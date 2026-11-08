@@ -3,6 +3,7 @@ import type { WikiNodeData } from "../types";
 import type { LessonOutline } from "./courses/types";
 import { useTheme } from "../hooks/useTheme";
 import { domainColor, tagColor } from "../theme/domains";
+import { apiFetch } from "../utils/api";
 
 type ConceptLesson = LessonOutline & { course: string };
 
@@ -128,7 +129,7 @@ function useConceptLessons(pageId: string): ConceptLesson[] {
   useEffect(() => {
     let cancelled = false;
     setLessons([]);
-    fetch(`/api/courses/concept/${encodeURIComponent(pageId)}`)
+    apiFetch(`/api/courses/concept/${encodeURIComponent(pageId)}`)
       .then((r) => (r.ok ? r.json() : []))
       .then((ls) => !cancelled && setLessons(ls))
       .catch(() => {});

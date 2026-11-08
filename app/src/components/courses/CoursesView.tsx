@@ -5,6 +5,7 @@ import { useCourses } from "../../hooks/useCourses";
 import { LessonView, type TocEntry } from "./LessonView";
 import { pageTitle, useDocumentTitle } from "./useDocumentTitle";
 import "./courses.css";
+import { apiFetch } from "../../utils/api";
 
 interface Props {
   /** Route path after `/courses` — "" (catalog), "<course>", or "<lesson id>". */
@@ -108,7 +109,7 @@ function SearchResults({ query, onOpen }: { query: string; onOpen: (p: string) =
   useEffect(() => {
     const ctrl = new AbortController();
     const t = setTimeout(() => {
-      fetch(`/api/courses/search?q=${encodeURIComponent(query.trim())}`, { signal: ctrl.signal })
+      apiFetch(`/api/courses/search?q=${encodeURIComponent(query.trim())}`, { signal: ctrl.signal })
         .then((r) => r.json())
         .then(setHits)
         .catch(() => {});
@@ -222,7 +223,7 @@ function LessonLayout({ course, lessonId, progress, onOpen, onOpenConcept, onAsk
   const [error, setError] = useState<string | null>(null);
   const [toc, setToc] = useState<TocEntry[]>([]);
   const [activeHeading, setActiveHeading] = useState<string | null>(null);
-  const { markVisited, toggleDone } = progress;
+  const { markVisited, markDone } = progress;
   const loaded = lesson?.id === lessonId ? lesson : null;
   // Narrow screens only: the sidebar is a drawer behind a toggle (CSS hides both otherwise).
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -263,7 +264,7 @@ function LessonLayout({ course, lessonId, progress, onOpen, onOpenConcept, onAsk
   useEffect(() => {
     let cancelled = false;
     setError(null);
-    fetch(`/api/courses/lessons/${lessonId}`)
+    apiFetch(`/api/courses/lessons/${lessonId}`)
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(r.status === 404 ? "Lesson not found" : `HTTP ${r.status}`))))
       .then((l: Lesson) => {
         if (cancelled) return;
@@ -309,7 +310,7 @@ function LessonLayout({ course, lessonId, progress, onOpen, onOpenConcept, onAsk
               lesson={lesson}
               courseTitle={course.title}
               done={progress.done.has(lesson.id)}
-              onToggleDone={() => toggleDone(lesson.id)}
+              onMarkDone={() => markDone(lesson.id)}
               onOpen={onOpen}
               onOpenConcept={onOpenConcept}
               onAsk={onAsk}

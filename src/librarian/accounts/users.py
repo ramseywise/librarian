@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 import uuid
 from dataclasses import dataclass, field, replace
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Literal
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
@@ -18,6 +18,8 @@ from librarian.db import tables
 Role = Literal["admin", "member"]
 ROLES: tuple[Role, ...] = ("admin", "member")
 ALL_SCOPES = frozenset({"read", "write"})
+# users.last_seen_at is written at most this often, so a busy user does not write on every request.
+SEEN_RESOLUTION = timedelta(minutes=5)
 
 _EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+$")
 
@@ -35,6 +37,7 @@ class User:
     name: str | None = None
     # What this request may do: a read-only key gives {"read"}; every other credential both.
     scopes: frozenset[str] = field(default=ALL_SCOPES)
+    last_seen_at: datetime | None = None
 
     @property
     def is_admin(self) -> bool:
@@ -57,6 +60,7 @@ def _check_timezone(tz: str) -> str:
 
 
 def user_from_row(row: RowMapping, scopes: frozenset[str] = ALL_SCOPES) -> User:
+    seen = row.get("last_seen_at")
     return User(
         id=row["id"],
         email=row["email"],
@@ -64,6 +68,7 @@ def user_from_row(row: RowMapping, scopes: frozenset[str] = ALL_SCOPES) -> User:
         timezone=row["timezone"],
         name=row["name"],
         scopes=scopes,
+        last_seen_at=seen.replace(tzinfo=UTC) if seen and seen.tzinfo is None else seen,
     )
 
 
@@ -130,3 +135,26 @@ def ensure_owner(engine: Engine, email: str) -> User:
             conn.execute(update(t).where(t.c.id == owner.id).values(role="admin"))
         owner = replace(owner, role="admin")
     return owner
+
+
+def set_role(engine: Engine, email: str, role: Role) -> User:
+    """Make an existing user an admin or a member; AccountError if there is no such user."""
+    if role not in ROLES:
+        raise AccountError(f"role must be one of {', '.join(ROLES)}, not {role!r}")
+    user = get_user(engine, email)
+    if user is None:
+        raise AccountError(f"no user with email {email!r}")
+    t = tables.users
+    with engine.begin() as conn:
+        conn.execute(update(t).where(t.c.id == user.id).values(role=role))
+    return replace(user, role=role)
+
+
+def touch_seen(engine: Engine, user: User) -> None:
+    """Record that `user` made a request now, unless that was recorded in the last few minutes."""
+    now = datetime.now(UTC)
+    if user.last_seen_at is not None and now - user.last_seen_at < SEEN_RESOLUTION:
+        return
+    t = tables.users
+    with engine.begin() as conn:
+        conn.execute(update(t).where(t.c.id == user.id).values(last_seen_at=now))

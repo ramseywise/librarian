@@ -24,7 +24,7 @@ import httpx
 import structlog
 
 from librarian.config import get_settings
-from librarian.ingest.base import ScraperBase
+from librarian.ingest.base import ScraperBase, request_with_retry
 
 log = structlog.get_logger(__name__)
 
@@ -235,8 +235,7 @@ def fetch_recent(
 
             log.info("arxiv.fetch_category", category=category, since_days=since_days)
             try:
-                resp = client.get(ARXIV_API_URL, params=params)
-                resp.raise_for_status()
+                resp = request_with_retry(client, "GET", ARXIV_API_URL, params=params)
             except httpx.HTTPError as exc:
                 log.warning("arxiv.fetch_error", category=category, error=str(exc))
                 continue

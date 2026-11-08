@@ -47,6 +47,7 @@ mkdir -p data/wiki/private data/courses/private
 docker run -d --name "${NAME}" -p "${PORT}:8000" \
     -e LIBRARIAN_API_TOKEN="${E2E_TOKEN}" \
     -e LIBRARIAN_API_WORKERS=2 \
+    -e LIBRARIAN_CHAT_ENABLED=false \
     -v "$PWD/data:/app/data:ro" \
     -v "${VOLUME}:/app/var" \
     --tmpfs /app/data/wiki/private \

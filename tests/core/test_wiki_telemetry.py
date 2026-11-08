@@ -11,6 +11,7 @@ tombstone and _index.md both link to it and must not count. All names here are m
 
 from __future__ import annotations
 
+import itertools
 import json
 import subprocess
 from datetime import date, timedelta
@@ -38,6 +39,9 @@ def filler(n: int) -> str:
     return " ".join(["word"] * n)
 
 
+_summary_ids = itertools.count()
+
+
 def write_page(
     wiki: Path,
     rel: str,
@@ -49,8 +53,10 @@ def write_page(
 ) -> None:
     path = wiki / rel
     path.parent.mkdir(parents=True, exist_ok=True)
+    # Unique words per page: identical boilerplate summaries would read as near-duplicates.
+    n = next(_summary_ids)
     path.write_text(
-        f"---\ntitle: {title}\ntags: {tags}\nsummary: A fixture page\n"
+        f"---\ntitle: {title}\ntags: {tags}\nsummary: Fixture q{n}a q{n}b q{n}c q{n}d\n"
         f"updated: {updated.isoformat()}\nsources: []\n---\n\n{body}\n"
     )
 
@@ -621,3 +627,143 @@ class TestHook:
             wiki, "private/links.md", "Links", f"[[{PRIVATE_TITLE}]]", tags="[private, concept]"
         )
         assert "PRIVATE LEAK" not in self.run_hook(tmp_path, wiki, "data/wiki/private/links.md")
+
+
+def ont_page(
+    wiki: Path, rel: str, title: str, links: str = "", *, tags: str = "[rag, concept]", summary: str
+) -> None:
+    path = wiki / rel
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        f"---\ntitle: {title}\ntags: {tags}\nsummary: {summary}\n"
+        f"updated: {TODAY.isoformat()}\nsources: []\n---\n\n{filler(200)}\n\n## See Also\n{links}\n"
+    )
+
+
+def ontology_lines(out: str) -> list[str]:
+    return [line for line in out.splitlines() if " ONT00" in line]
+
+
+class TestOntologyChecks:
+    @pytest.fixture
+    def tree(self, tmp_path: Path) -> Path:
+        return tmp_path / "wiki"
+
+    def test_cycle_reported_once_and_chain_is_not(
+        self, tree: Path, telemetry: Path, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        # a -> b -> c -> a is a cycle (X is a prerequisite for the page it is written on);
+        # d -> e -> f is an acyclic chain.
+        ont_page(
+            tree, "rag/a.md", "Alpha One", "- [[Gamma Three]] — prerequisite-for", summary="aa"
+        )
+        ont_page(tree, "rag/b.md", "Beta Two", "- [[Alpha One]] — prerequisite-for", summary="bb")
+        ont_page(tree, "rag/c.md", "Gamma Three", "- [[Beta Two]] — prerequisite-for", summary="cc")
+        ont_page(tree, "rag/d.md", "Delta Four", "- [[Zed]]", summary="dd")
+        ont_page(
+            tree, "rag/e.md", "Epsilon Five", "- [[Delta Four]] — prerequisite-for", summary="ee"
+        )
+        ont_page(
+            tree, "rag/f.md", "Zeta Six", "- [[Epsilon Five]] — prerequisite-for", summary="ff"
+        )
+        assert run(["check"], tree, telemetry) == 0  # a WARN never fails the exit code
+        lines = ontology_lines(capsys.readouterr().out)
+        assert len(lines) == 1
+        assert lines[0].startswith("WARN ONT001") and "3 pages" in lines[0]
+        assert "rag/a.md, rag/b.md, rag/c.md" in lines[0]
+        assert "rag/d.md" not in lines[0]
+
+    def test_instance_of_mutual_and_project_as_general(
+        self, tree: Path, telemetry: Path, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        ont_page(tree, "rag/p.md", "Pee Page", "- [[Ex Page]] — instance-of", summary="p")
+        ont_page(tree, "rag/x.md", "Ex Page", "- [[Pee Page]] — instance-of", summary="x")
+        # A project listing a pattern as its instance is reversed; the pattern listing the
+        # project is the right way round and is not flagged.
+        ont_page(
+            tree,
+            "projects/proj.md",
+            "Some Project",
+            "- [[Some Pattern]] — instance-of",
+            tags="[projects, project]",
+            summary="proj",
+        )
+        ont_page(
+            tree,
+            "patterns/pat.md",
+            "Some Pattern",
+            "- [[Other Project]] — instance-of",
+            tags="[patterns, pattern]",
+            summary="pat",
+        )
+        ont_page(
+            tree,
+            "projects/other.md",
+            "Other Project",
+            "",
+            tags="[projects, project]",
+            summary="other",
+        )
+        assert run(["check"], tree, telemetry) == 0
+        lines = ontology_lines(capsys.readouterr().out)
+        assert sorted(line.split()[1] for line in lines) == ["ONT002", "ONT003"]
+        assert any("projects/proj.md lists patterns/pat.md" in line for line in lines)
+
+    def test_near_duplicates_found_and_distinct_titles_not(
+        self, tree: Path, telemetry: Path, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        ont_page(
+            tree,
+            "rag/one.md",
+            "Hybrid Search Fusion",
+            summary="Combining sparse and dense retrieval scores with reciprocal rank fusion",
+        )
+        ont_page(
+            tree,
+            "rag/two.md",
+            "Hybrid Search Fusion Methods",
+            summary="Combining sparse and dense retrieval scores via reciprocal rank fusion",
+        )
+        ont_page(
+            tree,
+            "eval/three.md",
+            "Judge Calibration",
+            summary="Aligning an LLM grader with human labels",
+        )
+        assert run(["check"], tree, telemetry) == 0
+        lines = ontology_lines(capsys.readouterr().out)
+        assert len(lines) == 1 and "ONT004" in lines[0]
+        assert "rag/one.md / rag/two.md" in lines[0]
+
+    def test_private_and_tombstone_pages_are_excluded(
+        self, tree: Path, telemetry: Path, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        ont_page(tree, "rag/a.md", "Alpha One", "- [[Beta Two]] — prerequisite-for", summary="aa")
+        ont_page(
+            tree,
+            "rag/b.md",
+            "Beta Two",
+            "- [[Alpha One]] — prerequisite-for",
+            tags="[rag, tombstone]",
+            summary="bb",
+        )
+        ont_page(
+            tree,
+            "private/secret.md",
+            "Secret Cycle Page",
+            "- [[Alpha One]] — prerequisite-for",
+            tags="[private, concept]",
+            summary="Hybrid Search Fusion retrieval scores",
+        )
+        ont_page(tree, "rag/c.md", "Hybrid Search Fusion", summary="Hybrid Search Fusion retrieval")
+        ont_page(
+            tree,
+            "rag/d.md",
+            "Hybrid Search Fusion",
+            tags="[rag, tombstone]",
+            summary="Hybrid Search Fusion retrieval",
+        )
+        assert run(["check"], tree, telemetry) == 0
+        out = capsys.readouterr().out
+        assert ontology_lines(out) == []
+        assert "Secret Cycle Page" not in out and "private/secret" not in out

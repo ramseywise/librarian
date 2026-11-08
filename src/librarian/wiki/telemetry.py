@@ -5,7 +5,8 @@ goes to data/telemetry/, outside data/wiki/, so the MCP index, relinker and grap
 
     uv run librarian wiki stats [--json]
     uv run librarian wiki snapshot            # stats + one row in metrics.jsonl
-    uv run librarian wiki check [--file PATH] # private-leak check, exit 1 on BLOCKER
+    uv run librarian wiki check [--file PATH] # private-leak check, exit 1 on BLOCKER;
+                                              # ontology findings (ONT001-004) only warn
     uv run librarian wiki log <op> "<detail>" # exit 2 if detail names a private page
     uv run librarian wiki ask "<topic>"       # gitignored asked.jsonl
     uv run librarian wiki gaps                # regenerate gitignored gaps.md
@@ -107,6 +108,7 @@ from librarian.wiki.leak_check import (
 from librarian.wiki.leak_check import (
     run_check as run_check,
 )
+from librarian.wiki.ontology import check_ontology
 from librarian.wiki.oplog import (
     _OP_RE as _OP_RE,
 )
@@ -336,6 +338,8 @@ def _cmd_check(args: argparse.Namespace) -> int:
     if not (args.wiki_dir / "private").is_dir():
         print("check: no private/ directory here, nothing to compare against")
     report.blockers[:0] = _tracked_private_blockers(args.repo_root)
+    # Ontology findings only ever warn: they never change the exit code.
+    report.warnings.extend(check_ontology(args.wiki_dir))
     for line in report.blockers:
         print(f"BLOCKER {line}")
     for line in report.warnings:

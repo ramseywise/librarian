@@ -17,8 +17,13 @@ For batch operations, use ManifestSession to avoid O(N²) _load() calls:
 
 from __future__ import annotations
 
+import contextlib
+import fcntl
 import hashlib
 import json
+import os
+import tempfile
+from collections.abc import Iterator
 from datetime import date
 from pathlib import Path
 
@@ -41,9 +46,39 @@ def _load() -> dict[str, dict]:
 
 
 def _save(entries: dict[str, dict]) -> None:
+    """Write the manifest atomically: temp file in the same dir, fsync, then os.replace.
+
+    A crash mid-write leaves the old manifest intact rather than a truncated one.
+    """
     MANIFEST_PATH.parent.mkdir(parents=True, exist_ok=True)
     lines = [json.dumps(e, ensure_ascii=False) for e in entries.values()]
-    MANIFEST_PATH.write_text("\n".join(lines) + "\n")
+    fd, tmp_name = tempfile.mkstemp(dir=MANIFEST_PATH.parent, prefix=".manifest.", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w") as fh:
+            fh.write("\n".join(lines) + "\n")
+            fh.flush()
+            os.fsync(fh.fileno())
+        os.replace(tmp_name, MANIFEST_PATH)
+    except BaseException:
+        with contextlib.suppress(FileNotFoundError):
+            os.unlink(tmp_name)
+        raise
+
+
+@contextlib.contextmanager
+def _lock() -> Iterator[None]:
+    """Hold an exclusive lock on the manifest across processes, so two ingests cannot interleave.
+
+    A sidecar lock file, because the manifest itself is replaced on every save. Not reentrant:
+    flock on a second descriptor in the same process blocks.
+    """
+    MANIFEST_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with MANIFEST_PATH.with_name(MANIFEST_PATH.name + ".lock").open("w") as fh:
+        fcntl.flock(fh, fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(fh, fcntl.LOCK_UN)
 
 
 def file_hash(path: Path) -> str:
@@ -76,18 +111,21 @@ def mark(path: str | Path, wiki_pages: list[str]) -> None:
     """
     p = Path(path)
     rel = str(p.relative_to(REPO_ROOT)) if p.is_absolute() else str(p)
-    entries = _load()
-    entries[rel] = {
-        "path": rel,
-        "hash": file_hash(p),
-        "ingested_at": date.today().isoformat(),
-        "wiki_pages": wiki_pages,
-    }
-    _save(entries)
+    with _lock():
+        entries = _load()
+        entries[rel] = {
+            "path": rel,
+            "hash": file_hash(p),
+            "ingested_at": date.today().isoformat(),
+            "wiki_pages": wiki_pages,
+        }
+        _save(entries)
 
 
 class ManifestSession:
     """Context manager for batch ingest — loads manifest once, saves on exit.
+
+    Holds the manifest lock for the whole session, so a second ingest waits for this one.
 
     Fixes the O(N²) _load() pattern (#36): each check()/mark() call inside the
     session operates on the in-memory dict rather than re-reading the file.
@@ -102,14 +140,19 @@ class ManifestSession:
     def __init__(self) -> None:
         self._entries: dict[str, dict] = {}
         self._dirty = False
+        self._stack = contextlib.ExitStack()
 
     def __enter__(self) -> ManifestSession:
+        self._stack.enter_context(_lock())
         self._entries = _load()
         return self
 
     def __exit__(self, *_: object) -> None:
-        if self._dirty:
-            _save(self._entries)
+        try:
+            if self._dirty:
+                _save(self._entries)
+        finally:
+            self._stack.close()
 
     def check(self, path: str | Path) -> tuple[bool, str]:
         """Return (needs_ingest, reason). False means skip — already ingested unchanged."""

@@ -1,0 +1,65 @@
+/* Sign-in, the user menu, the admin page and the privacy page. Values come from tokens.css. */
+.account-card {
+  max-width: 26rem;
+  margin: 12vh auto var(--space-7);
+  padding: 0 var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.account-provider { display: block; text-align: center; text-decoration: none; }
+.account-form { display: flex; flex-direction: column; gap: var(--space-2); }
+.account-form--inline { flex-direction: row; flex-wrap: wrap; align-items: center; margin-bottom: var(--space-3); }
+.account-form input, .account-table select {
+  font: inherit;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm, 6px);
+  background: var(--surface);
+  color: var(--text);
+}
+.account-error { color: var(--danger, #c62828); }
+.account-hint { color: var(--text-soft); font-size: var(--fs-sm); }
+.account-token summary { cursor: pointer; color: var(--text-secondary); }
+.account-token .account-form { margin-top: var(--space-3); }
+
+.account-table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); display: block; overflow-x: auto; }
+.account-table th, .account-table td {
+  text-align: left;
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.account-table th { color: var(--text-soft); font-weight: 600; }
+
+.account-legal h2 { font-size: var(--fs-md); color: var(--text-strong); margin: var(--space-6) 0 var(--space-2); }
+.account-legal ul { padding-left: 1.2em; display: flex; flex-direction: column; gap: var(--space-1); }
+.account-legal p { margin: var(--space-2) 0; }
+
+.user-menu { position: relative; }
+.user-menu-pop {
+  position: absolute;
+  right: 0;
+  top: calc(100% + var(--space-2));
+  min-width: 15rem;
+  z-index: 50;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md, 8px);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-size: var(--fs-sm);
+}
+.user-menu-who { display: flex; flex-direction: column; color: var(--text); }
+.user-menu-who span, .user-menu-spend { color: var(--text-soft); }
+.user-menu-pop a, .user-menu-pop button {
+  color: var(--link);
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}

@@ -75,7 +75,7 @@ describe("SlidesView", () => {
     expect(fetchMock.mock.calls[0][0]).toBe("/api/courses/slides/c1/m1");
     const img = await screen.findByRole("img", { name: "First" });
     expect(img).toHaveAttribute("src", "blob:slide");
-    expect(fetchMock).toHaveBeenCalledWith("/api/courses/slide-image/c1/m1/1");
+    expect(fetchMock).toHaveBeenCalledWith("/api/courses/slide-image/c1/m1/1", expect.anything());
     expect(screen.getByText("1 of 2")).toBeInTheDocument();
   });
 

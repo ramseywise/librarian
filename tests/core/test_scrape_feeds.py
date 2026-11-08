@@ -324,7 +324,7 @@ def test_fetch_recent_skips_disabled_feeds(monkeypatch: pytest.MonkeyPatch) -> N
         def __exit__(self, *_: object) -> None:
             return None
 
-        def get(self, url: str) -> _FakeResponse:
+        def request(self, method: str, url: str, **_: object) -> _FakeResponse:
             requested.append(url)
             return _FakeResponse()
 

@@ -18,7 +18,7 @@ beforeEach(() => {
 afterEach(cleanup);
 
 const renderLesson = () => render(
-  <LessonView lesson={drill} courseTitle="Programming" done={false} onToggleDone={vi.fn()} onOpen={vi.fn()}
+  <LessonView lesson={drill} courseTitle="Programming" done={false} onMarkDone={vi.fn()} onOpen={vi.fn()}
     onOpenConcept={vi.fn()} onAsk={vi.fn()} onToc={vi.fn()} onActiveHeading={vi.fn()} />,
 );
 

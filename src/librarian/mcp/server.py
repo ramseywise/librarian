@@ -14,8 +14,13 @@ This module is only the FastMCP setup; the wiki tools come from the shared regis
 (`librarian.agent.tools`) and the code tools from `apps.mcp.codemap_tools`; indexing, ranking and rendering
 live in `librarian.retrieval` (see its docstring), shared with the chat agent and the evals.
 
+Remote mode: with LIBRARIAN_API_KEY set (and LIBRARIAN_API_URL, default http://localhost:8000)
+the wiki tools are answered by that API (`librarian.mcp.remote`) and no local index is opened.
+Without it, the owner's local mode reads the index directly.
+
 Usage:
     uv run librarian mcp [--rebuild]
+    LIBRARIAN_API_KEY=lk_... LIBRARIAN_API_URL=https://librarian.example.com uv run librarian mcp
 """
 
 from __future__ import annotations
@@ -31,6 +36,7 @@ from librarian import retrieval
 from librarian.agent.tools import MCP, Tool, ToolContext, tools_for
 from librarian.config import get_settings
 from librarian.log_config import configure_logging, get_logger
+from librarian.mcp import remote
 from librarian.mcp.codemap_tools import register_codemap_tools
 from librarian.retrieval import corpus, embeddings
 
@@ -49,6 +55,9 @@ def _register(tool: Tool) -> None:
     """
 
     def adapter(**kwargs: Any) -> str:  # noqa: ANN401
+        settings = get_settings()
+        if settings.remote_api_key:
+            return remote.call(settings, tool.name, kwargs)
         return tool.run(kwargs, ToolContext(surface=MCP))
 
     fields = {
@@ -90,13 +99,18 @@ def main(argv: list[str] | None = None) -> int:
         "--rebuild", action="store_true", help="force a full drop and re-embed of the index"
     )
     args = ap.parse_args(argv)
+    settings = get_settings()
     if args.rebuild:
         print(retrieval.rebuild_index())
+        return 0
+    if settings.remote_api_key:
+        log.info("starting_mcp_server", mode="remote", api_url=settings.remote_api_url)
+        mcp.run()
         return 0
 
     # The same read-only handle the API serves from. With no built index (or autobuild on, the
     # dev default) it builds one first; the stdio server has nothing to answer before it exists.
-    handle = retrieval.IndexHandle(autobuild=get_settings().index_autobuild)
+    handle = retrieval.IndexHandle(autobuild=settings.index_autobuild)
     handle.start(wait=True)
     retrieval.set_handle(handle)
     if handle.state != "ready":
@@ -104,6 +118,7 @@ def main(argv: list[str] | None = None) -> int:
 
     log.info(
         "starting_mcp_server",
+        mode="local",
         wiki_dir=str(corpus.WIKI_DIR),
         courses_dir=str(corpus.COURSES_DIR),
         hybrid_search=embeddings.HAS_EMBEDDINGS,

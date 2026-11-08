@@ -57,6 +57,14 @@ def _isolate_courses(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.fixture(autouse=True)
+def _isolate_index_dir(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Built indexes go to a tmp dir: a real `var/index/current` must not make a test ready."""
+    from librarian.retrieval import corpus
+
+    monkeypatch.setattr(corpus, "INDEX_DIR", tmp_path / "index")
+
+
+@pytest.fixture(autouse=True)
 def _isolate_study_state(
     tmp_path: Path, tmp_path_factory: pytest.TempPathFactory, monkeypatch: pytest.MonkeyPatch
 ) -> Iterator[None]:

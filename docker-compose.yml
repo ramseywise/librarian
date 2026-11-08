@@ -3,14 +3,17 @@
 # Single-user local flow, no TLS: `make app` adds docker-compose.local.yml (API on 127.0.0.1:8000).
 #   make app-build    (the private mountpoints must exist first: mkdir -p data/wiki/private data/courses/private)
 #
-# LIBRARIAN_API_TOKEN is required: the container binds 0.0.0.0 and the API refuses to start
-# without a token (add `--insecure` to the command to override). Set it, ANTHROPIC_API_KEY and
+# Sign-in (LIBRARIAN_API_TOKEN or a login method: Google, GitHub or email, see .env.example) is
+# required: the container binds 0.0.0.0 and the API refuses to start open (add `--insecure` to
+# the command to override). Set it, LIBRARIAN_SESSION_SECRET for a login method, ANTHROPIC_API_KEY and
 # POSTGRES_PASSWORD (URL-safe characters; the default is for a laptop) in .env. For UI development use `make ui` (Vite on :5173) against `make api`.
+# Image: LIBRARIAN_IMAGE (default librarian:local, built here). A host sets a registry tag and runs
+# `./librarian upgrade <tag>`, which pulls and never builds (`up --no-build`).
 services:
   # One-shot: creates the two private mountpoints on the host. Docker cannot create a tmpfs
   # mountpoint inside the read-only ./data mount below, and a clean clone has neither directory.
   prepare:
-    image: librarian:local
+    image: ${LIBRARIAN_IMAGE:-librarian:local}
     build:
       context: .
       dockerfile: Dockerfile
@@ -45,7 +48,7 @@ services:
   #   docker compose run --rm indexer       every API process picks up the new build within ~5 s.
   # Same mounts as the API, private masks included, so the index never holds a private page.
   indexer:
-    image: librarian:local
+    image: ${LIBRARIAN_IMAGE:-librarian:local}
     depends_on:
       prepare:
         condition: service_completed_successfully
@@ -59,7 +62,7 @@ services:
     restart: "no"
 
   librarian:
-    image: librarian:local
+    image: ${LIBRARIAN_IMAGE:-librarian:local}
     build:
       context: .
       dockerfile: Dockerfile
@@ -87,6 +90,10 @@ services:
       - LIBRARIAN_INDEX_AUTOBUILD=0
       # uvicorn workers per container. State is in Postgres and the index file, so 2+ is safe.
       - LIBRARIAN_API_WORKERS=${LIBRARIAN_API_WORKERS:-2}
+      # Sign-in: OAuth callbacks and email links are built from this; cookies are Secure on https.
+      - LIBRARIAN_PUBLIC_URL=${LIBRARIAN_PUBLIC_URL:-https://${LIBRARIAN_DOMAIN:-localhost}}
+      # Only Caddy reaches the API (no host port), so its X-Forwarded-For is the client address.
+      - LIBRARIAN_FORWARDED_ALLOW_IPS=*
     volumes:
       # Content, read-only.
       - ./data:/app/data:ro
@@ -99,6 +106,26 @@ services:
       # directories must exist on the host first (make app does that).
       - /app/data/wiki/private
       - /app/data/courses/private
+    restart: unless-stopped
+
+  # Nightly encrypted backup of the database to the bucket (`librarian ops schedule`, at
+  # LIBRARIAN_BACKUP_AT UTC). A loop in a container instead of a host timer: it ships with the
+  # compose file, needs no host setup, behaves the same on a laptop drill and on the host, and
+  # restart: unless-stopped brings it back after a reboot. A failed run emails the owner.
+  # Off unless the profile is on: `./librarian start` enables it when LIBRARIAN_BACKUP_URL is set.
+  # `./librarian backup|restore|upgrade` run one-off commands in this service.
+  backup:
+    image: ${LIBRARIAN_IMAGE:-librarian:local}
+    profiles: ["backup"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ["librarian", "ops", "schedule"]
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      - DATABASE_URL=postgresql://librarian:${POSTGRES_PASSWORD:-librarian-dev}@postgres:5432/librarian
     restart: unless-stopped
 
   # User state. Not published on the host: only the librarian service reaches it.

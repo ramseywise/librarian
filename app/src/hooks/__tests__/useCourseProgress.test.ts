@@ -1,57 +1,82 @@
-import { act, renderHook } from "@testing-library/react";
+import { act, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { PROGRESS_KEY, resetProgressStoreForTests, useCourseProgress } from "../useCourseProgress";
+import { fromServer, loadProgress, PROGRESS_KEY, resetProgressStoreForTests, useCourseProgress } from "../useCourseProgress";
+
+let posts: { lesson: string; state: string }[];
+let server: Record<string, { state: "opened" | "done"; updatedAt: string }>;
 
 beforeEach(() => {
   localStorage.clear();
   resetProgressStoreForTests();
+  posts = [];
+  server = {};
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async (url: string, init?: RequestInit) => {
+      if (init?.method === "POST") {
+        posts.push(JSON.parse(String(init.body)));
+        return new Response(JSON.stringify({ logged: true }), { status: 200 });
+      }
+      expect(url).toBe("/api/courses/progress");
+      return new Response(JSON.stringify({ lessons: server }), { status: 200 });
+    }),
+  );
 });
-afterEach(() => vi.restoreAllMocks());
+afterEach(() => vi.unstubAllGlobals());
 
 describe("useCourseProgress", () => {
-  it("shares one store across hook instances (Courses and Practice)", () => {
+  it("loads the user's progress from the server", async () => {
+    server = {
+      "c/m/l1": { state: "done", updatedAt: "2026-11-01T10:00:00" },
+      "c/m/l2": { state: "opened", updatedAt: "2026-11-02T10:00:00" },
+      "d/m/x": { state: "opened", updatedAt: "2026-11-01T09:00:00" },
+    };
+    const { result } = renderHook(() => useCourseProgress());
+    await waitFor(() => expect(result.current.done.has("c/m/l1")).toBe(true));
+    expect(result.current.last).toEqual({ c: "c/m/l2", d: "d/m/x" });
+  });
+
+  it("shares one store across hook instances and writes through", async () => {
     const a = renderHook(() => useCourseProgress());
     const b = renderHook(() => useCourseProgress());
-    act(() => a.result.current.toggleDone("c/m/l1"));
+    await act(() => loadProgress());
+    act(() => a.result.current.markDone("c/m/l1"));
     expect(b.result.current.done.has("c/m/l1")).toBe(true);
     act(() => b.result.current.markVisited("c", "c/m/l1"));
+    act(() => b.result.current.markVisited("c", "c/m/l1")); // unchanged: no second write
     expect(a.result.current.last).toEqual({ c: "c/m/l1" });
-    expect(JSON.parse(localStorage.getItem(PROGRESS_KEY)!)).toEqual({ done: ["c/m/l1"], last: { c: "c/m/l1" } });
-    act(() => a.result.current.toggleDone("c/m/l1"));
-    expect(b.result.current.done.has("c/m/l1")).toBe(false);
+    act(() => a.result.current.markDone("c/m/l1")); // done stays done
+    await waitFor(() =>
+      expect(posts).toEqual([
+        { lesson: "c/m/l1", state: "done" },
+        { lesson: "c/m/l1", state: "opened" },
+      ]),
+    );
   });
 
-  it("reads the existing stored shape", () => {
+  it("sends progress kept in this browser up once, then forgets it", async () => {
     localStorage.setItem(PROGRESS_KEY, JSON.stringify({ done: ["x/y/z"], last: { x: "x/y/z" } }));
-    const { result } = renderHook(() => useCourseProgress());
-    expect(result.current.done.has("x/y/z")).toBe(true);
-    expect(result.current.last.x).toBe("x/y/z");
+    await act(() => loadProgress());
+    expect(posts).toEqual([{ lesson: "x/y/z", state: "done" }]);
+    expect(localStorage.getItem(PROGRESS_KEY)).toBeNull();
   });
 
-  it("tolerates storage that throws, keeping progress in memory", () => {
-    vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => { throw new Error("denied"); });
-    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => { throw new Error("denied"); });
+  it("keeps changes in memory when the server cannot be reached", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("offline")));
     const { result } = renderHook(() => useCourseProgress());
-    expect(result.current.done.size).toBe(0);
-    act(() => result.current.toggleDone("a/b/c"));
+    await act(() => loadProgress());
+    act(() => result.current.markDone("a/b/c"));
     expect(result.current.done.has("a/b/c")).toBe(true);
   });
 
-  it("picks up changes made in another tab", () => {
-    const { result } = renderHook(() => useCourseProgress());
-    localStorage.setItem(PROGRESS_KEY, JSON.stringify({ done: ["other/tab/lesson"], last: {} }));
-    act(() => { window.dispatchEvent(new StorageEvent("storage", { key: PROGRESS_KEY })); });
-    expect(result.current.done.has("other/tab/lesson")).toBe(true);
-  });
-
-  it("re-reads storage when the course views remount, so another tab's progress survives", () => {
-    const first = renderHook(() => useCourseProgress());
-    act(() => first.result.current.toggleDone("mine"));
-    first.unmount(); // switched to the Graph tab: nobody listens for storage events
-    localStorage.setItem(PROGRESS_KEY, JSON.stringify({ done: ["mine", "other-tab"], last: {} }));
-    const again = renderHook(() => useCourseProgress());
-    expect([...again.result.current.done]).toEqual(["mine", "other-tab"]);
-    act(() => again.result.current.toggleDone("third"));
-    expect(JSON.parse(localStorage.getItem(PROGRESS_KEY)!).done).toEqual(["mine", "other-tab", "third"]);
+  it("picks the newest lesson per course", () => {
+    expect(
+      fromServer({
+        lessons: {
+          "c/1": { state: "done", updatedAt: "2026-01-02" },
+          "c/2": { state: "opened", updatedAt: "2026-01-01" },
+        },
+      }),
+    ).toEqual({ done: ["c/1"], last: { c: "c/1" } });
   });
 });

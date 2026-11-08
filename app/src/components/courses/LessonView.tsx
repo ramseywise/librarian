@@ -9,7 +9,7 @@ interface Props {
   lesson: Lesson;
   courseTitle: string;
   done: boolean;
-  onToggleDone: () => void;
+  onMarkDone: () => void;
   onOpen: (path: string) => void;
   onOpenConcept: (pageId: string) => void;
   onAsk: (question: string) => void;
@@ -42,7 +42,7 @@ export function DrillBadges({ drill }: { drill: NonNullable<Lesson["drill"]> }) 
   );
 }
 
-export function LessonView({ lesson, courseTitle, done, onToggleDone, onOpen, onOpenConcept, onAsk, onToc, onActiveHeading }: Props) {
+export function LessonView({ lesson, courseTitle, done, onMarkDone, onOpen, onOpenConcept, onAsk, onToc, onActiveHeading }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const proseRef = useRef<HTMLDivElement>(null);
   const body = stripDuplicateH1(lesson.body, lesson.title);
@@ -130,7 +130,7 @@ export function LessonView({ lesson, courseTitle, done, onToggleDone, onOpen, on
           )}
 
           <div className="lesson-actions">
-            <button onClick={onToggleDone} className={`round-btn${done ? " round-btn--done" : ""}`}>
+            <button onClick={onMarkDone} disabled={done} className={`round-btn${done ? " round-btn--done" : ""}`}>
               {done ? "✓ Completed" : "Mark as complete"}
             </button>
             <button onClick={ask} className="round-btn">Ask the librarian ↗</button>

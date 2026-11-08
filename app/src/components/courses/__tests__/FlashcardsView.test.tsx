@@ -33,7 +33,7 @@ describe("FlashcardsView", () => {
     const fetchMock = stubDeck();
     render(<FlashcardsView deckId="c1/m1" />);
     expect(await screen.findByText("First question")).toBeTruthy();
-    expect(fetchMock).toHaveBeenCalledWith("/api/courses/flashcards/c1/m1");
+    expect(fetchMock).toHaveBeenCalledWith("/api/courses/flashcards/c1/m1", expect.anything());
     expect(screen.queryByText("First answer")).toBeNull();
 
     await userEvent.click(screen.getByRole("button", { pressed: false }));
@@ -78,7 +78,7 @@ describe("FlashcardsView", () => {
       body: JSON.stringify({ deck: "c1/m1", card: "0", result: "missed" }),
     }));
     expect(screen.getByText("Second question")).toBeTruthy();
-    const posts = () => fetchMock.mock.calls.filter((c) => (c as unknown[])[1]).length;
+    const posts = () => fetchMock.mock.calls.filter((c) => (c as unknown as [string, RequestInit?])[1]?.method === "POST").length;
     expect(posts()).toBe(1);
     await userEvent.click(screen.getByRole("button", { name: "Next" }));
     expect(posts()).toBe(1);

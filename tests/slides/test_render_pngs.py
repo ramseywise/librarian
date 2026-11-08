@@ -92,3 +92,55 @@ def test_a_good_render_replaces_the_old_pngs(
     assert [p.read_bytes() for p in pngs] == [b"new", b"new"]
     assert sorted(p.name for p in out.glob("*.png")) == ["slide-01.png", "slide-02.png"]
     assert not [p for p in out.parent.iterdir() if p.name.startswith(".render-")]
+
+
+def _which(*present: str):
+    return lambda name: f"/bin/{name}" if name in present else None
+
+
+def test_renderer_defaults_follow_the_tools_present(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("SLIDES_RENDERER", raising=False)
+    monkeypatch.setattr(bd.shutil, "which", _which("qlmanage", "soffice", "pdftoppm"))
+    assert bd.pick_renderer() == "quicklook"
+    monkeypatch.setattr(bd.shutil, "which", _which("soffice", "pdftoppm"))
+    assert bd.pick_renderer() == "libreoffice"
+    monkeypatch.setattr(bd.shutil, "which", _which("soffice"))
+    assert bd.pick_renderer() is None
+
+
+def test_the_env_var_picks_the_renderer_and_a_bad_name_is_refused(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("SLIDES_RENDERER", "libreoffice")
+    assert bd.pick_renderer() == "libreoffice"
+    assert bd.pick_renderer("quicklook") == "quicklook"
+    with pytest.raises(ValueError):
+        bd.pick_renderer("word")
+
+
+def test_libreoffice_renders_to_the_same_names(
+    stub: None, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls: list[list[str]] = []
+
+    def run(cmd: list[str], **kw: Any) -> None:
+        calls.append(cmd)
+        if cmd[0] == "pdftoppm":
+            for k in (1, 2):
+                Path(f"{cmd[-1]}-{k}.png").write_bytes(b"lo")
+
+    monkeypatch.setattr(bd.subprocess, "run", run)
+    (tmp_path / "d.pptx").write_bytes(b"pptx")
+    out = tmp_path / "deck" / "preview"
+    pngs = bd.render_pngs(tmp_path / "d.pptx", out, renderer="libreoffice")
+    assert [p.name for p in pngs] == ["slide-01.png", "slide-02.png"]
+    assert [c[0] for c in calls] == ["soffice", "pdftoppm"]
+    assert "--headless" in calls[0] and "pdf" in calls[0]
+
+
+def test_a_missing_libreoffice_tool_skips_with_the_same_kind_of_message(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(bd.shutil, "which", _which("soffice"))
+    assert bd.render_pngs(tmp_path / "d.pptx", tmp_path / "o", renderer="libreoffice") == []
+    assert "pdftoppm not found" in capsys.readouterr().err

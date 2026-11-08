@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { FlashcardsDueSummary } from "./types";
+import { apiFetch } from "../../utils/api";
 
 /** Modules listed; the total still counts every one. */
 const MAX_MODULES = 6;
@@ -10,7 +11,7 @@ export function FlashcardsDue() {
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/courses/flashcards-due")
+    apiFetch("/api/courses/flashcards-due")
       .then((r) => (r.ok ? (r.json() as Promise<FlashcardsDueSummary>) : null))
       .then((body) => {
         if (!cancelled && typeof body?.due === "number") setSummary(body);

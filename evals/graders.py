@@ -40,6 +40,9 @@ class GoldenEntry:
     difficulty: str
     # Pages checked by hand to also contain the answer. They count for hit rate and MRR, not recall.
     accept_pages: list[str] = field(default_factory=list)
+    # A query the corpus should NOT answer (source_pages is empty). Never counted in hit rate, MRR
+    # or recall; graded separately by `RetrievalGrader.grade_negatives`.
+    negative: bool = False
 
 
 @dataclass
@@ -85,6 +88,9 @@ class EvalReport:
     retrieval_results: list[RetrievalGraderResult] = field(default_factory=list)
     answer_results: list[AnswerGraderResult] = field(default_factory=list)
     n_entries: int = 0
+    # Negatives are reported apart from the positives above: n_entries counts positives only.
+    n_negatives: int = 0
+    negative_rejection_rate: float | None = None
 
     def __str__(self) -> str:
         lines = [
@@ -95,6 +101,10 @@ class EvalReport:
             f"Token overlap     : {self.mean_token_overlap:.3f}",
             f"Semantic sim.     : {self.mean_semantic_similarity:.3f}",
         ]
+        if self.negative_rejection_rate is not None:
+            lines.append(
+                f"Negatives rejected: {self.negative_rejection_rate:.3f}  (n={self.n_negatives}, report-only)"
+            )
         return "\n".join(lines)
 
 
@@ -137,7 +147,15 @@ class RetrievalGrader:
         entries: list[GoldenEntry],
         retrieved_per_entry: list[list[RetrievalResult]],
     ) -> tuple[float, float, float, list[RetrievalGraderResult]]:
-        """Grade a batch. Returns (hit_rate, mrr, mean_recall, per_entry_results)."""
+        """Grade a batch. Returns (hit_rate, mrr, mean_recall, per_entry_results).
+
+        Negative entries are skipped (see `grade_negatives`), so they never move the rates.
+        """
+        pairs = [
+            (e, r) for e, r in zip(entries, retrieved_per_entry, strict=True) if not e.negative
+        ]
+        entries = [e for e, _ in pairs]
+        retrieved_per_entry = [r for _, r in pairs]
         results = [
             self.grade_entry(e, r) for e, r in zip(entries, retrieved_per_entry, strict=True)
         ]
@@ -145,6 +163,24 @@ class RetrievalGrader:
         mrr = sum(r.reciprocal_rank for r in results) / len(results) if results else 0.0
         mean_recall = sum(r.expected_set_recall for r in results) / len(results) if results else 0.0
         return hit_rate, mrr, mean_recall, results
+
+    @staticmethod
+    def grade_negatives(
+        entries: list[GoldenEntry],
+        retrieved_per_entry: list[list[RetrievalResult]],
+        score_ceiling: float,
+    ) -> tuple[int, float | None]:
+        """Rule: a negative entry is rejected (passes) when no result scores at or above
+        `score_ceiling`, or there are no results. Returns (n_negatives, rejection_rate), the
+        rate None when the set has no negatives. Scores are the search core's blended scores, so
+        the ceiling is per corpus and must be measured, not guessed.
+        """
+        flags = [
+            not any(r.score >= score_ceiling for r in retrieved)
+            for e, retrieved in zip(entries, retrieved_per_entry, strict=True)
+            if e.negative
+        ]
+        return len(flags), (sum(flags) / len(flags) if flags else None)
 
     # ------------------------------------------------------------------
     # internals
@@ -489,6 +525,7 @@ def load_golden_dataset(path: str | None = None) -> list[GoldenEntry]:
             source_pages=item["source_pages"],
             difficulty=item["difficulty"],
             accept_pages=item.get("accept_pages", []),
+            negative=item.get("negative", False),
         )
         for item in raw
     ]

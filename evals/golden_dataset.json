@@ -201,7 +201,9 @@
       "data/wiki/mcp/mcp-protocol.md",
       "data/wiki/adk/adk-context-engineering.md"
     ],
-    "accept_pages": ["data/wiki/adk/skill-md-pattern.md"],
+    "accept_pages": [
+      "data/wiki/adk/skill-md-pattern.md"
+    ],
     "difficulty": "medium"
   },
   {
@@ -232,7 +234,9 @@
     "source_pages": [
       "data/wiki/patterns/react-pattern.md"
     ],
-    "accept_pages": ["data/wiki/memory/self-learning-agents.md"],
+    "accept_pages": [
+      "data/wiki/memory/self-learning-agents.md"
+    ],
     "difficulty": "medium"
   },
   {
@@ -465,7 +469,9 @@
     "source_pages": [
       "data/wiki/adk/adk-context-engineering.md"
     ],
-    "accept_pages": ["data/wiki/eval/skill-eval-pipeline.md"],
+    "accept_pages": [
+      "data/wiki/eval/skill-eval-pipeline.md"
+    ],
     "difficulty": "hard"
   },
   {
@@ -507,5 +513,1010 @@
       "data/wiki/infra/prefix-caching.md"
     ],
     "difficulty": "medium"
+  },
+  {
+    "id": "s2-001",
+    "category": "adk",
+    "query": "How many observability layers does ADK offer, and which one is on by default without any setup?",
+    "expected_answer": "ADK has four tiers: Cloud Trace (always on, OpenTelemetry spans), prompt-response logging (off locally, on when deployed), BigQuery Agent Analytics (opt-in at scaffold time) and third-party integrations. Only Cloud Trace is always enabled.",
+    "source_pages": [
+      "data/wiki/adk/adk-observability.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "s2-002",
+    "category": "context",
+    "query": "My agent burns tokens reading huge search results. Is there a way to summarise tool output that keeps the facts the agent still needs?",
+    "expected_answer": "Context-aware compression puts the query and what the agent already knows into the compressor prompt so it keeps what is new and relevant. In a course experiment it finished in 7 iterations and 40k tokens versus 10-12 iterations and 93k-277k for per-result or combined summaries.",
+    "source_pages": [
+      "data/wiki/context/context-aware-compression.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-003",
+    "category": "eval",
+    "query": "We have an LLM call that decides whether an event gets published, and nobody has ever checked it against human labels. What kinds of weaknesses should we look for and in what order do we fix them?",
+    "expected_answer": "Seven defect classes: silent sanitizer repairs, self-reported approval, anchoring on the prior verdict, one verdict answering two questions, computable checks asked in prose, unbounded undelimited input, and decorative confidence. Fix order: baseline against human labels first, then deterministic fixes, then spend-backed experiments, where a measured 'keep as is' counts as finished.",
+    "source_pages": [
+      "data/wiki/eval/single-call-llm-gate-weakness-audit.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-004",
+    "category": "foundations",
+    "query": "How do I group consecutive rows in SQL into streaks when a month can be skipped, without writing a loop?",
+    "expected_answer": "Number each customer's active months with row_number and subtract it from a running month index; the difference is constant along an unbroken run and jumps at a gap. Group by customer and that difference to get streak length and start.",
+    "source_pages": [
+      "data/wiki/foundations/sql-sessionisation-and-gaps-and-islands.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-005",
+    "category": "graph",
+    "query": "What are the common shapes for wiring multiple agents together and how does each one typically break?",
+    "expected_answer": "Five shapes: generate-then-verify (checker agrees with the producer's reasoning), supervisor (mis-routing, bottleneck), fan-out/fan-in (missing reducer, correlated errors), hierarchical subgraph (hidden cost, failures hard to see) and handoff (status values drift). Underneath are two questions: is context shared, and who decides what runs next.",
+    "source_pages": [
+      "data/wiki/graph/multi-agent-topology-patterns.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "s2-006",
+    "category": "harness",
+    "query": "How can I keep a running scorecard of code health per area that both agents and humans read so a new session knows where to start?",
+    "expected_answer": "A per-area health record with grade, verification, agent legibility, test stability, boundary compliance and key gaps. A fresh session fixes the lowest grade first, the cleanup loop updates it to show trend, and it is the baseline for simplification passes.",
+    "source_pages": [
+      "data/wiki/harness/quality-document.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-007",
+    "category": "infra",
+    "query": "Why would you turn on row-level security for a table but deliberately write no policy at all?",
+    "expected_answer": "When every reader is server-side code using the admin client, an anon policy would name a reader that does not exist and would expose the whole table, which is sensitive in aggregate even if each row is harmless. RLS with no policy fails closed for any future direct anon read; then prove the CHECK constraint with a rejected INSERT.",
+    "source_pages": [
+      "data/wiki/infra/2026-08-29-rls-on-no-policy-server-mediated-tables.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "s2-008",
+    "category": "interview",
+    "query": "What do I need to be able to explain about transformers, RLHF versus DPO and KV cache for a theory round on language models?",
+    "expected_answer": "Cover architecture (tokenization, attention softmax(QK^T/sqrt d)V with O(n^2) cost, transformer block, KV cache underpinning prefix caching, sampling), the training pipeline (pretraining, SFT, RLHF with reward hacking, DPO which skips the reward model, Constitutional AI) and the RAG vs fine-tuning adaptation menu.",
+    "source_pages": [
+      "data/wiki/interview/llm-fundamentals-interview-guide.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "s2-009",
+    "category": "langgraph",
+    "query": "In a multi-turn RAG chat a follow-up like 'what about the Python version?' retrieves junk. How do I fix retrieval for follow-ups?",
+    "expected_answer": "Add a node before the retriever that uses a cheap model (Haiku, about $0.001 per rewrite) to rewrite the latest query into a self-contained form using prior turns. It only fires on multi-turn conversations and is a no-op on single turns.",
+    "source_pages": [
+      "data/wiki/langgraph/history-condenser.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "s2-010",
+    "category": "loop",
+    "query": "What properties make a grader trustworthy enough for an unattended agent loop, and why shouldn't the agent be able to edit it?",
+    "expected_answer": "The checker should be objective, automatic, fast, clear and hard to fake. It must live outside the loop's write scope enforced structurally (permissions, hooks, a separate repo), because an agent that can edit its own evaluator has a negotiation rather than a verifier; build it before scaling the generator.",
+    "source_pages": [
+      "data/wiki/loop/loop-scorekeeper.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-011",
+    "category": "mcp",
+    "query": "How do agents built on different frameworks discover each other and hand off long-running tasks, and what are the task states?",
+    "expected_answer": "Google's A2A spec has each agent publish an Agent Card at /.well-known/agent.json. Tasks go submitted, working, input-required (back and forth with working), then completed, failed or cancelled; in LangGraph the task ID maps to thread_id and input-required maps to interrupt().",
+    "source_pages": [
+      "data/wiki/mcp/a2a-agent-protocol.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-012",
+    "category": "memory",
+    "query": "Is it better to extract facts into a memory store up front or just let a strong model search the raw conversation history?",
+    "expected_answer": "A 2026 study (single LoCoMo conversation, directional only) found designed memory beat full context only with the weakest model, a weak writer caps a strong reader, and a strong agent searching the verbatim history scored 99% at under half the cost of full context. Keep the source and make it searchable.",
+    "source_pages": [
+      "data/wiki/memory/designed-memory-vs-raw-record-search.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-013",
+    "category": "meta",
+    "query": "When writing a conventions guide for building autonomous agents, how should I decide what to cover first and how specific to be on fast-moving topics?",
+    "expected_answer": "Rank gaps by the damage a wrong default does (security first), write emerging topics at the level of their settled vocabulary rather than churning specifics, promote project findings only after they survive three implementations, and wire the canon into every repo's Refs line or it is never read.",
+    "source_pages": [
+      "data/wiki/meta/stability-graded-canon-writing.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "s2-014",
+    "category": "patterns",
+    "query": "Should my security reviewer and product reviewer each be their own sub-agent or just a section in one prompt?",
+    "expected_answer": "A lens becomes a separate agent only for isolation (it must be denied something the caller knows) or parallelism (N instances run at once). Otherwise it is a section of a skill, since a job title is not a lens.",
+    "source_pages": [
+      "data/wiki/patterns/when-a-lens-earns-agenthood.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-015",
+    "category": "projects",
+    "query": "Where did the paragraphs about the map filter panel, glossary and eval gate go when they were removed from the repo's main instructions file?",
+    "expected_answer": "They were moved into a dated feature-notes page for the librarian repo so CLAUDE.md loads lighter; binding rules stay in CLAUDE.md as one-line pointers while the page describes how the features work and why.",
+    "source_pages": [
+      "data/wiki/projects/librarian-repo-feature-notes.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "s2-016",
+    "category": "prompting",
+    "query": "What is the pattern where a model tries, gets scored, then writes itself a note about what went wrong before retrying?",
+    "expected_answer": "Reflexion: an actor attempts, an evaluator scores, and a self-reflection step converts the score into natural-language feedback kept in memory for the next try. It needs a do-over and an objective evaluator; with a weak evaluator it reinforces confident mistakes.",
+    "source_pages": [
+      "data/wiki/prompting/reflexion.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "s2-017",
+    "category": "rag",
+    "query": "How should a 'more like this' feature decide what to show next to an item the user just opened without drifting away from what they searched for?",
+    "expected_answer": "The opened item anchors similarity while the original search context acts as a guardrail. It excludes items already seen in the slate, sorts by a combined related score, prefers one or two strong matches over three weak ones, hides itself if nothing qualifies, and uses a stricter threshold (0.70 vs 0.60) when there is no search context.",
+    "source_pages": [
+      "data/wiki/rag/anchor-and-guardrail-similar-items.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-018",
+    "category": "adk",
+    "query": "For an assistant embedded in a product, how many levels of capability should I ship first, and how should the UI be driven from the model's output?",
+    "expected_answer": "Ship level 1 (knowledge answers from support docs) first, validate, then expand to guided execution and autonomous execution. The agent returns typed structured JSON (message, suggestions, navButtons, form, confirm, etc.) so the frontend is decoupled from the model's reasoning.",
+    "source_pages": [
+      "data/wiki/adk/product-design-patterns.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-019",
+    "category": "context",
+    "query": "Why does vector search over case files give wrong answers to 'what share of cases were class A' or 'does this new profession qualify', and what is the remedy?",
+    "expected_answer": "Aggregation and rule-induction questions fail under chunk-and-retrieve because attention is soft retrieval, not a summariser. The remedy is to spend compute at index time to precompute statistics, rules and hierarchy (RAPTOR, GraphRAG, tiered summaries).",
+    "source_pages": [
+      "data/wiki/context/index-time-distillation.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-020",
+    "category": "eval",
+    "query": "If I only test a new cheaper model on 10 to 20 events with pass/fail gates, what can I legitimately conclude?",
+    "expected_answer": "Chance of seeing at least one failure is 1-(1-p)^N, so N=10-20 only detects gross failure (roughly a 15-30% failure rate) and cannot show parity. The result should state that scope.",
+    "source_pages": [
+      "data/wiki/eval/binary-gate-sample-power.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "s2-021",
+    "category": "foundations",
+    "query": "How do I model a possible change in a daily count series in a Bayesian way, and why use a discrete-uniform prior on the switch day?",
+    "expected_answer": "Write the generating story: counts are Poisson with rate lambda_1 before a switch day tau and lambda_2 after, with exponential priors on the rates and a discrete-uniform prior on tau. Since tau is discrete NUTS cannot be used and Metropolis is used; the result is a ranking of plausible change days rather than a single date.",
+    "source_pages": [
+      "data/wiki/foundations/generative-story-models.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "s2-022",
+    "category": "graph",
+    "query": "What are the ways a graph of agents fails mechanically, and how do I stop a run that never ends?",
+    "expected_answer": "Mechanical failures include oscillation/infinite cycles, deadlocks at joins, races on shared state, unbounded fan-out and mis-routing. Prevent infinite loops with an attempt counter checked by the router and a deliberate recursion_limit (LangGraph default 25 super-steps raising GraphRecursionError).",
+    "source_pages": [
+      "data/wiki/graph/multi-agent-failure-modes.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-023",
+    "category": "harness",
+    "query": "My cancel-booking tool takes extra arguments for what the model believes about the booking. Should the tool trust them when applying policy?",
+    "expected_answer": "No. The expected_* parameters act as a checklist forcing the model to look facts up, but carry no authority; all policy facts come from the database and server clock, and belief/truth mismatches are logged because the mismatch rate justifies the server-side check.",
+    "source_pages": [
+      "data/wiki/harness/belief-parameters-with-ground-truth-gate.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-024",
+    "category": "infra",
+    "query": "How do I stop Next.js from proxying and caching third-party images while still optimizing my own fallback images in the same component?",
+    "expected_answer": "Pass a per-instance unoptimized flag computed from the resolved src, since the same element serves either a third-party URL or a local fallback. A global unoptimized flag is a one-way override that de-optimizes local assets, and a pass-through loader still builds a multi-width srcSet.",
+    "source_pages": [
+      "data/wiki/infra/per-render-image-optimizer-opt-out.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "s2-025",
+    "category": "interview",
+    "query": "What would an interviewer be scoring in an applied-AI system design round, and how could I use that to run a mock round?",
+    "expected_answer": "Eleven rubric dimensions with strong evidence and red flags (e.g. problem framing, success metrics with no-launch thresholds), five vague phrases that draw a 'which mechanism?' probe, an eleven-phase flow, a seniority bar and three personas. Use rubric plus flow plus a persona and session config (level, duration, topic, feedback mode).",
+    "source_pages": [
+      "data/wiki/interview/ai-system-design-interviewer-rubric.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-026",
+    "category": "langgraph",
+    "query": "What are the standard LangChain building blocks for loading PDFs, splitting text and storing embeddings in a RAG pipeline?",
+    "expected_answer": "Document loaders like PyPDFLoader, WebBaseLoader and DirectoryLoader; RecursiveCharacterTextSplitter (chunk_size 500-1500, overlap 10-20%); vector store classes such as Chroma, FAISS and Pinecone with similarity/MMR search and metadata filtering.",
+    "source_pages": [
+      "data/wiki/langgraph/langchain-rag-implementation.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "s2-027",
+    "category": "loop",
+    "query": "What should a small progress file contain so a long-running autonomous loop can resume after the context fills up or the session ends?",
+    "expected_answer": "Three tiers (now, recent, archive) and five fields: goal, last score, what was tried, what is next, and waiting for a human. It is read at the start of every pass, because progress should live in files not in the context window.",
+    "source_pages": [
+      "data/wiki/loop/loop-state-file.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-028",
+    "category": "mcp",
+    "query": "How can an agent send UI to a client without shipping executable code, and why would a screen come up blank?",
+    "expected_answer": "A2UI has agents emit declarative JSON describing components as a flat adjacency list with a JSON-Pointer data model that clients render with native widgets. The classic blank-screen bug is a missing beginRendering message; also invalid messages are often silently dropped.",
+    "source_pages": [
+      "data/wiki/mcp/a2ui-protocol.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-029",
+    "category": "memory",
+    "query": "How does the 'LLM as operating system' approach let an agent manage its own memory beyond the context window?",
+    "expected_answer": "MemGPT/Letta treats the window as RAM with core memory blocks always in context, archival memory as a vector store on disk, and recall memory as rolling-summarised history. The agent pages facts in and out itself via tool calls such as memory edit and archival search.",
+    "source_pages": [
+      "data/wiki/memory/memgpt-letta-virtual-context.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "s2-030",
+    "category": "meta",
+    "query": "Why did our design decisions end up in per-issue plans even though we ran design skills at the start of the project?",
+    "expected_answer": "In an audit of ~560 open questions the decision register grew from 30 to 124 rows with zero design passes because design output was the wrong granularity, shape and trigger for a one-issue pipeline; roughly 55% were settled in-plan by repo precedent. The fix is to turn design content into checklist rows the workflow reads and measure upstream-silent questions per plan.",
+    "source_pages": [
+      "data/wiki/meta/design-decisions-migrate-into-plans.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "s2-031",
+    "category": "patterns",
+    "query": "I want to run several coding-agent builds at once in separate worktrees. What actually limits how many I can run?",
+    "expected_answer": "Memory is not the limit (three concurrent builds peaked at 1.42 GB). The constraints are declared dependencies, shared file lanes and the single shared database, so parallelise across lanes, serialise within a lane, run migration-adding builds alone, and cap concurrency at 3 for review attention.",
+    "source_pages": [
+      "data/wiki/patterns/parallel-across-lanes-migrations-alone.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-032",
+    "category": "projects",
+    "query": "What subjects does the self-paced AI and data engineering curriculum repo cover, and what is its current state?",
+    "expected_answer": "Six subjects: programming, data analytics, data engineering, data science, generative AI and AI engineering, across three learning paths. It uses depth/summary/reference layering, a five-criterion definition of done and a structural freeze since 2026-10-28; its courses are now authored in librarian's data/courses and it only supplies sources PDFs.",
+    "source_pages": [
+      "data/wiki/projects/learn-ai-engineering-project.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-033",
+    "category": "prompting",
+    "query": "Is there a prompting technique that searches over multiple reasoning branches with backtracking, and how much did it improve on Game of 24?",
+    "expected_answer": "Tree of Thoughts: a propose prompt generates candidate steps, a value prompt rates them sure/maybe/impossible, and a code controller runs BFS/DFS with backtracking. GPT-4 went from 4% with chain-of-thought to 74% on Game of 24.",
+    "source_pages": [
+      "data/wiki/prompting/tree-of-thoughts.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "s2-034",
+    "category": "rag",
+    "query": "How can a RAG system answer precise filter-and-aggregate questions over structured study data, and how many retries does it allow on SQL errors?",
+    "expected_answer": "Treat text-to-SQL as the second branch of a hybrid retriever: intent recognition, schema subsetting, dynamic few-shot SQL examples, mechanical validation, a result cap of 50 records, and error-as-context retry up to 3 attempts.",
+    "source_pages": [
+      "data/wiki/rag/text-to-sql-retrieval.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-035",
+    "category": "adk",
+    "query": "In LangGraph, how do I pause an agent for a human only when a payment is large, versus always before a node?",
+    "expected_answer": "Use dynamic interrupt() inside the node with a condition like amount > threshold for conditional pauses; use static breakpoints (interrupt_before/interrupt_after at compile time) for mandatory review points. Static ones are predictable and easier to test.",
+    "source_pages": [
+      "data/wiki/adk/adk-hitl-patterns.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "s2-036",
+    "category": "context",
+    "query": "Why does my agent keep re-trying hypotheses it already ruled out after I started feeding tool results back as user messages?",
+    "expected_answer": "Chat templates select trained behaviours, so a tool result sent as a user turn can reset reasoning mid-task. Current reasoning models expect prior reasoning returned verbatim in the tool loop (Claude needs signed thinking blocks passed back); stripping it makes agents repeat ruled-out hypotheses.",
+    "source_pages": [
+      "data/wiki/context/reasoning-state-pass-back.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "s2-037",
+    "category": "eval",
+    "query": "A team keeps quoting a 77.8% hit rate for their recommender. Why might that number be misleading?",
+    "expected_answer": "It came from a Wizard-of-Oz test with human-curated result sets, N=6 participants and a pre-specified answer key, so it validates the concept and is a ceiling for curation, not a measurement of the automated ranker which had never been scored against it. Label every number with what produced it.",
+    "source_pages": [
+      "data/wiki/eval/validated-concept-vs-unmeasured-system.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-038",
+    "category": "foundations",
+    "query": "What should be decided before launching an A/B test, and how should I decide whether to ship afterwards?",
+    "expected_answer": "Fix the primary metric, minimum detectable effect and sample size before launch, randomise and analyse at the same unit, check the split, and test once. Then decide by comparing the confidence interval with the effect worth shipping rather than reading the p-value.",
+    "source_pages": [
+      "data/wiki/foundations/ab-test-lifecycle-and-interval-decisions.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "s2-039",
+    "category": "graph",
+    "query": "When should I model data as a property graph versus RDF, and what Cypher habits keep a knowledge graph clean?",
+    "expected_answer": "Choose by goal: LPG when edges need provenance. Build purpose-first from the questions the graph must answer, use bounded paths, MERGE on an identity key with uniqueness constraints, and record provenance on edges.",
+    "source_pages": [
+      "data/wiki/graph/knowledge-graph-fundamentals.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-040",
+    "category": "harness",
+    "query": "How can a second model guard risky tool calls when there is no human available, and which option is safer against prompt injection?",
+    "expected_answer": "Either a serial proposer-reviewer that sees intent or a parallel sidecar that sees only structured call fields (name, arguments). The sidecar has lower injection exposure since untrusted text never reaches it; the reviewer should be a different model family, return rejections as tool results, and trip a circuit breaker to a human after N rejections.",
+    "source_pages": [
+      "data/wiki/harness/proposer-reviewer-and-sidecar-gating.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "s2-041",
+    "category": "infra",
+    "query": "What does the vendor claim about a hosted model that returns typed decisions with probabilities, and how much of that has been independently confirmed?",
+    "expected_answer": "TypeSafe AI's Jev returns a schema-restricted typed decision with probabilities, with claimed 70-500 ms latency and very low pricing (all self-reported). Speed and price gains are partly confirmed independently against named comparators, accuracy and calibration vary by task, and no peer-reviewed evaluation was found.",
+    "source_pages": [
+      "data/wiki/infra/jev-decision-model.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "s2-042",
+    "category": "interview",
+    "query": "What rounds do forward-deployed AI engineer interview loops include that people forget to prepare for?",
+    "expected_answer": "Beyond coding, the loop has about half non-coding stages such as an ambiguous customer case study (highest weight, lowest pass rate) and a customer-conversation simulation described as a hidden filter, plus business/ROI judgment. Commonly missed round types include recruiter screen, project deep-dive, debugging, take-home defense and reverse interview.",
+    "source_pages": [
+      "data/wiki/interview/ai-role-interview-loop-map.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-043",
+    "category": "langgraph",
+    "query": "How do I build a simple tool-calling agent with LangChain 1.0 without hand-writing ReAct wiring?",
+    "expected_answer": "Use create_agent() with a model string, a list of @tool-decorated functions, a system_prompt, and optionally a checkpointer and middleware. It handles the loop, tool execution and state, and runs on the LangGraph runtime.",
+    "source_pages": [
+      "data/wiki/langgraph/langchain-fundamentals.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "s2-044",
+    "category": "loop",
+    "query": "How do I let an agent edit its own code without risking permanent damage from one bad edit?",
+    "expected_answer": "Treat each self-edit as a release: branch from stable, write a minimal patch in an isolated candidate directory, run static checks and tests, replay the motivating failures, run the old-task regression suite, then release to canary or reject. Attach a falsifiable change contract and keep safety machinery outside the agent's write scope.",
+    "source_pages": [
+      "data/wiki/loop/self-modification-release-process.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-045",
+    "category": "mcp",
+    "query": "Should we ship a separate MCP server for every agent project, and where should the business logic live?",
+    "expected_answer": "No: versioned REST is the service boundary and MCP servers are thin adapters with no business logic, scaffolded only when an MCP host is an actual consumer. A sidecar is just a deploy-time transport detail.",
+    "source_pages": [
+      "data/wiki/mcp/rest-first-mcp-as-adapter.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "s2-046",
+    "category": "memory",
+    "query": "Why does asking 'what about the second one?' in a chatbot retrieve nothing, and what are the fixes?",
+    "expected_answer": "The standalone embedding of an under-specified query isn't near anything in the index. Fixes are history-aware query rewriting (e.g. CONQRR trained with RL against retrieval performance), a when-to-retrieve policy that skips turns like 'thanks!', and asking a clarifying question on ambiguous turns.",
+    "source_pages": [
+      "data/wiki/memory/memory-augmented-conversational-rag.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-047",
+    "category": "meta",
+    "query": "When I give an implementation agent a plan, how should I handle gaps so it doesn't make things up?",
+    "expected_answer": "Give every file's content in full and treat any gap as a defect in the plan, not licence to invent. For markdown deliverables use structure-checking verification, and require verbatim or byte-identical copies where paraphrase would corrupt the content.",
+    "source_pages": [
+      "data/wiki/meta/no-placeholder-plan-discipline.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-048",
+    "category": "patterns",
+    "query": "Should a full-text search index live in a side table with backfill like my embeddings, or somewhere simpler?",
+    "expected_answer": "If the derivation is pure SQL over the same row and one version is enough (tsvector/trigram), use GENERATED ALWAYS ... STORED columns: no application code and no backfill, provided all functions are IMMUTABLE. An embedding comes from an external model and needs several recipes per row, so it earns a side table with hash-gated backfill.",
+    "source_pages": [
+      "data/wiki/patterns/pure-derivation-is-a-generated-column.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "s2-049",
+    "category": "projects",
+    "query": "Why was the change-contract system made global instead of template-only, and what blocked rolling it out to one repo?",
+    "expected_answer": "Identical copies had already drifted into three repos, and the skill has no dependency on scaffolded structure, so the canonical copy lives in the global skills reservoir. The rollout to akira was blocked on hardcoded scan paths.",
+    "source_pages": [
+      "data/wiki/projects/change-contracts-rollout.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "s2-050",
+    "category": "prompting",
+    "query": "How do attackers extract a system prompt even though the model refuses when asked directly, and what should I assume as a designer?",
+    "expected_answer": "An escalation ladder: asking for the text above the first message, tagged echo, odd tool names, a logging tool (models leak more via tool calls), base64/ROT13 encodings, and baiting with partial leaks. Assume the prompt will leak and keep secrets out of it.",
+    "source_pages": [
+      "data/wiki/prompting/prompt-leaking.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "s2-051",
+    "category": "rag",
+    "query": "How can I ingest PDFs, web pages and CSV ledgers into one pipeline so the generation step doesn't care where content came from?",
+    "expected_answer": "Use a hub-and-spoke canonical document IR: a slim adapter per source emits one typed Document schema (sections with type, content and provenance span). Keep it minimal with no pre-chunking or indexing; for small multimodal corpora send page images to a vision model, thread provenance from ingest and validate citations before rendering.",
+    "source_pages": [
+      "data/wiki/rag/canonical-document-ir-for-ingest.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-052",
+    "category": "adk",
+    "query": "What model roles and replanning limit make sense for a planner-executor agent that does multi-step tasks?",
+    "expected_answer": "A Planner (Sonnet) makes a step list, an Executor (Haiku) runs one step at a time, a Replanner (Haiku) updates remaining steps if something fails with a max of 3 replanning rounds, and a Responder (Sonnet) writes the final answer; it is more robust than a single ReAct loop.",
+    "source_pages": [
+      "data/wiki/adk/plan-and-execute-pattern.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-053",
+    "category": "context",
+    "query": "How should I divide up a limited context window between instructions, retrieved evidence and room for the model to think?",
+    "expected_answer": "Decide the split before the window fills: reserve output first, cap every growing component, value each chunk by marginal information, and set the budget by ablation against the effective rather than advertised window. Stable rules are investments in the prefix; one-off tool results are expenses to clear.",
+    "source_pages": [
+      "data/wiki/context/context-window-budgeting.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "s2-054",
+    "category": "eval",
+    "query": "What should I stamp on every logged ranking result so I can reconstruct what configuration produced it later?",
+    "expected_answer": "A named version constant for each component that shaped it (prompt hash, enrichment, review gate, weights, ranker, composer, moment-context schema). A rule table whose output is logged but which has no version constant is a hole, and instrumentation must ship in the same commit as the feature since logs cannot be backfilled.",
+    "source_pages": [
+      "data/wiki/eval/frozen-version-stamps-on-logged-results.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-055",
+    "category": "foundations",
+    "query": "How do you turn a bunch of binned features into a points-based credit score that regulators can read?",
+    "expected_answer": "Bin each characteristic, convert bins to weight of evidence ln(good share / bad share), fit logistic regression on the WoE columns and print additive points. Learn bins on the training fold only, and it matches gradient boosting within noise on small data.",
+    "source_pages": [
+      "data/wiki/foundations/woe-logistic-scorecard.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-056",
+    "category": "graph",
+    "query": "Is there a published example of a production multi-agent workflow builder with real iteration limits?",
+    "expected_answer": "The n8n AI workflow builder is a LangGraph supervisor routing to five specialist subgraphs (Discovery max 50 iterations, Builder max 100). All agents run the same model and differ only by system prompt, and it comes from a third-party teardown so constants should be checked in the repo.",
+    "source_pages": [
+      "data/wiki/graph/n8n-ai-workflow-builder.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "s2-057",
+    "category": "harness",
+    "query": "What are the three layers for working with coding agents so they get the context they can't infer?",
+    "expected_answer": "A spec (the goal rather than the task, in small agile slices), a verifier (criteria before work, a second model as critic, external ground truth), and an environment (operating contract, knowledge base, skills and hooks for what must never happen). Packaging is from a video breakdown of a Karpathy talk, medium confidence.",
+    "source_pages": [
+      "data/wiki/harness/spec-verifier-environment-layering.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-058",
+    "category": "infra",
+    "query": "What's the policy for displaying third-party event images without hosting copies of them?",
+    "expected_answer": "The browser loads images from the original host and nothing is copied, proxied or cached; images come only from first-party sources with stored provenance and attribution, technical blocks are never circumvented, and a no-deploy kill switch backs a hide-first takedown route. It is a working product policy, not a legal opinion.",
+    "source_pages": [
+      "data/wiki/infra/hotlink-not-copy-image-posture.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "s2-059",
+    "category": "interview",
+    "query": "How do I structure behavioral interview answers and what makes one score higher?",
+    "expected_answer": "Use STAR (action should be 60-70% of the answer, 'I decided X because Y') plus a Reflection close naming a behavior you changed, and re-angle one story bank per audience. Ending at Result is a B; ending with the behavior change is an A.",
+    "source_pages": [
+      "data/wiki/interview/behavioral-interview-guide.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-060",
+    "category": "langgraph",
+    "query": "How do I require human approval before an agent can send an email, using LangChain's built-in hooks?",
+    "expected_answer": "Add HumanInTheLoopMiddleware to create_agent with interrupt_on per tool, allowing decisions approve, edit or reject. It requires a checkpointer and thread_id so state persists across the interrupt and resume.",
+    "source_pages": [
+      "data/wiki/langgraph/langchain-middleware.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "s2-061",
+    "category": "loop",
+    "query": "What does it mean to have a slower loop watching a faster agent loop, and how often should it run?",
+    "expected_answer": "An evolve loop is a second, slower loop that edits the fast loop's files (contract, state, triggers, procedure) rather than retraining weights. It runs roughly every 5-10 runs of the fast loop, and 'no change needed' counts as a first-class success under the anti-busywork rule.",
+    "source_pages": [
+      "data/wiki/loop/evolve-loop.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-062",
+    "category": "mcp",
+    "query": "When agents exchange knowledge, how can the receiver learn why the sender believes something and not just what?",
+    "expected_answer": "A proposed design where every belief carries its source and contradictions, each agent keeps a PeerModel of what others know, and the default message is a compressed AttentionBrief while full provenance stays in an external store. It is a working design that has not been built or measured.",
+    "source_pages": [
+      "data/wiki/mcp/provenance-tracked-agent-beliefs.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "s2-063",
+    "category": "memory",
+    "query": "When an agent's picture of itself turns out wrong, what do the major frameworks offer to correct it rather than just append?",
+    "expected_answer": "Fixed identity is the default; the only revision paths are Letta's self-editable persona block, Mem0's ADD/MERGE/UPDATE/DELETE consolidation, and Zep's bi-temporal edge invalidation. A prose-file identity system learned to record dispositions not deliberation, gate pre-commit, and enforce by hook rather than instruction.",
+    "source_pages": [
+      "data/wiki/memory/identity-memory-revision-vs-accretion.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "s2-064",
+    "category": "meta",
+    "query": "One of our logged measurements turned out to be invalid. Should I close the row or delete it?",
+    "expected_answer": "Neither: mark it void with a reason in an append-only flag file, because closing says the question was answered while void says the answer never counted. Only a superseded row is a true close; wrong-thing-measured and broken-instrument rows are voids.",
+    "source_pages": [
+      "data/wiki/meta/void-dont-close-invalid-ledger-rows.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-065",
+    "category": "patterns",
+    "query": "Our refusal logic had solid unit tests but the refusal banner was missing from reports. How did that happen?",
+    "expected_answer": "A feature is the decision, its expression and the wiring, and tests covered only the decision. The report code injected content by string/regex anchors, and when an anchor failed to match replace returned the document unchanged, so three of five injections silently did nothing.",
+    "source_pages": [
+      "data/wiki/patterns/tested-decision-untested-expression.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "s2-066",
+    "category": "projects",
+    "query": "What is the nonprofit that the librarian owner joined in July 2026 and what is the platform work there?",
+    "expected_answer": "NYC Data Science for Social Good, which supports about 600 nonprofits through roughly 300 volunteers. The platform engineering work is a knowledge base repository, standardized project templates and a planned PM agent, replacing a fragile Google Sheets backend.",
+    "source_pages": [
+      "data/wiki/projects/dssg-project.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "s2-067",
+    "category": "prompting",
+    "query": "How should I change my prompts when moving from a standard LLM to a reasoning model?",
+    "expected_answer": "State goals, constraints and output format instead of prescribing steps; drop manual chain-of-thought since it can degrade instruction-following; escalate effort gradually against an eval; use few-shot only for style/format; and don't treat visible thinking as a faithful audit trail.",
+    "source_pages": [
+      "data/wiki/prompting/prompting-reasoning-models.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "s2-068",
+    "category": "rag",
+    "query": "Why is the first request after a deploy so slow in my RAG service and how do I prevent it?",
+    "expected_answer": "Embedding models and rerankers are lazy-loaded so the first request takes 3-8 seconds. Force-load them in the FastAPI lifespan startup hook with a dummy embed and predict call so all requests, including the first, are fast.",
+    "source_pages": [
+      "data/wiki/rag/embedder-warmup.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "s2-069",
+    "category": "adk",
+    "query": "Which multi-agent architecture was picked for the ADK proof of concept and why were the others set aside?",
+    "expected_answer": "A single agent with dynamically loaded skills and context compaction was selected, given goals of fast (few LLM calls, prefix caching) and scalable. Alternatives were manager with experts as tools (more round-trips), manager/experts (coordination overhead), and router/experts/orchestrator (hard to govern).",
+    "source_pages": [
+      "data/wiki/adk/multi-agent-orchestration-patterns.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-070",
+    "category": "context",
+    "query": "Should an agent retrieve documents before it starts reasoning or load them while it works?",
+    "expected_answer": "Agentic systems favour just-in-time context: keep lightweight identifiers like file paths and load at runtime so relevance is decided by an agent that has already read part of the material. A path costs about 10 tokens against 5,000 for the file; the default is a hybrid.",
+    "source_pages": [
+      "data/wiki/context/context-retrieval-strategies.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-071",
+    "category": "eval",
+    "query": "What are the known failure modes of using one LLM to grade another and how do I mitigate each?",
+    "expected_answer": "Position bias (run both orders), verbosity (rubric says length isn't quality), self-preference (judge from a different model family), leniency (binary criteria with tricky-FAIL examples), format/authority (check citations in code) and limited capability (reference answers or a stronger judge).",
+    "source_pages": [
+      "data/wiki/eval/llm-judge-biases.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "s2-072",
+    "category": "foundations",
+    "query": "How can I verify my hand-written backpropagation is correct, and what number tells me it is?",
+    "expected_answer": "Compare analytic gradients with a centred finite difference using eps 1e-5 and compute the relative difference; below about 1e-7 passes (correct ~9e-11 versus ~0.05 for a planted 10% error). It costs two forward passes per parameter, so run it once on a tiny network and turn it off for training.",
+    "source_pages": [
+      "data/wiki/foundations/gradient-checking-with-finite-differences.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-073",
+    "category": "graph",
+    "query": "In a fan-out agent system, how do we answer 'which node spent this money' during an audit?",
+    "expected_answer": "Propagate stable graph_id, run_id and node_id identifiers on gateway-mediated model and MCP calls as span attributes, which enables node-level cost attribution, and put approval gates where consequence concentrates.",
+    "source_pages": [
+      "data/wiki/graph/graph-governance-and-attribution.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-074",
+    "category": "harness",
+    "query": "Why do multi-agent systems need protocols instead of just chatting instructions to each other?",
+    "expected_answer": "Use natural language inside a task but protocols to coordinate tasks: conversational handoff yields nine failure modes (forgotten commitments, split ownership, duplicate retries, silent failures, etc.), all known distributed-systems failures. A protocol needs a communication protocol, a task graph and an isolation boundary.",
+    "source_pages": [
+      "data/wiki/harness/protocol-driven-multi-agent-collaboration.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-075",
+    "category": "infra",
+    "query": "Our admin page reads zero rows even though data exists and a row-level-security policy is written. What should I check first?",
+    "expected_answer": "A policy does nothing until row level security is enabled on its table; compare anon versus service-role row counts on the same filter. Other causes are RLS enabled out-of-band with no migration, or a policy predicate (e.g. review_status published) that no row satisfies.",
+    "source_pages": [
+      "data/wiki/infra/written-but-inert-rls-policies.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "s2-076",
+    "category": "harness",
+    "query": "I'm building tools for a coding agent: how should the edit tool and its parameter descriptions be designed so the model uses them correctly?",
+    "expected_answer": "Edit via old-string to new-string is the predictable default (fails loudly if the match isn't unique), start/end anchors are the economical compromise, and line ranges fail without a live line map. For interface design, descriptions should say when to use the tool and what it does not do, parameters need self-documenting names, descriptions and enums, and returns should be structured with a status and actionable errors.",
+    "source_pages": [
+      "data/wiki/harness/coding-agent-search-and-edit-schemes.md",
+      "data/wiki/patterns/aci-agent-computer-interface.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-077",
+    "category": "patterns",
+    "query": "When an LLM helps write something I'll have to say as my own, how do I keep my voice, and how does the practice harness grade and log my attempts?",
+    "expected_answer": "Voice loop: ask cold, quote the person's strongest phrases first so they are protected, flag sentences the model invented, let the person rewrite last, record their words verbatim, and promote a style observation to a standing voice file only on its second occurrence. The harness has explicit coach vs mock stance, a spoiler gate on solutions, a strict process rubric, and an append-only content-free history log keyed by stable question ids.",
+    "source_pages": [
+      "data/wiki/patterns/voice-preserving-redraft-loop.md",
+      "data/wiki/interview/graded-drill-harness.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "s2-078",
+    "category": "foundations",
+    "query": "I need to write a retrying decorator for concurrent HTTP calls. What do I need to know about decorator mechanics and about which concurrency model and retry rules to use?",
+    "expected_answer": "A decorator wraps a function (use functools.wraps), and one with arguments adds an extra level of nesting. For concurrency use threads for a few dozen blocking calls and asyncio for hundreds; in asyncio never block the event loop, bound fan-out with a Semaphore, add deadlines, and retry only transient errors with backoff plus jitter.",
+    "source_pages": [
+      "data/wiki/foundations/python-closures-and-decorators.md",
+      "data/wiki/foundations/python-concurrency-models.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-079",
+    "category": "patterns",
+    "query": "What are two ways an evaluation or CI check can give false assurance, one that always passes and one that is always failing?",
+    "expected_answer": "A fixture eval that replays stored model outputs through deterministic post-processing never calls the model, so it scores 1.0 for any model or prompt change and cannot fail as a regression gate; fix by running a live sample. An always-red CI job (a failing db-drift job from a malformed secret) goes unread, so a falsified issue premise sat unnoticed; both are checks that carry no signal.",
+    "source_pages": [
+      "data/wiki/patterns/fixture-eval-blind-to-the-swapped-component.md",
+      "data/wiki/patterns/always-red-check-carries-no-signal.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "s2-080",
+    "category": "projects",
+    "query": "What agent loop does the forecasting and segmentation agent system run, and what is the change-contract framework that sorts agent components into changeable, simple and invariant layers?",
+    "expected_answer": "Atlas runs a Planner, Forecaster, Evaluator, Learner loop where PlannerStrategy is updated by Haiku reflection each cycle. SANYI classifies components into Bianyi (ever-changing: prompts, flags, thresholds), Jianyi (structured: schemas, topology, tool signatures) and Buyi (invariant: safety, PII, compliance), with the rule that LLM constraints in prompts are soft and Buyi needs code enforcement.",
+    "source_pages": [
+      "data/wiki/projects/atlas-project.md",
+      "data/wiki/meta/sanyi-change-contract.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-081",
+    "category": "foundations",
+    "query": "What principles should a table schema follow, and in what order should I study the storage and compute layers beneath data engineering?",
+    "expected_answer": "Schema hygiene: atomic values, a stable meaningless unique key, no redundant data, and explicit units, with constraints (PRIMARY KEY, UNIQUE, CHECK, FOREIGN KEY) to keep promises. The reading map goes from what a system promises and how it is measured, through encoding and file layout, row/column stores and B-trees vs LSM, to transactions and isolation, partitioning and replication.",
+    "source_pages": [
+      "data/wiki/foundations/data-systems-foundations-reading-map.md",
+      "data/wiki/foundations/sql-schema-design-and-ddl.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-082",
+    "category": "harness",
+    "query": "What does 'agent equals model plus harness' mean, and what extra capabilities separate a deep agent from a shallow tool-calling loop?",
+    "expected_answer": "The harness is everything between request and output except the weights (context, tools, constraints, verification, correction), nested as prompt within context within harness within loop. A deep agent adds explicit planning, an orchestrator with clean-context sub-agents, external memory with agentic search, and verification.",
+    "source_pages": [
+      "data/wiki/harness/harness-engineering.md",
+      "data/wiki/harness/deep-agent-pillars.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "s2-083",
+    "category": "infra",
+    "query": "We specified aborting the stream when a secret shows up mid-response and a cost cap across parallel subagents. Why might neither actually work?",
+    "expected_answer": "Aborting a stream on a hit is too late since the leaked tokens were already rendered client-side; scrubbing needs to transform chunks in transit with a carry window for secrets split across chunks. A cost cap across subagents has no hook into the operator's API budget, and the rule is that a spec may only require a control the runtime demonstrably enforces.",
+    "source_pages": [
+      "data/wiki/infra/streaming-output-scrubbing.md",
+      "data/wiki/patterns/verified-runtime-capability-constraint.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "s2-084",
+    "category": "prompting",
+    "query": "How many times should I let a model retry when its output breaks a length limit, and what should happen after that?",
+    "expected_answer": "Cap validate-and-retry at 2-3 attempts and then fall back to deterministic repair, because prompt-stated limits fail 5-20% of the time and retry messages drift. This matches the two-retry rule: past two failures on a gate the problem is the spec or context, so force re-planning rather than repair.",
+    "source_pages": [
+      "data/wiki/prompting/length-limits-as-deterministic-fit-layer.md",
+      "data/wiki/harness/loop-detection-and-the-two-retry-rule.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-085",
+    "category": "foundations",
+    "query": "I'm fine-tuning a roughly 13B model with RL and wondering whether to train a step-level reward model. What framework and reward setup are sensible?",
+    "expected_answer": "TRL has the flattest learning curve and is practical up to about 13B. A process reward model needs step-level labelled data, and 2025 practice swung back to an outcome reward model with a light PRM used only for verification, since an ORM cannot tell a lucky guess from sound reasoning.",
+    "source_pages": [
+      "data/wiki/foundations/rl-training-frameworks-for-llms.md",
+      "data/wiki/foundations/outcome-vs-process-reward-models.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "s2-086",
+    "category": "adk",
+    "query": "Which ADK agents orchestrate sub-agents without any LLM routing, and what core runtime pieces do I need to know to build with ADK in Python?",
+    "expected_answer": "Sequential, Parallel and Loop workflow agents give deterministic, cheaper control flow with data shared via session.state and output_key. The core primitives are Agent/LlmAgent, BaseAgent (custom _run_async_impl), Tool, Session, State, Runner and Event.",
+    "source_pages": [
+      "data/wiki/adk/adk-workflow-agents.md",
+      "data/wiki/adk/adk-python-api-reference.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "s2-087",
+    "category": "patterns",
+    "query": "In an account-free voting page where each voter is a cookie UUID, what leaks if rows go to a client component, and what should I rate-limit votes on?",
+    "expected_answer": "Passing whole rows serialises every participant's credential into the page payload, so aggregate server-side, sign the token and reject a bad one instead of minting a new identity. Rate-limit on the signed visitor cookie rather than IP, with IP only as a fallback, since per-IP limits lock out shared-NAT deployments.",
+    "source_pages": [
+      "data/wiki/patterns/capability-token-in-a-serialized-row.md",
+      "data/wiki/infra/rate-limit-keying-identity-over-ip.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "s2-088",
+    "category": "patterns",
+    "query": "Users pick different mood tiles but get nearly the same results, and some tags are almost never assigned. How should I investigate?",
+    "expected_answer": "Compute each option's reach vector over the tag space and take cosines: six tiles amounted to about 3.5 distinct requests, and the lever is pruning adjacency edges rather than splitting options. For starved tags separate four causes (missing edge, suppressing prompt, vocabulary gap, supply gap) and measure reach with the scorer's own tier function.",
+    "source_pages": [
+      "data/wiki/patterns/intake-option-separability.md",
+      "data/wiki/patterns/starved-tag-triage.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "s2-089",
+    "category": "eval",
+    "query": "Humans can't agree on how 'experimental' an event is, and many listings are too sparse to annotate fully. How do I design the ratings and the LLM output contract?",
+    "expected_answer": "Decompose the low-agreement dimension into checkable relational sub-signals (venue history, genre-tag entropy, organizer record) and cap its ranking weight by its kappa meanwhile. The enrichment schema separates non-blocking uncertainty_flags, a usable enrichment_status=partial and blocking needs_review, so sparse input lowers certainty rather than quality, and partial_but_usable items go to production.",
+    "source_pages": [
+      "data/wiki/eval/decompose-low-ceiling-dimensions.md",
+      "data/wiki/prompting/graded-uncertainty-enrichment-contract.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "s2-090",
+    "category": "eval",
+    "query": "I'm building a labelling tool to measure per-facet precision. What must the control and storage support?",
+    "expected_answer": "The control must be able to write both right and wrong verdicts, otherwise precision is zero or unmeasurable and affirmed values look unreviewed; the sample must be model output and a failed seed should fail loudly. Store judgments append-only, keyed to the exact enrichment row with an instrument column and a fixed rater picklist, never updating or collapsing to consensus so agreement statistics have every rating.",
+    "source_pages": [
+      "data/wiki/eval/one-sided-label-control.md",
+      "data/wiki/eval/append-only-human-labels.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "neg-sem-001",
+    "category": "negative",
+    "query": "What is the recipe for a good sourdough starter and how often should I feed it?",
+    "expected_answer": "",
+    "source_pages": [],
+    "difficulty": "hard",
+    "negative": true
+  },
+  {
+    "id": "neg-sem-002",
+    "category": "negative",
+    "query": "How do I configure Kubernetes pod autoscaling on Azure AKS with KEDA?",
+    "expected_answer": "",
+    "source_pages": [],
+    "difficulty": "hard",
+    "negative": true
+  },
+  {
+    "id": "neg-sem-003",
+    "category": "negative",
+    "query": "Who won the 2018 FIFA World Cup and what was the final score?",
+    "expected_answer": "",
+    "source_pages": [],
+    "difficulty": "hard",
+    "negative": true
+  },
+  {
+    "id": "neg-sem-004",
+    "category": "negative",
+    "query": "How do I set up Terraform remote state in an S3 bucket with DynamoDB locking?",
+    "expected_answer": "",
+    "source_pages": [],
+    "difficulty": "hard",
+    "negative": true
+  },
+  {
+    "id": "neg-sem-005",
+    "category": "negative",
+    "query": "What are the symptoms and treatment of seasonal affective disorder?",
+    "expected_answer": "",
+    "source_pages": [],
+    "difficulty": "hard",
+    "negative": true
+  },
+  {
+    "id": "neg-sem-006",
+    "category": "negative",
+    "query": "How do I train a YOLOv8 object detector on a custom dataset of traffic signs?",
+    "expected_answer": "",
+    "source_pages": [],
+    "difficulty": "hard",
+    "negative": true
+  },
+  {
+    "id": "neg-sem-007",
+    "category": "negative",
+    "query": "What is the tax treatment of employee stock options in Germany?",
+    "expected_answer": "",
+    "source_pages": [],
+    "difficulty": "hard",
+    "negative": true
+  },
+  {
+    "id": "neg-sem-008",
+    "category": "negative",
+    "query": "How do I write a Rust procedural macro that derives a trait?",
+    "expected_answer": "",
+    "source_pages": [],
+    "difficulty": "hard",
+    "negative": true
+  },
+  {
+    "id": "neg-sem-009",
+    "category": "negative",
+    "query": "What are the best practices for tuning a PostgreSQL vacuum on a 5 TB table?",
+    "expected_answer": "",
+    "source_pages": [],
+    "difficulty": "hard",
+    "negative": true
+  },
+  {
+    "id": "neg-sem-010",
+    "category": "negative",
+    "query": "How can I tune guitar strings to drop D tuning?",
+    "expected_answer": "",
+    "source_pages": [],
+    "difficulty": "hard",
+    "negative": true
   }
 ]

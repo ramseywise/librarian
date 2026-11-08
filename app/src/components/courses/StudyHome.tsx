@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { StudyHomeData } from "./types";
 import { pageTitle, useDocumentTitle } from "./useDocumentTitle";
 import "./courses.css";
+import { apiFetch } from "../../utils/api";
 
 /** The study queue, the entry point to practice: cards and questions due, the next drill for the weakest
  * track, and the lecture for the module in hand. Every row links to the existing views (`#/flashcards/<id>?due`,
@@ -13,7 +14,7 @@ export function StudyHome() {
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/courses/study")
+    apiFetch("/api/courses/study")
       .then((r) => (r.ok ? (r.json() as Promise<StudyHomeData>) : Promise.reject(new Error(`HTTP ${r.status}`))))
       .then((d) => !cancelled && setHome(d))
       .catch((e: Error) => !cancelled && setError(e.message));

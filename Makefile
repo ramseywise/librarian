@@ -90,13 +90,15 @@ eval-nofts:
 	uv run python -m evals.run_eval --live --arm nofts --verbose --save-baseline
 
 # Every gated live arm: healthy pipeline, degraded fallback, uniformly sampled wiki
-# pages, and lesson search. A ranking change must clear all of them, not trade one
-# for another.
+# pages, lesson search, one-hop graph expansion, and the two-page questions. A ranking
+# change must clear all of them, not trade one for another.
 eval-gate:
 	uv run python -m evals.run_eval --live --arm sem --verbose
 	uv run python -m evals.run_eval --live --arm nofts --verbose
 	uv run python -m evals.run_eval --live --arm uniform --verbose
 	uv run python -m evals.run_eval --live --arm course --verbose
+	uv run python -m evals.run_eval --live --arm graph --verbose
+	uv run python -m evals.run_eval --live --arm multihop --verbose
 
 .PHONY: wiki-stats wiki-snapshot wiki-check wiki-gaps wiki-graph
 .PHONY: skills-check skills-sync chapter-check chapter-check-all link-check curriculum crosswalk crosswalk-check manifest-check drill-check review-findings signals smoke-labs
@@ -204,7 +206,7 @@ help:
 	@echo "eval-nofts       — eval the degraded no-fts arm (gated); save nofts baseline"
 	@echo "e2e-container    — build the image, run it with a token, e2e against it (tests/e2e/run_container.sh)"
 	@echo "e2e-compose      — compose stack behind Caddy, 2 API replicas, e2e through TLS (tests/e2e/run_compose.sh)"
-	@echo "eval-gate        — run every gated live arm (sem, nofts, uniform, course); no baseline written"
+	@echo "eval-gate        — run every gated live arm (sem, nofts, uniform, course, graph, multihop); no baseline written"
 
 # Course checks: stdlib ports of the learn-ai-engineering scripts, run over data/courses/.
 # Private lessons (data/courses/private/) are skipped and never named. Paths are relative to data/courses/.

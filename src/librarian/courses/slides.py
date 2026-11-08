@@ -215,8 +215,10 @@ def needs() -> list[str]:
     missing = []
     if not shutil.which("uv"):
         missing.append("uv (fetches python-pptx, pillow and resvg-py to build the deck)")
-    if not shutil.which("qlmanage"):
-        missing.append("macOS Quick Look (qlmanage) to render slide images")
+    if not shutil.which("qlmanage") and not (shutil.which("soffice") and shutil.which("pdftoppm")):
+        missing.append(
+            "macOS Quick Look (qlmanage), or LibreOffice and pdftoppm, to render slide images"
+        )
     return missing
 
 

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import type { Course, PracticeDrill } from "../components/courses/types";
+import { apiFetch } from "../utils/api";
 
 interface Resource<T> {
   data: T | null;
@@ -15,7 +16,7 @@ function createResource<T>(url: string) {
 
   function load(force = false): Promise<T> {
     if (res.promise && !force) return res.promise;
-    const p = fetch(url)
+    const p = apiFetch(url)
       .then((r) => (r.ok ? (r.json() as Promise<T>) : Promise.reject(new Error(`HTTP ${r.status}`))))
       .then(
         (data) => {

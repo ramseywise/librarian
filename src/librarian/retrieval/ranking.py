@@ -13,7 +13,7 @@ from contextlib import contextmanager
 import duckdb
 
 from librarian.log_config import get_logger
-from librarian.observability import timed
+from librarian.observability import experiment, timed
 from librarian.retrieval import corpus, embeddings, index
 from librarian.retrieval.graph_expansion import expand_one_hop
 
@@ -150,6 +150,36 @@ def rerank(query: str, rows: list[tuple], limit: int) -> list[tuple]:
 
 
 # ---------------------------------------------------------------------------
+# Hybrid candidate union (experiment, off by default)
+# ---------------------------------------------------------------------------
+
+HYBRID_EXPERIMENT = "hybrid-union"
+
+
+def union_candidates(
+    bm25_rows: list[tuple], all_rows: list[tuple], query_vec: list[float], k: int
+) -> list[tuple]:
+    """BM25 candidates plus the cosine top-k over all pages, de-duplicated by path.
+
+    all_rows are 8-tuples whose last field is ignored. Rows that only the cosine list found get
+    BM25 score 0.0 when the BM25 rows carry real scores (so the text half of the blend is 0 for
+    them), else None. BM25 rows keep their order and score; added rows follow in cosine order.
+    """
+    seen = {r[0] for r in bm25_rows}
+    scored = sorted(
+        (
+            (_cosine(query_vec, embeddings.blob_to_floats(r[6])), i, r)
+            for i, r in enumerate(all_rows)
+            if r[6] and r[0] not in seen
+        ),
+        key=lambda t: (-t[0], t[1]),
+    )
+    has_scores = any(r[7] is not None for r in bm25_rows)
+    extra = [(*r[:7], 0.0 if has_scores else None) for _, _, r in scored[:k]]
+    return [*bm25_rows, *extra]
+
+
+# ---------------------------------------------------------------------------
 # Search core
 # ---------------------------------------------------------------------------
 
@@ -270,6 +300,9 @@ def _search_rows(
     if degraded:
         log.warning("retrieval_degraded", tool=tool, reasons=degraded)
 
+    if HYBRID_EXPERIMENT in experiment() and embeddings.HAS_EMBEDDINGS:
+        rows = _with_cosine_candidates(query, rows, table, tag_filter, tag_params, limit)
+
     if not rows:
         corpus.log_retrieval(
             tool, query=query, domain=domain, n_results=0, top_paths=[], degraded=degraded
@@ -291,6 +324,27 @@ def _search_rows(
         **extra,
     )
     return ranked, degraded
+
+
+def _with_cosine_candidates(
+    query: str, rows: list[tuple], table: str, tag_filter: str, tag_params: list, limit: int
+) -> list[tuple]:
+    """Experiment `hybrid-union`: add the cosine top `limit * 3` over all pages to the candidates."""
+    try:
+        q_vec = embeddings.encode([query])[0].tolist()
+        con = index.connect()
+        try:
+            all_rows = con.execute(
+                f"SELECT path, title, tags, summary, content, backlinks, embedding, NULL "
+                f"FROM {table} WHERE TRUE {tag_filter}",
+                tag_params,
+            ).fetchall()
+        finally:
+            con.close()
+        return union_candidates(rows, all_rows, q_vec, limit * 3)
+    except Exception as e:
+        log.warning("hybrid_union_failed", error=str(e))
+        return rows
 
 
 # Score multiplier for expanded pages relative to the best seed that reached

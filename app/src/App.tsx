@@ -7,6 +7,8 @@ import { useChatStream } from "./hooks/useChatStream";
 import { useHashRoute } from "./hooks/useHashRoute";
 import { useSlashSearch } from "./hooks/useSlashSearch";
 import { ThemeToggle } from "./components/ThemeToggle";
+import { UserMenu } from "./components/account/UserMenu";
+import { useAuthConfig, useMe } from "./hooks/useAuth";
 import type { SelectedNode } from "./types";
 import "./theme/tokens.css";
 import "./theme/components.css";
@@ -36,6 +38,11 @@ const StudyHome = lazy(() =>
 const PracticeView = lazy(() =>
   import("./components/courses/PracticeView").then((m) => ({ default: m.PracticeView }))
 );
+const LoginView = lazy(() => import("./components/account/LoginView").then((m) => ({ default: m.LoginView })));
+const AdminView = lazy(() => import("./components/account/AdminView").then((m) => ({ default: m.AdminView })));
+const PrivacyView = lazy(() =>
+  import("./components/account/PrivacyView").then((m) => ({ default: m.PrivacyView }))
+);
 
 export default function App() {
   const [highlightedPages, setHighlightedPages] = useState<Set<string>>(new Set());
@@ -48,13 +55,20 @@ export default function App() {
   const lastQueryRef = useRef("");
   const [route, navigate] = useHashRoute();
   useSlashSearch();
+  const authConfig = useAuthConfig();
+  const me = useMe();
+  const inLogin = route === "/login" || route.startsWith("/login?");
+  const inAdmin = route === "/admin";
+  const inPrivacy = route === "/privacy";
+  const inAccount = inLogin || inAdmin || inPrivacy;
   const inPractice = route === "/practice";
   const inFlashcards = route.startsWith("/flashcards/");
   const inStudy = route === "/study";
   const inSlides = route.startsWith("/slides/");
   const inQuiz = route.startsWith("/quiz/");
+  // Every page drawn over the graph; the graph stays mounted underneath.
   const inCourses =
-    route === "/courses" || route.startsWith("/courses/") || inPractice || inFlashcards || inStudy || inSlides || inQuiz;
+    route === "/courses" || route.startsWith("/courses/") || inPractice || inFlashcards || inStudy || inSlides || inQuiz || inAccount;
   const courseRoute = route.replace(/^\/courses\/?/, "");
   // Course views set their own titles; the graph's is set here.
   useDocumentTitle(inCourses ? null : pageTitle("Graph"));
@@ -164,7 +178,7 @@ export default function App() {
           <button
             onClick={() => navigate("/courses")}
             className="tab"
-            aria-current={inCourses && !inPractice && !inStudy ? "page" : undefined}
+            aria-current={inCourses && !inPractice && !inStudy && !inAccount ? "page" : undefined}
           >
             Courses
           </button>
@@ -177,6 +191,7 @@ export default function App() {
         </nav>
         <div className="app-header-actions">
           <ThemeToggle />
+          <UserMenu me={me} config={authConfig} />
           {!inCourses && highlightedPages.size > 0 && (
             <button onClick={clearHighlights} className="pill-btn pill-btn--accent">
               ✕ {highlightedPages.size} highlighted
@@ -199,7 +214,13 @@ export default function App() {
           {inCourses && (
             <div className="app-course-layer">
               <Suspense fallback={<div className="app-loading">Loading…</div>}>
-                {inStudy ? (
+                {inLogin ? (
+                  <LoginView route={route} />
+                ) : inAdmin ? (
+                  <AdminView />
+                ) : inPrivacy ? (
+                  <PrivacyView />
+                ) : inStudy ? (
                   <StudyHome />
                 ) : inSlides ? (
                   <SlidesView deckId={route.slice("/slides/".length)} />

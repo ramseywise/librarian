@@ -1,0 +1,223 @@
+#!/usr/bin/env bash
+# One operator entrypoint: the same verbs on a laptop and on the host. Wraps docker compose and
+# the `librarian ops` verbs (src/librarian/ops/). See docs/ops/.
+#
+#   ./librarian [--local] [--dry-run] <command> [args]
+#
+#   start                       bring the stack up and wait for /readyz
+#   stop                        stop every service (data volumes stay)
+#   status                      services, image in use, readiness
+#   logs [service...]           follow logs
+#   backup                      one encrypted backup to the bucket now
+#   restore <object|latest> [--replace] [--identity FILE]
+#                               stop the API, restore into a new database, check it, swap, start
+#   upgrade <image-tag>         backup, pull, up, wait for /readyz, roll back on failure (host only)
+#   content push                rsync wiki and courses to DEPLOY_HOST:DEPLOY_PATH (never private/)
+#
+# --local (or LIBRARIAN_MODE=local) adds docker-compose.local.yml: API on 127.0.0.1:8000, no TLS,
+# images built here. Without it the host mode never builds: it pulls LIBRARIAN_IMAGE.
+# --dry-run (or LIBRARIAN_DRY_RUN=1) prints the commands instead of running them.
+set -euo pipefail
+
+cd "$(dirname "${BASH_SOURCE[0]}")"
+
+MODE="${LIBRARIAN_MODE:-host}"
+DRY="${LIBRARIAN_DRY_RUN:-0}"
+READY_TIMEOUT="${LIBRARIAN_READY_TIMEOUT:-300}"
+STATE_DIR=".ops"
+
+usage() { sed -n '2,/^set -euo/p' "$0" | sed '$d' | sed 's/^# \{0,1\}//'; }
+die() { echo "librarian: $*" >&2; exit "${2:-1}"; }
+
+# Print every command; run it unless this is a dry run.
+run() {
+    echo "+ $*"
+    if [ "$DRY" = "1" ]; then return 0; fi
+    "$@"
+}
+
+env_get() {  # value of NAME from the environment, else from .env (last assignment wins)
+    local name="$1" value="${!1:-}"
+    if [ -z "$value" ] && [ -f .env ]; then
+        value="$(grep -E "^${name}=" .env | tail -n 1 | cut -d= -f2- | sed -e 's/^["'"'"']//' -e 's/["'"'"']$//' || true)"
+    fi
+    printf '%s' "$value"
+}
+
+compose_files() {
+    if [ "$MODE" = "local" ]; then echo "-f docker-compose.yml -f docker-compose.local.yml"
+    else echo "-f docker-compose.yml"; fi
+}
+
+compose() {
+    # shellcheck disable=SC2046  # the file list is deliberately word-split
+    run docker compose $(compose_files) "$@"
+}
+
+current_image() {
+    if [ -n "${LIBRARIAN_IMAGE:-}" ]; then printf '%s' "$LIBRARIAN_IMAGE"
+    elif [ -f "$STATE_DIR/image" ]; then cat "$STATE_DIR/image"
+    else
+        local from_env; from_env="$(env_get LIBRARIAN_IMAGE)"
+        printf '%s' "${from_env:-librarian:local}"
+    fi
+}
+
+save_image() {  # $1 = tag now serving; the one before it is kept in .ops/image.prev
+    if [ "$DRY" = "1" ]; then echo "+ (record image $1 in $STATE_DIR/image)"; return 0; fi
+    mkdir -p "$STATE_DIR"
+    if [ -f "$STATE_DIR/image" ]; then cp "$STATE_DIR/image" "$STATE_DIR/image.prev"; fi
+    printf '%s\n' "$1" >"$STATE_DIR/image"
+}
+
+# A bare tag (sha-abc123) reuses the repository of the current image; a full reference is used as given.
+resolve_image() {
+    case "$1" in
+        */*|*:*) printf '%s' "$1" ;;
+        *) local cur; cur="$(current_image)"; printf '%s:%s' "${cur%:*}" "$1" ;;
+    esac
+}
+
+use_backup_profile() {  # the nightly service runs on a host once a bucket is configured
+    if [ "$MODE" != "local" ] && [ -n "$(env_get LIBRARIAN_BACKUP_URL)" ]; then
+        export COMPOSE_PROFILES="${COMPOSE_PROFILES:+$COMPOSE_PROFILES,}backup"
+    fi
+}
+
+wait_ready() {
+    if [ "$DRY" = "1" ]; then echo "+ (wait up to ${READY_TIMEOUT}s for /readyz)"; return 0; fi
+    local waited=0
+    # shellcheck disable=SC2046
+    until docker compose $(compose_files) exec -T librarian python -c \
+        "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/readyz', timeout=5)" \
+        >/dev/null 2>&1; do
+        if [ "$waited" -ge "$READY_TIMEOUT" ]; then return 1; fi
+        sleep 5; waited=$((waited + 5))
+    done
+    echo "ready after ${waited}s"
+}
+
+cmd_start() {
+    export LIBRARIAN_IMAGE; LIBRARIAN_IMAGE="$(current_image)"
+    use_backup_profile
+    run mkdir -p data/wiki/private data/courses/private
+    if [ "$MODE" = "local" ]; then compose up -d --build librarian; else compose up -d --no-build; fi
+    wait_ready || die "librarian did not become ready in ${READY_TIMEOUT}s (./librarian logs librarian)"
+}
+
+cmd_stop() {
+    export LIBRARIAN_IMAGE; LIBRARIAN_IMAGE="$(current_image)"
+    COMPOSE_PROFILES="${COMPOSE_PROFILES:+$COMPOSE_PROFILES,}backup"; export COMPOSE_PROFILES
+    compose stop
+}
+
+cmd_status() {
+    export LIBRARIAN_IMAGE; LIBRARIAN_IMAGE="$(current_image)"
+    echo "image: $LIBRARIAN_IMAGE   mode: $MODE"
+    compose ps
+    if wait_ready_once; then echo "readyz: ok"; else echo "readyz: not ready"; fi
+}
+
+wait_ready_once() {
+    if [ "$DRY" = "1" ]; then return 0; fi
+    # shellcheck disable=SC2046
+    docker compose $(compose_files) exec -T librarian python -c \
+        "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/readyz', timeout=5)" \
+        >/dev/null 2>&1
+}
+
+cmd_logs() { export LIBRARIAN_IMAGE; LIBRARIAN_IMAGE="$(current_image)"; compose logs -f --tail 200 "$@"; }
+
+# One-off `librarian ops ...` in the backup service (image has pg_dump, age and aws).
+ops() {
+    export LIBRARIAN_IMAGE; LIBRARIAN_IMAGE="$(current_image)"
+    compose run --rm backup librarian ops "$@"
+}
+
+cmd_backup() { ops backup "$@"; }
+
+cmd_restore() {
+    local object="" identity="" replace=()
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            --replace) replace=(--replace) ;;
+            --identity) shift; identity="${1:-}"; [ -n "$identity" ] || die "--identity needs a file" 2 ;;
+            -*) die "restore: unknown option $1" 2 ;;
+            *) [ -z "$object" ] || die "restore: one object only" 2; object="$1" ;;
+        esac
+        shift
+    done
+    [ -n "$object" ] || die "usage: ./librarian restore <object|latest> [--replace] [--identity FILE]" 2
+    [ -n "$identity" ] || die "restore: --identity <age private key file> is required (keep the key off this host except while restoring)" 2
+    [ "$DRY" = "1" ] || [ -f "$identity" ] || die "restore: no such identity file: $identity" 2
+    export LIBRARIAN_IMAGE; LIBRARIAN_IMAGE="$(current_image)"
+    use_backup_profile
+    local abs; abs="$(cd "$(dirname "$identity")" && pwd)/$(basename "$identity")"
+
+    echo "== fence: stopping the API so nothing writes during the restore"
+    compose stop librarian
+    echo "== restoring into a new database; the live one is replaced only if the checks pass"
+    if ! compose run --rm -v "$abs:/run/age-identity:ro" backup \
+            librarian ops restore "$object" --identity /run/age-identity ${replace[@]+"${replace[@]}"}; then
+        die "restore rejected or failed. The API is STILL STOPPED. Read the error above; if it says the live database was not replaced, ./librarian start is safe."
+    fi
+    echo "== starting the API"
+    compose up -d --no-build librarian
+    wait_ready || die "restored, but librarian is not ready in ${READY_TIMEOUT}s (./librarian logs librarian)"
+}
+
+cmd_upgrade() {
+    [ $# -eq 1 ] || die "usage: ./librarian upgrade <image-tag>" 2
+    [ "$MODE" != "local" ] || die "upgrade is for a host (images come from a registry). Locally: ./librarian start" 2
+    local prev next
+    prev="$(current_image)"; next="$(resolve_image "$1")"
+    echo "== upgrade $prev -> $next"
+    export LIBRARIAN_IMAGE="$prev"
+    use_backup_profile
+    # The gate runs on the image now serving: no backup younger than the window, no upgrade.
+    ops upgrade "$next" || die "backup gate failed; nothing was changed" 3
+
+    export LIBRARIAN_IMAGE="$next"
+    compose pull librarian || { export LIBRARIAN_IMAGE="$prev"; die "could not pull $next; still on $prev"; }
+    compose up -d --no-build
+    if wait_ready; then
+        save_image "$next"
+        echo "== upgraded to $next"
+        return 0
+    fi
+    echo "== $next is not ready; going back to $prev" >&2
+    export LIBRARIAN_IMAGE="$prev"
+    compose up -d --no-build
+    wait_ready || die "ROLLBACK FAILED: $prev is not ready either. The backup from the gate is in the bucket (./librarian restore latest)."
+    die "upgrade to $next failed readiness; $prev is serving again. Logs: ./librarian logs librarian"
+}
+
+cmd_content() {
+    [ "${1:-}" = "push" ] || die "usage: ./librarian content push" 2
+    shift
+    # The script keeps the private/ guard (dry-run transfer list, exclude, post-check).
+    run scripts/deploy-content.sh "$@"
+}
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --local) MODE=local; shift ;;
+        --dry-run) DRY=1; shift ;;
+        *) break ;;
+    esac
+done
+
+[ $# -gt 0 ] || { usage; exit 2; }
+command="$1"; shift
+case "$command" in
+    start) cmd_start "$@" ;;
+    stop) cmd_stop "$@" ;;
+    status) cmd_status "$@" ;;
+    logs) cmd_logs "$@" ;;
+    backup) cmd_backup "$@" ;;
+    restore) cmd_restore "$@" ;;
+    upgrade) cmd_upgrade "$@" ;;
+    content) cmd_content "$@" ;;
+    -h|--help|help) usage ;;
+    *) echo "librarian: unknown command '$command'" >&2; usage >&2; exit 2 ;;
+esac

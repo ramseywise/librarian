@@ -20,6 +20,12 @@ WORKDIR /app
 RUN pip install --no-cache-dir uv \
     && useradd --create-home --uid 1000 librarian
 
+# Backup tools for `librarian ops` (the compose `backup` service runs from this same image, so the
+# host only pulls): pg_dump/pg_restore 17 to match the postgres service, age, and the aws CLI for S3/R2.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends postgresql-client-17 age awscli \
+    && rm -rf /var/lib/apt/lists/*
+
 # Dependencies from the lockfile, with CPU-only torch: the locked linux torch pulls ~3 GB of CUDA
 # wheels a single-user host cannot use. Torch is installed from the CPU index at the locked
 # version; everything else (minus torch, triton and the nvidia-* wheels) comes from uv.lock.

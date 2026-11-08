@@ -17,6 +17,8 @@ jobs:
     # so main as of 2026-11-07. Move it deliberately; Dependabot does not bump reusable workflows.
     uses: ramseywise/ai-project-template/.github/workflows/python-ci.yml@86705a49b18d7e721b6fe729d7599203c49afbb2 # main as of 2026-11-07
     with:
+      # Explicit, so scripts/check_versions.py can compare it with the Dockerfile and .python-version.
+      python-version: "3.12"
       # Makefile's `lint:` runs ruff, import-linter and pyright; the
       # paths below are the real top-level Python dirs; raw/ data/wiki/ logs/
       # are artifacts (naming.md data-layer rule) and stay unlinted.
@@ -27,12 +29,21 @@ jobs:
       # are ignored; the rest of tests stay blocking.
       test-command: "uv run pytest tests/ --ignore=tests/e2e -q"
 
+  versions:
+    # The image and CI must run the same Python and Node: scripts/check_versions.py compares the
+    # Dockerfile, .python-version, requires-python and the setup steps in the workflows.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7.6.0
+      - run: uv run --no-project python scripts/check_versions.py
+
   architecture:
     # Import contracts and the type check. The shared python-ci workflow only lints and tests.
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7.6.0
         with:
           enable-cache: true
       # All extras, not just the dev group: pyright resolves every import, and
@@ -49,8 +60,8 @@ jobs:
       run:
         working-directory: app
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
           cache: npm
@@ -62,17 +73,38 @@ jobs:
       - run: npm run build
 
   docker:
-    # The deployable image: web build, API install, embedding model. Built, not pushed.
+    # The deployable image: web build, API install, embedding model. Built on every run; pushed to
+    # GHCR only on main (never on a PR), tagged sha-<short> and main, so a host can roll back to a
+    # tag. The token and `packages: write` are scoped to this job.
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    env:
+      PUSH: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     steps:
-      - uses: actions/checkout@v7
-      - uses: docker/setup-buildx-action@v4
-      - uses: docker/build-push-action@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Image name and release
+        id: img
+        run: |
+          echo "name=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
+          echo "short=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - if: env.PUSH == 'true'
+        uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: .
           file: Dockerfile
-          push: false
-          tags: librarian:ci
+          push: ${{ env.PUSH == 'true' }}
+          build-args: LIBRARIAN_RELEASE=${{ steps.img.outputs.short }}
+          tags: |
+            ${{ steps.img.outputs.name }}:sha-${{ steps.img.outputs.short }}
+            ${{ steps.img.outputs.name }}:main
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -83,10 +115,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
-      - uses: actions/checkout@v7
-      - uses: docker/setup-buildx-action@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
       # Same cache scope as the `docker` job, so one of the two builds from cache.
-      - uses: docker/build-push-action@v7
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: .
           file: Dockerfile
@@ -94,7 +126,7 @@ jobs:
           tags: librarian:e2e
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      - uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7.6.0
         with:
           enable-cache: true
       - run: uv sync --group dev

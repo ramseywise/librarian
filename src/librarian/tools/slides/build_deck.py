@@ -19,6 +19,7 @@ from __future__ import annotations
 import argparse
 import itertools
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -1592,48 +1593,129 @@ def slide_outline(pptx: Path) -> list[dict[str, str]]:
     return out
 
 
-def render_pngs(pptx: Path, out_dir: Path, size: int = 2400) -> list[Path]:
-    """Split the deck into one-slide files and render each to PNG with Quick Look (macOS)."""
-    if not shutil.which("qlmanage"):
+RENDERERS = ("quicklook", "libreoffice")
+
+
+def pick_renderer(requested: str | None = None) -> str | None:
+    """The renderer to use: the request (`--renderer`, else `SLIDES_RENDERER`), else Quick Look when
+    `qlmanage` exists, else LibreOffice when `soffice` and `pdftoppm` both exist, else None."""
+    choice = (requested or os.environ.get("SLIDES_RENDERER") or "").strip().lower()
+    if choice:
+        if choice not in RENDERERS:
+            raise ValueError(f"unknown renderer {choice!r} (use one of {', '.join(RENDERERS)})")
+        return choice
+    if shutil.which("qlmanage"):
+        return "quicklook"
+    if shutil.which("soffice") and shutil.which("pdftoppm"):
+        return "libreoffice"
+    return None
+
+
+def render_pngs(
+    pptx: Path, out_dir: Path, size: int = 2400, renderer: str | None = None
+) -> list[Path]:
+    """Render each slide to `slide-NN.png` in `out_dir`, `size` px wide, with Quick Look (macOS) or
+    LibreOffice + pdftoppm (Linux). A failed render keeps the old PNGs."""
+    renderer = pick_renderer(renderer)
+    if renderer is None:
         print("render: qlmanage not found (macOS only) — skipping", file=sys.stderr)
         return []
+    tools = ("qlmanage",) if renderer == "quicklook" else ("soffice", "pdftoppm")
+    for tool in tools:
+        if not shutil.which(tool):
+            hint = " (macOS only)" if tool == "qlmanage" else ""
+            print(f"render: {tool} not found{hint} — skipping", file=sys.stderr)
+            return []
     out_dir.mkdir(parents=True, exist_ok=True)
     n = len(Presentation(str(pptx)).slides)
     # Render beside the target and swap in only on success: a failed render keeps the old PNGs.
     stage = Path(tempfile.mkdtemp(prefix=".render-", dir=out_dir.parent))
     try:
-        with tempfile.TemporaryDirectory() as tmp:
-            singles = []
-            for i in range(n):
-                prs = Presentation(str(pptx))
-                ids = prs.slides._sldIdLst
-                for k, sld in reversed(list(enumerate(ids))):
-                    if k != i:
-                        prs.part.drop_rel(sld.rId)
-                        ids.remove(sld)
-                # Quick Look hangs indefinitely on a pptx with speaker notes; the render doesn't need them.
-                for rId, rel in list(prs.slides[0].part.rels.items()):
-                    if rel.reltype == RT.NOTES_SLIDE:
-                        prs.slides[0].part.drop_rel(rId)
-                p = Path(tmp) / f"slide-{i + 1:02d}.pptx"
-                prs.save(str(p))
-                singles.append(p)
-            try:
-                subprocess.run(
-                    ["qlmanage", "-t", "-s", str(size), "-o", tmp, *map(str, singles)],
-                    check=True,
-                    capture_output=True,
-                    timeout=30 + 5 * n,
-                )
-            except subprocess.TimeoutExpired:
-                print("render: qlmanage timed out — some slides may be missing", file=sys.stderr)
-            for p in singles:
-                src = Path(f"{p}.png")
-                if src.exists():
-                    shutil.move(src, stage / f"{p.stem}.png")
+        if renderer == "quicklook":
+            _render_quicklook(pptx, stage, n, size)
+        else:
+            _render_libreoffice(pptx, stage, n, size)
         return _swap_in(stage, out_dir, n)
     finally:
         shutil.rmtree(stage, ignore_errors=True)
+
+
+def _render_quicklook(pptx: Path, stage: Path, n: int, size: int) -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        singles = []
+        for i in range(n):
+            prs = Presentation(str(pptx))
+            ids = prs.slides._sldIdLst
+            for k, sld in reversed(list(enumerate(ids))):
+                if k != i:
+                    prs.part.drop_rel(sld.rId)
+                    ids.remove(sld)
+            # Quick Look hangs indefinitely on a pptx with speaker notes; the render doesn't need them.
+            for rId, rel in list(prs.slides[0].part.rels.items()):
+                if rel.reltype == RT.NOTES_SLIDE:
+                    prs.slides[0].part.drop_rel(rId)
+            p = Path(tmp) / f"slide-{i + 1:02d}.pptx"
+            prs.save(str(p))
+            singles.append(p)
+        try:
+            subprocess.run(
+                ["qlmanage", "-t", "-s", str(size), "-o", tmp, *map(str, singles)],
+                check=True,
+                capture_output=True,
+                timeout=30 + 5 * n,
+            )
+        except subprocess.TimeoutExpired:
+            print("render: qlmanage timed out — some slides may be missing", file=sys.stderr)
+        for p in singles:
+            src = Path(f"{p}.png")
+            if src.exists():
+                shutil.move(src, stage / f"{p.stem}.png")
+
+
+def _render_libreoffice(pptx: Path, stage: Path, n: int, size: int) -> None:
+    """pptx -> pdf with `soffice --headless`, then one PNG per page with `pdftoppm`, `size` px wide."""
+    with tempfile.TemporaryDirectory() as tmp:
+        tmpd = Path(tmp)
+        src = tmpd / "deck.pptx"
+        shutil.copyfile(pptx, src)
+        try:
+            subprocess.run(
+                [
+                    "soffice",
+                    f"-env:UserInstallation=file://{tmpd / 'profile'}",
+                    "--headless",
+                    "--convert-to",
+                    "pdf",
+                    "--outdir",
+                    str(tmpd),
+                    str(src),
+                ],
+                check=True,
+                capture_output=True,
+                timeout=120 + 10 * n,
+            )
+            pdf = tmpd / "deck.pdf"
+            subprocess.run(
+                [
+                    "pdftoppm",
+                    "-png",
+                    "-scale-to-x",
+                    str(size),
+                    "-scale-to-y",
+                    "-1",
+                    str(pdf),
+                    str(tmpd / "page"),
+                ],
+                check=True,
+                capture_output=True,
+                timeout=60 + 10 * n,
+            )
+        except subprocess.TimeoutExpired:
+            print("render: soffice timed out — some slides may be missing", file=sys.stderr)
+        # pdftoppm pads the page number to the page count's width: page-1.png, page-01.png, ...
+        pages = sorted(tmpd.glob("page-*.png"), key=lambda p: int(p.stem.rsplit("-", 1)[1]))
+        for i, page in enumerate(pages[:n]):
+            shutil.move(page, stage / f"slide-{i + 1:02d}.png")
 
 
 def _swap_in(stage: Path, out_dir: Path, n: int) -> list[Path]:
@@ -1723,6 +1805,11 @@ def main() -> None:
         "--pdf", action="store_true", help="also write <output>.pdf next to the .pptx (macOS)"
     )
     ap.add_argument(
+        "--renderer",
+        choices=RENDERERS,
+        help="slide image renderer (default: SLIDES_RENDERER, else Quick Look, else LibreOffice)",
+    )
+    ap.add_argument(
         "--strict", action="store_true", help="exit 1 on any warning (overflow or story rules)"
     )
     ap.add_argument(
@@ -1750,7 +1837,7 @@ def main() -> None:
         )
     if args.preview or args.pdf:
         with tempfile.TemporaryDirectory() as tmp:
-            pngs = render_pngs(out, args.preview or Path(tmp))
+            pngs = render_pngs(out, args.preview or Path(tmp), renderer=args.renderer)
             if args.preview and pngs:
                 for sheet in contact_sheets(pngs, args.preview):
                     print(f"sheet: {sheet}")

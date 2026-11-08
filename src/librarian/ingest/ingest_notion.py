@@ -23,7 +23,7 @@ from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 
 from librarian.config import get_settings
-from librarian.ingest.base import ScraperBase
+from librarian.ingest.base import ScraperBase, request_with_retry
 
 load_dotenv()
 log = structlog.get_logger()
@@ -84,9 +84,11 @@ def fetch_page(page_id: str, api_key: str) -> tuple[str, str]:
         "Notion-Version": "2022-06-28",
     }
 
-    with httpx.Client(headers=headers) as client:
+    with httpx.Client(headers=headers, timeout=30) as client:
         # Page metadata
-        meta = client.get(f"https://api.notion.com/v1/pages/{page_id}").json()
+        meta = request_with_retry(
+            client, "GET", f"https://api.notion.com/v1/pages/{page_id}"
+        ).json()
         props = meta.get("properties", {})
         title_prop = props.get("title", props.get("Name", {}))
         rich = title_prop.get("title", [])
@@ -99,7 +101,9 @@ def fetch_page(page_id: str, api_key: str) -> tuple[str, str]:
             params: dict = {"page_size": 100}
             if cursor:
                 params["start_cursor"] = cursor
-            resp = client.get(
+            resp = request_with_retry(
+                client,
+                "GET",
                 f"https://api.notion.com/v1/blocks/{page_id}/children",
                 params=params,
             ).json()

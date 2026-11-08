@@ -262,5 +262,401 @@
       "data/wiki/infra/input-guardrails-pipeline.md"
     ],
     "difficulty": "medium"
+  },
+  {
+    "id": "mh-025",
+    "category": "multi-hop",
+    "query": "If an agent's memory only matters once it enters a context window, why is decay-weighted retrieval a workable way to handle contradictory memories, and what kind of memory should it not be used for?",
+    "expected_answer": "Memory has no effect on a model except by entering a context window, so every memory decision is really a decision about what occupies a future window, and episodic memory that accumulates linearly rots unless it is distilled. Decay weighting scores each memory by e^(-alpha * age) at read time over min-max normalised age, so a recent 'user eats meat' outranks an old 'user is vegetarian' without any step that detects the conflict, and the full history is kept. The cost is that stable long-lived facts decay at the same rate as volatile ones, so it suits time-stamped episodic observations; durable identity facts belong in a small always-injected profile layer above the decayed store.",
+    "source_pages": [
+      "data/wiki/context/memory-as-context.md",
+      "data/wiki/memory/memory-decay-weighting.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-026",
+    "category": "multi-hop",
+    "query": "In a design for cutting cost at 1M queries a day, why does prefix caching come first among the levers, and what does a prompt have to look like before it actually benefits?",
+    "expected_answer": "The walkthrough orders the levers prefix caching, then model routing, then token trimming and output caps, then a batch API, because a 1k-token system prompt over 1M calls is about 1B repeated input tokens a day. Prefix caching only pays if the prefix is byte-identical, within a roughly 5-minute TTL, and long enough for the provider (OpenAI needs a 1,024-token threshold); then it saves about 90% of prefix cost. Dynamic content is not cached, which is why in ADK a static_instruction is eligible but an instruction callable is not.",
+    "source_pages": [
+      "data/wiki/interview/ai-system-design-walkthroughs.md",
+      "data/wiki/infra/prefix-caching.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "mh-027",
+    "category": "multi-hop",
+    "query": "A default model was trained on a sample with 30% bad accounts when the real rate is 5%. Why can't its Gini tell you anything is wrong, and what does the uncorrected score do to a 5:1 cost-ratio approval cutoff?",
+    "expected_answer": "Adding -2.097 to the log odds corrects the prior shift and drops the mean PD from 0.265 to 0.047, but the Gini stays at 0.480 because the shift does not change the ranking, so a ranking metric cannot reveal the miscalibration. The cost-based cutoff (approve when PD < 1/6 at a 5:1 cost ratio) is valid only for a calibrated PD. Applied to the uncorrected score it rejects 42% and costs 0.444, worse than approving everyone (0.250), while the corrected score costs 0.245.",
+    "source_pages": [
+      "data/wiki/foundations/prior-shift-correction-for-oversampled-defaults.md",
+      "data/wiki/foundations/calibrated-score-deterministic-decision.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "mh-028",
+    "category": "multi-hop",
+    "query": "When a place's raw upstream tag was being lost, why was the new subtype column guarded by a prefix-only CHECK and shipped in the same branch as its reader?",
+    "expected_answer": "The kept value is a namespaced fact such as shop:books, and the CHECK validates only the prefix because the upstream vocabulary has hundreds of values and grows outside the repo's control, so an enumerated list would go stale by design while the prefix still catches a bare value or wrong separator. The column shipped with its one reader in the same branch and review because of the schema rule that every column names its reader: an audit had found four plausible, CHECK-constrained lifecycle columns on one table where only one was read, and the dead ones were wrong about the published rows. A column nothing selects is a trap rather than documentation.",
+    "source_pages": [
+      "data/wiki/patterns/keep-the-source-subtype-before-the-first-collapse.md",
+      "data/wiki/patterns/every-column-names-its-reader.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-029",
+    "category": "multi-hop",
+    "query": "Per-user conversion appeared to fall from 11.34% to 9.94% while per-session conversion rose. What explains the disagreement, and why does the unit of the metric matter at all?",
+    "expected_answer": "The two periods ran 198 and 108 days, and a longer window gives each user more chances to return and buy, inflating the per-user rate; over equal 108-day windows it went from 9.43% to 9.94%, moving the same way as per-session (7.48% to 7.60%). More generally a metric sampled by member weights each group by its size: the mean seen by a random member is sum(s_i^2)/sum(s_i), never below the per-group mean, so with nine users at 20 sessions and one at 500 the mean is 68.0 per user but a random session belongs to a user with 372.9. So match windows and state the denominator, choosing the unit the decision is about.",
+    "source_pages": [
+      "data/wiki/foundations/per-user-metrics-depend-on-window-length.md",
+      "data/wiki/foundations/inspection-paradox-in-metrics.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-030",
+    "category": "multi-hop",
+    "query": "A platform plans to ship Postgres full-text search first and pgvector later behind one endpoint. What must the vector upgrade prove, and what does the Librarian's own hybrid benchmark suggest about expecting dense retrieval alone to win?",
+    "expected_answer": "The search endpoint keeps a frozen response shape (results with title, snippet, source_url, score) so consumers never rewrite, and semantic retrieval ships only if a roughly 20-question set, hand-graded before and after, shows vector beating full-text. The Librarian benchmark shows why that gate is sensible: dense-only hit rate was 45% against 50% for BM25 and 58% for hybrid RRF, with 68% once a cross-encoder reranker was added, so dense alone is not automatically the winner. RRF is rank-based and parameter-free apart from k=60, which avoids tuning weights across score distributions.",
+    "source_pages": [
+      "data/wiki/rag/upgrade-invariant-retrieval-contract.md",
+      "data/wiki/rag/rag-retrieval-strategies.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-031",
+    "category": "multi-hop",
+    "query": "In the cost-leveled review ladder, what does the default level add over a mechanical review, and how do the scanner agents it dispatches divide the work and decide severity?",
+    "expected_answer": "L2, the default, adds a scanner subagent and a test run to the mechanical diff-and-lint review of L1, while L3 adds the full SANYI contract audit and is restricted to a single repo. The scanners are independent single-concern agents run in parallel (correctness, safety, structure, wander always; agent-quality and contracts only when signal detection finds agent code or a SANYI.md), each with its own ID prefix and read-only tools. Severity is derived rather than chosen: for example the contracts scanner fixes merge impact by violation code (BY blocker, JY important, BN-1 suggestion), which keeps findings comparable across parallel runs.",
+    "source_pages": [
+      "data/wiki/meta/cost-leveled-review-ladder.md",
+      "data/wiki/patterns/parallel-dimension-scanner-architecture.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-032",
+    "category": "multi-hop",
+    "query": "How can simulation be used to test a confidence interval method, and what does it show for the Wald interval on a rare proportion?",
+    "expected_answer": "A data-generating-process check simulates data from a known process, applies the method many times and reports bias, spread and coverage, which is the general test for any interval method. For a 95% interval the claim is about the procedure's long-run coverage (a simulation gave 0.948). Applied to a rare proportion with true p = 0.02 and n = 50, Wald covers the truth only 0.633 of the time against 0.920 for Wilson, and with 0 conversions in 50 Wald returns [0, 0] while Wilson gives [0, 0.0714].",
+    "source_pages": [
+      "data/wiki/foundations/dgp-simulation-check.md",
+      "data/wiki/foundations/confidence-interval-coverage-and-wilson.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "mh-033",
+    "category": "multi-hop",
+    "query": "Why do summary statistics need a plot beside them, and what chart-axis choices can make the plot itself misleading?",
+    "expected_answer": "Anscombe's four datasets share the same means (9.0 and 7.5), correlation of 0.82 and fitted line (slope 0.5, intercept 3.0) yet look like a noisy line, a curve, an outlier-dragged line and a single leverage point, so the table cannot tell you the next step. A plot can still mislead: with dual y axes whoever sets the limits invents any crossing or gap, and a bar from a non-zero baseline exaggerated an 11% difference into a bar 86% taller. The fixes are aligned panels on one time axis, indexing both series to 100, and bars that start at zero.",
+    "source_pages": [
+      "data/wiki/foundations/anscombes-quartet-plot-before-summarising.md",
+      "data/wiki/foundations/misleading-axes-dual-axes-and-truncated-bars.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "mh-034",
+    "category": "multi-hop",
+    "query": "What problem does each of clustered standard errors and fixed effects solve in panel or grouped data, and what does each leave unfixed?",
+    "expected_answer": "Clustered standard errors fix the standard error, not the estimate: in a group-randomised example the naive SE of 0.0411 became 0.0781 clustered, and the false-positive rate fell from 27.8% to 3.5%, though with few clusters (5) about 21% of nulls were still rejected. Fixed effects fix bias from stable unit differences by using only within-unit variation, moving a pooled estimate of -1.005 to 0.472 against a true 0.5, but they absorb time-invariant regressors and leave time-varying confounders. In a panel with a persistent regressor you also cluster by unit, since coverage was 0.697 naive against 0.940 clustered.",
+    "source_pages": [
+      "data/wiki/foundations/clustered-standard-errors.md",
+      "data/wiki/foundations/panel-data-fixed-effects.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-035",
+    "category": "multi-hop",
+    "query": "In a dbt project, where does a snapshot fit relative to the staging, core and mart layers, and why can't a lost snapshot be rebuilt like an ordinary model?",
+    "expected_answer": "Models follow the layer rule that each layer reads only the one before it, and because ELT keeps the raw layer as a replay point a buggy model is cheap to fix by rebuilding. A snapshot is different: it builds Type 2 history by comparing a mutable source with what it holds on each run, so it samples, changes between runs are lost, and a missed run cannot be recovered, making a missed run an incident. For that reason snapshots read sources directly with no logic in them, so a transform bug is not baked into permanent history, and the strategy (timestamp versus check, hard_deletes: invalidate) must be chosen with care.",
+    "source_pages": [
+      "data/wiki/foundations/dbt-snapshots-history-as-samples.md",
+      "data/wiki/foundations/dbt-layers-materialisations-and-the-ref-graph.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-036",
+    "category": "multi-hop",
+    "query": "If in-session skills append to an inbox that an offline consolidator empties, why is polling the inbox size a poor metric, and how should promotion be measured instead?",
+    "expected_answer": "In the single-writer design, in-session skills only write to an append-only inbox and one offline consolidator is the sole process allowed to rewrite the curated files. Because the consolidator drains the inbox, a metric sampled on a schedule measures the drain: a buffer emptied to zero undercounts when polled, as the rate-metrics page notes for a growth inbox. Promotion events must instead be logged when the transform runs, so the count does not depend on when the poll happens.",
+    "source_pages": [
+      "data/wiki/patterns/rate-metrics-measure-the-logger.md",
+      "data/wiki/patterns/single-writer-offline-consolidation.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-037",
+    "category": "multi-hop",
+    "query": "When does the LangGraph summarisation node fire, and why does evicting the in-memory session wrapper cost little when a Postgres checkpointer is in use?",
+    "expected_answer": "Summarisation triggers at 8 messages, keeps the 4 most recent verbatim and has Haiku compress the rest into a SystemMessage beginning '[Conversation summary]:'; because the summary evolves each cycle, prefix caching helps only within a session. The session wrapper dict had leaked memory and was replaced with cachetools.TTLCache(maxsize=500, ttl=1800). Since the Postgres checkpointer holds the real conversation state, evicting a wrapper loses only in-flight interrupt state, not the conversation.",
+    "source_pages": [
+      "data/wiki/langgraph/summarization-node.md",
+      "data/wiki/langgraph/langgraph-advanced-patterns.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-038",
+    "category": "multi-hop",
+    "query": "How does a backfill that synthesises review-queue rows stay safe to re-run, and why does the machine writer then leave those rows alone?",
+    "expected_answer": "The unique index on (osm_type, osm_id) does not stop a rerun because manual rows use a negative sequence id, so the guard goes on the link column venue_id: read all linked ids and skip already-linked venues. The synthesised rows are marked status accepted, review_batch null, source manual_admin and tagged with a created_by ticket tag so rollback is one delete. The machine pass only writes draft or needs_review rows, enforced in the statement itself (UPDATE ... WHERE review_status IN ('draft','needs_review')), so a row in a terminal state is outside its write set and zero rows updated means a human got there first.",
+    "source_pages": [
+      "data/wiki/patterns/idempotency-on-the-link-column.md",
+      "data/wiki/patterns/advance-only-machine-writes.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-039",
+    "category": "multi-hop",
+    "query": "Why does a shared calendar mislabel events onto one venue, and how did the same dependence on the source row make a direct sheet insert pass a 'done when' without being served?",
+    "expected_answer": "Events inherit their venue from the source row, where the source URL is UNIQUE and the venue column is NOT NULL and singular, so a shared calendar stamps all its events with one venue; 25 of 26 festivals have no single venue, and the plan refused to register shared calendars from the propose form. The same dependence bit the done-when 'a row enrichment can pick up': a direct insert met it, but the serving path default-denies rows with no source and the legal gate returns 'posture missing'. It was tightened to 'a row with a source id and a venue id' and the work fed through the existing writer (the importer).",
+    "source_pages": [
+      "data/wiki/patterns/attribution-inherited-from-the-source-row.md",
+      "data/wiki/patterns/done-when-the-cheapest-write-can-meet.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-040",
+    "category": "multi-hop",
+    "query": "After a sanitiser silently coerced enrichment fields, what second defect hit the remediation re-run, and how does that defect work?",
+    "expected_answer": "Sanitize coerces enums to a fallback and never fails, and cleanEnum with no allow-list returns the fallback unconditionally, so bad values had been overwritten while the publish script never read needs_review; the remediation re-enriched 16 of 20 rows. That run hit the empty-string env override: 'VAR= cmd' makes the variable present but empty, dotenv with override:false keeps the empty shell value, and `env.VAR ?? fallback` treats '' as a value (nullish) while `if (env.VAR)` treats it as unset. Two call sites used ??, giving a no_api_key result and model: ''; the fix is || or an explicit check, plus probing the resolved config before spending.",
+    "source_pages": [
+      "data/wiki/patterns/sanitize-never-fails-validate-never-mutates.md",
+      "data/wiki/patterns/empty-string-env-override-defeats-nullish-coalescing.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-041",
+    "category": "multi-hop",
+    "query": "If a row was enriched from starved input and its source page later gains a real description, why won't a re-crawl simply fix it, and how should the enrichment input be repaired?",
+    "expected_answer": "Starvation came from feeding operator notes (provenance) as content, so both hospitality rows returned empty vibe and context tags; the fix is real descriptive input through a pure shaping function applied after the content hash so no hash is invalidated, with a dry run per vertical printing the shaped payload and parsed response. A re-crawl will not overwrite an existing row: it only adds occurrences and dates, and a real title or description change is flagged (source_content_changed), withholding the handoff. The cost is that a real page correction waits for a human, accepted because an overwrite had been renaming public URLs, hiding published rows and reverting hand corrections.",
+    "source_pages": [
+      "data/wiki/patterns/input-starved-enrichment.md",
+      "data/wiki/patterns/recrawl-adds-never-overwrites.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "mh-042",
+    "category": "multi-hop",
+    "query": "Why can a green make gate still reflect no quality bar for a newly added LLM-judged metric, and where does an all-ungated eval suite finally get caught?",
+    "expected_answer": "CI runs eval:grade --gate with a blank judge key, so judges degrade to heuristic-only and exit 0, and a metric registered with no target is the deliberate UNGATED state (reported as UNGATED, not skipped), while a target with no metric is an error. Gate is type-check, lint, test, build and db-drift with autofix allowed, so a gate pass says nothing about a threshold nobody has measured. Zero activated targets only warns in CD (--warn-empty) and fails at the readiness audit (/deploy-check); ship then reruns the same checks strictly with no autofix so the committed diff is the reviewed diff.",
+    "source_pages": [
+      "data/wiki/eval/ungated-metric-convention.md",
+      "data/wiki/infra/gate-vs-ship-targets.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "mh-043",
+    "category": "multi-hop",
+    "query": "When the first round of an outcome measure rests on click proxies, how is the benchmark holdout assigned, and why must its key never rotate?",
+    "expected_answer": "The outcome ladder has only proxies: rung 1 splits the CTA click by kind (free but silent for free events), rung 2 is add-to-calendar and rung 3 is next-day self-reported attendance; rung 1 ships from the first serve and the decision record states the first round is measured on a proxy. Holdout membership is a write-time boolean benchmark_holdout computed at insert as an FNV-1a hash of (user_id, content_kind, item_id) at a 20% rate, with aggregates using WHERE NOT benchmark_holdout and benchmark exports WHERE benchmark_holdout. The flag filters but never becomes the label (that is the verdict table), and rotating the pseudonym would flip the split, so the key is frozen.",
+    "source_pages": [
+      "data/wiki/eval/outcome-signal-ladder.md",
+      "data/wiki/patterns/write-time-deterministic-holdout.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-044",
+    "category": "multi-hop",
+    "query": "A team wants customer lifetime from order data in which many customers are still active. What goes wrong with naive averaging and with a single pooled Markov chain, and what fixes each?",
+    "expected_answer": "Survival analysis handles censoring: averaging only customers who left gave 212.8 days and counting censored customers as left gave 250.9, against a true mean of 401.8, whereas Kaplan-Meier uses the censored customers properly. For value, a Markov chain with churn as an absorbing state values a new customer through (I - Q)^-1, but a single pooled chain gave 430.73 against a true 513.29 (about 19% low) because customers differ and the Markov property fails (77% versus 52% staying active); per-type chains averaged 515.1 against 515.0. The two models are alternatives, one modelling time to churn and the other state-by-state value.",
+    "source_pages": [
+      "data/wiki/foundations/markov-chain-customer-value.md",
+      "data/wiki/foundations/survival-analysis-for-customer-lifetimes.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "mh-045",
+    "category": "multi-hop",
+    "query": "Before a model's confidence field is used as the thresholds in three-band routing, what has to be true of it, and what happened when one such field was audited?",
+    "expected_answer": "Three-band routing sets two thresholds per category from the cost of each error type, uses override rate, escalation rate and queue depth as monitors, and treats every human verdict as a label. That presumes the score is a probability. The audited 'confidence' (weight 0.15) was a fixed lookup on a 3-4 value enrichment_status, a status string dressed as a float; calibration needs a real probability, a reader that acts on it and independent labels. The probe's tag confidence was graded only against the same call's evidence_sufficient bit so it was registered UNGATED, and 'low confidence then escalate' stays unsafe until calibrated (ECE 0.106, Brier 0.130 on 982 raw tags).",
+    "source_pages": [
+      "data/wiki/infra/three-band-confidence-routing.md",
+      "data/wiki/patterns/confidence-that-is-not-a-probability.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-046",
+    "category": "multi-hop",
+    "query": "What does a host rollback not undo, which invariants make code-only rollback safe, and how do build-state markers protect against trusting a stale READY status?",
+    "expected_answer": "A host rollback restores code only, never migrations, rows or schedules, so the runbook says that first and rests on invariants: a deploy never applies a migration, never runs ingestion, enrichment or publishing, never enables a schedule, and promotion needs CI green on the exact SHA (checked with gh run list --json headSha,conclusion). Build-state markers (BUILT, ABSENT, UNVERIFIED, SPECIFIED for greenfield) are verified against the tree rather than inherited: six of eight inherited markers were wrong, a false BUILT is worse than a false ABSENT, and an earlier promotion plan had reached READY and was never executed.",
+    "source_pages": [
+      "data/wiki/patterns/path-verified-build-state-markers.md",
+      "data/wiki/infra/rollback-restores-code-only.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-047",
+    "category": "multi-hop",
+    "query": "If answer quality drops, how do operational metrics help locate the cause, and which traces should be sampled for scoring in production?",
+    "expected_answer": "Latency, error rate, token usage and retrieval recall are health metrics orthogonal to the eval ladder; a quality regression with flat operations points at the model or prompt, while one accompanied by latency or error spikes points at infrastructure. For online scoring, 10-20% of traces are chosen by rule: negative feedback, high-cost dialogues (cost is a proxy for thrashing), a time window as a control group for normal traffic, and a full 48-hour review after a change. Manual labelling calibrates and an LLM judge gives breadth; using only the judge layer drifts.",
+    "source_pages": [
+      "data/wiki/eval/heuristic-pipeline-metrics.md",
+      "data/wiki/eval/online-eval-sampling.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-048",
+    "category": "multi-hop",
+    "query": "In an eval CI that separates running from asserting, why is an overall improvement not enough to pass, and which rules and counting conventions catch hidden regressions?",
+    "expected_answer": "The slow RUN phase writes results.jsonl and the fast ASSERT phase computes confidence intervals per slice against a baseline, with rule types including an absolute floor, a baseline-relative paired difference, a per-slice floor (no slice drops more than 10 points), an efficiency budget (cost per success within 1.2x baseline) and a regression set. This matters because slicing can hide losses: Billing +8, How-to +1 and Non-English -17 netted to an overall +1. Errors and refusals must count as failures or be reported as their own rate, since dropping the 8% of tasks on which system B errored creates a sample ratio mismatch; infra failures are retried and counted separately.",
+    "source_pages": [
+      "data/wiki/eval/run-then-assert-eval-ci.md",
+      "data/wiki/eval/eval-metric-pitfalls.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "mh-049",
+    "category": "multi-hop",
+    "query": "Why would a scaffold maintainer make a capability such as the checkpointer a template default instead of an opt-in, and what makes the opt-in alternative workable?",
+    "expected_answer": "Template floor-raising prioritises scaffold additions by cross-portfolio gap frequency and 'removes the activation energy' (for example 0/5 repos had OTel spans), so the checkpointer should be a default, not an opt-in skill. The counter-case is Copier re-entry: .copier-answers.yml is durable scaffold state, and changing an answer through copier (clean git tree first, then copier update -d) is the only way a component enters after genesis, since hand-copied files silently fork. That add-later guarantee is what makes a minimal MVP scaffold credible, which is why the floor-raising page lists it as contradicting the default-everything approach.",
+    "source_pages": [
+      "data/wiki/patterns/template-floor-raising.md",
+      "data/wiki/patterns/copier-re-entry-capability-path.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "mh-050",
+    "category": "multi-hop",
+    "query": "In a Deep Agents harness, how do you persist memory across threads, and what design decision prevents one user's memories leaking into another's?",
+    "expected_answer": "StateBackend is thread-scoped and the default, while StoreBackend persists across threads, needs store= and should use AsyncPostgresStore in production; a CompositeBackend routes by longest prefix, for example /memories/ to the StoreBackend (a path like /prefs.txt does not match it). Underneath is LangGraph's BaseStore, a cross-thread key-value store with optional vector search and explicit get/put, unlike the automatic single-thread checkpointer. Its key design decision is the namespace, such as (user_id, memory_type), because a wrong namespace leaks memories across users.",
+    "source_pages": [
+      "data/wiki/langgraph/deep-agents-memory-backends.md",
+      "data/wiki/langgraph/langgraph-basestore.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-051",
+    "category": "multi-hop",
+    "query": "Which distribution would you use to model order value, and how should a single huge order change the choice of test when comparing groups?",
+    "expected_answer": "Order value is modelled as lognormal, whose mean grows with sigma, while goodness-of-fit tests such as KS will reject any model given enough rows. For comparing groups, Welch is the default, but one 60,000 whale moved the Welch p-value from 0.165 to 0.506 whereas Mann-Whitney moved from 0.125 to 0.163. Mann-Whitney answers 'tends to be higher', not 'total revenue differs', so choose the test for the question and check design first (pairing, clustering, multiple comparisons).",
+    "source_pages": [
+      "data/wiki/foundations/distribution-selection-for-metrics.md",
+      "data/wiki/foundations/statistical-test-selection.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-052",
+    "category": "multi-hop",
+    "query": "A frozen router's PSI stays at 0.001 yet its error on automatically paid cases rises. What kind of drift is this, and how can it be detected?",
+    "expected_answer": "It is concept drift, such as a new fraud type: in the router experiment PSI stayed at 0.001 while error on paid cases rose from 0.014 to 0.033 and cost to 5.181 (4.747 after recalibration, with error still 2.9%). PSI bins deciles of the score or inputs (thresholds: under 0.10 little shift, over 0.25 significant), needs no outcomes and ignores error rates, so it caught covariate drift (PSI 0.251, paid share 0.602 to 0.385, error unchanged at 0.014) but not this. Only labels on automatically paid cases reveal concept drift, hence a random audit sample.",
+    "source_pages": [
+      "data/wiki/foundations/drift-seen-and-unseen-in-an-automated-router.md",
+      "data/wiki/foundations/population-stability-index.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "mh-053",
+    "category": "multi-hop",
+    "query": "What retry mechanisms exist in the Librarian CRAG pipeline and its LLM calls, and how should they be kept from compounding?",
+    "expected_answer": "The CRAG gate compares the reranker confidence_score to 0.3 and a retry re-enters at retrieve with max retries 1 (about 400ms); confidence_threshold=0.0 disables it, and it is one of three thresholds (0.3 reranker score, 0.5 per-chunk grade, 0.7 whole-retrieval grade). Separately the Anthropic client should use max_retries=3, and a manual loop of 5 must not be stacked on the SDK's 3 because that makes 15 calls. The hardening list also surfaces an escalate signal in the API response so the caller sees when the retried answer is still not confident.",
+    "source_pages": [
+      "data/wiki/langgraph/langgraph-crag-pipeline.md",
+      "data/wiki/infra/production-hardening-patterns.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "mh-054",
+    "category": "multi-hop",
+    "query": "Which tier of a telemetry dashboard tends to go dark, and what check must a number pass before it is allowed to drive a behaviour change?",
+    "expected_answer": "Tier 0 outcomes (task success, cost per merged PR) were dark while Tier 2-3 numbers such as a 97% cache hit rate and the compaction rate were tuned because they are easy to instrument; the action test is 'what would I do differently if this number changed?', and a pilot of about 20 hand-tagged sessions can light the tier. Before a number drives action it must pass the claim-verification gate: recompute it from the raw transcripts, count the right unit, establish the denominator and test causal direction, giving a verdict of CONFIRMED, OVERSTATED, INVERTED, PHANTOM or UNMEASURABLE. A failing claim cannot become a behaviour change, and the loop is propose-only.",
+    "source_pages": [
+      "data/wiki/patterns/dark-outcome-tier.md",
+      "data/wiki/patterns/telemetry-claim-verification-gate.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "mh-055",
+    "category": "multi-hop",
+    "query": "A 90-day repeat rate fell from 31.6% to 20.2%. How do you separate 'every customer got worse' from 'we bought different customers', and what must hold for the cohorts being compared?",
+    "expected_answer": "Rate and mix decomposition splits the 11.4-point fall into a rate effect (-6.2, every channel worse by 5-9 points) and a mix effect (-5.2, as a low-repeat channel grew from about 27.5% to 53.8% of new customers). The split depends on order, since reversing it gave -5.6 for mix and -5.8 for rates, so report it as about half and half, and it does not prove cause. The cohort triangle supplies the precondition: compare at fixed age and use only customers whose full 90-day window has completed, because filling an unreached cell with a partial figure reports a collapse.",
+    "source_pages": [
+      "data/wiki/foundations/cohort-retention-triangle.md",
+      "data/wiki/foundations/rate-and-mix-decomposition.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-056",
+    "category": "multi-hop",
+    "query": "Why did a venue backfill have to be paired with a fix to the ingestion path before standing places could be served through the event ranker, and which ranker rules would otherwise misbehave?",
+    "expected_answer": "The migration backfilled venue_id on all 37 hospitality rows, but the single-page ingestion path had no venue field, so the next hand-added bar would reproduce the defect; the forward gap was made a required step of the same phase and the serving phase was gated on it. Widening the event type to standing content creates two hazards: the diversity ledger's venue-repetition cap returns 'no limit' on a null key, so three bars from one place would pass, and the junk-title filter (title equals venue name) would be true by construction for backfilled bars and exclude 100% of them. The fix is to scope that clause, and the missing_display_data check, to content_kind of event.",
+    "source_pages": [
+      "data/wiki/patterns/backfill-without-the-forward-path.md",
+      "data/wiki/patterns/widen-a-narrow-type-re-home-its-constraints.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "mh-057",
+    "category": "multi-hop",
+    "query": "How do the graph explorer's chat agent and the five-agent Librarian RAG pipeline each signal that an answer may not be trustworthy?",
+    "expected_answer": "The graph explorer's chat agent is a plain Anthropic tool-use loop (search_wiki and read_page, up to 8 turns) that computes grounding instead of trusting it: it emits cited, pages_read and ungrounded = cited minus pages_read, and cited ids are never added to the highlight set. The RAG pipeline's CRAG gate treats a confidence_score below 0.3 as fallback_requested and retries, after max_crag_retries (default 1) it generates from whatever is available, and escalate = not confident or fallback_requested is surfaced in the API response. One checks citations against pages actually read, the other checks retrieval score.",
+    "source_pages": [
+      "data/wiki/projects/librarian-graph-explorer.md",
+      "data/wiki/rag/librarian-rag-architecture.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-058",
+    "category": "multi-hop",
+    "query": "Why does a clean result from a contracts review not mean a diff is safe, and why should other review dimensions cite the contract too?",
+    "expected_answer": "A contracts reporter returning [] shows only that no written rule was broken: the contract declared no dependency budget, a lint rule lived in CLAUDE.md rather than the contract, and an accessibility invariant was scoped to two files, so a clean verdict was an absent control rather than a satisfied one. Across 238 review findings, those anchored to a contract entry were fixed 9 of 9, other findings averaged 65% and the intent dimension 44%. Yet only 4% were anchored because only the contracts dimension cited the contract, so a contract_ref field on every finding lets all dimensions cite it, and gaps found this way are candidates for amending the contract.",
+    "source_pages": [
+      "data/wiki/patterns/clean-contract-review-is-only-as-wide-as-the-contract.md",
+      "data/wiki/patterns/contract-anchored-findings-get-fixed.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-059",
+    "category": "multi-hop",
+    "query": "Radix's dialog was adopted for four behaviours. Which one went untested, and why did a focus-restore test still pass while real dialogs dropped focus?",
+    "expected_answer": "The hand-rolled dialogs lacked a focus trap, Escape to close, focus restore and scroll lock; the tests covered three, and focus restore, the one most likely to regress silently on a library upgrade, had none. A later component test 'restores focus to the trigger on close' stayed green because its fixture used the uncontrolled Dialog.Trigger, the only shape where Radix restores focus itself. Every dialog in the app was controlled, so triggerRef was null, onCloseAutoFocus prevented the default and focused nothing, and focus fell to body; a Playwright journey using the real components caught it, and the fix captures document.activeElement on open.",
+    "source_pages": [
+      "data/wiki/patterns/adoption-ban-needs-an-escape-hatch.md",
+      "data/wiki/patterns/component-test-in-a-shape-the-app-never-uses.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-060",
+    "category": "multi-hop",
+    "query": "A volunteer team has only a weekend and wants a chatbot over a complex system. Which archetype can they realistically choose, and how far up the orchestration ladder should they go?",
+    "expected_answer": "Conversational Interface is the semester-floor archetype (it alone needs auth, per-user scoping, history, tool-calling, deployment and evaluation), so a weekend team cannot choose it and should reframe toward Document Generation, the only weekend-sprint archetype. In the orchestration decision shortcut a weekend maps to a single prompt, and the governing bias is to start simple and escalate only on demonstrated need, since each pattern's limits are the next one's entry condition. The time budget is a hard constraint that interacts with the archetype's complexity floor.",
+    "source_pages": [
+      "data/wiki/patterns/ai-project-archetypes.md",
+      "data/wiki/patterns/agent-orchestration-patterns.md"
+    ],
+    "difficulty": "easy"
   }
 ]

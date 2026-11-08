@@ -5,25 +5,29 @@ import contextlib
 import os
 import signal
 import time
-from collections.abc import AsyncIterator, Callable
+from collections.abc import AsyncIterator, Callable, Coroutine
 from typing import Any
 
 # Before the heavy imports below, so the startup log covers them too.
 _PROCESS_T0 = time.perf_counter()
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.requests import Request
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from librarian import retrieval
+from librarian import release, retrieval
 from librarian.api.routers import graph
 from librarian.api.routers.account import router as account_router
+from librarian.api.routers.auth import router as auth_router
 from librarian.api.routers.chat import router as chat_router
 from librarian.api.routers.courses import router as courses_router
 from librarian.api.routers.curriculum import router as curriculum_router
 from librarian.api.routers.glossary import router as glossary_router
+from librarian.api.routers.release import ReleaseHeaderMiddleware, poll_releases
+from librarian.api.routers.release import router as release_router
+from librarian.api.routers.tools import router as tools_router
 from librarian.api.routers.wiki_health import router as wiki_health_router
 from librarian.api.security import (
     RequestLogMiddleware,
@@ -153,6 +157,7 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
             jobs.append(warmup)
     if get_settings().dev_watch:
         watcher = _start_watcher()
+    poller = _start_task(poll_releases()) if get_settings().release_url else None
     if jobs:
         _in_background(lambda: _run_in_order(jobs))
     log.info("api.startup.ready", seconds=round(time.perf_counter() - _PROCESS_T0, 2))
@@ -160,7 +165,7 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
         yield
     finally:
         retrieval.set_handle(None)
-        await _shutdown(watcher)
+        await _shutdown(watcher, poller)
 
 
 def _start_watcher() -> asyncio.Task[None] | None:
@@ -169,10 +174,14 @@ def _start_watcher() -> asyncio.Task[None] | None:
     except ImportError as e:
         log.warning("api.watcher.skipped", reason="api extra not installed", error=str(e))
         return None
-    watcher = asyncio.create_task(_watch_and_broadcast(awatch))
-    _background_tasks.add(watcher)
-    watcher.add_done_callback(_background_tasks.discard)
-    return watcher
+    return _start_task(_watch_and_broadcast(awatch))
+
+
+def _start_task(coro: Coroutine[Any, Any, None]) -> asyncio.Task[None]:
+    task = asyncio.create_task(coro)
+    _background_tasks.add(task)
+    task.add_done_callback(_background_tasks.discard)
+    return task
 
 
 def _install_reload_signal(handle: retrieval.IndexHandle) -> None:
@@ -187,16 +196,17 @@ def _install_reload_signal(handle: retrieval.IndexHandle) -> None:
         log.debug("api.index.sighup_unavailable")
 
 
-async def _shutdown(watcher: asyncio.Task[None] | None) -> None:
-    """Stop the wiki watcher and pending catalog rewarm, and close live websockets."""
+async def _shutdown(*tasks: asyncio.Task[None] | None) -> None:
+    """Stop the wiki watcher, the release poller and pending catalog rewarm; close websockets."""
     global _rewarm_handle
     if _rewarm_handle is not None:
         _rewarm_handle.cancel()
         _rewarm_handle = None
-    if watcher is not None:
-        watcher.cancel()
-        with contextlib.suppress(asyncio.CancelledError):
-            await watcher
+    for task in tasks:
+        if task is not None:
+            task.cancel()
+            with contextlib.suppress(asyncio.CancelledError):
+                await task
     await graph.close_clients()
     log.info("api.shutdown.done")
 
@@ -221,18 +231,23 @@ app.add_middleware(
     allow_origins=get_settings().cors_origin_list,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["X-Librarian-Release"],
 )
 app.add_middleware(
     SecurityHeadersMiddleware,
     csp=build_csp(inline_script_hashes(get_settings().web_dir / "index.html")),
 )
 app.add_middleware(RequestLogMiddleware)
+app.add_middleware(ReleaseHeaderMiddleware)
 app.include_router(graph.router)
 app.include_router(account_router)
+app.include_router(auth_router)
 app.include_router(chat_router)
 app.include_router(courses_router)
 app.include_router(curriculum_router)
 app.include_router(glossary_router)
+app.include_router(release_router)
+app.include_router(tools_router)
 app.include_router(wiki_health_router)
 
 
@@ -263,6 +278,8 @@ def readyz() -> JSONResponse:
     except Exception as exc:
         log.warning("api.readyz.index_failed", error=str(exc), error_type=type(exc).__name__)
         checks["index"] = False
+    if get_settings().release_url:  # serving releases: none installed yet means nothing to serve
+        checks["content"] = release.current_name() is not None
     unavailable = retrieval.embeddings_unavailable()
     checks["embeddings"] = unavailable or retrieval.embeddings_ready()
     ready = all(checks.values())
@@ -274,18 +291,6 @@ def readyz() -> JSONResponse:
     if unavailable:
         body["degraded"] = ["embeddings_unavailable"]
     return JSONResponse(body, status_code=200 if ready else 503)
-
-
-@app.post("/admin/reload")
-def admin_reload() -> dict[str, object]:
-    """Swap to the index build `current` names now (same as SIGHUP). Requires the API token.
-
-    Requests already running finish on the old build; later ones use the new one.
-    """
-    handle = retrieval.get_handle()
-    if handle is None:
-        raise HTTPException(status_code=503, detail="no index handle")
-    return handle.reload()
 
 
 # Last, so every route above keeps precedence. The UI routes with `#/...`, so a plain static

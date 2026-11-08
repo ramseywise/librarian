@@ -19,6 +19,9 @@ dependencies = [
     "sqlalchemy>=2",
     "alembic>=1.20.1",
     "psycopg[binary]>=3",
+    # Login: the OAuth code flow with Google and GitHub (librarian.accounts.oauth).
+    "authlib>=1.3",
+    "zstandard>=0.23",
 ]
 
 [project.scripts]
@@ -177,12 +180,14 @@ source_modules = [
     "librarian.wiki",
     "librarian.ingest",
     "librarian.accounts",
+    "librarian.ops",
     "librarian.db",
 ]
 forbidden_modules = [
     "librarian.api",
     "librarian.mcp",
     "librarian.tools",
+    "librarian.release",
 ]
 
 [[tool.importlinter.contracts]]
@@ -205,10 +210,12 @@ layers = [
     "librarian.api | librarian.mcp",
     "librarian.agent",
     "librarian.tools",
+    "librarian.release",
     "librarian.courses",
     "librarian.retrieval",
     "librarian.wiki",
     "librarian.ingest",
+    "librarian.ops",
     "librarian.accounts",
     "librarian.db",
 ]

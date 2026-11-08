@@ -195,6 +195,14 @@ Pre-configured in `.claude/settings.json` — available to Claude Code and any M
 uv run librarian mcp
 ```
 
+Remote mode, for anyone without the repo: create a key (`librarian keys create <email>`, read scope is enough) and
+point the server at a deployment. Every wiki tool call becomes `GET <url>/api/tools/<name>` with the key; no local
+index is opened, and the answers are the same text (one tool registry, `librarian.agent.tools`).
+
+```bash
+LIBRARIAN_API_KEY=lk_... LIBRARIAN_API_URL=https://librarian.example.com uv run librarian mcp
+```
+
 **Tools:**
 
 | Tool | Description |
@@ -273,8 +281,26 @@ LIBRARIAN_DOMAIN=librarian.example.com docker compose up -d --build   # Caddy + 
   excludes `private/`, aborts if the dry run lists any `private/` path, fails if any file under a `private/` directory
   exists at the destination afterwards, then runs `docker compose restart librarian` over ssh.
 
-- `LIBRARIAN_API_TOKEN` is required. The container binds `0.0.0.0`, and `librarian api` refuses to
-  bind a non-loopback host without a token unless you pass `--insecure` (serves unauthenticated).
+- Sign-in is required: `LIBRARIAN_API_TOKEN`, a login method, or both. The container binds `0.0.0.0`, and
+  `librarian api` refuses to bind a non-loopback host with neither unless you pass `--insecure` (serves unauthenticated).
+
+### Sign-in
+
+Google, GitHub and email links (Resend) are each on when their settings are set (`.env.example`, "Sign-in").
+Any of them also needs `LIBRARIAN_PUBLIC_URL` (compose derives `https://$LIBRARIAN_DOMAIN`) and a 32+ character
+`LIBRARIAN_SESSION_SECRET`; `librarian api --check` says what is missing. Register the OAuth callbacks as
+`<PUBLIC_URL>/auth/callback/google` and `<PUBLIC_URL>/auth/callback/github`.
+
+- Only the owner (`LIBRARIAN_OWNER_EMAIL`), existing users and invited emails get in: `librarian users invite <email>`
+  (or `POST /api/admin/invites`), `librarian users invites`, and `librarian users promote <email> [--member]` for the admin role.
+  The provider must say the email is verified; for GitHub the verified primary email is used.
+- A session is an HttpOnly `lb_session` cookie (SameSite=Lax, Secure on https, `LIBRARIAN_SESSION_DAYS`). A cookie-authenticated
+  write also needs the `lb_csrf` cookie's value in an `X-CSRF-Token` header, and a cookie `/ws` needs a same-origin `Origin`.
+  A bearer key or token needs neither.
+- An email link works once, for 15 minutes, and opens a confirm page first, so a mail scanner fetching it spends nothing.
+  `/auth/*` is rate limited per client address; behind Caddy compose trusts its `X-Forwarded-For` (`LIBRARIAN_FORWARDED_ALLOW_IPS`).
+- Sign-ins, refusals, keys, invites, role changes and `/admin/reload` go to the `audit` table: `GET /api/admin/audit`.
+- Keep `LIBRARIAN_API_TOKEN` until sign-in has been checked end to end on the deployment; it still acts as the owner.
 - The image sets `LIBRARIAN_PUBLIC=true`, so `private/` wiki and course trees are never read,
   indexed or served, whatever is on disk (the compose tmpfs masks are a second lock).
 

@@ -22,7 +22,7 @@ Live arms with a committed baseline gate against their own floors
 (`LIVE_ARM_FLOORS`): `sem` is the healthy pipeline, `nofts` is the degraded
 substring-fallback path taken when the fts extension is unavailable.  Both are
 gated so a ranking change cannot improve one arm at the other's expense.  The
-`lex` and `graph` ablations remain report-only.
+`lex` ablation remains report-only. `graph` and `multihop` are gated too.
 
 *Agent* (`--agent`, BILLABLE): runs each query through the real chat agent
 (`librarian.agent.loop.run_agent_stream`, the path the UI uses) and grades the run with
@@ -81,27 +81,54 @@ MRR_FLOOR = 0.40
 # gated against its own measured baseline.
 LIVE_FLOOR_TOLERANCE = 0.05
 
+# Re-measured 2026-11-08 on the grown sets (150 entries per wiki/lesson set, 60 multihop) in a
+# checkout of tracked files only (no data/wiki/private/, no gitignored lessons), which is what CI has.
+# floor = measured - LIVE_FLOOR_TOLERANCE, rounded down to 0.01. Old-set measurements on the same
+# checkout: sem 1.0/0.863, nofts 0.92/0.738, uniform 0.917/0.767, course 0.922/0.839.
 LIVE_ARM_FLOORS: dict[str, dict[str, float]] = {
-    # Set from evals/baselines/live-baseline-2026-08-04T14-24-15Z.json — hit 1.0, MRR 0.905.
-    # Latest measures MRR 0.864: not lowered to follow it. 89% of this set's answers are in the
-    # top decile of pages by backlinks, so it rewards ranking hubs first and cannot judge ranking
-    # alone. `uniform` is the check on it. A ranking change must clear every arm.
-    "sem": {"hit_rate": 0.95, "mrr": 0.85},
-    # Set from live-nofts-2026-11-05T11-57-02Z.json — hit 0.94, MRR 0.77. Latest, live-nofts-2026-11-05T12-54-35Z.json,
-    # measures hit 0.92, MRR 0.738, after backlinks left the rerank: not lowered to follow it.
-    "nofts": {"hit_rate": 0.89, "mrr": 0.72},
-    # evals/baselines/live-uniform-2026-11-05T12-55-11Z.json — hit 0.917, MRR 0.767
-    "uniform": {"hit_rate": 0.86, "mrr": 0.71},
-    # evals/baselines/live-course-2026-11-05T12-55-43Z.json — hit 0.922, MRR 0.827
-    "course": {"hit_rate": 0.87, "mrr": 0.77},
+    # evals/baselines/live-sem-2026-11-08T12-42-36Z.json — hit 0.993, MRR 0.903. The 50 old entries
+    # are hub-biased (89% of answers in the top decile of pages by backlinks); the 90 added are a
+    # domain-stratified random sample, so this set judges ranking better than the old one but
+    # `uniform` stays the check on it. A ranking change must clear every arm.
+    "sem": {"hit_rate": 0.94, "mrr": 0.85},
+    # evals/baselines/live-nofts-2026-11-08T12-44-02Z.json — hit 0.700, MRR 0.553. Much lower than
+    # the old 0.92/0.738 on the 50-entry set: the substring fallback copes badly with the sampled
+    # questions, which are phrased as a user would, not in the page's words.
+    "nofts": {"hit_rate": 0.65, "mrr": 0.50},
+    # evals/baselines/live-uniform-2026-11-08T12-45-11Z.json — hit 0.957, MRR 0.820
+    "uniform": {"hit_rate": 0.90, "mrr": 0.77},
+    # evals/baselines/live-course-2026-11-08T12-46-20Z.json — hit 0.964, MRR 0.860
+    "course": {"hit_rate": 0.91, "mrr": 0.81},
+    # evals/baselines/live-graph-2026-11-08T12-47-31Z.json — hit 0.993, MRR 0.903: sem plus one-hop
+    # typed expansion on the same set. Equal to `sem` today (expansion appends below the ranked
+    # rows), so this arm catches a change that makes expansion displace ranked results.
+    "graph": {"hit_rate": 0.94, "mrr": 0.85},
+    # evals/baselines/live-multihop-2026-11-08T12-48-05Z.json — hit 0.983, MRR 0.950: graph
+    # expansion on 60 two-page questions (24 hand-picked, 36 from a seeded sample of linked pairs).
+    "multihop": {"hit_rate": 0.93, "mrr": 0.90},
 }
 
-# Arms with their own question set. Both sets were written from a seeded random sample of pages
-# by an agent with no access to search: `uniform` from wiki pages, `course` from lessons.
+# Arms with their own question set. These sets were written from a seeded random sample of pages
+# by an agent with no access to search: `uniform` from wiki pages, `course` from lessons. The
+# 2026-11-08 growth (F18) used seed 20261108 over tracked, non-private, non-tombstone, non-underscore
+# pages not already a source in any set: sem = domain-stratified round robin (75 single pages + 15
+# linked pairs), uniform = uniform draw (68 + 12 pairs), multihop = 36 linked pairs, course = 75
+# lessons + 14 same-module pairs. Pair entries have two source_pages. Each question was written
+# from reading the page(s) with no search run; ten hand-written negatives per set were added.
+# The sampler is not committed; the seed and these counts are the record.
 ARM_DATASETS: dict[str, str] = {
     "uniform": "golden_wiki_uniform.json",
     "course": "golden_courses.json",
+    "multihop": "golden_multihop.json",
 }
+# Negative entries (`"negative": true`, no source_pages) are queries the corpus should not answer.
+# Rule: rejected when no result's score reaches the arm's ceiling. Reported, not gated: on the
+# 2026-11-08 clean-checkout measurement the top-1 scores of off-topic queries (wiki 0.51-0.68,
+# lessons 0.47-0.58) overlap the weakest positives (p5 0.61-0.63, min 0.52-0.59), so a floor on
+# the rejection rate would gate noise. Ceilings sit at about the 90th percentile of the off-topic
+# set. Lessons are scored on their own scale. Measured 2026-11-08: rejected 0.9 (sem, uniform), 1.0 (nofts, course) of 10.
+NEGATIVE_SCORE_CEILING: dict[str, float] = {"sem": 0.62, "course": 0.58}
+
 # Lessons are a separate corpus, reached only through this search domain.
 ARM_DOMAINS: dict[str, str] = {"course": "course"}
 
@@ -124,7 +151,11 @@ def _oracle_answer(entry: GoldenEntry) -> str:
 def _live_retrieval(entry: GoldenEntry, arm: str = "sem") -> list[RetrievalResult]:
     """Retrieve through the real search core (BM25 + semantic rerank)."""
     rows, _degraded = retrieval.search_rows(
-        entry.query, domain=ARM_DOMAINS.get(arm, ""), limit=10, tool="eval", expand=(arm == "graph")
+        entry.query,
+        domain=ARM_DOMAINS.get(arm, ""),
+        limit=10,
+        tool="eval",
+        expand=(arm in ("graph", "multihop")),
     )
     return [RetrievalResult(page_path=row[0], score=float(row[6])) for row in rows]
 
@@ -163,10 +194,18 @@ def run(
         else:
             retrieved_lists = [_oracle_retrieval(e) for e in entries]
 
-    candidate_answers = [_oracle_answer(e) for e in entries]
+    positives = [e for e in entries if not e.negative]
+    candidate_answers = [_oracle_answer(e) for e in positives]
 
     hit_rate, mrr, mean_recall, ret_results = retrieval_grader.grade_batch(entries, retrieved_lists)
-    mean_overlap, mean_sim, ans_results = answer_grader.grade_batch(entries, candidate_answers)
+    mean_overlap, mean_sim, ans_results = answer_grader.grade_batch(positives, candidate_answers)
+    n_neg, neg_rate = (
+        retrieval_grader.grade_negatives(
+            entries, retrieved_lists, NEGATIVE_SCORE_CEILING.get(arm, 0.62)
+        )
+        if live
+        else (sum(e.negative for e in entries), None)
+    )
 
     report = EvalReport(
         hit_rate=hit_rate,
@@ -176,7 +215,9 @@ def run(
         mean_semantic_similarity=mean_sim,
         retrieval_results=ret_results,
         answer_results=ans_results,
-        n_entries=len(entries),
+        n_entries=len(positives),
+        n_negatives=n_neg,
+        negative_rejection_rate=neg_rate,
     )
 
     if verbose:
@@ -244,6 +285,8 @@ def _save_baseline(
         "embedding_model_id": embeddings.MODEL_NAME,
         "edge_count": _edge_count() if live else None,
         "n_entries": report.n_entries,
+        "n_negatives": report.n_negatives,
+        "negative_rejection_rate": report.negative_rejection_rate,
         "hit_rate": report.hit_rate,
         "mean_reciprocal_rank": report.mean_reciprocal_rank,
         "mean_expected_set_recall": report.mean_expected_set_recall,
@@ -425,12 +468,13 @@ def main() -> None:
     )
     parser.add_argument(
         "--arm",
-        choices=["lex", "sem", "graph", "nofts", "uniform", "course"],
+        choices=["lex", "sem", "graph", "nofts", "uniform", "course", "multihop"],
         default="sem",
         help="Live-mode ablation arm: lex (BM25 only), sem (current pipeline), "
         "graph (sem + one-hop typed expansion), nofts (fts forced off — the "
         "degraded substring-fallback path), uniform (sem on questions about uniformly "
-        "sampled wiki pages), course (lesson search)",
+        "sampled wiki pages), course (lesson search), multihop (graph expansion on the "
+        "two-page questions)",
     )
     parser.add_argument(
         "--agent",
@@ -466,7 +510,7 @@ def main() -> None:
         dataset_file = _resolve_dataset_path(args.dataset, args.arm)
         if args.live:
             prefix = f"live-{args.arm}"
-            if "multihop" in dataset_file.stem:
+            if "multihop" in dataset_file.stem and args.arm != "multihop":
                 prefix += "-multihop"
         else:
             prefix = "baseline"

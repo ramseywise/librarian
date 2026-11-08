@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { Curriculum } from "../types";
+import { apiFetch } from "../utils/api";
 
 const POLL_MS = 5000;
 const MAX_POLLS = 12;
@@ -23,7 +24,7 @@ export function useCurriculum(revision: unknown, enabled: boolean): Curriculum |
 
     async function load() {
       try {
-        const res = await fetch("/api/graph/curriculum");
+        const res = await apiFetch("/api/graph/curriculum");
         if (!res.ok) return;
         const text = await res.text();
         if (cancelled) return;

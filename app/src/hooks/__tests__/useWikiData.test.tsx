@@ -3,6 +3,7 @@ import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { deriveDomains, parseGraphMessage, useWikiData, wsUrl } from "../useWikiData";
 import type { WikiNodeData } from "../../types";
+import { RELEASE_EVENT } from "../../utils/api";
 
 const node = (id: string, dir: string, tags: string[], extra: Partial<WikiNodeData> = {}) => ({
   id,
@@ -122,6 +123,18 @@ describe("useWikiData socket lifecycle", () => {
     act(() => FakeWebSocket.instances[0].onmessage?.({ data: JSON.stringify({ type: "graph_update", data }) }));
     expect(result.current.domains).toEqual(["eval", "rag"]);
     expect(result.current.tagSharedEdges.map((e) => e.id)).toEqual(["ts:a->b"]);
+  });
+
+  it("reconnects for the new graph when a response names a new content release", () => {
+    renderHook(() => useWikiData());
+    act(() => {
+      window.dispatchEvent(new CustomEvent(RELEASE_EVENT, { detail: "content-b" }));
+    });
+    expect(FakeWebSocket.instances[0].closed).toBe(true);
+    act(() => FakeWebSocket.instances[0].onclose?.()); // the browser reports the close
+    act(() => vi.advanceTimersByTime(2_000));
+    expect(open()).toHaveLength(1);
+    expect(FakeWebSocket.instances).toHaveLength(2);
   });
 
   it("ignores malformed messages", () => {

@@ -16,9 +16,11 @@ torch, fastapi) load only for the verbs that need them.
     librarian courses check chapters|curriculum|links|drills|quiz|manifest|crosswalk|smoke-labs
     librarian courses review findings|signals|score-eval
     librarian db upgrade|import-attempts|import-drill-log   user-state database (DATABASE_URL)
-    librarian users add|list                           accounts
+    librarian ops backup|restore|upgrade|schedule|list    encrypted backups, fenced restore, upgrade gate
+    librarian users add|list|invite|invites|promote    accounts and who may sign in
     librarian keys create|list|revoke                  API keys (lk_…), each printed once
     librarian index build [--out FILE]                 build the search index file the servers read
+    librarian release build|pull|pin|unpin|list        content releases the API pulls and swaps in
     librarian mcp [--rebuild]                          the wiki MCP server (stdio)
     librarian api [--port N] [--workers N] [--reload]  the FastAPI backend (uvicorn)
 """
@@ -98,9 +100,29 @@ GROUPS: dict[str, dict[str, Verb]] = {
     "index": {
         "build": Verb("librarian.retrieval.artifact:main", help="build a search index artifact"),
     },
+    "release": {
+        v: Verb("librarian.release.cli:main", (v,), h)
+        for v, h in {
+            "build": "package wiki, courses, slides and index into content-<sha>.tar.zst",
+            "pull": "download the latest release, verify it and swap it in",
+            "pin": "serve one release and stop following latest",
+            "unpin": "follow latest again",
+            "list": "the releases on disk and which one is current",
+        }.items()
+    },
     "jobs": {
         "run": Verb("librarian.jobs.runner:main", help="run a scheduled job headless"),
         "list": Verb("librarian.jobs.runner:main", ("list",), "list the jobs"),
+    },
+    "ops": {
+        v: Verb("librarian.ops.cli:main", (v,), h)
+        for v, h in {
+            "backup": "dump, encrypt with age, upload (alerts the owner on failure)",
+            "restore": "fenced restore into a new database, check it, swap",
+            "upgrade": "backup gate before an image change",
+            "schedule": "daily backup loop (the compose backup service)",
+            "list": "the backups in the bucket",
+        }.items()
     },
     "db": {
         "upgrade": Verb("librarian.db.cli:main", ("upgrade",), "apply the database migrations"),
@@ -118,6 +140,11 @@ GROUPS: dict[str, dict[str, Verb]] = {
     "users": {
         "add": Verb("librarian.accounts.cli:main", ("users", "add"), "create a user"),
         "list": Verb("librarian.accounts.cli:main", ("users", "list"), "list the users"),
+        "invite": Verb("librarian.accounts.cli:main", ("users", "invite"), "let an email sign in"),
+        "invites": Verb("librarian.accounts.cli:main", ("users", "invites"), "the invite list"),
+        "promote": Verb(
+            "librarian.accounts.cli:main", ("users", "promote"), "make a user an admin"
+        ),
     },
     "keys": {
         "create": Verb(
@@ -196,7 +223,7 @@ def _run_api(argv: list[str]) -> int:
     ap.add_argument(
         "--insecure",
         action="store_true",
-        help="allow a non-loopback host with no LIBRARIAN_API_TOKEN",
+        help="allow a non-loopback host with no login and no LIBRARIAN_API_TOKEN",
     )
     ap.add_argument(
         "--check", action="store_true", help="validate the configuration and exit (1 on errors)"
@@ -222,7 +249,7 @@ def _run_api(argv: list[str]) -> int:
         return 1
     if args.check:
         return 0
-    if not settings.api_token and not is_loopback(args.host):
+    if settings.open_mode and not is_loopback(args.host):
         configure_logging()
         get_logger(__name__).warning("api.auth.open", host=args.host, hint="--insecure")
     # The app logs one structured line per request; uvicorn's access log would repeat it
@@ -234,6 +261,8 @@ def _run_api(argv: list[str]) -> int:
         reload=args.reload,
         workers=workers,
         access_log=False,
+        proxy_headers=True,
+        forwarded_allow_ips=settings.forwarded_allow_ips,
     )
     return 0
 

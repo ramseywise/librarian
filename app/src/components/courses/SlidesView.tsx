@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { SlideDeck } from "./types";
 import { pageTitle, useDocumentTitle } from "./useDocumentTitle";
 import "./courses.css";
+import { apiFetch } from "../../utils/api";
 
 /** While a build runs the viewer asks again at this interval. */
 const POLL_MS = 3000;
@@ -13,7 +14,7 @@ function SlideImage({ url, alt }: { url: string; alt: string }) {
     let cancelled = false;
     let made: string | null = null;
     setSrc(null);
-    fetch(url)
+    apiFetch(url)
       .then((r) => (r.ok ? r.blob() : Promise.reject(new Error(`HTTP ${r.status}`))))
       .then((blob) => {
         if (cancelled) return;
@@ -48,7 +49,7 @@ export function SlidesView({ deckId }: { deckId: string }) {
     let cancelled = false;
     // GET only reads. A stale deck says so, and we ask for the build once per tick.
     const load = (url: string, init?: RequestInit): Promise<SlideDeck> =>
-      fetch(url, init).then((r) => (r.ok ? r.json() : Promise.reject(new Error(r.status === 404 ? "No slides here" : `HTTP ${r.status}`))));
+      apiFetch(url, init).then((r) => (r.ok ? r.json() : Promise.reject(new Error(r.status === 404 ? "No slides here" : `HTTP ${r.status}`))));
     load(`/api/courses/slides/${deckId}`)
       // A deployment serves prebuilt decks and has no build route (404): keep what GET answered.
       .then((d) => (d.stale ? load(`/api/courses/slides/${deckId}/build`, { method: "POST" }).catch(() => d) : d))

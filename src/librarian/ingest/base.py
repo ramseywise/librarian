@@ -29,9 +29,14 @@ Subclass protocol:
 from __future__ import annotations
 
 import argparse
+import random
+import time
 from abc import ABC, abstractmethod
+from datetime import UTC, datetime
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 
+import httpx
 import structlog
 
 from librarian.config import get_settings
@@ -40,6 +45,66 @@ from librarian.log_config import configure_logging
 
 REPO_ROOT = get_settings().root
 log = structlog.get_logger()
+
+MAX_ATTEMPTS = 4
+BACKOFF_BASE_S = 1.0
+BACKOFF_CAP_S = 30.0
+RETRY_AFTER_CAP_S = 60.0
+
+
+def _retry_after(resp: httpx.Response) -> float | None:
+    """Seconds named by a Retry-After header (delta-seconds or HTTP date), capped; None if absent."""
+    value = resp.headers.get("retry-after")
+    if not value:
+        return None
+    try:
+        seconds = float(value)
+    except ValueError:
+        try:
+            seconds = (parsedate_to_datetime(value) - datetime.now(UTC)).total_seconds()
+        except (TypeError, ValueError):
+            return None
+    return min(max(seconds, 0.0), RETRY_AFTER_CAP_S)
+
+
+def request_with_retry(
+    client: httpx.Client,
+    method: str,
+    url: str,
+    *,
+    max_attempts: int = MAX_ATTEMPTS,
+    **kwargs: object,
+) -> httpx.Response:
+    """Send a request, retrying transient failures with exponential backoff and jitter.
+
+    Retries connect/read timeouts, connection errors, 429 (sleeping for Retry-After when given)
+    and 5xx. Any other 4xx raises at once. Returns a response that passed raise_for_status();
+    after the last attempt the final error is raised (an httpx.HTTPError).
+    """
+    for attempt in range(1, max_attempts + 1):
+        delay = min(BACKOFF_CAP_S, BACKOFF_BASE_S * 2 ** (attempt - 1))
+        delay += random.uniform(0, delay / 2)
+        try:
+            resp = client.request(method, url, **kwargs)  # pyright: ignore[reportArgumentType]
+            resp.raise_for_status()
+            return resp
+        except httpx.HTTPStatusError as exc:
+            status = exc.response.status_code
+            if (status != 429 and status < 500) or attempt == max_attempts:
+                raise
+            retry_after = _retry_after(exc.response)
+            if retry_after is not None:
+                delay = retry_after
+            reason = f"status_{status}"
+        except (httpx.TimeoutException, httpx.TransportError) as exc:
+            if attempt == max_attempts:
+                raise
+            reason = type(exc).__name__
+        log.warning(
+            "ingest.http_retry", url=url, attempt=attempt, reason=reason, sleep_s=round(delay, 2)
+        )
+        time.sleep(delay)
+    raise AssertionError("unreachable")  # pragma: no cover - loop always returns or raises
 
 
 class ScraperBase(ABC):

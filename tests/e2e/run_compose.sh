@@ -78,3 +78,20 @@ if [ "${served}" -ne "${REPLICAS}" ]; then
     exit 1
 fi
 echo "all ${REPLICAS} replicas served requests"
+
+# The sign-in limit is counted in the database, so REPLICAS x workers share it: exactly
+# LIBRARIAN_AUTH_RATE_LIMIT (default 10) requests per window get past the limiter, not 10 per worker.
+# Wait out any window the checks above opened, then send 25 in a row and count the 429s.
+limit="${LIBRARIAN_AUTH_RATE_LIMIT:-10}"
+window="${LIBRARIAN_AUTH_RATE_WINDOW_S:-60}"
+sleep $((window + 1))
+admitted=0
+for _ in $(seq $((limit * 2 + 5))); do
+    code=$(curl -sS --cacert "${CA}" -o /dev/null -w '%{http_code}' "${E2E_API_URL}/auth/login/google")
+    [ "${code}" != "429" ] && admitted=$((admitted + 1))
+done
+echo "auth requests past the limiter: ${admitted} (limit ${limit})"
+if [ "${admitted}" -ne "${limit}" ]; then
+    echo "expected exactly ${limit} auth requests per ${window}s across all workers" >&2
+    exit 1
+fi

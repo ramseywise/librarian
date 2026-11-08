@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from "react";
+import { apiFetch } from "../utils/api";
 
 export interface Grounding {
   cited: string[];
@@ -163,7 +164,7 @@ export function useChatStream(onHighlight: (pages: string[]) => void) {
     let receivedDone = false;
     let responded = false;
     try {
-      const resp = await fetch("/api/chat/stream", {
+      const resp = await apiFetch("/api/chat/stream", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query, history }),

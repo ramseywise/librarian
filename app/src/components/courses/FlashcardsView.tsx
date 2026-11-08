@@ -4,6 +4,7 @@ import { StudyFilter } from "./StudyFilter";
 import { studyOrder, type StudyMode } from "./studyQueue";
 import { pageTitle, useDocumentTitle } from "./useDocumentTitle";
 import "./courses.css";
+import { apiFetch } from "../../utils/api";
 
 /** Deck text allows `**bold**` and `code` and nothing else (deck-spec.md), so no Markdown parser. */
 export function InlineMarkup({ text }: { text: string }) {
@@ -47,7 +48,7 @@ export function FlashcardsView({ deckId: route }: { deckId: string }) {
     let cancelled = false;
     setDeck(null);
     setError(null);
-    fetch(`/api/courses/flashcards/${deckId}`)
+    apiFetch(`/api/courses/flashcards/${deckId}`)
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(r.status === 404 ? "No flashcards here" : `HTTP ${r.status}`))))
       .then((d: FlashcardDeck) => {
         if (cancelled) return;
@@ -75,7 +76,7 @@ export function FlashcardsView({ deckId: route }: { deckId: string }) {
   };
   const grade = (result: "knew" | "missed") => {
     if (!card) return;
-    void fetch("/api/courses/flashcard-results", {
+    void apiFetch("/api/courses/flashcard-results", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ deck: deck.id, card: card.id, result }),

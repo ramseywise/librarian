@@ -22,7 +22,7 @@ from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 
 from librarian.config import get_settings
-from librarian.ingest.base import ScraperBase
+from librarian.ingest.base import ScraperBase, request_with_retry
 
 load_dotenv()
 log = structlog.get_logger()
@@ -38,8 +38,9 @@ class Settings(BaseSettings):
 
 
 ISSUES_QUERY = """
-query Issues($filter: IssueFilter, $first: Int) {
-  issues(filter: $filter, first: $first, orderBy: updatedAt) {
+query Issues($filter: IssueFilter, $first: Int, $after: String) {
+  issues(filter: $filter, first: $first, after: $after, orderBy: updatedAt) {
+    pageInfo { hasNextPage endCursor }
     nodes {
       id
       identifier
@@ -66,15 +67,31 @@ def fetch_issues(api_key: str, project_id: str = "", team_key: str = "") -> list
     if team_key:
         filter_var["team"] = {"key": {"eq": team_key}}
 
-    with httpx.Client(headers=headers) as client:
-        resp = client.post(
-            LINEAR_API,
-            json={"query": ISSUES_QUERY, "variables": {"filter": filter_var, "first": 100}},
-        )
-        resp.raise_for_status()
-        data = resp.json()
+    issues: list[dict] = []
+    cursor: str | None = None
+    with httpx.Client(headers=headers, timeout=30) as client:
+        while True:
+            resp = request_with_retry(
+                client,
+                "POST",
+                LINEAR_API,
+                json={
+                    "query": ISSUES_QUERY,
+                    "variables": {"filter": filter_var, "first": 100, "after": cursor},
+                },
+            )
+            body = resp.json()
+            if body.get("errors"):
+                raise RuntimeError(f"Linear GraphQL errors: {body['errors']}")
+            page = (body.get("data") or {}).get("issues") or {}
+            issues.extend(page.get("nodes", []))
+            info = page.get("pageInfo") or {}
+            cursor = info.get("endCursor")
+            if not (info.get("hasNextPage") and cursor):
+                break
+            log.info("linear.next_page", fetched=len(issues))
 
-    return data.get("data", {}).get("issues", {}).get("nodes", [])
+    return issues
 
 
 def issue_to_markdown(issue: dict) -> str:

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { Glossary, GlossaryTerm } from "../types";
+import { apiFetch } from "../utils/api";
 
 /**
  * The glossary and where each term is mentioned; null until both answer. `revision` changes with
@@ -16,7 +17,7 @@ export function useGlossary(revision: unknown, enabled: boolean): Glossary | nul
     let cancelled = false;
     async function load() {
       try {
-        const [terms, mentions] = await Promise.all([fetch("/api/glossary"), fetch("/api/glossary/mentions")]);
+        const [terms, mentions] = await Promise.all([apiFetch("/api/glossary"), apiFetch("/api/glossary/mentions")]);
         if (!terms.ok || !mentions.ok) return;
         const [termsText, mentionsText] = await Promise.all([terms.text(), mentions.text()]);
         if (cancelled) return;

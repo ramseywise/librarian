@@ -77,9 +77,57 @@ users = Table(
     Column("role", String(16), nullable=False, server_default="member"),
     Column("timezone", String(64), nullable=False, server_default="UTC"),
     Column("created_at", DateTime(timezone=True), nullable=False),
+    # The last request by any credential of this user, written at most every few minutes.
+    Column("last_seen_at", DateTime(timezone=True), nullable=True),
 )
 
-# Browser sessions (login, phase 3 wave B). `id` is the sha256 of the cookie value.
+# Who may sign in for the first time. Existing users and the owner need no invite.
+invites = Table(
+    "invites",
+    metadata,
+    Column("email", String(320), primary_key=True),
+    Column("invited_by", String(64), nullable=True),
+    Column("created_at", DateTime(timezone=True), nullable=False),
+    Column("used_at", DateTime(timezone=True), nullable=True),
+)
+
+# Email sign-in links. `id` is the sha256 of the token in the link; each is used at most once.
+login_tokens = Table(
+    "login_tokens",
+    metadata,
+    Column("id", String(64), primary_key=True),
+    Column("email", String(320), nullable=False),
+    Column("created_at", DateTime(timezone=True), nullable=False),
+    Column("expires_at", DateTime(timezone=True), nullable=False),
+    Column("used_at", DateTime(timezone=True), nullable=True),
+    Index("login_tokens_email", "email", "created_at"),
+)
+
+# Shared fixed-window request counters (accounts.rate_limits). One row per key; the window opens
+# at `window_start` (epoch seconds) with the first hit and the row restarts once it has passed.
+rate_limits = Table(
+    "rate_limits",
+    metadata,
+    Column("key", String(255), primary_key=True),
+    Column("window_start", Float, nullable=False),
+    Column("hits", Integer, nullable=False),
+    Index("rate_limits_window_start", "window_start"),
+)
+
+# Security-relevant events: login, logout, key create/revoke, invite, promote, admin reload.
+# `target` names what was acted on (an email, a key id), never a secret.
+audit = Table(
+    "audit",
+    metadata,
+    Column("id", _ID, primary_key=True, autoincrement=True),
+    Column("ts", DateTime(timezone=True), nullable=False),
+    Column("user_id", String(64), nullable=True),
+    Column("action", String(32), nullable=False),
+    Column("target", Text, nullable=True),
+    Index("audit_ts", "ts"),
+)
+
+# Browser sessions. `id` is the sha256 of the cookie value.
 sessions = Table(
     "sessions",
     metadata,

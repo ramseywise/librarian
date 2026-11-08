@@ -62,12 +62,25 @@ commits). See `.claude/skills/README.md`.
   imports codemap's tools); and the core below (`courses`, `retrieval`, `wiki`, `ingest`, `accounts`, `db`), which imports none of them.
 - `app/` — the React/Vite frontend only (`app/src/`, built to `app/dist/`, served by the API). The single
   `Dockerfile` at the repo root builds it and the API into one image.
+- **Operations:** `./librarian start|stop|status|logs|backup|restore|upgrade|content push` is the one operator
+  entrypoint (wraps compose and `librarian ops`, in `src/librarian/ops/`; runbooks in `docs/ops/`). The host pulls an
+  image by tag (`LIBRARIAN_IMAGE`) and never builds. **Migrations are expand-only within a release:** add columns
+  nullable (or with a server default), never drop or rename one in the same release that stops using it; the drop
+  or rename ships one release later. That is what lets `./librarian upgrade` roll back to the previous image without
+  down-migrations. `upgrade` refuses without a backup younger than 15 minutes.
+- **Content releases** (`src/librarian/release/`): a `content/*` tag runs `.github/workflows/content-release.yml`
+  (checks, all eval-gate arms, then `librarian release build` inside the image, which refuses any `private/` path)
+  and uploads `content-<sha>.tar.zst`, its `.sha256`, then `latest`. With `LIBRARIAN_RELEASE_URL` set the API
+  serves `var/content/current`, pulls on start, every `LIBRARIAN_RELEASE_POLL_S` and on a signed `POST /admin/reload`,
+  and names the release in `X-Librarian-Release`. Roll back with `librarian release pin <sha>` (the current release
+  and two before it stay on disk); `unpin` follows `latest` again. A release index is built for one state dir
+  (`/app/var`); a host with another one refuses it.
 - Cartographer (`src/librarian/tools/cartographer/`: session facts, dashboard, weekly sweep) runs as `uv run cartographer`.
 - CLI: `librarian wiki stats|snapshot|check|gaps|log|ask|graph|rename|relink`,
   `librarian ingest triage|lint-raw|notion|linear|pdf`, `librarian scrape sessions|docs|repos|feeds|arxiv|bookmarks`,
-  `librarian courses check|review`, `librarian users add|list`, `librarian keys create|list|revoke`,
-  `librarian db upgrade|import-attempts|import-drill-log`,
-  `librarian mcp [--rebuild]`, `librarian api`. Each is a thin dispatcher to the
+  `librarian courses check|review`, `librarian users add|list|invite|invites|promote`, `librarian keys create|list|revoke`,
+  `librarian db upgrade|import-attempts|import-drill-log`, `librarian ops backup|restore|upgrade|schedule|list`,
+  `librarian release build|pull|pin|unpin|list`, `librarian mcp [--rebuild]`, `librarian api`. Each is a thin dispatcher to the
   module's `main(argv)`, and `python -m librarian.<module>` works too.
 
 ---
@@ -375,6 +388,7 @@ Run lint to find health issues. Check each of the following:
 - **Orphan raw files** — files in `data/raw/` with no corresponding wiki coverage
 - **Untyped links** — `## See Also` entries without a `— type` annotation (>50% untyped = WARN)
 - **Unrecognized link types** — typed-syntax annotations whose type is not canonical (WARN)
+- **Ontology** — `librarian wiki check` WARNs (never the exit code) on `prerequisite-for` cycles (`ONT001`), `instance-of` declared both ways (`ONT002`) or with a `project` page as the general side (`ONT003`), and near-duplicate pages by title+summary token overlap (`ONT004`, threshold 0.35); public non-tombstone pages only
 - **Bridge gaps** — domain pairs with >5 pages each but <3 cross-domain links (NOTE)
 - **Stale suggestions** — `data/wiki/_relink_suggestions.md` entries older than 14 days unreviewed
 - **Private leak** — a page outside `private/` has a wikilink resolving into `private/` (`make wiki-check`, exit 1; a 3+ word private title in public text is a WARN). A lesson outside `data/courses/private/` that links, embeds or lists a lesson id into it, or names a private wiki page (`[[...]]` or `wiki:`), also blocks, and so does a git-tracked file under either `private/` tree (pre-commit runs `wiki check --tracked-only`). Reports name the public file and line, never the private page
@@ -522,6 +536,7 @@ When searching for a page, check:
 - **Do not** leave new pages without at least one backlink
 - **Do not** skip the ingest checklist for "small" sources — every source matters
 - **Do not** write speculative content — wiki pages represent synthesised knowledge from sources, not inference
+- **Do not** call something "deployed" because its suite passes, or "qualified" because its commit is pushed: `docs/status.md` records what was checked, and only a check on a host (date and host) or a restore drill moves a row past `tested in CI`
 
 ---
 

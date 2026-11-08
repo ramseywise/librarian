@@ -54,7 +54,9 @@ def _make_entry(
 @pytest.mark.unit
 def test_golden_dataset_loads() -> None:
     entries = load_golden_dataset(str(GOLDEN_PATH))
-    assert len(entries) == 50, f"expected 50 entries, got {len(entries)}"
+    assert len(entries) == 150, f"expected 150 entries, got {len(entries)}"
+    assert sum(e.negative for e in entries) == 10
+    assert sum(len(e.source_pages) > 1 for e in entries) >= 15
 
 
 @pytest.mark.unit
@@ -63,6 +65,8 @@ def test_golden_dataset_required_fields() -> None:
     for e in entries:
         assert e.id, f"missing id in {e}"
         assert e.query, f"missing query in entry {e.id}"
+        if e.negative:
+            continue
         assert e.expected_answer, f"missing expected_answer in entry {e.id}"
         assert e.source_pages, f"missing source_pages in entry {e.id}"
         assert e.category, f"missing category in entry {e.id}"
@@ -95,7 +99,8 @@ def test_golden_dataset_category_distribution() -> None:
 
     cats = Counter(e.category for e in entries)
     # Sanity: all entries have a recognisable category
-    valid = {"retrieval", "memory", "architecture", "patterns", "eval", "infra", "meta"}
+    valid = {"retrieval", "memory", "architecture", "patterns", "eval", "infra", "meta", "negative"}
+    valid |= {d.name for d in (Path(__file__).parents[2] / "data/wiki").iterdir() if d.is_dir()}
     for cat in cats:
         assert cat in valid, f"unknown category '{cat}'"
     # At least 3 distinct categories
@@ -116,13 +121,21 @@ def test_golden_dataset_difficulty_distribution() -> None:
 @pytest.mark.unit
 @pytest.mark.parametrize(
     ("filename", "root"),
-    [("golden_wiki_uniform.json", "data/wiki/"), ("golden_courses.json", "data/courses/")],
+    [
+        ("golden_wiki_uniform.json", "data/wiki/"),
+        ("golden_courses.json", "data/courses/"),
+        ("golden_multihop.json", "data/wiki/"),
+        ("golden_dataset.json", "data/wiki/"),
+    ],
 )
 def test_arm_golden_sets_point_at_real_public_pages(filename: str, root: str) -> None:
     repo_root = Path(__file__).parents[2]
     entries = load_golden_dataset(str(GOLDEN_PATH.parent / filename))
     assert len({e.id for e in entries}) == len(entries)
     for e in entries:
+        if e.negative:
+            assert not e.source_pages, e.id
+            continue
         assert e.source_pages
         for page in e.source_pages:
             assert page.startswith(root), page
@@ -138,6 +151,25 @@ def test_every_arm_with_its_own_set_is_gated() -> None:
         assert _resolve_dataset_path(None, arm).name == filename
         assert LIVE_ARM_FLOORS[arm]["hit_rate"] > 0
         assert LIVE_ARM_FLOORS[arm]["mrr"] > 0
+    # graph runs on the default set and has no set of its own
+    assert LIVE_ARM_FLOORS["graph"]["hit_rate"] > 0
+    assert LIVE_ARM_FLOORS["multihop"]["mrr"] > 0
+
+
+@pytest.mark.unit
+def test_negatives_do_not_count_in_hit_rate_and_are_graded_by_score() -> None:
+    pos = GoldenEntry("p", "x", "q", "a", ["data/wiki/a.md"], "easy")
+    neg = GoldenEntry("n", "negative", "q", "", [], "hard", negative=True)
+    low = [RetrievalResult(page_path="data/wiki/z.md", score=0.4)]
+    high = [RetrievalResult(page_path="data/wiki/z.md", score=0.9)]
+    grader = RetrievalGrader()
+    hit, mrr, _, results = grader.grade_batch(
+        [pos, neg], [[RetrievalResult(page_path="data/wiki/a.md", score=1.0)], high]
+    )
+    assert (hit, mrr, len(results)) == (1.0, 1.0, 1)
+    assert grader.grade_negatives([pos, neg], [[], low], 0.62) == (1, 1.0)
+    assert grader.grade_negatives([pos, neg], [[], high], 0.62) == (1, 0.0)
+    assert grader.grade_negatives([pos], [[]], 0.62) == (0, None)
 
 
 @pytest.mark.unit
@@ -440,4 +472,4 @@ def test_oracle_eval_passes_floors() -> None:
     assert report.mean_reciprocal_rank >= MRR_FLOOR, (
         f"MRR {report.mean_reciprocal_rank:.3f} below floor {MRR_FLOOR}"
     )
-    assert report.n_entries == 50
+    assert report.n_entries == 140

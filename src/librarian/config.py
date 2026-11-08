@@ -124,6 +124,28 @@ class Settings(BaseSettings):
     owner_email: str = Field(
         default="owner@localhost", validation_alias=_env("LIBRARIAN_OWNER_EMAIL")
     )
+    # Login (librarian.api.routers.auth). Each method is on when its settings are set; any of them
+    # turns open mode off. The callback and email links are built on LIBRARIAN_PUBLIC_URL, e.g.
+    # https://librarian.example.com; an https URL also makes the cookies Secure.
+    public_url: str = Field(default="", validation_alias=_env("LIBRARIAN_PUBLIC_URL"))
+    # Signs the short-lived OAuth state cookie. 32+ random bytes; changing it only breaks logins in flight.
+    session_secret: str = Field(default="", validation_alias=_env("LIBRARIAN_SESSION_SECRET"))
+    session_days: int = Field(default=30, ge=1, validation_alias=_env("LIBRARIAN_SESSION_DAYS"))
+    google_client_id: str = Field(default="", validation_alias=_env("GOOGLE_CLIENT_ID"))
+    google_client_secret: str = Field(default="", validation_alias=_env("GOOGLE_CLIENT_SECRET"))
+    github_client_id: str = Field(default="", validation_alias=_env("GITHUB_CLIENT_ID"))
+    github_client_secret: str = Field(default="", validation_alias=_env("GITHUB_CLIENT_SECRET"))
+    # Email sign-in links, sent through Resend from a domain verified there (SPF and DKIM).
+    resend_api_key: str = Field(default="", validation_alias=_env("RESEND_API_KEY"))
+    email_from: str = Field(default="", validation_alias=_env("EMAIL_FROM"))
+    # Requests per client address per window to /auth/* (shared by all workers), and links per email per hour.
+    auth_rate_limit: int = Field(default=10, validation_alias=_env("LIBRARIAN_AUTH_RATE_LIMIT"))
+    auth_rate_window_s: int = Field(
+        default=60, validation_alias=_env("LIBRARIAN_AUTH_RATE_WINDOW_S")
+    )
+    email_links_per_hour: int = Field(
+        default=5, validation_alias=_env("LIBRARIAN_EMAIL_LINKS_PER_HOUR")
+    )
     # Serve /docs, /redoc and /openapi.json (still behind the token when one is set).
     expose_docs: bool = Field(default=False, validation_alias=_env("LIBRARIAN_EXPOSE_DOCS"))
     # Comma-separated browser origins allowed by CORS. The Vite dev server by default.
@@ -135,6 +157,11 @@ class Settings(BaseSettings):
     # uvicorn worker processes for `librarian api` (the --workers default). Shared state is in
     # the database and the index file, so any number serve the same answers.
     api_workers: int = Field(default=1, ge=1, validation_alias=_env("LIBRARIAN_API_WORKERS"))
+    # Proxies whose X-Forwarded-For uvicorn believes (comma-separated, "*" for any). Behind Caddy
+    # the per-address sign-in limit needs it, or every client is the proxy's one address.
+    forwarded_allow_ips: str = Field(
+        default="127.0.0.1", validation_alias=_env("LIBRARIAN_FORWARDED_ALLOW_IPS")
+    )
     # POST /api/chat/stream limits. The burst limit is per process (N workers allow N times as
     # many); the daily budget is read from the database, so it holds across workers. 0 turns a limit off.
     chat_rate_limit: int = Field(default=20, validation_alias=_env("LIBRARIAN_CHAT_RATE_LIMIT"))
@@ -160,6 +187,12 @@ class Settings(BaseSettings):
         default=DEFAULT_CHAT_MODEL, validation_alias=_env("ANTHROPIC_MODEL")
     )
     anthropic_api_key: str = Field(default="", validation_alias=_env("ANTHROPIC_API_KEY"))
+    # `librarian mcp` remote mode: with a key (an `lk_` key from `librarian keys create` or the
+    # account page) every wiki tool call goes to this API instead of the local index.
+    remote_api_key: str = Field(default="", validation_alias=_env("LIBRARIAN_API_KEY"))
+    remote_api_url: str = Field(
+        default="http://localhost:8000", validation_alias=_env("LIBRARIAN_API_URL")
+    )
     codemap_api_url: str = Field(
         default="http://localhost:8100", validation_alias=_env("CODEMAP_API_URL")
     )
@@ -168,6 +201,40 @@ class Settings(BaseSettings):
     # (in the background for the API) and rebuild it when the wiki changes. Production sets
     # this to 0 and runs `librarian index build` as a separate job.
     index_autobuild: bool = Field(default=True, validation_alias=_env("LIBRARIAN_INDEX_AUTOBUILD"))
+    # Content releases (librarian.release). With a URL the API serves the release it pulls
+    # (`<url>/latest` names it; https or file://), on start, every poll interval and on a signed
+    # POST /admin/reload. Unset: content is read from data/ as on a dev checkout.
+    release_url: str = Field(default="", validation_alias=_env("LIBRARIAN_RELEASE_URL"))
+    release_poll_s: float = Field(
+        default=60.0, ge=0, validation_alias=_env("LIBRARIAN_RELEASE_POLL_S")
+    )
+    # HMAC-SHA256 key for the release webhook (X-Librarian-Signature). Unset: admins only.
+    release_webhook_secret: str = Field(
+        default="", validation_alias=_env("LIBRARIAN_RELEASE_WEBHOOK_SECRET")
+    )
+
+    # Backups (librarian.ops). Where the encrypted dumps go: `s3://bucket/prefix` (needs the `aws`
+    # CLI and AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY in the environment) or `file:///dir`.
+    # Unset: `librarian ops backup` refuses to run.
+    backup_url: str = Field(default="", validation_alias=_env("LIBRARIAN_BACKUP_URL"))
+    # S3-compatible endpoint, e.g. https://<account>.r2.cloudflarestorage.com for Cloudflare R2.
+    backup_endpoint_url: str = Field(
+        default="", validation_alias=_env("LIBRARIAN_BACKUP_ENDPOINT_URL")
+    )
+    # age public key (age1...). The host holds only this; the private key stays off the host.
+    backup_age_recipient: str = Field(
+        default="", validation_alias=_env("LIBRARIAN_BACKUP_AGE_RECIPIENT")
+    )
+    # `ops upgrade` takes a new backup unless the newest one is younger than this many minutes.
+    backup_max_age_min: int = Field(
+        default=15, ge=0, validation_alias=_env("LIBRARIAN_BACKUP_MAX_AGE_MIN")
+    )
+    # Time of day (UTC, HH:MM) the compose `backup` service runs `ops backup`.
+    backup_at: str = Field(
+        default="03:30",
+        pattern=r"^([01]\d|2[0-3]):[0-5]\d$",
+        validation_alias=_env("LIBRARIAN_BACKUP_AT"),
+    )
 
     # ── derived locations ────────────────────────────────────────────────────
 
@@ -177,7 +244,9 @@ class Settings(BaseSettings):
 
     @property
     def wiki_dir(self) -> Path:
-        return self.override_wiki_dir or self.data_dir / "wiki"
+        if self.override_wiki_dir:
+            return self.override_wiki_dir
+        return self.content_dir / "wiki" if self.release_url else self.data_dir / "wiki"
 
     @property
     def private_dir(self) -> Path:
@@ -185,7 +254,9 @@ class Settings(BaseSettings):
 
     @property
     def courses_dir(self) -> Path:
-        return self.override_courses_dir or self.data_dir / "courses"
+        if self.override_courses_dir:
+            return self.override_courses_dir
+        return self.content_dir / "courses" if self.release_url else self.data_dir / "courses"
 
     @property
     def courses_private_dir(self) -> Path:
@@ -229,6 +300,30 @@ class Settings(BaseSettings):
     @property
     def state_dir(self) -> Path | None:
         return self.override_state_dir.expanduser() if self.override_state_dir else None
+
+    @property
+    def login_methods(self) -> list[str]:
+        """The sign-in methods configured: "google", "github", "email"."""
+        methods = [
+            name
+            for name, ident, secret in (
+                ("google", self.google_client_id, self.google_client_secret),
+                ("github", self.github_client_id, self.github_client_secret),
+            )
+            if ident and secret
+        ]
+        if self.resend_api_key and self.email_from:
+            methods.append("email")
+        return methods
+
+    @property
+    def open_mode(self) -> bool:
+        """No token and no login configured: every request is the owner (local use)."""
+        return not self.api_token and not self.login_methods
+
+    @property
+    def secure_cookies(self) -> bool:
+        return self.public_url.startswith("https://")
 
     @property
     def cors_origin_list(self) -> list[str]:

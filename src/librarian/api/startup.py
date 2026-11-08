@@ -16,8 +16,9 @@ def find_problems(
     """(errors, warnings), one line each. The API refuses to start on any error.
 
     Errors: the wiki or courses directory is missing, the chat model is not in the price table,
-    the chat is enabled with no ANTHROPIC_API_KEY, and no LIBRARIAN_API_TOKEN where the API is
-    reachable from outside (public mode, or a non-loopback `host` without `insecure`). Warnings:
+    the chat is enabled with no ANTHROPIC_API_KEY, open mode (no login and no LIBRARIAN_API_TOKEN)
+    where the API is reachable from outside (public mode, or a non-loopback `host` without
+    `insecure`), and a login method without LIBRARIAN_PUBLIC_URL or the session secret. Warnings:
     a non-loopback `host` served open under `insecure`.
     """
     errors: list[str] = []
@@ -29,16 +30,35 @@ def find_problems(
     errors.extend(find_model_problems(settings))
     if settings.chat_enabled and not settings.anthropic_api_key:
         errors.append("ANTHROPIC_API_KEY is not set (or set LIBRARIAN_CHAT_ENABLED=false)")
-    if not settings.api_token:
+    if settings.open_mode:
         if settings.public_mode:
-            errors.append("LIBRARIAN_API_TOKEN is not set in public mode (LIBRARIAN_PUBLIC)")
+            errors.append(
+                "neither a login method nor LIBRARIAN_API_TOKEN is set in public mode (LIBRARIAN_PUBLIC)"
+            )
         elif host is not None and not is_loopback(host):
-            line = f"LIBRARIAN_API_TOKEN is not set and the API binds {host}"
+            line = f"no login method or LIBRARIAN_API_TOKEN is set and the API binds {host}"
             if insecure:
                 warnings.append(f"{line}: serving it open (--insecure)")
             else:
-                errors.append(f"{line} (set it, or pass --insecure to serve unauthenticated)")
+                errors.append(f"{line} (set one, or pass --insecure to serve unauthenticated)")
+    errors.extend(find_login_problems(settings))
     return errors, warnings
+
+
+def find_login_problems(settings: Settings) -> list[str]:
+    """A login method needs the URL its links point at, and OAuth a secret to sign its state."""
+    methods = settings.login_methods
+    if not methods:
+        return []
+    problems = []
+    if not settings.public_url.startswith(("https://", "http://localhost", "http://127.")):
+        problems.append(
+            "LIBRARIAN_PUBLIC_URL must be the https URL users open (or http://localhost) "
+            f"when login is configured ({', '.join(methods)})"
+        )
+    if set(methods) & {"google", "github"} and len(settings.session_secret) < 32:
+        problems.append("LIBRARIAN_SESSION_SECRET must be at least 32 characters for OAuth login")
+    return problems
 
 
 def find_model_problems(settings: Settings) -> list[str]:

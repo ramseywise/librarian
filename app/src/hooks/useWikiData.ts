@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Edge, Node } from "@xyflow/react";
 import type { GraphPayload, WikiEdgeData, WikiNodeData } from "../types";
 import { tagSharedEdges as computeTagSharedEdges } from "../utils/tagEdges";
-import { wsProtocols } from "../utils/auth";
+import { RELEASE_EVENT, apiFetch, wsProtocols } from "../utils/api";
 import type { XY } from "../utils/layout";
 
 const RECONNECT_MS = 2000;
@@ -81,8 +81,13 @@ export function useWikiData({ tagShared = true }: { tagShared?: boolean } = {}) 
     }
     connect();
 
+    // A new content release: drop the socket; its reconnect receives the new graph.
+    const onRelease = () => ws?.close();
+    window.addEventListener(RELEASE_EVENT, onRelease);
+
     return () => {
       disposed = true;
+      window.removeEventListener(RELEASE_EVENT, onRelease);
       clearTimeout(timer);
       if (ws) {
         ws.onclose = null;
@@ -100,7 +105,7 @@ export function useWikiData({ tagShared = true }: { tagShared?: boolean } = {}) 
   );
 
   const fetchSemanticEdges = useCallback(async (threshold = 0.65) => {
-    const res = await fetch(`/api/edges/semantic?threshold=${threshold}`);
+    const res = await apiFetch(`/api/edges/semantic?threshold=${threshold}`);
     if (!res.ok) throw new Error(`semantic edges: HTTP ${res.status}`);
     setSemanticEdges((await res.json()) as Edge<WikiEdgeData>[]);
   }, []);
@@ -109,7 +114,7 @@ export function useWikiData({ tagShared = true }: { tagShared?: boolean } = {}) 
   const loadUmapPositions = useCallback(() => {
     if (!umapRequest.current) {
       setUmapFailed(false);
-      umapRequest.current = fetch("/api/layout/umap", { method: "POST" })
+      umapRequest.current = apiFetch("/api/layout/umap", { method: "POST" })
         .then((res) => (res.ok ? (res.json() as Promise<Record<string, XY>>) : null))
         .catch(() => null)
         .then((pos) => {

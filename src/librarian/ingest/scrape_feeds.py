@@ -32,7 +32,7 @@ import structlog
 from bs4 import BeautifulSoup
 
 from librarian.config import get_settings
-from librarian.ingest.base import ScraperBase
+from librarian.ingest.base import ScraperBase, request_with_retry
 
 log = structlog.get_logger(__name__)
 
@@ -429,8 +429,7 @@ def fetch_recent(
 
             log.info("feeds.fetch", feed=source.key, url=source.url, tier=source.tier)
             try:
-                resp = client.get(source.url)
-                resp.raise_for_status()
+                resp = request_with_retry(client, "GET", source.url)
             except httpx.HTTPError as exc:
                 log.warning("feeds.fetch_error", feed=source.key, error=str(exc))
                 continue

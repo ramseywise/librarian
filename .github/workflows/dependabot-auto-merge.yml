@@ -8,8 +8,9 @@ permissions:
 jobs:
   wait-for-ci:
     if: github.actor == 'dependabot[bot]'
-    uses: ramseywise/ai-project-template/.github/workflows/python-ci.yml@main
+    uses: ramseywise/ai-project-template/.github/workflows/python-ci.yml@86705a49b18d7e721b6fe729d7599203c49afbb2 # main as of 2026-11-07
     with:
+      python-version: "3.12"
       lint-paths: "src tests"
       test-command: "uv run pytest tests/ --ignore=tests/e2e -q"
 
@@ -18,9 +19,11 @@ jobs:
     if: github.actor == 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
-      - uses: dependabot/fetch-metadata@v3
+      - uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
         id: metadata
-      - run: gh pr merge --auto --squash "$PR_URL"
+      # Patch-level only: minor and major updates wait for a human.
+      - if: steps.metadata.outputs.update-type == 'version-update:semver-patch'
+        run: gh pr merge --auto --squash "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

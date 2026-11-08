@@ -1,0 +1,134 @@
+name: Content release
+
+# Publish the wiki and courses as a content release the API pulls and swaps in without a deploy.
+# Push a tag `content/<anything>` on the commit to publish:
+#
+#   git tag content/2026-11-08 && git push origin content/2026-11-08
+#
+# 1. checks: the public-only wiki check, the course checks and every eval-gate arm;
+# 2. package: inside the deployable image (so the index's absolute paths are /app/var/..., what
+#    the host serves), `librarian release build` writes content-<sha>.tar.zst, its .sha256 and
+#    `latest`; the build refuses any private/ path and the archive is listed again here;
+# 3. publish: the archive and checksum first, `latest` last, so a host never reads a `latest`
+#    naming an archive that is not there; then a signed POST /admin/reload so it swaps now
+#    instead of at the next poll.
+#
+# Slides are not built here: decks rebuild on the host when first viewed (var/slides/).
+#
+# Settings (repository secrets): RELEASE_BUCKET (s3://bucket/prefix, the same prefix the host's
+# LIBRARIAN_RELEASE_URL reads over https), RELEASE_S3_ENDPOINT (empty for AWS; the R2/B2 endpoint
+# otherwise), RELEASE_AWS_ACCESS_KEY_ID / RELEASE_AWS_SECRET_ACCESS_KEY (write access to that
+# prefix only), and optionally LIBRARIAN_PUBLIC_URL + LIBRARIAN_RELEASE_WEBHOOK_SECRET for the reload.
+on:
+  push:
+    tags: ["content/*"]
+  workflow_dispatch:
+
+concurrency:
+  group: content-release
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7.6.0
+        with:
+          enable-cache: true
+      - run: uv sync --group dev --extra api
+      - run: uv run librarian wiki check --tracked-only
+      - run: uv run librarian courses check
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: ~/.cache/huggingface
+          key: hf-all-MiniLM-L6-v2
+      - run: make eval-gate
+
+  package:
+    needs: checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    outputs:
+      name: ${{ steps.name.outputs.name }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - id: name
+        run: echo "name=content-${GITHUB_SHA::12}" >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          file: Dockerfile
+          load: true
+          tags: librarian:release
+          cache-from: type=gha
+      - name: Build the release in the image
+        run: |
+          mkdir -p dist/release && chmod 777 dist/release
+          # The checkout's data/ read-only; private/ dirs do not exist in CI (gitignored).
+          docker run --rm --entrypoint librarian \
+            -e GITHUB_SHA="${GITHUB_SHA}" \
+            -v "$PWD/data:/app/data:ro" \
+            -v "$PWD/dist/release:/out" \
+            librarian:release release build --out /out --name "${{ steps.name.outputs.name }}"
+      - name: No private path in the archive
+        run: |
+          sudo apt-get install -y --no-install-recommends zstd >/dev/null
+          if tar --zstd -tf "dist/release/${{ steps.name.outputs.name }}.tar.zst" | grep -E '(^|/)private(/|$)'; then
+            echo "private path in the release" >&2
+            exit 1
+          fi
+          (cd dist/release && sha256sum -c "${{ steps.name.outputs.name }}.tar.zst.sha256")
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: release
+          path: dist/release/
+          retention-days: 7
+
+  publish:
+    needs: package
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      NAME: ${{ needs.package.outputs.name }}
+      BUCKET: ${{ secrets.RELEASE_BUCKET }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.RELEASE_AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.RELEASE_AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: auto
+      ENDPOINT: ${{ secrets.RELEASE_S3_ENDPOINT }}
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: release
+          path: dist/release
+      - name: Upload, archive first and latest last
+        run: |
+          set -euo pipefail
+          test -n "$BUCKET" || { echo "RELEASE_BUCKET is not set" >&2; exit 1; }
+          s3() { aws s3 ${ENDPOINT:+--endpoint-url "$ENDPOINT"} "$@"; }
+          s3 cp "dist/release/$NAME.tar.zst" "$BUCKET/$NAME.tar.zst"
+          s3 cp "dist/release/$NAME.tar.zst.sha256" "$BUCKET/$NAME.tar.zst.sha256"
+          s3 cp dist/release/latest "$BUCKET/latest" --cache-control "no-cache, max-age=0"
+      - name: Ask the host to pull now
+        env:
+          URL: ${{ secrets.LIBRARIAN_PUBLIC_URL }}
+          SECRET: ${{ secrets.LIBRARIAN_RELEASE_WEBHOOK_SECRET }}
+        run: |
+          set -euo pipefail
+          if [ -z "$URL" ] || [ -z "$SECRET" ]; then
+            echo "no webhook configured: hosts pick the release up at their next poll"
+            exit 0
+          fi
+          body='{}'
+          ts=$(date +%s)
+          sig=$(printf '%s.%s' "$ts" "$body" | openssl dgst -sha256 -hmac "$SECRET" -hex | sed 's/^.* //')
+          curl -fsS -X POST "$URL/admin/reload" \
+            -H "Content-Type: application/json" \
+            -H "X-Librarian-Timestamp: $ts" \
+            -H "X-Librarian-Signature: sha256=$sig" \
+            --data "$body"

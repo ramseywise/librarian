@@ -508,5 +508,999 @@
       "data/courses/programming/drills/coding/implementation/credits-expiry-system.md"
     ],
     "difficulty": "medium"
+  },
+  {
+    "id": "data-analytics-100",
+    "category": "course",
+    "query": "I'm new to data analysis and don't know what order to learn things in, from a messy export to a recommendation someone can act on. What does the whole path cover and what should I be able to do at the end?",
+    "expected_answer": "An orientation to the six-pillar analytics course: it follows an analyst's order of work (load and clean, describe, test, model, visualise, apply) and lists the outcomes, prerequisites and the 'know when the numbers lie' thread.",
+    "source_pages": [
+      "data/courses/data-analytics/00-start-here/readme.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "generative-ai-100",
+    "category": "course",
+    "query": "We run support agents on two different frameworks and every team logs different field names, so I can't tell which prompt version raised escalations. What should every trace record, and when is it safe to let a grounding check start blocking answers?",
+    "expected_answer": "Defines the logging contract a support agent must meet (route, release, prompt version, tokens), a validator that rejects traces missing fields, how eval runs are identified and reproduced, and a promotion policy for letting a grounding check block.",
+    "source_pages": [
+      "data/courses/generative-ai/06-observability/notes/05-support-agent-observability.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "interviewing-100",
+    "category": "course",
+    "query": "I have a 45-minute LLM system design interview coming up. What steps should I follow and how do I narrate trade-offs so I'm graded well?",
+    "expected_answer": "The method for the system-design round: a five-step timed process, the two opening questions, trade-off narration, a reference LLM architecture to sketch quickly, bottleneck and failure-mode tables, and a practice plan.",
+    "source_pages": [
+      "data/courses/interviewing/rounds/system-design-round/study-guide.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "data-analytics-101",
+    "category": "course",
+    "query": "I built a monthly table of how customers move between new, active, lapsed and gone to estimate what a new customer is worth, but the answer is far from the true figure. Why does it go wrong and how can I catch it?",
+    "expected_answer": "Markov chains on customer states give a confident lifetime value (431 vs the true 513) because they average customers who behave differently; the lesson shows how to detect that and then analyses whole journeys with optimal matching.",
+    "source_pages": [
+      "data/courses/data-analytics/06-applied-analyses/notes/08-states-and-sequences.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "programming-100",
+    "category": "course",
+    "query": "My Python service feels slow but the CPU is mostly idle and requests seem to be waiting on something. What does the operating system actually do when my code asks for a file or a lock, and how can two threads lose an update?",
+    "expected_answer": "Builds the OS model beneath Python concurrency: processes versus threads, what a syscall costs, what threads share, and how an unplanned interleaving loses an update, with measured costs from a function call to a process start.",
+    "source_pages": [
+      "data/courses/programming/computer-science/notes/05-processes-threads-and-io.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "interviewing-101",
+    "category": "course",
+    "query": "In a 40-minute timed exercise I have to issue login tokens and verify them on protected requests using only the standard library. What mistakes do interviewers watch for, such as how I compare signatures?",
+    "expected_answer": "A worked stdlib-only token auth endpoint using hmac and hashlib, starting from the threat model; it highlights graded mistakes like comparing signatures with == instead of a constant-time compare.",
+    "source_pages": [
+      "data/courses/interviewing/rounds/coding-challenge/examples/auth-api-endpoint.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "interviewing-102",
+    "category": "course",
+    "query": "I pass coding rounds but I'm told the role-play where the interviewer acts as a frustrated customer is where most people fail. What is being scored and what habits help me hold up under pressure?",
+    "expected_answer": "Explains the customer/stakeholder simulation round: what is scored (empathy, discovery, expectation-setting, technical translation), common scenarios, the six habits that pass, a prep checklist and per-role weighting.",
+    "source_pages": [
+      "data/courses/interviewing/rounds/customer-simulation/readme.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "ai-engineering-100",
+    "category": "course",
+    "query": "Embedding my whole product catalogue on a GPU is slow. Do the KV-cache and token-streaming tricks I learned for chat models apply, and is there a cheap way to speed it up without new hardware?",
+    "expected_answer": "Encoders do one forward pass per input so LLM serving ideas mostly do not apply; sorting inputs by length to batch them made the same encoder about three times faster, and a vision-language model needs you to separate its encoder cost from its decode cost.",
+    "source_pages": [
+      "data/courses/ai-engineering/07-inference-engineering/notes/08b-serving-encoders-and-vision-models.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "ai-engineering-101",
+    "category": "course",
+    "query": "My agent has the right facts but still answers badly, and when I added the current time to the system prompt, first-token latency jumped and the bill nearly doubled. How should I arrange what goes into the model's window?",
+    "expected_answer": "Takes the context window apart into components and layers and shows how altitude, progressive disclosure and ordering decide whether each piece helps; a volatile value early in the prompt breaks prefix caching.",
+    "source_pages": [
+      "data/courses/ai-engineering/02-context-engineering/notes/02-context-anatomy.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "programming-101",
+    "category": "course",
+    "query": "How would I model a parking lot that takes cars, bikes and vans into small, compact and large slots, charges a fee on exit and shows free spots per floor? What classes and flow would you use?",
+    "expected_answer": "A low-level design drill: requirements, key components (lot, floor, spot, vehicle, ticket), a data model and the entry/exit workflow with fee calculation.",
+    "source_pages": [
+      "data/courses/programming/drills/coding/dsa/system-design/parking-lot/readme.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "ai-engineering-102",
+    "category": "course",
+    "query": "I'm shipping an LLM app and worry about both attackers and the model accidentally harming users. What's the overall map of these risks and the common root cause, and in what order should I read about them?",
+    "expected_answer": "Orients the safety and security pillar: the adversarial half (prompt injection, exfiltration, poisoned retrieval, supply chain) versus the no-adversary half, their shared root that the model cannot separate instructions from data, plus reading order and rules of thumb.",
+    "source_pages": [
+      "data/courses/ai-engineering/09-safety-and-security/readme.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "data-engineering-100",
+    "category": "course",
+    "query": "Two teams' tables join without error, but the total we report is about half what it should be because one team writes CA and the other California. Is that a tooling problem or an ownership problem, and how do warehouse, fabric and mesh approaches differ?",
+    "expected_answer": "Compares the modern data warehouse, data fabric/lakehouse and data mesh, arguing that most 'monster pipeline' problems are ownership problems where no one owns the rule between two correct tables.",
+    "source_pages": [
+      "data/courses/data-engineering/07-architecture-and-governance/notes/01-data-architectures-mesh-fabric-mdw.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "interviewing-103",
+    "category": "course",
+    "query": "Interview prompt: lawyers need cited answers over 50,000 contracts and the data cannot leave the client's network. How should I structure my design answer from clarifying questions to closing with measurement?",
+    "expected_answer": "A worked system-design answer for legal document QA: clarify and assume (OCR, on-prem, p95 under 3s), ingestion and query pipelines, a narrated trade-off, sidecars, shortcomings and a measurement close.",
+    "source_pages": [
+      "data/courses/interviewing/rounds/system-design-round/examples/rag-system.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "interviewing-104",
+    "category": "course",
+    "query": "A recruiter screen is next week. How should I answer 'walk me through your background' and the compensation-expectations question without hurting myself?",
+    "expected_answer": "A question bank for the recruiter screen: what each question tests, the response structure that works and red flags, covering background, motivation, comp negotiation, logistics and project highlights.",
+    "source_pages": [
+      "data/courses/interviewing/rounds/recruiter-screen/questions.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "programming-102",
+    "category": "course",
+    "query": "We're adding an LLM feature to a normal backend. How do I size it and route traffic when one request can cost 67 times the median, and how should a gateway reserve budget, fall back and stream to the client?",
+    "expected_answer": "A map of an AI system's backend: what changes when the unit of work is a token, sizing with Little's law, routing by work not connections, and a gateway with budget reservation, fallback and resumable streaming.",
+    "source_pages": [
+      "data/courses/programming/backend-and-system-design/notes/10-ai-system-reference-architecture.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "data-analytics-102",
+    "category": "course",
+    "query": "I need to turn an analysis into a decision for a busy executive. How do I choose the right chart and draw it well in Python and JavaScript, and why can a dashboard stay green while something is going wrong?",
+    "expected_answer": "Overview of the visualisation pillar: charts as mappings from data to marks, drawing in matplotlib/seaborn and JavaScript, using a chart to get a decision made; follows a retailer whose email-budget cut left the dashboard green.",
+    "source_pages": [
+      "data/courses/data-analytics/05-visualisation-and-storytelling/readme.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "data-analytics-103",
+    "category": "course",
+    "query": "I'm building a scorecard to decide which loan applications a bank should approve, but my sample has oversampled defaulters. How do I build and weight it, and turn probabilities into points and a cutoff?",
+    "expected_answer": "Builds a logistic credit scorecard with weight of evidence, sign checks and population weights that undo the stratified sample (the largest error), converts probability to points, sets approval policy and covers Basel vocabulary.",
+    "source_pages": [
+      "data/courses/data-analytics/06-applied-analyses/notes/02-credit-scoring.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "generative-ai-101",
+    "category": "course",
+    "query": "Before I add critics, debates and extra agents to my pipeline, how do I know the team beats just sampling the same number of answers and taking a majority vote?",
+    "expected_answer": "Argues the fair baseline for multi-agent designs is self-consistency at equal compute; many structures (self-judging critics, debates, model mixing) stop paying, and shows when a team does beat the vote and how to test it.",
+    "source_pages": [
+      "data/courses/generative-ai/03-agentic-foundations/notes/04b-when-more-agents-pay.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "programming-103",
+    "category": "course",
+    "query": "Quick system-design knowledge check: when is cursor pagination better than offset, why does sharding by user_id make some queries expensive, and what is the strongest argument against sharding a 50GB database?",
+    "expected_answer": "A 15-question multiple-choice quiz on backend and system-design fundamentals: indexes, load balancers, SSE, normalization, DynamoDB partitions, pagination, consistent hashing, CDC, latency orders and PACELC.",
+    "source_pages": [
+      "data/courses/programming/drills/mcq/quiz1.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "data-analytics-104",
+    "category": "course",
+    "query": "In pandas how do I drop rows with missing values, fill them, remove duplicates and replace values, and how do I handle string columns with regexes?",
+    "expected_answer": "McKinney's data cleaning and preparation notebook: handling missing data with dropna/fillna, removing duplicates, replacing values, discretising, outliers and string manipulation.",
+    "source_pages": [
+      "data/courses/data-analytics/01-python-for-data-analysis/practice/mckinney/ch07.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "ai-engineering-103",
+    "category": "course",
+    "query": "Which papers, books and frameworks should I read to go deeper on prompt injection, guardrails and securing LLM agents, and which ones actually changed claims in the notes?",
+    "expected_answer": "The annotated reading list for the safety pillar: books, core papers, origins of the ideas, weekly papers, courses, frameworks and standards, and tools, with markers for source-changing and preprint-only items.",
+    "source_pages": [
+      "data/courses/ai-engineering/09-safety-and-security/references.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "data-science-100",
+    "category": "course",
+    "query": "Working through the Andrew Ng exercise where I implement K-means by hand and then compress an image and apply PCA: how do I find closest centroids, update means and run SVD in Python?",
+    "expected_answer": "Programming exercise 7 in Python: K-means (closest centroid, centroid update, random initialization, image compression) and PCA via SVD on the provided datasets.",
+    "source_pages": [
+      "data/courses/data-science/01-classical-ml/practice/ng-machine-learning/ex7/ex7.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "data-science-101",
+    "category": "course",
+    "query": "My customer table mixes plan, channel and industry with revenue and invoice counts. I one-hot encoded everything, ran k-means and got four tidy groups, but I doubt them. What are better ways to cluster mixed data and validate without labels?",
+    "expected_answer": "One-hot k-means finds groups only when numbers also separate them (ARI 0.879) and scores 0.003 when only categories hold the groups; covers FAMD/MCA, Gower, k-prototypes, latent class, label-free validation and when to use which.",
+    "source_pages": [
+      "data/courses/data-science/01-classical-ml/notes/05b-clustering-categorical-and-mixed-data.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "generative-ai-102",
+    "category": "course",
+    "query": "I want to build the simplest possible character-level model that generates new names from a list. How do I count which letter follows which, turn that into probabilities and sample?",
+    "expected_answer": "Karpathy's makemore part 1: build a bigram count table from names, normalise to probabilities, sample new names, evaluate with negative log likelihood and then replace the table with a small neural net.",
+    "source_pages": [
+      "data/courses/generative-ai/09-llms-from-scratch/practice/nn-zero-to-hero/makemore/makemore-part1-bigrams.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "generative-ai-103",
+    "category": "course",
+    "query": "Is there a runnable example of an agent that answers questions over a table using read-only SQL/pandas, and checks each numeric claim before reporting it, without needing an API key?",
+    "expected_answer": "A lab for the data-analysis agent: read-only SQL and pandas tools, profiling, a validator that recomputes each claim and charts, driven by a scripted stub model with tests and named analyses.",
+    "source_pages": [
+      "data/courses/generative-ai/07-agentic-applications/practice/data-analysis-agent/readme.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "generative-ai-104",
+    "category": "course",
+    "query": "How does a pretrained language model become a helpful assistant, and in what order should I learn the RL vocabulary, RLHF, preference optimisation and agent post-training?",
+    "expected_answer": "Overview of the RL and alignment pillar: RL from plain language through MDPs and value/policy methods to RLHF, preference optimization, Constitutional AI and post-training for agents, with reading order and the reward-signal thread.",
+    "source_pages": [
+      "data/courses/generative-ai/05-rl/readme.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "programming-104",
+    "category": "course",
+    "query": "My Python job takes all night, a dict doubled my memory, and a total came out wrong by a cent. Where do I start learning the machine-level ideas behind this, and in what order?",
+    "expected_answer": "Overview of the computer-science foundations module: cost models, data structures, algorithm patterns, numbers and memory, processes/threads and networks, with reading order and rules of thumb.",
+    "source_pages": [
+      "data/courses/programming/computer-science/readme.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "ai-engineering-104",
+    "category": "course",
+    "query": "My agent keeps calling the wrong tool, believes it saw a whole file when output was silently truncated, and once retried a write and charged a customer three times. How should I design tools to stop these failures?",
+    "expected_answer": "Treats tools as the agent-computer interface: descriptions as routing logic, avoiding silent truncation, guarding retries on writes, and the SWE-agent evidence that a purpose-built interface beat a plain shell (18.0% vs 11.0%).",
+    "source_pages": [
+      "data/courses/ai-engineering/03-harness-engineering/notes/03-tool-design.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "generative-ai-105",
+    "category": "course",
+    "query": "I have a hand-rolled prompt template, parser, retry and model call, and I'd like to swap providers. What are the core building blocks of LangChain and when is it better to skip it?",
+    "expected_answer": "Teaches LangChain's five building blocks (chat models and messages, prompt templates, structured output parsers, and composition via the Runnable interface) run offline on a fake chat model, and when to skip the framework.",
+    "source_pages": [
+      "data/courses/generative-ai/01-llm-fundamentals/notes/11-langchain-basics.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "ai-engineering-105",
+    "category": "course",
+    "query": "I autoscale my LLM servers on GPU utilization and route round-robin, and latency still blows up under mixed traffic. How should batching, routing, parallelism and scaling work for LLMs?",
+    "expected_answer": "Serving at scale: why web defaults break on LLM traffic, continuous batching, routing, constrained decoding, parallelism for inference, watching a fleet and autoscaling on the right signal.",
+    "source_pages": [
+      "data/courses/ai-engineering/07-inference-engineering/notes/06-serving-at-scale.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "interviewing-105",
+    "category": "course",
+    "query": "In a timed exercise I must orchestrate classify, retrieve, validate and generate steps where some may fail and the failure behaviour must be explicit. Should I use a fixed workflow or a ReAct loop, and how do I structure the code?",
+    "expected_answer": "A worked example of deterministic workflow orchestration: justify workflow over ReAct, give steps a uniform interface, write the runner with explicit failure handling, test it, and what interviewers grade.",
+    "source_pages": [
+      "data/courses/interviewing/rounds/coding-challenge/examples/workflow-orchestration.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "programming-105",
+    "category": "course",
+    "query": "Which classic design patterns do I actually need in Python data and LLM code, given functions are first class? E.g. how do I swap a reranker or confine a vendor API?",
+    "expected_answer": "The ten or so patterns met in data/LLM systems with minimal Python: strategy, adapter/gateway, decorator, factory, repository, observer, pipeline, state machine, template method and module-as-singleton, with costs.",
+    "source_pages": [
+      "data/courses/programming/software-design/notes/04-patterns-worth-knowing.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "generative-ai-106",
+    "category": "course",
+    "query": "Version B passes 80% of my 50 eval tasks and version A passed 72%. Can I ship B, or is that noise, and how should I compare versions properly?",
+    "expected_answer": "An eval score is a sample estimate: gives the standard error and confidence interval of a pass rate, paired comparison on the same tasks, slicing, and reading transcripts, noting that most small-suite improvements are noise.",
+    "source_pages": [
+      "data/courses/generative-ai/08-eval/notes/09-reading-results.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "generative-ai-107",
+    "category": "course",
+    "query": "Our support bot answers the same refund question dozens of times a day in different wordings and every time runs rewrite, retrieve, grade, generate. How can I reuse earlier answers safely when no two questions are identical?",
+    "expected_answer": "A semantic cache: embed the question and reuse a stored graded answer when close enough, covering the threshold's trade-off, guarding hits, staleness and scope, and building the cache index.",
+    "source_pages": [
+      "data/courses/generative-ai/02-rag-retrieval/notes/10-semantic-cache.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "generative-ai-108",
+    "category": "course",
+    "query": "We merged a new agent version because the average score went up, but one important category got worse. How do I build a golden dataset, run an experiment per version and attach judge and similarity scores to traces so regressions show per category?",
+    "expected_answer": "Builds a golden dataset in Langfuse, one experiment run per agent version, LLM-judge and embedding-similarity scores attached to traces, and a per-category comparison that exposes regressions an average hides.",
+    "source_pages": [
+      "data/courses/generative-ai/06-observability/notes/02-scoring-datasets-experiments.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "programming-106",
+    "category": "course",
+    "query": "Given a list of courses and prerequisite pairs, how do I decide whether it is possible to finish them all? I know it involves detecting a cycle but want the intuition and two ways to do it.",
+    "expected_answer": "A first-principles guide to Course Schedule: restate as cycle detection in a directed graph, with DFS three-colour (white/gray/black) and Kahn's BFS topological sort via in-degrees.",
+    "source_pages": [
+      "data/courses/programming/drills/coding/dsa/graph/course-schedule/thinking.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "data-science-102",
+    "category": "course",
+    "query": "I have unlabelled customer data and no right answer to score against. How do I shrink it to something visible or group similar items, and how do I judge whether the result is any good?",
+    "expected_answer": "Unsupervised learning: scaling, PCA, NMF, t-SNE and clustering (k-means, agglomerative, DBSCAN), judged mostly by inspection, plus Gaussian anomaly detection and collaborative filtering.",
+    "source_pages": [
+      "data/courses/data-science/01-classical-ml/notes/05-unsupervised-learning.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "data-science-103",
+    "category": "course",
+    "query": "My classifier scores 90% but only a tiny fraction of cases are positive. How do I pick a metric from the cost of each kind of error, choose a threshold, and tell whether I need more data or a different model?",
+    "expected_answer": "Model evaluation: cross-validation, grid search with held-out test or nested CV, metric choice from error costs, thresholds from precision-recall and ROC curves, and learning curves, with leakage as the common failure.",
+    "source_pages": [
+      "data/courses/data-science/01-classical-ml/notes/04-model-evaluation.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "data-analytics-105",
+    "category": "course",
+    "query": "In pandas, what's the difference between a Series and a DataFrame, and how do I index, sort, slice and join two tables?",
+    "expected_answer": "A pandas notebook covering Series vs DataFrame, descriptive functions, indexing and sorting, slicing and subsetting, and joining DataFrames.",
+    "source_pages": [
+      "data/courses/data-analytics/01-python-for-data-analysis/practice/4-dataframes.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "data-analytics-106",
+    "category": "course",
+    "query": "My A/B test shows p = 0.00003 but the head of product asks 'how likely is the new checkout actually better?' and the p-value can't answer. What extra ingredient do I need to answer that?",
+    "expected_answer": "Bayes' rule turns a statement about data given a hypothesis into one about the hypothesis given data by adding a prior; worked through a coin and then the checkout test.",
+    "source_pages": [
+      "data/courses/data-analytics/04-bayesian-analysis/notes/01-bayesian-inference.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "data-engineering-101",
+    "category": "course",
+    "query": "The monthly revenue report came out 18% too high even though every pipeline job finished green. How do I write checks that catch bad data, and when do I use Great Expectations versus dbt tests?",
+    "expected_answer": "Defines six data-quality dimensions, treats a test as a query returning bad rows, uses reconciliation for accuracy, shows the same rules in Great Expectations and dbt, and where tests belong in the pipeline.",
+    "source_pages": [
+      "data/courses/data-engineering/05-quality-and-observability/notes/01-quality-dimensions-and-tests.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "programming-107",
+    "category": "course",
+    "query": "What's the difference between Python's array module and a list, and how do the GIL, concurrency versus parallelism and method resolution order come up in senior interviews?",
+    "expected_answer": "A senior-level Python interview reference, concepts 1-10: array module, garbage collection and circular references, mutable returns, MRO, walrus operator, attrgetter, CPython, the GIL, concurrency versus parallelism, multithreading.",
+    "source_pages": [
+      "data/courses/programming/drills/python/advanced/handbook/concepts-1-10.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "data-science-104",
+    "category": "course",
+    "query": "I'm doing Andrew Ng's exercise where I train a neural network on 5000 handwritten digit images by implementing backpropagation myself. How do the model representation, cost, gradient and gradient checking fit together in Python?",
+    "expected_answer": "Programming exercise 4: visualise the digit data, represent a feed-forward network with Theta1/Theta2, compute cost and regularisation, implement backpropagation, check gradients and train with an optimiser.",
+    "source_pages": [
+      "data/courses/data-science/01-classical-ml/practice/ng-machine-learning/ex4/ex4.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "generative-ai-109",
+    "category": "course",
+    "query": "My research agent hit a recursion-limit error and I can't tell why it ran out of budget. How do I record each step with inputs and outputs, read a failing run, and turn runs into a dataset for comparing experiments?",
+    "expected_answer": "Using LangSmith to trace the same agent on LangGraph and ADK, read a failing run, build datasets, add evaluators and compare experiments, including testing whether a cheaper model is good enough.",
+    "source_pages": [
+      "data/courses/generative-ai/04-agentic-frameworks/notes/05-langsmith.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "programming-108",
+    "category": "course",
+    "query": "I want to practise a coding question without spoiling it. How are the starter files laid out, and where should I copy one to work on it?",
+    "expected_answer": "Describes the coding-drill starter files: one per question with docstring prompt, interviewer clarifications, stubbed signatures and a happy-path smoke assert; copy to the gitignored scratch folder, and debug-dedup fails on a real bug.",
+    "source_pages": [
+      "data/courses/programming/drills/coding/prompts/readme.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "interviewing-106",
+    "category": "course",
+    "query": "An interviewer plays the COO and says 'your AI gave our customer wrong information yesterday. Go.' What should my first moves be, and what other customer scenarios might I be handed?",
+    "expected_answer": "A bank of twelve customer-simulation scenarios (incident, scope creep, technical misunderstanding, bad news, IT constraints, privacy and others), each with what is scored, the habit sequence and failure modes.",
+    "source_pages": [
+      "data/courses/interviewing/rounds/customer-simulation/questions.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "data-science-105",
+    "category": "course",
+    "query": "When I shift a digit one pixel to the right my MLP falls from 97% to under 50%. Why, and what design change fixes it?",
+    "expected_answer": "Convolutional networks: an MLP ties weights to pixel positions, while a convolution reuses one small filter everywhere; built from NumPy arithmetic up through stride, padding, pooling and ResNets, with detection, face verification and style transfer.",
+    "source_pages": [
+      "data/courses/data-science/02-deep-learning/notes/04-convolutional-networks.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "generative-ai-110",
+    "category": "course",
+    "query": "How can an agent reuse what worked last time, like a workaround or a check, rather than only remembering facts? Is distilling skills from past runs better than keeping raw records?",
+    "expected_answer": "Experience stores: skill files, insights and trajectory banks; evidence says keep the raw record, distill sparingly, overwrite rather than append, test whether the store helps, and consider memory in the weights.",
+    "source_pages": [
+      "data/courses/generative-ai/03-agentic-foundations/notes/03b-learning-from-experience.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "interviewing-107",
+    "category": "course",
+    "query": "I want to practise full system design questions for AI roles. Which worked examples exist and which topics does each cover?",
+    "expected_answer": "An index of worked system-design examples (RAG document QA, code-review agent and others) with prompts and key topics, to attempt yourself under a 40-minute timer before comparing.",
+    "source_pages": [
+      "data/courses/interviewing/rounds/system-design-round/examples/readme.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "data-analytics-107",
+    "category": "course",
+    "query": "My product team asks whether a change actually caused a revenue lift. How do I design and read an A/B test, choose the deciding metric, and reason about cause when I can't randomise?",
+    "expected_answer": "Overview of the experimentation and causality pillar: designing and reading A/B tests, metric choice, running many tests on a platform, and causal reasoning from observational data, with reading order and rules of thumb.",
+    "source_pages": [
+      "data/courses/data-analytics/03-experimentation-and-causality/readme.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "programming-109",
+    "category": "course",
+    "query": "My SQL query fails because I filter on an aggregate in WHERE, and a sum over no rows gives NULL instead of 0. How do GROUP BY, HAVING and NULL handling in aggregates work?",
+    "expected_answer": "Aggregation in SQL: aggregate functions and NULL behaviour (count(*) versus count(col), sum of zero rows is NULL, COALESCE), GROUP BY keys, and why WHERE runs before grouping while HAVING filters groups.",
+    "source_pages": [
+      "data/courses/programming/sql/notes/03-aggregation.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "ai-engineering-106",
+    "category": "course",
+    "query": "I resolved entity mentions with an LLM but loading them into the graph duplicates nodes and some facts must be removable for legal reasons. How should I assemble and maintain a knowledge graph?",
+    "expected_answer": "Graph assembly is deterministic: MERGE on a shared key under a constraint with provenance, integrate structured sources, then assess, clean, enrich and retire facts so the graph does not go stale.",
+    "source_pages": [
+      "data/courses/ai-engineering/05-graph-engineering/notes/10b-assembling-and-maintaining-kgs.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "data-analytics-108",
+    "category": "course",
+    "query": "People tell me Bayesian priors are subjective, and I used Normal(0,100) on a logistic slope as an 'uninformative' default. Is that safe, how do I check a prior, and how can the posterior decide which A/B variant to show next?",
+    "expected_answer": "Choosing priors deliberately: flat is a choice, prior predictive checks, a logistic default, when data overrule the prior, ridge/lasso as priors, shrinkage, eliciting from experts, then Thompson-sampling bandits and regret versus A/B tests.",
+    "source_pages": [
+      "data/courses/data-analytics/04-bayesian-analysis/notes/03-priors-and-bandits.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "generative-ai-111",
+    "category": "course",
+    "query": "I have no machine learning background. How can a program learn to win a game just by trying moves and seeing a score, and what do reward, policy, value and exploration mean for training chat models?",
+    "expected_answer": "A plain-language introduction to RL via text-adventure programs: reward, exploration versus exploitation, value, policy, how a language model becomes an agent, and what goes wrong when the reward measures the wrong thing.",
+    "source_pages": [
+      "data/courses/generative-ai/05-rl/notes/00-rl-in-plain-language.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "ai-engineering-107",
+    "category": "course",
+    "query": "Can I package a reasoning step like 'understand the question' or 'verify the answer' as a callable prompt, and does that actually improve a model's reasoning? Why isn't a self-grading loop a real check?",
+    "expected_answer": "Cognitive tools as named prompts run in their own context, with evidence from IBM Research Zurich (2025), four template families, and a self-correction loop that fails when the verifier shares the generator's blind spot.",
+    "source_pages": [
+      "data/courses/ai-engineering/02-context-engineering/notes/08-cognitive-tools.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "generative-ai-112",
+    "category": "course",
+    "query": "Instead of thousands of human labellers deciding what a model should prefer, can a written set of principles and a model's own feedback train it? How does that pipeline work and how does it differ from RLHF?",
+    "expected_answer": "Constitutional AI and RLAIF: a readable constitution, a supervised self-critique phase (SL-CAI) then RL from AI feedback, RLAIF as a standalone, links to red-teaming and how it relates to RLHF.",
+    "source_pages": [
+      "data/courses/generative-ai/05-rl/notes/04-constitutional-ai.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "data-analytics-109",
+    "category": "course",
+    "query": "I have a year of daily revenue in a pandas DataFrame and want to see the trend and weekly pattern. How do matplotlib figures and axes work, and when do I use pandas or seaborn shortcuts?",
+    "expected_answer": "The plotting chapter: matplotlib figures and axes, line charts over time, pandas plot shortcuts, histograms, seaborn from a table, choosing which chart answers which question, and saving figures.",
+    "source_pages": [
+      "data/courses/data-analytics/01-python-for-data-analysis/notes/07-plotting.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "ai-engineering-108",
+    "category": "course",
+    "query": "I need my model to answer fast and cheaply enough to ship. What are the main topics (batching, KV cache, prefill/decode split, GPU use) and in what order should I study them?",
+    "expected_answer": "Overview of the inference-engineering pillar: scope, reading order, builds-on/feeds-into, the lab, layout and primary texts for batching and scheduling, KV cache placement, prefill/decode and GPU behaviour.",
+    "source_pages": [
+      "data/courses/ai-engineering/07-inference-engineering/readme.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "programming-110",
+    "category": "course",
+    "query": "I know Python and I'm starting TypeScript. Why does `x as User` not check anything at runtime, and how do truthiness, equality and object copying differ from Python?",
+    "expected_answer": "TypeScript is JavaScript with a type checker that disappears; covers how TS runs (tsc, node type-stripping), Python-to-JS mappings, truthiness and equality quirks, references and copies, and briefly classes.",
+    "source_pages": [
+      "data/courses/programming/typescript/notes/01-js-for-python-devs.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "generative-ai-113",
+    "category": "course",
+    "query": "Our RAG bot misses a one-sentence answer buried in a 90-line refunds page, and 'how long will it take?' mid-chat has no subject. How do chunking, query rewriting and reranking each fix a different failure?",
+    "expected_answer": "Covers chunking strategies (including index small, return large and a Pro Git experiment), query transformations and self-query filters, conversational query rewriting and history-aware retrieval, and reranking of a deep result list.",
+    "source_pages": [
+      "data/courses/generative-ai/02-rag-retrieval/notes/05-chunking-query-parsing-and-reranking.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "programming-111",
+    "category": "course",
+    "query": "How do I parse a JSON or XML response from a web API in Python and turn it into dicts and lists, and make the call itself?",
+    "expected_answer": "Web data in Python: json loads/dumps and file I/O, parsing XML, calling an API, and exercises.",
+    "source_pages": [
+      "data/courses/programming/python/02-informatics/notes/03-web-data-json-xml.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "data-engineering-102",
+    "category": "course",
+    "query": "What are the standard books, papers and docs behind dimensional modelling and data ingestion, and which papers actually changed claims in the course notes?",
+    "expected_answer": "Reference list for the ingest and modelling pillar: books (e.g. Kimball and Ross), core papers, standards and docs, posts and courses, with starred papers that changed a claim.",
+    "source_pages": [
+      "data/courses/data-engineering/02-ingest-and-modelling/references.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "programming-112",
+    "category": "course",
+    "query": "My TypeScript project has confusing import errors and tsconfig problems when I run files with node. What is a modern module setup, and what are .d.ts files and module augmentation?",
+    "expected_answer": "ES modules, a modern tsconfig.json, how to run TS, declaration files and module augmentation, arguing that most TypeScript pain is module and config pain.",
+    "source_pages": [
+      "data/courses/programming/typescript/notes/07-modules-and-tooling.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "data-science-106",
+    "category": "course",
+    "query": "In Andrew Ng's exercise for recognising handwritten digits, how do I do one-vs-all logistic regression across 10 classes and then use pre-trained neural-network weights to predict?",
+    "expected_answer": "Programming exercise 3: load 5000 20x20 digit images, train regularised one-vs-all logistic regression (about 94.9% training accuracy), and do forward propagation with provided neural network weights.",
+    "source_pages": [
+      "data/courses/data-science/01-classical-ml/practice/ng-machine-learning/ex3/ex3.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "data-analytics-110",
+    "category": "course",
+    "query": "We want a customer-segments dashboard in the browser by Friday; my first draft returns the whole customer table from one endpoint and paints a scatter of clusters. What's wrong with that and what's a better stack?",
+    "expected_answer": "Dashboard stack layers and routes from Python to a browser; the naive draft leaks 50,000 emails, ships a heavy library and refits on filter; fixes include precomputing labels, controlling payload and what the browser downloads.",
+    "source_pages": [
+      "data/courses/data-analytics/05-visualisation-and-storytelling/notes/06-dashboard-stacks-from-python-to-frontend.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "data-engineering-103",
+    "category": "course",
+    "query": "Who owns data across a company, how do access control, GDPR basics, catalogs, semantic layers and contracts fit together, and in what order do I study them?",
+    "expected_answer": "Overview of the architecture and governance pillar: warehouse/fabric/lakehouse/mesh, access control and personal data, catalog, semantic layer and contracts, with reading order and rules of thumb.",
+    "source_pages": [
+      "data/courses/data-engineering/07-architecture-and-governance/readme.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "ai-engineering-109",
+    "category": "course",
+    "query": "Which survey papers and books should I read to go deeper on context engineering for LLMs, and which are speculative rather than established?",
+    "expected_answer": "The reading list for context engineering: core papers (including the Mei et al. survey), speculative-track papers, ideas' origins, weekly papers, books, courses and talks.",
+    "source_pages": [
+      "data/courses/ai-engineering/02-context-engineering/references.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "data-science-107",
+    "category": "course",
+    "query": "Why do recurrent networks forget or explode on long inputs, what does the forget-gate bias do, and how did attention replace them for things like translation?",
+    "expected_answer": "Sequence models in PyTorch: the recurrent cell, vanishing gradients and the forget-gate bias, character models and sampling, word vectors, seq2seq and attention, autoencoders and when a sequence model earns its place.",
+    "source_pages": [
+      "data/courses/data-science/02-deep-learning/notes/05-sequence-models.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "data-science-108",
+    "category": "course",
+    "query": "I have thousands of labelled documents and someone suggests a transformer. What should I try first, how do I read the model, and which metrics matter?",
+    "expected_answer": "Text classification baseline: TF-IDF with a linear model that is quick, hard to beat on small data and readable by coefficients (revealing label leaks), classifier comparisons, dense features and metrics.",
+    "source_pages": [
+      "data/courses/data-science/03-nlp/notes/02-text-classification.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "programming-113",
+    "category": "course",
+    "query": "How do I find the longest root-to-leaf path in a binary tree? Walk me through the recursive thinking and base case.",
+    "expected_answer": "A first-principles guide to Maximum Depth of Binary Tree: trees are recursive, depth = 1 + max(left, right), the empty-tree base case, step-by-step solution and complexity.",
+    "source_pages": [
+      "data/courses/programming/drills/coding/dsa/trees/max-depth/thinking.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "ai-engineering-110",
+    "category": "course",
+    "query": "My assistant avoided injection but then said something offensive, repeated a stranger's phone number pasted into a ticket, and refused a refund because 'chargeback' looked like fraud. Where do content classifiers go and how do I measure them?",
+    "expected_answer": "Guardrail models as classifiers with a policy: placement, measuring false positives and negatives on your own traffic, latency and cascades, refusals as errors, harm and fairness, detecting generated text and frameworks.",
+    "source_pages": [
+      "data/courses/ai-engineering/09-safety-and-security/notes/03-guardrail-models.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "data-engineering-104",
+    "category": "course",
+    "query": "A password sat in our repo, someone resized the warehouse in the console, and a change went straight to production. What practices (environments, CI for models, secrets, IaC) stop wrong numbers from shipping?",
+    "expected_answer": "DataOps: the path of a change, separate environments, CI that builds only changed models and catches a bad PR with tests, CI for DAGs, secrets and config, and infrastructure as code.",
+    "source_pages": [
+      "data/courses/data-engineering/05-quality-and-observability/notes/06-dataops.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "data-science-109",
+    "category": "course",
+    "query": "Reviewers correct my model's mistakes and I treat those corrections as free labels. What are they not telling me, how do I detect noisy labels, and how large an audit should I run?",
+    "expected_answer": "Corrections only label what the model chose to show; covers labeller agreement versus correctness, noise shapes, finding wrong labels, rules instead of hand labels, which rows to label first, correction rate, random audits and sample size.",
+    "source_pages": [
+      "data/courses/data-science/01-classical-ml/notes/14-learning-from-corrections.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "programming-114",
+    "category": "course",
+    "query": "Using the Anthropic SDK from TypeScript, how do I type content blocks, handle stop_reason, stream, call tools and get validated structured output?",
+    "expected_answer": "TypeScript for AI apps: a messages request, content blocks as a discriminated union, stop_reason handling, streaming with async, tool use, structured output with zod, and errors, retries and refusals.",
+    "source_pages": [
+      "data/courses/programming/typescript/notes/09-typescript-for-ai-apps.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "ai-engineering-111",
+    "category": "course",
+    "query": "My agent makes users repeat themselves between sessions, but when it remembers it acts on an old address with full confidence. How should I decide what to store, how to keep it from going stale, and how memory competes for the window?",
+    "expected_answer": "Memory as the mechanism by which context outlives a window: memory types and taxonomies, structured note-taking, index-plus-detail, memory hygiene, short-term state, the memory loop and production designs.",
+    "source_pages": [
+      "data/courses/ai-engineering/02-context-engineering/notes/06-memory.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "data-science-110",
+    "category": "course",
+    "query": "There's a Kaggle-style competition with breath-by-breath time series where each row has flow and pressure readings. Should I build a sequence model like an LSTM with k-fold training, or use gradient boosting on features, and which boosting library would I pick?",
+    "expected_answer": "The LSTM starter notebook loads breath-level sequences, builds a Dataset and trains a PyTorch LSTM with k-fold CV; the boosting note compares XGBoost, LightGBM, CatBoost and others on tabular data, finding accuracy is within noise and differences lie in speed, categorical handling and tuning order.",
+    "source_pages": [
+      "data/courses/data-science/02-deep-learning/practice/deep-learning-starter-simple-lstm.md",
+      "data/courses/data-science/01-classical-ml/notes/07-boosting-in-practice.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "data-science-111",
+    "category": "course",
+    "query": "I want to implement linear regression with gradient descent myself and also know which classical model family to try first on a table and how to tell too simple from too flexible. Where do I look?",
+    "expected_answer": "Supervised learning surveys kNN, linear models, naive Bayes, trees, SVMs and small nets with the complexity knob for each; Ng's exercise 1 implements the cost function and gradient descent for one-variable linear regression with a convergence plot.",
+    "source_pages": [
+      "data/courses/data-science/01-classical-ml/notes/02-supervised-learning.md",
+      "data/courses/data-science/01-classical-ml/practice/ng-machine-learning/ex1/ex1.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "interviewing-108",
+    "category": "course",
+    "query": "In live interviews I freeze: how should I narrate while coding a timed challenge, and how do I respond when a panel attacks my RAG design and one of their objections is actually right?",
+    "expected_answer": "The coding study guide teaches the narration method and plan-code-test cycle; the RAG defense example shows challenge-and-response and how to adapt visibly when a challenge is valid.",
+    "source_pages": [
+      "data/courses/interviewing/rounds/coding-challenge/study-guide.md",
+      "data/courses/interviewing/rounds/case-study/examples/aie-track/rag-pipeline-defense.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "ai-engineering-112",
+    "category": "course",
+    "query": "My graph agent turns a user's question into Cypher and runs it against our database. How do I generate and verify the query reliably, and how do I make sure the model can't do damage through the query or tool call?",
+    "expected_answer": "Text-to-Cypher works as a generate-then-verify loop with whitelisted labels/relationship types and parameterised entity names; the sandboxing note treats a tool call as a semi-trusted request with a policy engine, isolation, egress control and boundary testing.",
+    "source_pages": [
+      "data/courses/ai-engineering/09-safety-and-security/notes/04-tool-and-execution-sandboxing.md",
+      "data/courses/ai-engineering/05-graph-engineering/notes/11-kg-rag-and-text-to-cypher.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "interviewing-109",
+    "category": "course",
+    "query": "An interviewer wants me to defend a project I built, and the project is an evaluation system for an LLM product. How do I defend design decisions against rejected alternatives, and what would a strong eval design cover?",
+    "expected_answer": "The project deep-dive round checks ownership depth, decision defense and honesty about boundaries; the eval-harness example designs an evaluation system with clarifying questions, requirements, pipeline, trade-offs, shortcomings and measurement.",
+    "source_pages": [
+      "data/courses/interviewing/rounds/project-deep-dive/readme.md",
+      "data/courses/interviewing/rounds/system-design-round/examples/eval-harness.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "generative-ai-114",
+    "category": "course",
+    "query": "After I rebuild a GPT-2 style model from scratch commit by commit, I'd like to understand how the model is later tuned against a learned reward and how that goes wrong with reward hacking and overoptimisation.",
+    "expected_answer": "The build-nanoGPT readme describes a clean step-by-step GPT-2 reproduction with a video walk-through; the RLHF failure modes note covers reward hacking, overoptimisation against a reward model and the alignment tax.",
+    "source_pages": [
+      "data/courses/generative-ai/09-llms-from-scratch/practice/nn-zero-to-hero/nanogpt/build-nanogpt/readme.md",
+      "data/courses/generative-ai/05-rl/notes/12-rlhf-failure-modes.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "interviewing-110",
+    "category": "course",
+    "query": "For an interview I need to design a voice agent that places thousands of phone calls and scores them, and also answer breadth questions crisply. How do I structure the design and phrase answers in 60 seconds with a deeper follow-up?",
+    "expected_answer": "The voice-agent example splits a real-time call loop from a slower scoring pipeline within the five-step design process; the technical-questions guide teaches the 60-second answer plus one deeper level, the honest-gap move and trade-off pairs.",
+    "source_pages": [
+      "data/courses/interviewing/rounds/system-design-round/examples/voice-agent.md",
+      "data/courses/interviewing/rounds/technical-questions/study-guide.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "generative-ai-115",
+    "category": "course",
+    "query": "I built a deep research agent from a single while loop with planning, compaction and an LLM judge. How would I evaluate a system like that when the backlog is real, the calibration sample is small and my grader may be getting the wrong input?",
+    "expected_answer": "The deep-research note builds the framework-free tool loop with planning/think tools, compaction at 80% context and a RACE judge; the eval case study covers routing versus domain evals, gate ladders, grounding checks and grader selection with the right ground truth.",
+    "source_pages": [
+      "data/courses/generative-ai/07-agentic-applications/notes/02-deep-research-bot.md",
+      "data/courses/generative-ai/08-eval/notes/13-case-study-support-agent.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "ai-engineering-113",
+    "category": "course",
+    "query": "We extract entities with an LLM across a huge corpus on a GPU cluster to build a knowledge graph. What silent correctness risk affects the graph, and what silent platform misconfiguration can wreck throughput?",
+    "expected_answer": "Building KGs: extraction is easy but entity resolution is load-bearing since a false merge corrupts multi-hop answers; the platform note shows NUMA binding, unpinned buffers and NCCL falling back to TCP as silent costs.",
+    "source_pages": [
+      "data/courses/ai-engineering/05-graph-engineering/notes/10-building-kgs-with-llms.md",
+      "data/courses/ai-engineering/07-inference-engineering/notes/03-the-platform.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "programming-115",
+    "category": "course",
+    "query": "I'm practising explaining code out loud: how should I trace a placement function whose vertical flag seems to do nothing, and how do I reason about picking the most intervals that don't overlap?",
+    "expected_answer": "The Battleship answer review traces place_ship, where the else branch behaves like horizontal placement, and critiques how to state the actual cells; the activity-selection guide derives the earliest-finish-first greedy with brute-force comparison and complexity.",
+    "source_pages": [
+      "data/courses/programming/drills/coding/battleship/solutions/comp-3.md",
+      "data/courses/programming/drills/coding/dsa/greedy/activity-selection/thinking.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "generative-ai-116",
+    "category": "course",
+    "query": "How do I check that a hand-written implementation agrees with a trusted reference, and how should I measure and grade a non-deterministic AI system using repeated runs and error bars?",
+    "expected_answer": "The eval pillar overview covers defining correctness, building tasks, trustworthy graders, repeated runs and reading results with error bars; the micrograd chapter writes backpropagation in about 100 lines that matches PyTorch to every printed digit.",
+    "source_pages": [
+      "data/courses/generative-ai/08-eval/readme.md",
+      "data/courses/generative-ai/09-llms-from-scratch/notes/01-micrograd.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "data-engineering-105",
+    "category": "course",
+    "query": "Six months after a model shipped nobody knows which data or parameters produced it. How do I track runs and registry versions, and how can the underlying table formats and snapshots help reproduce the training data?",
+    "expected_answer": "The warehouse/lakehouse pillar covers open table formats, lakehouse and streaming; the tracking note covers MLflow runs, registry labels, retraining gates, rollback and choosing the run.",
+    "source_pages": [
+      "data/courses/data-engineering/04-warehouse-lakehouse-streaming/readme.md",
+      "data/courses/data-engineering/06-ml-platform/notes/02-experiment-tracking-and-model-registry.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "generative-ai-117",
+    "category": "course",
+    "query": "I'd like to build a language model from scratch starting with derivatives. How does estimating a slope numerically with a small h lead into backpropagation, and where does the whole path to GPT-2 go?",
+    "expected_answer": "The micrograd lecture notebook starts with numerical slopes of a function and builds gradients on expressions; the pillar readme maps micrograd, makemore and nanoGPT as the full stack from the chain rule to GPT-2.",
+    "source_pages": [
+      "data/courses/generative-ai/09-llms-from-scratch/practice/nn-zero-to-hero/micrograd/micrograd-lecture-second-half-roughly.md",
+      "data/courses/generative-ai/09-llms-from-scratch/readme.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "generative-ai-118",
+    "category": "course",
+    "query": "Which Python libraries do the course notebooks assume, and how do I estimate the price of an agent run where every step re-reads the whole context?",
+    "expected_answer": "The general-resources page lists the Python/ML toolchain libraries and non-pillar links; the agent-cost note prices a multi-step run (each step re-reads earlier context) and divides by success rate.",
+    "source_pages": [
+      "data/courses/generative-ai/00-start-here/references.md",
+      "data/courses/generative-ai/03-agentic-foundations/notes/01b-what-an-agent-costs.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "neg-course-001",
+    "category": "negative",
+    "query": "How do I bake a loaf of sourdough bread at home?",
+    "expected_answer": "",
+    "source_pages": [],
+    "difficulty": "hard",
+    "negative": true
+  },
+  {
+    "id": "neg-course-002",
+    "category": "negative",
+    "query": "What were the main causes of the French Revolution?",
+    "expected_answer": "",
+    "source_pages": [],
+    "difficulty": "hard",
+    "negative": true
+  },
+  {
+    "id": "neg-course-003",
+    "category": "negative",
+    "query": "How do I replace a flat bicycle tyre?",
+    "expected_answer": "",
+    "source_pages": [],
+    "difficulty": "hard",
+    "negative": true
+  },
+  {
+    "id": "neg-course-004",
+    "category": "negative",
+    "query": "Explain how to play the Sicilian Defence in chess openings.",
+    "expected_answer": "",
+    "source_pages": [],
+    "difficulty": "hard",
+    "negative": true
+  },
+  {
+    "id": "neg-course-005",
+    "category": "negative",
+    "query": "How do I write a Swift UI view that animates a button press on iOS?",
+    "expected_answer": "",
+    "source_pages": [],
+    "difficulty": "hard",
+    "negative": true
+  },
+  {
+    "id": "neg-course-006",
+    "category": "negative",
+    "query": "What is the capital gains tax rate for short-term trades in Canada?",
+    "expected_answer": "",
+    "source_pages": [],
+    "difficulty": "hard",
+    "negative": true
+  },
+  {
+    "id": "neg-course-007",
+    "category": "negative",
+    "query": "How do I do a heel-toe downshift when driving a manual car?",
+    "expected_answer": "",
+    "source_pages": [],
+    "difficulty": "hard",
+    "negative": true
+  },
+  {
+    "id": "neg-course-008",
+    "category": "negative",
+    "query": "How can I learn conversational Japanese kanji in three months?",
+    "expected_answer": "",
+    "source_pages": [],
+    "difficulty": "hard",
+    "negative": true
+  },
+  {
+    "id": "neg-course-009",
+    "category": "negative",
+    "query": "How do I configure an nginx reverse proxy with Lets Encrypt on Ubuntu?",
+    "expected_answer": "",
+    "source_pages": [],
+    "difficulty": "hard",
+    "negative": true
+  },
+  {
+    "id": "neg-course-010",
+    "category": "negative",
+    "query": "What exercises build a stronger lower back?",
+    "expected_answer": "",
+    "source_pages": [],
+    "difficulty": "hard",
+    "negative": true
   }
 ]

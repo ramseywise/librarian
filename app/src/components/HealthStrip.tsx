@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { apiFetch } from "../utils/api";
 
 interface Metric {
   value: number;
@@ -35,7 +36,7 @@ export function HealthStrip() {
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/wiki/health")
+    apiFetch("/api/wiki/health")
       .then((r) => (r.ok ? (r.json() as Promise<Snapshot>) : Promise.reject(new Error(`HTTP ${r.status}`))))
       .then((body) => {
         if (!cancelled) setSnapshot(body);

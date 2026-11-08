@@ -1,8 +1,13 @@
-"""Access control for the API: who the caller is, chat rate limit, daily spend caps, request logs.
+"""Access control for the API: who the caller is, CSRF, rate limits, daily spend caps, request logs.
+
+A caller is a bearer credential (an `lk_` key, or the bootstrap token) or a session cookie set by
+a login. Cookie-authenticated writes must echo the CSRF cookie in a header (double submit), and a
+cookie-authenticated WebSocket must come from our own origin; a bearer credential is never sent by
+the browser on its own, so it needs neither.
 
 The day's spend is a row of `chat_usage` in the database, so the cap holds across workers and
-restarts. The requests-per-window limit is a per-process burst guard: it is in memory and each
-worker counts its own.
+restarts. The sign-in limit is shared too (`accounts.rate_limits`); the chat requests-per-window
+limit is a per-process burst guard: in memory, each worker counts its own.
 """
 
 from __future__ import annotations
@@ -17,15 +22,16 @@ from collections import deque
 from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Annotated, Any, NoReturn
+from urllib.parse import urlsplit
 
 from fastapi import Depends, HTTPException, WebSocketException
 from sqlalchemy import Engine, Select, func, select
 from sqlalchemy.exc import SQLAlchemyError
-from starlette.requests import HTTPConnection
+from starlette.requests import HTTPConnection, Request
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from librarian import accounts
-from librarian.accounts import User
+from librarian.accounts import User, rate_limits
 from librarian.config import Settings, get_settings
 from librarian.db import get_engine, tables, upsert
 from librarian.log_config import get_logger
@@ -33,8 +39,16 @@ from librarian.pricing import PRICES, TokenUsage, cost_usd, price_for
 
 log = get_logger(__name__)
 
-# Open without a token even when one is set: orchestrator probes carry no credentials.
-PUBLIC_PATHS = frozenset({"/healthz", "/readyz"})
+# Open without a credential: orchestrator probes, and the sign-in routes themselves.
+# /admin/reload checks its own credential: a webhook signature, or an admin (api/main.py).
+PUBLIC_PATHS = frozenset(
+    {"/healthz", "/readyz", "/api/auth/config", "/api/legal/third-party", "/admin/reload"}
+)
+PUBLIC_PREFIXES = ("/auth/",)
+SESSION_COOKIE = "lb_session"
+# Readable by the page (not HttpOnly): the client copies it into CSRF_HEADER on every write.
+CSRF_COOKIE = "lb_csrf"
+CSRF_HEADER = "x-csrf-token"
 # Browsers cannot set headers on a WebSocket, so the client sends the token as a subprotocol:
 # `new WebSocket(url, ["bearer", token])`. The server accepts with "bearer".
 WS_SUBPROTOCOL = "bearer"
@@ -76,41 +90,84 @@ def _deny(conn: HTTPConnection, status: int, detail: str) -> NoReturn:
     raise HTTPException(status_code=status, detail=detail, headers=headers)
 
 
-def _resolve_user(conn: HTTPConnection, settings: Settings) -> User:
-    """An `lk_` key is that key's user; the bootstrap token, or no token configured, the owner."""
+def _resolve_user(conn: HTTPConnection, settings: Settings) -> tuple[User, bool]:
+    """(user, by cookie). A bearer credential wins over a cookie.
+
+    An `lk_` key is that key's user, the bootstrap token the owner, a session cookie its user.
+    Open mode (no token, no login configured) is the owner whatever is sent.
+    """
     supplied = _supplied_credential(conn)
     engine = get_engine()
     if supplied is not None and accounts.is_api_key(supplied):
         user = accounts.resolve_key(engine, supplied)
         if user is None:
             _deny(conn, 401, "Unknown or revoked API key.")
-        return user
-    if not settings.api_token or token_matches(supplied, settings.api_token):
-        return accounts.ensure_owner(engine, settings.owner_email)
-    _deny(conn, 401, "Missing or invalid API token.")
+        return user, False
+    if settings.open_mode or (settings.api_token and token_matches(supplied, settings.api_token)):
+        return accounts.ensure_owner(engine, settings.owner_email), False
+    if supplied is not None:
+        _deny(conn, 401, "Missing or invalid API token.")
+    cookie = conn.cookies.get(SESSION_COOKIE)
+    user = accounts.resolve_session(engine, cookie) if cookie else None
+    if user is None:
+        _deny(conn, 401, "Not signed in.")
+    return user, True
+
+
+def _csrf_ok(conn: HTTPConnection) -> bool:
+    cookie = conn.cookies.get(CSRF_COOKIE)
+    return bool(cookie) and token_matches(conn.headers.get(CSRF_HEADER), cookie)
+
+
+def same_origin(conn: HTTPConnection, settings: Settings) -> bool:
+    """The Origin header names this host, the public URL, or a CORS origin. No Origin is not ours."""
+    origin = conn.headers.get("origin")
+    if not origin:
+        return False
+    allowed = {o.rstrip("/") for o in settings.cors_origin_list}
+    if settings.public_url:
+        allowed.add(settings.public_url.rstrip("/"))
+    return origin.rstrip("/") in allowed or urlsplit(origin).netloc == conn.headers.get("host")
+
+
+def is_public(path: str) -> bool:
+    return path in PUBLIC_PATHS or path.startswith(PUBLIC_PREFIXES)
 
 
 def current_user(conn: HTTPConnection) -> User | None:
     """App-level dependency: the request's `User`, also set as `request.state.user`.
 
     401 (HTTP) or a refused handshake (WebSocket) without a valid credential; 403 for a write
-    (any method but GET, HEAD, OPTIONS) with a read-only key. None only on /healthz and /readyz.
-    Settings are read on each call so a test or a restart-less env change applies. A plain
+    (any method but GET, HEAD, OPTIONS) with a read-only key, or by cookie without the CSRF
+    header; a refused handshake for a cookie WebSocket from another origin. None on the public
+    paths. Settings are read on each call so a test or a restart-less env change applies. A plain
     function, so FastAPI runs its database lookups in the threadpool.
     """
-    if conn.url.path in PUBLIC_PATHS:
+    if is_public(conn.url.path):
         return None
+    return authenticate(conn)
+
+
+def authenticate(conn: HTTPConnection) -> User:
+    """`current_user` without the public-path exemption, for a public route that may also be
+    called by a signed-in user (POST /admin/reload: a webhook signature, or an admin)."""
+    settings = get_settings()
     try:
-        user = _resolve_user(conn, get_settings())
+        user, by_cookie = _resolve_user(conn, settings)
     except SQLAlchemyError as e:
         log.error("auth.lookup_failed", error=str(e))
         _deny(conn, 503, "Accounts database unavailable.")
-    if (
-        conn.scope["type"] == "http"
-        and conn.scope["method"] not in _SAFE_METHODS
-        and "write" not in user.scopes
-    ):
+    writes = conn.scope["type"] == "http" and conn.scope["method"] not in _SAFE_METHODS
+    if writes and "write" not in user.scopes:
         _deny(conn, 403, "This API key is read-only.")
+    if by_cookie and writes and not _csrf_ok(conn):
+        _deny(conn, 403, "Missing or wrong CSRF token.")
+    if by_cookie and conn.scope["type"] == "websocket" and not same_origin(conn, settings):
+        _deny(conn, 403, "Cross-origin WebSocket refused.")
+    try:
+        accounts.touch_seen(get_engine(), user)
+    except SQLAlchemyError as e:
+        log.warning("auth.touch_failed", error=str(e))
     conn.state.user = user
     return user
 
@@ -135,6 +192,9 @@ Admin = Annotated[User, Depends(require_admin)]
 
 class ChatLimiter:
     """Per-process burst guard plus the shared per-UTC-day spend caps for the chat route.
+
+    The requests-per-window limit (`_hits`) is per process on purpose: with N workers a client can
+    send up to N times the limit. The spend caps, which bound the cost, are the shared ones.
 
     Spend is a row per user and day; the global cap is their sum. The engine is looked up on
     each call unless one is given, so two limiters on one database behave as two workers.
@@ -259,6 +319,72 @@ class ChatLimiter:
 
 
 chat_limiter = ChatLimiter()
+
+
+class AuthLimiter:
+    """Requests per client address per window to the sign-in routes, counted across all workers.
+
+    The count is a row in the database (`accounts.rate_limits`), so `--workers N` and replicas
+    share one limit instead of multiplying it. A small in-process window sits in front as a burst
+    guard: it answers floods without a query and still holds when the database is down.
+
+    The address is the TCP peer, or the forwarded one when uvicorn trusts the proxy
+    (LIBRARIAN_FORWARDED_ALLOW_IPS). The key is the address for the whole /auth/* group.
+
+    Fail open: if the shared count cannot be read, the request is admitted (logged), and only the
+    per-process guard applies. Sign-in needs the same database to create a session, so a flood
+    during an outage cannot get anyone in; refusing every sign-in on a limiter fault would turn a
+    counter problem into a full login outage.
+    """
+
+    def __init__(self, engine: Engine | None = None) -> None:
+        self._engine = engine
+        self._hits: dict[str, deque[float]] = {}
+
+    def _db(self) -> Engine:
+        return self._engine or get_engine()
+
+    def _deny(self, wait: int) -> NoReturn:
+        raise HTTPException(
+            status_code=429,
+            detail=f"Too many sign-in requests. Retry in {wait}s.",
+            headers={"Retry-After": str(wait)},
+        )
+
+    def __call__(self, request: Request) -> None:
+        """Route dependency: 429 with Retry-After when the caller's address is over the limit."""
+        settings = get_settings()
+        limit, window = settings.auth_rate_limit, settings.auth_rate_window_s
+        if limit <= 0:
+            return
+        addr = request.client.host if request.client else ""
+        now = time.monotonic()
+        for a in [a for a, q in self._hits.items() if not q or now - q[-1] >= window]:
+            del self._hits[a]
+        hits = self._hits.setdefault(addr, deque())
+        while hits and now - hits[0] >= window:
+            hits.popleft()
+        if len(hits) >= limit:
+            self._deny(max(1, int(window - (now - hits[0])) + 1))
+        hits.append(now)
+        try:
+            shared = rate_limits.hit(self._db(), f"auth:{addr}", window)
+        except SQLAlchemyError as e:
+            log.error("auth.rate_limit_unavailable", error=str(e), fail="open")
+            return
+        if shared.hits > limit:
+            self._deny(shared.retry_after_s)
+
+    def reset(self) -> None:
+        """Forget both the in-process window and the shared counters."""
+        self._hits.clear()
+        try:
+            rate_limits.clear(self._db())
+        except SQLAlchemyError as e:
+            log.warning("auth.rate_limit_reset_failed", error=str(e))
+
+
+auth_limiter = AuthLimiter()
 
 
 _INLINE_SCRIPT_RE = re.compile(r"<script(?P<attrs>[^>]*)>(?P<body>.*?)</script>", re.S | re.I)

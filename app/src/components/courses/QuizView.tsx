@@ -4,6 +4,7 @@ import { InlineMarkup } from "./FlashcardsView";
 import { quizOrder } from "./studyQueue";
 import { pageTitle, useDocumentTitle } from "./useDocumentTitle";
 import "./courses.css";
+import { apiFetch } from "../../utils/api";
 
 function shuffled<T>(items: T[]): T[] {
   const out = [...items];
@@ -32,7 +33,7 @@ export function QuizView({ quizId: route }: { quizId: string }) {
     let cancelled = false;
     setQuiz(null);
     setError(null);
-    fetch(`/api/courses/quiz/${quizId}`)
+    apiFetch(`/api/courses/quiz/${quizId}`)
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(r.status === 404 ? "No quiz here" : `HTTP ${r.status}`))))
       .then((q: Quiz) => {
         if (cancelled) return;
@@ -59,7 +60,7 @@ export function QuizView({ quizId: route }: { quizId: string }) {
     setPicked(choice);
     setSaveFailed(false);
     try {
-      const r = await fetch("/api/courses/quiz-results", {
+      const r = await apiFetch("/api/courses/quiz-results", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ quiz: quiz.id, question: question.id, choice }),

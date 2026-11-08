@@ -1,40 +1,46 @@
-name: Nightly eval-gate
+name: Eval gate
 
-# Retrieval ranking against the four gated arms (sem, nofts, uniform, course). Not on every PR:
-# it needs the embedding model and builds the whole index, ~10 min cold.
+# Retrieval ranking against the six gated arms (sem, nofts, uniform, course, graph, multihop).
+# Nightly, and on pull requests that touch the retrieval code or the evals (not every PR: it needs
+# the embedding model and builds the whole index, ~10 min cold).
 #
-# CI has no data/wiki/private/, and the floors in evals/run_eval.py were measured with it. If this
-# job fails with only small misses on a fresh runner, compare against a local run before touching
-# a floor: see "Eval-gate on a clean checkout" in the PR notes.
+# CI has no data/wiki/private/ or other gitignored files. The floors in evals/run_eval.py were
+# measured on a checkout of tracked files only, so a failure here is a real ranking change.
 on:
   schedule:
     - cron: "17 3 * * *"
+  pull_request:
+    paths:
+      - "src/librarian/retrieval/**"
+      - "evals/**"
+      - "Makefile"
+      - ".github/workflows/eval-gate.yml"
   workflow_dispatch:
 
 concurrency:
-  group: eval-gate
-  cancel-in-progress: false
+  group: eval-gate-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   eval-gate:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7.6.0
         with:
           enable-cache: true
       # sentence-transformers is in the `api` extra.
       - run: uv sync --group dev --extra api
       # The embedding model (all-MiniLM-L6-v2, ~90 MB). Keyed on the model name: it changes only
       # when the code names another one.
-      - uses: actions/cache@v4
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ~/.cache/huggingface
           key: hf-all-MiniLM-L6-v2
       # The search index and the embedding cache. The embedding cache is content-addressed, so a
       # stale restore only costs the pages that changed; the index is rebuilt when its inputs differ.
-      - uses: actions/cache@v4
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: |
             .wiki_index.duckdb

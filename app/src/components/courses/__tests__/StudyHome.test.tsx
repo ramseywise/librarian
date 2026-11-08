@@ -34,7 +34,7 @@ describe("StudyHome", () => {
     const fetchMock = stub(home);
     render(<StudyHome />);
     expect(await screen.findByText("3 due today, 5 new.")).toBeInTheDocument();
-    expect(fetchMock).toHaveBeenCalledWith("/api/courses/study");
+    expect(fetchMock).toHaveBeenCalledWith("/api/courses/study", expect.anything());
     expect(screen.getByRole("link", { name: "Flashcards (2 due, 1 new)" })).toHaveAttribute("href", "#/flashcards/c1/m1?due");
     expect(screen.getByRole("link", { name: "Quiz (1 due, 4 new)" })).toHaveAttribute("href", "#/quiz/c1/m1?due");
     // A module with no cards gets no flashcards link.

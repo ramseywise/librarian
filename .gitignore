@@ -124,3 +124,6 @@ src/librarian/tools/codemap/repos.local.txt
 
 # Prebuilt content mounted into the container (compose ./content); built locally, never tracked.
 /content/
+
+# ./librarian wrapper state (image in use, the one before it)
+.ops/
