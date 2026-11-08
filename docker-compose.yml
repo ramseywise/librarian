@@ -29,8 +29,9 @@ services:
       librarian:
         condition: service_healthy
     ports:
-      - "80:80"
-      - "443:443"
+      # Host ports, overridable so a second stack (tests/e2e/run_compose.sh) can run beside this one.
+      - "${LIBRARIAN_HTTP_PORT:-80}:80"
+      - "${LIBRARIAN_HTTPS_PORT:-443}:443"
     environment:
       - LIBRARIAN_DOMAIN=${LIBRARIAN_DOMAIN:-localhost}
     volumes:
@@ -39,6 +40,24 @@ services:
       - caddy-config:/config
     restart: unless-stopped
 
+  # One-shot indexer: builds var/index/<id>.duckdb and points `current` at it before the API
+  # starts (a corpus already built is reused, so a restart is quick). After a content change:
+  #   docker compose run --rm indexer       every API process picks up the new build within ~5 s.
+  # Same mounts as the API, private masks included, so the index never holds a private page.
+  indexer:
+    image: librarian:local
+    depends_on:
+      prepare:
+        condition: service_completed_successfully
+    command: ["librarian", "index", "build"]
+    volumes:
+      - ./data:/app/data:ro
+      - librarian-var:/app/var
+    tmpfs:
+      - /app/data/wiki/private
+      - /app/data/courses/private
+    restart: "no"
+
   librarian:
     image: librarian:local
     build:
@@ -46,6 +65,8 @@ services:
       dockerfile: Dockerfile
     depends_on:
       prepare:
+        condition: service_completed_successfully
+      indexer:
         condition: service_completed_successfully
       postgres:
         condition: service_healthy
@@ -62,6 +83,10 @@ services:
       - LIBRARIAN_CONTENT_DIR=/app/content
       # User state (attempts, chat spend). POSTGRES_PASSWORD comes from .env or the shell.
       - DATABASE_URL=postgresql://librarian:${POSTGRES_PASSWORD:-librarian-dev}@postgres:5432/librarian
+      # The indexer service builds the index; the API only opens it.
+      - LIBRARIAN_INDEX_AUTOBUILD=0
+      # uvicorn workers per container. State is in Postgres and the index file, so 2+ is safe.
+      - LIBRARIAN_API_WORKERS=${LIBRARIAN_API_WORKERS:-2}
     volumes:
       # Content, read-only.
       - ./data:/app/data:ro

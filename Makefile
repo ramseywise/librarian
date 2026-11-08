@@ -2,7 +2,7 @@
 # repo targets below must keep working on a machine without ~/.claude set up.
 -include ~/.claude/Makefile.common
 
-.PHONY: slides slides-all flashcards deck-graph deck-graph-check deck-check app app-build deploy-content obsidian api ui mcp index-rebuild install-ui install-api setup-ollama test test-watch test-e2e install-browsers ingest scrape scrape-sessions scrape-docs scrape-repos lint lint-raw help codemap-reindex codemap-api install-codemap install-presenter eval eval-live eval-nofts eval-gate e2e-container
+.PHONY: slides slides-all flashcards deck-graph deck-graph-check deck-check app app-build deploy-content obsidian api ui mcp index-rebuild install-ui install-api setup-ollama test test-watch test-e2e install-browsers ingest scrape scrape-sessions scrape-docs scrape-repos lint lint-raw help codemap-reindex codemap-api install-codemap install-presenter eval eval-live eval-nofts eval-gate e2e-container e2e-compose
 
 # The private tmpfs masks need their mountpoints on the host: the data mount is read-only.
 LOCAL_COMPOSE = docker compose -f docker-compose.yml -f docker-compose.local.yml
@@ -23,7 +23,7 @@ obsidian:
 	open -a Obsidian $(PWD)/data/wiki
 
 api:
-	LIBRARIAN_DEV_BUILD_SLIDES=1 uv run --extra api librarian api --reload --port 8000
+	LIBRARIAN_DEV_BUILD_SLIDES=1 LIBRARIAN_DEV_WATCH=1 uv run --extra api librarian api --reload --port 8000
 
 mcp:
 	uv run librarian mcp
@@ -129,6 +129,9 @@ test-e2e:
 e2e-container:  ## Build the image, run it with a test token and run the e2e set against it (SKIP_BUILD=1, KEEP=1, E2E_PORT)
 	tests/e2e/run_container.sh
 
+e2e-compose:  ## Whole stack behind Caddy with 2 API replicas on Postgres, e2e through TLS (REPLICAS, SKIP_BUILD=1, KEEP=1)
+	tests/e2e/run_compose.sh
+
 install-browsers:
 	uv run playwright install chromium
 
@@ -200,6 +203,7 @@ help:
 	@echo "eval-live        — eval the live sem arm (gated against its baseline); save live baseline"
 	@echo "eval-nofts       — eval the degraded no-fts arm (gated); save nofts baseline"
 	@echo "e2e-container    — build the image, run it with a token, e2e against it (tests/e2e/run_container.sh)"
+	@echo "e2e-compose      — compose stack behind Caddy, 2 API replicas, e2e through TLS (tests/e2e/run_compose.sh)"
 	@echo "eval-gate        — run every gated live arm (sem, nofts, uniform, course); no baseline written"
 
 # Course checks: stdlib ports of the learn-ai-engineering scripts, run over data/courses/.

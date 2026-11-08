@@ -16,9 +16,11 @@ torch, fastapi) load only for the verbs that need them.
     librarian courses check chapters|curriculum|links|drills|quiz|manifest|crosswalk|smoke-labs
     librarian courses review findings|signals|score-eval
     librarian db upgrade|import-attempts               user-state database (DATABASE_URL)
+    librarian users add|list                           accounts
+    librarian keys create|list|revoke                  API keys (lk_…), each printed once
     librarian index build [--out FILE]                 build the search index file the servers read
     librarian mcp [--rebuild]                          the wiki MCP server (stdio)
-    librarian api [--port N] [--reload]                the FastAPI backend (uvicorn)
+    librarian api [--port N] [--workers N] [--reload]  the FastAPI backend (uvicorn)
 """
 
 from __future__ import annotations
@@ -106,6 +108,17 @@ GROUPS: dict[str, dict[str, Verb]] = {
             "librarian.db.cli:main", ("import-attempts",), "copy var/attempts.sqlite3 in, once"
         ),
     },
+    "users": {
+        "add": Verb("librarian.accounts.cli:main", ("users", "add"), "create a user"),
+        "list": Verb("librarian.accounts.cli:main", ("users", "list"), "list the users"),
+    },
+    "keys": {
+        "create": Verb(
+            "librarian.accounts.cli:main", ("keys", "create"), "new API key, shown once"
+        ),
+        "list": Verb("librarian.accounts.cli:main", ("keys", "list"), "list API keys"),
+        "revoke": Verb("librarian.accounts.cli:main", ("keys", "revoke"), "revoke an API key"),
+    },
     "courses": {
         "check": Verb("librarian.cli:_run_check", help="chapters|curriculum|links|drills|quiz|..."),
         "review": Verb("librarian.cli:_run_review", help="findings|signals|score-eval"),
@@ -168,6 +181,12 @@ def _run_api(argv: list[str]) -> int:
     ap.add_argument("--port", type=int, default=8000)
     ap.add_argument("--reload", action="store_true", help="restart on code changes")
     ap.add_argument(
+        "--workers",
+        type=int,
+        default=None,
+        help="worker processes (default LIBRARIAN_API_WORKERS, else 1); not with --reload",
+    )
+    ap.add_argument(
         "--insecure",
         action="store_true",
         help="allow a non-loopback host with no LIBRARIAN_API_TOKEN",
@@ -183,6 +202,10 @@ def _run_api(argv: list[str]) -> int:
     from librarian.log_config import configure_logging, get_logger
 
     settings = get_settings()
+    workers = settings.api_workers if args.workers is None else args.workers
+    if workers < 1 or (args.reload and workers > 1):
+        print("librarian api: --workers must be 1 or more, and 1 with --reload", file=sys.stderr)
+        return 2
     errors, warnings = find_problems(settings, host=args.host, insecure=args.insecure)
     for line in warnings:
         print(f"librarian api: warning: {line}", file=sys.stderr)
@@ -202,6 +225,7 @@ def _run_api(argv: list[str]) -> int:
         host=args.host,
         port=args.port,
         reload=args.reload,
+        workers=workers,
         access_log=False,
     )
     return 0
@@ -213,7 +237,7 @@ def _usage() -> str:
         lines.append(f"  {group}: " + ", ".join(verbs))
     lines += [
         "  mcp [--rebuild]",
-        "  api [--host H] [--port N] [--reload] [--insecure] [--check]",
+        "  api [--host H] [--port N] [--workers N] [--reload] [--insecure] [--check]",
         "",
         "Run a verb with --help for its options.",
     ]

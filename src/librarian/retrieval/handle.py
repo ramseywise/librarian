@@ -6,6 +6,8 @@ the file `current` points at (see `artifact`) with `read_only=True`, so any numb
 can serve the same build and none of them can write it.
 
 `reload()` (SIGHUP, `POST /admin/reload`) opens the build `current` now names and swaps it in.
+Those reach one process; every handle also notices a repointed `current` by itself within
+CURRENT_CHECK_INTERVAL_S of a query, so all workers and replicas follow a new build.
 A request that already holds a cursor finishes on the old build, because a cursor keeps its
 database alive after the handle lets go of it; the next `cursor()` gets the new one.
 
@@ -33,6 +35,9 @@ log = get_logger(__name__)
 
 # Dev mode: at most one stat() sweep of the corpus per interval.
 STALE_CHECK_INTERVAL_S = 5.0
+# Every mode: at most one look at where `current` points per interval. This is how a new build
+# reaches every worker and replica: a reload request or SIGHUP lands on one process only.
+CURRENT_CHECK_INTERVAL_S = 5.0
 
 State = Literal["ready", "building", "missing", "error"]
 
@@ -64,6 +69,7 @@ class IndexHandle:
         self._builder: threading.Thread | None = None
         self._fp: int | None = None
         self._last_check = 0.0
+        self._last_current_check = time.monotonic()
 
     # -- state -------------------------------------------------------------------------
 
@@ -195,10 +201,21 @@ class IndexHandle:
                 return
         self._start_build(base=self._path, wait=False)
 
+    def _check_current(self) -> None:
+        """Load the build `current` names if another process has repointed it."""
+        now = time.monotonic()
+        with self._lock:
+            if now - self._last_current_check < CURRENT_CHECK_INTERVAL_S:
+                return
+            self._last_current_check = now
+        if artifact.resolve_current(self.index_dir) != self._path:
+            self.load()
+
     # -- reading -----------------------------------------------------------------------
 
     def cursor(self) -> duckdb.DuckDBPyConnection:
         """A connection for one query, on the build loaded now. The caller closes it."""
+        self._check_current()
         if self.autobuild:
             self._check_stale()
         con = self._con

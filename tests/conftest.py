@@ -57,12 +57,16 @@ def _isolate_courses(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.fixture(autouse=True)
-def _isolate_study_state(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
+def _isolate_study_state(
+    tmp_path: Path, tmp_path_factory: pytest.TempPathFactory, monkeypatch: pytest.MonkeyPatch
+) -> Iterator[None]:
     """Keep tests off the real database, the old flashcard log and the slide build dir."""
     from librarian.courses import attempts, slides
     from librarian.db import engine as db_engine
 
-    url = f"sqlite:///{tmp_path / 'state' / 'librarian.sqlite3'}"
+    # Outside tmp_path: every API request opens the database (accounts), and many tests use
+    # tmp_path itself as the wiki or courses root.
+    url = f"sqlite:///{tmp_path_factory.mktemp('db') / 'librarian.sqlite3'}"
     monkeypatch.setattr(db_engine, "database_url", lambda: url)
     monkeypatch.setattr(attempts, "LEGACY_FLASHCARD_LOG", tmp_path / "state" / "flashcards.jsonl")
     monkeypatch.setattr(slides, "BUILD_DIR", tmp_path / "state" / "slides")

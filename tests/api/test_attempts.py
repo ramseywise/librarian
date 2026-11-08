@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 import pytest
+from sqlalchemy import create_engine
 
 from librarian.courses import attempts
 
@@ -49,8 +50,12 @@ def test_the_same_event_twice_is_stored_once() -> None:
     assert len(attempts.attempts()) == 1
 
 
-def test_a_store_that_cannot_be_written_reports_false(tmp_path: Path) -> None:
+def test_a_store_that_cannot_be_written_reports_false(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     (tmp_path / "state").write_text("a file where the state dir should be")
+    broken = create_engine(f"sqlite:///{tmp_path / 'state' / 'librarian.sqlite3'}")
+    monkeypatch.setattr(attempts, "get_engine", lambda: broken)
     assert attempts.record("flashcard", "k", "c/m", "knew") is False
 
 

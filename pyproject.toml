@@ -176,6 +176,7 @@ source_modules = [
     "librarian.retrieval",
     "librarian.wiki",
     "librarian.ingest",
+    "librarian.accounts",
     "librarian.db",
 ]
 forbidden_modules = [
@@ -190,7 +191,7 @@ type = "independence"
 modules = ["librarian.api", "librarian.mcp"]
 
 # Dependencies run downwards: entry points (api, mcp; independent of each other, see above) ->
-# agent (tool registry and chat loop, imported only by api and mcp) -> tools (librarian.tools: slides, presenter, codemap, cartographer) -> courses -> retrieval -> wiki -> ingest -> db (user-state tables; imports none of them). retrieval (the
+# agent (tool registry and chat loop, imported only by api and mcp) -> tools (librarian.tools: slides, presenter, codemap, cartographer) -> courses -> retrieval -> wiki -> ingest -> accounts (users and API keys) -> db (user-state tables; imports none of them). retrieval (the
 # index, ranking and the public search API) reads wiki pages through librarian.wiki.common, so it
 # sits above wiki. Two known upward edges are recorded here instead of hidden: wiki.gaps'
 # course-gap report imports courses.catalog/curriculum inside a function (the gap list needs the
@@ -208,6 +209,7 @@ layers = [
     "librarian.retrieval",
     "librarian.wiki",
     "librarian.ingest",
+    "librarian.accounts",
     "librarian.db",
 ]
 ignore_imports = [

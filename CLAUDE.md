@@ -51,20 +51,22 @@ commits). See `.claude/skills/README.md`.
 
 - `src/librarian/` — the library, installed as the `librarian` package: `config.py` (every path and
   setting; `LIBRARIAN_ROOT` or a `pyproject.toml` above the package locates the repo), `log_config.py`,
-  `cli.py`, `wiki/` (parser, health, telemetry, graph, rename, relinker, common), `retrieval/`
+  `cli.py`, `accounts/` (users, API keys; the API's `current_user` resolves them),
+  `wiki/` (parser, health, telemetry, graph, rename, relinker, common), `retrieval/`
   (index, ranking, search/read API, embeddings), `courses/` (catalog, curriculum, leitner, glossary) and `ingest/`
   (scrapers, ingest gate, manifest, raw lint).
 - Also inside the `librarian` package, in three layers (enforced by import-linter, `make lint-imports`):
   entry points `api/` (FastAPI, `librarian api`; routers in `api/routers/`, logic in the core) and `mcp/`
   (FastMCP, `librarian mcp`), independent of each other and using only the public names of
   `librarian.retrieval`; `agent/` (the tool registry and chat loop they share); `tools/` (`slides`, `presenter`, `codemap`, `cartographer`: what builds the media and content; they must not import api/mcp; `mcp`
-  imports codemap's tools); and the core below (`courses`, `retrieval`, `wiki`, `ingest`), which imports none of them.
+  imports codemap's tools); and the core below (`courses`, `retrieval`, `wiki`, `ingest`, `accounts`, `db`), which imports none of them.
 - `app/` — the React/Vite frontend only (`app/src/`, built to `app/dist/`, served by the API). The single
   `Dockerfile` at the repo root builds it and the API into one image.
 - Cartographer (`src/librarian/tools/cartographer/`: session facts, dashboard, weekly sweep) runs as `uv run cartographer`.
 - CLI: `librarian wiki stats|snapshot|check|gaps|log|ask|graph|rename|relink`,
   `librarian ingest triage|lint-raw|notion|linear|pdf`, `librarian scrape sessions|docs|repos|feeds|arxiv|bookmarks`,
-  `librarian courses check|review`, `librarian mcp [--rebuild]`, `librarian api`. Each is a thin dispatcher to the
+  `librarian courses check|review`, `librarian users add|list`, `librarian keys create|list|revoke`,
+  `librarian mcp [--rebuild]`, `librarian api`. Each is a thin dispatcher to the
   module's `main(argv)`, and `python -m librarian.<module>` works too.
 
 ---

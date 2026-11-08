@@ -18,6 +18,7 @@ from fastapi.testclient import TestClient
 from librarian.agent import loop as agent
 from librarian.agent import tools
 from librarian.api import main as main_module
+from librarian.api.routers import chat as chat_router
 from librarian.config import Settings, get_settings
 from librarian.retrieval import corpus, embeddings
 
@@ -334,7 +335,7 @@ def api(monkeypatch: pytest.MonkeyPatch) -> tuple[TestClient, list[tuple[str, An
         seen.append((query, history))
         yield {"type": "done"}
 
-    monkeypatch.setattr(main_module, "run_agent_stream", fake_stream)
+    monkeypatch.setattr(chat_router, "run_agent_stream", fake_stream)
     return TestClient(main_module.app), seen
 
 

@@ -104,6 +104,9 @@ class Settings(BaseSettings):
     dev_build_slides: bool = Field(
         default=False, validation_alias=_env("LIBRARIAN_DEV_BUILD_SLIDES")
     )
+    # Dev only (`make api` turns it on): watch data/wiki, push graph updates over /ws and rebuild
+    # the course catalog after an edit. Per process, so a deployment leaves it off.
+    dev_watch: bool = Field(default=False, validation_alias=_env("LIBRARIAN_DEV_WATCH"))
     # Where a deployment's prebuilt content lives (`<dir>/slides/<module>/...`). Default: var/content/current.
     override_content_dir: Path | None = Field(
         default=None, validation_alias=_env("LIBRARIAN_CONTENT_DIR")
@@ -116,6 +119,11 @@ class Settings(BaseSettings):
     # API access. With no token the API is open (local dev); with one, every /api route and the
     # websocket require `Authorization: Bearer <token>`. /healthz and /readyz are always open.
     api_token: str = Field(default="", validation_alias=_env("LIBRARIAN_API_TOKEN"))
+    # The admin that the bootstrap token and open mode act as (librarian.accounts). Other users
+    # sign in with an `lk_` key from `librarian keys create`.
+    owner_email: str = Field(
+        default="owner@localhost", validation_alias=_env("LIBRARIAN_OWNER_EMAIL")
+    )
     # Serve /docs, /redoc and /openapi.json (still behind the token when one is set).
     expose_docs: bool = Field(default=False, validation_alias=_env("LIBRARIAN_EXPOSE_DOCS"))
     # Comma-separated browser origins allowed by CORS. The Vite dev server by default.
@@ -124,15 +132,23 @@ class Settings(BaseSettings):
     )
     # The built web UI (`npm run build` in app), served by the API at "/" when it exists.
     override_web_dir: Path | None = Field(default=None, validation_alias=_env("LIBRARIAN_WEB_DIR"))
-    # POST /api/chat/stream limits, per process. 0 turns a limit off.
+    # uvicorn worker processes for `librarian api` (the --workers default). Shared state is in
+    # the database and the index file, so any number serve the same answers.
+    api_workers: int = Field(default=1, ge=1, validation_alias=_env("LIBRARIAN_API_WORKERS"))
+    # POST /api/chat/stream limits. The burst limit is per process (N workers allow N times as
+    # many); the daily budget is read from the database, so it holds across workers. 0 turns a limit off.
     chat_rate_limit: int = Field(default=20, validation_alias=_env("LIBRARIAN_CHAT_RATE_LIMIT"))
     chat_rate_window_s: int = Field(
         default=60, validation_alias=_env("LIBRARIAN_CHAT_RATE_WINDOW_S")
     )
     # Off: the chat route answers 404 and the API key is not required at startup.
     chat_enabled: bool = Field(default=True, validation_alias=_env("LIBRARIAN_CHAT_ENABLED"))
+    # Two daily caps: all users together, and each member (admins have only the global one).
     chat_daily_budget_usd: float = Field(
         default=5.0, validation_alias=_env("LIBRARIAN_CHAT_DAILY_BUDGET_USD")
+    )
+    chat_user_daily_budget_usd: float = Field(
+        default=1.0, validation_alias=_env("LIBRARIAN_CHAT_USER_DAILY_BUDGET_USD")
     )
     # The daily spend is estimated from the price table in librarian.pricing, keyed by model id.
 

@@ -36,9 +36,17 @@ def test_migrations_upgrade_from_empty_and_are_idempotent(raw_engine: Engine) ->
     upgrade(raw_engine)
     upgrade(raw_engine)
     names = set(inspect(raw_engine).get_table_names())
-    assert {"attempts", "meta", "chat_usage", "alembic_version"} <= names
+    assert {
+        "attempts",
+        "meta",
+        "chat_usage",
+        "users",
+        "sessions",
+        "api_keys",
+        "alembic_version",
+    } <= names
     with raw_engine.connect() as conn:
-        assert conn.exec_driver_sql("SELECT version_num FROM alembic_version").scalar() == "0002"
+        assert conn.exec_driver_sql("SELECT version_num FROM alembic_version").scalar() == "0003"
     cols = {c["name"] for c in inspect(raw_engine).get_columns("attempts")}
     assert {"user_id", "ts", "event_key"} <= cols
 

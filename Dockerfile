@@ -33,15 +33,22 @@ RUN --mount=type=cache,target=/root/.cache/uv uv venv /app/.venv \
     && uv pip install --no-deps -r /tmp/req-nocuda.txt \
     && uv pip install --no-deps --index-url https://download.pytorch.org/whl/cpu "torch==${TORCH_VERSION}"
 
+# The embedding model, so the container does not download it on first start (readiness waits for it).
+# Before `COPY src`, so a code change keeps this layer. A download that stalls is killed after
+# 5 minutes and retried, so the build fails instead of hanging.
+ENV HF_HOME=/opt/hf HF_HUB_DOWNLOAD_TIMEOUT=60
+RUN for attempt in 1 2 3; do \
+        timeout 300 /app/.venv/bin/python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')" \
+        && break; \
+        echo "model download attempt ${attempt} failed" >&2; \
+        [ "${attempt}" = 3 ] && exit 1; \
+    done \
+    && chmod -R a+rX /opt/hf
+
 # hatchling needs the packages listed under [tool.hatch.build.targets.wheel] to exist when the
 # project installs.
 COPY src ./src
 RUN uv pip install --no-deps -e .
-
-# The embedding model, so the container does not download it on first start (readiness waits for it).
-ENV HF_HOME=/opt/hf
-RUN /app/.venv/bin/python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')" \
-    && chmod -R a+rX /opt/hf
 
 COPY --from=web /web/dist ./app/dist
 

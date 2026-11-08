@@ -16,10 +16,13 @@ in one step, and every platform we run on (macOS, Linux, the Docker volume) has 
 from __future__ import annotations
 
 import argparse
+import contextlib
+import fcntl
 import hashlib
 import os
 import re
 import shutil
+from collections.abc import Iterator
 from pathlib import Path
 
 import duckdb
@@ -103,6 +106,28 @@ def build_artifact(
     build_id = corpus_id()
     target = out or corpus.INDEX_DIR / f"{build_id}.duckdb"
     target.parent.mkdir(parents=True, exist_ok=True)
+    with _build_lock(target.parent):
+        _build_into(target, build_id, base)
+        repoint(target.parent, target)
+        prune(target.parent, keep)
+    return target
+
+
+@contextlib.contextmanager
+def _build_lock(index_dir: Path) -> Iterator[None]:
+    """One build per index directory at a time, across processes (N API workers start together).
+
+    The second builder waits, then finds the first one's file and reuses it.
+    """
+    with (index_dir / ".build.lock").open("w") as fh:
+        fcntl.flock(fh, fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(fh, fcntl.LOCK_UN)
+
+
+def _build_into(target: Path, build_id: str, base: Path | None) -> None:
     if target.exists():
         log.info("index_build_reused", path=str(target), build_id=build_id)
     else:
@@ -122,9 +147,6 @@ def build_artifact(
         con.close()  # checkpoints: the file is complete before it gets its name
         os.replace(tmp, target)
         log.info("index_built_artifact", path=str(target), build_id=build_id)
-    repoint(target.parent, target)
-    prune(target.parent, keep)
-    return target
 
 
 def rebuild_index() -> Path:

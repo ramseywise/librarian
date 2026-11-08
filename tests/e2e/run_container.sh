@@ -46,6 +46,7 @@ docker volume rm "${VOLUME}" >/dev/null 2>&1 || true
 mkdir -p data/wiki/private data/courses/private
 docker run -d --name "${NAME}" -p "${PORT}:8000" \
     -e LIBRARIAN_API_TOKEN="${E2E_TOKEN}" \
+    -e LIBRARIAN_API_WORKERS=2 \
     -v "$PWD/data:/app/data:ro" \
     -v "${VOLUME}:/app/var" \
     --tmpfs /app/data/wiki/private \

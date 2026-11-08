@@ -81,6 +81,18 @@ The session tooling (`cron`, `enrich`, `migrate`) is `tools/cartographer/`; run 
 | `wiki/rename.py` | Renames a wiki page and rewrites every inbound link. Dry run by default. |
 | `wiki/parser.py`, `wiki/health.py` | The graph payload the API serves, and the latest telemetry row. |
 
+## Accounts
+
+`librarian.accounts` holds users and API keys in the user-state database (`users`, `sessions`, `api_keys`; migration 0003). It sits just above `db` and imports nothing else of the package.
+
+| Module | Purpose |
+|--------|---------|
+| `accounts/users.py` | `User` (id, email, role, timezone, scopes), `add_user`, `get_user`, `list_users`, and `ensure_owner`, which creates `LIBRARIAN_OWNER_EMAIL` as an admin on first use and keeps it one. |
+| `accounts/keys.py` | `lk_<id>_<secret>` keys: only the sha256 is stored, the key is printed once. Scopes are `read` or `read write`. `resolve_key` returns the key's user and writes `last_used_at` at most every 5 minutes. |
+| `accounts/cli.py` | `librarian users add\|list` and `librarian keys create\|list\|revoke`. |
+
+`api/security.py:current_user` runs on every route. An `lk_` key is its user, and an unknown or revoked one is 401 even in open mode. Otherwise the bootstrap `LIBRARIAN_API_TOKEN`, or no token configured, is the owner. Anything else is 401. A read-only key gets 403 on any method except GET, HEAD or OPTIONS. Routes take `SignedIn` or `Admin` (403 for members). `GET /api/me` says who the caller is and how much of their chat budget is left. Chat has two daily caps: `LIBRARIAN_CHAT_DAILY_BUDGET_USD` over everyone and `LIBRARIAN_CHAT_USER_DAILY_BUDGET_USD` per member. The request log records `user_id`, never the credential.
+
 ## Retrieval
 
 `librarian.retrieval` is the one place that indexes, ranks and serves the wiki and the lessons. The MCP server, the chat agent and the evals call only its public names: `search`, `search_rows`, `degraded_notice`, `read_page`, `list_domain`, `list_pages`, `domain_briefing`, `open_index`, `rebuild_index`, `disabled`, `IndexBusyError`.
@@ -94,7 +106,7 @@ The session tooling (`cron`, `enrich`, `migrate`) is `tools/cartographer/`; run 
 | `retrieval/graph_expansion.py` | One-hop typed-relationship neighbours. |
 | `retrieval/embeddings.py` | The one model loader, lock, `HAS_EMBEDDINGS` flag and blob helpers, plus the page-embedding and text caches. numpy and sentence-transformers load lazily. |
 
-Index ownership: the index is a build artifact. `librarian index build` (`retrieval/artifact.py`) writes `var/index/<id>.duckdb`, where `<id>` is a hash of the schema version, the embedding model and the content of every indexable page, then repoints the symlink `var/index/current` at it (a temporary symlink renamed over `current`, so a reader never sees a missing or half-written pointer) and keeps the newest three builds. The API and the MCP server hold an `IndexHandle` (`retrieval/handle.py`): it opens `current` read-only, so any number of processes serve one build and none can write it, and `open_index()` returns a cursor on it. `POST /admin/reload` and SIGHUP reopen `current`; requests holding a cursor finish on the old build. With `LIBRARIAN_INDEX_AUTOBUILD` on (dev default) a missing index is built in a background thread (`/readyz` says `index: building`) and a changed page, found by mtime and size, triggers a rebuild; production sets it to 0 and runs the build as a job. Without a handle (tests, evals, scripts) `open_index()` keeps the old read-write file at `corpus.DB_PATH`, refreshed on open, where `connect()` retries lock errors and raises `IndexBusyError` after 60 s.
+Index ownership: the index is a build artifact. `librarian index build` (`retrieval/artifact.py`) writes `var/index/<id>.duckdb`, where `<id>` is a hash of the schema version, the embedding model and the content of every indexable page, then repoints the symlink `var/index/current` at it (a temporary symlink renamed over `current`, so a reader never sees a missing or half-written pointer) and keeps the newest three builds. The API and the MCP server hold an `IndexHandle` (`retrieval/handle.py`): it opens `current` read-only, so any number of processes serve one build and none can write it, and `open_index()` returns a cursor on it. `POST /admin/reload` and SIGHUP reopen `current`; requests holding a cursor finish on the old build. Those reach one process, so every handle also checks where `current` points at most every 5 s and follows it: with `librarian api --workers N` or several replicas, a build reaches all of them without a reload. Builds of one index directory take a file lock (`.build.lock`), so workers starting together embed the corpus once. With `LIBRARIAN_INDEX_AUTOBUILD` on (dev default) a missing index is built in a background thread (`/readyz` says `index: building`) and a changed page, found by mtime and size, triggers a rebuild; production sets it to 0 and runs the build as a job. Without a handle (tests, evals, scripts) `open_index()` keeps the old read-write file at `corpus.DB_PATH`, refreshed on open, where `connect()` retries lock errors and raises `IndexBusyError` after 60 s.
 
 Embeddings: the index embeds the whole file, while the graph, relinker and course caches embed the body, so their stores stay separate (merging them would change ranking). All of them share one model (`LIBRARIAN_EMBEDDING_MODEL`, default the same MiniLM the server hard-coded), one loader and one lock.
 

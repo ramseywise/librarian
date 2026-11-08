@@ -112,11 +112,13 @@ def caddyfile() -> str:
 def test_caddyfile_has_hsts_sse_and_ws_proxy(caddyfile: str) -> None:
     assert "Strict-Transport-Security" in caddyfile
     assert "{$LIBRARIAN_DOMAIN:localhost}" in caddyfile
+    # Both blocks proxy to every replica (the api_upstreams snippet); SSE is never buffered.
     assert re.search(
-        r"handle /api/chat/stream \{\s*reverse_proxy librarian:8000 \{\s*flush_interval -1",
+        r"handle /api/chat/stream \{\s*reverse_proxy \{\s*import api_upstreams\s*flush_interval -1",
         caddyfile,
     )
-    assert "reverse_proxy librarian:8000" in caddyfile
+    assert caddyfile.count("import api_upstreams") == 2
+    assert re.search(r"dynamic a \{\s*name librarian\s*port 8000", caddyfile)
 
 
 def test_caddyfile_leaves_csp_to_the_api(caddyfile: str) -> None:

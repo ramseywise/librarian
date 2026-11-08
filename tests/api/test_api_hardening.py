@@ -14,6 +14,7 @@ from pydantic import ValidationError
 import librarian.api.main as main_module
 from librarian import cli
 from librarian.agent.tools import _McpSearch
+from librarian.api.routers import graph as graph_router
 from librarian.api.startup import find_problems
 from librarian.config import Settings, get_settings
 
@@ -142,15 +143,54 @@ def test_websocket_client_is_removed_when_the_connection_breaks(
     def boom() -> dict[str, Any]:
         raise RuntimeError("parse failed")
 
-    monkeypatch.setattr(main_module, "parse_wiki", boom)
-    main_module._ws_clients.clear()
+    monkeypatch.setenv("LIBRARIAN_DEV_WATCH", "1")
+    get_settings.cache_clear()
+    monkeypatch.setattr(graph_router, "parse_wiki", boom)
+    graph_router._ws_clients.clear()
     with TestClient(main_module.app) as client:
         try:
             with client.websocket_connect("/ws") as ws:
                 ws.receive_json()
         except Exception:
             pass
-    assert main_module._ws_clients == []
+    assert graph_router._ws_clients == []
+    get_settings.cache_clear()
+
+
+def test_websocket_sends_the_graph_but_tracks_no_client_without_dev_watch(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("LIBRARIAN_DEV_WATCH", "0")
+    get_settings.cache_clear()
+    monkeypatch.setattr(graph_router, "parse_wiki", lambda: {"nodes": [], "edges": []})
+    graph_router._ws_clients.clear()
+    with TestClient(main_module.app) as client, client.websocket_connect("/ws") as ws:
+        assert ws.receive_json()["type"] == "graph_update"
+        assert graph_router._ws_clients == []  # nothing to broadcast to: no watcher runs
+    get_settings.cache_clear()
+
+
+def test_api_workers_come_from_the_flag_or_the_setting(
+    settings_env: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    import uvicorn
+
+    import librarian.log_config as log_config
+
+    settings_env.setattr(log_config, "configure_logging", lambda: None)
+    ran: list[int] = []
+    settings_env.setattr(uvicorn, "run", lambda *a, **k: ran.append(k["workers"]))
+    assert cli.main(["api"]) == 0
+    assert cli.main(["api", "--workers", "3"]) == 0
+    settings_env.setenv("LIBRARIAN_API_WORKERS", "2")
+    get_settings.cache_clear()
+    assert cli.main(["api"]) == 0
+    assert ran == [1, 3, 2]
+
+    assert cli.main(["api", "--reload", "--workers", "2"]) == 2
+    assert cli.main(["api", "--workers", "0"]) == 2
+    assert "--workers" in capsys.readouterr().err
+    assert ran == [1, 3, 2]
 
 
 # ── F19: limits ────────────────────────────────────────────────────────────

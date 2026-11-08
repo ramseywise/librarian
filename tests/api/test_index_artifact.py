@@ -194,6 +194,53 @@ def test_reload_swaps_while_a_held_cursor_still_answers(wiki: Path) -> None:
     fresh.close()
 
 
+def test_a_handle_follows_a_build_another_process_made(
+    wiki: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from librarian.retrieval import handle as handle_module
+
+    first = artifact.build_artifact()
+    handle = IndexHandle(autobuild=False)
+    handle.start()
+    _write(wiki, "gamma", "Gamma is a brand new page.")
+    second = artifact.build_artifact()  # the indexer job: repoints `current`, no reload sent
+
+    held = handle.cursor()  # within the interval: still the first build
+    assert handle.build_id == first.stem
+    monkeypatch.setattr(handle_module, "CURRENT_CHECK_INTERVAL_S", 0.0)
+    fresh = handle.cursor()
+    assert handle.build_id == second.stem
+    assert fresh.execute("SELECT count(*) FROM pages").fetchone() == (3,)
+    held.close()
+    fresh.close()
+
+
+def test_concurrent_builds_of_one_corpus_embed_it_once(
+    wiki: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import threading
+    from concurrent.futures import ThreadPoolExecutor
+
+    real = index.build_index
+    builds: list[int] = []
+    started = threading.Event()
+
+    def slow_build(con: duckdb.DuckDBPyConnection, **kwargs: object) -> object:
+        builds.append(1)
+        started.set()
+        time.sleep(0.3)  # long enough for the other builders to reach the lock
+        return real(con, **kwargs)  # type: ignore[arg-type]
+
+    monkeypatch.setattr(index, "build_index", slow_build)
+    with ThreadPoolExecutor(max_workers=3) as pool:
+        paths = list(pool.map(lambda _: artifact.build_artifact(), range(3)))
+    assert started.is_set()
+    assert len(set(paths)) == 1
+    assert builds == [1]
+    assert artifact.resolve_current(corpus.INDEX_DIR) == paths[0]
+    assert not list(corpus.INDEX_DIR.glob("*.tmp"))
+
+
 def test_a_prune_cannot_break_a_loaded_build(wiki: Path) -> None:
     first = artifact.build_artifact(keep=1)
     handle = IndexHandle(autobuild=False)

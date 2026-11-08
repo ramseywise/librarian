@@ -1,4 +1,4 @@
-"""Access control for the API: bearer token, chat rate limit, daily spend cap, request logs.
+"""Access control for the API: who the caller is, chat rate limit, daily spend caps, request logs.
 
 The day's spend is a row of `chat_usage` in the database, so the cap holds across workers and
 restarts. The requests-per-window limit is a per-process burst guard: it is in memory and each
@@ -10,18 +10,22 @@ from __future__ import annotations
 import base64
 import hashlib
 import hmac
+import os
 import re
 import time
 from collections import deque
 from datetime import UTC, date, datetime
 from pathlib import Path
+from typing import Annotated, Any, NoReturn
 
-from fastapi import HTTPException, WebSocketException
-from sqlalchemy import Engine, select
+from fastapi import Depends, HTTPException, WebSocketException
+from sqlalchemy import Engine, Select, func, select
 from sqlalchemy.exc import SQLAlchemyError
 from starlette.requests import HTTPConnection
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
+from librarian import accounts
+from librarian.accounts import User
 from librarian.config import Settings, get_settings
 from librarian.db import get_engine, tables, upsert
 from librarian.log_config import get_logger
@@ -35,6 +39,7 @@ PUBLIC_PATHS = frozenset({"/healthz", "/readyz"})
 # `new WebSocket(url, ["bearer", token])`. The server accepts with "bearer".
 WS_SUBPROTOCOL = "bearer"
 _WS_POLICY_VIOLATION = 1008
+_WS_INTERNAL_ERROR = 1011
 
 
 def _bearer_from_header(value: str) -> str | None:
@@ -54,32 +59,85 @@ def token_matches(supplied: str | None, expected: str) -> bool:
     return supplied is not None and hmac.compare_digest(supplied.encode(), expected.encode())
 
 
-async def require_token(conn: HTTPConnection) -> None:
-    """App-level dependency: 401 (HTTP) or a refused handshake (WebSocket) without the token.
+_SAFE_METHODS = frozenset({"GET", "HEAD", "OPTIONS"})
 
-    Reads the token from settings on each call so a test or a restart-less env change applies.
-    """
-    expected = get_settings().api_token
-    if not expected or conn.url.path in PUBLIC_PATHS:
-        return
+
+def _supplied_credential(conn: HTTPConnection) -> str | None:
     if conn.scope["type"] == "websocket":
-        supplied = _bearer_from_subprotocols(conn.headers.get("sec-websocket-protocol", ""))
-        if not token_matches(supplied, expected):
-            raise WebSocketException(code=_WS_POLICY_VIOLATION, reason="unauthorized")
-        return
-    if not token_matches(_bearer_from_header(conn.headers.get("authorization", "")), expected):
-        raise HTTPException(
-            status_code=401,
-            detail="Missing or invalid API token.",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        return _bearer_from_subprotocols(conn.headers.get("sec-websocket-protocol", ""))
+    return _bearer_from_header(conn.headers.get("authorization", ""))
+
+
+def _deny(conn: HTTPConnection, status: int, detail: str) -> NoReturn:
+    if conn.scope["type"] == "websocket":
+        code = _WS_POLICY_VIOLATION if status < 500 else _WS_INTERNAL_ERROR
+        raise WebSocketException(code=code, reason=detail)
+    headers = {"WWW-Authenticate": "Bearer"} if status == 401 else None
+    raise HTTPException(status_code=status, detail=detail, headers=headers)
+
+
+def _resolve_user(conn: HTTPConnection, settings: Settings) -> User:
+    """An `lk_` key is that key's user; the bootstrap token, or no token configured, the owner."""
+    supplied = _supplied_credential(conn)
+    engine = get_engine()
+    if supplied is not None and accounts.is_api_key(supplied):
+        user = accounts.resolve_key(engine, supplied)
+        if user is None:
+            _deny(conn, 401, "Unknown or revoked API key.")
+        return user
+    if not settings.api_token or token_matches(supplied, settings.api_token):
+        return accounts.ensure_owner(engine, settings.owner_email)
+    _deny(conn, 401, "Missing or invalid API token.")
+
+
+def current_user(conn: HTTPConnection) -> User | None:
+    """App-level dependency: the request's `User`, also set as `request.state.user`.
+
+    401 (HTTP) or a refused handshake (WebSocket) without a valid credential; 403 for a write
+    (any method but GET, HEAD, OPTIONS) with a read-only key. None only on /healthz and /readyz.
+    Settings are read on each call so a test or a restart-less env change applies. A plain
+    function, so FastAPI runs its database lookups in the threadpool.
+    """
+    if conn.url.path in PUBLIC_PATHS:
+        return None
+    try:
+        user = _resolve_user(conn, get_settings())
+    except SQLAlchemyError as e:
+        log.error("auth.lookup_failed", error=str(e))
+        _deny(conn, 503, "Accounts database unavailable.")
+    if (
+        conn.scope["type"] == "http"
+        and conn.scope["method"] not in _SAFE_METHODS
+        and "write" not in user.scopes
+    ):
+        _deny(conn, 403, "This API key is read-only.")
+    conn.state.user = user
+    return user
+
+
+def require_user(user: Annotated[User | None, Depends(current_user)]) -> User:
+    """Route dependency: the signed-in user (FastAPI resolves `current_user` once per request)."""
+    if user is None:
+        raise HTTPException(status_code=401, detail="Not signed in.")
+    return user
+
+
+def require_admin(user: Annotated[User, Depends(require_user)]) -> User:
+    if not user.is_admin:
+        raise HTTPException(status_code=403, detail="Admins only.")
+    return user
+
+
+# Route parameter types: `def route(user: SignedIn)`.
+SignedIn = Annotated[User, Depends(require_user)]
+Admin = Annotated[User, Depends(require_admin)]
 
 
 class ChatLimiter:
-    """Per-process burst guard plus the shared per-UTC-day spend cap for the chat route.
+    """Per-process burst guard plus the shared per-UTC-day spend caps for the chat route.
 
-    `user_id` is None while there is one user; accounts will fill it in. The engine is looked up
-    on each call unless one is given, so two limiters on one database behave as two workers.
+    Spend is a row per user and day; the global cap is their sum. The engine is looked up on
+    each call unless one is given, so two limiters on one database behave as two workers.
     """
 
     def __init__(self, engine: Engine | None = None) -> None:
@@ -93,10 +151,7 @@ class ChatLimiter:
     def _today() -> date:
         return datetime.now(UTC).date()
 
-    def spent_usd(self, user_id: str | None = None) -> float:
-        """Today's estimated spend from the database; 0.0 when it cannot be read (logged)."""
-        t = tables.chat_usage
-        stmt = select(t.c.usd).where(t.c.user_key == (user_id or ""), t.c.day == self._today())
+    def _read(self, stmt: Select[Any]) -> float:
         try:
             with self._db().connect() as conn:
                 return float(conn.execute(stmt).scalar() or 0.0)
@@ -104,15 +159,46 @@ class ChatLimiter:
             log.error("chat.spend_read_failed", error=str(e))
             return 0.0
 
-    def admit(self, settings: Settings, now: float | None = None) -> None:
-        """Count one chat request, or raise 429 saying which limit was hit."""
+    def spent_usd(self, user_id: str | None = None) -> float:
+        """One user's spend today from the database; 0.0 when it cannot be read (logged)."""
+        t = tables.chat_usage
+        return self._read(
+            select(t.c.usd).where(t.c.user_key == (user_id or ""), t.c.day == self._today())
+        )
+
+    def total_spent_usd(self) -> float:
+        """Everyone's spend today, for the global cap."""
+        t = tables.chat_usage
+        return self._read(select(func.sum(t.c.usd)).where(t.c.day == self._today()))
+
+    def admit(
+        self,
+        settings: Settings,
+        now: float | None = None,
+        *,
+        user_id: str | None = None,
+        user_cap: bool = False,
+    ) -> None:
+        """Count one chat request, or raise 429 saying which limit was hit.
+
+        `user_cap` applies the per-user budget to `user_id` (members; admins have only the global cap).
+        """
         now = time.monotonic() if now is None else now
         budget = settings.chat_daily_budget_usd
-        if budget > 0 and self.spent_usd() >= budget:
+        if budget > 0 and self.total_spent_usd() >= budget:
             raise HTTPException(
                 status_code=429,
                 detail=(
                     f"Daily chat budget of ${budget:.2f} is spent (estimated). "
+                    "It resets at 00:00 UTC."
+                ),
+            )
+        mine = settings.chat_user_daily_budget_usd
+        if user_cap and mine > 0 and self.spent_usd(user_id) >= mine:
+            raise HTTPException(
+                status_code=429,
+                detail=(
+                    f"Your daily chat budget of ${mine:.2f} is spent (estimated). "
                     "It resets at 00:00 UTC."
                 ),
             )
@@ -264,7 +350,7 @@ class SecurityHeadersMiddleware:
 
 
 class RequestLogMiddleware:
-    """One `http.request` event per HTTP request: method, path, status, duration.
+    """One `http.request` event per HTTP request: method, path, status, duration, user id.
 
     The query string, headers and body are never logged, so neither the token nor a chat
     question can reach the log. Streaming responses are timed to their last byte.
@@ -295,4 +381,6 @@ class RequestLogMiddleware:
                 path=scope["path"],
                 status=status,
                 duration_ms=round((time.perf_counter() - started) * 1000, 1),
+                pid=os.getpid(),  # which worker, with --workers N
+                user_id=getattr(scope.get("state", {}).get("user"), "id", None),
             )

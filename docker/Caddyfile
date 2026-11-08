@@ -11,6 +11,20 @@
 	admin off
 }
 
+# Every API replica (`docker compose up --scale librarian=N`): the service name resolves to one A
+# record per container, re-read every 5 s, taken in turn. A replica that refuses a connection is
+# skipped for 30 s and the request retried on another.
+(api_upstreams) {
+	dynamic a {
+		name librarian
+		port 8000
+		refresh 5s
+	}
+	lb_policy round_robin
+	lb_try_duration 5s
+	fail_duration 30s
+}
+
 {$LIBRARIAN_DOMAIN:localhost} {
 	# Real domains only: a pinned HSTS on localhost would follow the browser to every other
 	# local service on that name, and the internal certificate is not trusted anyway.
@@ -20,7 +34,8 @@
 
 	# SSE: send each event as it is written; never buffer or compress the stream.
 	handle /api/chat/stream {
-		reverse_proxy librarian:8000 {
+		reverse_proxy {
+			import api_upstreams
 			flush_interval -1
 		}
 	}
@@ -28,6 +43,8 @@
 	# Everything else, including the /ws WebSocket: Caddy upgrades and tunnels it unchanged.
 	handle {
 		encode zstd gzip
-		reverse_proxy librarian:8000
+		reverse_proxy {
+			import api_upstreams
+		}
 	}
 }

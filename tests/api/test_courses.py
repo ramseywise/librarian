@@ -18,7 +18,7 @@ from pathlib import Path
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from sqlalchemy import delete
+from sqlalchemy import create_engine, delete
 
 from librarian.api.routers import courses as courses_routes
 from librarian.courses import attempts, leitner
@@ -529,6 +529,7 @@ def test_flashcards_due_counts_module_decks_only(client: TestClient) -> None:
     _log_review("Reviewed today", "gen-ai/01-rag", "knew", 0)
     # A card no deck holds any more, and a line the old log can't parse, must not count.
     _log_review("Deleted card", "gen-ai/01-rag", "knew", 9)
+    attempts.LEGACY_FLASHCARD_LOG.parent.mkdir(parents=True, exist_ok=True)
     attempts.LEGACY_FLASHCARD_LOG.write_text("{broken\n")
 
     body = client.get("/api/courses/flashcards-due").json()
@@ -557,11 +558,16 @@ def test_flashcard_result_rejects_unknown_cards_and_grades(client: TestClient) -
     assert attempts.attempts() == []
 
 
-def test_flashcard_result_survives_a_failed_write(client: TestClient, tmp_path: Path) -> None:
+def test_flashcard_result_survives_a_failed_write(
+    client: TestClient, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     _write_cards("  - {front: Q, back: A}\n")
     courses._load.cache_clear()
     blocker = tmp_path / "state"
     blocker.write_text("a file where the state folder should be")
+    # Only the attempts store: the caller is still resolved from the working database.
+    broken = create_engine(f"sqlite:///{blocker / 'librarian.sqlite3'}")
+    monkeypatch.setattr(attempts, "get_engine", lambda: broken)
     body = {"deck": "gen-ai/01-rag", "card": "0", "result": "knew"}
     assert client.post("/api/courses/flashcard-results", json=body).json() == {"logged": False}
 

@@ -8,6 +8,7 @@ from sqlalchemy import (
     Date,
     DateTime,
     Float,
+    ForeignKey,
     Index,
     Integer,
     MetaData,
@@ -58,6 +59,45 @@ chat_usage = Table(
     Column("output_tokens", BigInteger, nullable=False, server_default="0"),
     Column("usd", Float, nullable=False, server_default="0"),
     UniqueConstraint("user_key", "day", name="chat_usage_user_day"),
+)
+
+# Accounts. `email` is stored lowercased; `role` is "admin" or "member".
+users = Table(
+    "users",
+    metadata,
+    Column("id", String(64), primary_key=True),
+    Column("email", String(320), nullable=False, unique=True),
+    Column("name", Text, nullable=True),
+    Column("role", String(16), nullable=False, server_default="member"),
+    Column("timezone", String(64), nullable=False, server_default="UTC"),
+    Column("created_at", DateTime(timezone=True), nullable=False),
+)
+
+# Browser sessions (login, phase 3 wave B). `id` is the sha256 of the cookie value.
+sessions = Table(
+    "sessions",
+    metadata,
+    Column("id", String(64), primary_key=True),
+    Column("user_id", String(64), ForeignKey("users.id", ondelete="CASCADE"), nullable=False),
+    Column("created_at", DateTime(timezone=True), nullable=False),
+    Column("expires_at", DateTime(timezone=True), nullable=False),
+    Index("sessions_user", "user_id"),
+)
+
+# `hash` is the sha256 of the whole key (`lk_<id>_<secret>`); the key itself is never stored.
+# `scopes` is space-separated: "read" or "read write".
+api_keys = Table(
+    "api_keys",
+    metadata,
+    Column("id", String(32), primary_key=True),
+    Column("user_id", String(64), ForeignKey("users.id", ondelete="CASCADE"), nullable=False),
+    Column("hash", String(64), nullable=False, unique=True),
+    Column("name", Text, nullable=True),
+    Column("scopes", String(64), nullable=False),
+    Column("created_at", DateTime(timezone=True), nullable=False),
+    Column("last_used_at", DateTime(timezone=True), nullable=True),
+    Column("revoked_at", DateTime(timezone=True), nullable=True),
+    Index("api_keys_user", "user_id"),
 )
 
 
