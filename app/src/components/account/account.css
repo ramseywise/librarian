@@ -63,3 +63,8 @@
   text-align: left;
   cursor: pointer;
 }
+
+.account-table td.account-note { white-space: normal; min-width: 12rem; max-width: 28rem; }
+.account-table .feedback-notes { color: var(--text-soft); white-space: normal; font-size: var(--fs-sm); }
+.study-subheading { font-size: var(--fs-sm); color: var(--text-secondary); margin: var(--space-4) 0 var(--space-1); }
+.account-table .feedback-notes ul { margin: 0; padding-left: 1.2em; }

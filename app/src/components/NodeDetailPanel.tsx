@@ -3,6 +3,7 @@ import type { WikiNodeData } from "../types";
 import type { LessonOutline } from "./courses/types";
 import { useTheme } from "../hooks/useTheme";
 import { domainColor, tagColor } from "../theme/domains";
+import { ReportButton } from "./feedback/ReportButton";
 import { apiFetch } from "../utils/api";
 
 type ConceptLesson = LessonOutline & { course: string };
@@ -106,6 +107,10 @@ export function NodeDetailPanel({ nodeId, data, highlighted, lastQuery, onClose,
           {lessons.length > 6 && <div className="detail-more">+{lessons.length - 6} more</div>}
         </div>
       )}
+
+      <div className="detail-section">
+        <ReportButton key={nodeId} kind="page" target={nodeId} />
+      </div>
 
       {/* Footer meta */}
       <div className="detail-footer">

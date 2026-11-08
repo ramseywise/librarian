@@ -2,18 +2,27 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 from collections.abc import AsyncIterator
 from typing import Literal, Self
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field, model_validator
+from sqlalchemy.exc import SQLAlchemyError
 
+from librarian import experiments, feedback
 from librarian.agent import run_agent_stream
+from librarian.api.routers.release import served_release
 from librarian.api.security import SignedIn, chat_limiter
-from librarian.config import get_settings
+from librarian.config import get_release, get_settings
+from librarian.db import get_engine
+from librarian.log_config import get_logger
+from librarian.observability import set_variant
 from librarian.pricing import TokenUsage
+
+log = get_logger(__name__)
 
 router = APIRouter()
 
@@ -51,7 +60,7 @@ class ChatRequest(BaseModel):
 
 
 @router.post("/api/chat/stream")
-async def chat_stream(req: ChatRequest, user: SignedIn) -> StreamingResponse:
+async def chat_stream(req: ChatRequest, user: SignedIn, request: Request) -> StreamingResponse:
     settings = get_settings()
     if not settings.chat_enabled:
         raise HTTPException(status_code=404, detail="chat is disabled")
@@ -62,8 +71,42 @@ async def chat_stream(req: ChatRequest, user: SignedIn) -> StreamingResponse:
     def on_usage(usage: TokenUsage) -> None:
         chat_limiter.record_usage(settings, usage, user.id)
 
+    variant = experiments.resolve(
+        settings,
+        user.id,
+        is_admin=user.is_admin,
+        override=request.headers.get(experiments.VARIANT_HEADER),
+    )
+
+    def note_unanswered() -> None:
+        """A per-user `unanswered` row for a question that got no cited page. Never raises."""
+        try:
+            feedback.record(
+                get_engine(),
+                user_id=user.id,
+                kind="unanswered",
+                target=req.query,
+                release=served_release() or get_release(),
+                experiment=variant,
+            )
+        except (SQLAlchemyError, feedback.FeedbackError) as e:
+            log.warning("feedback.unanswered_failed", error=str(e))
+
     async def generate() -> AsyncIterator[str]:
-        async for event in run_agent_stream(req.query, history, on_usage=on_usage):
+        # The variant applies to this request only: the hybrid candidate path reads it through
+        # observability.experiment(), and worker threads inherit it.
+        set_variant(variant)
+        stream = run_agent_stream(
+            req.query,
+            history,
+            on_usage=on_usage,
+            user_id=None if settings.open_mode else user.id,
+            variant=variant,
+            release=served_release() or get_release(),
+        )
+        async for event in stream:
+            if event["type"] == "grounding" and not event["cited"]:
+                await asyncio.to_thread(note_unanswered)
             yield f"data: {json.dumps(event)}\n\n"
 
     return StreamingResponse(

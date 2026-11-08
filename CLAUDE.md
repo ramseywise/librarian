@@ -78,7 +78,7 @@ commits). See `.claude/skills/README.md`.
 - Cartographer (`src/librarian/tools/cartographer/`: session facts, dashboard, weekly sweep) runs as `uv run cartographer`.
 - CLI: `librarian wiki stats|snapshot|check|gaps|log|ask|graph|rename|relink`,
   `librarian ingest triage|lint-raw|notion|linear|pdf`, `librarian scrape sessions|docs|repos|feeds|arxiv|bookmarks`,
-  `librarian courses check|review`, `librarian users add|list|invite|invites|promote`, `librarian keys create|list|revoke`,
+  `librarian courses check|review`, `librarian feedback export|prune`, `librarian users add|list|invite|invites|promote`, `librarian keys create|list|revoke`,
   `librarian db upgrade|import-attempts|import-drill-log`, `librarian ops backup|restore|upgrade|schedule|list`,
   `librarian release build|pull|pin|unpin|list`, `librarian mcp [--rebuild]`, `librarian api`. Each is a thin dispatcher to the
   module's `main(argv)`, and `python -m librarian.<module>` works too.

@@ -19,6 +19,8 @@ export interface ChatMessage {
   /** Status line shown under the reply: why it is incomplete. Kept out of `content`. */
   note?: string;
   grounding?: Grounding;
+  /** Telemetry row id from the `done` event; present means the answer can be rated. */
+  answerId?: string;
 }
 
 interface HistoryTurn {
@@ -193,6 +195,8 @@ export function useChatStream(onHighlight: (pages: string[]) => void) {
           onHighlightRef.current((event.pages as string[]) ?? []);
         } else if (event.type === "done") {
           receivedDone = true;
+          const answerId = typeof event.answer_id === "string" && event.answer_id ? event.answer_id : undefined;
+          if (answerId) patch((m) => ({ ...m, answerId }));
         }
       });
 

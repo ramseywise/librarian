@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { apiJson, postJson } from "../../utils/api";
 import { pageTitle, useDocumentTitle } from "../courses/useDocumentTitle";
+import { FeedbackSummaryView } from "./FeedbackSummary";
 import "./account.css";
 
 interface AdminUser {
@@ -114,6 +115,8 @@ export function AdminView() {
             ))}
           </ul>
         </section>
+
+        <FeedbackSummaryView />
 
         <section className="study-block" aria-label="Audit log">
           <h2 className="study-heading">Audit log</h2>

@@ -17,6 +17,9 @@ torch, fastapi) load only for the verbs that need them.
     librarian courses review findings|signals|score-eval
     librarian db upgrade|import-attempts|import-drill-log   user-state database (DATABASE_URL)
     librarian ops backup|restore|upgrade|schedule|list    encrypted backups, fenced restore, upgrade gate
+    librarian eval compare --experiment NAME           per-variant answer metrics from telemetry and ratings
+    librarian metrics product|check-release            product numbers; exit 1 if a release hurt grounding or ratings
+    librarian feedback export|prune                    reader feedback to data/raw/, retention
     librarian users add|list|invite|invites|promote    accounts and who may sign in
     librarian keys create|list|revoke                  API keys (lk_…), each printed once
     librarian index build [--out FILE]                 build the search index file the servers read
@@ -124,6 +127,12 @@ GROUPS: dict[str, dict[str, Verb]] = {
             "list": "the backups in the bucket",
         }.items()
     },
+    "feedback": {
+        "export": Verb(
+            "librarian.ingest.feedback_export:main", help="anonymised data/raw/feedback/ source"
+        ),
+        "prune": Verb("librarian.feedback.cli:main", help="delete rows older than --days (180)"),
+    },
     "db": {
         "upgrade": Verb("librarian.db.cli:main", ("upgrade",), "apply the database migrations"),
         "import-attempts": Verb(
@@ -135,6 +144,17 @@ GROUPS: dict[str, dict[str, Verb]] = {
             "librarian.courses.imports:main",
             ("import-drill-log",),
             "import the sisyphus drill log into a user's history (local only)",
+        ),
+    },
+    "eval": {
+        "compare": Verb(
+            "librarian.metrics.cli:main", ("eval", "compare"), "compare experiment variants"
+        ),
+    },
+    "metrics": {
+        "product": Verb("librarian.metrics.cli:main", ("metrics", "product"), "product metrics"),
+        "check-release": Verb(
+            "librarian.metrics.cli:main", ("metrics", "check-release"), "grounding/rating check"
         ),
     },
     "users": {

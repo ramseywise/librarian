@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { apiFetch } from "../../utils/api";
+import { MyFeedback } from "./MyFeedback";
 import { Markdown } from "../courses/Markdown";
 import { pageTitle, useDocumentTitle } from "../courses/useDocumentTitle";
 import "./account.css";
@@ -32,8 +33,18 @@ export function PrivacyView() {
           <li><strong>Sign-in:</strong> session and API key records (only a hash of each key), sign-in links until they expire, and invites.</li>
           <li><strong>An audit log</strong> of sign-ins, refused sign-ins, invites, role changes and key changes.</li>
           <li><strong>Study history:</strong> lessons opened and finished, flashcard grades, quiz answers and drill runs, so your reviews can be scheduled.</li>
+          <li><strong>Feedback:</strong> ratings, reports and notes you send.</li>
           <li><strong>Chat usage:</strong> a count per day of requests, tokens and estimated cost, used for the daily budget.</li>
         </ul>
+
+        <p>
+          Feedback you send (ratings of answers, notes on pages and lessons, and questions the wiki could not
+          answer) is stored with your account, kept for 180 days, and visible to the site admin without your email
+          or name. You can delete your own entries here at any time. Anonymised notes may be added to the wiki's
+          sources after personal details are removed.
+        </p>
+
+        <MyFeedback />
 
         <h2>What is not stored</h2>
         <ul>

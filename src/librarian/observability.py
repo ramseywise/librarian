@@ -13,7 +13,9 @@ Environment (standard OTel names, no vendor-specific ones):
     OTEL_EXPORTER_OTLP_ENDPOINT   e.g. https://cloud.langfuse.com/api/public/otel
     OTEL_EXPORTER_OTLP_HEADERS    e.g. Authorization=Basic <base64(pk-lf-...:sk-lf-...)>,
                                   x-langfuse-ingestion-version=4
-    LIBRARIAN_EXPERIMENT          value of the `experiment` attribute (default empty)
+    LIBRARIAN_EXPERIMENT          value of the `experiment` attribute when no experiments are
+                                  configured (default empty); with LIBRARIAN_EXPERIMENTS set, the
+                                  request's variant string (`librarian.experiments`) replaces it
     LIBRARIAN_TRACE_CONTENT       1 to put the query and answer text on `agent.turn` (default off)
     SENTRY_DSN                    enables Sentry; SENTRY_ENVIRONMENT optionally names the env
     LIBRARIAN_RELEASE             the `release` on logs, spans and Sentry events
@@ -30,6 +32,7 @@ import os
 import time
 from collections.abc import Iterator
 from contextlib import contextmanager
+from contextvars import ContextVar, Token
 from typing import TYPE_CHECKING, Any
 
 from librarian.config import get_release
@@ -72,7 +75,21 @@ def end_span(s: Any) -> None:  # noqa: ANN401
         s.end()
 
 
+# The variant string of the request being served (`ranking=hybrid-union;prompt=v2`). Set per
+# request by the routes that run the chat agent; unset, the process-wide env value applies.
+_variant: ContextVar[str | None] = ContextVar("librarian_variant", default=None)
+
+
+def set_variant(value: str | None) -> Token[str | None]:
+    """Make `value` the current request's variant string. Threads started from here inherit it."""
+    return _variant.set(value)
+
+
 def experiment() -> str:
+    """The variant string in force: the request's, else `LIBRARIAN_EXPERIMENT`, else empty."""
+    current = _variant.get()
+    if current is not None:
+        return current
     return os.environ.get("LIBRARIAN_EXPERIMENT", "").strip()
 
 

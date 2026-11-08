@@ -46,3 +46,19 @@ describe("LessonView drill", () => {
     expect(sessionStorage.getItem("librarian.timer.programming/ts/group-by")).toBeNull();
   });
 });
+
+describe("LessonView report", () => {
+  it("posts a lesson report with the lesson id", async () => {
+    const fetchMock = vi.fn(async () => new Response(JSON.stringify({ id: "f1" }), { status: 201 }));
+    vi.stubGlobal("fetch", fetchMock);
+    renderLesson();
+    await userEvent.click(screen.getByRole("button", { name: /Report or suggest a change to this lesson/ }));
+    await userEvent.type(screen.getByRole("textbox"), "unclear");
+    await userEvent.click(screen.getByRole("button", { name: "Send" }));
+    await screen.findByText(/your note was sent/);
+    const post = (fetchMock.mock.calls as unknown as [string, RequestInit][]).find(([, i]) => i?.method === "POST");
+    expect(post?.[0]).toBe("/api/feedback");
+    expect(JSON.parse(String(post?.[1].body))).toEqual({ kind: "lesson", target: "programming/ts/group-by", body: "unclear" });
+    vi.unstubAllGlobals();
+  });
+});

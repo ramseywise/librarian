@@ -12,10 +12,12 @@ from sqlalchemy import (
     Index,
     Integer,
     MetaData,
+    SmallInteger,
     String,
     Table,
     Text,
     UniqueConstraint,
+    func,
 )
 
 metadata = MetaData()
@@ -177,3 +179,30 @@ def event_key(user_id: str, ts_iso: str, kind: str, item: str, result: str) -> s
 
     raw = "\x1f".join((user_id, ts_iso, kind, item, result))
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+# Reader feedback (librarian.feedback). `kind` is answer | page | lesson | unanswered and `target`
+# names what it is about: an answer id, a wiki page id, a lesson id, or the unanswered question
+# (truncated). `rating` is 1 or -1 and only on answers. `release` and `experiment` are what the
+# server was serving when the row was written.
+feedback = Table(
+    "feedback",
+    metadata,
+    Column("id", String(32), primary_key=True),
+    Column(
+        "user_id",
+        String(64),
+        ForeignKey("users.id", name="feedback_user_fk", ondelete="CASCADE"),
+        nullable=False,
+    ),
+    Column("ts", DateTime(timezone=True), nullable=False, server_default=func.now()),
+    Column("kind", String(16), nullable=False),
+    Column("target", String(320), nullable=False),
+    Column("rating", SmallInteger, nullable=True),
+    Column("body", Text, nullable=True),
+    Column("release", String(64), nullable=True),
+    Column("experiment", String(255), nullable=True),
+    Index("feedback_kind_target", "kind", "target"),
+    Index("feedback_ts", "ts"),
+    Index("feedback_user", "user_id"),
+)

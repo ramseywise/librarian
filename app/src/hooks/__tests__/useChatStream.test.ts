@@ -170,6 +170,16 @@ describe("useChatStream", () => {
     expect(result.current.streaming).toBe(false);
   });
 
+  it("stores the answer_id from the done event", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => streamResponse([frame({ type: "token", content: "x" }), frame({ type: "done", answer_id: "deadbeef" })]))
+    );
+    const { result } = renderHook(() => useChatStream(() => {}));
+    await act(() => result.current.sendQuery("hi"));
+    expect(assistant(result).answerId).toBe("deadbeef");
+  });
+
   it("keeps sendQuery/stop/clear stable across token updates", async () => {
     let stream!: ReturnType<typeof controlledResponse>;
     vi.stubGlobal(

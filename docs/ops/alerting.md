@@ -90,3 +90,33 @@ the failure mode, so also add a dead-man check.
 
 SLO dashboards, Prometheus metrics, disk and spend-cap alerts and a game-day belong to the full
 phase 5.1 in `.claude/docs/plans/2026-11-07-multi-user-production.md`.
+
+## 5. Grounding and rating after a release
+
+The four checks above watch the host. This one watches the product: did a content or image release
+make answers worse. It reads `logs/agent.jsonl` (rows carry `release` and `ungrounded`) and the
+`feedback` table, and compares the release answering most recently with the one before it.
+
+    librarian metrics check-release                       # last 30 days
+    librarian metrics check-release --days 14
+    librarian metrics check-release --current sha-abc123 --previous sha-def456
+
+It exits 1 with a `FAIL:` line when grounding fell by more than 10 points, or the down-rating rate
+(down-rated answers / answers) rose by more than 10 points, and both releases have n >= 30
+answers. With fewer it prints a `NOTE:` and exits 0: it does not judge a sample that small. With
+rows from fewer than two releases it also exits 0.
+
+`librarian ops schedule` runs only the daily backup, so there is no scheduler to add this to. Run
+it from the host's cron or a systemd timer, inside the image, and send a non-zero exit to the
+owner. Healthchecks.io style (the check pings only when it passes, so a fail and a missed run both
+alert):
+
+    # crontab, hourly; HC_URL is the monitor's ping URL
+    0 * * * * cd /srv/librarian && docker compose exec -T librarian librarian metrics check-release && curl -fsS -m 10 "$HC_URL" >/dev/null
+
+`librarian metrics product`
+prints the numbers behind it (answers per day, grounding, rating rate, spend per user as median,
+p90 and max, cards and lessons completed); it never names a user.
+
+- [ ] Schedule `metrics check-release` and test it once by running it with `--previous` set to a
+  release you know is worse.

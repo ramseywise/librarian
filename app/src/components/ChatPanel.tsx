@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState, type KeyboardEvent } from "react";
 import type { ChatMessage } from "../hooks/useChatStream";
 import { ChatMarkdown } from "./chat/ChatMarkdown";
+import { AnswerRating } from "./feedback/AnswerRating";
 import { GroundingLine } from "./chat/GroundingLine";
 
 interface Props {
@@ -112,6 +113,9 @@ export function ChatPanel({
             )}
             {m.grounding && !m.streaming && (
               <GroundingLine grounding={m.grounding} onOpenPage={onOpenPage} />
+            )}
+            {m.role === "assistant" && m.answerId && !m.streaming && !m.error && (
+              <AnswerRating answerId={m.answerId} />
             )}
           </div>
         ))}

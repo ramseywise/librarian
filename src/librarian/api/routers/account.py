@@ -17,11 +17,11 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, Literal
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel, Field
 
-from librarian import accounts
+from librarian import accounts, experiments
 from librarian.accounts import User, audit
 from librarian.api.security import Admin, SignedIn, chat_limiter
 from librarian.config import get_settings
@@ -57,12 +57,19 @@ def _key_json(k: accounts.KeyInfo) -> dict[str, Any]:
 
 
 @router.get("/api/me")
-def me(user: SignedIn) -> dict[str, Any]:
+def me(user: SignedIn, request: Request) -> dict[str, Any]:
     settings = get_settings()
     done = progress.summary(user)
     return {
         **_user_json(user),
         "scopes": sorted(user.scopes),
+        # The caller's experiment variants, e.g. "ranking=hybrid-union" ("" when none are running).
+        "experiment": experiments.resolve(
+            settings,
+            user.id,
+            is_admin=user.is_admin,
+            override=request.headers.get(experiments.VARIANT_HEADER),
+        ),
         "progress": {"done": done["done"], "modules": done["modules"], "last": done["last"]},
         "chat": {
             "spent_today_usd": round(chat_limiter.spent_usd(user.id), 4),

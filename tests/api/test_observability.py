@@ -190,7 +190,7 @@ async def test_agent_error_marks_the_turn(wiki: Path, spans: Any, fake_anthropic
 @pytest.mark.unit
 async def test_agent_runs_unchanged_with_tracing_off(wiki: Path, fake_anthropic: type) -> None:
     events = await _run(fake_anthropic([fake_anthropic.text_turn("Hi.")]))
-    assert events[-1] == {"type": "done"}
+    assert events[-1]["type"] == "done" and len(events[-1]["answer_id"]) == 32
 
 
 # -- Sentry -----------------------------------------------------------------

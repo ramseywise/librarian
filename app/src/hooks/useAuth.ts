@@ -15,6 +15,8 @@ export interface Me {
   role: "admin" | "member";
   timezone: string;
   scopes: string[];
+  /** Active experiment variant for this user; may be empty. */
+  experiment?: string;
   chat: { spent_today_usd: number; daily_budget_usd: number | null };
 }
 

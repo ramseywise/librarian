@@ -24,6 +24,7 @@ from librarian.api.routers.auth import router as auth_router
 from librarian.api.routers.chat import router as chat_router
 from librarian.api.routers.courses import router as courses_router
 from librarian.api.routers.curriculum import router as curriculum_router
+from librarian.api.routers.feedback import router as feedback_router
 from librarian.api.routers.glossary import router as glossary_router
 from librarian.api.routers.release import ReleaseHeaderMiddleware, poll_releases
 from librarian.api.routers.release import router as release_router
@@ -245,6 +246,7 @@ app.include_router(auth_router)
 app.include_router(chat_router)
 app.include_router(courses_router)
 app.include_router(curriculum_router)
+app.include_router(feedback_router)
 app.include_router(glossary_router)
 app.include_router(release_router)
 app.include_router(tools_router)

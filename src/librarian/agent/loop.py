@@ -4,23 +4,26 @@ import asyncio
 import json
 import re
 import time
+import uuid
 from collections.abc import AsyncGenerator, Callable, Sequence
+from dataclasses import asdict
 from datetime import UTC, datetime
 from typing import Any, cast
 
 import anthropic
 
 from librarian.agent.tools import CHAT, INVALID_ARGS_PREFIX, Tool, ToolContext, tools_for
-from librarian.config import get_settings
+from librarian.config import get_release, get_settings
 from librarian.log_config import get_logger
 from librarian.observability import (
     NoopSpan,
     end_span,
+    experiment,
     start_span,
     timed,
     trace_content_enabled,
 )
-from librarian.pricing import TokenUsage
+from librarian.pricing import TokenUsage, cost_usd
 from librarian.retrieval import corpus
 
 log = get_logger(__name__)
@@ -130,6 +133,14 @@ def extract_citations(text: str) -> list[str]:
     return list(dict.fromkeys(m.group(1) for m in CITATION_RE.finditer(text)))
 
 
+def _cost(model: str, usage: TokenUsage) -> float | None:
+    """Dollar cost of the answer's model calls; None for a model the price table lacks."""
+    try:
+        return round(cost_usd(model, usage), 6)
+    except KeyError:
+        return None
+
+
 def _log_answer(**fields: object) -> None:
     """Append one JSON line of answer telemetry to logs/agent.jsonl.
 
@@ -203,10 +214,13 @@ async def run_agent_stream(
     on_usage: Callable[[TokenUsage], None] | None = None,
     tool_names: Sequence[str] | None = None,
     context: ToolContext | None = None,
+    user_id: str | None = None,
+    variant: str | None = None,
+    release: str | None = None,
 ) -> AsyncGenerator[dict[str, Any], None]:
     """Run the tool-use loop and yield SSE-ready events.
 
-    Events: token* → grounding → highlight? → done. Grounding is emitted even after an
+    Events: token* → grounding → highlight? → done (with `answer_id`). Grounding is emitted even after an
     error, over whatever was read. `history` is prior text-only user/assistant turns
     (validated at the API boundary, trimmed here). `client` is injectable so tests and
     the eval harness can drive the loop without the env.
@@ -217,8 +231,16 @@ async def run_agent_stream(
     `tool_names` picks the registry tools offered to the model (default: every chat tool).
     `context` is handed to each tool call; it is the seam for request context (the lesson a
     user has open), and nothing reads it yet.
+    `user_id` (None in open mode) and `variant` (the caller's experiment string; default the
+    process-wide one) go on the telemetry line with a fresh `answer_id`, which the final `done`
+    event carries so a rating can name the answer. `release` is the served content release (default:
+    the build's); the line also carries `usage` and, for a priced model, `cost_usd`.
     """
+    answer_id = uuid.uuid4().hex
+    variant = experiment() if variant is None else variant
     model = model or default_model()
+    release = release or get_release()
+    total = TokenUsage()
     tools: dict[str, Tool] = {t.name: t for t in tools_for(CHAT, tool_names)}
     tool_specs = [t.anthropic_spec() for t in tools.values()]
     if tool_specs:
@@ -314,6 +336,7 @@ async def run_agent_stream(
                     if isinstance(getattr(response, "model", None), str):
                         model_span.set_attribute("gen_ai.response.model", response.model)
                     end_span(model_span)
+                    total = total + usage
                     if on_usage is not None:
                         on_usage(usage)
 
@@ -396,7 +419,7 @@ async def run_agent_stream(
         valid_pages = {p for p in referenced_pages if next(corpus.WIKI_DIR.rglob(f"{p}.md"), None)}
         if valid_pages:
             yield {"type": "highlight", "pages": sorted(valid_pages)}
-        yield {"type": "done"}
+        yield {"type": "done", "answer_id": answer_id}
     except (asyncio.CancelledError, GeneratorExit):
         # Client went away. No yield from here on; the finally below still logs.
         if not answered:
@@ -413,7 +436,13 @@ async def run_agent_stream(
         checked = grounding()
         _log_answer(
             source=source,
+            answer_id=answer_id,
+            experiment=variant,
+            user_id=user_id,
+            release=release,
             model=model,
+            usage=asdict(total),
+            cost_usd=_cost(model, total),
             query=query,
             n_history=len(prior),
             turns=turns,

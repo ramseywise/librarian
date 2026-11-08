@@ -1,0 +1,34 @@
+/* Rating row, report form. Values come from tokens.css. */
+.answer-rating { margin-top: var(--space-2); font-size: var(--fs-sm); }
+.answer-rating-row { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+.rate-btn, .report-btn {
+  font: inherit;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm, 6px);
+  padding: var(--space-1) var(--space-2);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.rate-btn:hover:not(:disabled), .report-btn:hover { border-color: var(--border-strong); color: var(--text); }
+.rate-btn[aria-pressed="true"] { border-color: var(--link); background: color-mix(in srgb, var(--link) 12%, transparent); }
+.rate-btn:disabled { opacity: 0.6; cursor: default; }
+.feedback-link { font-size: var(--fs-sm); }
+.feedback-status { color: var(--text-soft); }
+.feedback-error { color: var(--danger, #c62828); margin-top: var(--space-1); }
+.feedback-form { display: flex; gap: var(--space-2); align-items: flex-start; margin-top: var(--space-2); }
+.feedback-form--stack { flex-direction: column; align-items: stretch; }
+.feedback-textarea {
+  flex: 1;
+  font: inherit;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm, 6px);
+  background: var(--surface);
+  color: var(--text);
+  resize: vertical;
+}
+.feedback-label { color: var(--text-secondary); }
+.feedback-foot { display: flex; justify-content: space-between; align-items: center; }
+.feedback-count { color: var(--text-soft); font-size: var(--fs-sm); }
+.report { margin-top: var(--space-3); }

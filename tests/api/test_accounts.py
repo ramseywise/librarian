@@ -171,7 +171,10 @@ def test_last_used_is_written_at_most_once_per_window() -> None:
 
 def _fake_agent(monkeypatch: pytest.MonkeyPatch) -> None:
     async def run(
-        query: str, history: list[Any], on_usage: Callable[[TokenUsage], None]
+        query: str,
+        history: list[Any],
+        on_usage: Callable[[TokenUsage], None],
+        **_: object,
     ) -> AsyncIterator[dict[str, Any]]:
         on_usage(TokenUsage(output=1000))
         yield {"type": "done"}

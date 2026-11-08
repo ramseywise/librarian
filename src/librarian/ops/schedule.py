@@ -1,4 +1,6 @@
-"""`ops schedule`: the loop the compose `backup` service runs, one backup a day at a fixed UTC time."""
+"""`ops schedule`: the loop the compose `backup` service runs, one backup a day at a fixed UTC time.
+
+The same slot prunes feedback rows past `LIBRARIAN_FEEDBACK_RETENTION_DAYS` (privacy retention)."""
 
 from __future__ import annotations
 
@@ -7,6 +9,8 @@ from collections.abc import Callable
 from datetime import UTC, datetime, timedelta
 
 from librarian.config import Settings
+from librarian.db import get_engine
+from librarian.feedback import prune
 from librarian.log_config import get_logger
 from librarian.ops.backup import run_backup
 from librarian.ops.runner import run_with_alert
@@ -35,5 +39,11 @@ def loop(
         log.info("ops.schedule.wait", next=due.isoformat(), seconds=round(wait))
         sleep(max(wait, 0.0))
         run_with_alert(settings, "backup", lambda: run_backup(settings))
+        # Retention: feedback rows older than the window go after the day's backup has them.
+        run_with_alert(
+            settings,
+            "feedback-prune",
+            lambda: prune(get_engine(), settings.feedback_retention_days),
+        )
         if once:
             return

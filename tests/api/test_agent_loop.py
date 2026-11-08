@@ -260,7 +260,7 @@ async def test_telemetry_failure_never_breaks_the_answer(
     monkeypatch.setattr(corpus, "LOGS_DIR", blocker)  # mkdir under a file fails
     client = fake_anthropic([fake_anthropic.text_turn("Fine.")])
     events = await _collect(agent.run_agent_stream("q", client=client))
-    assert events[-1] == {"type": "done"}
+    assert events[-1]["type"] == "done" and len(events[-1]["answer_id"]) == 32
 
 
 # ---------------------------------------------------------------------------
@@ -299,7 +299,7 @@ async def test_client_error_is_reported_and_logged(wiki: Path, fake_anthropic: t
     events = await _collect(agent.run_agent_stream("q", client=client))
     assert "An error occurred" in "".join(e["content"] for e in _of(events, "token"))
     assert _of(events, "grounding")[0]["cited"] == []
-    assert events[-1] == {"type": "done"}
+    assert events[-1]["type"] == "done" and len(events[-1]["answer_id"]) == 32
     line = _agent_log()[0]
     assert line["stop_reason"] == "error" and line["error"] is True
 
@@ -313,7 +313,7 @@ async def test_missing_key_is_an_error_event_not_a_crash(
 
     monkeypatch.setattr(agent, "_get_client", no_client)
     events = await _collect(agent.run_agent_stream("q"))
-    assert events[-1] == {"type": "done"}
+    assert events[-1]["type"] == "done" and len(events[-1]["answer_id"]) == 32
     assert _agent_log()[0]["stop_reason"] == "error"
 
 
@@ -331,6 +331,7 @@ def api(monkeypatch: pytest.MonkeyPatch) -> tuple[TestClient, list[tuple[str, An
         query: str,
         history: Any = None,  # noqa: ANN401
         on_usage: Any = None,  # noqa: ANN401
+        **_: object,
     ) -> AsyncIterator[dict[str, Any]]:
         seen.append((query, history))
         yield {"type": "done"}

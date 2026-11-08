@@ -2,7 +2,8 @@
 Pre-ingest linter for data/raw/ filename conventions.
 
 Convention: YYYY-MM-DD-lowercase-slug.md
-Exempted dirs: data/raw/claude-docs/, data/raw/repos/ (mirror external structure, not user-dropped)
+Exempted dirs: data/raw/claude-docs/, data/raw/repos/ (mirror external structure, not user-dropped),
+data/raw/feedback/ (generated, named by date only)
 """
 
 import re
@@ -14,7 +15,14 @@ from librarian.config import get_settings
 ROOT = get_settings().raw_dir
 
 # Dirs that are scraper output or mirror external structure — not user-dropped files
-EXEMPT_PREFIXES = {"claude-docs", "repos", "agent-skills", "claude-skills", "sessions"}
+EXEMPT_PREFIXES = {
+    "claude-docs",
+    "repos",
+    "agent-skills",
+    "claude-skills",
+    "sessions",
+    "feedback",  # written by `librarian feedback export`, named by date only
+}
 
 # Standard user-drop convention: 2026-07-05-my-page.md
 DATE_SLUG_RE = re.compile(

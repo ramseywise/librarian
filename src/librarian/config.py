@@ -146,6 +146,20 @@ class Settings(BaseSettings):
     email_links_per_hour: int = Field(
         default=5, validation_alias=_env("LIBRARIAN_EMAIL_LINKS_PER_HOUR")
     )
+    # Reader feedback (librarian.feedback): rows written per user per window, and how long they
+    # are kept (`librarian feedback prune`, run daily by the backup service).
+    feedback_rate_limit: int = Field(
+        default=30, validation_alias=_env("LIBRARIAN_FEEDBACK_RATE_LIMIT")
+    )
+    feedback_rate_window_s: int = Field(
+        default=3600, validation_alias=_env("LIBRARIAN_FEEDBACK_RATE_WINDOW_S")
+    )
+    feedback_retention_days: int = Field(
+        default=180, ge=1, validation_alias=_env("LIBRARIAN_FEEDBACK_RETENTION_DAYS")
+    )
+    # Experiments and their variants, e.g. `ranking=control,hybrid-union;prompt=v1,v2`
+    # (librarian.experiments). Each user is assigned one variant per experiment, stably.
+    experiments: str = Field(default="", validation_alias=_env("LIBRARIAN_EXPERIMENTS"))
     # Serve /docs, /redoc and /openapi.json (still behind the token when one is set).
     expose_docs: bool = Field(default=False, validation_alias=_env("LIBRARIAN_EXPOSE_DOCS"))
     # Comma-separated browser origins allowed by CORS. The Vite dev server by default.

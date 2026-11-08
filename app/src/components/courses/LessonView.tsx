@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { Lesson } from "./types";
 import { useGlossary } from "../../hooks/useGlossary";
+import { ReportButton } from "../feedback/ReportButton";
 import { DrillTimer } from "./DrillTimer";
 import { Markdown } from "./Markdown";
 import { splitSolution } from "./markdownUtils";
@@ -135,6 +136,8 @@ export function LessonView({ lesson, courseTitle, done, onMarkDone, onOpen, onOp
             </button>
             <button onClick={ask} className="round-btn">Ask the librarian ↗</button>
           </div>
+
+          <ReportButton key={lesson.id} kind="lesson" target={lesson.id} />
 
           <div className="lesson-pager">
             {lesson.prev ? <PagerLink dir="prev" title={lesson.prev.title} onClick={() => onOpen(lesson.prev!.id)} /> : <span className="grow" />}

@@ -1,0 +1,447 @@
+{
+  "reviewed": false,
+  "note": "Written from page summaries by a model; rubric lines and expected pages are unchecked by a human. Do not treat scores as ground truth until reviewed.",
+  "questions": [
+    {
+      "id": "chat-01",
+      "question": "What does the history condenser node do in LangGraph and why is it needed?",
+      "expected_pages": [
+        "history-condenser"
+      ],
+      "rubric": [
+        "Says it rewrites the latest user query into a self-contained form using prior turns",
+        "Says it prevents retrieval degradation on multi-turn conversations that lean on coreference"
+      ]
+    },
+    {
+      "id": "chat-02",
+      "question": "What security patterns should an MCP server follow?",
+      "expected_pages": [
+        "mcp-server-security-patterns"
+      ],
+      "rubric": [
+        "Mentions the read-only invariant",
+        "Mentions sandbox isolation",
+        "Mentions secrets handling"
+      ]
+    },
+    {
+      "id": "chat-03",
+      "question": "What is Google's A2A protocol for?",
+      "expected_pages": [
+        "a2a-agent-protocol"
+      ],
+      "rubric": [
+        "Says it is an open specification for communication between agents",
+        "Mentions the task lifecycle and agent cards"
+      ]
+    },
+    {
+      "id": "chat-04",
+      "question": "What is agent-computer interface (ACI) design and why does it matter?",
+      "expected_pages": [
+        "aci-agent-computer-interface"
+      ],
+      "rubric": [
+        "Describes it as the tool-design discipline between agent and tools, analogous to HCI",
+        "Says it determines whether the agent uses tools correctly"
+      ]
+    },
+    {
+      "id": "chat-05",
+      "question": "How should a long-running loop keep its state between runs?",
+      "expected_pages": [
+        "loop-state-file"
+      ],
+      "rubric": [
+        "Says it keeps a small state file on disk",
+        "Mentions the three tiers now, recent and archive"
+      ]
+    },
+    {
+      "id": "chat-06",
+      "question": "What are the rungs of the loop autonomy ladder?",
+      "expected_pages": [
+        "loop-autonomy-ladder"
+      ],
+      "rubric": [
+        "Names tool approval, stop condition, trigger and session as the four handoffs",
+        "Says they are climbed one at a time"
+      ]
+    },
+    {
+      "id": "chat-07",
+      "question": "Why does byte-stability of the prompt prefix matter, and what breaks it?",
+      "expected_pages": [
+        "cache-stable-context-layout"
+      ],
+      "rubric": [
+        "Says prompt caching makes prefix stability an architectural constraint",
+        "Names cache breakers such as timestamps or per-request content"
+      ]
+    },
+    {
+      "id": "chat-08",
+      "question": "How should the context window be laid out?",
+      "expected_pages": [
+        "context-anatomy"
+      ],
+      "rubric": [
+        "Describes five layers organised by stability",
+        "Says stable content goes before dynamic content"
+      ]
+    },
+    {
+      "id": "chat-09",
+      "question": "What does summarising or structuring agent state tend to lose?",
+      "expected_pages": [
+        "compression-strips-epistemic-frame"
+      ],
+      "rubric": [
+        "Says headline facts survive",
+        "Says how-sure, how-known and how-this-changed markers are dropped"
+      ]
+    },
+    {
+      "id": "chat-10",
+      "question": "What is an agent status bar in context engineering?",
+      "expected_pages": [
+        "agent-status-bar"
+      ],
+      "rubric": [
+        "Describes a short code-maintained key-value block appended at the end of the context every turn"
+      ]
+    },
+    {
+      "id": "chat-11",
+      "question": "What does DSPy do differently from hand-written prompts?",
+      "expected_pages": [
+        "dspy"
+      ],
+      "rubric": [
+        "Says it uses signatures and modules",
+        "Says an optimizer compiles them against a metric and training set"
+      ]
+    },
+    {
+      "id": "chat-12",
+      "question": "How should I approach evaluating prompts?",
+      "expected_pages": [
+        "evaluating-prompts"
+      ],
+      "rubric": [
+        "Says to build the eval before the prompt",
+        "Says to match the test style to what changes"
+      ]
+    },
+    {
+      "id": "chat-13",
+      "question": "What is the ADK eval-fix loop?",
+      "expected_pages": [
+        "adk-eval-guide"
+      ],
+      "rubric": [
+        "Describes the eval-fix loop as ADK's evaluation methodology",
+        "Mentions built-in criteria or the evalset schema"
+      ]
+    },
+    {
+      "id": "chat-14",
+      "question": "What are the observability tiers for ADK agents?",
+      "expected_pages": [
+        "adk-observability"
+      ],
+      "rubric": [
+        "Describes four tiers",
+        "Names Cloud Trace as the always-on tier",
+        "Mentions prompt-response logging or the BigQuery analytics plugin"
+      ]
+    },
+    {
+      "id": "chat-15",
+      "question": "Where do you enforce access control in a shared retrieval index?",
+      "expected_pages": [
+        "acl-aware-retrieval"
+      ],
+      "rubric": [
+        "Says post-filtering starves the candidate pool",
+        "Says pre-filtering loses ANN benefits"
+      ]
+    },
+    {
+      "id": "chat-16",
+      "question": "What did the typed-graph expansion ablation find?",
+      "expected_pages": [
+        "2026-08-06-typed-graph-ablation"
+      ],
+      "rubric": [
+        "Reports a null result at 284 pages",
+        "Says semantic retrieval was already at its recall ceiling"
+      ]
+    },
+    {
+      "id": "chat-17",
+      "question": "Which agent failures are worth retrying?",
+      "expected_pages": [
+        "agent-retry-taxonomy"
+      ],
+      "rubric": [
+        "Says not all failures are retryable",
+        "Describes a per-failure-mode response",
+        "Mentions feeding the error back so a retry becomes a re-plan"
+      ]
+    },
+    {
+      "id": "chat-18",
+      "question": "How should check failure messages be written for an agent?",
+      "expected_pages": [
+        "agent-oriented-error-messages"
+      ],
+      "rubric": [
+        "Says to state what failed, why the rule exists and how to fix it"
+      ]
+    },
+    {
+      "id": "chat-19",
+      "question": "What is the MemGPT/Letta virtual-context design?",
+      "expected_pages": [
+        "memgpt-letta-virtual-context"
+      ],
+      "rubric": [
+        "Describes an LLM-as-operating-system design",
+        "Says the agent pages facts between a fixed core in-context block and external archival stores"
+      ]
+    },
+    {
+      "id": "chat-20",
+      "question": "What are the three tiers of agent evaluation in Anthropic's taxonomy?",
+      "expected_pages": [
+        "anthropic-eval-taxonomy"
+      ],
+      "rubric": [
+        "Names unit, trajectory and end-to-end tiers",
+        "Maps them to cost, determinism and failure coverage"
+      ]
+    },
+    {
+      "id": "chat-21",
+      "question": "What is the augmentation gate in RAG evaluation?",
+      "expected_pages": [
+        "augmentation-gate"
+      ],
+      "rubric": [
+        "Says it is the step nobody evaluates",
+        "Says the failure can live in how much retrieved context reaches the generator"
+      ]
+    },
+    {
+      "id": "chat-22",
+      "question": "How do I choose between LangChain, LangGraph and Deep Agents?",
+      "expected_pages": [
+        "framework-selection"
+      ],
+      "rubric": [
+        "Describes them as layered frameworks",
+        "Says higher layers add planning, memory and middleware"
+      ]
+    },
+    {
+      "id": "chat-23",
+      "question": "Compare MemGPT-style paging with extraction-based memory.",
+      "expected_pages": [
+        "memgpt-letta-virtual-context",
+        "designed-memory-vs-raw-record-search"
+      ],
+      "rubric": [
+        "Describes the agent paging facts between core and archival stores",
+        "Describes extraction-based memory deciding what to keep before a question arrives"
+      ]
+    },
+    {
+      "id": "chat-24",
+      "question": "How does verifier quality limit how far up the autonomy ladder a loop can go?",
+      "expected_pages": [
+        "loop-scorekeeper",
+        "loop-autonomy-ladder"
+      ],
+      "rubric": [
+        "Says each rung is earned with a verifier",
+        "Says the scorekeeper must be objective, automatic and hard to game"
+      ]
+    },
+    {
+      "id": "chat-25",
+      "question": "Where should a self-improving loop store what it learns?",
+      "expected_pages": [
+        "evolve-loop",
+        "lesson-media-ladder"
+      ],
+      "rubric": [
+        "Names the media: experience doc, prompt or skill, program or harness, weights",
+        "Mentions the evolve loop rewriting files rather than weights"
+      ]
+    },
+    {
+      "id": "chat-26",
+      "question": "How do MCP and A2A differ in what they connect?",
+      "expected_pages": [
+        "a2a-agent-protocol",
+        "agent-interoperability-protocol-stack"
+      ],
+      "rubric": [
+        "Says MCP is for data and tools",
+        "Says A2A is for agent-to-agent communication"
+      ]
+    },
+    {
+      "id": "chat-27",
+      "question": "How do query-aware compression and epistemic-frame loss relate?",
+      "expected_pages": [
+        "context-aware-compression",
+        "compression-strips-epistemic-frame"
+      ],
+      "rubric": [
+        "Describes compressing tool results using the query and the agent's state",
+        "Warns that compression drops how-sure and how-known markers"
+      ]
+    },
+    {
+      "id": "chat-28",
+      "question": "How do retry policy and error-message design work together?",
+      "expected_pages": [
+        "agent-retry-taxonomy",
+        "agent-oriented-error-messages"
+      ],
+      "rubric": [
+        "Says retryable failures need a different response from non-retryable ones",
+        "Says messages should tell the agent what failed and how to fix it"
+      ]
+    },
+    {
+      "id": "chat-29",
+      "question": "How do Anthropic's eval tiers relate to the ADK eval workflow?",
+      "expected_pages": [
+        "anthropic-eval-taxonomy",
+        "adk-eval-guide"
+      ],
+      "rubric": [
+        "Names the unit, trajectory and end-to-end tiers",
+        "Mentions the ADK eval-fix loop"
+      ]
+    },
+    {
+      "id": "chat-30",
+      "question": "How does multi-turn query rewriting fit conversational RAG?",
+      "expected_pages": [
+        "memory-augmented-conversational-rag",
+        "history-condenser"
+      ],
+      "rubric": [
+        "Says multi-turn retrieval breaks because the query is under-specified",
+        "Says the query is rewritten against history"
+      ]
+    },
+    {
+      "id": "chat-31",
+      "question": "How do context layout and cache stability interact?",
+      "expected_pages": [
+        "cache-stable-context-layout",
+        "context-anatomy"
+      ],
+      "rubric": [
+        "Says stable content goes before dynamic",
+        "Says a stable prefix is what lets caching work"
+      ]
+    },
+    {
+      "id": "chat-32",
+      "question": "Bedrock Knowledge Bases or a LangGraph CRAG pipeline, and how does that fit the wider orchestration options?",
+      "expected_pages": [
+        "2026-04-11-bedrock-vs-langgraph",
+        "2026-04-12-orchestration-architecture"
+      ],
+      "rubric": [
+        "Describes the Bedrock versus LangGraph CRAG tradeoff on quality, observability and cost",
+        "Mentions the full Bedrock, full LangGraph or polyglot options"
+      ]
+    },
+    {
+      "id": "chat-33",
+      "question": "Why was LangFuse chosen for observability, and what are ADK's own observability tiers?",
+      "expected_pages": [
+        "2026-04-09-observability-langfuse-vs-langsmith",
+        "adk-observability"
+      ],
+      "rubric": [
+        "Says LangFuse was chosen first for RAG observability",
+        "Describes ADK's four observability tiers"
+      ]
+    },
+    {
+      "id": "chat-34",
+      "question": "What does the wiki conclude about agentic RAG variants and typed-graph expansion?",
+      "expected_pages": [
+        "agentic-rag-advanced",
+        "2026-08-06-typed-graph-ablation"
+      ],
+      "rubric": [
+        "Distinguishes Self-RAG from CRAG or mentions adaptive tiers",
+        "Reports the null result for typed-graph expansion"
+      ]
+    },
+    {
+      "id": "chat-35",
+      "question": "What is the wiki's recommended Kubernetes autoscaling configuration for GPU inference nodes?",
+      "expected_pages": [],
+      "rubric": [
+        "Says the wiki does not cover this",
+        "Does not present an invented answer as wiki knowledge"
+      ]
+    },
+    {
+      "id": "chat-36",
+      "question": "Which Rust async runtime does the wiki recommend for agent tool servers?",
+      "expected_pages": [],
+      "rubric": [
+        "Says the wiki does not cover this",
+        "Does not present an invented answer as wiki knowledge"
+      ]
+    },
+    {
+      "id": "chat-37",
+      "question": "What learning rate schedule does the wiki recommend for LoRA fine-tuning a 70B model?",
+      "expected_pages": [],
+      "rubric": [
+        "Says the wiki does not cover this",
+        "Does not present an invented answer as wiki knowledge"
+      ]
+    },
+    {
+      "id": "chat-38",
+      "question": "What does the wiki say about running sourdough starters for a small bakery agent?",
+      "expected_pages": [],
+      "rubric": [
+        "Says the wiki does not cover this",
+        "Does not present an invented answer as wiki knowledge"
+      ]
+    },
+    {
+      "id": "chat-39",
+      "question": "Which vector database has the cheapest enterprise pricing tier according to the wiki?",
+      "expected_pages": [],
+      "rubric": [
+        "Says the wiki does not cover this",
+        "Does not present an invented answer as wiki knowledge"
+      ]
+    },
+    {
+      "id": "chat-40",
+      "question": "What Terraform module layout does the wiki prescribe for AWS Lambda GPU workers?",
+      "expected_pages": [],
+      "rubric": [
+        "Says the wiki does not cover this",
+        "Does not present an invented answer as wiki knowledge"
+      ]
+    }
+  ]
+}

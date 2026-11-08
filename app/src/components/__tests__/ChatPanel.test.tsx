@@ -79,3 +79,14 @@ describe("ChatPanel", () => {
     expect(screen.getByText("**not bold** [page:z]")).toBeInTheDocument();
   });
 });
+
+describe("ChatPanel rating row", () => {
+  it("shows ratings only on finished answers that have an answerId", () => {
+    const { rerender } = render(<ChatPanel {...base} messages={[reply({ content: "hi" })]} streaming={false} />);
+    expect(screen.queryByRole("button", { name: "Good answer" })).toBeNull();
+    rerender(<ChatPanel {...base} messages={[reply({ content: "hi", answerId: "abc" })]} streaming={false} />);
+    expect(screen.getByRole("button", { name: "Good answer" })).toBeInTheDocument();
+    rerender(<ChatPanel {...base} messages={[reply({ content: "hi", answerId: "abc", streaming: true })]} streaming />);
+    expect(screen.queryByRole("button", { name: "Good answer" })).toBeNull();
+  });
+});

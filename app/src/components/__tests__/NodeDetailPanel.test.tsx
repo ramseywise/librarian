@@ -66,3 +66,17 @@ describe("NodeDetailPanel", () => {
     expect(fetchMock.mock.calls[0][0]).toBe("/api/courses/concept/rrf-fusion");
   });
 });
+
+describe("NodeDetailPanel report", () => {
+  it("posts a page report with the node id", async () => {
+    const fetchMock = lessons(0);
+    render(<NodeDetailPanel nodeId="rrf-fusion" data={DATA} highlighted={false} lastQuery="" onClose={() => {}} />);
+    fireEvent.click(screen.getByRole("button", { name: /Report or suggest a change to this page/ }));
+    fireEvent.change(screen.getByRole("textbox"), { target: { value: "outdated" } });
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
+    await screen.findByText(/your note was sent/);
+    const post = (fetchMock.mock.calls as unknown as [string, RequestInit][]).find(([, i]) => i?.method === "POST");
+    expect(post?.[0]).toBe("/api/feedback");
+    expect(JSON.parse(String(post?.[1].body))).toEqual({ kind: "page", target: "rrf-fusion", body: "outdated" });
+  });
+});
