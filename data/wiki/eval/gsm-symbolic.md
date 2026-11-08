@@ -73,3 +73,4 @@ logical reasoning; they state it as a hypothesis.
 - [[Eval Contamination Defenses]] — related
 - [[Eval Error Bars and Sample Size]] — related (a spread and a baseline of 100 questions)
 - [[GHOSTS Benchmark]] — related (expert-graded maths prompts from 2023, before automated robustness sets)
+- [[XYEval]] — related (cites injected distractors as prior work)

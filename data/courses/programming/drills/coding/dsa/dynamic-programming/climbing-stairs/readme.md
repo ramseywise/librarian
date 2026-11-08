@@ -1,5 +1,5 @@
 ---
-imported_hash: 0ba52c4b2de00f05
+imported_hash: e7f628d81450c083
 title: Climbing Stairs
 summary: You are climbing a staircase with n steps.
 order: 144
@@ -22,4 +22,4 @@ You are climbing a staircase with `n` steps. Each time you can climb 1 or 2 step
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](../../dynamic_programming/climbing_stairs/solution.py) |
+| Python   | [solution.py](solution.py) |

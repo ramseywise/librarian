@@ -1,5 +1,5 @@
 ---
-imported_hash: 6bd0f44ad2d1c222
+imported_hash: 5d2999f9bcc22fd5
 title: 02 — Ingest and modelling
 summary: How data enters a platform you control, and what shape it takes once it is there.
 order: 1
@@ -68,7 +68,7 @@ uv run --with duckdb --with pyarrow --with numpy python 03_data_vault_and_obt.py
 uv run --with duckdb --with pyarrow --with numpy --with pyyaml --with jsonschema python 04_data_contracts.py   # one step fetches the ODCS schema
 ```
 
-- **Zoomcamp:** [practice/datatalks-de/](practice/datatalks-de/) holds the DataTalks.Club course [README](practice/datatalks-de/README.md), its [Docker and Terraform module](practice/datatalks-de/01-docker-terraform/) and its [project brief](practice/datatalks-de/projects/README.md). The Docker part runs offline after a CSV download; Terraform needs a GCP account. It is a snapshot, so its module numbers differ from the [current course](https://github.com/DataTalksClub/data-engineering-zoomcamp).
+- **Zoomcamp:** [practice/datatalks-de/](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-engineering/02-ingest-and-modelling/practice/datatalks-de) holds the DataTalks.Club course [README](https://github.com/ramseywise/learn-ai-engineering/blob/main/data-engineering/02-ingest-and-modelling/practice/datatalks-de/README.md), its [Docker and Terraform module](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-engineering/02-ingest-and-modelling/practice/datatalks-de/01-docker-terraform) and its [project brief](https://github.com/ramseywise/learn-ai-engineering/blob/main/data-engineering/02-ingest-and-modelling/practice/datatalks-de/projects/README.md). The Docker part runs offline after a CSV download; Terraform needs a GCP account. It is a snapshot, so its module numbers differ from the [current course](https://github.com/DataTalksClub/data-engineering-zoomcamp).
 
 ## Primary texts
 

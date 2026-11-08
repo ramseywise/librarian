@@ -2,7 +2,7 @@
 title: Confidence That Is Not a Probability
 tags: [patterns, eval, pattern]
 summary: A field named "confidence" is often a status lookup dressed as a float; calibration (ECE/Brier) needs three things that are usually missing — a real probability, a reader that acts on it, and independent correctness labels — so check all three before building escalation or a calibration gate on it.
-updated: 2026-11-05
+updated: 2026-11-08
 sources:
   - data/raw/claude-docs/akira/docs/research/2026-09-25-dis238-confidence-calibration.md
   - data/raw/claude-docs/diskoe/docs/research/2026-09-25-dis238-confidence-calibration.md
@@ -101,3 +101,4 @@ public per-field confidence is noise (see [[Graded-Uncertainty Enrichment Contra
 - [[Three-Band Confidence Routing]] — extends (allow / review / act bands set per category from error costs)
 - [[Probability Calibration and Reliability Curves]] — prerequisite-for
 - [[Confidence-Gated Escalation]] — extends (what a gate needs from the score, and how to check it)
+- [[Language Model Self-Knowledge]] — related (tests whether a model's stated probabilities are calibrated)

@@ -1,5 +1,5 @@
 ---
-imported_hash: 1c7f1618ca403e56
+imported_hash: 0687d88051f3f777
 title: Backtracking
 summary: Backtracking builds solutions incrementally, abandoning a path as soon as it determines that the path cannot lead to a valid solution.
 order: 136
@@ -12,6 +12,6 @@ source: learn-ai-engineering/programming/drills/coding/dsa/backtracking/Readme.m
 
 Backtracking builds solutions incrementally, abandoning a path as soon as it determines that the path cannot lead to a valid solution. It follows the **choose → explore → unchoose** pattern.
 
-- Letter Combinations of a Phone Number [[Leetcode](https://leetcode.com/problems/letter-combinations-of-a-phone-number/)] [[Solution](letter_combination_of_digits/)] [[Thinking](letter-combination-of-digits/thinking.md)]
-- Generate valid parenthesis given a number [[Leetcode](https://leetcode.com/problems/generate-parentheses/)] [[Solution](generate_parenthesis/)] [[Thinking](generate-parenthesis/thinking.md)]
+- Letter Combinations of a Phone Number [[Leetcode](https://leetcode.com/problems/letter-combinations-of-a-phone-number/)] [[Solution](letter-combination-of-digits)] [[Thinking](letter-combination-of-digits/thinking.md)]
+- Generate valid parenthesis given a number [[Leetcode](https://leetcode.com/problems/generate-parentheses/)] [[Solution](generate-parenthesis)] [[Thinking](generate-parenthesis/thinking.md)]
 - Permutations [[Leetcode](https://leetcode.com/problems/permutations/)] [[Solution](permutations/)] [[Thinking](permutations/thinking.md)]

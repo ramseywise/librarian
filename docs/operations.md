@@ -21,7 +21,7 @@ Moved from CLAUDE.md. Runbooks are in [ops/](ops/); what is deployed is in [stat
 ## CLI
 
 - CLI: `librarian wiki stats|snapshot|check|gaps|log|ask|graph|rename|relink|lint|verify|index-add|sync-check|compact-signals|week`,
-  `librarian ingest triage|lint-raw|overlap|mark|status|pending|notion|linear|pdf`, `librarian scrape sessions|docs|repos|feeds|arxiv|bookmarks`,
+  `librarian ingest triage|lint-raw|overlap|closeout|mark|status|pending|notion|linear|pdf`, `librarian scrape sessions|docs|repos|feeds|arxiv|bookmarks`,
   `librarian courses check|review`, `librarian feedback export|prune`, `librarian users add|list|invite|invites|promote`, `librarian keys create|list|revoke`,
   `librarian db upgrade|import-attempts|import-drill-log`, `librarian ops backup|restore|upgrade|schedule|list`,
   `librarian release build|pull|pin|unpin|list`, `librarian mcp [--rebuild]`, `librarian api`. Each is a thin dispatcher to the

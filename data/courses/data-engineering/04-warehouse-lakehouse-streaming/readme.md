@@ -1,5 +1,5 @@
 ---
-imported_hash: bd7cc2c45b797ed1
+imported_hash: e316215f4ac101e9
 title: 04 Warehouse, lakehouse and streaming
 summary: 'Everything else: references.md.'
 order: 1
@@ -56,7 +56,7 @@ source: learn-ai-engineering/data-engineering/04-warehouse-lakehouse-streaming/R
 ## Deck and practice
 
 - **Deck:** [slides/warehouse-lakehouse-streaming.pptx](slides/warehouse-lakehouse-streaming.pptx). Build with `make slides PILLAR=data-engineering/04-warehouse-lakehouse-streaming STRICT=1 PREVIEW=1`.
-- **Practice:** [practice/01_warehouse_and_store.py](practice/01_warehouse_and_store.py) and [practice/01b_object_storage.py](practice/01b_object_storage.py) hold the code for those two chapters; the S3 code runs against moto, a local mock. [practice/datatalks-de](practice/datatalks-de). `03-data-warehouse` needs a GCP account with BigQuery. `05-batch` needs Java and Spark 3.x, and runs offline after its `download_data.sh`. `06-streaming` needs Docker for the broker (`docker compose up`, then the `python/json_example` producer and consumer).
+- **Practice:** [practice/01_warehouse_and_store.py](practice/01_warehouse_and_store.py) and [practice/01b_object_storage.py](practice/01b_object_storage.py) hold the code for those two chapters; the S3 code runs against moto, a local mock. [practice/datatalks-de](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-engineering/04-warehouse-lakehouse-streaming/practice/datatalks-de). `03-data-warehouse` needs a GCP account with BigQuery. `05-batch` needs Java and Spark 3.x, and runs offline after its `download_data.sh`. `06-streaming` needs Docker for the broker (`docker compose up`, then the `python/json_example` producer and consumer).
 - **Chapter code:** every block without an `# illustrative` label runs locally. Each chapter gives its `uv run --with ...` line. No cloud account is required.
 
 ## Primary texts

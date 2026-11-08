@@ -64,3 +64,5 @@ disagree in places (for example 76.6 against 76.8, and different overall figures
 - [[Direct Preference Optimization]] — alternative-to (the offline baseline J1 compares against)
 - [[Bradley-Terry Preference Model]] — alternative-to (the scalar reward-model baseline)
 - [[Prometheus 2 Evaluator Models]] — related (another open judge trained for evaluation)
+- [[TIR-Judge]] — extends (adds code execution to a reinforcement-learned judge)
+- [[Self-Taught Evaluators]] — alternative-to (rejection-sampled fine-tuning on synthetic pairs)

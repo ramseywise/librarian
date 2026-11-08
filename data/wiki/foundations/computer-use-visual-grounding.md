@@ -2,7 +2,7 @@
 title: Computer Use Visual Grounding
 tags: [foundations, llm, concept]
 summary: "How a GUI agent turns a screenshot into a click — Set-of-Mark labelling, structured DOM/accessibility indexing (prefer it whenever structure exists) and direct coordinate prediction with aspect-ratio-matched rescaling — plus the observation-interface fix for dynamic screens and why per-step efficiency is now the bottleneck."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--07-agentic-applications--real-time-multimodal-agents.md
 ---
@@ -65,3 +65,4 @@ the slow GUI agent ([[Fast-Slow Thinking Architecture]]).
 - [[Real-Time Multimodal Agents]] — instance-of (the GUI setting)
 - [[Fast-Slow Thinking Architecture]] — extends (talking while acting)
 - [[Tool Design as Harness Surface]] — prerequisite-for (the computer/bash/editor action space)
+- [[Universal Verifier for Computer-Use Agents]] — related (verifying computer-use trajectories from screenshots)

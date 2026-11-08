@@ -1,5 +1,5 @@
 ---
-imported_hash: a451c218859b6ca1
+imported_hash: c5eca221ceb6cb53
 title: References
 summary: ★ marks a paper whose text changed a claim in the notes.
 order: 7
@@ -53,6 +53,6 @@ source: learn-ai-engineering/data-engineering/02-ingest-and-modelling/references
 
 | Course | Platform | Cost | Supports |
 |---|---|---|---|
-| [DE Zoomcamp](https://github.com/DataTalksClub/data-engineering-zoomcamp) (DataTalks.Club), Module 1 and Workshop 1 upstream; snapshot vendored at [practice/datatalks-de/](practice/datatalks-de/), whose module numbers differ from upstream's current ones | GitHub, YouTube | Free | [01](notes/01-ingest.md): Docker, Terraform, dlt, then Kafka in the streaming module |
+| [DE Zoomcamp](https://github.com/DataTalksClub/data-engineering-zoomcamp) (DataTalks.Club), Module 1 and Workshop 1 upstream; snapshot vendored at [practice/datatalks-de/](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-engineering/02-ingest-and-modelling/practice/datatalks-de), whose module numbers differ from upstream's current ones | GitHub, YouTube | Free | [01](notes/01-ingest.md): Docker, Terraform, dlt, then Kafka in the streaming module |
 | Kimball Group [design tips and techniques](https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/kimball-techniques/dimensional-modeling-techniques/) | Web | Free | [02](notes/02-dimensional-modelling.md) · [02b](notes/02b-dimensional-modelling-history-and-conformed-dimensions.md): reading, in place of a course |
 | [Confluent Kafka 101](https://developer.confluent.io/courses/apache-kafka/events/) | Web, video | Free | [01](notes/01-ingest.md): topics, partitions, consumers |

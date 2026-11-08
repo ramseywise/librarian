@@ -1,5 +1,5 @@
 ---
-imported_hash: 4a0e45d80ae75c28
+imported_hash: cf8e749e9a4af261
 title: Sentiment analysis
 summary: 'Your product has fifty thousand reviews, and a manager asks two questions: are people happy, and why not?'
 order: 7
@@ -374,13 +374,13 @@ Both outputs fail in instructive ways. The cloud draws "the", "a" and "i" larges
 
 | Notebook | Covers | Runs |
 |---|---|---|
-| [`Ch09a - Unsupervised Lexical`](../practice/text-analytics-with-python/Ch09 - Sentiment Analysis/Ch09a - Sentiment Analysis - Unsupervised Lexical.ipynb) | TextBlob, AFINN, SentiWordNet, VADER | Needs data: `movie_reviews.csv.bz2` (not in this snapshot; IMDb 50k from the book repo). `afinn`, `textblob`, spaCy `en_core_web_sm` |
+| [`Ch09a - Unsupervised Lexical`](https://github.com/ramseywise/learn-ai-engineering/blob/main/data-science/03-nlp/practice/text-analytics-with-python/Ch09%20-%20Sentiment%20Analysis/Ch09a%20-%20Sentiment%20Analysis%20-%20Unsupervised%20Lexical.ipynb) | TextBlob, AFINN, SentiWordNet, VADER | Needs data: `movie_reviews.csv.bz2` (not in this snapshot; IMDb 50k from the book repo). `afinn`, `textblob`, spaCy `en_core_web_sm` |
 | `Ch09b - Supervised` | BoW/TF-IDF + LR/SVM; word2vec and GloVe + dense net | Needs data as above; standalone `keras`, `keras.layers.normalization` (TF 1.x era), gensim 3 `size=` / `index2word`, spaCy vectors model |
 | `Ch09c - Advanced Deep Learning` | Embedding + LSTM | Needs data; standalone `keras`; `predict_classes` removed in TF 2.6 |
 | `Ch09d - Model Interpretation` | LIME explanations | Needs data; legacy: `skater` is unmaintained, swap in `lime` |
 | `Ch09e - Topic Models` | NMF per sentiment class, pyLDAvis | Needs data; NMF `alpha` → `alpha_W`; pyLDAvis `.sklearn` → `.lda_model` |
 
-The intro-to-nlp CNN and RNN sentiment notebooks are in [`practice/intro-to-nlp/tensorFlow/neural-network/`](../practice/intro-to-nlp/tensorFlow/neural-network) and the PetFinder word clouds in [`practice/intro-to-nlp/word-cloud/`](../practice/intro-to-nlp/word-cloud). Their data is in `practice/intro-to-nlp/data/` (CSVs gitignored, local only), and the [pillar README](../readme.md#practice) says how to get it.
+The intro-to-nlp CNN and RNN sentiment notebooks are in [`practice/intro-to-nlp/tensorFlow/neural-network/`](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-science/03-nlp/practice/intro-to-nlp/tensorFlow/neural-network) and the PetFinder word clouds in [`practice/intro-to-nlp/word-cloud/`](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-science/03-nlp/practice/intro-to-nlp/word-cloud). Their data is in `practice/intro-to-nlp/data/` (CSVs gitignored, local only), and the [pillar README](../readme.md#practice) says how to get it.
 
 ## Pitfalls
 

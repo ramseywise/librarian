@@ -79,6 +79,35 @@ def get_graph(edges: Literal["wikilink", "all"] = "wikilink") -> dict[str, Any]:
     return graph
 
 
+@router.get("/api/graph/atlas")
+def get_graph_atlas() -> dict[str, Any]:
+    """The map's first paint: /api/graph without summaries, paths or edge objects.
+
+    Wikilinks are `[source, target]` index pairs into `nodes` (with the relationship as a
+    third item when typed), about a tenth of the edge JSON. The full graph still arrives over
+    /ws; the UI uses this until it does. Same pages as parse_wiki(): no private, no tombstones.
+    """
+    graph = parse_wiki()
+    index = {n["id"]: i for i, n in enumerate(graph["nodes"])}
+    nodes = [
+        {
+            "id": n["id"],
+            "title": n["data"]["title"],
+            "domain": n["data"]["domain"][0],
+            "typeTag": n["data"]["typeTag"],
+            "tags": n["data"]["tags"],
+        }
+        for n in graph["nodes"]
+    ]
+    links = []
+    for e in graph["edges"]:
+        pair = [index[e["source"]], index[e["target"]]]
+        if rel := e["data"].get("relationship"):
+            pair.append(rel)
+        links.append(pair)
+    return {"nodes": nodes, "links": links, "domains": graph["domains"]}
+
+
 # Sync routes (threadpool): both block on embeddings, and compute_embeddings serialises
 # on a lock the course-catalog build may hold — never wait on it from the event loop.
 @router.get("/api/edges/semantic")

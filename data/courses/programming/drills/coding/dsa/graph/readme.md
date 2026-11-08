@@ -1,5 +1,5 @@
 ---
-imported_hash: dcdbb0483bba40dd
+imported_hash: d8fb93d774a02357
 title: Graph
 summary: Graph algorithms for traversal, shortest path, cycle detection, and connected components.
 order: 150
@@ -19,5 +19,5 @@ Graph algorithms for traversal, shortest path, cycle detection, and connected co
 
 ## Problems
 
-- Number of Islands [[Leetcode](https://leetcode.com/problems/number-of-islands/)] [[Solution](number_of_islands/)] [[Thinking](number-of-islands/thinking.md)]
-- Course Schedule (Cycle Detection) [[Leetcode](https://leetcode.com/problems/course-schedule/)] [[Solution](course_schedule/)] [[Thinking](course-schedule/thinking.md)]
+- Number of Islands [[Leetcode](https://leetcode.com/problems/number-of-islands/)] [[Solution](number-of-islands)] [[Thinking](number-of-islands/thinking.md)]
+- Course Schedule (Cycle Detection) [[Leetcode](https://leetcode.com/problems/course-schedule/)] [[Solution](course-schedule)] [[Thinking](course-schedule/thinking.md)]

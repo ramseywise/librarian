@@ -1,5 +1,5 @@
 ---
-imported_hash: 3ddea873c98caab9
+imported_hash: 30ebd6d0b10d6817
 title: 04 — Bayesian Analysis
 summary: 'Bayesian analysis writes down how the data could have been generated, puts a prior on the unknowns, and computes the posterior: what is plausible once the data is in.'
 order: 1
@@ -43,7 +43,7 @@ Larkspur's checkout test from the previous pillar gets a new question. [Chapter 
 | 7 | [Multilevel models and partial pooling](notes/07-multilevel-models-and-partial-pooling.md) | Fit random intercepts and slopes in `MixedLM` and PyMC, choose between clustered SEs, fixed effects and a multilevel model, and say when partial pooling does not help |
 | 7b | [Varying slopes, measurement error and missing data](notes/07b-varying-slopes-measurement-error-and-missing-data.md) | Count effective parameters, fit correlated varying slopes with a non-centred form, and model measurement error and missing predictors instead of ignoring them |
 
-Read 1 to 5 in order (1b follows 1 and can wait until after 2; 3b follows 3). Chapter 6 needs 1 and 2, and is the map for the [BayesianML coursework](practice/BayesianML). Chapter 7b follows 7. Chapter 7 needs 2 and 4, plus clustered SEs from [regression](../02-probability-and-statistics/notes/06-regression-and-glms.md) and the design effect from [probability foundations](../02-probability-and-statistics/notes/02-probability-foundations.md). Earlier pillars: [probability and statistics](../02-probability-and-statistics/readme.md) and [experimentation](../03-experimentation-and-causality/readme.md), whose Larkspur test chapter 4 reuses.
+Read 1 to 5 in order (1b follows 1 and can wait until after 2; 3b follows 3). Chapter 6 needs 1 and 2, and is the map for the [BayesianML coursework](practice/bayesianml). Chapter 7b follows 7. Chapter 7 needs 2 and 4, plus clustered SEs from [regression](../02-probability-and-statistics/notes/06-regression-and-glms.md) and the design effect from [probability foundations](../02-probability-and-statistics/notes/02-probability-foundations.md). Earlier pillars: [probability and statistics](../02-probability-and-statistics/readme.md) and [experimentation](../03-experimentation-and-causality/readme.md), whose Larkspur test chapter 4 reuses.
 
 ## Builds on and feeds into
 
@@ -117,15 +117,15 @@ uv run --with pymc --with arviz --with scipy --with scikit-learn python
 
 Three legacy blocks in chapter 6 are marked `# illustrative`, because they show the coursework's PyMC3, GPy and GPyOpt code and need its pinned environment. Chapter 7 shows the core of each simulation, and its runnable form is [practice/ch07_multilevel_models.py](practice/ch07_multilevel_models.py): run `uv run ch07_multilevel_models.py` from that folder. It also needs `statsmodels` and the chart helpers in [06/practice](../06-applied-analyses/practice/chartstyle.py).
 
-**Practice:** the coursework in [practice/BayesianML/](practice/BayesianML) is kept as written, with no saved outputs. It targets Python 3.7, TensorFlow 1.15, Keras 2.3.1, `pymc3==3.11.4` and `theano-pymc==1.1.2`, set up with [bayesian.yml](practice/BayesianML/bayesian.yml). The course grader is not included, and these notebooks are not run by the repo checks.
+**Practice:** the coursework in [practice/BayesianML/](practice/bayesianml) is kept as written, with no saved outputs. It targets Python 3.7, TensorFlow 1.15, Keras 2.3.1, `pymc3==3.11.4` and `theano-pymc==1.1.2`, set up with [bayesian.yml](practice/bayesianml/bayesian.yml). The course grader is not included, and these notebooks are not run by the repo checks.
 
 | Folder | What it is | How to run |
 |---|---|---|
-| [week_2](practice/BayesianML/week_2) | EM for a Gaussian mixture | Notebook, in the pinned environment |
-| [week_4](practice/BayesianML/week_4) | MCMC and Bayesian logistic regression in PyMC3 | Notebook, in the pinned environment |
-| [week_5](practice/BayesianML/week_5) | Variational autoencoder on MNIST | Notebook, in the pinned environment |
-| [week_6](practice/BayesianML/week_6) | Gaussian processes and Bayesian optimisation | Also needs GPy, GPyOpt and xgboost, installed with pip |
-| [final_assignment](practice/BayesianML/final_assignment) | "Finding the suspect": a VAE with Bayesian optimisation | Notebook with `utils.py`, in the pinned environment |
+| [week_2](practice/bayesianml/week-2) | EM for a Gaussian mixture | Notebook, in the pinned environment |
+| [week_4](practice/bayesianml/week-4) | MCMC and Bayesian logistic regression in PyMC3 | Notebook, in the pinned environment |
+| [week_5](practice/bayesianml/week-5) | Variational autoencoder on MNIST | Notebook, in the pinned environment |
+| [week_6](practice/bayesianml/week-6) | Gaussian processes and Bayesian optimisation | Also needs GPy, GPyOpt and xgboost, installed with pip |
+| [final_assignment](practice/bayesianml/final-assignment) | "Finding the suspect": a VAE with Bayesian optimisation | Notebook with `utils.py`, in the pinned environment |
 
 ## Primary texts
 

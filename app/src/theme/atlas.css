@@ -249,16 +249,15 @@
   .map-bar { top: 44px; left: var(--space-5); right: var(--space-5); transform: none; width: auto; max-width: none; justify-content: flex-start; }
   .map-search-input { width: 150px; }
   .map-search-list { right: auto; left: 0; width: min(320px, calc(100vw - 48px)); }
-  .graph-controls.is-open .graph-all-nodes { position: static; }
   .atlas-list { right: var(--space-5); bottom: var(--space-3); }
 }
 
 /* ---- Wiki health strip ------------------------------------------------------- */
 .health-strip {
   position: absolute;
-  /* Between the filter panel and the minimap, which the atlas's list button sits inside. */
-  left: 360px; /* wide form of the panel, before the curriculum loads */
-  right: 225px;
+  /* Clear of React Flow's zoom controls on the left and the atlas's list button on the right. */
+  left: 60px;
+  right: var(--space-5);
   width: fit-content;
   margin-inline: auto;
   bottom: var(--space-3);

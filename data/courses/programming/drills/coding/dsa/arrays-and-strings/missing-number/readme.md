@@ -1,5 +1,5 @@
 ---
-imported_hash: 9031446c4042e23a
+imported_hash: d4877d12009a878d
 title: Missing Number
 summary: ''
 order: 124
@@ -20,4 +20,4 @@ Missing number in array
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](../../arrays_and_strings/missing_number/solution.py) |
+| Python   | [solution.py](solution.py) |

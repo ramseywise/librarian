@@ -228,6 +228,7 @@ TruLens / Phoenix** (ready-made RAG judges with tracing). All need calibration b
 
 ## See Also
 - [[RAGChecker]] — alternative-to (claim-level metric set with a human-preference meta-evaluation)
+- [[Ragas Reference-Free RAG Metrics]] — alternative-to (the reference-free three-metric suite and its WikiEval validation)
 - [[Lookback Lens]] — related
 - [[Trajectory Over Outcome]] <!-- auto-linked -->
 - [[Online Eval Sampling]] <!-- auto-linked -->

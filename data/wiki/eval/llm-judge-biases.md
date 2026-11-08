@@ -10,6 +10,8 @@ sources:
   - data/raw/papers/2026-11-05-whitehouse-2025-j1.md
   - data/raw/papers/2026-11-05-ye-2023-flask.md
   - data/raw/papers/2026-11-06-chen-2026-two-level-meta-rubrics-evaluating.md
+  - data/raw/papers/2026-11-08-wang-2024-large-language-models-not-fair.md
+  - data/raw/papers/2026-11-08-gu-2024-survey-llm-as-judge.md
 ---
 
 # LLM Judge Biases
@@ -35,6 +37,8 @@ model's own.
 - **Position.** J1-Llama-70B, trained as a judge, flipped its verdict on 21.9% of PPE Correctness
   pairs when answer order was swapped; an untrained Llama-3.1-8B flipped on 44.1%
   ([[J1 Reinforcement-Learned Judge]]).
+- **Position, pairwise order swaps.** On 80 Vicuna questions, ChatGPT as judge let Vicuna-13B beat ChatGPT on 66 queries by reordering alone; GPT-4 favoured the first position (51.3% win rate as Assistant 1, 23.8% as Assistant 2) and ChatGPT the second (2.5% against 82.5%) ([[Position Bias Calibration (MEC, BPC, HITLC)]]).
+- **Survey meta-evaluation.** Gu et al. ran six standard judges at temperature 0 on swapped-position pairs (LLMEval2 and EvalBiasBench): GPT-4-turbo had position consistency 80.31%, GPT-3.5-turbo 68.78% and LLaMA3-8B 38.85%. On the EvalBiasBench length subset (n=34) GPT-3.5-turbo scored 20.59% against 91.18% for GPT-4-turbo. Asking GPT-3.5-turbo for an explanation with the verdict lowered its position consistency from 68.78% to 48.97%, and a majority vote over 5 rounds raised it only to 70.11%. One run per cell, no intervals; the authors call the explanation result a speculation about deeper biases, and it was tested on GPT-3.5-turbo only (self-reported).
 - **Length.** FLASK skill scores correlated 0.737 with response length for
   completeness but 0.147 for logical correctness ([[FLASK Skill-Set Evaluation]]).
 - **Self-scoring.** In GAMUT, Qwen3-VL 235B as judge gave itself 44.0 against 33.0 from a Gemini
@@ -102,3 +106,7 @@ UI agents from screenshots, video from sampled frames — each with its own cali
 - [[J1 Reinforcement-Learned Judge]] — extends (a consistency reward aimed at position flips)
 - [[FLASK Skill-Set Evaluation]] — related (length and grader-preference evidence)
 - [[Prometheus 2 Evaluator Models]] — related (bias analysis not done there)
+- [[Position Bias Calibration (MEC, BPC, HITLC)]] — instance-of (position bias, measured and calibrated)
+- [[Self-Taught Evaluators]] — related (answer order alone swung one judge's RewardBench score by 5.6 points)
+- [[Taste-Bench]] — related (both-orders scoring against position bias)
+- [[FACTS Leaderboard]] — related (concedes judge self-preference and averages two judges to reduce it)

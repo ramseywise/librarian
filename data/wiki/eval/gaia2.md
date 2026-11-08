@@ -56,3 +56,5 @@ quoted three different ways in the paper. The models and prices date from Septem
 - [[LLM-as-Judge Evaluation]] — related (a verifier compared with a single judge)
 - [[TheAgentCompany]] — alternative-to
 - [[Trajectory Over Outcome]] — related
+- [[GAIA General-Assistant Benchmark]] — related (a different benchmark with a similar name)
+- [[AgentBench]] — alternative-to (another agent benchmark)

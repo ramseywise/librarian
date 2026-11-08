@@ -1,5 +1,5 @@
 ---
-imported_hash: 5a52e5de557f939c
+imported_hash: 489f0eb027a4b6ea
 title: Min Stack
 summary: Design a stack that supports push, pop, top, and retrieving the minimum element in constant time O(1).
 order: 208
@@ -20,4 +20,4 @@ Design a stack that supports push, pop, top, and retrieving the minimum element 
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](../min_stack/solution.py) |
+| Python   | [solution.py](solution.py) |

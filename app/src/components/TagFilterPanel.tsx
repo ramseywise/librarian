@@ -26,7 +26,7 @@ interface ChipProps {
   onBrief?: (domain: string) => void;
 }
 
-function Chip({ id, label, count, color, active, onToggle, briefScope, onBrief }: ChipProps) {
+export function Chip({ id, label, count, color, active, onToggle, briefScope, onBrief }: ChipProps) {
   const canBrief = onBrief && briefScope;
   return (
     <div
@@ -161,22 +161,9 @@ export function TagFilterPanel({ domains, curriculum, activeTags, onChange, onBr
     onChange(next);
   }
 
-  const allChip = (
-    <button
-      type="button"
-      aria-pressed={activeTags.size === 0}
-      className="chip chip--all"
-      onClick={() => onChange(new Set())}
-    >
-      All
-    </button>
-  );
-
   if (!curriculum) {
     return (
-      <div className="float-panel graph-filter-panel" role="group" aria-label="Filter by domain">
-        <div className="panel-label">Filter by Domain</div>
-        {allChip}
+      <div className="side-chips" role="group" aria-label="Filter by domain">
         {domains
           .filter((d) => d !== "private")
           .map((tag) => (
@@ -195,19 +182,11 @@ export function TagFilterPanel({ domains, curriculum, activeTags, onChange, onBr
     );
   }
 
-  // Tags set from elsewhere (the node detail panel): shown so they can be cleared one by one.
+  // Ids no section lists (an old link's bare tag): shown so they can be cleared one by one.
   const plainTags = [...activeTags].filter((t) => !isFacetId(t)).sort();
 
   return (
-    <div
-      className="float-panel graph-filter-panel graph-filter-panel--tree"
-      role="group"
-      aria-label="Filter by curriculum"
-    >
-      <div className="cur-head">
-        <div className="panel-label">Curriculum</div>
-        {allChip}
-      </div>
+    <div className="side-curriculum" role="group" aria-label="Filter by curriculum">
       {plainTags.length > 0 && (
         <div className="cur-chips">
           {plainTags.map((tag) => (

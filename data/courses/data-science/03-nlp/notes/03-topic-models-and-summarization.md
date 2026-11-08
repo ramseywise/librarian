@@ -1,5 +1,5 @@
 ---
-imported_hash: 13918302c6500b8b
+imported_hash: 4346f33f58e0f84f
 title: Topic models, keyphrases and summarisation
 summary: A colleague hands you ten thousand support tickets and asks what people are complaining about.
 order: 4
@@ -383,10 +383,10 @@ Sarkar's first-edition chapter 5 works on toy inputs of 8, 9 and 13 sentences wi
 
 | Notebook | Covers | Runs |
 |---|---|---|
-| [`Ch06a`](../practice/text-analytics-with-python/Ch06 - Text Summarization and Topic Models) | Collocations, PMI, tag-based keyphrases | Needs `nltk` data (Gutenberg corpus); `elephants.txt` included |
+| [`Ch06a`](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-science/03-nlp/practice/text-analytics-with-python/Ch06%20-%20Text%20Summarization%20and%20Topic%20Models) | Collocations, PMI, tag-based keyphrases | Needs `nltk` data (Gutenberg corpus); `elephants.txt` included |
 | `Ch06b`, `Ch06c`, `Ch06d` | LSI from scratch, LDA (gensim, MALLET, sklearn), NMF, coherence tuning, pyLDAvis | Needs internet: NIPS papers (`nips12raw_str602.tgz`, not in the repo); MALLET needs a Java install; `pyLDAvis.sklearn` → `pyLDAvis.lda_model`; `test_data/` included |
 | `Ch06e` | LSA and TextRank summaries | Runs offline; `networkx`, `nltk` |
-| [`Ch07c - Document Clustering`](../practice/text-analytics-with-python/Ch07 - Text Similarity and Clustering/Ch07c - Document Clustering.ipynb) | k-means, affinity propagation, Ward dendrogram on TMDB movies | Runs offline; `tmdb_5000_movies.csv.gz` included |
+| [`Ch07c - Document Clustering`](https://github.com/ramseywise/learn-ai-engineering/blob/main/data-science/03-nlp/practice/text-analytics-with-python/Ch07%20-%20Text%20Similarity%20and%20Clustering/Ch07c%20-%20Document%20Clustering.ipynb) | k-means, affinity propagation, Ward dendrogram on TMDB movies | Runs offline; `tmdb_5000_movies.csv.gz` included |
 | [`07-working-with-text-data.ipynb`](../../01-classical-ml/practice/intro-to-ml-in-python/07-working-with-text-data.md), last section | LDA on IMDb | Needs the `aclImdb` download |
 
 ## Pitfalls

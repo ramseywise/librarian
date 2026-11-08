@@ -2,7 +2,7 @@
 title: Skill Discovery Failure Modes
 tags: [meta, llm, reference]
 summary: Why a Claude Code skill silently fails to trigger or gets ignored — the shared ~15k-character description budget that drops skills with no warning, disable-model-invocation removing the description entirely, auto-formatted multi-line YAML, vague descriptions, name/casing mismatches, compaction forgetting — plus how to tune a description with near-miss negative trigger evals.
-updated: 2026-10-17
+updated: 2026-11-08
 sources:
   - data/raw/claude-docs/galactus/skills/skill-creator/references/gotchas.md
   - data/raw/claude-docs/guacamayo/skills/skill-creator/references/gotchas.md
@@ -118,3 +118,4 @@ absorbs its intent, is in [[Pipeline-Absorbed Skills]].
 - [[Skill Authoring Discipline]] — prerequisite-for
 - [[Pipeline-Absorbed Skills]] — extends (zero invocations from a structural bypass that description rewrites cannot fix)
 - [[Dispatcher Carries the Skill Body]] — extends (`disable-model-invocation` also hides skills from subagents)
+- [[Skill Lift Evaluation]] — related (measures lift as visible skills grow)

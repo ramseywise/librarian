@@ -1,5 +1,5 @@
 ---
-imported_hash: 5c4a2b32bb852270
+imported_hash: 400b70952e445336
 title: Data Science
 summary: Running through all the pillars is one habit.
 order: 1
@@ -125,7 +125,7 @@ Each pillar has a README with its reading order, a `references.md` that maps its
 5. Build and diagnose sequence models, including recurrent networks, attention and [transformer encoders](../02-deep-learning/notes/05b-transformer-encoders.md), for ordered inputs ([Vaswani et al.](https://arxiv.org/abs/1706.03762)).
 6. Compare TF-IDF, frozen encoders, and fine-tuned text models against the same held-out baseline.
 
-**Review and practice:** [deck](../02-deep-learning/slides/deep-learning.pptx) · runnable chapter examples in PyTorch · optional historical [Ng coursework](../02-deep-learning/practice/ng-deep-learning) for comparison.
+**Review and practice:** [deck](../02-deep-learning/slides/deep-learning.pptx) · runnable chapter examples in PyTorch · optional historical [Ng coursework](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-science/02-deep-learning/practice/ng-deep-learning) for comparison.
 
 **Mastery lab:** Train a small neural model with a linear or from-scratch control. Diagnose one deliberate failure (such as poor initialisation, train/eval mode, or learning rate), correct it, and justify the next experiment from the measurements.
 
@@ -221,10 +221,10 @@ Don't run these in bulk. Each pillar README and each note's Practice section say
 | [`intro-to-ml-in-python/`](../01-classical-ml/practice/intro-to-ml-in-python) | 01 | Offline. Needs scikit-learn 1.4 or later, `mglearn` (bundled) and graphviz. Notebook 07 needs the aclImdb download |
 | [`ng-machine-learning/`](../01-classical-ml/practice/ng-machine-learning) | 01 | Offline, NumPy and SciPy with bundled `.mat` data |
 | [`udacity_mlnd_python_practice.ipynb`](../01-classical-ml/practice/udacity-mlnd-python-practice.md) | 01 | Offline, needs `data/iris.txt` (not in repo) |
-| [`ng-deep-learning/`](../02-deep-learning/practice/ng-deep-learning) | 02 | Legacy: TF 1.x through `tf.compat.v1`, two notebooks still need `tf.contrib`, some need course helper files and weights. Note 01 has a table for rewriting them in PyTorch |
+| [`ng-deep-learning/`](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-science/02-deep-learning/practice/ng-deep-learning) | 02 | Legacy: TF 1.x through `tf.compat.v1`, two notebooks still need `tf.contrib`, some need course helper files and weights. Note 01 has a table for rewriting them in PyTorch |
 | [`deep-learning-starter-simple-lstm.ipynb`](../02-deep-learning/practice/deep-learning-starter-simple-lstm.md) | 02 | GPU recommended, needs Kaggle Ventilator Pressure data |
-| [`intro-to-nlp/`](../03-nlp/practice/intro-to-nlp) | 03 | Data is git-ignored. [Download instructions](../03-nlp/readme.md#intro-to-nlp-datasets) are in the NLP README. Start Jupyter inside the folder |
-| [`text-analytics-with-python/`](../03-nlp/practice/text-analytics-with-python) | 03 | Partly legacy: spaCy 2, standalone Keras, gensim 3, `skater`, TF 2.15 or earlier for Ch10a. Ch09 and Ch10 need `movie_reviews.csv` (not in repo) |
+| [`intro-to-nlp/`](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-science/03-nlp/practice/intro-to-nlp) | 03 | Data is git-ignored. [Download instructions](../03-nlp/readme.md#intro-to-nlp-datasets) are in the NLP README. Start Jupyter inside the folder |
+| [`text-analytics-with-python/`](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-science/03-nlp/practice/text-analytics-with-python) | 03 | Partly legacy: spaCy 2, standalone Keras, gensim 3, `skater`, TF 2.15 or earlier for Ch10a. Ch09 and Ch10 need `movie_reviews.csv` (not in repo) |
 | [`approaching-almost-any-nlp-problem-on-kaggle.ipynb`](../03-nlp/practice/approaching-almost-any-nlp-problem-on-kaggle.md) | 03 | Legacy, needs Kaggle spooky-author data and GloVe |
 | [`nn-zero-to-hero/`](../../generative-ai/09-llms-from-scratch/practice/nn-zero-to-hero) | GA 09 | micrograd is offline. makemore needs `names.txt` (not in repo). nanoGPT's `bigram.py` runs on CPU, `gpt.py` on a GPU, and `build-nanogpt` needs 8 GPUs and FineWeb-Edu |
 | [`05-time-series-and-recommenders/practice/`](../05-time-series-and-recommenders/practice/readme.md) | 05 | See its README |

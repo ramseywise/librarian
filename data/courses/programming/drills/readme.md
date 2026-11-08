@@ -9,9 +9,9 @@ source: learn-ai-engineering/programming/drills/README.md
 # Drills: the gym
 
 Practice by language and topic, not a sequence. Come in, pick a track, drill, log it. Learning
-material lives in the [curriculum](../../README.md); interview format and round prep live in
+material lives in the [curriculum](https://github.com/ramseywise/learn-ai-engineering/blob/main/README.md); interview format and round prep live in
 [`practice/interviewing/`](../../interviewing/00-start-here/readme.md). This folder is reps. The dependency runs one way:
-practice links to chapters, chapters never depend on practice. [`practice/CROSSWALK.md`](../../practice/CROSSWALK.md)
+practice links to chapters, chapters never depend on practice. [`practice/CROSSWALK.md`](https://github.com/ramseywise/learn-ai-engineering/blob/main/practice/CROSSWALK.md)
 maps each curriculum unit to the drills and guides that test it.
 
 This folder is the **drills** module of the Programming course: every tracked `.md` here is a
@@ -78,7 +78,7 @@ Worked examples of the schema: [`sql/window-functions/top-orders-per-user.md`](s
 [`terraform/review/web-stack.md`](terraform/review/web-stack.md).
 
 `units` links a drill to the curriculum: `scripts/practice/crosswalk.py` checks every path exists and
-generates [`practice/CROSSWALK.md`](../../practice/CROSSWALK.md). `concepts` links it to the wiki: librarian's Practice
+generates [`practice/CROSSWALK.md`](https://github.com/ramseywise/learn-ai-engineering/blob/main/practice/CROSSWALK.md). `concepts` links it to the wiki: librarian's Practice
 mode uses it to draw concept → drill edges in the graph.
 
 ## Logging

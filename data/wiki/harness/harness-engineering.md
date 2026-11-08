@@ -2,7 +2,7 @@
 title: Harness Engineering
 tags: [llm, agents, infra, concept]
 summary: "Agent = Model + Harness — the discipline of building everything between request and output except the weights (context, tools, constrain, verify, correct), why reliability compounding makes the harness dominate the model, and why coding agents matured first."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--README.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--README.md
@@ -306,3 +306,4 @@ Atomic pages: [[Harness Subsystem Attribution]] · [[Dynamic Tool Discovery]] ·
 - [[Skill Authoring Discipline]] — related (authoring the skill layer of the harness)
 - [[Harness Subsystem Attribution]] — extends (the skill-issue reframe as a diagnostic procedure)
 - [[Deep Agent Pillars]] — related (the architecture-level view of the same system)
+- [[Harness-IF]] — related (instruction following by surface)

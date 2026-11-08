@@ -1,25 +1,72 @@
 import type { Node } from "@xyflow/react";
 import { courseColor } from "../theme/domains";
 import type { Theme } from "./theme";
-import type { Curriculum, Facets, WikiNodeData } from "../types";
+import type { Curriculum, Facets, Glossary, WikiNodeData } from "../types";
 
 export const courseFacet = (course: string) => `course:${course}`;
 export const moduleFacet = (course: string, module: string) => `module:${course}/${module}`;
 export const beyondFacet = (domain: string) => `beyond:${domain}`;
+export const tagFacet = (tag: string) => `tag:${tag}`;
+export const termFacet = (term: string) => `term:${term}`;
 
-const FACET_ID = /^(course|module|beyond):/;
+const FACET_ID = /^(course|module|beyond|tag|term):/;
+const CURRICULUM_FACET = /^(course|module|beyond):/;
 export const isFacetId = (tag: string) => FACET_ID.test(tag);
 export const isModuleFacet = (tag: string) => tag.startsWith("module:");
 
-/** Filter id → the pages it selects, for every course, module and "beyond" directory. */
-export function facetsOf(c: Curriculum | null): Facets | undefined {
-  if (!c) return undefined;
+/**
+ * Has a filter id's source not arrived yet? Curriculum facets wait on the curriculum, term facets
+ * on the glossary; a `tag:` facet comes with the pages.
+ */
+export function facetPending(id: string, c: Curriculum | null, glossary: Glossary | null): boolean {
+  if (CURRICULUM_FACET.test(id)) return !c;
+  if (id.startsWith("term:")) return !glossary;
+  return false;
+}
+
+/**
+ * Filter id → the pages it selects: every course, module and "beyond" directory once the
+ * curriculum is in, every frontmatter tag, and every glossary term (the pages that mention it).
+ */
+export function facetsOf(
+  c: Curriculum | null,
+  nodes: Pick<Node<WikiNodeData>, "id" | "data">[] = [],
+  glossary: Glossary | null = null,
+): Facets {
   const out: Facets = new Map();
-  for (const course of c.courses) {
-    out.set(courseFacet(course.id), new Set(course.pageIds));
-    for (const m of course.modules) out.set(moduleFacet(course.id, m.id), new Set(m.pageIds));
+  if (c) {
+    for (const course of c.courses) {
+      out.set(courseFacet(course.id), new Set(course.pageIds));
+      for (const m of course.modules) out.set(moduleFacet(course.id, m.id), new Set(m.pageIds));
+    }
+    for (const b of c.beyond) out.set(beyondFacet(b.domain), new Set(b.pageIds));
   }
-  for (const b of c.beyond) out.set(beyondFacet(b.domain), new Set(b.pageIds));
+  for (const n of nodes) {
+    for (const t of n.data.tags ?? []) {
+      const id = tagFacet(t);
+      const set = out.get(id);
+      if (set) set.add(n.id);
+      else out.set(id, new Set([n.id]));
+    }
+  }
+  if (glossary) for (const [term, pages] of Object.entries(glossary.mentions)) out.set(termFacet(term), new Set(pages));
+  return out;
+}
+
+/** Each page's curriculum modules, as facet ids: the "same module" layer walks these. */
+export function modulesOf(c: Curriculum | null): Map<string, string[]> {
+  const out = new Map<string, string[]>();
+  if (!c) return out;
+  for (const course of c.courses) {
+    for (const m of course.modules) {
+      const id = moduleFacet(course.id, m.id);
+      for (const page of m.pageIds) {
+        const list = out.get(page);
+        if (list) list.push(id);
+        else out.set(page, [id]);
+      }
+    }
+  }
   return out;
 }
 

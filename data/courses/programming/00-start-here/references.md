@@ -1,5 +1,5 @@
 ---
-imported_hash: ec1edc4462d19923
+imported_hash: e2c21152aabc9163
 title: References
 summary: Everything the Python, SQL and TypeScript tracks are built from, with how each source is used.
 order: 2
@@ -11,7 +11,7 @@ source: learn-ai-engineering/programming/references.md
 # Programming — references
 
 Everything the Python, SQL and TypeScript tracks are built from, with how each source is used. Per-note sources are
-in each note's frontmatter. [Sources and depth](../CURRICULUM.md#sources-and-depth) says how source maps work across the courses.
+in each note's frontmatter. [Sources and depth](https://github.com/ramseywise/learn-ai-engineering/blob/main/CURRICULUM.md#sources-and-depth) says how source maps work across the courses.
 
 ## Python
 

@@ -59,3 +59,4 @@ trajectory grading; the full-set Sonnet run was a single run, which the authors 
 - [[MLE-bench]] — alternative-to (another outcome-graded benchmark of real engineering work)
 - [[Trajectory Over Outcome]] — related (SWE-Lancer grades end state only)
 - [[Repository-Level Coding Benchmarks]] — related
+- [[AlphaEval]] — related (value-weighted scoring)

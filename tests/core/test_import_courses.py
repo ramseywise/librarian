@@ -384,6 +384,34 @@ def test_root_readme_links_to_non_lessons_gain_a_level(practice: tuple[Path, Pat
     assert "(slides/deck.pptx)" in (dest / "programming" / "python" / "notes.md").read_text()
 
 
+def test_links_follow_renamed_folders_and_point_unmirrored_files_at_github(
+    practice: tuple[Path, Path],
+) -> None:
+    source, dest = practice
+    week = source / "programming" / "drills" / "sql" / "Week_1"
+    week.mkdir()
+    (week / "case (study).md").write_text("# Case\n")
+    (week / "data.csv").write_text("a,b\n")
+    examples = source / "programming" / "drills" / "sql" / "examples"
+    examples.mkdir()
+    (examples / "1.select.py").write_text("print(1)\n")
+    (source / "DECKS.md").write_text("# Decks\n")
+    (source / "programming" / "python" / "notes.md").write_text(
+        "# Notes\n\n[Week](../drills/sql/Week_1/) [CSV](../drills/sql/Week_1/data.csv) "
+        "[Case](../drills/sql/Week_1/case%20%28study%29.md) [Decks](../../DECKS.md) "
+        "[Examples](../drills/sql/examples/)\n"
+    )
+    _git(source, "add", "DECKS.md", "programming/")
+    ic.apply(ic.build_plan(source, ["programming"]), ["programming"], dry_run=False)
+    notes = (dest / "programming" / "python" / "notes.md").read_text()
+    assert "(../drills/sql/week-1)" in notes
+    assert "(../drills/sql/week-1/data.csv)" in notes
+    assert "(../drills/sql/week-1/case-study.md)" in notes
+    assert f"({ic.SIBLING_URL}/blob/main/DECKS.md)" in notes
+    # a folder with no lesson in it has no copy here
+    assert f"({ic.SIBLING_URL}/tree/main/programming/drills/sql/examples)" in notes
+
+
 def test_vendored_paths_are_not_fooled_by_practice_dirs(tmp_path: Path) -> None:
     practice_dir = tmp_path / "practice"
     for name in ("drills", "interviewing"):

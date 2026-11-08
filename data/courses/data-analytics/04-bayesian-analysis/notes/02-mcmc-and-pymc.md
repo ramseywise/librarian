@@ -1,5 +1,5 @@
 ---
-imported_hash: 4d3055dd35cae666
+imported_hash: 7350c264788f636f
 title: 2 — MCMC and PyMC
 summary: The Challenger model in chapter 1 has two parameters and the sampler returned an answer in a second.
 order: 4
@@ -426,7 +426,7 @@ Two further numbers from the chapter. About 200 effective samples is enough for 
 
 ## PyMC3 to current PyMC
 
-BMH's notebooks, the talk and most posts before 2022 use PyMC3 on a Theano backend. So does the BayesianML week 4 coursework, pinned at `pymc3==3.11.4 theano-pymc==1.1.2` (see [practice/BayesianML/](../practice/BayesianML)). The code in this pillar runs on PyMC 6.4 and ArviZ 1.3. There the return value is an xarray `DataTree` with the same `posterior` access as the older `InferenceData`:
+BMH's notebooks, the talk and most posts before 2022 use PyMC3 on a Theano backend. So does the BayesianML week 4 coursework, pinned at `pymc3==3.11.4 theano-pymc==1.1.2` (see [practice/BayesianML/](../practice/bayesianml)). The code in this pillar runs on PyMC 6.4 and ArviZ 1.3. There the return value is an xarray `DataTree` with the same `posterior` access as the older `InferenceData`:
 
 ```python
 print(type(mix).__name__, list(mix.posterior.data_vars))

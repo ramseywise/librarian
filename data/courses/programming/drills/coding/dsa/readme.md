@@ -1,5 +1,5 @@
 ---
-imported_hash: d870c8bf3a069da8
+imported_hash: e031c717a5990db9
 title: Hello, Interview!
 summary: We welcome contributions in any programming language!
 order: 99
@@ -23,11 +23,11 @@ We welcome contributions in **any programming language**! If you'd like to add a
 
 ## 📚 Topics
 
-### [Arrays and Strings](arrays_and_strings/)
+### [Arrays and Strings](arrays-and-strings)
 
 ### [Backtracking](backtracking/)
 
-### [Dynamic Programming](dynamic_programming/)
+### [Dynamic Programming](dynamic-programming)
 
 ### [Graph](graph/)
 
@@ -35,21 +35,21 @@ We welcome contributions in **any programming language**! If you'd like to add a
 
 ### [Hashing](hashing/)
 
-### [Linked List](linked_list/)
+### [Linked List](linked-list)
 
-### [Meet in the Middle](meet_in_the_middle/)
+### [Meet in the Middle](meet-in-the-middle)
 
-### [Object Oriented Design](object_oriented_design/)
+### [Object Oriented Design](object-oriented-design)
 
 ### [Queues](queues/)
 
 ### [Recursion](recursion/)
 
-### [Sliding Window](sliding_window/)
+### [Sliding Window](sliding-window)
 
 ### [Stacks](stacks/)
 
-### [System Design](system_design/)
+### [System Design](system-design)
 
 ### [Trees](trees/)
 

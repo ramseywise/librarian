@@ -20,6 +20,8 @@ def pytest_configure(config: pytest.Config) -> None:
     os.environ.setdefault("ANTHROPIC_API_KEY", "test-key")
     # ...and don't build an index of the real wiki in the background either.
     os.environ.setdefault("LIBRARIAN_INDEX_AUTOBUILD", "0")
+    # Open mode, whatever token .env holds for `make app`; tests that need one set it.
+    os.environ.setdefault("LIBRARIAN_API_TOKEN", "")
 
 
 @pytest.fixture(autouse=True)

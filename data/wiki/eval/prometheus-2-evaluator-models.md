@@ -57,3 +57,5 @@ FLASK 0.659 in one table, 0.617 in another). Its comparison models are dated, en
 - [[LLM-as-Judge Evaluation]] — related
 - [[LLM Judge Biases]] — related (bias analysis the paper leaves out)
 - [[J1 Reinforcement-Learned Judge]] — related
+- [[PandaLM]] — alternative-to (an open judge distilled from GPT-3.5 labels)
+- [[Self-Taught Evaluators]] — alternative-to (a judge trained on synthetic pairs)

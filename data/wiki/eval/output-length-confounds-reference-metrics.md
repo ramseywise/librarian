@@ -5,6 +5,7 @@ summary: "On open-ended long-context tasks, L-Eval found n-gram scores track ans
 updated: 2026-11-08
 sources:
   - data/raw/papers/2026-11-05-an-2023-l-eval.md
+  - data/raw/papers/2026-11-06-janiak-2025-illusion-progress.md
 ---
 
 # Output Length Confounds Reference Metrics
@@ -43,6 +44,16 @@ cautions apply:
 - The same commercial model was used to filter the data and was then evaluated, a
   self-selection risk to note when reading its scores.
 
+## The same problem in hallucination-detector scores
+
+Janiak et al. (arXiv 2508.08285, 2025) report that hallucination-detection papers score their detectors with ROUGE-L at a 0.3 threshold, and re-score six detectors with an LLM judge (GPT-4o-Mini) instead. Detectors are measured by AUROC.
+
+- **Judge against ROUGE, versus humans.** On 200 NQ-Open pairs with Mistral-7B-Instruct-v0.3 answers, deliberately sampled where the two methods disagree, three annotators (Cohen's kappa 0.799) agreed with the judge more often than with ROUGE: precision 0.736 against 0.401, agreement 0.723 against 0.142, with recall 0.957 for both (self-reported). Because of the sampling these are not population rates.
+- **AUROC drops under the judge.** With zero-shot detectors on NQ-Open, TriviaQA and SQuAD, Mistral's Perplexity fell from 0.852 to 0.584 on NQ-Open (-45.9%, the single worst cell), and its mean over the three datasets fell 27.8% for Perplexity, 24.4% for Eigenscore, 23.2% for eRank and 9.7% for Semantic Entropy. Llama-3.1-8B-Instruct was mixed, with mean LN-Entropy rising from 0.547 to 0.617 (self-reported). ROUGE-based and judge-based AUROCs correlated at only Pearson r = 0.55 (Mistral, one point per method per dataset).
+- **Length rivals the detectors.** With judge labels and few-shot prompting, mean AUROC over three datasets for Llama was 0.751 for a standard-deviation-of-length baseline against 0.747 for Eigenscore and 0.784 for Perplexity; for Mistral, mean length scored 0.713 against 0.694 for Eigenscore and 0.635 for Perplexity. Detector scores correlate with answer length (Eigenscore 0.826 for Llama, 0.894 for Mistral). Repeating sentences with no new facts raised Mistral's NQ-Open AUROC from 0.852 to 0.964 at four repeats, and the authors report ROUGE-L falling below 0.3 for answers over 100 tokens whatever their accuracy (self-reported).
+
+Limits of that study: two 7-8B open models, short-answer closed-book QA, one judge model and a single run. The human check covers one model and one dataset and no judge bias (verbosity, self-preference) was tested; the judge's precision of 0.736 still lets false alarms through. The authors say verbose answers are not necessarily hallucinations, so length-correlated detectors may track some real signal. Internal inconsistency: the Section 4 prose calls ROUGE high-precision, which contradicts its own Table 1 and abstract (precision 0.401); the table is used above. The Table 3 zero-shot gaps also differ slightly from Table 2 (Llama eRank -16.7% against -20.2%), probably from different averaging.
+
 ## Practical rule
 
 Before comparing two systems on a free-text metric, check their mean answer lengths. If they
@@ -63,3 +74,4 @@ The authors themselves say almost every metric they tried, the GPT-4 judge inclu
 - [[LLM Judge Biases]] — related
 - [[Long-Context Prompting]] — related
 - [[Benchmark Prompt Format Sensitivity]] — related (another prompt detail that moves scores)
+- [[SelfCheckGPT]] — related (a hallucination detector of the kind re-scored in the Janiak study)

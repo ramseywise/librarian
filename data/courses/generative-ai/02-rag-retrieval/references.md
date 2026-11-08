@@ -1,5 +1,5 @@
 ---
-imported_hash: 6d511f2c6a5a61fb
+imported_hash: c2cb5da2a83197c4
 title: References
 summary: 19 more in the citation report. <!-- citegraph:origins end -->
 order: 23
@@ -163,7 +163,7 @@ source: learn-ai-engineering/generative-ai/02-rag-retrieval/references.md
 | [Lin 2004, ROUGE: A Package for Automatic Evaluation of Summaries](https://openalex.org/W2154652894) | ⚑ | 5 | 4 | read ([PDF](../01-llm-fundamentals/sources/lin-2004-rouge.pdf)) |
 | [Fan 2019, ELI5: Long Form Question Answering](https://arxiv.org/abs/1907.09190) | ACL (1) 2019 | 5 | 3 | read ([PDF](sources/fan-2019-eli5.pdf)) |
 
-19 more in [the citation report](../../scripts/papers/reports/citegraph-rag.md).
+19 more in [the citation report](https://github.com/ramseywise/learn-ai-engineering/blob/main/scripts/papers/reports/citegraph-rag.md).
 <!-- citegraph:origins end -->
 
 ## AI Papers of the Week
@@ -267,7 +267,7 @@ Papers picked up by the weekly [DAIR](https://github.com/dair-ai/AI-Papers-of-th
 
 ## Secondary and vendor posts
 
-Use these as gap-detectors, not citations of record (see [recurring sources](../../scripts/papers/recurring-sources.md) Tier 2).
+Use these as gap-detectors, not citations of record (see [recurring sources](https://github.com/ramseywise/learn-ai-engineering/blob/main/scripts/papers/recurring-sources.md) Tier 2).
 
 | Source | What the notes take from it | Notes |
 |---|---|---|

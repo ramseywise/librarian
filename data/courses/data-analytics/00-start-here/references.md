@@ -1,5 +1,5 @@
 ---
-imported_hash: 48120f247df1bb34
+imported_hash: fb63f93afed23780
 title: References
 summary: Everything here is free unless the row says otherwise.
 order: 2
@@ -68,7 +68,7 @@ Everything here is free unless the row says otherwise.
 | Cassie Kozyrkov, *Making Friends with Machine Learning* | Applied ML explained for people who decide, not only build | [About](https://cloud.google.com/blog/topics/developers-practitioners/ai-all-humans-course-delight-and-inspire) · Parts [1](https://bit.ly/mfml_part1), [2](https://bit.ly/mfml_part2), [3](https://bit.ly/mfml_part3), [4](https://bit.ly/mfml_part4) | 02 |
 | Michigan, *Applied Data Science with Python* | Paid on Coursera. The source of the `umich_*` coursework scripts | [Coursera](https://www.coursera.org/specializations/data-science-python) | 01, 02 |
 | Wesleyan, *Data Analysis and Interpretation* | Paid on Coursera. The source of the `wesleyan_*` scripts | [Coursera](https://www.coursera.org/specializations/data-analysis) | 02 |
-| HSE, *Bayesian Methods for Machine Learning* | Source of the coursework in [`practice/BayesianML`](../04-bayesian-analysis/practice/BayesianML). Its old Coursera page returned 404 on 2026-11-02, so no link is given | | 04 |
+| HSE, *Bayesian Methods for Machine Learning* | Source of the coursework in [`practice/BayesianML`](../04-bayesian-analysis/practice/bayesianml). Its old Coursera page returned 404 on 2026-11-02, so no link is given | | 04 |
 
 ## Talks, docs and posts
 
@@ -112,8 +112,8 @@ The map from PyMC3 to current PyMC is in [the MCMC chapter](../04-bayesian-analy
 |---|---|---|
 | BMH snapshot (removed) | PyMC2 and PyMC3, plus a 2022 port to `import pymc` | snippets in pillar 04 rewritten for PyMC 6.4 |
 | Talk notebooks (removed) | upstream uses PyMC3; our snapshot had been changed to `import pymc` | snippets in pillar 04 rewritten for PyMC 6.4 |
-| [practice/BayesianML/week_4](../04-bayesian-analysis/practice/BayesianML/week_4) | PyMC3 + Theano | pinned at `pymc3==3.11.4 theano-pymc==1.1.2`; archival banner in the notebook |
-| [practice/BayesianML/](../04-bayesian-analysis/practice/BayesianML) (all weeks) | TF 1.15, Keras 2.3.1, Python 3.7 | legacy; `bayesian.yml` |
+| [practice/BayesianML/week_4](../04-bayesian-analysis/practice/bayesianml/week-4) | PyMC3 + Theano | pinned at `pymc3==3.11.4 theano-pymc==1.1.2`; archival banner in the notebook |
+| [practice/BayesianML/](../04-bayesian-analysis/practice/bayesianml) (all weeks) | TF 1.15, Keras 2.3.1, Python 3.7 | legacy; `bayesian.yml` |
 
 ## Jupyter quick hacks
 

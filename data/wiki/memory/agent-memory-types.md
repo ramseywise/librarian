@@ -345,3 +345,4 @@ For Deep Agents, memory is surfaced through pluggable backends rather than direc
 - [[Memory Forms Taxonomy]] — related (the survey space these practitioner types occupy one cell of)
 - [[MemGPT / Letta Virtual Context Memory]] — extends (agent-managed paging between in-context core and archival stores)
 - [[Multi-Writer Agent Memory Systems Comparison]] — extends (adopting a memory layer for a shared team store)
+- [[Agent Plasticity]] — related (artifact reuse measured in self-improving agents)

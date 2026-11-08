@@ -1,5 +1,5 @@
 ---
-imported_hash: dd14e4f252fd724c
+imported_hash: 8bff41226294d068
 title: References
 summary: 11 more in the citation report. <!-- citegraph:origins end -->
 order: 15
@@ -91,7 +91,7 @@ source: learn-ai-engineering/ai-engineering/07-inference-engineering/references.
 | [Han 2015, Deep Compression: Compressing Deep Neural Networks with Pruning, Train](https://arxiv.org/abs/1510.00149) | ICLR 2016 | 5 | 2 | read ([PDF](sources/han-2015-deep-compression.pdf)) |
 | [Aminabadi 2022, DeepSpeed- Inference: Enabling Efficient Inference of Transformer Mode](https://arxiv.org/abs/2207.00032) | SC 2022 | 5 | 2 | read ([PDF](sources/aminabadi-2022-deepspeed-inference.pdf)) |
 
-11 more in [the citation report](../../scripts/papers/reports/citegraph-inference.md).
+11 more in [the citation report](https://github.com/ramseywise/learn-ai-engineering/blob/main/scripts/papers/reports/citegraph-inference.md).
 <!-- citegraph:origins end -->
 
 ## AI Papers of the Week

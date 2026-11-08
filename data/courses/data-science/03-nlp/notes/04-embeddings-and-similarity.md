@@ -1,5 +1,5 @@
 ---
-imported_hash: 6c10cd07b120009f
+imported_hash: 0949d309e1a31003
 title: Embeddings and similarity
 summary: To a TF-IDF model, "hotel" and "motel" are exactly as far apart as "hotel" and "banana", because each word is its own axis.
 order: 5
@@ -462,9 +462,9 @@ Everything in RAG is here in small: documents become vectors (TF-IDF, BM25 or a 
 
 | Notebook | Covers | Runs |
 |---|---|---|
-| [`Ch04b - Advanced Deep Learning Strategies`](../practice/text-analytics-with-python/Ch04 - Feature Engineering for Text Representation/Ch04b - Feature Engineering Text Data - Advanced Deep Learning Strategies.ipynb) | CBOW and skip-gram in Keras, gensim word2vec, document vectors, GloVe via spaCy, FastText | Needs `nltk` Gutenberg data, spaCy `en_vecs` (→ `en_core_web_md`); standalone `keras` 2.x; gensim 3 argument names (`size`, `iter`) |
-| [`Ch07a`](../practice/text-analytics-with-python/Ch07 - Text Similarity and Clustering), `Ch07b` | Distance metrics, TF-IDF movie recommender, BM25 | Runs offline; `tmdb_5000_movies.csv.gz` included |
-| [`Operations on word vectors - v2`](../../02-deep-learning/practice/ng-deep-learning/Sequence Models/Week2/Word Vector Representation/Operations on word vectors - v2.ipynb), [`Emojify - v2`](../../02-deep-learning/practice/ng-deep-learning/Sequence Models/Week2/Emojify/Emojify - v2.ipynb) (own) | Cosine, analogies, debiasing; GloVe-based classifier | Legacy: needs the course's `w2v_utils`/`emo_utils` and `glove.6B.50d.txt` (not in the repo) |
+| [`Ch04b - Advanced Deep Learning Strategies`](https://github.com/ramseywise/learn-ai-engineering/blob/main/data-science/03-nlp/practice/text-analytics-with-python/Ch04%20-%20Feature%20Engineering%20for%20Text%20Representation/Ch04b%20-%20Feature%20Engineering%20Text%20Data%20-%20Advanced%20Deep%20Learning%20Strategies.ipynb) | CBOW and skip-gram in Keras, gensim word2vec, document vectors, GloVe via spaCy, FastText | Needs `nltk` Gutenberg data, spaCy `en_vecs` (→ `en_core_web_md`); standalone `keras` 2.x; gensim 3 argument names (`size`, `iter`) |
+| [`Ch07a`](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-science/03-nlp/practice/text-analytics-with-python/Ch07%20-%20Text%20Similarity%20and%20Clustering), `Ch07b` | Distance metrics, TF-IDF movie recommender, BM25 | Runs offline; `tmdb_5000_movies.csv.gz` included |
+| [`Operations on word vectors - v2`](https://github.com/ramseywise/learn-ai-engineering/blob/main/data-science/02-deep-learning/practice/ng-deep-learning/Sequence%20Models/Week2/Word%20Vector%20Representation/Operations%20on%20word%20vectors%20-%20v2.ipynb), [`Emojify - v2`](https://github.com/ramseywise/learn-ai-engineering/blob/main/data-science/02-deep-learning/practice/ng-deep-learning/Sequence%20Models/Week2/Emojify/Emojify%20-%20v2.ipynb) (own) | Cosine, analogies, debiasing; GloVe-based classifier | Legacy: needs the course's `w2v_utils`/`emo_utils` and `glove.6B.50d.txt` (not in the repo) |
 
 ## Pitfalls
 

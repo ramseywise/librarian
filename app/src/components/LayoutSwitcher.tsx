@@ -15,7 +15,7 @@ const MODES: { key: LayoutMode; label: string; hint: string }[] = [
 
 export function LayoutSwitcher({ current, onChange, loadingUmap, umapUnavailable }: Props) {
   return (
-    <div className="float-panel graph-layout-panel">
+    <div className="graph-layout-panel">
       <div className="panel-label panel-label--spaced">Layout</div>
       <div className="btn-row">
         {MODES.map(({ key, label, hint }) => (

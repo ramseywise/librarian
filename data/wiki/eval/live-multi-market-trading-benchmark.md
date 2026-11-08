@@ -47,3 +47,4 @@ another has a high Sharpe ratio from 1.08% volatility. There is no limitations s
 - [[Eval Contamination Defenses]] — related (live data as a way around leakage, untested here)
 - [[Eval Error Bars and Sample Size]] — related (single runs, no intervals)
 - [[Best-of-k Headline Inflation]] — related
+- [[E-Commerce Operation Benchmarks]] — related (another long-horizon market simulation)

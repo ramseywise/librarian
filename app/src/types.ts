@@ -1,4 +1,4 @@
-export type EdgeType = "wikilink" | "semantic" | "tag-shared" | "mentions";
+export type EdgeType = "wikilink" | "semantic" | "tag-shared" | "module" | "mentions";
 export type LayoutMode = "dagre" | "umap-semantic";
 
 export interface WikiNodeData extends Record<string, unknown> {
@@ -30,6 +30,8 @@ export interface EdgeVisibility {
   wikilink: boolean;
   semantic: boolean;
   "tag-shared": boolean;
+  /** Pages taught in the same curriculum module. */
+  module: boolean;
   /** The glossary layer: term nodes and their "mentions" edges, focused views only. */
   terms: boolean;
 }
@@ -77,7 +79,7 @@ export interface Curriculum {
   stale: boolean;
 }
 
-/** Filter id (`course:<id>`, `module:<course>/<module>`, `beyond:<dir>`) → its pages. */
+/** Filter id (`course:<id>`, `module:<course>/<module>`, `beyond:<dir>`, `tag:<tag>`, `term:<id>`) → its pages. */
 export type Facets = Map<string, Set<string>>;
 
 export interface SelectedNode {

@@ -71,3 +71,4 @@ evaluation almost exclusively; LLM judges get a paragraph and agents are not cov
 - [[Model Version Drift]] — related (format changes across model snapshots)
 - [[LegalBench]] — related (demonstration and wording sensitivity measured on legal tasks)
 - [[AGIEval]] — related (zero-shot vs few-shot and chain of thought moved exam scores unevenly)
+- [[TruthfulQA]] — related (GPT-3-175B scored 58.1% true with one prompt and 12.5% with another)

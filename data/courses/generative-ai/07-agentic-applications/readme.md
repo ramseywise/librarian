@@ -1,5 +1,5 @@
 ---
-imported_hash: 4582b5c03314899a
+imported_hash: 2eeb023be7adc3d7
 title: 07 — Agentic Applications
 summary: 'Models get swapped out every few months, and the application decisions stay: how much autonomy to grant, what limits to enforce, what counts as done and who checks it.'
 order: 1
@@ -186,7 +186,7 @@ The two labs built here run offline and are covered above. The items below were 
 | [practice/deep-research-bot/notebooks/03_rl_for_deep_research_agent.ipynb](practice/deep-research-bot/notebooks/03-rl-for-deep-research-agent.md) | needs service | W&B Serverless RL (OpenPipe ART); upstream `add_rl` branch |
 | [practice/deep-research-bot/eval_simple_agent.py](practice/deep-research-bot/eval_simple_agent.py) | needs API key | W&B + Exa keys; the judge model runs on W&B Inference |
 | `practice/deep-research-bot/tests/test_eval.ipynb` | needs API key | Eval smoke test over the `fixture_*.jsonl` files; calls the judge model |
-| [practice/deep_research_bench/](practice/deep_research_bench/) | needs API key | Gemini + Jina keys; the benchmark data (from the upstream repo / Hugging Face; `data/` is gitignored) |
+| [practice/deep_research_bench/](practice/deep-research-bench) | needs API key | Gemini + Jina keys; the benchmark data (from the upstream repo / Hugging Face; `data/` is gitignored) |
 | [internet-search-agent](https://github.com/omidreza-amrollahi/internet-search-agent) (upstream, not copied) | legacy | Azure OpenAI + Bing Search (retired 2025); optional crawl4ai on :11235. Unit tests run offline with mocks |
 | Li ch. 6 labs ([upstream](https://github.com/bojieli/ai-agent-book)) | needs API key / GPU | Voice labs need ASR/TTS keys; robotics labs need a simulator and GPU |
 | Li ch. 1 and ch. 5 application labs ([ch. 1](https://github.com/bojieli/ai-agent-book/tree/main/chapter1), [ch. 5](https://github.com/bojieli/ai-agent-book/tree/main/chapter5)) | needs API key | LLM and search keys |

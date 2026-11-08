@@ -70,6 +70,7 @@ import subprocess
 from collections.abc import Iterator
 from dataclasses import dataclass, field
 from pathlib import Path
+from urllib.parse import quote, unquote
 
 import structlog
 import yaml
@@ -85,6 +86,9 @@ log = structlog.get_logger()
 
 LAE = "learn-ai-engineering"
 DEFAULT_SOURCE = WORKSPACE_DIR / LAE
+# Where links to sibling files the mirror never holds (repo-level docs, reference-only
+# course folders) point instead.
+SIBLING_URL = "https://github.com/ramseywise/learn-ai-engineering"
 COURSES_DIR = get_settings().courses_dir
 
 # Subjects that don't live at learn-ai-engineering/<slug>: slug → (repo, dir in that repo).
@@ -769,9 +773,50 @@ def _rewrite_deck(text: str, deck_src: Path, deck_dest: Path, mod: Module, plan:
     return _YAML_IMAGE_RE.sub(image, text)
 
 
-def _mirror_path(target: Path, source: Path) -> Path | None:
+def _renamed_dirs(src_to_dest: dict[Path, Path]) -> dict[Path, Path]:
+    """Source folder → mirror folder for every lesson folder the import renamed
+    (`practice/BayesianML/week_4` → `practice/bayesianml/week-4`), so links to the folder or
+    to a file in it follow the rename. Stops where the names stop matching (a subject root)."""
+    dirs: dict[Path, Path] = {}
+    for src, dest in src_to_dest.items():
+        s, d = src.parent, (COURSES_DIR / dest).parent
+        while d != COURSES_DIR and s.name and _dest_segment(s.name) == d.name:
+            if s.name != d.name:
+                dirs.setdefault(s, d)
+            s, d = s.parent, d.parent
+    return dirs
+
+
+def _sibling_url(target: Path, plan: Plan) -> str | None:
+    """GitHub URL of a committed sibling file or folder the mirror never holds: one outside
+    every subject (DECKS.md, scripts/papers/), inside a reference-only course folder, or a
+    folder with no copy here (vendored code without a licence to mirror)."""
+    if plan.source is None or not plan.tracked:
+        return None
+    try:
+        rel = target.relative_to(plan.source.resolve()).as_posix()
+    except ValueError:
+        return None
+    mirrored = _mirror_path(target, plan.source, plan.renamed_dirs)
+    held = mirrored is not None and not (target.is_dir() and not mirrored.is_dir())
+    if held and not set(rel.split("/")) & PRACTICE_REFERENCE_ONLY:
+        return None
+    if rel in plan.tracked:
+        return f"{SIBLING_URL}/blob/main/{quote(rel)}"
+    if any(t.startswith(rel + "/") for t in plan.tracked):
+        return f"{SIBLING_URL}/tree/main/{quote(rel)}"
+    return None
+
+
+def _mirror_path(
+    target: Path, source: Path, renamed: dict[Path, Path] | None = None
+) -> Path | None:
     """Where a non-lesson file of the sources repo sits in the mirror, or None if outside
-    every subject. Below the subject root the layout is the same in both."""
+    every subject. Below the subject root the layout is the same in both, apart from the
+    lesson folders the import renamed."""
+    for folder in (target, *target.parents) if renamed else ():
+        if folder in renamed:
+            return renamed[folder] / target.relative_to(folder)
     best: tuple[int, Path] | None = None
     for subject in SUBJECTS:
         root = (source / SUBJECT_SOURCES.get(subject, (LAE, subject))[1]).resolve()
@@ -797,7 +842,7 @@ def _rewrite_body(
         if not path:
             return None
         try:
-            target = (lesson.src.parent / path.replace("%20", " ")).resolve()
+            target = (lesson.src.parent / unquote(path)).resolve()
         except (OSError, ValueError):
             return None
         return target if target.exists() else None
@@ -823,7 +868,9 @@ def _rewrite_body(
         # moves down into 00-start-here, so its links to them need one more `../`. The
         # sources/ dir is left alone: sources.py adjusts those links when it serves them.
         if target and plan.source and "sources" not in Path(url.split("#")[0]).parts:
-            mirrored = _mirror_path(target, plan.source)
+            if (remote := _sibling_url(target, plan)) is not None:
+                return remote + anchor
+            mirrored = _mirror_path(target, plan.source, plan.renamed_dirs)
             written = Path(os.path.normpath(lesson_dir / url.split("#")[0].split("?")[0]))
             if mirrored is not None and mirrored != written:
                 return os.path.relpath(mirrored, lesson_dir) + anchor
@@ -849,6 +896,8 @@ class Plan:
     source: Path | None = None  # repo the images come from, asked about ignored paths
     copies: dict[Path, Path] = field(default_factory=dict)  # practice code: dest (abs) → source
     new_dirs: set[str] = field(default_factory=set)  # practice folders with no copy here yet
+    renamed_dirs: dict[Path, Path] = field(default_factory=dict)  # see _renamed_dirs
+    tracked: set[str] = field(default_factory=set)  # the sibling's committed files, for links
 
 
 def _hash(text: str) -> str:
@@ -899,6 +948,8 @@ def build_plan(source: Path, subjects: list[str]) -> Plan:
         for mod in modules
         for lesson in mod.lessons
     }
+    plan.renamed_dirs = _renamed_dirs(src_to_dest)
+    plan.tracked = set(_git_lines(source, "ls-files") or ())
     for subject in subjects:
         repo, rel = SUBJECT_SOURCES.get(subject, (LAE, subject))
         if subject not in discovered:

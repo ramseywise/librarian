@@ -1,5 +1,5 @@
 ---
-imported_hash: 32144e347bbe73f7
+imported_hash: b46356506a43a15c
 title: Add Two Numbers
 summary: ''
 order: 170
@@ -18,4 +18,4 @@ source: learn-ai-engineering/programming/drills/coding/dsa/linked_list/add_two_n
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](../../linked_list/add_two_numbers/solution.py) |
+| Python   | [solution.py](solution.py) |

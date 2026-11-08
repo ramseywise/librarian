@@ -1,5 +1,5 @@
 ---
-imported_hash: 6363b5b639b68485
+imported_hash: b2503ac558f272ae
 title: Text representation
 summary: A model cannot read. Before any classifier, topic model or neural network sees a film review, somebody has decided how that text becomes numbers, and those decisions quietly set what the model is able to learn.
 order: 2
@@ -421,11 +421,11 @@ flowchart LR
 
 | Notebook | Covers | Runs |
 |---|---|---|
-| [`Ch01 - Natural Language Processing Basics`](../practice/text-analytics-with-python/Ch01 - Natural Language Processing Basics) | Corpora, POS-tagged sentences | Needs `nltk` data downloads; spaCy 2 model shortcut `'en'` → use `en_core_web_sm` |
-| [`Ch02 - Python for NLP`](../practice/text-analytics-with-python/Ch02 - Python for Natural Language Processing) | Strings, regex | Runs offline |
-| [`Ch03a - Text Wrangling`](../practice/text-analytics-with-python/Ch03 - Processing and Understanding Text/Ch03a - Text Wrangling.ipynb), `Ch03b` | Tokenisation, normalisation, stemming, POS, chunking, parsing | Needs `nltk` data, spaCy model (`'en_core'` → `en_core_web_sm`), local `contractions.py` and `big.txt` |
+| [`Ch01 - Natural Language Processing Basics`](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-science/03-nlp/practice/text-analytics-with-python/Ch01%20-%20Natural%20Language%20Processing%20Basics) | Corpora, POS-tagged sentences | Needs `nltk` data downloads; spaCy 2 model shortcut `'en'` → use `en_core_web_sm` |
+| [`Ch02 - Python for NLP`](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-science/03-nlp/practice/text-analytics-with-python/Ch02%20-%20Python%20for%20Natural%20Language%20Processing) | Strings, regex | Runs offline |
+| [`Ch03a - Text Wrangling`](https://github.com/ramseywise/learn-ai-engineering/blob/main/data-science/03-nlp/practice/text-analytics-with-python/Ch03%20-%20Processing%20and%20Understanding%20Text/Ch03a%20-%20Text%20Wrangling.ipynb), `Ch03b` | Tokenisation, normalisation, stemming, POS, chunking, parsing | Needs `nltk` data, spaCy model (`'en_core'` → `en_core_web_sm`), local `contractions.py` and `big.txt` |
 | `Ch03c - BONUS - Stanford CoreNLP` | Constituency/dependency parsing via CoreNLP | Needs service: a running CoreNLP Java server |
-| [`Ch04a - Traditional Strategies`](../practice/text-analytics-with-python/Ch04 - Feature Engineering for Text Representation/Ch04a - Feature Engineering Text Data - Traditional Strategies.ipynb) | BoW, n-grams, TF-IDF from scratch, similarity, clustering | Runs offline; `scikit-learn>=1.2` (fixed to `get_feature_names_out`) |
+| [`Ch04a - Traditional Strategies`](https://github.com/ramseywise/learn-ai-engineering/blob/main/data-science/03-nlp/practice/text-analytics-with-python/Ch04%20-%20Feature%20Engineering%20for%20Text%20Representation/Ch04a%20-%20Feature%20Engineering%20Text%20Data%20-%20Traditional%20Strategies.ipynb) | BoW, n-grams, TF-IDF from scratch, similarity, clustering | Runs offline; `scikit-learn>=1.2` (fixed to `get_feature_names_out`) |
 | [`07-working-with-text-data.ipynb`](../../01-classical-ml/practice/intro-to-ml-in-python/07-working-with-text-data.md) | BoW, TF-IDF, n-grams, lemmatisation, LDA on IMDb | Needs the IMDb `aclImdb` download (~80 MB) into `data/`; `spacy`, `nltk` |
 
 ## Pitfalls

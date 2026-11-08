@@ -71,6 +71,8 @@
   --edge-wikilink-label: #aaa;
   --edge-semantic: #4a90d9;
   --edge-tag: #e8943a;
+  --edge-module: #b07fd6;
+  --minimap-mask: rgba(0, 0, 0, 0.55);
 
   /* Radii */
   --radius-xs: 3px;
@@ -185,6 +187,8 @@
   --edge-wikilink-label: #4d4d4d;
   --edge-semantic: #1b5fa8;
   --edge-tag: #8a4b00;
+  --edge-module: #6b3d99;
+  --minimap-mask: rgba(240, 239, 234, 0.7);
 
   --shadow-overlay: 0 8px 40px rgba(0, 0, 0, 0.18);
 }

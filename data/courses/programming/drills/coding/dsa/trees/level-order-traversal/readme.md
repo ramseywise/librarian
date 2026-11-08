@@ -1,5 +1,5 @@
 ---
-imported_hash: d7f50f6b868098fa
+imported_hash: 5dac050299682331
 title: Binary Tree Level Order Traversal
 summary: Given the root of a binary tree, return the level order traversal of its nodes' values (left to right, level by level).
 order: 223
@@ -20,4 +20,4 @@ Given the root of a binary tree, return the level order traversal of its nodes' 
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](../level_order_traversal/solution.py) |
+| Python   | [solution.py](solution.py) |

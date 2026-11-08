@@ -1,5 +1,5 @@
 ---
-imported_hash: 58e256f2ed324695
+imported_hash: 8037a5ccb5c2a61c
 title: 02 — Deep learning
 summary: Neural networks from the forward pass to pre-trained transformers, split along the five courses of Ng's Deep Learning Specialization, with a closing chapter on text models.
 order: 1
@@ -76,7 +76,7 @@ Logistic regression stops at 0.895 on two interleaved moons, because its boundar
 
 | Folder | What | How to run |
 |---|---|---|
-| [`practice/ng-deep-learning/`](practice/ng-deep-learning) | Own assignments from the five Ng courses | `uv run --python 3.11 --with "tensorflow<2.16" --with matplotlib --with scipy --with jupyter jupyter lab`, from that folder. These are legacy: TF 1.x through `tf.compat.v1`, two notebooks still need `tf.contrib`, and some need course helper files and weights, so note 01 suggests reproducing them in PyTorch |
+| [`practice/ng-deep-learning/`](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-science/02-deep-learning/practice/ng-deep-learning) | Own assignments from the five Ng courses | `uv run --python 3.11 --with "tensorflow<2.16" --with matplotlib --with scipy --with jupyter jupyter lab`, from that folder. These are legacy: TF 1.x through `tf.compat.v1`, two notebooks still need `tf.contrib`, and some need course helper files and weights, so note 01 suggests reproducing them in PyTorch |
 | [`practice/autoencoder.py`](practice/autoencoder.py) | The bottleneck, denoising and reconstruction error as an anomaly score, for [note 05](notes/05-sequence-models.md#autoencoders-the-bottleneck-on-its-own) | `uv run autoencoder.py`, from `practice/`; a few minutes on a laptop CPU |
 | [`practice/transaction_sequence_lab.py`](practice/transaction_sequence_lab.py) | Generated card charges: boosted aggregates against a GRU, a random split against a time split, late chargebacks, a cost threshold and drift, for [note 05](notes/05-sequence-models.md#ordered-events-make-the-sequence-model-earn-its-place) | `uv run transaction_sequence_lab.py`, from `practice/`; 3 to 6 minutes on a laptop CPU, depending on what else is running; less with `--seeds 1` |
 | [`practice/vision_transfer.py`](practice/vision_transfer.py) | Generated shapes from a folder: a scratch CNN against a frozen and a fine-tuned ImageNet ResNet-18 at 1%, 10% and 100% of the data, 3 seeds, with the [`vision_project/`](practice/vision_project) package it imports, for [note 04b](notes/04b-vision-in-practice.md#train-borrow-or-fine-tune) | `uv run vision_transfer.py`, from `practice/`; about 13 minutes on an M4 Pro GPU, `--seeds 1` for about 5. First run downloads about 45 MB of weights |

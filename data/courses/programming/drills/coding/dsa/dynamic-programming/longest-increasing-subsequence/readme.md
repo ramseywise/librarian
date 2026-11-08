@@ -1,5 +1,5 @@
 ---
-imported_hash: fa24baace9cc3738
+imported_hash: 4954d364e787ab00
 title: Longest Increasing Subsequence
 summary: Given an integer array nums, return the length of the longest strictly increasing subsequence.
 order: 148
@@ -22,4 +22,4 @@ Given an integer array `nums`, return the length of the longest strictly increas
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](../../dynamic_programming/longest_increasing_subsequence/solution.py) |
+| Python   | [solution.py](solution.py) |

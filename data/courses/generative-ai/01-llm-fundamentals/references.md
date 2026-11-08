@@ -1,5 +1,5 @@
 ---
-imported_hash: 74a4ea143384f43f
+imported_hash: 9355293374823898
 title: References
 summary: Placed in sources/ by the readings router (scripts/papers/potw.py route) on 2026-10-31 and queued in the ledger for /papers and /chapter.
 order: 22
@@ -230,7 +230,7 @@ These PDFs came in with the old `readings/` folder. They are not cited by the 01
 | [Wei 2022, Chain-Of-Thought Prompting Elicits Reasoning in Large Language Models](https://doi.org/10.52202/068431-1800) | NeurIPS 2022 | 20 | 3 | read ([PDF](../../ai-engineering/01-prompt-engineering/sources/wei-2022-chain-thought-prompting-elicits-reasoning.pdf)) |
 | [Kudo 2018, SentencePiece: A simple and language independent subword tokenizer and](https://arxiv.org/abs/1808.06226) | EMNLP (Demonstration) 2018 | 19 | 6 | read ([PDF](sources/kudo-2018-sentencepiece.pdf)) |
 
-96 more in [the citation report](../../scripts/papers/reports/citegraph-llm-fundamentals.md).
+96 more in [the citation report](https://github.com/ramseywise/learn-ai-engineering/blob/main/scripts/papers/reports/citegraph-llm-fundamentals.md).
 <!-- citegraph:origins end -->
 
 ## AI Papers of the Week

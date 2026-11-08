@@ -1,5 +1,5 @@
 ---
-imported_hash: b3d74bef8d391469
+imported_hash: 21570d508a8af0fb
 title: Reverse Linked List
 summary: ''
 order: 178
@@ -18,4 +18,4 @@ source: learn-ai-engineering/programming/drills/coding/dsa/linked_list/reverse_l
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](../../linked_list/reverse_linked_list/solution.py) |
+| Python   | [solution.py](solution.py) |

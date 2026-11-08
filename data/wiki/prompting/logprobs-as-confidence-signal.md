@@ -2,7 +2,7 @@
 title: Logprobs as Confidence Signal
 tags: [prompting, llm, eval, pattern]
 summary: Where the API exposes token log-probabilities they are the best confidence instrument — gate on average token probability, read classification probabilities off a first token, give every label a distinct first token to avoid prefix collision, and calibrate per-label offsets on labelled data.
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--04-controlling-output.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--09-evaluating-prompts.md
@@ -50,3 +50,4 @@ available.
 - [[Sampling Parameters]] — extends
 - [[Evaluating Prompts]] — prerequisite-for
 - [[Stop Sequences and Completion Anatomy]] — extends (a known start makes the decision token readable)
+- [[Language Model Self-Knowledge]] — related (calibration of a model's own probabilities)

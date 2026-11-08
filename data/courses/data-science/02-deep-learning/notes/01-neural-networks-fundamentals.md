@@ -1,5 +1,5 @@
 ---
-imported_hash: ac4abd0753e5ad95
+imported_hash: 98bd2b9fe7697cbf
 title: Neural network basics
 summary: The sklearn MLPClassifier in supervised learning hides all of this.
 order: 2
@@ -371,7 +371,7 @@ Buduma, *Fundamentals of Deep Learning* ([PDF](../../sources/buduma-fundamentals
 | Set | Runs |
 |---|---|
 | [`ng-machine-learning/ex4`](../../01-classical-ml/practice/ng-machine-learning/ex4/ex4.md) | Legacy: Python 2.7 kernel; `scipy.misc.toimage` removed in SciPy 1.2; data in `ex4/data/` |
-| [`ng-deep-learning/Neural Networks and Deep Learning`](../practice/ng-deep-learning/Neural Networks and Deep Learning) (4 notebooks) | Legacy, reading-only as stored: Python 3.5–3.6 kernels; the Coursera helper modules (`lr_utils`, `dnn_app_utils`, ...) and `datasets/` were not copied into the repo. They run once those are restored |
+| [`ng-deep-learning/Neural Networks and Deep Learning`](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-science/02-deep-learning/practice/ng-deep-learning/Neural%20Networks%20and%20Deep%20Learning) (4 notebooks) | Legacy, reading-only as stored: Python 3.5–3.6 kernels; the Coursera helper modules (`lr_utils`, `dnn_app_utils`, ...) and `datasets/` were not copied into the repo. They run once those are restored |
 
 All are your own Coursera submissions, kept untouched, and their outputs are not stored, so the percentages quoted from them come from your earlier runs of the notes. Every other number in this chapter came from running the code shown.
 

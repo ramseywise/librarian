@@ -19,14 +19,14 @@ import { MapSearch } from "./MapSearch";
 import { TermNode } from "./TermNode";
 import { WikiNode, type WikiFlowNode } from "./WikiNode";
 import { EdgeTogglePanel } from "./EdgeTogglePanel";
+import { GraphSidebar } from "./GraphSidebar";
 import { LayoutSwitcher } from "./LayoutSwitcher";
-import { TagFilterPanel } from "./TagFilterPanel";
 import { useCurriculum } from "../hooks/useCurriculum";
 import { useGlossary } from "../hooks/useGlossary";
 import { useHashRoute } from "../hooks/useHashRoute";
 import { useWikiData } from "../hooks/useWikiData";
 import { sectorIdOf, sectorsOf } from "../utils/atlas";
-import { facetsOf, isFacetId, isModuleFacet, withCourseGroups } from "../utils/curriculum";
+import { facetPending, facetsOf, isModuleFacet, modulesOf, withCourseGroups } from "../utils/curriculum";
 import {
   isTermNodeId,
   NO_TERMS,
@@ -40,7 +40,9 @@ import {
   applyView,
   degreeOf,
   expandBridges,
+  expandFrom,
   filterPrimaryIds,
+  moduleEdges,
   neighbours,
   pageNeighbourhood,
   renderIds as computeRenderIds,
@@ -87,10 +89,9 @@ interface WikiGraphProps {
   onActiveTagsChange: (tags: Set<string>) => void;
 }
 
-/** Fit padding that leaves room for the filter panel, unless it's behind the narrow-screen menu. */
+/** Fit padding that clears the status pill and level bar over the top of the canvas. */
 function fitPadding(padding: number): FitViewOptions["padding"] {
-  if (!window.matchMedia("(min-width: 760px)").matches) return { top: "110px", right: padding, bottom: padding, left: padding };
-  return { top: "130px", right: padding, bottom: padding, left: "330px" };
+  return { top: "110px", right: padding, bottom: padding, left: padding };
 }
 
 /**
@@ -138,9 +139,17 @@ function WikiGraphInner({
   const [edgeVis, setEdgeVis] = useState<EdgeVisibility>({
     wikilink: true,
     semantic: true,
+    module: true,
     "tag-shared": false,
     terms: true,
   });
+  // The level of the map lives in the route. Under the courses tabs the graph stays mounted and
+  // the route isn't a map route, so it keeps the level it had.
+  const [route, navigate] = useHashRoute();
+  const parsedView = useMemo(() => parseMapRoute(route), [route]);
+  const [mapView, setMapView] = useState<MapView>(() => parsedView ?? ATLAS);
+  if (parsedView && mapPath(parsedView) !== mapPath(mapView)) setMapView(parsedView);
+  const onAtlas = mapView.level === "atlas";
   const {
     baseNodes,
     wikilinkEdges,
@@ -152,15 +161,9 @@ function WikiGraphInner({
     umapFailed,
     loadUmapPositions,
     connected,
-  } = useWikiData({ tagShared: edgeVis["tag-shared"] });
+    full,
+  } = useWikiData({ tagShared: edgeVis["tag-shared"], live: !onAtlas });
   const [layout, setLayout] = useState<LayoutMode>("umap-semantic");
-  // The level of the map lives in the route. Under the courses tabs the graph stays mounted and
-  // the route isn't a map route, so it keeps the level it had.
-  const [route, navigate] = useHashRoute();
-  const parsedView = useMemo(() => parseMapRoute(route), [route]);
-  const [mapView, setMapView] = useState<MapView>(() => parsedView ?? ATLAS);
-  if (parsedView && mapPath(parsedView) !== mapPath(mapView)) setMapView(parsedView);
-  const onAtlas = mapView.level === "atlas";
   const onAll = mapView.level === "all";
   const grouping: Grouping = mapView.level === "all" ? "domain" : mapView.grouping;
   const anchorId = mapView.level === "page" ? mapView.page : null;
@@ -179,7 +182,8 @@ function WikiGraphInner({
   const theme = useTheme();
   const curriculum = useCurriculum(baseNodes, hasNodes);
   const glossary = useGlossary(baseNodes, hasNodes);
-  const facets = useMemo(() => facetsOf(curriculum), [curriculum]);
+  const facets = useMemo(() => facetsOf(curriculum, baseNodes, glossary), [curriculum, baseNodes, glossary]);
+  const pageModules = useMemo(() => modulesOf(curriculum), [curriculum]);
   const loadingUmap = !onAtlas && layout === "umap-semantic" && hasNodes && !umapPositions && !umapFailed;
 
   // UMAP positions are fetched once, on first use; the hook caches them. `connected` retries a
@@ -195,6 +199,35 @@ function WikiGraphInner({
     [edgeVis.semantic, wikilinkEdges, semanticEdges],
   );
   const degree = useMemo(() => degreeOf(wikilinkEdges), [wikilinkEdges]);
+
+  // What a click pulls in: a turn each from every connection that is switched on.
+  const nodeById = useMemo(() => new Map(baseNodes.map((n) => [n.id, n])), [baseNodes]);
+  const reveal = useCallback(
+    (id: string) => {
+      const dir = nodeById.get(id)?.data.domain[0];
+      const found = expandFrom(
+        id,
+        {
+          wikilink: edgeVis.wikilink ? wikilinkEdges : undefined,
+          semantic: edgeVis.semantic ? semanticEdges : undefined,
+          moduleMates: edgeVis.module
+            ? (p) => (pageModules.get(p) ?? []).flatMap((m) => [...(facets.get(m) ?? [])])
+            : undefined,
+          // Across directories only, as the shared-tag layer draws them.
+          tagMates: edgeVis["tag-shared"]
+            ? (p) =>
+                (nodeById.get(p)?.data.tags ?? [])
+                  .filter((t) => domains.includes(t))
+                  .flatMap((t) => [...(facets.get(`tag:${t}`) ?? [])])
+                  .filter((other) => nodeById.get(other)?.data.domain[0] !== dir)
+            : undefined,
+        },
+        degree,
+      );
+      return found.length ? found : neighbours(id, wikilinkEdges, degree);
+    },
+    [nodeById, edgeVis, wikilinkEdges, semanticEdges, pageModules, facets, domains, degree],
+  );
 
   // --- Level: the atlas's sectors, and the subset a focused level hands to React Flow -----
   const atlasPages = useMemo(
@@ -229,7 +262,7 @@ function WikiGraphInner({
   // A link can outlive what it names: an unknown or private page, a retired sector, or an "All"
   // that the filter no longer makes small enough. Nothing here says which ids exist.
   const pagesInFilter = primaryIds?.size ?? baseNodes.length;
-  const facetsPending = !curriculum && [...activeTags].some(isFacetId);
+  const facetsPending = [...activeTags].some((t) => facetPending(t, curriculum, glossary));
   useEffect(() => {
     if (!hasNodes || parsedView === null) return;
     const bad =
@@ -287,8 +320,8 @@ function WikiGraphInner({
       }
       return here;
     }
-    return new Set([focusNodeId, ...neighbours(focusNodeId, linkEdges, degree)]);
-  }, [focusNodeId, glossary, scopeIds, revealed, linkEdges, degree]);
+    return new Set([focusNodeId, ...reveal(focusNodeId)]);
+  }, [focusNodeId, glossary, scopeIds, revealed, reveal]);
 
   const search = useMemo(() => searchMap(deferredSearch, baseNodes, glossary), [deferredSearch, baseNodes, glossary]);
 
@@ -348,15 +381,25 @@ function WikiGraphInner({
     [pageNodes, terms],
   );
 
+  const sameModule = useMemo(
+    () => (edgeVis.module ? moduleEdges(pageNodes.map((n) => n.id), pageModules, degree) : []),
+    [edgeVis.module, pageNodes, pageModules, degree],
+  );
   const edges = useMemo(
     () =>
       visibleEdges(
-        { wikilink: wikilinkEdges, semantic: semanticEdges, tagShared: tagSharedEdges, mentions: terms.edges },
+        {
+          wikilink: wikilinkEdges,
+          semantic: semanticEdges,
+          tagShared: tagSharedEdges,
+          module: sameModule,
+          mentions: terms.edges,
+        },
         edgeVis,
         viewNodes,
         view,
       ),
-    [wikilinkEdges, semanticEdges, tagSharedEdges, terms, edgeVis, viewNodes, view],
+    [wikilinkEdges, semanticEdges, tagSharedEdges, sameModule, terms, edgeVis, viewNodes, view],
   );
 
   // --- Sync derived nodes into React Flow state (keeps node dragging working) -----------
@@ -498,12 +541,12 @@ function WikiGraphInner({
       setRevealed((prev) => {
         const next = new Set(prev);
         next.add(node.id);
-        for (const id of neighbours(node.id, linkEdges, degree)) next.add(id);
+        for (const id of reveal(node.id)) next.add(id);
         return next.size === prev.size ? prev : next;
       });
       onNodeSelect?.({ id: node.id, data: node.data as WikiNodeData });
     },
-    [onNodeSelect, linkEdges, degree],
+    [onNodeSelect, reveal],
   );
 
   const handleResetRevealed = useCallback(() => {
@@ -588,9 +631,13 @@ function WikiGraphInner({
     }
   }, [hasRenderedNodes]);
 
+  // Before the socket opens the map runs on the atlas payload, which is enough to draw it.
+  const ready = connected || (hasNodes && !full);
   const statusText = !connected
     ? hasNodes
-      ? "○ reconnecting…"
+      ? full
+        ? "○ reconnecting…"
+        : "● ready"
       : "○ starting server…"
     : loadingUmap
       ? "● computing layout…"
@@ -641,145 +688,165 @@ function WikiGraphInner({
     </div>
   );
 
+  const layers = !onAtlas && (
+    <>
+      <EdgeTogglePanel
+        visibility={edgeVis}
+        onChange={setEdgeVis}
+        onLoadSemantic={handleLoadSemantic}
+        loadingSemanticEdges={loadingSemantic}
+      />
+      <LayoutSwitcher
+        current={layout}
+        onChange={setLayout}
+        loadingUmap={loadingUmap}
+        umapUnavailable={layout === "umap-semantic" && umapFailed}
+      />
+    </>
+  );
+  // Outside <ReactFlow>, inside its provider: it reads the same store. The theme's colours are
+  // passed in because its CSS variables are scoped to the canvas.
+  const minimap = !onAtlas && !curriculumPending && (
+    <MiniMap
+      nodeColor={miniMapColor}
+      className="graph-minimap"
+      bgColor="var(--surface)"
+      maskColor="var(--minimap-mask)"
+      maskStrokeColor="var(--border-pressed)"
+      style={{ width: 240, height: 150 }}
+      pannable
+      zoomable
+      ariaLabel="Minimap"
+    />
+  );
+
   return (
     <div className="graph-root">
-      <HealthStrip />
-      {/* Connection status, and how much of the wiki is on the canvas */}
-      <div className={`graph-status ${connected ? "graph-status--live" : "graph-status--offline"}`}>
-        {statusText}
+      <GraphSidebar
+        id="graph-controls"
+        open={menuOpen}
+        domains={domains}
+        curriculum={curriculum}
+        glossary={glossary}
+        facets={facets}
+        activeTags={activeTags}
+        onChange={onActiveTagsChange}
+        onBrief={onBrief}
+        layers={layers || undefined}
+        minimap={minimap || undefined}
+      />
+
+      <div className="graph-canvas">
+        <HealthStrip />
+        {/* Connection status, and how much of the wiki is on the canvas */}
+        <div className={`graph-status ${ready ? "graph-status--live" : "graph-status--offline"}`}>
+          {statusText}
+          {hasNodes && (
+            <span className="graph-status-count">
+              {" "}· {onAtlas ? (primaryIds?.size ?? baseNodes.length) : pageCount} of {baseNodes.length} pages
+            </span>
+          )}
+        </div>
+
         {hasNodes && (
-          <span className="graph-status-count">
-            {" "}· {onAtlas ? (primaryIds?.size ?? baseNodes.length) : pageCount} of {baseNodes.length} pages
-          </span>
+          <MapBar
+            view={mapView}
+            sectorLabel={sector?.label}
+            pageTitle={anchorId ? pageInfo.get(anchorId)?.title : undefined}
+            shown={scope ? shownCount : onAll ? pageCount : undefined}
+            total={scope ? scope.total : onAll ? baseNodes.length : undefined}
+            hops={scope?.hops}
+            revealedExtra={revealedExtra}
+            onResetRevealed={handleResetRevealed}
+            nextCap={nextCap}
+            onExpand={expandCap}
+            onGrouping={(g) => navigate(mapPath({ level: "atlas", grouping: g }))}
+            refocus={clickedPage ? { title: `Focus on ${pageInfo.get(clickedPage)?.title ?? clickedPage}`, onClick: () => openPage(clickedPage) } : null}
+            search={<MapSearch value={searchText} onChange={setSearchText} result={search} onOpenPage={openPage} />}
+          />
         )}
-      </div>
 
-      {hasNodes && (
-        <MapBar
-          view={mapView}
-          sectorLabel={sector?.label}
-          pageTitle={anchorId ? pageInfo.get(anchorId)?.title : undefined}
-          shown={scope ? shownCount : onAll ? pageCount : undefined}
-          total={scope ? scope.total : onAll ? baseNodes.length : undefined}
-          hops={scope?.hops}
-          revealedExtra={revealedExtra}
-          onResetRevealed={handleResetRevealed}
-          nextCap={nextCap}
-          onExpand={expandCap}
-          onGrouping={(g) => navigate(mapPath({ level: "atlas", grouping: g }))}
-          refocus={clickedPage ? { title: `Focus on ${pageInfo.get(clickedPage)?.title ?? clickedPage}`, onClick: () => openPage(clickedPage) } : null}
-          search={<MapSearch value={searchText} onChange={setSearchText} result={search} onOpenPage={openPage} />}
-        />
-      )}
-
-      {/* Narrow screens: one button in place of the control panels. */}
-      <button
-        ref={menuBtnRef}
-        type="button"
-        className="graph-menu-btn"
-        aria-label="Graph controls"
-        aria-expanded={menuOpen}
-        aria-controls="graph-controls"
-        onClick={() => setMenuOpen((o) => !o)}
-      >
-        ☰ Controls
-      </button>
-
-      <div id="graph-controls" className={`graph-controls${menuOpen ? " is-open" : ""}`}>
-        {!onAtlas && (
-          <>
-            <EdgeTogglePanel
-              visibility={edgeVis}
-              onChange={setEdgeVis}
-              onLoadSemantic={handleLoadSemantic}
-              loadingSemanticEdges={loadingSemantic}
-            />
-            <LayoutSwitcher
-              current={layout}
-              onChange={setLayout}
-              loadingUmap={loadingUmap}
-              umapUnavailable={layout === "umap-semantic" && umapFailed}
-            />
-          </>
-        )}
+        {/* Narrow screens: one button in place of the sidebar. */}
+        <button
+          ref={menuBtnRef}
+          type="button"
+          className="graph-menu-btn"
+          aria-label="Graph controls"
+          aria-expanded={menuOpen}
+          aria-controls="graph-controls"
+          onClick={() => setMenuOpen((o) => !o)}
+        >
+          ☰ Controls
+        </button>
 
         {allNodes}
 
-        <TagFilterPanel
-          domains={domains}
-          curriculum={curriculum}
-          activeTags={activeTags}
-          onChange={onActiveTagsChange}
-          onBrief={onBrief}
-        />
-      </div>
-
-      {onAtlas && curriculumPending && hasNodes && (
-        <div className="map-note" role="status">
-          Loading the curriculum; showing domains until it arrives.
-        </div>
-      )}
-
-      {onAtlas ? (
-        hasNodes && (
-          <Atlas
-            sectors={sectors}
-            grouping={curriculumPending ? "domain" : grouping}
-            info={pageInfo}
-            degree={degree}
-            totalLinks={wikilinkEdges.length}
-            termCount={glossary?.terms.length ?? 0}
-            matches={atlasMatches}
-            lit={atlasLit}
-            onOpenSector={openSectorLevel}
-            onOpenPage={openPageLevel}
-            enterFrom={enterFrom}
-          />
-        )
-      ) : curriculumPending ? (
-        <div className="map-loading">Loading the curriculum…</div>
-      ) : (
-        <ReactFlow
-          className="map-fade-in"
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          nodeTypes={NODE_TYPES}
-          onNodeClick={handleNodeClick}
-          onNodeDoubleClick={handleNodeDoubleClick}
-          onPaneClick={handlePaneClick}
-          fitView
-          fitViewOptions={{ padding: fitPadding(0.15) }}
-          onlyRenderVisibleElements
-          minZoom={0.1}
-          maxZoom={3}
-          proOptions={{ hideAttribution: true }}
-        >
-          <Background variant={BackgroundVariant.Dots} color="var(--border)" gap={20} />
-          <Controls className="graph-flow-controls" />
-          <MiniMap nodeColor={miniMapColor} className="graph-minimap" />
-        </ReactFlow>
-      )}
-
-      {focusedTerm && (
-        <div className="term-card" role="group" aria-label={`Glossary term ${focusedTerm.label}`}>
-          <div className="term-card-title">{focusedTerm.label}</div>
-          <div>{focusedTerm.def}</div>
-          <div className="term-card-note">
-            {(focusIds?.size ?? 1) - 1} pages here mention it · {focusedTerm.mentions} in the wiki
+        {onAtlas && curriculumPending && hasNodes && (
+          <div className="map-note" role="status">
+            Loading the curriculum; showing domains until it arrives.
           </div>
-          <div className="term-card-actions">
-            {focusedTerm.page && (
-              <button type="button" className="pill-btn" onClick={() => openPage(focusedTerm.page!)}>
-                Open its page
+        )}
+
+        {onAtlas ? (
+          hasNodes && (
+            <Atlas
+              sectors={sectors}
+              grouping={curriculumPending ? "domain" : grouping}
+              info={pageInfo}
+              degree={degree}
+              totalLinks={wikilinkEdges.length}
+              termCount={glossary?.terms.length ?? 0}
+              matches={atlasMatches}
+              lit={atlasLit}
+              onOpenSector={openSectorLevel}
+              onOpenPage={openPageLevel}
+              enterFrom={enterFrom}
+            />
+          )
+        ) : curriculumPending ? (
+          <div className="map-loading">Loading the curriculum…</div>
+        ) : (
+          <ReactFlow
+            className="map-fade-in"
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            nodeTypes={NODE_TYPES}
+            onNodeClick={handleNodeClick}
+            onNodeDoubleClick={handleNodeDoubleClick}
+            onPaneClick={handlePaneClick}
+            fitView
+            fitViewOptions={{ padding: fitPadding(0.15) }}
+            onlyRenderVisibleElements
+            minZoom={0.1}
+            maxZoom={3}
+            proOptions={{ hideAttribution: true }}
+          >
+            <Background variant={BackgroundVariant.Dots} color="var(--border)" gap={20} />
+            <Controls className="graph-flow-controls" />
+          </ReactFlow>
+        )}
+
+        {focusedTerm && (
+          <div className="term-card" role="group" aria-label={`Glossary term ${focusedTerm.label}`}>
+            <div className="term-card-title">{focusedTerm.label}</div>
+            <div>{focusedTerm.def}</div>
+            <div className="term-card-note">
+              {(focusIds?.size ?? 1) - 1} pages here mention it · {focusedTerm.mentions} in the wiki
+            </div>
+            <div className="term-card-actions">
+              {focusedTerm.page && (
+                <button type="button" className="pill-btn" onClick={() => openPage(focusedTerm.page!)}>
+                  Open its page
+                </button>
+              )}
+              <button type="button" className="pill-btn" onClick={() => setFocusNodeId(null)}>
+                Close
               </button>
-            )}
-            <button type="button" className="pill-btn" onClick={() => setFocusNodeId(null)}>
-              Close
-            </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

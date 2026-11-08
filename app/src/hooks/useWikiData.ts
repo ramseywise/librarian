@@ -6,6 +6,8 @@ import { RELEASE_EVENT, apiFetch, wsProtocols } from "../utils/api";
 import type { XY } from "../utils/layout";
 
 const RECONNECT_MS = 2000;
+/** On the atlas, how long after its first paint the full graph is fetched anyway. */
+const LIVE_DELAY_MS = 1500;
 
 /** WebSocket URL on the page's own origin; Vite proxies `/ws` to the API (ws: true). */
 export function wsUrl(loc: Pick<Location, "protocol" | "host">): string {
@@ -48,12 +50,56 @@ export function parseGraphMessage(raw: string): GraphPayload | null {
   };
 }
 
+/** GET /api/graph/atlas: the pages without summaries, wikilinks as index pairs. */
+export interface AtlasPayload {
+  nodes: { id: string; title: string; domain: string; typeTag: string; tags: string[] }[];
+  links: ([number, number] | [number, number, string])[];
+  domains: string[];
+}
+
+/** The atlas payload as a GraphPayload, with empty summaries until the full graph arrives. */
+export function fromAtlas(a: AtlasPayload): GraphPayload {
+  const nodes = a.nodes.map((n) => ({
+    id: n.id,
+    type: "wikiNode",
+    position: { x: 0, y: 0 },
+    data: {
+      title: n.title,
+      tags: n.tags,
+      domain: [n.domain],
+      typeTag: n.typeTag,
+      summary: "",
+      updated: "",
+      path: `${n.domain}/${n.id}.md`,
+      dimmed: false,
+    },
+  })) as Node<WikiNodeData>[];
+  const edges = a.links.flatMap(([s, t, relationship]) => {
+    const source = nodes[s]?.id;
+    const target = nodes[t]?.id;
+    if (!source || !target) return [];
+    const data: WikiEdgeData = relationship ? { edgeType: "wikilink", relationship } : { edgeType: "wikilink" };
+    return [{ id: `wl:${source}->${target}`, source, target, data }];
+  });
+  return { nodes, edges, domains: a.domains.filter((d) => d !== "private") };
+}
+
 const EMPTY: GraphPayload = { nodes: [], edges: [], domains: [] };
 const NO_EDGES: Edge<WikiEdgeData>[] = [];
 
-/** `tagShared`: derive the tag-shared edges. Costly, so the map asks only when they're shown. */
-export function useWikiData({ tagShared = true }: { tagShared?: boolean } = {}) {
+/**
+ * `tagShared`: derive the tag-shared edges. Costly, so the map asks only when they're shown.
+ * `live`: open the socket (the full graph, then its updates) now. Until then the map runs on the
+ * atlas payload, about a tenth of the size, and the socket opens shortly after it lands anyway.
+ */
+export function useWikiData({ tagShared = true, live = true }: { tagShared?: boolean; live?: boolean } = {}) {
   const [graph, setGraph] = useState<GraphPayload>(EMPTY);
+  /** The full graph has arrived over the socket; the atlas payload no longer applies. */
+  const [full, setFull] = useState(false);
+  const fullRef = useRef(false);
+  const [atlasDone, setAtlasDone] = useState(false);
+  const [timedOut, setTimedOut] = useState(false);
+  const wantLive = live || timedOut;
   const [semanticEdges, setSemanticEdges] = useState<Edge<WikiEdgeData>[]>([]);
   const [umapPositions, setUmapPositions] = useState<Record<string, XY> | null>(null);
   /** Last UMAP request failed (e.g. the server answers 503 when umap-learn is missing). */
@@ -62,6 +108,29 @@ export function useWikiData({ tagShared = true }: { tagShared?: boolean } = {}) 
   const umapRequest = useRef<Promise<Record<string, XY> | null> | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
+    apiFetch("/api/graph/atlas")
+      .then((res) => (res.ok ? (res.json() as Promise<AtlasPayload>) : null))
+      .catch(() => null)
+      .then((atlas) => {
+        if (cancelled) return;
+        if (atlas && Array.isArray(atlas.nodes) && !fullRef.current) setGraph(fromAtlas(atlas));
+        setAtlasDone(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // A failed atlas request (an older server) goes straight to the socket.
+  useEffect(() => {
+    if (!atlasDone || wantLive) return;
+    const timer = setTimeout(() => setTimedOut(true), graph.nodes.length ? LIVE_DELAY_MS : 0);
+    return () => clearTimeout(timer);
+  }, [atlasDone, wantLive, graph.nodes.length]);
+
+  useEffect(() => {
+    if (!wantLive) return;
     let ws: WebSocket | null = null;
     let timer: ReturnType<typeof setTimeout> | undefined;
     let disposed = false;
@@ -76,7 +145,11 @@ export function useWikiData({ tagShared = true }: { tagShared?: boolean } = {}) 
       };
       sock.onmessage = (e) => {
         const payload = typeof e.data === "string" ? parseGraphMessage(e.data) : null;
-        if (payload) setGraph(payload);
+        if (payload) {
+          fullRef.current = true;
+          setFull(true);
+          setGraph(payload);
+        }
       };
     }
     connect();
@@ -96,7 +169,7 @@ export function useWikiData({ tagShared = true }: { tagShared?: boolean } = {}) 
         ws.close();
       }
     };
-  }, []);
+  }, [wantLive]);
 
   // ~42k edges on the current wiki; recomputed only when a new payload arrives.
   const tagSharedEdges = useMemo(
@@ -141,5 +214,6 @@ export function useWikiData({ tagShared = true }: { tagShared?: boolean } = {}) 
     umapFailed,
     loadUmapPositions,
     connected,
+    full,
   };
 }

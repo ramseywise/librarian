@@ -1,5 +1,5 @@
 ---
-imported_hash: e579b6019a9afaa9
+imported_hash: 51dfd03114892341
 title: LLM embeddings as features
 summary: A pretrained sentence encoder turns any text into a few hundred numbers, and once text is numbers, everything from classical ML applies again.
 order: 8
@@ -359,7 +359,7 @@ The top terms read as real subjects without anybody naming them: crime, animals,
 
 Someone asks you to flag descriptions that do not belong: spam, a wrong field pasted in, or text from another catalogue. You have no labels for these, and you cannot list in advance what wrong looks like. What you do have is a lot of normal text. So keep a clean reference set, and score new lines by how far they sit from it.
 
-To measure this we hide two kinds of intruder among real films. Neither is random noise, and both are English of about the right length: 40 chunks of [Irish song lyrics](../practice/intro-to-nlp/data/irish-lyrics.txt) and 40 chunks of [`big.txt`](../practice/text-analytics-with-python/Ch03 - Processing and Understanding Text/big.txt), a concatenation of public-domain prose. Fiction about people's lives is the harder intruder, because a film description is also that.
+To measure this we hide two kinds of intruder among real films. Neither is random noise, and both are English of about the right length: 40 chunks of [Irish song lyrics](https://github.com/ramseywise/learn-ai-engineering/blob/main/data-science/03-nlp/practice/intro-to-nlp/data/irish-lyrics.txt) and 40 chunks of [`big.txt`](https://github.com/ramseywise/learn-ai-engineering/blob/main/data-science/03-nlp/practice/text-analytics-with-python/Ch03%20-%20Processing%20and%20Understanding%20Text/big.txt), a concatenation of public-domain prose. Fiction about people's lives is the harder intruder, because a film description is also that.
 
 ```python
 import random, re

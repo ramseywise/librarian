@@ -1,5 +1,5 @@
 ---
-imported_hash: cd662c8c63556214
+imported_hash: df0917f99377fcdb
 title: References
 summary: No research paper changes a claim in this pillar.
 order: 7
@@ -50,7 +50,7 @@ No research paper changes a claim in this pillar. The nearest argument is the Be
 
 | Course | Platform | Cost | Supports |
 |---|---|---|---|
-| [DE Zoomcamp](https://github.com/DataTalksClub/data-engineering-zoomcamp) (DataTalks.Club), Module 2 Workflow Orchestration (Kestra) and Module 4 Analytics Engineering (dbt) upstream; older snapshot at [practice/datatalks-de/](practice/datatalks-de/) | GitHub, YouTube | Free | [01](notes/01-transform.md), [02](notes/02-orchestrate.md) |
+| [DE Zoomcamp](https://github.com/DataTalksClub/data-engineering-zoomcamp) (DataTalks.Club), Module 2 Workflow Orchestration (Kestra) and Module 4 Analytics Engineering (dbt) upstream; older snapshot at [practice/datatalks-de/](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-engineering/03-transform-and-orchestrate/practice/datatalks-de) | GitHub, YouTube | Free | [01](notes/01-transform.md), [02](notes/02-orchestrate.md) |
 | [MLOps Zoomcamp](https://github.com/DataTalksClub/mlops-zoomcamp) (DataTalks.Club), modules 03 to 05 | GitHub, YouTube | Free | [02](notes/02-orchestrate.md): Mage and Prefect in practice |
 | [dbt Fundamentals](https://learn.getdbt.com/courses/dbt-fundamentals) | dbt Learn | Free | [01](notes/01-transform.md), [03](notes/03-dbt-tests-snapshots-incremental.md) |
 | [Dagster University](https://courses.dagster.io/) | Web | Check site | [05](notes/05-dagster-and-airflow.md) |

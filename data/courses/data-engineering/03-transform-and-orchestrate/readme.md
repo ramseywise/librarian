@@ -1,5 +1,5 @@
 ---
-imported_hash: 2d5aae2230fb36cf
+imported_hash: 96e98f0b56e5064b
 title: 03 — Transform and orchestrate
 summary: How landed tables become tested models, and how those models get built on schedule, in the right order, for the right day.
 order: 1
@@ -74,7 +74,7 @@ uv run --with dagster-dbt --with dbt-duckdb python 05_dagster_dbt.py
 uv run --python 3.12 --with apache-airflow --with duckdb python 05_airflow.py   # starts airflow standalone for a minute or two
 ```
 
-- **Zoomcamp:** [practice/datatalks-de/](practice/datatalks-de/) holds the DataTalks.Club [workflow orchestration](practice/datatalks-de/02-workflow-orchestration/) and [analytics engineering](practice/datatalks-de/04-analytics-engineering/) modules. Chapters 1 and 2 say what each needs in their Run labels. It is a snapshot: its orchestration module uses Mage, while the [current course](https://github.com/DataTalksClub/data-engineering-zoomcamp) uses Kestra.
+- **Zoomcamp:** [practice/datatalks-de/](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-engineering/03-transform-and-orchestrate/practice/datatalks-de) holds the DataTalks.Club [workflow orchestration](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-engineering/03-transform-and-orchestrate/practice/datatalks-de/02-workflow-orchestration) and [analytics engineering](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-engineering/03-transform-and-orchestrate/practice/datatalks-de/04-analytics-engineering) modules. Chapters 1 and 2 say what each needs in their Run labels. It is a snapshot: its orchestration module uses Mage, while the [current course](https://github.com/DataTalksClub/data-engineering-zoomcamp) uses Kestra.
 
 ## Primary texts
 

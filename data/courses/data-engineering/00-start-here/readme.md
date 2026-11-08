@@ -1,5 +1,5 @@
 ---
-imported_hash: 68b1fde5dfb74345
+imported_hash: 703439c9f955bdae
 title: Data Engineering
 summary: 'Position in the path: after programming (Python, SQL); data analytics is recommended, not required.'
 order: 1
@@ -166,17 +166,17 @@ Each pillar's README has its own full list. These are the ones that cross stages
 
 Labels: **offline** = runs on a laptop with no account once data is downloaded · **Docker** · **GCP** / **AWS** = needs a cloud account and billing · **pin** = unpinned dependencies; pin as stated · **legacy** = API or tool superseded · **reading** = videos or text, no code. These labels are read from the course material; the zoomcamp notebooks and modules were not executed. Module numbers are those of the 2024-era snapshot, and upstream has since renumbered, as [references.md](references.md#courses-and-videos) explains.
 
-**DE Zoomcamp** ([course README](../02-ingest-and-modelling/practice/datatalks-de/README.md))
+**DE Zoomcamp** ([course README](https://github.com/ramseywise/learn-ai-engineering/blob/main/data-engineering/02-ingest-and-modelling/practice/datatalks-de/README.md))
 
 | Module | Folder | Chapter | Needs |
 |---|---|---|---|
-| `01-docker-terraform` | [02](../02-ingest-and-modelling/practice/datatalks-de/01-docker-terraform) | [Ingest](../02-ingest-and-modelling/notes/01-ingest.md) | Docker (Postgres, pgAdmin, ingest container): offline. Terraform part: GCP (service-account key) |
-| `02-workflow-orchestration` | [03](../03-transform-and-orchestrate/practice/datatalks-de/02-workflow-orchestration) | [Orchestrate](../03-transform-and-orchestrate/notes/02-orchestrate.md) | Reading (videos only in the snapshot); to follow along, Docker (Mage) + GCP |
-| `03-data-warehouse` | [04](../04-warehouse-lakehouse-streaming/practice/datatalks-de/03-data-warehouse) | [Warehouse and store](../04-warehouse-lakehouse-streaming/notes/01-warehouse-and-store.md) | GCP (BigQuery, billing). BQML export: Docker (`tensorflow/serving`) |
-| `04-analytics-engineering` | [03](../03-transform-and-orchestrate/practice/datatalks-de/04-analytics-engineering) | [Transform](../03-transform-and-orchestrate/notes/01-transform.md) | GCP (BigQuery + dbt Cloud), or offline with dbt Core + Postgres |
-| `05-batch` | [04](../04-warehouse-lakehouse-streaming/practice/datatalks-de/05-batch) | [Warehouse and store](../04-warehouse-lakehouse-streaming/notes/01-warehouse-and-store.md) | Java 11 + Spark 3.3.2 (pin); offline locally. Dataproc and the GCS connector: GCP |
-| `06-streaming` | [04](../04-warehouse-lakehouse-streaming/practice/datatalks-de/06-streaming) | [Kafka](../04-warehouse-lakehouse-streaming/notes/04-kafka-and-stream-semantics.md) | Docker (Kafka / Confluent compose, Redpanda); Java for the Kafka Streams examples; ksqlDB folder is SQL only |
-| `projects/` | [02](../02-ingest-and-modelling/practice/datatalks-de/projects) | Capstone | Reading: project brief and dataset list |
+| `01-docker-terraform` | [02](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-engineering/02-ingest-and-modelling/practice/datatalks-de/01-docker-terraform) | [Ingest](../02-ingest-and-modelling/notes/01-ingest.md) | Docker (Postgres, pgAdmin, ingest container): offline. Terraform part: GCP (service-account key) |
+| `02-workflow-orchestration` | [03](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-engineering/03-transform-and-orchestrate/practice/datatalks-de/02-workflow-orchestration) | [Orchestrate](../03-transform-and-orchestrate/notes/02-orchestrate.md) | Reading (videos only in the snapshot); to follow along, Docker (Mage) + GCP |
+| `03-data-warehouse` | [04](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-engineering/04-warehouse-lakehouse-streaming/practice/datatalks-de/03-data-warehouse) | [Warehouse and store](../04-warehouse-lakehouse-streaming/notes/01-warehouse-and-store.md) | GCP (BigQuery, billing). BQML export: Docker (`tensorflow/serving`) |
+| `04-analytics-engineering` | [03](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-engineering/03-transform-and-orchestrate/practice/datatalks-de/04-analytics-engineering) | [Transform](../03-transform-and-orchestrate/notes/01-transform.md) | GCP (BigQuery + dbt Cloud), or offline with dbt Core + Postgres |
+| `05-batch` | [04](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-engineering/04-warehouse-lakehouse-streaming/practice/datatalks-de/05-batch) | [Warehouse and store](../04-warehouse-lakehouse-streaming/notes/01-warehouse-and-store.md) | Java 11 + Spark 3.3.2 (pin); offline locally. Dataproc and the GCS connector: GCP |
+| `06-streaming` | [04](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-engineering/04-warehouse-lakehouse-streaming/practice/datatalks-de/06-streaming) | [Kafka](../04-warehouse-lakehouse-streaming/notes/04-kafka-and-stream-semantics.md) | Docker (Kafka / Confluent compose, Redpanda); Java for the Kafka Streams examples; ksqlDB folder is SQL only |
+| `projects/` | [02](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-engineering/02-ingest-and-modelling/practice/datatalks-de/projects) | Capstone | Reading: project brief and dataset list |
 
 **MLOps Zoomcamp** ([course repo at the commit these chapters read](https://github.com/DataTalksClub/mlops-zoomcamp/tree/e34bf8f540b75dfd712ffcc97d3c000ae1c2e3e7), all in pillar 06)
 
@@ -204,7 +204,7 @@ Labels: **offline** = runs on a laptop with no account once data is downloaded �
 
 ## Completion standard and next steps
 
-Complete a portfolio containing a repeatable ingest/model, tested and orchestrated pipeline, costed storage or streaming decision, quality incident response, ML-platform exercise, and governed architecture decision. Every item should state its grain or contract, failure handling, evidence, and trade-offs. The capstone is MLOps `07-project` or the DE [project brief](../02-ingest-and-modelling/practice/datatalks-de/projects): self-score against the evaluation criteria in the brief, with LocalStack standing in for the cloud criterion.
+Complete a portfolio containing a repeatable ingest/model, tested and orchestrated pipeline, costed storage or streaming decision, quality incident response, ML-platform exercise, and governed architecture decision. Every item should state its grain or contract, failure handling, evidence, and trade-offs. The capstone is MLOps `07-project` or the DE [project brief](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-engineering/02-ingest-and-modelling/practice/datatalks-de/projects): self-score against the evaluation criteria in the brief, with LocalStack standing in for the cloud criterion.
 
 Continue to [Data Science](../../data-science/00-start-here/readme.md) for modelling depth, or [Generative AI](../../generative-ai/00-start-here/readme.md) and [AI Engineering](../../ai-engineering/00-start-here/readme.md) for LLM systems.
 

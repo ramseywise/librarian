@@ -51,3 +51,5 @@ agent. Finance has only 12 tasks, so one task moves it 8.33 points. The model li
 - [[LLM-as-Judge Evaluation]] — related
 - [[Gaia2]] — alternative-to (another environment-based agent benchmark)
 - [[Multi-Session Agent Benchmarks]] — related (OdysseyBench contrasts itself with this benchmark)
+- [[AlphaEval]] — related (tasks sourced from deploying companies)
+- [[E-Commerce Operation Benchmarks]] — alternative-to (another simulated-business agent benchmark)

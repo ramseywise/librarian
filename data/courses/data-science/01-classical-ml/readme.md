@@ -1,5 +1,5 @@
 ---
-imported_hash: e92eb807efe59b01
+imported_hash: 75dd087fbe866a7f
 title: 01 — Classical ML
 summary: 'The classical machine-learning toolkit for tabular data: linear models, trees, kernels, clustering and boosting, with the practices that make their scores believable.'
 order: 1
@@ -179,7 +179,7 @@ make slides PILLAR=data-science/01-classical-ml STRICT=1 PREVIEW=1
 make slides PILLAR=data-science/01-classical-ml LECTURE=00-overview STRICT=1 PREVIEW=1
 ```
 
-The lecture series is being built one note at a time. [DECKS.md](../../DECKS.md) shows how far it has got.
+The lecture series is being built one note at a time. [DECKS.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/DECKS.md) shows how far it has got.
 
 ## Primary texts
 

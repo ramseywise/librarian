@@ -43,3 +43,4 @@ Beating crowd workers is not shown to beat all humans, and no expert comparison 
 - [[Chain-of-Verification]] — related (FActScore is its biography metric)
 - [[Grounding Claim Methodology]] — alternative-to (faithfulness to retrieved context rather than to the web)
 - [[LLM-as-Judge Evaluation]] — related
+- [[FActScore]] — alternative-to (the earlier atomic-fact metric, scored against Wikipedia instead of web search)

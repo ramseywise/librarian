@@ -4,7 +4,9 @@ import {
   applyView,
   degreeOf,
   expandBridges,
+  expandFrom,
   filterPrimaryIds,
+  moduleEdges,
   neighbours,
   pageNeighbourhood,
   renderIds,
@@ -28,7 +30,7 @@ const edge = (source: string, target: string, edgeType: WikiEdgeData["edgeType"]
 const NONE: ViewState = {
   focusId: null, focusIds: null, filterIds: null, activeTags: new Set(),
 };
-const ALL_ON: EdgeVisibility = { wikilink: true, semantic: true, "tag-shared": true, terms: true };
+const ALL_ON: EdgeVisibility = { wikilink: true, semantic: true, module: true, "tag-shared": true, terms: true };
 
 const nodes = [node("p", "projects", "project"), node("a", "rag"), node("b", "eval"), node("c", "memory")];
 const flags = (ns: Node<WikiNodeData>[]) =>
@@ -135,7 +137,7 @@ describe("visibleEdges", () => {
 
   it("respects the toggles when no filter is active", () => {
     const v = NONE;
-    const out = visibleEdges(src, { wikilink: true, semantic: false, "tag-shared": false, terms: false }, applyView(nodes, v), v);
+    const out = visibleEdges(src, { wikilink: true, semantic: false, module: false, "tag-shared": false, terms: false }, applyView(nodes, v), v);
     expect(out.map((e) => e.id)).toEqual(["wikilink:a->b"]);
     expect(out[0].style).toBeDefined();
   });
@@ -168,7 +170,7 @@ describe("visibleEdges", () => {
     const noTagShared = { ...ALL_ON, "tag-shared": false };
     const ids = visibleEdges(src, noTagShared, applyView(nodes, v), v).map((e) => e.id);
     expect(ids).toEqual(["wikilink:a->b"]);
-    const off = { wikilink: false, semantic: false, "tag-shared": false, terms: false };
+    const off = { wikilink: false, semantic: false, module: false, "tag-shared": false, terms: false };
     expect(visibleEdges(src, off, applyView(nodes, v), v)).toEqual([]);
   });
 
@@ -219,5 +221,40 @@ describe("pageNeighbourhood", () => {
 
   it("holds just the page when it has no links", () => {
     expect([...pageNeighbourhood("alone", edges, degree, 10).ids]).toEqual(["alone"]);
+  });
+});
+
+describe("expandFrom", () => {
+  const degree = new Map([["w1", 9], ["w2", 8], ["w3", 7], ["m1", 5], ["m2", 4], ["t1", 3]]);
+  const links = ["w1", "w2", "w3"].map((t) => ({ source: "x", target: t }));
+
+  it("takes one from each switched-on source in turn", () => {
+    const out = expandFrom(
+      "x",
+      { wikilink: links, moduleMates: () => ["m1", "m2", "x"], tagMates: () => ["t1", "w1"] },
+      degree,
+      4,
+    );
+    expect(out).toEqual(["w1", "m1", "t1", "w2"]);
+  });
+
+  it("uses only the sources it is given", () => {
+    expect(expandFrom("x", { wikilink: links }, degree, 2)).toEqual(["w1", "w2"]);
+    expect(expandFrom("x", {}, degree)).toEqual([]);
+  });
+});
+
+describe("moduleEdges", () => {
+  it("joins each module's pages to its best-linked page, once per pair", () => {
+    const modules = new Map([
+      ["a", ["module:c/one", "module:c/two"]],
+      ["b", ["module:c/one", "module:c/two"]],
+      ["c", ["module:c/one"]],
+      ["lone", ["module:c/three"]],
+    ]);
+    const degree = new Map([["a", 1], ["b", 5], ["c", 2]]);
+    const out = moduleEdges(["a", "b", "c", "lone"], modules, degree);
+    expect(out.map((e) => [e.source, e.target])).toEqual([["b", "c"], ["b", "a"]]);
+    expect(out.every((e) => e.data?.edgeType === "module")).toBe(true);
   });
 });

@@ -1,5 +1,5 @@
 ---
-imported_hash: dfff7022e1877e48
+imported_hash: 9cc2ae8a51773cfc
 title: Unique Characters In String
 summary: Implement an algorithm to determine if a string has all unique characters.
 order: 134
@@ -19,4 +19,4 @@ What if you can not use additional data structures?
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](../../arrays_and_strings/unique_characters_in_string/solution.py) |
+| Python   | [solution.py](solution.py) |

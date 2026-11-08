@@ -21,7 +21,7 @@ type GraphEdge = Edge<WikiEdgeData>;
 type Link = { source: string; target: string; data?: { relationship?: string } };
 
 /** Most neighbours a single click reveals; the best-linked ones win. */
-export const REVEAL_CAP = 40;
+export const REVEAL_CAP = 12;
 
 export function degreeOf(edges: Link[]): Map<string, number> {
   const deg = new Map<string, number>();
@@ -92,6 +92,84 @@ export function neighbours(
         a.localeCompare(b),
     )
     .slice(0, cap);
+}
+
+/**
+ * What one click on `id` pulls in, over every connection that is switched on: its wikilinks
+ * (typed first), semantic neighbours, module mates and pages sharing a topic tag. Taken in turn,
+ * one from each, so a dense source (tags, modules) can't crowd out the links; best-linked first
+ * within each.
+ */
+export function expandFrom(
+  id: string,
+  sources: {
+    wikilink?: Link[];
+    semantic?: Link[];
+    /** Pages in the same module as each page, or none when the layer is off. */
+    moduleMates?: (id: string) => Iterable<string>;
+    /** Pages sharing a topic tag, or none when the layer is off. */
+    tagMates?: (id: string) => Iterable<string>;
+  },
+  degree: Map<string, number>,
+  cap = REVEAL_CAP,
+): string[] {
+  const byDegree = (ids: Iterable<string>) =>
+    [...new Set(ids)]
+      .filter((x) => x !== id)
+      .sort((a, b) => (degree.get(b) ?? 0) - (degree.get(a) ?? 0) || a.localeCompare(b));
+  const lists = [
+    sources.wikilink ? neighbours(id, sources.wikilink, degree, cap) : [],
+    sources.semantic ? neighbours(id, sources.semantic, degree, cap) : [],
+    sources.moduleMates ? byDegree(sources.moduleMates(id)).slice(0, cap) : [],
+    sources.tagMates ? byDegree(sources.tagMates(id)).slice(0, cap) : [],
+  ].filter((l) => l.length > 0);
+  // Each source skips what another already took, so a shared page doesn't cost it its turn.
+  const out = new Set<string>();
+  const next = lists.map(() => 0);
+  let progressed = true;
+  while (out.size < cap && progressed) {
+    progressed = false;
+    lists.forEach((l, i) => {
+      while (next[i] < l.length && out.has(l[next[i]])) next[i]++;
+      if (out.size < cap && next[i] < l.length) {
+        out.add(l[next[i]++]);
+        progressed = true;
+      }
+    });
+  }
+  return [...out];
+}
+
+/**
+ * "Same module" edges among the rendered pages: each module's pages joined to its best-linked one
+ * on the canvas, a star rather than a clique, so a module of 30 adds 29 lines and not 435.
+ */
+export function moduleEdges(
+  rendered: Iterable<string>,
+  modulesOf: Map<string, string[]>,
+  degree: Map<string, number>,
+): GraphEdge[] {
+  const members = new Map<string, string[]>();
+  for (const id of rendered) {
+    for (const m of modulesOf.get(id) ?? []) {
+      const list = members.get(m);
+      if (list) list.push(id);
+      else members.set(m, [id]);
+    }
+  }
+  const seen = new Set<string>();
+  const out: GraphEdge[] = [];
+  for (const [m, ids] of members) {
+    if (ids.length < 2) continue;
+    const [hub, ...rest] = ids.sort((a, b) => (degree.get(b) ?? 0) - (degree.get(a) ?? 0) || a.localeCompare(b));
+    for (const other of rest) {
+      const key = hub < other ? `${hub}|${other}` : `${other}|${hub}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      out.push({ id: `md:${key}`, source: hub, target: other, data: { edgeType: "module", module: m } });
+    }
+  }
+  return out;
 }
 
 /** See Also types that say how two pages relate; `related` and untyped links only say that they do. */
@@ -237,6 +315,7 @@ export const EDGE_STYLES: Record<string, CSSProperties> = {
   wikilink: { stroke: "var(--edge-wikilink)", strokeWidth: 1 },
   semantic: { stroke: "var(--edge-semantic)", strokeWidth: 1, strokeDasharray: "4 3" },
   "tag-shared": { stroke: "var(--edge-tag)", strokeWidth: 1, strokeDasharray: "2 4" },
+  module: { stroke: "var(--edge-module)", strokeWidth: 1.5, opacity: 0.6 },
   mentions: { stroke: "var(--concept)", strokeWidth: 1, strokeDasharray: "1 5", opacity: 0.55 },
 };
 
@@ -244,6 +323,8 @@ export interface EdgeSources {
   wikilink: GraphEdge[];
   semantic: GraphEdge[];
   tagShared: GraphEdge[];
+  /** Same-module stars among the rendered pages (moduleEdges). */
+  module?: GraphEdge[];
   /** Term → page, already limited to the terms on the canvas. */
   mentions?: GraphEdge[];
 }
@@ -278,6 +359,7 @@ export function visibleEdges(
     ...(vis.wikilink ? src.wikilink : []),
     ...(vis.semantic ? src.semantic : []),
     ...(vis["tag-shared"] ? src.tagShared : []),
+    ...(vis.module ? (src.module ?? []) : []),
     ...(vis.terms ? (src.mentions ?? []) : []),
   ];
 

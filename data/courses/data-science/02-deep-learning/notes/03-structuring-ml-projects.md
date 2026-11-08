@@ -1,5 +1,5 @@
 ---
-imported_hash: 7bb8bd45e3396980
+imported_hash: 590755706412625e
 title: Structuring ML projects
 summary: 'Your two quizzes are the case studies: a bird detector for the city of Peacetopia and an autonomous-driving perception system.'
 order: 4
@@ -299,8 +299,8 @@ Course 3 has no programming assignments, and the two quizzes are your submission
 
 | Set | Runs |
 |---|---|
-| [Week 1: Peacetopia](../practice/ng-deep-learning/Structuring%20Machine%20Learning%20Projects/Week%201%20Quiz%20-%20Bird%20recognition%20in%20the%20city%20of%20Peacetopia%20%28case%20study%29.md) | Read: a markdown quiz |
-| [Week 2: Autonomous driving](../practice/ng-deep-learning/Structuring%20Machine%20Learning%20Projects/Week%202%20Quiz%20-%20Autonomous%20driving%20%28case%20study%29.md) | Read: a markdown quiz |
+| [Week 1: Peacetopia](https://github.com/ramseywise/learn-ai-engineering/blob/main/data-science/02-deep-learning/practice/ng-deep-learning/Structuring%20Machine%20Learning%20Projects/Week%201%20Quiz%20-%20Bird%20recognition%20in%20the%20city%20of%20Peacetopia%20%28case%20study%29.md) | Read: a markdown quiz |
+| [Week 2: Autonomous driving](https://github.com/ramseywise/learn-ai-engineering/blob/main/data-science/02-deep-learning/practice/ng-deep-learning/Structuring%20Machine%20Learning%20Projects/Week%202%20Quiz%20-%20Autonomous%20driving%20%28case%20study%29.md) | Read: a markdown quiz |
 
 The numbers described as Peacetopia's come from the quiz, and every digits number came from running the code shown.
 

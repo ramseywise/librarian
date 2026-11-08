@@ -1,5 +1,5 @@
 ---
-imported_hash: bb145acba997b551
+imported_hash: d8a15c421850bc14
 title: Advanced Python — senior-interview concepts
 summary: '54 concepts that senior Python screens probe beyond syntax: concurrency, memory, the data model, metaprogramming.'
 order: 263
@@ -22,7 +22,7 @@ run and rewritten from memory in `programming/drills/coding/scratch/`. Log it in
 | Folder | What |
 |---|---|
 | [`handbook/`](handbook/) | Explanation per concept: why it matters, trade-offs, when to use |
-| [`examples/`](examples/) | One runnable script per concept (`N.<name>.py`); the `.txt` files are inputs for 37/38 |
+| [`examples/`](https://github.com/ramseywise/learn-ai-engineering/tree/main/programming/drills/python/advanced/examples) | One runnable script per concept (`N.<name>.py`); the `.txt` files are inputs for 37/38 |
 
 Source: [gostak-dd/fifty-advanced-python-concepts](https://github.com/gostak-dd/fifty-advanced-python-concepts)
 (formerly `GGyll/…`), imported 2026-10-29. The `.pkl`/`.db`/`.bin` files the scripts write

@@ -2,7 +2,7 @@
 title: Judge Calibration (TPR, TNR and Corrected Pass Rate)
 tags: [eval, llm, pattern]
 summary: "Calibrate an LLM judge against 100–200 human labels split train/dev/test, report TPR and TNR separately (TNR usually matters most), benchmark against human–human agreement, and correct the observed pass rate with (p̂ + TNR − 1) / (TPR + TNR − 1)."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--05-llm-as-judge.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--11-production-and-the-maturity-ladder.md
@@ -87,3 +87,4 @@ TPR + TNR is well above 1.
 - [[Positive-Only Judge Fixtures Measure Recall]] — related (a fixture set that can only measure TPR)
 - [[Human Verdicts as Judge Fixtures]] — related (human labels exported as fixtures)
 - [[LLM Grader Calibration Insights]] — instance-of (calibration results from one pipeline)
+- [[Judge Lifecycle with RART and a Drift Band]] — extends (a drift test and weekly human sample after calibration)

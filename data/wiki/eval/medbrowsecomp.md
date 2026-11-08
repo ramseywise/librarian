@@ -42,3 +42,5 @@ conclusion statements do not obviously match the tables. The systems date from M
 - [[Gaia2]] — related (another agent benchmark with search tasks)
 - [[Trajectory Over Outcome]] — related (the authors catalogue trajectory errors)
 - [[Eval Contamination Defenses]] — related
+- [[Web Agent Benchmarks (WebShop and Mind2Web)]] — related
+- [[GAIA General-Assistant Benchmark]] — related

@@ -1,5 +1,5 @@
 ---
-imported_hash: 28e413382387fd45
+imported_hash: e5f5c5a31838bc70
 title: 03 — Natural language processing
 summary: 'The pre-transformer NLP toolkit, taught as something you can still use: preprocessing, bag of words and TF-IDF, text classification, topic models and summarisation, word embeddings, named entity recognition and sentiment analysis.'
 order: 1
@@ -94,8 +94,8 @@ The spaCy model goes on the command line as `--with "en_core_web_sm@https://gith
 
 | Folder | Notes | How it runs |
 |---|---|---|
-| [`practice/text-analytics-with-python/`](practice/text-analytics-with-python/) | 01-06 | Notebooks from Sarkar's book. They need the nltk, spaCy and gensim models and are partly legacy: spaCy 2, standalone keras, gensim 3, `skater`, and TF 2.15 or earlier for Ch10a. Ch09 and Ch10 need `movie_reviews.csv`, which is not in the repo |
-| [`practice/intro-to-nlp/`](practice/intro-to-nlp/) | 01, 03, 04, 06 | Own DeepLearning.AI TensorFlow NLP and Hugging Face course work, using the `tf.keras` 2.x `Tokenizer` API. The transformers notebook needs internet access for model downloads |
+| [`practice/text-analytics-with-python/`](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-science/03-nlp/practice/text-analytics-with-python) | 01-06 | Notebooks from Sarkar's book. They need the nltk, spaCy and gensim models and are partly legacy: spaCy 2, standalone keras, gensim 3, `skater`, and TF 2.15 or earlier for Ch10a. Ch09 and Ch10 need `movie_reviews.csv`, which is not in the repo |
+| [`practice/intro-to-nlp/`](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-science/03-nlp/practice/intro-to-nlp) | 01, 03, 04, 06 | Own DeepLearning.AI TensorFlow NLP and Hugging Face course work, using the `tf.keras` 2.x `Tokenizer` API. The transformers notebook needs internet access for model downloads |
 | [`practice/approaching-almost-any-nlp-problem-on-kaggle.ipynb`](practice/approaching-almost-any-nlp-problem-on-kaggle.md) | 02 | Legacy. Needs Kaggle's spooky-author data and GloVe, with old keras and xgboost APIs |
 
 ### intro-to-nlp datasets

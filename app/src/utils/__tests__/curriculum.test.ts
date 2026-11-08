@@ -3,7 +3,7 @@ import type { Node } from "@xyflow/react";
 import type { Curriculum, WikiNodeData } from "../../types";
 import { courseColor, domainColor } from "../../theme/domains";
 import { applyView, filterPrimaryIds } from "../graphView";
-import { facetsOf, withCourseGroups } from "../curriculum";
+import { facetPending, facetsOf, withCourseGroups } from "../curriculum";
 
 function node(id: string, domain = "rag", typeTag = "concept"): Node<WikiNodeData> {
   return {
@@ -68,5 +68,31 @@ describe("withCourseGroups", () => {
   it("does nothing before the curriculum loads", () => {
     const input = [node("a")];
     expect(withCourseGroups(input, null)).toBe(input);
+  });
+});
+
+describe("tag and glossary filters", () => {
+  const tagged = [
+    { ...node("a"), data: { ...node("a").data, tags: ["rag", "pattern"] } },
+    { ...node("b"), data: { ...node("b").data, tags: ["eval", "concept"] } },
+  ];
+  const glossary = { terms: [], mentions: { bm25: ["b"] } };
+  const all = facetsOf(null, tagged, glossary);
+
+  it("a tag selects the pages carrying it, a term the pages mentioning it", () => {
+    expect([...filterPrimaryIds(tagged, new Set(["tag:rag"]), all)!]).toEqual(["a"]);
+    expect([...filterPrimaryIds(tagged, new Set(["term:bm25"]), all)!]).toEqual(["b"]);
+  });
+
+  it("are there before the curriculum is", () => {
+    expect(all.has("course:ai")).toBe(false);
+    expect(all.get("tag:concept")).toEqual(new Set(["b"]));
+  });
+
+  it("a facet is pending only while its source is missing", () => {
+    expect(facetPending("course:ai", null, glossary)).toBe(true);
+    expect(facetPending("course:ai", curriculum, null)).toBe(false);
+    expect(facetPending("term:bm25", curriculum, null)).toBe(true);
+    expect(facetPending("tag:rag", null, null)).toBe(false);
   });
 });

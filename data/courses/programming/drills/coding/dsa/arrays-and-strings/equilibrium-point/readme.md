@@ -1,5 +1,5 @@
 ---
-imported_hash: 17ca3830491fec95
+imported_hash: 868adcec0f3db4e9
 title: Equilibrium Point
 summary: ''
 order: 104
@@ -20,4 +20,4 @@ Equilibrium Point
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](../../arrays_and_strings/equilibrium_point/solution.py) |
+| Python   | [solution.py](solution.py) |

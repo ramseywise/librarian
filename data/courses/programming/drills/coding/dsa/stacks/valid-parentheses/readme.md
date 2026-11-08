@@ -1,5 +1,5 @@
 ---
-imported_hash: 74ff30e4889ea49b
+imported_hash: 23af92436050740d
 title: Valid Parentheses
 summary: Given a string s containing just the characters (, ), {, }, [, ], determine if the input string is valid.
 order: 210
@@ -22,4 +22,4 @@ Given a string `s` containing just the characters `(`, `)`, `{`, `}`, `[`, `]`, 
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](../valid_parentheses/solution.py) |
+| Python   | [solution.py](solution.py) |

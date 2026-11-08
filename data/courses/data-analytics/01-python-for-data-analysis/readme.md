@@ -1,5 +1,5 @@
 ---
-imported_hash: 328dcdee996ef16a
+imported_hash: 5c62986254e30152
 title: Python for data analysis
 summary: The working pandas, NumPy, matplotlib and seaborn you need to do analysis in Python.
 order: 1
@@ -139,7 +139,7 @@ When a cell fails, this table translates most of it.
 
 ### Course scripts
 
-Scripts kept from earlier coursework, in [`courses/`](practice/courses). They are notes as code, so read them beside an open REPL rather than running them top to bottom.
+Scripts kept from earlier coursework, in [`courses/`](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-analytics/01-python-for-data-analysis/practice/courses). They are notes as code, so read them beside an open REPL rather than running them top to bottom.
 
 | Script | From | Does it run? |
 |---|---|---|

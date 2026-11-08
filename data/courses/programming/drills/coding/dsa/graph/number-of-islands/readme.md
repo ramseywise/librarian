@@ -1,5 +1,5 @@
 ---
-imported_hash: d4b7b78c4ab9ad7d
+imported_hash: 2fec92fd644e7556
 title: Number of Islands
 summary: Given an m x n 2D binary grid representing a map of '1's (land) and '0's (water), return the number of islands.
 order: 157
@@ -20,4 +20,4 @@ Given an `m x n` 2D binary grid representing a map of `'1'`s (land) and `'0'`s (
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](../number_of_islands/solution.py) |
+| Python   | [solution.py](solution.py) |

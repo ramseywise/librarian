@@ -36,3 +36,4 @@ Hallucinations are reduced, not removed, and only directly stated factual errors
 - [[Self-Consistency]] — related (another sampling-and-agreement route to fewer wrong answers)
 - [[Tool-Augmented Factuality Checking]] — alternative-to (verifies claims with outside tools instead of the model's own isolated answers)
 - [[SAFE Long-Form Factuality Scoring]] — related (FActScore-style atomic-fact scoring)
+- [[FActScore]] — prerequisite-for (the metric its biography results are reported in)

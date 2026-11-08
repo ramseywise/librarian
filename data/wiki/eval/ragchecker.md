@@ -35,6 +35,7 @@ No significance test backs "significantly better". On Spearman for completeness,
 ## See Also
 - [[RAG Eval Metrics Suite]] — alternative-to (a different metric set for the same retrieval-versus-generation split)
 - [[RAG Evaluation]] — related
+- [[Ragas Reference-Free RAG Metrics]] — alternative-to (a reference-free metric suite validated on WikiEval)
 - [[Grounding Claim Methodology]] — related
 - [[LLM-as-Judge Evaluation]] — related
 - [[Tool-Augmented Factuality Checking]] — related (claim-level checks against web evidence instead of retrieved context)

@@ -1,5 +1,5 @@
 ---
-imported_hash: ce43a07d59ce9bc8
+imported_hash: 8170888a1bf1f019
 title: References
 summary: 'Grouped by note: research agents, then GUI and voice, coding, data analysis, and dialogue and human-AI interaction.'
 order: 19
@@ -31,7 +31,7 @@ Grouped by note: research agents, then GUI and voice, coding, data analysis, and
 
 | | Paper | Link | Notes |
 |---|---|---|---|
-| ★ | Du et al., *DeepResearch Bench* (2025): 100 tasks, RACE and FACT. Code in [practice/deep_research_bench/](practice/deep_research_bench/) | [2506.11763](https://arxiv.org/abs/2506.11763) | [02](notes/02-deep-research-bot.md) |
+| ★ | Du et al., *DeepResearch Bench* (2025): 100 tasks, RACE and FACT. Code in [practice/deep_research_bench/](practice/deep-research-bench) | [2506.11763](https://arxiv.org/abs/2506.11763) | [02](notes/02-deep-research-bot.md) |
 | ⚑ | Huang et al., *Deep Research Agents* (2025): a survey, and the map note 02 uses: workflows, planning, retrieval, tuning; no controlled comparison of designs | [2506.18096](https://arxiv.org/abs/2506.18096) · [PDF](sources/huang-2025-deep-research-agents.pdf) | [02](notes/02-deep-research-bot.md) |
 | ⚑ | Han et al., *Deep Researcher with Test-Time Diffusion* (TTD-DR, 2025): draft first, revise with retrieval; 69.1% and 74.5% win rates against OpenAI Deep Research on two long-form tasks, judged by Gemini 1.5 Pro at 60.8% agreement with humans; self-evolution supplies most of the gain in the ablation | [2507.16075](https://arxiv.org/abs/2507.16075) · [PDF](sources/han-2025-deep-researcher-test-time-diffusion.pdf) | [02](notes/02-deep-research-bot.md) |
 | ⚑ | Alzubi et al., *Open Deep Search* (2025): ODS-v2 with DeepSeek-R1, 88.3% on SimpleQA and 75.3% on FRAMES, up from 82.4% and 30.1%; behind GPT-4o Search Preview on SimpleQA (90.0%) | [2503.20201](https://arxiv.org/abs/2503.20201) · [PDF](sources/alzubi-2025-open-deep-search.pdf) | [02](notes/02-deep-research-bot.md) |

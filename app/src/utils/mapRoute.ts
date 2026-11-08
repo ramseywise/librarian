@@ -13,10 +13,13 @@
 
 export type Grouping = "domain" | "course";
 
-/** Pages a focused view holds until asked for more. */
-export const DEFAULT_CAP = 150;
-/** A page's neighbourhood is meant to be read card by card, so it opens smaller than a sector. */
-export const PAGE_CAP = 60;
+/**
+ * Pages a focused view holds until asked for more: a sector opens on its hubs, and clicks grow it
+ * from there. 150 cards with ~1,000 links between them read as one tangle.
+ */
+export const DEFAULT_CAP = 15;
+/** A page's neighbourhood is meant to be read card by card. */
+export const PAGE_CAP = 25;
 export const MAX_CAP = 2400;
 
 export type MapView =

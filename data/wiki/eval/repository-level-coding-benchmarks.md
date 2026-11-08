@@ -65,3 +65,5 @@ The models date from 2024-2026.
 - [[CLI Agent Failure Timeline]] — related (LongCLI-Bench and Terminal-Bench failure analysis)
 - [[Best-of-k Headline Inflation]] — related
 - [[Eval Contamination Defenses]] — related
+- [[Terminal-Bench]] — related
+- [[InterCode]] — related (interactive coding with execution feedback)

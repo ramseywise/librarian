@@ -1,5 +1,5 @@
 ---
-imported_hash: facf07af4bfc72d3
+imported_hash: a682518484d4593d
 title: References
 summary: ★ changed a claim in the notes. ⚑ preprint only.
 order: 11
@@ -157,7 +157,7 @@ source: learn-ai-engineering/ai-engineering/08-multimodal-engineering/references
 | [Saharia 2022, Photorealistic Text-to-Image Diffusion Models with Deep Language Under](https://arxiv.org/abs/2205.11487) | NeurIPS 2022 | 12 | 5 | read ([PDF](sources/saharia-2022-photorealistic-text-image-diffusion-models.pdf)) |
 | [Jia 2021, Scaling Up Visual and Vision-Language Representation Learning With Noi](https://arxiv.org/abs/2102.05918) | ICML 2021 | 12 | 4 | read ([PDF](sources/jia-2021-scaling-up-visual-vision-language.pdf)) |
 
-73 more in [the citation report](../../scripts/papers/reports/citegraph-multimodal.md).
+73 more in [the citation report](https://github.com/ramseywise/learn-ai-engineering/blob/main/scripts/papers/reports/citegraph-multimodal.md).
 <!-- citegraph:origins end -->
 
 ## AI Papers of the Week

@@ -1,5 +1,5 @@
 ---
-imported_hash: 823769e15c41e986
+imported_hash: 8742bbb2b8d20cd6
 title: Diagonal Traverse
 summary: Given a matrix of M x N elements (M rows, N columns), return all elements of the matrix in diagonal order as shown in the below image.
 order: 102
@@ -21,4 +21,4 @@ matrix in diagonal order as shown in the below image.
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](../../arrays_and_strings/diagonal_traverse/solution.py) |
+| Python   | [solution.py](solution.py) |

@@ -1,5 +1,5 @@
 ---
-imported_hash: 2a17f892110724fc
+imported_hash: 6f8a8b8353a64220
 title: References
 summary: ★ marks a paper whose text changed a claim in the notes.
 order: 12
@@ -86,4 +86,4 @@ source: learn-ai-engineering/data-engineering/01-storage-and-compute-foundations
 |---|---|---|---|
 | Kleppmann, [Distributed Systems lecture series](https://www.youtube.com/playlist?list=PLeKd45zvjcDFUEv_ohr_HdUFe97RItdiB) (University of Cambridge, 8 lectures, about 7 hours; [notes](https://www.cl.cam.ac.uk/teaching/2122/ConcDisSys/materials.html)) | YouTube | Free | [05](notes/05-partitioning-and-replication.md): replication, quorums, consistency, and background for [06](notes/06-when-distributed-systems-fail.md) and [07](notes/07-consistency-and-consensus.md) |
 | [CMU 15-445/645, Intro to Database Systems](https://15445.courses.cs.cmu.edu/) (Pavlo; recorded lectures on YouTube from the CMU Database Group, course site lists the current term) | Web, YouTube | Free | [03](notes/03-row-and-column-stores.md): storage, indexes, query execution |
-| [DE Zoomcamp, batch module](https://github.com/DataTalksClub/data-engineering-zoomcamp) (DataTalks.Club; vendored here at [05-batch](../04-warehouse-lakehouse-streaming/practice/datatalks-de/05-batch/)) | GitHub, YouTube | Free | [08](notes/08-distributed-compute.md): Spark on real taxi data |
+| [DE Zoomcamp, batch module](https://github.com/DataTalksClub/data-engineering-zoomcamp) (DataTalks.Club; vendored here at [05-batch](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-engineering/04-warehouse-lakehouse-streaming/practice/datatalks-de/05-batch)) | GitHub, YouTube | Free | [08](notes/08-distributed-compute.md): Spark on real taxi data |

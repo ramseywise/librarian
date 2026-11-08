@@ -1,5 +1,5 @@
 ---
-imported_hash: b6d47064841f6a3a
+imported_hash: eac6bf603d676912
 title: Generative AI
 summary: A course in building with large language models, from what a model is to a complete agent you can trust.
 order: 1
@@ -49,7 +49,7 @@ The numbers are stable folder names, not a strict sequence. 08 is the Eval pilla
 | 2 | [02 RAG & retrieval](../02-rag-retrieval/readme.md) | How do you give a model knowledge at inference time? | Measured retrieval pipeline | in progress |
 | 3 | [03 Agentic foundations](../03-agentic-foundations/readme.md) | How do models plan, use tools and work in loops? | Bounded agent design | [pptx](../03-agentic-foundations/slides/agentic-foundations.pptx), [pdf](../03-agentic-foundations/slides/agentic-foundations.pdf) |
 | 4 | [04 Agentic frameworks](../04-agentic-frameworks/readme.md) | What do LangGraph, ADK and LangSmith do for one research agent, and which should you pick? | Same workflow implemented and compared | [pptx](../04-agentic-frameworks/slides/agentic-frameworks.pptx), [pdf](../04-agentic-frameworks/slides/agentic-frameworks.pdf) |
-| 5 | [05 RL & alignment](../05-rl/readme.md) | How does a pretrained model become an assistant, and how are agents post-trained? | Policy/value experiment and limitation analysis | [pptx](../05-RL/slides/rl-and-alignment.pptx), [pdf](../05-RL/slides/rl-and-alignment.pdf) |
+| 5 | [05 RL & alignment](../05-rl/readme.md) | How does a pretrained model become an assistant, and how are agents post-trained? | Policy/value experiment and limitation analysis | [pptx](../05-rl/slides/rl-and-alignment.pptx), [pdf](../05-rl/slides/rl-and-alignment.pdf) |
 | 6 | [06 Observability](../06-observability/readme.md) | What happened inside a run, and what did it cost? | Diagnosed trace and evaluation plan | [pptx](../06-observability/slides/observability.pptx), [pdf](../06-observability/slides/observability.pdf) |
 | 6 | [08 Eval](../08-eval/readme.md) | Was it any good, and is a difference real? | Reproducible evaluation report and gate | [pptx](../08-eval/slides/eval-engineering.pptx), [pdf](../08-eval/slides/eval-engineering.pdf) |
 | 7 | [07 Agentic applications](../07-agentic-applications/readme.md) | What does it take to ship a search, research, voice, coding or data-analysis agent? | Working application with boundaries | [pptx](../07-agentic-applications/slides/agentic-applications.pptx), [pdf](../07-agentic-applications/slides/agentic-applications.pdf) |

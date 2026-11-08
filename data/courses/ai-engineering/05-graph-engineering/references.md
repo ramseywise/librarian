@@ -1,5 +1,5 @@
 ---
-imported_hash: 26839dd6e3abd14f
+imported_hash: 3d1d0a15f976f6d7
 title: References
 summary: Use these as gap-detectors, not citations of record (see recurring sources Tier 2).
 order: 23
@@ -145,7 +145,7 @@ source: learn-ai-engineering/ai-engineering/05-graph-engineering/references.md
 
 ## Secondary and vendor posts
 
-Use these as gap-detectors, not citations of record (see [recurring sources](../../scripts/papers/recurring-sources.md) Tier 2).
+Use these as gap-detectors, not citations of record (see [recurring sources](https://github.com/ramseywise/learn-ai-engineering/blob/main/scripts/papers/recurring-sources.md) Tier 2).
 
 | Source | What the notes take from it | Notes |
 |---|---|---|

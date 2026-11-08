@@ -64,8 +64,10 @@ authors note that repetition gains shrink on harder examples, which they attribu
 correlated biases. Model names and leaderboard positions are a mid-2026 snapshot.
 
 ## See Also
+- [[GPTScore]] — alternative-to (another scorer built on model probabilities)
 - [[LLM-as-Judge Evaluation]] — extends (the discrete judge it is compared against)
 - [[LLM Judge Biases]] — related (position bias and the ring pass)
 - [[Verification Loops]] — related (a learned score used to pick among candidates)
 - [[Best-of-k Headline Inflation]] — related (selection over several attempts versus a single run)
 - [[Self-Consistency]] — related (repetition as a way to pool answers)
+- [[Universal Verifier for Computer-Use Agents]] — alternative-to (rubric-based verifier for computer-use trajectories)

@@ -2,7 +2,7 @@
 title: Paired Input-Perturbation Eval
 tags: [eval, pattern]
 summary: "To decide whether a skip gate may ignore a field, perturb only that field on real rows with everything else held fixed, run the production prompt on both copies, and diff the outputs: report material vs immaterial changes separately for a shift that stays inside an output bucket and one that crosses it, state the real N, and name the missing same-input noise control as a limitation."
-updated: 2026-10-17
+updated: 2026-11-08
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-22-dis281-stage2b-schedule-sensitivity-eval.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-22-dis281-stage2b-schedule-sensitivity-eval.md
@@ -73,3 +73,4 @@ effect on output quality nobody measured.
 - [[Offline Prompt Experiment Runner]] — extends (same harness; pairs are input variants, not prompt variants)
 - [[Eval Non-Determinism]] — related (the missing same-input control)
 - [[Ranker Weight Sensitivity Sweep]] — alternative-to (perturbing parameters of a pure function instead of inputs to a model)
+- [[XYEval]] — related (perturbs a benchmark task with a wrong suggestion)

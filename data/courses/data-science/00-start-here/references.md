@@ -1,5 +1,5 @@
 ---
-imported_hash: 3385e314137f501c
+imported_hash: c99b535dcca81bc6
 title: References
 summary: Each URL was checked to load on 2026-11-02, and the costs are as the platform listed them.
 order: 2
@@ -17,7 +17,7 @@ source: learn-ai-engineering/data-science/references.md
 | | Source | Pillars |
 |---|---|---|
 | ★ | Müller and Guido, *Introduction to Machine Learning with Python* (O'Reilly, 2016), [PDF](sources/mueller-guido-introduction-to-ml-with-python.pdf). Companion notebooks in [`intro-to-ml-in-python/`](../01-classical-ml/practice/intro-to-ml-in-python), from [amueller/introduction_to_ml_with_python](https://github.com/amueller/introduction_to_ml_with_python), with `mglearn` | [01](../01-classical-ml/references.md), [03](../03-nlp/references.md) |
-| ★ | Sarkar, *Text Analytics with Python*, 1st ed. (Apress, 2016, seven chapters), [PDF](sources/sarkar-text-analytics-with-python-2e.pdf), which is the 1st edition despite the `2e` in its file name. The companion notebooks in [`text-analytics-with-python/`](../03-nlp/practice/text-analytics-with-python) follow the 2nd ed. (Apress, 2019, not in the repo), from [dipanjanS/text-analytics-with-python](https://github.com/dipanjanS/text-analytics-with-python), Apache-2.0 | [03](../03-nlp/references.md), [02](../02-deep-learning/references.md) (ch. 10), [01](../01-classical-ml/references.md) (ch. 4) |
+| ★ | Sarkar, *Text Analytics with Python*, 1st ed. (Apress, 2016, seven chapters), [PDF](sources/sarkar-text-analytics-with-python-2e.pdf), which is the 1st edition despite the `2e` in its file name. The companion notebooks in [`text-analytics-with-python/`](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-science/03-nlp/practice/text-analytics-with-python) follow the 2nd ed. (Apress, 2019, not in the repo), from [dipanjanS/text-analytics-with-python](https://github.com/dipanjanS/text-analytics-with-python), Apache-2.0 | [03](../03-nlp/references.md), [02](../02-deep-learning/references.md) (ch. 10), [01](../01-classical-ml/references.md) (ch. 4) |
 | | James, Witten, Hastie, Tibshirani and Taylor, *An Introduction to Statistical Learning with Applications in Python* (2023). Held in [`../data-analytics/sources/`](../data-analytics/sources/). Ch. 2 to 6 pair with 01 notes 01 to 04, ch. 8 with note 06, and ch. 12 with note 05 | [01](../01-classical-ml/references.md) |
 | | Bird, Klein and Loper, *Natural Language Processing with Python* (the NLTK book, online edition CC BY-NC-ND 3.0), [PDF](sources/bird-klein-loper-nlp-with-python.pdf) | [03](../03-nlp/references.md) |
 | | Buduma, *Fundamentals of Deep Learning* (O'Reilly), [PDF](sources/buduma-fundamentals-of-deep-learning.pdf) | [02](../02-deep-learning/references.md) |
@@ -31,7 +31,7 @@ Each URL was checked to load on 2026-11-02, and the costs are as the platform li
 | Course | Platform, cost | Why take it | Pillars |
 |---|---|---|---|
 | ★ [Machine Learning Specialization](https://www.coursera.org/specializations/machine-learning-introduction) | Ng, Coursera. Paid certificate, audit options vary | The current edition of the course behind the own ports in [`ng-machine-learning/`](../01-classical-ml/practice/ng-machine-learning), which come from the 2011 edition | 01 |
-| ★ [Deep Learning Specialization](https://www.coursera.org/specializations/deep-learning) | Ng, DeepLearning.AI on Coursera. Paid certificate, audit options vary | The course behind [`ng-deep-learning/`](../02-deep-learning/practice/ng-deep-learning) and the chapter split in pillar 02 | 02 |
+| ★ [Deep Learning Specialization](https://www.coursera.org/specializations/deep-learning) | Ng, DeepLearning.AI on Coursera. Paid certificate, audit options vary | The course behind [`ng-deep-learning/`](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-science/02-deep-learning/practice/ng-deep-learning) and the chapter split in pillar 02 | 02 |
 | ★ [Neural Networks: Zero to Hero](https://karpathy.ai/zero-to-hero.html) | Karpathy, YouTube, free. Code at [karpathy/nn-zero-to-hero](https://github.com/karpathy/nn-zero-to-hero), MIT | Builds autograd, makemore and a GPT line by line. Kept in [`nn-zero-to-hero/`](../../generative-ai/09-llms-from-scratch/practice/nn-zero-to-hero), with [build-nanogpt](https://github.com/karpathy/build-nanogpt) | 04, 02 |
 | [StatQuest: Machine Learning](https://www.youtube.com/playlist?list=PLblh5JKOoLUICTaGLRoHQDuF_7q2GfuJF) | Starmer, YouTube, free | Short refreshers when a model family or metric won't stick | 01, 03 |
 | [Practical Deep Learning for Coders](https://course.fast.ai/) | fast.ai, free | Top-down alternative to Ng: working models first, theory afterwards | 02, 03 |

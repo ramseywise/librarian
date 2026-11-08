@@ -1,5 +1,5 @@
 ---
-imported_hash: ed7d6d9d99fc51b3
+imported_hash: 0914826c8c9391f8
 title: Interviewing
 summary: Interview prep for AI, ML, data science, analytics, data engineering and forward-deployed roles.
 order: 1
@@ -15,7 +15,7 @@ separate topic layer: the teaching and the recall both live in the pillar notes,
 [round](#interview-rounds).
 
 **How to use.** Find your role in the map, work the core pillars' checklists, and read a note when you can't answer
-a row. Then prep each round you're facing. [`../CROSSWALK.md`](../CROSSWALK.md) lists the rounds and drills that test
+a row. Then prep each round you're facing. [`../CROSSWALK.md`](https://github.com/ramseywise/learn-ai-engineering/blob/main/practice/CROSSWALK.md) lists the rounds and drills that test
 each curriculum unit.
 
 ## Role × pillar checklists
@@ -67,7 +67,7 @@ Each line builds on the ones before it. Stats runs alongside ML, and comes first
 4. Data engineering and MLOps, any time after classical ML.
 5. System design and product, which draw on everything: revisit them repeatedly.
 
-For the whole program, see [CURRICULUM.md](../../CURRICULUM.md).
+For the whole program, see [CURRICULUM.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/CURRICULUM.md).
 
 ## Interview rounds
 
@@ -94,7 +94,7 @@ round.
 - A topic question goes in the checklist of the note that answers it. If no note answers it, it's a gap for the
   curriculum, not a row. Authoring and wiring steps: the [`/practice` skill](https://github.com/ramseywise/librarian/blob/main/.claude/skills/practice/SKILL.md).
 - Round files carry `units:` frontmatter where the mapping to the curriculum is clear. `make crosswalk` turns those
-  into [`../CROSSWALK.md`](../CROSSWALK.md).
+  into [`../CROSSWALK.md`](https://github.com/ramseywise/learn-ai-engineering/blob/main/practice/CROSSWALK.md).
 - New files stay local until added to the allowlist in `practice/.gitignore`, after clearing the licence and checking
   for anything personal.
 - Strip the preamble on ingest: content starts at the `#`. Anything the model said *about* the notes goes in `sources:`,

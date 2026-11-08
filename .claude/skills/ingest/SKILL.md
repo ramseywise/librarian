@@ -146,7 +146,11 @@ Adapted from second-brain-os (MIT). Later sources should update the pages earlie
 1. Triage first (Step 0b), then sort what is left by date, **oldest first**. Newest first makes every old source look like a contradiction. Paper extractions (`data/raw/papers/`) are the exception: their date is the day the course read them, not when they were written, so batch them **by topic** instead (shared `course_home`, then title and lineage), so that ten papers on one subject land on the same few pages.
 2. Over about 200 sources, propose a filter before starting.
 3. **Before the first batch, and every five batches after it,** run `uv run librarian wiki graph` and read the "Directories over 20% of pages" lines. A directory flagged as a split candidate is filling up as a bucket: route the batch's new pages to the subject directory they belong in, and if none exists, say so in the report instead of adding to the bucket. Splitting a directory is the human's decision, because it touches the frontend colour map, domain tags and the eval gate.
-4. Ingest **ten sources per batch**. Then run the close-out (overlap check and reviewer included), **fix every defect the reviewer reports**, re-run `ingest overlap` and `wiki verify` on the pages you touched, and only then stage the batch, report its range and counts, and stop for a go-ahead. A defect left in a staged batch is one the human has to find again.
+4. Ingest **ten sources per batch** unless the human sets another size. Over ten, split the batch into topic groups and give each group to one agent that writes only its own pages; the coordinator (you) owns the shared files (`_index.md`, `_conflicts.md`, backlinks on pages outside every group) and resolves two groups wanting the same page. Then close the batch:
+   1. `uv run librarian ingest closeout --from <batch paths file> --pages-out <pages file>` prints `source -> pages`. A `NO PAGES` source was not compiled: compile it or list it under `Not ingested`. An `INCONSISTENT` source has an internal-inconsistencies line in its extraction: check that every page relying on the affected number says so in `## Limits`.
+   2. The close-out below (overlap check and reviewer included), with **one reviewer per topic group**, given that group's sources and pages. **Fix every defect the reviewer reports.**
+   3. Re-run `ingest overlap` on every page you touched, **your own fixes and backlinks included**: coordinator text is copied as easily as group text. Then `wiki verify` on the new pages.
+   4. `uv run librarian ingest closeout --from <batch paths file> --mark` records the manifest, then stage the batch, report its range and counts, and stop for a go-ahead. A defect left in a staged batch is one the human has to find again.
 5. Read every page the first batch produced. A flaw that passes in batch one is in every later batch too.
 6. Run `/lint` at the end. Large imports leave orphans and duplicates.
 
@@ -225,7 +229,7 @@ Follow `CLAUDE.md` exactly for each file triage did not skip.
    - Update the summary, add new facts, update `updated:` date and `sources:` list.
    - Tags: at least one domain tag + one type tag (see `CLAUDE.md`).
 5. **Contradiction check:** if source disagrees with existing wiki claim → add entry to `data/wiki/_conflicts.md`, tag page with `conflict`. Do NOT silently overwrite. Consider source `confidence` level when evaluating contradictions (see `docs/wiki-templates.md` § Source Confidence).
-6. **Cross-references (bidirectional):** add `[[wikilinks]]` to related pages in both directions. For each new page, identify 2–3 existing pages that should link TO it and add backlinks in their `## See Also` sections. Use typed relationships (`— extends`, `— prerequisite-for`, etc.) where the relationship type is clear.
+6. **Cross-references (bidirectional):** add `[[wikilinks]]` to related pages in both directions. For each new page, identify 2–3 existing pages that should link TO it and add backlinks in their `## See Also` sections. Type every link with the most specific relation that holds (`extends`, `prerequisite-for`, `instance-of`, `alternative-to`, `contradicts`, `supersedes`), and use `related` only when none does. Retrieval expansion walks the directional types and skips `related`, so a See Also of `related` links adds nothing to retrieval: a paper's benchmark page is usually `instance-of` the concept it measures, and a method is `alternative-to` the method it competes with. Batch 2 typed 195 of 234 links `related`; that is the failure to avoid.
 7. **Update `data/wiki/_index.md`** with the verb, never by hand (it skips `private/` pages and keeps the count and the order):
     ```bash
     uv run librarian wiki index-add <new page paths>
@@ -236,6 +240,11 @@ Follow `CLAUDE.md` exactly for each file triage did not skip.
     ```bash
     uv run librarian wiki relink
     ```
+    In Bulk Mode, scope it to the batch instead, and read stdout:
+    ```bash
+    uv run librarian wiki relink --changed <new page stems> --dry-run
+    ```
+    The full suggestions file is a backlog of thousands of lines, too long to review per batch. Without `--dry-run`, `--changed` rewrites that file with only the batch's pairs and drops the backlog.
     The relinker is **suggest-only** — it never modifies a wiki page. It writes
     `data/wiki/_relink_suggestions.md` (auto-tier, mid-tier, and orphan-backfill
     candidates) and `data/wiki/_bridge_suggestions.md`. Scan the suggestions for
@@ -257,7 +266,13 @@ Each file is a reading extraction written by `librarian scrape extractions`: Que
 - **Claims only.** Write what the extraction states, nothing more. Do not add a cause, mechanism or consequence ("because…", "which means…", "so teams should…") that the extraction does not state; an explanation you supply is inference, and a page is not the place for it. If an explanation is needed and the extraction has none, leave the result unexplained.
 - **Self-reported by default.** A paper's numbers about its own method, model or benchmark are self-reported: write "(self-reported)" straight after each one unless the extraction cites an independent check. Numbers it reports about other people's systems, measured in its own setup, are not.
 - **Setup next to every number.** Each number keeps the setup the extraction gives it (model, dataset, budget, number of runs, metric). A number with no setup is not written.
-- **Limits are required.** Every page built mainly from a paper has a `## Limits` section (before `## See Also`) holding the extraction's Limits that apply to the page's claim. A page with no limits reads as settled when its source is not.
+- **Limits are required.** Every page built mainly from a paper has a `## Limits` section (before `## See Also`) holding the extraction's Limits that apply to the page's claim. A page with no limits reads as settled when its source is not. When the extraction has an internal-inconsistencies line (two numbers or descriptions in the paper that disagree), it goes into `## Limits` too, on every page that uses the affected number; `ingest closeout` flags these sources.
+- **Known overreach.** The batch-2 reviewers found 31 defects on 37 pages, almost all of these kinds. Check each page for them before the reviewer does:
+  - framing in the opening sentence that the extraction does not give ("the first…", "a landmark…", "shows that agents cannot…");
+  - a gloss or acronym expansion the extraction does not state (leave an unexpanded acronym unexpanded);
+  - a superlative or ranking word ("best", "strongest", "far") the numbers do not support;
+  - an observation the extractor made (a gap it noticed, a count it took) written as the authors' claim; attribute it ("the extraction notes…", "by the extraction's estimate");
+  - a number beside the wrong setup (another model, split or run count), or with part of its setup missing.
 - **Lineage gives candidate links, not facts.** Each Lineage entry is a work the paper builds on or argues with. If the wiki has a page for that work or idea, it is a candidate typed link (`extends`, `alternative-to`, `contradicts`); add it only when the relation is clear from the extraction. Do not describe the earlier work from the lineage note alone.
 - **Page rules.** A paper gets a **new page** only for (a) a named mechanism or method with a non-obvious mechanism, or (b) a named benchmark or dataset that other pages will cite. Everything else (a result on a known technique, an ablation, a confirmation or a counter-example) goes into the existing concept page as a sentence or a row, with the paper in its `sources:`. Expect fewer new pages than papers; batch 1's 11 new pages from 10 papers was too many.
 - **Map the fields.** Question and Method give the opening paragraph; Results give the body, one claim per sentence with its setup; Limits give `## Limits`; Terms give inline definitions, never a glossary section; Lineage gives See Also candidates; Code, if present, is quoted only when it is short and the page is about it.

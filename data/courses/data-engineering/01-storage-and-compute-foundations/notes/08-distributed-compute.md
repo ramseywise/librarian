@@ -1,5 +1,5 @@
 ---
-imported_hash: 395b5e667902704f
+imported_hash: 54fe713ddf0578f0
 title: 8 — Distributed compute
 summary: Distributed compute exists because some jobs do not fit on one machine, and it costs far more than the cluster bill.
 order: 9
@@ -280,7 +280,7 @@ AdaptiveSparkPlan isFinalPlan=false
                   +- FileScan parquet [pickup_zone#2,payment_type#3,fare_usd#6] Batched: true, DataFilters: [isn ...
 ```
 
-(The `FileScan` line runs past the page; it has been truncated.) Read the plan from the bottom up: a scan of three of seven columns with the filter pushed into Parquet, a partial aggregate on each partition, an `Exchange` which is the shuffle, into 200 partitions by default, and a final aggregate. Partial aggregation before the shuffle is the combiner idea from MapReduce, chosen automatically. The default of 200 partitions is one to check: it is a lot of partitions for a million rows, though adaptive execution, shown by `AdaptiveSparkPlan`, can coalesce them at run time. This code needs only `pyspark` and a Java runtime, and `local[4]` runs it in one process with four threads. Practice with a real cluster is in the [zoomcamp batch module](../../04-warehouse-lakehouse-streaming/practice/datatalks-de/05-batch/).
+(The `FileScan` line runs past the page; it has been truncated.) Read the plan from the bottom up: a scan of three of seven columns with the filter pushed into Parquet, a partial aggregate on each partition, an `Exchange` which is the shuffle, into 200 partitions by default, and a final aggregate. Partial aggregation before the shuffle is the combiner idea from MapReduce, chosen automatically. The default of 200 partitions is one to check: it is a lot of partitions for a million rows, though adaptive execution, shown by `AdaptiveSparkPlan`, can coalesce them at run time. This code needs only `pyspark` and a Java runtime, and `local[4]` runs it in one process with four threads. Practice with a real cluster is in the [zoomcamp batch module](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-engineering/04-warehouse-lakehouse-streaming/practice/datatalks-de/05-batch).
 
 This convergence has a history worth knowing, since it explains how a lake differs from a warehouse. Massively parallel databases had been doing distributed joins for a decade before MapReduce, but demanded a model before a load. Hadoop's contribution was to accept any bytes first, and leave the interpretation to whoever read them, which is the [schema-on-read](01-data-systems-and-data-models.md) idea (pp. 415-416). The principle gets called sushi: raw is better (p. 416). It moves the burden from the producer to every consumer, which is why the [data contracts chapter](../../02-ingest-and-modelling/notes/04-data-contracts.md) exists. Then both sides moved towards each other, with dataflow engines adopting declarative joins and columnar execution while warehouses took on arbitrary code (pp. 427-429).
 

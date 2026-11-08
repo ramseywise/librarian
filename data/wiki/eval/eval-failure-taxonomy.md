@@ -81,3 +81,4 @@ were not peer reviewed and reproduced no experiments.
 - [[RAG Eval Gate Contract]] — instance-of (a project's stable label set)
 - [[Trajectory Over Outcome]] — related (label the earliest wrong decision in the path)
 - [[One Check Shape for Quality Verdicts]] — related (one verdict shape so labels join across a pipeline)
+- [[AgentBench]] — related (four outcome categories for failed runs)

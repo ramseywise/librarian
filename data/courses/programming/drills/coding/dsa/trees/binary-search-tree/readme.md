@@ -1,5 +1,5 @@
 ---
-imported_hash: 52d6215848f83ac5
+imported_hash: 13caddbe6f0eab5c
 title: Binary Search Tree
 summary: ''
 order: 221
@@ -18,4 +18,4 @@ source: learn-ai-engineering/programming/drills/coding/dsa/trees/binary_search_t
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](../binary_search_tree/solution.py) |
+| Python   | [solution.py](solution.py) |

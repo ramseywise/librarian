@@ -1,5 +1,5 @@
 ---
-imported_hash: 39878cd6316aed25
+imported_hash: 45fcadaf3e2102ba
 title: Subarray Average Size K
 summary: ''
 order: 205
@@ -18,4 +18,4 @@ source: learn-ai-engineering/programming/drills/coding/dsa/sliding_window/subarr
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](../../sliding_window/subarray_average_size_k/solution.py) |
+| Python   | [solution.py](solution.py) |

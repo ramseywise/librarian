@@ -318,3 +318,5 @@ afterward.
 - [[Agent Deployment Anti-Patterns]] — instance-of (acceptance criteria for #3)
 - [[Cheap-First Gating and Model Cascades]] — alternative-to (a gate on the cheap answer rather than an expensive verifier after execution)
 - [[LLM-as-a-Verifier]] — related (a learned verifier used to pick the best of N candidates)
+- [[InterCode]] — related
+- [[MINT Multi-Turn Benchmark]] — related

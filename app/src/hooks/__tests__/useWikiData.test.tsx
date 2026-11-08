@@ -1,7 +1,7 @@
 import { StrictMode, type ReactNode } from "react";
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { deriveDomains, parseGraphMessage, useWikiData, wsUrl } from "../useWikiData";
+import { deriveDomains, fromAtlas, parseGraphMessage, useWikiData, wsUrl } from "../useWikiData";
 import type { WikiNodeData } from "../../types";
 import { RELEASE_EVENT } from "../../utils/api";
 
@@ -22,6 +22,25 @@ describe("deriveDomains", () => {
   it("is the sorted set of primary directories without private", () => {
     expect(deriveDomains([node("a", "rag", []), node("b", "private", []), node("c", "eval", []), node("d", "rag", [])]))
       .toEqual(["eval", "rag"]);
+  });
+});
+
+describe("fromAtlas", () => {
+  it("rebuilds nodes and wikilink edges from index pairs", () => {
+    const g = fromAtlas({
+      nodes: [
+        { id: "a", title: "A", domain: "rag", typeTag: "concept", tags: ["rag"] },
+        { id: "b", title: "B", domain: "eval", typeTag: "pattern", tags: ["eval"] },
+      ],
+      links: [[0, 1, "extends"], [1, 0], [0, 7]],
+      domains: ["eval", "private", "rag"],
+    });
+    expect(g.nodes.map((n) => [n.id, n.data.domain[0], n.data.summary])).toEqual([["a", "rag", ""], ["b", "eval", ""]]);
+    expect(g.edges).toEqual([
+      { id: "wl:a->b", source: "a", target: "b", data: { edgeType: "wikilink", relationship: "extends" } },
+      { id: "wl:b->a", source: "b", target: "a", data: { edgeType: "wikilink" } },
+    ]);
+    expect(g.domains).toEqual(["eval", "rag"]);
   });
 });
 

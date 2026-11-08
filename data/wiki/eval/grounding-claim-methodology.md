@@ -130,3 +130,4 @@ text**, can't verify anything, and scores near zero — or worse, scores from it
 - [[Assembled, Not Generated Replies]] — related (sidestepping grounding by not generating prose at all)
 - [[Specialist Verdict Panel]] — instance-of (claim-level citation checking)
 - [[Tool-Augmented Factuality Checking]] — alternative-to (claims checked against the web, not a supplied context)
+- [[FACTS Leaderboard]] — related (its Grounding sub-benchmark counts a response accurate only when every claim is grounded in the document)

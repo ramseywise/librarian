@@ -1,5 +1,5 @@
 ---
-imported_hash: 0a2970399a96b408
+imported_hash: 76c5389069b16d20
 title: Pow(x, n)
 summary: Implement pow(x, n), which calculates x raised to the power n.
 order: 198
@@ -20,4 +20,4 @@ Implement `pow(x, n)`, which calculates x raised to the power n.
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](../power_of_n/solution.py) |
+| Python   | [solution.py](solution.py) |

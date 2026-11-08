@@ -1,5 +1,5 @@
 ---
-imported_hash: c67bdd2a2b9cdf7c
+imported_hash: 668e5714c1f24b69
 title: Paranthesis Checker
 summary: ''
 order: 126
@@ -20,4 +20,4 @@ Paranthesis Checker
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](../../arrays_and_strings/parenthesis_checker/solution.py) |
+| Python   | [solution.py](solution.py) |

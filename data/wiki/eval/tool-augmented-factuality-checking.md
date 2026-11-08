@@ -7,6 +7,7 @@ sources:
   - data/raw/papers/2026-11-05-chern-2023-factool.md
   - data/raw/papers/2026-11-05-wang-2023-survey-factuality-large-language-models.md
   - data/raw/papers/2026-11-05-rawte-2023-survey-hallucination-large-foundation-models.md
+  - data/raw/papers/2026-11-06-cossio-2025-comprehensive-taxonomy-hallucinations-large-language.md
 ---
 
 # Tool-Augmented Factuality Checking
@@ -65,6 +66,8 @@ reported, and the GPT-3.5 and GPT-4 versions used are 2023 snapshots.
 
 Wang et al. (arXiv 2310.07521) define factuality as generating content consistent with facts that can be traced to reliable sources for instance dictionaries, Wikipedia and textbooks. They treat it as a separate axis from hallucination, which they define as departure from the source or prompt. Their table gives four cells: an output can be unfaithful to the prompt yet factually correct, and a non-factual output need not be a hallucination (for example "I don't know" or a partly correct answer). They report, second-hand, that GPT-3.5 as a grader of answer correctness on NQ and TriviaQA gave negative results even with the gold answer shown. The survey runs no experiments of its own, excludes summarisation faithfulness, and warns that its method-comparison rows are not directly comparable. Rawte et al. (arXiv 2309.05922) define hallucination as content not based on factual or accurate information, with no faithfulness-versus-factuality split. That survey also reports no results of its own; it groups about 25 papers by modality, its coverage ends September 2023, and the extraction notes citation errors in it, so neither survey is a source for the numbers it restates.
 
+Cossio (arXiv 2508.01781, 2025), a single-author survey, runs no experiments. It sorts hallucination into intrinsic versus extrinsic and factuality versus faithfulness, and argues that hallucination is inevitable in any computable LLM, so the aim should move from elimination to detection, containment and human-in-the-loop validation. The extraction notes that the inevitability theorems restate earlier work and hold only in a formal setting that does not predict real rates, that the paper's claim that RAG helps mainly with extrinsic hallucination comes with no evidence, and that several of its benchmark descriptions look doubtful and should be checked against the originals. The percentages it gives for hallucination categories are quoted from other work without a setup and are not recorded here.
+
 ## See Also
 - [[SAFE Long-Form Factuality Scoring]] — related (a search-based claim checker validated against human labels)
 - [[Chain-of-Verification]] — alternative-to (the model verifies its own claims without tools)
@@ -73,3 +76,5 @@ Wang et al. (arXiv 2310.07521) define factuality as generating content consisten
 - [[LLM Judge Biases]] — related
 - [[LLM-as-Judge Evaluation]] — related
 - [[RAGChecker]] — related (claim-level checks against the retrieved context)
+- [[FActScore]] — alternative-to (atomic facts scored against Wikipedia instead of tools)
+- [[SelfCheckGPT]] — alternative-to (the model's own samples as the evidence, no tool)

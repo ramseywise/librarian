@@ -20,6 +20,8 @@ sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--05-llm-as-judge.md
   - data/raw/papers/2026-11-05-you-2026-agent-as-judge.md
   - data/raw/papers/2026-11-05-li-2026-jev-as-judge.md
+  - data/raw/papers/2026-11-08-chiang-2023-can-large-language-models-be.md
+  - data/raw/papers/2026-11-08-gu-2024-survey-llm-as-judge.md
 ---
 
 # LLM-as-Judge Evaluation
@@ -134,6 +136,14 @@ agentic judge itself. Trained and cheaper variants are on [[J1 Reinforcement-Lea
 [[Prometheus 2 Evaluator Models]] and [[JEV-as-a-Judge Cascade]]; a logprob-weighted scorer is
 [[LLM-as-a-Verifier]].
 
+## Human-evaluation replacement and a survey's own experiment (2023-2025)
+
+Chiang and Lee (ACL 2023) gave text-davinci-003 and ChatGPT the same instructions, samples and 1-5 Likert questions that human evaluators get, and compared them with three English teachers on 200 human-written and 200 GPT-2-medium stories (WritingPrompts) and on adversarial-attack text. In their setup text-davinci-003 rated human-written stories above GPT-2 stories on grammaticality, as the teachers did, and was cheaper (self-reported). Its per-story agreement with teachers was strongest on relevance and weakest on grammaticality. Lowering temperature to 0 slightly lowered ratings but kept the ordering, and a persona or an explain request changed grammaticality and cohesiveness ratings by under 0.1. Limits: only two tasks, English, three teachers, two instruction variants; ChatGPT was used through its web interface with one sample and scores read by hand; Kendall tau with teachers was weak (0.12-0.22) for grammaticality, cohesiveness and likability; the models are deprecated, and the authors call LLMs unsuitable for factual tasks.
+
+Gu et al. (arXiv 2411.15594, a survey) frame a judge as E <- P_LLM(x (+) C) and add a small meta-evaluation of their own: one run per cell at temperature 0, on LLMEval2 (2,553 samples with swapped positions) and EvalBiasBench (80 samples, 24 to 34 per bias). GPT-4-turbo reached 61.54% agreement with human labels there, and all judges were weak on human-tie labels (self-reported). Numbers by bias are on [[LLM Judge Biases]]. Their recipe for pairwise judging is a stronger model, swapped positions and a majority vote over several rounds. Limits: the experiment has no intervals or significance tests, uses percentage agreement only (no kappa) and prints no judge prompts; text and tables differ in a few decimals; the authors give causes for the explanation and self-validation results as speculation, and say current meta-evaluation is insufficient.
+
+Judges that score by token probability instead of a generated verdict are [[GPTScore]]; prompted translation scoring is [[GEMBA Translation Quality Prompting]]. Trained open judges are [[PandaLM]], [[Self-Taught Evaluators]] and [[TIR-Judge]] (a judge that runs code). Running a judge in production is [[Judge Lifecycle with RART and a Drift Band]], and the calibration for order flips is [[Position Bias Calibration (MEC, BPC, HITLC)]].
+
 ## See Also
 - [[PaperBench]] — related (a judge validated against human leaf labels)
 - [[Gaia2]] — related
@@ -169,3 +179,12 @@ agentic judge itself. Trained and cheaper variants are on [[J1 Reinforcement-Lea
 - [[JEV-as-a-Judge Cascade]] — extends (a cheap judge that escalates when unsure)
 - [[FLASK Skill-Set Evaluation]] — extends (per-skill rubrics)
 - [[GAMUT Meta-Rubric Benchmark]] — extends (structured rubrics compiled to binary checks)
+- [[GPTScore]] — alternative-to (a probability score instead of a generated verdict)
+- [[GEMBA Translation Quality Prompting]] — instance-of (an LLM judge scoring translations)
+- [[PandaLM]] — extends (an open judge trained on distilled labels)
+- [[Self-Taught Evaluators]] — extends (a judge trained on synthetic pairs)
+- [[TIR-Judge]] — extends (a judge that runs code)
+- [[Judge Lifecycle with RART and a Drift Band]] — extends (judge in production, with a drift trigger)
+- [[Position Bias Calibration (MEC, BPC, HITLC)]] — extends (calibrating the pairwise judge for answer order)
+- [[Ragas Reference-Free RAG Metrics]] — instance-of (reference-free LLM-prompted RAG metrics)
+- [[LiveMCP-101]] — related (a judge checked against humans and other judges)

@@ -1,5 +1,5 @@
 ---
-imported_hash: c3676c6b3ac56766
+imported_hash: 0320b7e9fd307832
 title: References
 summary: ★ marks a reading that changed a claim in the notes.
 order: 8
@@ -54,7 +54,7 @@ source: learn-ai-engineering/data-engineering/04-warehouse-lakehouse-streaming/r
 
 | Course | Platform | Cost | Notes | Weeks |
 |---|---|---|---|---|
-| [Data Engineering Zoomcamp](https://github.com/DataTalksClub/data-engineering-zoomcamp) | DataTalksClub | Free | Modules 03, 05, 06 are the [practice folder](practice/datatalks-de) | About 3 for these modules |
+| [Data Engineering Zoomcamp](https://github.com/DataTalksClub/data-engineering-zoomcamp) | DataTalksClub | Free | Modules 03, 05, 06 are the [practice folder](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-engineering/04-warehouse-lakehouse-streaming/practice/datatalks-de) | About 3 for these modules |
 | [Kafka 101](https://developer.confluent.io/courses/apache-kafka/events/) | Confluent | Free | Log concepts with a real broker; pairs with [04](notes/04-kafka-and-stream-semantics.md) | Under 1 |
 | [Lakehouse Fundamentals](https://www.databricks.com/learn/training/lakehouse-fundamentals) | Databricks | Free | The vendor's own framing; read beside [03](notes/03-lakehouse-vs-warehouse.md) | Under 1 |
 | [Distributed Systems lectures](https://www.youtube.com/playlist?list=PLeKd45zvjcDFUEv_ohr_HdUFe97RItdiB) (Kleppmann) | YouTube | Free | Background on logs, replication and consistency | About 1 |

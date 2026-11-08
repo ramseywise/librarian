@@ -1,5 +1,5 @@
 ---
-imported_hash: b1589c1afdc2a7eb
+imported_hash: 6a7cff20ef7ba29e
 title: Jump Game
 summary: Given an integer array nums, you are initially positioned at the first index of the array.
 order: 162
@@ -23,4 +23,4 @@ Given an integer array `nums`, you are initially positioned at the first index o
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](../jump_game/solution.py) |
+| Python   | [solution.py](solution.py) |

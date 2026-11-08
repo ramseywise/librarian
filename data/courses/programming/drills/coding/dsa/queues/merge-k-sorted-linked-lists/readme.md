@@ -1,5 +1,5 @@
 ---
-imported_hash: 5a018b9438edfbc4
+imported_hash: 045e99947f0d3bb5
 title: Merge K Sorted Linked Lists
 summary: ''
 order: 191
@@ -16,4 +16,4 @@ source: learn-ai-engineering/programming/drills/coding/dsa/queues/merge_k_sorted
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](../merge_k_sorted_linked_lists/solution.py) |
+| Python   | [solution.py](solution.py) |

@@ -259,6 +259,44 @@ def test_api_graph_edges_all_adds_tag_shared(
     assert client.get("/api/graph", params={"edges": "bogus"}).status_code == 422
 
 
+@pytest.mark.unit
+def test_api_graph_atlas_is_the_graph_without_bodies(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """GET /api/graph/atlas: same pages and links as /api/graph, links as index pairs,
+    no summaries, and still no private page."""
+    from fastapi.testclient import TestClient
+
+    import librarian.api.main as main_module
+    import librarian.wiki.parser as app_wp
+
+    _write_page(
+        tmp_path,
+        "rag",
+        "a-page",
+        "A Page",
+        ["rag", "concept"],
+        "S",
+        "[[B Page]]\n\n## See Also\n- [[B Page]] — extends",
+    )
+    _write_page(tmp_path, "eval", "b-page", "B Page", ["eval", "concept"], "S", "[[A Page]]")
+    _write_page(
+        tmp_path, "private", "client-notes", "Client Notes", ["infra", "concept"], "S", "[[A Page]]"
+    )
+    monkeypatch.setattr(app_wp, "WIKI_DIR", tmp_path)
+    monkeypatch.setattr(app_wp, "_parsed", None)
+    client = TestClient(main_module.app)
+
+    atlas = client.get("/api/graph/atlas").json()
+    ids = [n["id"] for n in atlas["nodes"]]
+    assert sorted(ids) == ["a-page", "b-page"]
+    assert all("summary" not in n for n in atlas["nodes"])
+    a, b = ids.index("a-page"), ids.index("b-page")
+    assert sorted(atlas["links"]) == sorted([[a, b, "extends"], [b, a]])
+    assert atlas["domains"] == ["eval", "rag"]
+    assert atlas["nodes"][a]["domain"] == "rag"
+
+
 def test_parse_wiki_reuses_the_parse_until_a_page_changes(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

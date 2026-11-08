@@ -35,3 +35,5 @@ Answers go stale between maintainer updates, and only Google Search, one query p
 - [[Tool-Augmented Factuality Checking]] — related (evidence-from-search idea applied to checking rather than answering)
 - [[Eval Contamination Defenses]] — related (temporal freshness as a defence)
 - [[RAG Evaluation]] — related
+- [[TruthfulQA]] — alternative-to (a factuality benchmark built around imitative falsehoods rather than currency)
+- [[FACTS Leaderboard]] — alternative-to (a four-part factuality suite that includes a search sub-benchmark)

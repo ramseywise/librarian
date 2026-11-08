@@ -1,5 +1,5 @@
 ---
-imported_hash: 853155d68870f919
+imported_hash: d76734ab82862e7a
 title: Maximum Sum Subarray
 summary: Kadane's Algorithm for Maximum Array Subsequence
 order: 120
@@ -20,4 +20,4 @@ Kadane's Algorithm for Maximum Array Subsequence
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](../../arrays_and_strings/maximum_sum_subarray/solution.py) |
+| Python   | [solution.py](solution.py) |

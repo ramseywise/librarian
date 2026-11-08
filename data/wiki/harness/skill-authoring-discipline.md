@@ -2,7 +2,7 @@
 title: Skill Authoring Discipline
 tags: [agents, llm, pattern]
 summary: "How to write a skill rather than what a skill is — the description as routing logic under a token/precision tension, negative examples as the higher-leverage half, explicit invocation where routing must be deterministic, and why skills plus network access is an exfiltration path."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--skills-design.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--skills-design.md
@@ -154,3 +154,5 @@ this is R3 and R8 with an egress path attached.
 - [[Agent Security Risk Taxonomy]] — related (the exfiltration path, as a risk class)
 - [[Long-Horizon Execution]] — related (checkpointing for skills that run long)
 - [[Harness Engineering]] — instance-of (authoring the skill layer of the harness)
+- [[Skill Lift Evaluation]] — related (measured lift of authored skills)
+- [[Harness-IF]] — related (instruction placement across surfaces)

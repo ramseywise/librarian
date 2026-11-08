@@ -38,3 +38,4 @@ isn't affordable.
 - [[Tree of Thoughts]] — prerequisite-for
 - [[Agentic Workflow Patterns]] — instance-of (voting parallelization)
 - [[Prompting Reasoning Models]] — alternative-to
+- [[SelfCheckGPT]] — related (uses agreement across samples to flag hallucinated sentences)

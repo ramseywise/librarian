@@ -83,3 +83,7 @@ conflate the backbone model with its harness and ask for protocols that vary eac
 - [[Trajectory Over Outcome]] — related (log inspection grades the path)
 - [[Eval Contamination Defenses]] — related (leakage and gold-answer lookup)
 - [[MLE-bench]] — related (scaffold moved scores there too)
+- [[AlphaEval]] — related (scaffold effects on product-level tasks)
+- [[Harness-IF]] — related
+- [[Terminal-Bench]] — related (same model under different scaffolds)
+- [[AgentBench]] — related

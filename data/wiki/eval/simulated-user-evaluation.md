@@ -2,10 +2,11 @@
 title: Simulated User Evaluation
 tags: [eval, llm, agents, pattern]
 summary: "Evaluate multi-turn agents with an LLM playing the user toward a goal — realistic only with progressive information disclosure (known facts plus rules for when to reveal them), optionally dual-control where the user acts on shared state — graded per turn and per conversation, versus canned conversations that cannot see compounding errors."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--06-evaluating-agents.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--references.md
+  - data/raw/papers/2026-11-06-levi-2025-intellagent.md
 ---
 
 # Simulated User Evaluation
@@ -37,6 +38,16 @@ tests whether the agent notices state changes it did not make. τ²-bench also t
 success conditions (only an "excellent" rating counts) and generates task parameters fresh
 each run ([[Eval Contamination Defenses]]).
 
+## IntellAgent: generated scenarios
+
+Levi et al. (arXiv 2501.11067, 2025, Plurai) replace the hand-written tasks of τ-bench (50 airline, 115 retail) with generated ones. They build a graph of policies from the agent's system prompt, random-walk it to sample policy combinations at a chosen complexity, have GPT-4o write each scenario with a matching database state, run a simulated user against the agent, and have a critique model judge the dialogue policy by policy. The setup yields 1,000 events per environment at complexity levels 2 to 11, with GPT-4o as generator, user simulator and critique (all self-reported).
+
+- **Ranking agrees with τ-bench.** Pearson correlation of success rates was 0.98 (airline) and 0.92 (retail) over six models (claude-3.5-sonnet, gpt-4o, gemini-1.5-pro, gpt-4o-mini, claude-3.5-haiku, gemini-1.5-flash) with native function calling (self-reported).
+- **Difficulty does not match.** Scores were lower on IntellAgent in airline (claude-3.5-sonnet 0.46 against 0.70, gpt-4o 0.44 against 0.70) and in retail for gpt-4o (0.51 against 0.68), a difference the extraction notes the paper does not comment on.
+- **Per-policy breakdown.** Success fell as complexity rose at different rates per model, and the authors report that all models struggled with user-consent policies, which they say τ-bench does not assess because it checks only the final database state.
+
+Limits: the paper reports no human validation of the simulator, critique, events or policy graph; its only validation is the τ-bench rank correlation, from six points per environment with no interval and no stated repeat runs. GPT-4o generates, plays the user, judges and is also one of the six models tested, and the paper does not discuss self-preference. The user agent is told the expected behaviour and may end the dialogue on a violation, unlike τ-bench's progressive-disclosure user. Edge weights between policies are LLM-scored and unchecked against real traffic, only two domains (both from τ-bench) are covered, and the extraction notes the tone is promotional.
+
 ## Grading
 
 Grade at both levels: **per turn** (grounded, on-policy) and **per conversation** (goal
@@ -58,3 +69,5 @@ and **interaction protocol** (single-shot, multi-turn, simulated user, dual cont
 - [[Human-Participant Skill Test Protocol]] — alternative-to (real first-time users)
 - [[Eval Non-Determinism]] — related (pass^k)
 - [[Eval Ladder]] — related
+- [[XYEval]] — related (pedantic simulated-user variant on tau2)
+- [[MINT Multi-Turn Benchmark]] — instance-of (GPT-4 simulated feedback in a multi-turn benchmark)

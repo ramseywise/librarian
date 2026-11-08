@@ -181,3 +181,5 @@ broken (unreachable state, wrong reference, missing permission) before the agent
 - [[Extract-and-Evaluate Monitoring]] — extends (scoring a trajectory for sabotage from extracted quotes)
 - [[Holistic Agent Leaderboard (HAL)]] — related (rubric-based inspection of agent logs)
 - [[Agents' Last Exam (ALE)]] — related (an artifact-only grader that never reads the trajectory)
+- [[Universal Verifier for Computer-Use Agents]] — related (scores process and outcome separately)
+- [[Taste-Bench]] — related (decision quality at a fork)

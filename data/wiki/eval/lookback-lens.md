@@ -38,3 +38,5 @@ It reads the attention of every layer and head during generation, so it cannot r
 - [[RAGChecker]] — related (claim-level diagnosis of RAG output from the outside, where this method reads the model's insides)
 - [[Grounding Claim Methodology]] — alternative-to (checks groundedness with quoted claims instead of attention)
 - [[Tool-Augmented Factuality Checking]] — related
+- [[Hidden-State Hallucination Probes]] — alternative-to (another white-box detector, reading hidden states instead of attention)
+- [[SelfCheckGPT]] — alternative-to (a black-box detector that needs only sampled text)

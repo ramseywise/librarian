@@ -1,5 +1,5 @@
 ---
-imported_hash: 84d55596497d9944
+imported_hash: 39e10af72c321b04
 title: Neural text models
 summary: 'The intro-to-nlp TensorFlow track opened with tensors: rank (0 scalar, 1 vector, 2 matrix, 3+), dtype, shape, conversion with .numpy(), tf.argmax, tf.reduce_max, and the fact that tf.constant is immutable while tf.Variable can be assigned.'
 order: 9
@@ -552,10 +552,10 @@ An encoder RNN squeezes a whole sentence into one final state, and its steps can
 
 | Notebook | Covers | Runs |
 |---|---|---|
-| [`Ch10a - Text Classification with Universal Embeddings`](../../03-nlp/practice/text-analytics-with-python/Ch10 - The Promise of Deep Learning/Ch10a - Deep Transfer Learning for NLP - Text Classification with Universal Embeddings.ipynb) | TF-Hub NNLM and USE encoders, frozen vs fine-tuned | Legacy: needs TF ≤ 2.15 + `tensorflow_hub`, internet for the modules, GPU recommended, IMDb `movie_reviews.csv` (not in this snapshot) |
+| [`Ch10a - Text Classification with Universal Embeddings`](https://github.com/ramseywise/learn-ai-engineering/blob/main/data-science/03-nlp/practice/text-analytics-with-python/Ch10%20-%20The%20Promise%20of%20Deep%20Learning/Ch10a%20-%20Deep%20Transfer%20Learning%20for%20NLP%20-%20Text%20Classification%20with%20Universal%20Embeddings.ipynb) | TF-Hub NNLM and USE encoders, frozen vs fine-tuned | Legacy: needs TF ≤ 2.15 + `tensorflow_hub`, internet for the modules, GPU recommended, IMDb `movie_reviews.csv` (not in this snapshot) |
 | [`deep-learning-starter-simple-lstm`](../practice/deep-learning-starter-simple-lstm.md) | PyTorch BiLSTM sequence regression, masked loss, GroupKFold | Needs data: Kaggle `ventilator-pressure-prediction`; GPU (5 folds × 200 epochs); `transformers` for the scheduler |
 
-The intro-to-nlp TensorFlow notebooks are in [`practice/intro-to-nlp/tensorFlow/`](../../03-nlp/practice/intro-to-nlp/tensorFlow) and the transformers notebook in [`practice/intro-to-nlp/transformers/`](../../03-nlp/practice/intro-to-nlp/transformers). They use the older `Tokenizer` API. All the numbers in this chapter's output blocks came from running the code shown, with `uv run --with torch --with scikit-learn --with pandas --with tensorflow --with sentence-transformers --with transformers`, on CPU. The IMDb file needs to be in the `data` folder.
+The intro-to-nlp TensorFlow notebooks are in [`practice/intro-to-nlp/tensorFlow/`](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-science/03-nlp/practice/intro-to-nlp/tensorFlow) and the transformers notebook in [`practice/intro-to-nlp/transformers/`](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-science/03-nlp/practice/intro-to-nlp/transformers). They use the older `Tokenizer` API. All the numbers in this chapter's output blocks came from running the code shown, with `uv run --with torch --with scikit-learn --with pandas --with tensorflow --with sentence-transformers --with transformers`, on CPU. The IMDb file needs to be in the `data` folder.
 
 ## Pitfalls
 

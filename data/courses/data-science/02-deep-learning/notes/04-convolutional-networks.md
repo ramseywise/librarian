@@ -1,5 +1,5 @@
 ---
-imported_hash: 3c230fefd466f942
+imported_hash: 4fe5c628f6455e86
 title: Convolutional networks
 summary: 'Parameter count follows from the shapes: a layer with $k$ filters of extent $e$ over $d{in}$ input channels has $k\,d{in}e^2 + k$ parameters, and a pooling layer has none.'
 order: 5
@@ -404,7 +404,7 @@ Buduma, *Fundamentals of Deep Learning* ([PDF](../../sources/buduma-fundamentals
 
 | Set | Runs |
 |---|---|
-| [`Convolutional Neural Networks`](../practice/ng-deep-learning/Convolutional Neural Networks) (6 notebooks across weeks 1 to 4) | Legacy, reading-only as stored: helper modules, `yad2k`, datasets and pretrained weights weren't copied. Per-notebook status is in [the migration table](01-neural-networks-fundamentals.md#tensorflow-1x-to-2x-status-and-migration-map) |
+| [`Convolutional Neural Networks`](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-science/02-deep-learning/practice/ng-deep-learning/Convolutional%20Neural%20Networks) (6 notebooks across weeks 1 to 4) | Legacy, reading-only as stored: helper modules, `yad2k`, datasets and pretrained weights weren't copied. Per-notebook status is in [the migration table](01-neural-networks-fundamentals.md#tensorflow-1x-to-2x-status-and-migration-map) |
 
 Every digits number here came from running the code shown. The numbers attributed to a paper are that paper's own.
 

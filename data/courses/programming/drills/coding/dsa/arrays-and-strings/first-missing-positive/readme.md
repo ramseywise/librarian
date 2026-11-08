@@ -1,5 +1,5 @@
 ---
-imported_hash: 19c7eaf0f8a7896e
+imported_hash: 4e719744d875efcf
 title: First Missing Positive
 summary: Given an unsorted integer array, find the smallest missing positive integer.
 order: 106
@@ -20,4 +20,4 @@ Given an unsorted integer array, find the smallest missing positive integer.
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](../../arrays_and_strings/first_missing_positive/solution.py) |
+| Python   | [solution.py](solution.py) |

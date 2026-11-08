@@ -1,5 +1,5 @@
 ---
-imported_hash: 5505a8eeff1721d1
+imported_hash: 8791ae68b90717a9
 title: Optimisation and regularisation
 summary: 'Three questions run through the chapter, in order: does the signal survive through the layers (initialisation and normalisation), does the optimiser make progress (optimisers and learning rates), and does what it learned generalise (regular…'
 order: 3
@@ -401,7 +401,7 @@ Buduma, *Fundamentals of Deep Learning* ([PDF](../../sources/buduma-fundamentals
 
 | Set | Runs |
 |---|---|
-| [`Improving Deep Neural Networks`](../practice/ng-deep-learning/Improving Deep Neural Networks Hyperparameter tuning, Regularization and Optimization) (Gradient Checking, Initialization, Optimization methods, Regularization, Tensorflow Tutorial) | Legacy, reading-only as stored: helper modules and `datasets/` were not copied. Gradient checking is covered in [neural network basics](01-neural-networks-fundamentals.md#checking-hand-written-gradients). The percentages in the tables come from your earlier runs of the notebooks |
+| [`Improving Deep Neural Networks`](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-science/02-deep-learning/practice/ng-deep-learning/Improving%20Deep%20Neural%20Networks%20Hyperparameter%20tuning%2C%20Regularization%20and%20Optimization) (Gradient Checking, Initialization, Optimization methods, Regularization, Tensorflow Tutorial) | Legacy, reading-only as stored: helper modules and `datasets/` were not copied. Gradient checking is covered in [neural network basics](01-neural-networks-fundamentals.md#checking-hand-written-gradients). The percentages in the tables come from your earlier runs of the notebooks |
 
 Every digits number in this chapter came from running the code shown, with `uv run --with scikit-learn --with torch --with dadaptation`.
 

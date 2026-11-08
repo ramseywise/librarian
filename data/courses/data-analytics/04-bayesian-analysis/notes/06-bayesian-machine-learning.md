@@ -1,5 +1,5 @@
 ---
-imported_hash: 00fff138da042cd3
+imported_hash: ee31c7c1e2ba6656
 title: 6 — Bayesian Machine Learning
 summary: The earlier chapters of this pillar estimate a handful of parameters and make a decision.
 order: 9
@@ -24,11 +24,11 @@ The coursework is HSE's *Bayesian Methods for Machine Learning*, taken on Course
 
 | Coursework | Topic | Inference method | Key idea |
 |---|---|---|---|
-| [week_2](../practice/BayesianML/week_2) | Gaussian mixture model | Expectation-maximisation | latent cluster labels, soft assignments |
-| [week_4](../practice/BayesianML/week_4) | Markov chains, Bayesian logistic regression | MCMC (Metropolis, NUTS) in PyMC3 | odds ratio with a credible interval |
-| [week_5](../practice/BayesianML/week_5) | Variational autoencoder on MNIST | variational inference (ELBO) | amortised posterior via an encoder network |
-| [week_6](../practice/BayesianML/week_6) | Gaussian processes, Bayesian optimisation | exact GP posterior, acquisition functions | tune hyperparameters with few evaluations |
-| [final_assignment](../practice/BayesianML/final_assignment) | "Finding the suspect": VAE + Bayesian optimisation | both | search a VAE's latent space with human feedback |
+| [week_2](../practice/bayesianml/week-2) | Gaussian mixture model | Expectation-maximisation | latent cluster labels, soft assignments |
+| [week_4](../practice/bayesianml/week-4) | Markov chains, Bayesian logistic regression | MCMC (Metropolis, NUTS) in PyMC3 | odds ratio with a credible interval |
+| [week_5](../practice/bayesianml/week-5) | Variational autoencoder on MNIST | variational inference (ELBO) | amortised posterior via an encoder network |
+| [week_6](../practice/bayesianml/week-6) | Gaussian processes, Bayesian optimisation | exact GP posterior, acquisition functions | tune hyperparameters with few evaluations |
+| [final_assignment](../practice/bayesianml/final-assignment) | "Finding the suspect": VAE + Bayesian optimisation | both | search a VAE's latent space with human feedback |
 
 **Runnability:** the coursework is legacy. The environment in `bayesian.yml` pins Python 3.7, TensorFlow 1.15, Keras 2.3.1, `pymc3==3.11.4` and `theano-pymc==1.1.2`, and week 6 adds GPy, GPyOpt and xgboost by pip. Every notebook imports the Coursera `grader` module, which is not included, and none has saved outputs. Read them for the method, and port to current PyMC with [chapter 2's map](02-mcmc-and-pymc.md#pymc3-to-current-pymc) before running. The code in this chapter runs on current NumPy, PyMC and scikit-learn; blocks marked `# illustrative` show the coursework's pinned libraries, and need that conda environment.
 
