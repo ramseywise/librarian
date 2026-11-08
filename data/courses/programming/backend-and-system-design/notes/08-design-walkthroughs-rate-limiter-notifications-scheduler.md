@@ -1,7 +1,7 @@
 ---
-imported_hash: 3f5ca8476d7bae0b
+imported_hash: 8bee08aac5543584
 title: '8 — Design walkthroughs: rate limiter, notifications, job scheduler'
-summary: Step 5 is where designs differ. For the rate limiter it's the race; for notifications it's fairness between kinds of traffic; for the scheduler it's two workers believing they own one job.
+summary: 'The interviewing track has its own six-step version, built for narrating a design out loud in 45 to 55 minutes: the system design study guide.'
 order: 9
 kind: reading
 section: Notes
@@ -24,6 +24,8 @@ Every requirement and scale figure in these walkthroughs is hypothetical, invent
 4. **Sketch.** The boxes, and how one request goes through them.
 5. **The hard part.** Usually one issue dominates. Spend your time there.
 6. **Failure.** Take each component away, and say what users see.
+
+The interviewing track has its own six-step version, built for narrating a design out loud in 45 to 55 minutes: [the system design study guide](../../../interviewing/rounds/system-design-round/study-guide.md#1-the-six-step-process-45-55-min). Use this method to find the design and that one to present it.
 
 Step 5 is where designs differ. For the rate limiter it's the race; for notifications it's fairness between kinds of traffic; for the scheduler it's two workers believing they own one job.
 
@@ -80,7 +82,7 @@ flowchart LR
 
 ## Rate limiter: the race
 
-The hard part. A check is a read followed by a write. This code forces the bad interleaving so that it shows up on every run, and uses SQLite for the "one transaction" case because it runs here with no server.
+The hard part. [Chapter 4](04-load-balancing-and-rate-limiting.md#sharing-the-count) ran this race with eight threads; here the bad order is forced. A check is a read followed by a write. This code forces the bad interleaving so that it shows up on every run, and uses SQLite for the "one transaction" case because it runs here with no server.
 
 ```python
 import sqlite3, tempfile, os
@@ -547,7 +549,7 @@ The rate is 50 per second. Overshoot is at most rate × sync × (gateways − 1)
 
 </details>
 
-**2. In `g_lease.py`, what would have happened if `finish` did not check the token?**
+**2. In `lease_scheduler.py`, what would have happened if `finish` did not check the token?**
 
 <details>
 <summary>Answer</summary>

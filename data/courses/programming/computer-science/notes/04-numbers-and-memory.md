@@ -1,5 +1,5 @@
 ---
-imported_hash: d063f2baf37dc098
+imported_hash: 1b483816d135b2e8
 title: 4 — Numbers and memory
 summary: 'print(sys.int_info) for bits in (0, 1, 29, 30, 60, 61, 90, 1_000): print(f"{bits:>5} bits: {sys.getsizeof(1 << bits):>4} bytes")'
 order: 5
@@ -746,6 +746,10 @@ The stretched operand is not copied; NumPy reuses the same memory with a stride 
 | Why can a NumPy loop be slower than a list loop? | Each element is boxed into a new Python object as you iterate. |
 | What's a page fault? | The first touch of an unmapped page traps to the kernel, which maps it. That's why allocation looks free until you use it. |
 | What does the TLB do? | It caches address translations, and works because of locality. |
+
+## See also
+
+- [Python 03 · 09 Memory and the runtime](../../python/03-language-for-engineers/notes/09-memory-and-the-runtime.md): refcounting, the GC and `tracemalloc` on the same objects.
 
 ## Next
 

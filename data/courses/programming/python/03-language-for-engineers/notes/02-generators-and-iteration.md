@@ -1,5 +1,5 @@
 ---
-imported_hash: 07017cabb15c602c
+imported_hash: 516ad3f8c0d42934
 title: 2 — Iterators, generators and comprehensions
 summary: 'def iter(self): # an iterator returns itself return self'
 order: 13
@@ -117,3 +117,7 @@ def take(n, it):
 ## Exercises
 
 [`practice/exercises/02_iteration.py`](../practice/exercises/02_iteration.py)
+
+## Next
+
+[3 — Functions, closures and decorators](03-functions-deeper.md): functions as values, closures and the decorator.

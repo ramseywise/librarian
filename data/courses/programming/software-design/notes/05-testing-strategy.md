@@ -1,5 +1,5 @@
 ---
-imported_hash: eafa622f96016c76
+imported_hash: f431012e36d08f81
 title: 5 — Testing strategy
 summary: 'Fowler gives a good test of sufficiency: you have enough tests if bugs rarely escape to production and you''re rarely hesitant to change code for fear of causing them.'
 order: 6
@@ -195,7 +195,7 @@ BatchingEmbedder ok
 DropsEmptyEmbedder ['returned 4 vectors for 5 texts']
 ```
 
-In a real suite, this is a `pytest.mark.parametrize` over implementations, with the implementation backed by a real vendor marked as slow. Between services, [Vocke describes](https://martinfowler.com/articles/practical-test-pyramid.html#ContractTests) the same idea as consumer-driven contracts: the consumer writes what it needs from a provider's interface, and the provider runs those tests. He says the provider should run them continuously, so that a breaking change is caught before it goes live.
+In a real suite, this is a `pytest.mark.parametrize` over implementations ([Python 03 · 06](../../python/03-language-for-engineers/notes/06-modules-packaging-tooling.md) covers `parametrize` and fixtures), with the implementation backed by a real vendor marked as slow. Between services, [Vocke describes](https://martinfowler.com/articles/practical-test-pyramid.html#ContractTests) the same idea as consumer-driven contracts: the consumer writes what it needs from a provider's interface, and the provider runs those tests. He says the provider should run them continuously, so that a breaking change is caught before it goes live.
 
 ## Property tests: say what's always true
 

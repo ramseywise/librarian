@@ -1,5 +1,5 @@
 ---
-imported_hash: 9f90cd803f8a5dfc
+imported_hash: 7a4506869bec03e0
 title: 3 — Unions and Narrowing
 summary: 'function show(id: ID): string { return id.toUpperCase(); // error: toUpperCase doesn''t exist on number }'
 order: 4
@@ -86,9 +86,18 @@ function area(s: Shape): number {
 }
 ```
 
-This is how you model API responses (`{ ok: true; data } | { ok: false; error }`), Redux-style actions and LLM content blocks (`block.type === 'text'`, [note 09](09-typescript-for-ai-apps.md)). It plays the role of Python's tagged unions with `match`.
+This is how you model API responses (`{ ok: true; data } | { ok: false; error }`), Redux-style actions and LLM content blocks (`block.type === 'text'`, [note 09](09-typescript-for-ai-apps.md)). In Python you would get the same effect with a `Literal` field and `match`, though nothing there enforces it.
 
 ## Type predicates
+
+The snippets below use these types:
+
+```ts
+interface User { type: 'user'; name: string; occupation: string }
+interface Admin { type: 'admin'; name: string; role: string }
+type Person = User | Admin;
+declare const people: Person[];
+```
 
 Write a function that returns `x is T` to package a check so you can reuse it:
 
@@ -99,7 +108,7 @@ function isAdmin(p: Person): p is Admin {
 const admins = people.filter(isAdmin);    // Admin[], not Person[]
 ```
 
-The predicate is a promise *you* make, and the checker trusts it without verifying. Since TS 5.5, simple arrow functions like `(p) => p.type === 'admin'` are inferred as predicates automatically. That is why vendored exercise 04 already passes on TS 7 (see `practice/typescript-exercises/NOTICE.md`).
+The predicate is a promise *you* make, and the checker trusts it without verifying. Since TS 5.5, simple arrow functions like `(p) => p.type === 'admin'` are inferred as predicates automatically. That is why vendored exercise 04 already passes on TS 7 (see `practice/typescript-exercises/NOTICE.md`). For that exercise, write the `person is Admin` and `person is User` annotations by hand on `isAdmin` and `isUser`, so you practise the syntax.
 
 ## `unknown` at the boundaries
 

@@ -1,5 +1,5 @@
 ---
-imported_hash: 8b7df66e5d568cab
+imported_hash: dabddc2f81a400b7
 title: '13 · Case Study: Evaluating a Multi-Agent Support System'
 summary: The notes teach the method. This note shows where the method bends when it meets a real backlog, a small calibration sample and a grader that was being fed the wrong input.
 order: 18
@@ -95,6 +95,8 @@ flowchart LR
 | 6 Generation quality | Did the answer use the evidence correctly? | Citation integrity, grounding, faithfulness, relevancy, completeness | Don't mix URL-only and passage-text context in one grounding claim |
 | 7 Grader calibration | Do graders match user outcomes? | Liked/disliked separation, Cohen's d, P/R/F1 vs. sentiment, stability by slice | Experimental graders can inform an investigation but never decide a promotion |
 | 8 Report | What should stakeholders do? | Gate cards, leaderboards with pool and n, `Ship / Hold / Investigate / Needs data` cards | Every claim names its gate, row pool, sample size and source artefact |
+
+Gate 7 sits after generation in the numbering, but calibration status is checked on every run, before a judge scores any gate's rows ([10](10-evals-in-ci.md#the-gate-ladder)).
 
 **The common handoff contract.** Each gate's input names its row pool, artefact paths, run ID, git commit, config snapshot and known exclusions. Its output gives pass/fail, a metric summary, row-level diagnostics, failure labels and a recommended next action. A downstream gate must never silently score rows that an upstream gate marked ineligible. Every artefact shares one header:
 

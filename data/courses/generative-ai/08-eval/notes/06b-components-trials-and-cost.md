@@ -1,5 +1,5 @@
 ---
-imported_hash: b0af3c5ade85a83a
+imported_hash: a596c1f08496affd
 title: '6b — Evaluating Agents: Components, Repeated Trials and Cost'
 summary: An agent is a router plus skills plus a final answer.
 order: 10
@@ -142,7 +142,7 @@ With 8 runs per agent, a gap that looks large can still fail a significance test
 
 ## Efficiency metrics
 
-Log these on every trial. They catch regressions that pass rates miss:
+Log these on every trial. They catch regressions that pass rates miss. Pricing a turn, rolling it up and the percentile dashboards are in [GA 06 note 6](../../06-observability/notes/06-cost-and-latency-dashboards.md); this section covers cost per success as an eval metric:
 
 | Metric | Why |
 |---|---|

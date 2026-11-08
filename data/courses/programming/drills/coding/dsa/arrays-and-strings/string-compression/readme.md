@@ -1,5 +1,5 @@
 ---
-imported_hash: 28516a6b109f5664
+imported_hash: 13f7c8ffd007e583
 title: String Compression
 summary: Given an array of characters, compress it in-place.
 order: 130
@@ -20,4 +20,4 @@ Given an array of characters, compress it in-place.
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](solution.py) |
+| Python   | [solution.py](../../arrays_and_strings/string_compression/solution.py) |

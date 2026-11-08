@@ -1,4 +1,4 @@
-# imported_hash: 6e8919544c556076
+# imported_hash: c003ffec7b1bbe61
 # Agentic Applications lecture deck. Covers notes 01-07.
 # Build: make slides PILLAR=generative-ai/07-agentic-applications STRICT=1 PREVIEW=1
 # Spec:  .claude/skills/slides/references/deck-spec.md
@@ -123,7 +123,7 @@ parts:
   - title: Add a clock
     summary: The latency budget · Queueing · Fast and slow · Computer use · GUI agents
     notes: >-
-      Research agents can take minutes. A voice agent has about two seconds. Time changes the architecture, and screens add
+      Research agents can take minutes. A voice agent aims for first audio within about 800 ms (the target in AIE 08/04), and a fully serial pipeline takes 1 to 2 s. Time changes the architecture, and screens add
       a perception problem. This part is about what a hard budget does to the loop.
     slides:
       - layout: image
@@ -135,7 +135,7 @@ parts:
         bullets:
           - "**VAD** waits 500 to 800 ms on silence."
           - "**Then** ASR, first token, first segment and TTS."
-          - "**Together:** about 1 to 2 s when idle."
+          - "**Together:** about 1 to 2 s when idle, before streaming. The design target is 800 ms."
         takeaway: Voice latency is a serial sum led by the silence wait, so a faster LLM alone will not fix it.
         source: notes/03-real-time-multimodal-agents.md
         notes: >-
@@ -389,7 +389,7 @@ parts:
           Where does the agent sit next to the person who has to trust it?
 
   - title: Meet the user
-    summary: Chatbot, editor, ambient · The router's history · Trust · One engine, new domain · Scoping the product
+    summary: Chatbot, editor, ambient · The intent router · Trust · One engine, new domain · Scoping the product
     notes: >-
       An agent can pass every test and still fail, if the person cannot see or undo what it did. The final part is about
       position: who is working when, and what that makes hard. It closes with the decision that comes first in a real
@@ -423,19 +423,17 @@ parts:
           A voice agent's fast and slow pair is a kind of concurrency too.
 
       - layout: steps
-        title: The router is older than the LLM, and still earns its place
-        recall: What did DIET find about large pretrained models, and when is a small intent model still sensible?
+        title: A small intent router still earns its place
+        recall: When is a small intent-and-slot model in front of the agent still sensible?
         steps:
-          - {title: "2016: Joint models", text: "Liu and Lane learn intent and slots together."}
-          - {title: "2018: Slot gate", text: "Goo et al.: 4.2% and 1.9% relative frame gains on ATIS and Snips."}
-          - {title: "2019: BERT", text: "Chen et al. apply BERT to the joint task."}
-          - {title: "2020: DIET", accent: "D4621A", text: "No clear benefit from large pretrained models; beats fine-tuned BERT, about six times faster to train."}
-          - {title: "2025: Workflow graphs", text: "Park et al.: state machine for the plan, LLMs inside each state; 52% better task accuracy than their baseline."}
+          - {title: "Known intents", text: "A small intent-and-slot model is a cheap, testable front door."}
+          - {title: "Known workflow", text: "Write the plan as a state machine and let the LLM handle each state with a short prompt (Park et al., 2025)."}
+          - {title: "Measure the outcome", text: "Retention and use can reverse what a capability benchmark predicts."}
         takeaway: With few known intents, a small router or workflow graph can beat an LLM on cost and testability.
         source: notes/06-application-patterns.md
         notes: >-
-          Louvan and Magnini warn that the datasets are solved, not language understanding. Separately, Blending showed three small
-          models beating ChatGPT on retention on one platform, so measure the outcome your product is for.
+          This is the intent classifier in front of the chatbot, not the router node from note 01. The research history behind it,
+          from joint intent and slot models to DIET, is under Further reading in note 06.
 
       - layout: compare
         title: A confirmation helps only if the person can disagree with it

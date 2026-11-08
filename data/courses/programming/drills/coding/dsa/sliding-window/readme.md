@@ -1,5 +1,5 @@
 ---
-imported_hash: 303434854974c4d1
+imported_hash: 2583154c8ce3a5bd
 title: Sliding Window
 summary: The sliding window technique iterates over a list K elements at a time.
 order: 200
@@ -12,6 +12,6 @@ source: learn-ai-engineering/programming/drills/coding/dsa/sliding_window/Readme
 
 The sliding window technique iterates over a list K elements at a time. The window can be **fixed-size** (always K elements) or **variable-size** (expand/shrink to meet conditions). It reduces nested loops from O(n²) to O(n).
 
-- Find average of all sub-array of size K [[Solution](subarray_average_size_k/)] [[Thinking](subarray-average-size-k/thinking.md)]
-- Maximum Average Subarray - 1 [[Leetcode](https://leetcode.com/problems/maximum-average-subarray-i/)] [[Solution](maximum_average_subarray_1/)] [[Thinking](maximum-average-subarray-1/thinking.md)]
-- Minimum Window Substring [[Leetcode](https://leetcode.com/problems/minimum-window-substring/)] [[Solution](minimum_window_substring/)] [[Thinking](minimum-window-substring/thinking.md)]
+- Find average of all sub-array of size K [[Solution](../sliding_window/subarray_average_size_k)] [[Thinking](subarray-average-size-k/thinking.md)]
+- Maximum Average Subarray - 1 [[Leetcode](https://leetcode.com/problems/maximum-average-subarray-i/)] [[Solution](../sliding_window/maximum_average_subarray_1)] [[Thinking](maximum-average-subarray-1/thinking.md)]
+- Minimum Window Substring [[Leetcode](https://leetcode.com/problems/minimum-window-substring/)] [[Solution](../sliding_window/minimum_window_substring)] [[Thinking](minimum-window-substring/thinking.md)]

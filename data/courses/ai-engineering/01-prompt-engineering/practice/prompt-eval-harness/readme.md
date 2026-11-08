@@ -1,5 +1,5 @@
 ---
-imported_hash: 90533d3563e7fb6b
+imported_hash: 15fdda614e1897ce
 title: 'Lab: a prompt eval harness'
 summary: 'Language: TypeScript. The Python version does the same job on the same inputs.'
 order: 17
@@ -10,7 +10,7 @@ source: learn-ai-engineering/ai-engineering/01-prompt-engineering/practice/promp
 
 # Lab: a prompt eval harness
 
-Language: TypeScript. The [Python version](../prompt-eval-harness-py/readme.md) does the same job on the same inputs. Supports [Evaluating prompts](../../notes/09-evaluating-prompts.md) and
+Language: TypeScript. The [Python version](../prompt-eval-harness-py/readme.md) does the same job on the same inputs. Supports [Evaluating prompts](../../notes/08-evaluating-prompts.md) and
 [Controlling output](../../notes/04-controlling-output.md).
 
 Prompt changes feel like improvements until a number says otherwise. This harness runs three prompt

@@ -1,5 +1,5 @@
 ---
-imported_hash: 8342aed9d71c6e93
+imported_hash: 2be38032944b8d9c
 title: Implement Stack Using Queues
 summary: Implement a LIFO stack using only queue operations (enqueue, dequeue, peek, empty).
 order: 189
@@ -20,4 +20,4 @@ Implement a LIFO stack using only queue operations (enqueue, dequeue, peek, empt
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](solution.py) |
+| Python   | [solution.py](../implement_stack_using_queues/solution.py) |

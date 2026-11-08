@@ -1,7 +1,7 @@
 ---
-imported_hash: 623d1bc01e619215
+imported_hash: 18c2db577e14dda1
 title: References
-summary: Recent papers picked up by the weekly DAIR sync (make papers, then /papers).
+summary: Papers added to the pillar after the first pass, each folded into the note named in its last column.
 order: 23
 kind: reading
 section: References
@@ -158,7 +158,7 @@ source: learn-ai-engineering/generative-ai/08-eval/references.md
 
 ## AI Papers of the Week
 
-Recent papers picked up by the weekly [DAIR](https://github.com/dair-ai/AI-Papers-of-the-Week) sync (`make papers`, then `/papers`). Newest first.
+Papers added to the pillar after the first pass, each folded into the note named in its last column. Many came from the weekly [DAIR](https://github.com/dair-ai/AI-Papers-of-the-Week) sync (`make papers`, then `/papers`). Newest first.
 
 | | Paper | arXiv | Chapters |
 |---|---|---|---|

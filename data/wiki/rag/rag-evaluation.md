@@ -2,7 +2,7 @@
 title: RAG Evaluation
 tags: [rag, eval, concept]
 summary: Three-tier evaluation architecture for RAG pipelines — golden datasets, LLM-as-judge, failure clustering, ragas vs deepeval, and retrieval lift measurement.
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
   - data/raw/claude-docs/playground/docs/archived/rag-agent-template-research.md
@@ -264,6 +264,8 @@ This is especially important for edge cases — judge prompts optimized on avera
 ---
 
 ## See Also
+- [[RAGChecker]] — related (claim-level retriever and generator diagnosis)
+- [[FreshQA]] — related (a benchmark of answer currency)
 - [[Agentic RAG — Advanced Patterns]] <!-- auto-linked -->
 - [[Trajectory Over Outcome]] — extends (why the trajectory tier exists, not just what it measures)
 - [[The Augmentation Gate]] — related (the component gate between retrieval and generation)

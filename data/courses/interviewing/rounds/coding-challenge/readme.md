@@ -1,5 +1,5 @@
 ---
-imported_hash: 71220235788b743f
+imported_hash: 19a2214fa110bd2b
 title: Coding Challenge
 summary: Live coding is increasingly project-style ("implement a rate limiter") over pure LeetCode.
 order: 23
@@ -50,7 +50,7 @@ Present in every loop but rarely the differentiator round. DS versions skew SQL/
 | `sources.md` | Pillar notes + external resources |
 | `examples/` | Nine worked walkthroughs — three general, five offline practicals, one interviewer guide (property search) |
 
-Drill-format practice files (prompt → hint ladder → solution) live in [`programming/drills/coding/`](../../../../programming/drills/coding/):
+Drill-format practice files (prompt → hint ladder → solution) live in [`programming/drills/coding/`](../../../programming/drills/coding):
 `algorithms/` (89 LeetCode-style problems by pattern), `implementation/` (Q16–19), `ml-coding/` (Q20–25).
 
 ## The AIE practical variant

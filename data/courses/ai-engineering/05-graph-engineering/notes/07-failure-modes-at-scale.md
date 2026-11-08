@@ -1,5 +1,5 @@
 ---
-imported_hash: 34b80efac1a040f2
+imported_hash: 95bea4a88803708b
 title: 7 — Failure Modes at Scale
 summary: A graph can pass every internal check while being wrong.
 order: 9
@@ -122,7 +122,7 @@ Locks and reducers prevent **lost updates**, where two writers clobber one key. 
 
 An early error becomes a premise for everything downstream. In the book's translation lab, the glossary agent rendered "reasoning" as 推理 (inference). The translator applied it faithfully, and the proofreader, checking against the glossary, saw perfect consistency and passed it. Every stage did its job and the error survived all of them. The fix is a check from an **independent perspective**: a reviewer that reads the output against the source, not against the upstream artifact.
 
-Topology sets how far an error travels. Kim et al. ([arXiv:2512.08296](https://arxiv.org/abs/2512.08296), 2025-12) counted trace-level errors relative to a single agent across six benchmarks: independent agents whose outputs were merged without any cross-checking amplified errors 17.2×, while a centralized orchestrator that validated workers' output before aggregating held it to 4.4×. Read that as descriptive: in their regression, once efficiency and overhead were controlled for, error amplification itself was not a significant predictor of success (p = 0.658).
+Topology sets how far an error travels. Kim et al. ([arXiv:2512.08296](https://arxiv.org/abs/2512.08296), 2025-12) counted trace-level errors relative to a single agent across six benchmarks (setup in [06](06-when-not-to-build-a-graph.md#what-fan-out-costs)): independent agents whose outputs were merged without any cross-checking amplified errors 17.2×, while a centralized orchestrator that validated workers' output before aggregating held it to 4.4×. Read that as descriptive: in their regression, once efficiency and overhead were controlled for, error amplification itself was not a significant predictor of success (p = 0.658).
 
 ### MAST: a taxonomy
 

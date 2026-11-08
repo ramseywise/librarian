@@ -1,5 +1,5 @@
 ---
-imported_hash: b66f2a52abdf8673
+imported_hash: 3ed44750919b8318
 title: Sequence models
 summary: 'def sigmoid(z): return 1 / (1 + np.exp(-z))'
 order: 7
@@ -478,7 +478,7 @@ Buduma, *Fundamentals of Deep Learning* ([PDF](../../sources/buduma-fundamentals
 
 | Set | Runs |
 |---|---|
-| [`Sequence Models`](../practice/ng-deep-learning/Sequence%20Models/) (7 notebooks across weeks 1 to 3) | Legacy, reading-only as stored: `emo_utils`, GloVe vectors, the dinosaur name list and pretrained weights weren't copied. The Keras notebooks use standalone `keras` 2.x, and [the migration table](01-neural-networks-fundamentals.md#tensorflow-1x-to-2x-status-and-migration-map) has the status |
+| [`Sequence Models`](../practice/ng-deep-learning/Sequence Models) (7 notebooks across weeks 1 to 3) | Legacy, reading-only as stored: `emo_utils`, GloVe vectors, the dinosaur name list and pretrained weights weren't copied. The Keras notebooks use standalone `keras` 2.x, and [the migration table](01-neural-networks-fundamentals.md#tensorflow-1x-to-2x-status-and-migration-map) has the status |
 
 All the numbers on digits, memory, names and dates came from running the code shown. The name list and word vectors are constructed, as the text says.
 

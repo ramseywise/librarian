@@ -1,4 +1,4 @@
-# imported_hash: 925e19f476cdf5b4
+# imported_hash: 68934a091aae6fa2
 # Prompt Engineering lecture deck. Covers notes 01-11 and prompt-library.md.
 # Build: make slides PILLAR=01-prompt-engineering STRICT=1 PREVIEW=1
 # Spec:  .claude/skills/slides/references/deck-spec.md
@@ -502,7 +502,7 @@ parts:
         statement: "Without an eval, every prompt change is an opinion. Copilot's eval framework is older than its prompts or its UI."
         attribution: Berryman & Ziegler, on GitHub Copilot
         takeaway: Build the eval before tuning, because without one every prompt change is an opinion.
-        source: notes/09-evaluating-prompts.md
+        source: notes/08-evaluating-prompts.md
         notes: >-
           Start small. Level one is five to twenty examples with outputs committed and reviewed with git diff. Level two is hundreds of examples scored automatically. Match the
           test to the decision: a model swap needs a broad regression suite, a wording change needs small unit tests on one call, and a change of architecture needs an end-to-end regression.
@@ -517,7 +517,7 @@ parts:
           - "**Score** from exact match up to a judge."
           - "**Online:** keep acceptance or impact as a standing guardrail."
         takeaway: Start offline with cheap exact checks, escalate to judges only where needed, and watch acceptance online as a guardrail.
-        source: notes/09-evaluating-prompts.md
+        source: notes/08-evaluating-prompts.md
         notes: >-
           For Copilot, acceptance correlated with self-reported productivity gains more strongly than fancier impact measures. Always log latency and token counts too. Now the thing
           most of you will do: use a model to grade a model.
@@ -542,7 +542,7 @@ parts:
           - "**Multi-aspect:** score each dimension apart."
           - "**Calibrated:** check against several humans."
         takeaway: Ask judges a specific, ordinal, multi-aspect question, and calibrate their scores against several human annotators.
-        source: notes/09-evaluating-prompts.md
+        source: notes/08-evaluating-prompts.md
         notes: >-
           This rubric is our own illustration of the note's SOMA advice. A judge asked whether the answer is right has a problem as hard as the original. Asked whether it verified identity before the refund, it has a checkable job.
           The rubric goes before the content, for the same left-to-right reason as our 173-word paragraph, and scores are relative rather than absolute.
@@ -560,7 +560,7 @@ parts:
           - ["+ **strict output template**", "86.3 ↓", "**98%**"]
           - ["+ a name + positive feedback", "**91.7**", 81%]
         takeaway: Prompt wording can move F1 by 26 points and trade against format adherence, so change one thing and re-score.
-        source: notes/09-evaluating-prompts.md
+        source: notes/08-evaluating-prompts.md
         notes: >-
           These rows are a selection from the note's cumulative table. Look at the strict template: format adherence jumps to 98 percent, and F1 falls. No single best prompt exists for both
           measures. Do not copy a name and positive feedback as a recipe. Copy the method of one change at a time, because these effects move with the model.
@@ -579,7 +579,7 @@ parts:
           - "**Fix the cheapest layer first:** clarity, context, ordering, examples, CoT, split, bigger model, fine-tune."
           - "**APE, OPRO, meta-prompting, DSPy** let a model search; each needs that same metric."
         takeaway: Version the template with its model and score, and keep a new version only when it beats the old on the eval.
-        source: notes/08-prompt-optimization.md
+        source: notes/09-prompt-optimization.md
         notes: >-
           APE has an LLM propose instructions and scores each on the target model. It found "Let's work this out in a step by step way to be sure we have the right answer." OPRO uses the LLM as the
           optimizer, shown past prompts and scores, and it found "Take a deep breath". DSPy compiles signatures and modules against a metric. A meta-prompt from a strong model is a first draft, not a result.
@@ -659,7 +659,7 @@ parts:
           - {title: Reasoning models, body: "State the goal, not the steps. Tune effort, not wording."}
           - {title: Shipping, accent: "D4621A", body: "Eval before tuning; one change at a time. Assume leaks and injection."}
         takeaway: Shape the document first, then keep guarantees in code and prove every change with an eval.
-        source: notes/08-prompt-optimization.md
+        source: notes/09-prompt-optimization.md
         notes: >-
           If you keep one sentence from today, it is this: when a prompt fails, change the document, its order, its contents and its shape, before you change the wording. The manual optimization checklist in note eight is the long form of these cards.
 

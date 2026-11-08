@@ -7,6 +7,7 @@ sources:
   - data/raw/articles/2026-07-19-evaluating-ai-agents-deeplearning.md
   - own-prose
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--06-evaluating-agents.md
+  - data/raw/papers/2026-11-05-yehudai-2025-survey-evaluation-llm-based-agents.md
 ---
 
 # Trajectory Over Outcome
@@ -112,6 +113,18 @@ escalation, and termination conditions; an outcome score confirms the system wor
 says nothing about which bound is load-bearing. See
 [[Bounding Agents Rather Than Trusting Them]].
 
+## What a survey says about trajectory grading
+
+Yehudai et al.'s survey of agent evaluation (arXiv 2503.16416; no experiments of its own, and
+the framework features are coded from vendor documentation) says frameworks grade at three
+granularities: the final response, each step, and the whole trajectory. Grading the trajectory
+may compare against a reference path (exact, partial, unordered or subset matching) or use no
+reference and rely on an LLM judge. The authors judge reference-based matching limited because several valid paths
+usually exist, and judge stepwise grading as assuming steps can be assessed independently. In
+their coding only 3 of 8 frameworks support trajectory assessment. They argue current benchmarks
+lean on coarse end-to-end success that cannot diagnose failures, and call for standard
+trajectory-level metrics; these are the authors' judgements, not measurements.
+
 ## Router evals as the cheap first layer
 
 A course sequence for agent eval (build → trace → router evals → trajectory evals →
@@ -148,6 +161,9 @@ correctly?). And **treat a 0% task as suspect**: a task failing every trial acro
 broken (unreachable state, wrong reference, missing permission) before the agent is.
 
 ## See Also
+- [[MedBrowseComp]] — related
+- [[CLI Agent Failure Timeline]] — related (failure traced step by step in coding-agent runs)
+- [[TheAgentCompany]] — related
 - [[Eval Non-Determinism]] <!-- auto-linked -->
 - [[Eval Harness Anatomy]] <!-- auto-linked -->
 - [[Eval Suite Maintenance]] <!-- auto-linked -->
@@ -163,3 +179,5 @@ broken (unreachable state, wrong reference, missing permission) before the agent
 - [[Simulated User Evaluation]] — extends
 - [[Agent Trace Anatomy]] — prerequisite-for
 - [[Extract-and-Evaluate Monitoring]] — extends (scoring a trajectory for sabotage from extracted quotes)
+- [[Holistic Agent Leaderboard (HAL)]] — related (rubric-based inspection of agent logs)
+- [[Agents' Last Exam (ALE)]] — related (an artifact-only grader that never reads the trajectory)

@@ -1,5 +1,5 @@
 ---
-imported_hash: 4daa529cec0caac4
+imported_hash: 7cfbb022486c4ac8
 title: 1 — Regular Expressions
 summary: 're.search(r"^From: ", line) # a Match or None: is the pattern anywhere?'
 order: 7
@@ -63,3 +63,7 @@ re.findall(r"<.+?>", "<b>hi</b>")   # ['<b>', '</b>']
 ## Exercises
 
 [`practice/exercises/01_regex.py`](../practice/exercises/01_regex.py)
+
+## Next
+
+[2 — Networks and HTTP](02-network-and-http.md): fetching the text you will match.

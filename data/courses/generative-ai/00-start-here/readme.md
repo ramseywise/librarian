@@ -1,5 +1,5 @@
 ---
-imported_hash: 1089f3a78db0b283
+imported_hash: b6d47064841f6a3a
 title: Generative AI
 summary: A course in building with large language models, from what a model is to a complete agent you can trust.
 order: 1
@@ -44,21 +44,21 @@ The numbers are stable folder names, not a strict sequence. 08 is the Eval pilla
 
 | Read | Pillar | The question it answers | Mastery evidence | Deck |
 |---|---|---|---|---|
-| 1 | [01 LLM fundamentals](../01-llm-fundamentals/readme.md) | What are these models, and how do you prompt, call and adapt them? | Explain and call an LLM with controlled decoding | [pptx](01-llm-fundamentals/slides/llm-fundamentals.pptx) |
-| 1b | [09 LLMs from scratch](../09-llms-from-scratch/readme.md) | What is inside a GPT, line by line? | Built/modified micrograd or nanoGPT exercise | [pptx](09-llms-from-scratch/slides/llms-from-scratch.pptx) |
+| 1 | [01 LLM fundamentals](../01-llm-fundamentals/readme.md) | What are these models, and how do you prompt, call and adapt them? | Explain and call an LLM with controlled decoding | [pptx](../01-llm-fundamentals/slides/llm-fundamentals.pptx) |
+| 1b | [09 LLMs from scratch](../09-llms-from-scratch/readme.md) | What is inside a GPT, line by line? | Built/modified micrograd or nanoGPT exercise | [pptx](../09-llms-from-scratch/slides/llms-from-scratch.pptx) |
 | 2 | [02 RAG & retrieval](../02-rag-retrieval/readme.md) | How do you give a model knowledge at inference time? | Measured retrieval pipeline | in progress |
-| 3 | [03 Agentic foundations](../03-agentic-foundations/readme.md) | How do models plan, use tools and work in loops? | Bounded agent design | [pptx](03-agentic-foundations/slides/agentic-foundations.pptx), [pdf](03-agentic-foundations/slides/agentic-foundations.pdf) |
-| 4 | [04 Agentic frameworks](../04-agentic-frameworks/readme.md) | What do LangGraph, ADK and LangSmith do for one research agent, and which should you pick? | Same workflow implemented and compared | [pptx](04-agentic-frameworks/slides/agentic-frameworks.pptx), [pdf](04-agentic-frameworks/slides/agentic-frameworks.pdf) |
-| 5 | [05 RL & alignment](../05-rl/readme.md) | How does a pretrained model become an assistant, and how are agents post-trained? | Policy/value experiment and limitation analysis | [pptx](05-RL/slides/rl-and-alignment.pptx), [pdf](05-RL/slides/rl-and-alignment.pdf) |
-| 6 | [06 Observability](../06-observability/readme.md) | What happened inside a run, and what did it cost? | Diagnosed trace and evaluation plan | [pptx](06-observability/slides/observability.pptx), [pdf](06-observability/slides/observability.pdf) |
-| 6 | [08 Eval](../08-eval/readme.md) | Was it any good, and is a difference real? | Reproducible evaluation report and gate | [pptx](08-eval/slides/eval-engineering.pptx), [pdf](08-eval/slides/eval-engineering.pdf) |
-| 7 | [07 Agentic applications](../07-agentic-applications/readme.md) | What does it take to ship a search, research, voice, coding or data-analysis agent? | Working application with boundaries | [pptx](07-agentic-applications/slides/agentic-applications.pptx), [pdf](07-agentic-applications/slides/agentic-applications.pdf) |
+| 3 | [03 Agentic foundations](../03-agentic-foundations/readme.md) | How do models plan, use tools and work in loops? | Bounded agent design | [pptx](../03-agentic-foundations/slides/agentic-foundations.pptx), [pdf](../03-agentic-foundations/slides/agentic-foundations.pdf) |
+| 4 | [04 Agentic frameworks](../04-agentic-frameworks/readme.md) | What do LangGraph, ADK and LangSmith do for one research agent, and which should you pick? | Same workflow implemented and compared | [pptx](../04-agentic-frameworks/slides/agentic-frameworks.pptx), [pdf](../04-agentic-frameworks/slides/agentic-frameworks.pdf) |
+| 5 | [05 RL & alignment](../05-rl/readme.md) | How does a pretrained model become an assistant, and how are agents post-trained? | Policy/value experiment and limitation analysis | [pptx](../05-RL/slides/rl-and-alignment.pptx), [pdf](../05-RL/slides/rl-and-alignment.pdf) |
+| 6 | [06 Observability](../06-observability/readme.md) | What happened inside a run, and what did it cost? | Diagnosed trace and evaluation plan | [pptx](../06-observability/slides/observability.pptx), [pdf](../06-observability/slides/observability.pdf) |
+| 6 | [08 Eval](../08-eval/readme.md) | Was it any good, and is a difference real? | Reproducible evaluation report and gate | [pptx](../08-eval/slides/eval-engineering.pptx), [pdf](../08-eval/slides/eval-engineering.pdf) |
+| 7 | [07 Agentic applications](../07-agentic-applications/readme.md) | What does it take to ship a search, research, voice, coding or data-analysis agent? | Working application with boundaries | [pptx](../07-agentic-applications/slides/agentic-applications.pptx), [pdf](../07-agentic-applications/slides/agentic-applications.pdf) |
 
 **Reading 06 and 08 together.** Observability is the tooling: traces, scores, judges over exports and dashboards, worked on one support agent's bad fortnight. Eval is the discipline: what correct means, which tasks represent real use, whether a grader can be trusted, and whether a difference is real. Read 06 chapters 1 and 2 first so you have data to reason about, then Eval's chapters on [graders](../08-eval/notes/04-graders.md) and [reading results](../08-eval/notes/09-reading-results.md), then return for the rest of 06.
 
 Every pillar has the same shape: a `README.md` with reading order and rules of thumb, `notes/` numbered in reading order, `references.md` mapping every source to the notes that use it, `sources/` for local PDFs and figures, `practice/` for runnable labs, and `slides/` for the deck, rebuilt with `make slides PILLAR=generative-ai/<pillar> STRICT=1 PREVIEW=1`. See the [pillar layout](https://github.com/ramseywise/librarian/blob/main/.claude/skills/pillar/references/pillar-layout.md).
 
-Bojie Li's *AI Agents in Depth* (Apache-2.0) is synthesised into pillars [03](../03-agentic-foundations/readme.md), [05](../05-rl/readme.md) and [07](../07-agentic-applications/readme.md). `deep_research_bench` and `deep-research-bot` are in [07's practice](07-agentic-applications/practice/).
+Bojie Li's *AI Agents in Depth* (Apache-2.0) is synthesised into pillars [03](../03-agentic-foundations/readme.md), [05](../05-rl/readme.md) and [07](../07-agentic-applications/readme.md). `deep_research_bench` and `deep-research-bot` are in [07's practice](../07-agentic-applications/practice).
 
 ## Units
 
@@ -102,11 +102,11 @@ Bojie Li's *AI Agents in Depth* (Apache-2.0) is synthesised into pillars [03](..
 
 **Objectives:** assemble retrieval, tools, memory, evaluation, and controls into scoped application patterns, including research ([Du et al.](https://arxiv.org/abs/2506.11763); [Li, ch. 6](https://github.com/bojieli/ai-agent-book/blob/main/book-en/chapter6.md)) and data-analysis agents.
 
-**Learning:** [chapters, deck, and practice](../07-agentic-applications/readme.md). **Evidence:** a working application with explicit permissions, data boundaries, success criteria, and human handoff.
+**Learning:** [chapters, deck, and practice](../07-agentic-applications/readme.md). **Evidence:** a working application with enforced limits, an independent check on its answers (held-out tests or recomputed numbers), and a scoped, costed product case.
 
 ### [08 Eval](../08-eval/readme.md)
 
-**Objectives:** design task datasets ([Anthropic, *Demystifying evals*](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents)); choose metrics; use human and model judges cautiously ([Husain and Shankar](https://hamel.dev/blog/posts/field-guide/)); analyse uncertainty; test regressions; make evaluation a release gate.
+**Objectives:** design task datasets ([Anthropic, *Demystifying evals*](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents)); choose metrics; use human and model judges cautiously ([Husain and Shankar](https://hamel.dev/blog/posts/field-guide/)); analyse uncertainty; test regressions; make evaluation a release gate; evaluate agents by outcome, trajectory, components and repeated trials; evaluate RAG retrieval and grounding separately; trace runs so scores attach to spans; sample and review production traffic; calibrate a judge against human labels before it gates anything.
 
 **Learning:** [chapters, deck, and practice](../08-eval/readme.md). **Evidence:** a versioned evaluation report with failure taxonomy, confidence/uncertainty, and a CI or release decision.
 

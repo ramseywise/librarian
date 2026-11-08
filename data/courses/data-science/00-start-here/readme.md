@@ -1,5 +1,5 @@
 ---
-imported_hash: 68b9cadd479d6b73
+imported_hash: 5c4a2b32bb852270
 title: Data Science
 summary: Running through all the pillars is one habit.
 order: 1
@@ -101,8 +101,10 @@ Each pillar has a README with its reading order, a `references.md` that maps its
 10. Read false positives and false negatives before tuning, and fix a class of error on one split while scoring on another ([Reading the errors](../01-classical-ml/notes/12-reading-the-errors.md)).
 11. Split predictions into automate, review and reject, pricing the thresholds from error costs and review time ([Automate, review or reject](../01-classical-ml/notes/13-automate-review-or-reject.md)).
 12. Learn from corrections without trusting silence: measure label noise, test active learning against random, and audit a random sample ([Learning from corrections](../01-classical-ml/notes/14-learning-from-corrections.md)).
+13. Measure group gaps in a screening model, say which of them cannot be closed together, and state what an audit must report ([Fairness in automated scoring](../01-classical-ml/notes/15-fairness-in-automated-scoring.md)).
+14. Detect anomalies with a density model, a classifier or an isolation forest, and fit a matrix-factorisation recommender on a ratings matrix ([Unsupervised learning](../01-classical-ml/notes/05-unsupervised-learning.md#anomaly-detection-ng-ex8-part-1); [DS 05](../05-time-series-and-recommenders/readme.md) takes recommenders further).
 
-**Review and practice:** [deck](01-classical-ml/slides/classical-ml.pptx) · chapter exercises · [boosting comparison](../01-classical-ml/practice/boosting-comparison/readme.md) · [credit-default lab](../01-classical-ml/practice/credit-default-lab/readme.md) · [music-clustering lab](../01-classical-ml/practice/music-clustering-lab/readme.md).
+**Review and practice:** [deck](../01-classical-ml/slides/classical-ml.pptx) · chapter exercises · [boosting comparison](../01-classical-ml/practice/boosting-comparison/readme.md) · [credit-default lab](../01-classical-ml/practice/credit-default-lab/readme.md) · [music-clustering lab](../01-classical-ml/practice/music-clustering-lab/readme.md).
 
 **Mastery lab:** Build a leakage-safe prediction pipeline for a tabular decision. Compare a dummy, linear model, and boosted-tree model across appropriate splits; inspect the errors; select a threshold from costs; and explain the result with a checked explanation method.
 
@@ -123,7 +125,7 @@ Each pillar has a README with its reading order, a `references.md` that maps its
 5. Build and diagnose sequence models, including recurrent networks, attention and [transformer encoders](../02-deep-learning/notes/05b-transformer-encoders.md), for ordered inputs ([Vaswani et al.](https://arxiv.org/abs/1706.03762)).
 6. Compare TF-IDF, frozen encoders, and fine-tuned text models against the same held-out baseline.
 
-**Review and practice:** [deck](02-deep-learning/slides/deep-learning.pptx) · runnable chapter examples in PyTorch · optional historical [Ng coursework](02-deep-learning/practice/ng-deep-learning/) for comparison.
+**Review and practice:** [deck](../02-deep-learning/slides/deep-learning.pptx) · runnable chapter examples in PyTorch · optional historical [Ng coursework](../02-deep-learning/practice/ng-deep-learning) for comparison.
 
 **Mastery lab:** Train a small neural model with a linear or from-scratch control. Diagnose one deliberate failure (such as poor initialisation, train/eval mode, or learning rate), correct it, and justify the next experiment from the measurements.
 
@@ -144,7 +146,7 @@ Each pillar has a README with its reading order, a `references.md` that maps its
 5. Evaluate semantic analysis, NER, and sentiment systems with the correct unit and metric.
 6. Compare a pretrained encoder with sparse features while accounting for label quantity, compute cost, and result variation.
 
-**Review and practice:** [deck](03-nlp/slides/nlp.pptx) · reproducible [note runner](03-nlp/practice/run_note.py) · chapter drills. Older course folders remain optional reference material rather than required labs.
+**Review and practice:** [deck](../03-nlp/slides/nlp.pptx) · reproducible [note runner](../03-nlp/practice/run_note.py) · chapter drills. Older course folders remain optional reference material rather than required labs.
 
 **Mastery lab:** Choose a labelled text problem and compare a TF-IDF linear model with a pretrained-embedding approach. Include a split-safe vectorisation pipeline, macro-F1 or another justified metric, sample error review, cost/latency trade-off, and a recommendation.
 
@@ -182,7 +184,7 @@ Each pillar has a README with its reading order, a `references.md` that maps its
 6. Match records with no shared key by blocking, scoring and ranking candidates, train pointwise, pairwise and listwise rankers, and score a match by whole records with room to abstain ([Fellegi and Sunter](https://www.irs.gov/pub/irs-soi/1985preprintar28.pdf); [Burges](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/MSR-TR-2010-82.pdf)).
 7. Decide when an encoder is worth tuning, build training pairs from match labels without leaking matches, and measure what hard-negative mining changes ([Musgrave et al.](https://arxiv.org/abs/2003.08505); [Huang et al.](https://arxiv.org/abs/2006.11632)).
 
-**Review and practice:** [deck](05-time-series-and-recommenders/slides/time-series-and-recommenders.pptx) · labs in [practice](../05-time-series-and-recommenders/practice/readme.md) · [customer-segments lab](../05-time-series-and-recommenders/practice/customer-segments-lab/readme.md) · [matching lab](05-time-series-and-recommenders/practice/04_matching_lab.py) · [similarity lab](05-time-series-and-recommenders/practice/05_similarity_lab.py).
+**Review and practice:** [deck](../05-time-series-and-recommenders/slides/time-series-and-recommenders.pptx) · labs in [practice](../05-time-series-and-recommenders/practice/readme.md) · [customer-segments lab](../05-time-series-and-recommenders/practice/customer-segments-lab/readme.md) · [matching lab](../05-time-series-and-recommenders/practice/04_matching_lab.py) · [similarity lab](../05-time-series-and-recommenders/practice/05_similarity_lab.py).
 
 **Mastery lab:** Complete either a rolling-origin demand forecast or a recommendation-ranking comparison. State the information boundary, include the naive or popularity baseline, show the correct evaluation metric, inspect failure cases, and convert the model choice into an operational decision.
 
@@ -216,15 +218,15 @@ Don't run these in bulk. Each pillar README and each note's Practice section say
 | [`boosting-comparison/`](../01-classical-ml/practice/boosting-comparison/readme.md) | 01 | Offline, a few minutes |
 | [`credit-default-lab/`](../01-classical-ml/practice/credit-default-lab/readme.md) | 01 | Fetches its data from UCI once, about four minutes |
 | [`music-clustering-lab/`](../01-classical-ml/practice/music-clustering-lab/readme.md) | 01 | Fetches its feature file once, about a minute |
-| [`intro-to-ml-in-python/`](01-classical-ml/practice/intro-to-ml-in-python) | 01 | Offline. Needs scikit-learn 1.4 or later, `mglearn` (bundled) and graphviz. Notebook 07 needs the aclImdb download |
-| [`ng-machine-learning/`](01-classical-ml/practice/ng-machine-learning) | 01 | Offline, NumPy and SciPy with bundled `.mat` data |
+| [`intro-to-ml-in-python/`](../01-classical-ml/practice/intro-to-ml-in-python) | 01 | Offline. Needs scikit-learn 1.4 or later, `mglearn` (bundled) and graphviz. Notebook 07 needs the aclImdb download |
+| [`ng-machine-learning/`](../01-classical-ml/practice/ng-machine-learning) | 01 | Offline, NumPy and SciPy with bundled `.mat` data |
 | [`udacity_mlnd_python_practice.ipynb`](../01-classical-ml/practice/udacity-mlnd-python-practice.md) | 01 | Offline, needs `data/iris.txt` (not in repo) |
-| [`ng-deep-learning/`](02-deep-learning/practice/ng-deep-learning) | 02 | Legacy: TF 1.x through `tf.compat.v1`, two notebooks still need `tf.contrib`, some need course helper files and weights. Note 01 has a table for rewriting them in PyTorch |
+| [`ng-deep-learning/`](../02-deep-learning/practice/ng-deep-learning) | 02 | Legacy: TF 1.x through `tf.compat.v1`, two notebooks still need `tf.contrib`, some need course helper files and weights. Note 01 has a table for rewriting them in PyTorch |
 | [`deep-learning-starter-simple-lstm.ipynb`](../02-deep-learning/practice/deep-learning-starter-simple-lstm.md) | 02 | GPU recommended, needs Kaggle Ventilator Pressure data |
-| [`intro-to-nlp/`](03-nlp/practice/intro-to-nlp) | 03 | Data is git-ignored. [Download instructions](../03-nlp/readme.md#intro-to-nlp-datasets) are in the NLP README. Start Jupyter inside the folder |
-| [`text-analytics-with-python/`](03-nlp/practice/text-analytics-with-python) | 03 | Partly legacy: spaCy 2, standalone Keras, gensim 3, `skater`, TF 2.15 or earlier for Ch10a. Ch09 and Ch10 need `movie_reviews.csv` (not in repo) |
+| [`intro-to-nlp/`](../03-nlp/practice/intro-to-nlp) | 03 | Data is git-ignored. [Download instructions](../03-nlp/readme.md#intro-to-nlp-datasets) are in the NLP README. Start Jupyter inside the folder |
+| [`text-analytics-with-python/`](../03-nlp/practice/text-analytics-with-python) | 03 | Partly legacy: spaCy 2, standalone Keras, gensim 3, `skater`, TF 2.15 or earlier for Ch10a. Ch09 and Ch10 need `movie_reviews.csv` (not in repo) |
 | [`approaching-almost-any-nlp-problem-on-kaggle.ipynb`](../03-nlp/practice/approaching-almost-any-nlp-problem-on-kaggle.md) | 03 | Legacy, needs Kaggle spooky-author data and GloVe |
-| [`nn-zero-to-hero/`](../generative-ai/09-llms-from-scratch/practice/nn-zero-to-hero) | GA 09 | micrograd is offline. makemore needs `names.txt` (not in repo). nanoGPT's `bigram.py` runs on CPU, `gpt.py` on a GPU, and `build-nanogpt` needs 8 GPUs and FineWeb-Edu |
+| [`nn-zero-to-hero/`](../../generative-ai/09-llms-from-scratch/practice/nn-zero-to-hero) | GA 09 | micrograd is offline. makemore needs `names.txt` (not in repo). nanoGPT's `bigram.py` runs on CPU, `gpt.py` on a GPU, and `build-nanogpt` needs 8 GPUs and FineWeb-Edu |
 | [`05-time-series-and-recommenders/practice/`](../05-time-series-and-recommenders/practice/readme.md) | 05 | See its README |
 | [`customer-segments-lab/`](../05-time-series-and-recommenders/practice/customer-segments-lab/readme.md) | 05 | Offline and synthetic, one to four minutes |
 

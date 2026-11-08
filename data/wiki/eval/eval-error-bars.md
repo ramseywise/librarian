@@ -7,6 +7,8 @@ sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--09-reading-results.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--03-eval-datasets.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--README.md
+  - data/raw/papers/2026-11-05-ye-2023-comprehensive-capability-analysis-gpt-3.md
+  - data/raw/papers/2026-11-05-zhong-2024-evaluation-openai-o1.md
 ---
 
 # Eval Error Bars and Sample Size
@@ -73,6 +75,22 @@ independent confirmation. Pre-register the slices that gate releases.
 4.6 points, 95% interval ±9; "73% vs 70%" is inside it. Run the paired test first
 ([[Paired Eval Comparison]]).
 
+## Small samples in capability papers
+
+Two 2023-24 capability studies show how thin the sample behind a headline can be (both
+self-reported; how the items were chosen is unstated in one and described inconsistently in
+the other). In a GPT-3/3.5 analysis, cross-model
+comparisons mixed test sets of 100 items (davinci, code-davinci-002), 1,000 items
+(text-davinci-001 and -002) and full datasets (text-davinci-003, gpt-3.5-turbo), the reported
+`±` was never defined, and no significance test was given; the authors say the subsampling,
+made for API rate limits, does not affect the overall trend. In an evaluation of OpenAI's
+o1-preview across 27 tasks, the claimed perfect score in high-school maths covers just 10 items, college maths was
+7 correct of 12, and the 83.3% coding figure is 10 of 12 LeetCode problems with three attempts
+each. The extractions report no intervals or inter-rater agreement for either, and the o1
+paper reports no human baseline despite "human-level" language. A benchmark-side counterpart
+is [[GSM-Symbolic]], where the spread across re-instantiated question sets is about what
+sampling alone gives at 100 questions per set, by the extraction's estimate.
+
 ## See Also
 - [[Paired Eval Comparison]] — extends (variance reduction for A vs B)
 - [[Eval Metric Interpretation Pitfalls]] — related (what the number means, not just how wide it is)
@@ -83,3 +101,9 @@ independent confirmation. Pre-register the slices that gate releases.
 - [[Multiple Comparisons Corrections]] — related (many metrics or variants compared at once)
 - [[Best-of-k Headline Inflation]] — related (a best-of-k headline is not a single-run estimate)
 - [[Benchmark Prompt Format Sensitivity]] — related (prompt format can move a score more than its error bar)
+- [[GSM-Symbolic]] — related (a score as a draw from a distribution)
+- [[GHOSTS Benchmark]] — related (expert grading with no agreement statistic)
+- [[AGIEval]] — related (human baselines without intervals)
+- [[Private Variant Testing on Arena Leaderboards]] — related (identical checkpoints scoring 17 points apart)
+- [[Live Multi-Market Trading Benchmark]] — related (single-run cells, no intervals)
+- [[Live Penetration Testing of Agents and Professionals]] — related (one run per agent, no hypothesis tests)

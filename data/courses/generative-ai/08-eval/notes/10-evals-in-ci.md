@@ -1,5 +1,5 @@
 ---
-imported_hash: fbe12f26c145f1e9
+imported_hash: b2302295fb46b9f6
 title: 10 — Evals in CI
 summary: An eval that someone has to remember to run stops being run, and one that fails the build on every wobble gets muted.
 order: 15
@@ -141,6 +141,8 @@ flowchart LR
 | **Generation** | Grounding, completeness on `generation_eligible` rows | Below floor or regressed |
 | **Grader calibration** | Gating judges are `calibrated`, calibration not stale | A gating judge is experimental or out of date |
 | **Release** | All above pass. Efficiency within budget | Any upstream failure |
+
+The ladder lists calibration after generation, but a judge that gates a generation row must already be calibrated. So calibration status is checked on every run, before any gate that uses a judge scores a row; the Grader calibration gate then reports it. The numbering stays as it is.
 
 This is distinct from the **maturity ladder** ([11](11-production-and-the-maturity-ladder.md#the-ladder)), which orders the stages of *building* an eval practice. The gate ladder orders checks *within* one run.
 

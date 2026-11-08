@@ -1,5 +1,5 @@
 ---
-imported_hash: 9409e5c2bca17c4c
+imported_hash: 88d8ec9e667f8eb4
 title: 2 — Data structures
 summary: 'A Python list holds a C array of pointers plus two numbers: the length, and how many slots are allocated.'
 order: 3
@@ -981,6 +981,11 @@ The general approach is to write down the operations and how often each happens,
 | Top k of a stream? | A min-heap of size k: `O(n log k)` time and `O(k)` memory. |
 | When is a linked list worth it? | When you hold node references and splice at them, as in an LRU. Otherwise the memory and pointer-chasing cost more. |
 | How do you build an LRU cache? | A dict from key to node in a doubly linked list. Both operations are constant time, and `OrderedDict` packages that. |
+
+## See also
+
+- [Python 03 · 08 Objects, inheritance and the MRO](../../python/03-language-for-engineers/notes/08-objects-inheritance-and-mro.md): how attribute lookup uses the `dict` described here.
+- [Python 03 · 09 Memory and the runtime](../../python/03-language-for-engineers/notes/09-memory-and-the-runtime.md): `__slots__` and object size in CPython.
 
 ## Next
 

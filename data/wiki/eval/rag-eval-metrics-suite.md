@@ -227,6 +227,8 @@ TruLens / Phoenix** (ready-made RAG judges with tracing). All need calibration b
 [[Judge Calibration (TPR, TNR and Corrected Pass Rate)]].
 
 ## See Also
+- [[RAGChecker]] — alternative-to (claim-level metric set with a human-preference meta-evaluation)
+- [[Lookback Lens]] — related
 - [[Trajectory Over Outcome]] <!-- auto-linked -->
 - [[Online Eval Sampling]] <!-- auto-linked -->
 - [[Eval Non-Determinism]] <!-- auto-linked -->

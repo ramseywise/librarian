@@ -5,6 +5,8 @@ summary: "Check a generated answer by splitting it into short claims, generating
 updated: 2026-11-08
 sources:
   - data/raw/papers/2026-11-05-chern-2023-factool.md
+  - data/raw/papers/2026-11-05-wang-2023-survey-factuality-large-language-models.md
+  - data/raw/papers/2026-11-05-rawte-2023-survey-hallucination-large-foundation-models.md
 ---
 
 # Tool-Augmented Factuality Checking
@@ -59,7 +61,15 @@ themselves, with no inter-annotator agreement. Claim extraction is scored only o
 from another dataset, not on the responses verified. No cost, latency or call counts are
 reported, and the GPT-3.5 and GPT-4 versions used are 2023 snapshots.
 
+## Definitions from two 2023 surveys
+
+Wang et al. (arXiv 2310.07521) define factuality as generating content consistent with facts that can be traced to reliable sources for instance dictionaries, Wikipedia and textbooks. They treat it as a separate axis from hallucination, which they define as departure from the source or prompt. Their table gives four cells: an output can be unfaithful to the prompt yet factually correct, and a non-factual output need not be a hallucination (for example "I don't know" or a partly correct answer). They report, second-hand, that GPT-3.5 as a grader of answer correctness on NQ and TriviaQA gave negative results even with the gold answer shown. The survey runs no experiments of its own, excludes summarisation faithfulness, and warns that its method-comparison rows are not directly comparable. Rawte et al. (arXiv 2309.05922) define hallucination as content not based on factual or accurate information, with no faithfulness-versus-factuality split. That survey also reports no results of its own; it groups about 25 papers by modality, its coverage ends September 2023, and the extraction notes citation errors in it, so neither survey is a source for the numbers it restates.
+
 ## See Also
+- [[SAFE Long-Form Factuality Scoring]] — related (a search-based claim checker validated against human labels)
+- [[Chain-of-Verification]] — alternative-to (the model verifies its own claims without tools)
+- [[FreshQA]] — related (search evidence used to keep answers current)
 - [[Grounding Claim Methodology]] — alternative-to (faithfulness to a given context instead of correctness against the web)
 - [[LLM Judge Biases]] — related
 - [[LLM-as-Judge Evaluation]] — related
+- [[RAGChecker]] — related (claim-level checks against the retrieved context)

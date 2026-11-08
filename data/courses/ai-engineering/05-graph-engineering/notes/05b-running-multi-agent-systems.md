@@ -1,5 +1,5 @@
 ---
-imported_hash: 4b2f04a14c9ec081
+imported_hash: 2f9f6d21282a07f0
 title: 5b — Running Multi-Agent Systems
 summary: 'The Actor model (Hewitt, 1973) is the precedent: isolated actors that share nothing and communicate only by message.'
 order: 7
@@ -70,7 +70,7 @@ The payload carries paths, not file contents, and the `task_id` is what makes a 
 
 ### Peer: proposer and reviewer
 
-Peer collaboration exists mostly to stop **premature termination**, which comes in three forms: the lazy fake "done", the premature give-up, and the false claim of success. The cure is verification, which is why Loop Engineering puts it bluntly: *"the bottleneck of the loop is the verifier"* ([04-loop](../../04-loop-engineering/readme.md)). Debate, brainstorm and panel formats are peer variants; by the new-information test they help only when the panellists bring different tools or sources.
+Peer collaboration exists mostly to stop **premature termination**, which comes in three forms: the lazy fake "done", the premature give-up, and the false claim of success. The cure is verification, which is why Loop Engineering puts it bluntly: *"the bottleneck of the loop is the verifier"* ([04-loop](../../04-loop-engineering/readme.md)). Debate, brainstorm and panel formats are peer variants; by the [new-information test](05-topology-patterns.md#when-multi-agent-beats-single-agent) they help only when the panellists bring different tools or sources.
 
 **A worked peer system: the Virtual Lab** (Swanson et al., 2024, via *Building AI Agents with LLMs, RAG, and Knowledge Graphs*, ch. 9). A human sets the question. A Principal Investigator agent writes the role, expertise and goal prompts for a team of scientist agents (GPT-4), plus an optional critic. Work then happens in two kinds of meeting:
 

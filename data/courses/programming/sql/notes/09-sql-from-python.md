@@ -1,7 +1,7 @@
 ---
-imported_hash: 008e46c72bbbb672
+imported_hash: b4df736d99370f95
 title: 9 — SQL from Python
-summary: 'with sqlite3.connect("practice/data/clubdata.db") as conn: # commits or rolls back on exit conn.row_factory = sqlite3.Row # rows behave like dicts rows = conn.execute( "SELECT surname, firstname FROM members WHERE joindate >= ?'
+summary: The ingest pattern (get-or-create, one transaction per batch) is in Python 02 · 05 Databases.
 order: 10
 kind: reading
 section: Notes
@@ -15,6 +15,8 @@ source: learn-ai-engineering/programming/sql/notes/09-sql-from-python.md
 ---
 
 ## `sqlite3`: in the standard library
+
+The ingest pattern (get-or-create, one transaction per batch) is in [Python 02 · 05 Databases](../../python/02-informatics/notes/05-databases.md).
 
 ```python
 import sqlite3

@@ -1,5 +1,5 @@
 ---
-imported_hash: 8a732571030acb75
+imported_hash: 5b6234092ff98374
 title: Computer science foundations
 summary: Python hides the machine well enough that you can work for years without a model of it, until a job takes all night, a dict doubles your memory, a total comes out wrong by a cent, or a service stalls with an idle CPU.
 order: 1
@@ -48,6 +48,8 @@ The notes follow the [full chapter standard](https://github.com/ramseywise/libra
 ## Builds on and feeds into
 
 **Builds on**
+
+Read this track after Python 03: the rows below are what it leans on, and Python 03 links back here only as further reading.
 
 | Chapter | Why |
 |---|---|

@@ -2,7 +2,7 @@
 title: Loop Detection and the Two-Retry Rule
 tags: [llm, agents, infra, pattern]
 summary: "The doom loop produces ten mutations of a broken solution — detection tracks per-file edit counts and forces re-planning rather than repair, because past two failures the problem is the spec, not the execution."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/claude-docs/playground/skills/workflow-triage/SKILL.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--05-verification-loops.md
@@ -70,6 +70,7 @@ practice: it read 0 in 134 of 135 ledger rows, while plans failed a day later at
 See [[Gate Pass Rate Measures Effort, Not Readiness]].
 
 ## See Also
+- [[CLI Agent Failure Timeline]] — related
 - [[Recursive Self-Improvement]] <!-- auto-linked -->
 - [[Agent Retry Taxonomy]] — extends
 - [[Verification Loops]] — related

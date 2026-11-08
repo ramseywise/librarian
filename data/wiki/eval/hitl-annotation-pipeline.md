@@ -2,8 +2,9 @@
 title: HITL Annotation Pipeline
 tags: [eval, concept]
 summary: Human-in-the-loop annotation workflow for conversation data — two-queue structure (random + edge case), inter-annotator agreement as quality gate, and feedback routing to eval dataset vs failure taxonomy.
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
+  - data/raw/papers/2026-11-05-veselovsky-2023-artificial-artificial-artificial-intelligence.md
   - data/raw/linear/2026-04-24-evaluation-and-improvement.md
   - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
   - data/raw/claude-docs/playground/docs/archived/mvp-feedback-eval/plan.md
@@ -81,6 +82,12 @@ Before LLM judge scores drive quality decisions, calibrate them against human la
 This is critical for edge cases — judge prompts trained on average-case behavior may not generalize to failure modes.
 
 See [[RAG Evaluation]] for the full judge suite architecture.
+
+## Crowd labels may not be human-written
+
+Veselovsky et al. (arXiv 2306.07899, a work-in-progress preprint, 2023) estimated LLM use among Mechanical Turk workers on one task: summarising 16 medical abstracts into at least 100 words, paid $1 per summary. Of 46 usable summaries from 44 workers, a classifier labelled 21 (46%) synthetic at one threshold and 15 (33%) at a stricter one (self-reported; a range from two thresholds, 95% intervals roughly 31 to 61% and 20 to 45%, no correction for classifier error). The classifier was a fine-tuned e5-base model trained on pre-LLM human summaries and 320 ChatGPT summaries, with 97 to 99% accuracy on held-out data of that task. As a side check, 41 of the 46 summaries involved pasting and all 5 typed without pasting were classed human. The authors conclude that crowd-written text cannot be presumed a human gold standard, and suggest workers may become a filter on model output. GPTZero caught only 6 of 10 ChatGPT summaries the authors generated.
+
+Limits: one task, chosen as easy for LLMs, one platform, a June 2023 snapshot, no ground truth on actual LLM use, and the human training data (2019) differs from the 2023 responses in more than LLM availability.
 
 ## See Also
 - [[Online Eval Sampling]] <!-- auto-linked -->

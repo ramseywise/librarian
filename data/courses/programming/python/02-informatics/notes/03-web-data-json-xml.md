@@ -1,5 +1,5 @@
 ---
-imported_hash: 2ce8d1fb60c2fbb2
+imported_hash: 42d6851fd1cebe91
 title: '3 — Web Data: JSON, XML and APIs'
 summary: 'data = json.loads(''{"name": "Ada", "langs": ["py", "ts"], "active": true, "manager": null}'') data["langs"][0] # ''py'' json.dumps(data, indent=2) # back to text with open("out.json", "w", encoding="utf-8") as fh: json.dump(data, fh)'
 order: 9
@@ -33,6 +33,15 @@ with open("out.json", "w", encoding="utf-8") as fh:
 | string, number | `str`, `int`/`float` |
 | `true`/`false`/`null` | `True`/`False`/`None` |
 
+**JSON Lines** (`.jsonl`) puts one compact JSON object on each line, so a file can be written and read one record at a time:
+
+```python
+records = [{"id": 1, "ok": True}, {"id": 2, "ok": False}]
+text = "".join(json.dumps(r, sort_keys=True, separators=(",", ":")) + "\n" for r in records)
+# '{"id":1,"ok":true}\n{"id":2,"ok":false}\n'
+parsed = [json.loads(line) for line in text.splitlines()]
+```
+
 `json.loads` raises `json.JSONDecodeError` on malformed input. Parsing JSON gives you dicts of *anything*, so validate the shape before you trust it. Pydantic does that ([Python 03 · note 05](../../03-language-for-engineers/notes/05-types-and-dataclasses.md)).
 
 ## XML
@@ -65,3 +74,7 @@ for user in root.findall("users/user"):
 ## Exercises
 
 [`practice/exercises/03_web_data.py`](../practice/exercises/03_web_data.py): flatten a nested JSON API response, read XML records, and follow pagination over fake pages.
+
+## Next
+
+[4 — Objects](04-objects.md): writing your own classes for the records you parse.

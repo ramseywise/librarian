@@ -1,5 +1,5 @@
 ---
-imported_hash: bd77388ed94383e9
+imported_hash: 251cfde61893b967
 title: Dynamic Programming
 summary: Dynamic programming solves complex problems by breaking them into overlapping subproblems.
 order: 143
@@ -12,6 +12,6 @@ source: learn-ai-engineering/programming/drills/coding/dsa/dynamic_programming/R
 
 Dynamic programming solves complex problems by breaking them into overlapping subproblems. The key steps are: define the state, write the recurrence relation, identify the base case, and decide top-down (memoization) vs bottom-up (tabulation).
 
-- Climbing Stairs [[Leetcode](https://leetcode.com/problems/climbing-stairs/)] [[Solution](climbing_stairs/)] [[Thinking](climbing-stairs/thinking.md)]
-- Longest Increasing Subsequence [[Leetcode](https://leetcode.com/problems/longest-increasing-subsequence/)] [[Solution](longest_increasing_subsequence/)] [[Thinking](longest-increasing-subsequence/thinking.md)]
-- Coin Change (Min Count) [[Leetcode](https://leetcode.com/problems/coin-change/)] [[Solution](coin_change_min_count/)] [[Thinking](coin-change-min-count/thinking.md)]
+- Climbing Stairs [[Leetcode](https://leetcode.com/problems/climbing-stairs/)] [[Solution](../dynamic_programming/climbing_stairs)] [[Thinking](climbing-stairs/thinking.md)]
+- Longest Increasing Subsequence [[Leetcode](https://leetcode.com/problems/longest-increasing-subsequence/)] [[Solution](../dynamic_programming/longest_increasing_subsequence)] [[Thinking](longest-increasing-subsequence/thinking.md)]
+- Coin Change (Min Count) [[Leetcode](https://leetcode.com/problems/coin-change/)] [[Solution](../dynamic_programming/coin_change_min_count)] [[Thinking](coin-change-min-count/thinking.md)]

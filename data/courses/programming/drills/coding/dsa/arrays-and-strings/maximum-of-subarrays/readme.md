@@ -1,5 +1,5 @@
 ---
-imported_hash: b3ac02ebde39214a
+imported_hash: 67e89b9a794e9646
 title: Maximum Of Subarrays
 summary: ''
 order: 116
@@ -20,4 +20,4 @@ Maximum of all subarrays of size k
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](solution.py) |
+| Python   | [solution.py](../../arrays_and_strings/maximum_of_subarrays/solution.py) |

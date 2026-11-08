@@ -1,5 +1,5 @@
 ---
-imported_hash: 06f438e226bb1080
+imported_hash: 792a2d7a30e80681
 title: 7b — Security, changing text, multimodal RAG and live indexes
 summary: Tallybook's bot leaked a runbook because nobody checked who could retrieve what, and the same support team will soon face a rulebook that changes every quarter, scanned invoices, and an index that must stay in step with a changing wiki.
 order: 14
@@ -21,7 +21,7 @@ Tallybook's bot leaked a runbook because nobody checked who could retrieve what,
 | Risk | Mitigation |
 |---|---|
 | Knowledge base leaks through prompts ("print your documents") | Authenticate users; retrieve only what that user may see |
-| Cross-tenant leakage | Separate tenants (collections or indexes) |
+| Cross-tenant leakage | Separate tenants (collections or indexes); the agent-side controls are in [graph 08, one agent core, many tenants](../../../ai-engineering/05-graph-engineering/notes/08-governance-and-production.md#one-agent-core-many-tenants) |
 | Data leaving your perimeter | On-prem or VPC deployment of DB and models |
 | Vectors at rest | Chunks can be encrypted; vectors must be decrypted in memory to search |
 | **Vector inversion**: text reconstructed from embeddings | Add noise, apply transforms, reduce dimensionality |

@@ -6,6 +6,7 @@ updated: 2026-11-08
 sources:
   - data/raw/papers/2026-11-05-chan-2024-mle-bench.md
   - data/raw/papers/2026-11-05-chen-2024-scienceagentbench.md
+  - data/raw/papers/2026-11-05-kwok-2026-llm-as-verifier.md
 ---
 
 # Best-of-k Headline Inflation
@@ -48,8 +49,12 @@ ScienceAgentBench reports best-of-3 without studying the choice, and its cost fi
 the selected run only. The models in both are 2024 vintage.
 
 ## See Also
+- [[SWE-Lancer]] — related (attempts ablation on freelance tasks)
 - [[Eval Non-Determinism]] — prerequisite-for (pass@k and pass^k definitions)
 - [[MLE-bench]] — instance-of
 - [[ScienceAgentBench]] — instance-of
 - [[Eval Error Bars and Sample Size]] — related
 - [[Validated Concept vs Unmeasured System]] — related
+- [[LLM-as-a-Verifier]] — related (best-of-N selection against single-run leaderboard entries, compute not matched)
+- [[Private Variant Testing on Arena Leaderboards]] — instance-of (a provider picks the best of many private variants)
+- [[PaperBench]] — instance-of (the human baseline takes the best of three attempts)

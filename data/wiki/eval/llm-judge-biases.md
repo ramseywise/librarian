@@ -7,6 +7,9 @@ sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--05-llm-as-judge.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--12-failure-modes.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--references.md
+  - data/raw/papers/2026-11-05-whitehouse-2025-j1.md
+  - data/raw/papers/2026-11-05-ye-2023-flask.md
+  - data/raw/papers/2026-11-06-chen-2026-two-level-meta-rubrics-evaluating.md
 ---
 
 # LLM Judge Biases
@@ -26,6 +29,17 @@ with each other (over 80%) **once these are controlled**.
 
 Self-grading leans lenient: frame the prompt as grading a third party's work, never the
 model's own.
+
+## Measured examples (self-reported by the papers)
+
+- **Position.** J1-Llama-70B, trained as a judge, flipped its verdict on 21.9% of PPE Correctness
+  pairs when answer order was swapped; an untrained Llama-3.1-8B flipped on 44.1%
+  ([[J1 Reinforcement-Learned Judge]]).
+- **Length.** FLASK skill scores correlated 0.737 with response length for
+  completeness but 0.147 for logical correctness ([[FLASK Skill-Set Evaluation]]).
+- **Self-scoring.** In GAMUT, Qwen3-VL 235B as judge gave itself 44.0 against 33.0 from a Gemini
+  judge, while Gemini and Claude Opus 4.8 judges produced identical rankings
+  ([[GAMUT Meta-Rubric Benchmark]]).
 
 ## Judge prompt structure that resists them
 
@@ -74,6 +88,7 @@ The pattern extends to other modalities — TTS via an audio model (or ASR then 
 UI agents from screenshots, video from sampled frames — each with its own calibration set.
 
 ## See Also
+- [[Shepherd Critic Model]] — related (GPT-4 Likert versus pairwise against human ratings)
 - [[LLM-as-Judge Evaluation]] — extends (the failure modes of the judge primitive)
 - [[Judge Calibration (TPR, TNR and Corrected Pass Rate)]] — related (measuring the residual error after mitigation)
 - [[Specialist Verdict Panel]] — instance-of (one judge per criterion)
@@ -84,3 +99,6 @@ UI agents from screenshots, video from sampled frames — each with its own cali
 - [[Human Agreement Ceiling Protocol]] — extends
 - [[Output Length Confounds Reference Metrics]] — related (length control as a verbosity mitigation)
 - [[Tool-Augmented Factuality Checking]] — related (outside evidence instead of a lenient self-check)
+- [[J1 Reinforcement-Learned Judge]] — extends (a consistency reward aimed at position flips)
+- [[FLASK Skill-Set Evaluation]] — related (length and grader-preference evidence)
+- [[Prometheus 2 Evaluator Models]] — related (bias analysis not done there)

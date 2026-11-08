@@ -5,6 +5,8 @@ summary: "The same model on the same benchmark can move by more than 20 accuracy
 updated: 2026-11-08
 sources:
   - data/raw/papers/2026-11-05-biderman-2024-lessons-trenches-reproducible-evaluation-language.md
+  - data/raw/papers/2026-11-05-ye-2023-comprehensive-capability-analysis-gpt-3.md
+  - data/raw/papers/2026-11-05-guha-2023-legalbench.md
 ---
 
 # Benchmark Prompt Format Sensitivity
@@ -26,6 +28,13 @@ together**, and the last two are rarely reported.
 - Micro- and macro-averaging over subtasks shifted results by several points.
 - Leaderboard entrants fine-tuned models to the harness's prompt format, down to the
   separator tokens a particular harness version used.
+- **Other studies (self-reported).** In a GPT-3/3.5 capability analysis, zero-shot davinci
+  (100 items per task) produced no parseable output on MRPC or SNLI unless the prompt ended
+  with an explicit "Answer" cue (analyzable rate 0.00 without it, 100.00 and 86.00 with it),
+  so scoring had to treat unparseable outputs as wrong. In LegalBench, five random 4-shot
+  demonstration sets on eight binary tasks gave a spread of over 20 balanced-accuracy points
+  for a 7B open model (see [[LegalBench]]), and a plain-language prompt beat a legalese one
+  by up to 21 points on four of five tasks for GPT-3.5.
 
 ## Other variance sources
 
@@ -60,3 +69,5 @@ evaluation almost exclusively; LLM judges get a paragraph and agents are not cov
 - [[Eval Harness]] — related (where these choices are fixed and logged)
 - [[Output Length Confounds Reference Metrics]] — related
 - [[Model Version Drift]] — related (format changes across model snapshots)
+- [[LegalBench]] — related (demonstration and wording sensitivity measured on legal tasks)
+- [[AGIEval]] — related (zero-shot vs few-shot and chain of thought moved exam scores unevenly)

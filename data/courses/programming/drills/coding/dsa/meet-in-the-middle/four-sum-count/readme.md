@@ -1,5 +1,5 @@
 ---
-imported_hash: 23602714117f3d37
+imported_hash: f76727e1c1576194
 title: 4Sum II
 summary: Given four integer arrays, return the count of tuples (i, j, k, l) such that nums1[i] + nums2[j] + nums3[k] + nums4[l] == 0.
 order: 181
@@ -20,4 +20,4 @@ Given four integer arrays, return the count of tuples `(i, j, k, l)` such that `
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](solution.py) |
+| Python   | [solution.py](../../meet_in_the_middle/four_sum_count/solution.py) |

@@ -1,5 +1,5 @@
 ---
-imported_hash: 4145d53d71634c1f
+imported_hash: a3143071eb4ca362
 title: Longest Substring Without Repeating
 summary: Given a string, find the length of the longest substring without repeating characters.
 order: 112
@@ -20,4 +20,4 @@ Given a string, find the length of the longest substring without repeating chara
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](solution.py) |
+| Python   | [solution.py](../../arrays_and_strings/longest_substring_without_repeating/solution.py) |

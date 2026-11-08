@@ -2,8 +2,9 @@
 title: LLM-as-Judge Evaluation
 tags: [eval, llm, pattern]
 summary: A separate LLM scoring outputs against a rubric — the approach for subjective quality where exact matching fails, requiring calibration against human grades and recommended as a complement to golden-set grading rather than a replacement.
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
+  - data/raw/papers/2026-11-05-luong-2025-towards-robust-mathematical-reasoning.md
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/eval-approaches.md
   - data/raw/claude-docs/akira/docs/research/2026-09-03-divergence-since-waslosheute-mvp.md
   - data/raw/claude-docs/kiez-archive/docs/research/2026-09-03-divergence-since-waslosheute-mvp.md
@@ -17,6 +18,8 @@ sources:
   - data/raw/claude-docs/diskoe/docs/research/2026-09-26-venue-dataset-review-findings.md
   - data/raw/claude-docs/kiez-archive/docs/research/2026-09-26-venue-dataset-review-findings.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--05-llm-as-judge.md
+  - data/raw/papers/2026-11-05-you-2026-agent-as-judge.md
+  - data/raw/papers/2026-11-05-li-2026-jev-as-judge.md
 ---
 
 # LLM-as-Judge Evaluation
@@ -114,7 +117,28 @@ that the judge's agreement means something ([[Human Agreement Ceiling Protocol]]
 that ceiling is low — as in the product above — the judge stays ungated whatever its
 calibration says.
 
+## Agent-as-a-Judge (survey)
+
+You et al. (arXiv 2601.05111, 2026) is a survey with no experiments or numbers of its own. The
+authors argue that a single-pass LLM judge has three weaknesses: bias from its own parameters
+(verbosity, favouring patterns like its own output), no way to check a claim against the world,
+and coarse scores when a rubric has many dimensions. Their remedy is a judge that plans, calls
+tools (code execution, search, provers), keeps memory and may use several cooperating agents. They
+sort such judges into three stages: procedural (a fixed workflow or debate between fixed roles),
+reactive (tool calls and routing chosen from interim feedback) and self-evolving (rubrics
+and memory that change as the judge runs). They also say agentic judging costs more, is slower, opens more
+room for attack and can magnify judge bias if its output is used as a reward. Limits: the survey offers no
+evidence that agentic judges match humans better than single-pass ones, states no inclusion criteria, concedes
+that many "agent" judges are fixed role-play prompts, and does not say how to validate an
+agentic judge itself. Trained and cheaper variants are on [[J1 Reinforcement-Learned Judge]],
+[[Prometheus 2 Evaluator Models]] and [[JEV-as-a-Judge Cascade]]; a logprob-weighted scorer is
+[[LLM-as-a-Verifier]].
+
 ## See Also
+- [[PaperBench]] — related (a judge validated against human leaf labels)
+- [[Gaia2]] — related
+- [[SAFE Long-Form Factuality Scoring]] — related (an LLM-plus-search judge validated against human labels)
+- [[Shepherd Critic Model]] — related
 - [[Eval vs Test Distinction]] <!-- auto-linked -->
 - [[Eval Ladder]] — related (part of; rung 3)
 - [[Golden Set Mechanics]] — related (heuristic in CI, judge on demand)
@@ -126,6 +150,7 @@ calibration says.
 - [[Constitutional AI and RLAIF]] — instance-of (the same judge primitive used to generate training labels)
 - [[Bradley-Terry Preference Model]] — related (pairwise comparison formalized as a scalar)
 - [[Append-Only Human Labels]] — prerequisite-for (human labels set the judge trust ceiling)
+- [[IMO-Bench]] — related (autograders for answers and proofs checked against expert grades)
 - [[Human Agreement Ceiling Protocol]] — prerequisite-for (κ_judge ≥ 0.8 × κ_HH, not an absolute target)
 - [[Synthesize the Cheap Half]] — related (gold-set calibration, closed-loop and stratum-bias rules for synthesized labels)
 - [[Confidence That Is Not a Probability]] — related (another score that needs independent labels before it can gate)
@@ -138,3 +163,9 @@ calibration says.
 - [[Grader States (Heuristic, Calibrated, Experimental)]] — extends
 - [[SOMA Judge Rubric]] — extends (specific, ordinal, multi-aspect rubric; never reveal self-grading)
 - [[Verification Loops]] — instance-of
+- [[LLM-as-a-Verifier]] — extends (score-token expectation instead of a discrete verdict)
+- [[J1 Reinforcement-Learned Judge]] — extends (a judge trained with RL)
+- [[Prometheus 2 Evaluator Models]] — extends (an open trained evaluator)
+- [[JEV-as-a-Judge Cascade]] — extends (a cheap judge that escalates when unsure)
+- [[FLASK Skill-Set Evaluation]] — extends (per-skill rubrics)
+- [[GAMUT Meta-Rubric Benchmark]] — extends (structured rubrics compiled to binary checks)

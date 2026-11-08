@@ -8,6 +8,7 @@ sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--04-graders.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--12-failure-modes.md
   - data/raw/papers/2026-11-05-borji-2023-categorical-archive-chatgpt-failures.md
+  - data/raw/papers/2026-11-06-albayaydh-2026-beyond-leaderboard.md
 ---
 
 # Eval Failure Taxonomy
@@ -62,6 +63,18 @@ categories that the author calls arbitrary and overlapping, from a convenience s
 denominators, and later model versions were re-tested ad hoc. Use such an archive to seed
 candidate labels, then measure frequencies on a sampled set of your own traces
 ([[Error Analysis (Open and Axial Coding)]]).
+
+## One literature's clusters
+
+Albayaydh et al. (arXiv 2607.05775, 2026), a narrative synthesis of 27 benchmark, taxonomy and
+audit papers on LLM agents, group reported failures into six clusters, namely tool invocation, planning with
+constraints, degradation over long horizons, multi-agent coordination, safety, and the validity
+of measurement itself. The clusters are the authors' own and, as they note, have subjective boundaries.
+Figures they pass on are second-hand and stated with few setups; two examples from the cited
+work: GPT-4 reached a 0.6% final-plan success on TravelPlanner, and the MAST study (7 frameworks,
+over 200 tasks, manually annotated traces, Cohen's kappa 0.88) coded 14 multi-agent failure
+modes in three categories. The paper's own gaps: it covers only English text and web tasks, cites a few sources that
+were not peer reviewed and reproduced no experiments.
 
 ## See Also
 - [[Error Analysis (Open and Axial Coding)]] — prerequisite-for (axial coding produces the categories)

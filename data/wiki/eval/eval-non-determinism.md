@@ -87,3 +87,5 @@ sampling ([[Eval Error Bars and Sample Size]]).
 - [[Best-of-k Headline Inflation]] — extends (when pass@k is reported as if it were pass@1)
 - [[Model Version Drift]] — related (change between snapshots, not between runs)
 - [[Benchmark Prompt Format Sensitivity]] — related
+- [[Holistic Agent Leaderboard (HAL)]] — related (mostly single runs without noise estimates)
+- [[Price Reversal in Reasoning-Model Costs]] — related (per-query cost also varies between runs)

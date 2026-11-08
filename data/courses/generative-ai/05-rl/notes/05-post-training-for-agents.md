@@ -1,5 +1,5 @@
 ---
-imported_hash: d5759a19fdc2ecb7
+imported_hash: 3bfd27bf2b6fd4d4
 title: 5 — Post-Training for Agents
 summary: The Q-learning agent in the treasure-hunt lab needs about 10,000 games, and an LLM agent wins the same game on its first try in 18 moves.
 order: 10
@@ -219,7 +219,7 @@ P(right move)=0.90  simulated first-win rate=0.31486  expected episodes to first
 
 A uniform policy expects to need millions of tries. A prior that is right 70% of the time needs about fifty. That is the entire difference between tabula rasa exploration and an LLM's.
 
-**Lab:** [practice/01-q-learning-treasure-hunt](../practice/01-q-learning-treasure-hunt/) reproduces Exp 7-1 offline. The Exp 7-2 LLM agent is [upstream](https://github.com/bojieli/ai-agent-book/tree/main/chapter1/learning-from-experience) and needs an API key.
+**Lab:** [practice/01-q-learning-treasure-hunt](../../05-RL/practice/01-q-learning-treasure-hunt) reproduces Exp 7-1 offline. The Exp 7-2 LLM agent is [upstream](https://github.com/bojieli/ai-agent-book/tree/main/chapter1/learning-from-experience) and needs an API key.
 
 **The other direction: LLMs inside a classic RL loop.** Everything else in this note trains
 the LLM. Raieli & Iuculano summarize the reverse, where a conventional RL agent keeps its own
@@ -263,7 +263,7 @@ Pitfalls of running SFT and RL in practice (reward hacking, simulators, compute)
 ## Try it
 
 1. Use the exploration block to find the per-move probability at which an 11-move path needs about 100 expected tries. What does that tell you about how much a prior has to help?
-2. Run the [treasure hunt lab](../practice/01-q-learning-treasure-hunt/) with `--stochastic --episodes 10000`, and compare the result with the deterministic win rate.
+2. Run the [treasure hunt lab](../../05-RL/practice/01-q-learning-treasure-hunt) with `--stochastic --episodes 10000`, and compare the result with the deterministic win rate.
 
 <details><summary>Answers</summary>
 

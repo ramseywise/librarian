@@ -1,7 +1,7 @@
 ---
-imported_hash: 34f70a5464f9e2cf
+imported_hash: 2a5c4ec888553c5c
 title: '6c — Evaluating Agents: Suites and Environment Hygiene'
-summary: snapshot ──► agent runs ──► grade end state ──► log steps, tokens, cost ──► tear down ▲ (tools on a and path and how the run ended │ │ private copy) │ └──────────────────────── fresh state for the next trial ◄────────────────────┘
+summary: 'Notes 06 and 06b graded runs: end state, path, components, repeated trials and cost.'
 order: 11
 kind: reading
 section: Notes
@@ -12,7 +12,7 @@ source: learn-ai-engineering/generative-ai/08-eval/notes/06c-agent-suites-and-en
 
 > The tasks you pick and the environment they run in decide what an agent eval can see. Add the suites your kind of agent needs, test conversations and sessions as wholes, and reset, isolate and audit the environment before blaming the agent.
 
-[06](06-evaluating-agents.md) and [06b](06b-components-trials-and-cost.md) graded runs: end state, path, components, repeated trials and cost. This chapter is about what the runs are run on. Each trial should move through the same isolated lifecycle, so that one trial's side effects never become the next trial's failure:
+Notes [06](06-evaluating-agents.md) and [06b](06b-components-trials-and-cost.md) graded runs: end state, path, components, repeated trials and cost. This chapter is about what the runs are run on. Each trial should move through the same isolated lifecycle, so that one trial's side effects never become the next trial's failure, as this loop shows.
 
 ```text
  per trial, k times per task

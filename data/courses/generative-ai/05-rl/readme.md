@@ -1,5 +1,5 @@
 ---
-imported_hash: de4358860638a0c7
+imported_hash: 6f0acf15ec49df7c
 title: 05 — RL & Alignment
 summary: Reinforcement learning is how a pretrained model becomes an assistant.
 order: 1
@@ -55,7 +55,7 @@ New to RL? Start at 00. It assumes no notation and no data-science pillar. If yo
 | 10 | [Engineering RL systems](notes/10-engineering-rl-systems.md) | Imitation and inverse RL; hierarchy and curricula; engineering an RL problem; scaling; running RL in production; what has dated |
 | 11 | [Multi-agent and RAG RL](notes/11-multi-agent-and-rag-rl.md) | CTDE, VDN/QMIX, MADDPG, MAPPO; path finding; RL over retrieval and tool actions; Self-RAG |
 
-Chapters 12 and 13 sit where the table puts them; they were split out of 02 and 03 and kept those numbers so that links to the other chapters still hold. Short route for a working engineer: 02, 12, 03, 05, 07, then run the [Q-learning lab](practice/01-q-learning-treasure-hunt/).
+Chapters 12 and 13 sit where the table puts them; they were split out of 02 and 03 and kept those numbers so that links to the other chapters still hold. Short route for a working engineer: 02, 12, 03, 05, 07, then run the [Q-learning lab](../05-RL/practice/01-q-learning-treasure-hunt).
 
 ## Builds on and feeds into
 
@@ -142,11 +142,11 @@ Everything else: [references.md](references.md).
 
 **Practice and slides**
 
-Deck: [slides/rl-and-alignment.pptx](slides/rl-and-alignment.pptx) and [.pdf](slides/rl-and-alignment.pdf), built from [slides/deck.yaml](slides/deck.yaml) with `make slides PILLAR=generative-ai/05-RL STRICT=1 PREVIEW=1`.
+Deck: [slides/rl-and-alignment.pptx](../05-RL/slides/rl-and-alignment.pptx) and [.pdf](../05-RL/slides/rl-and-alignment.pdf), built from [slides/deck.yaml](../05-RL/slides/deck.yaml) with `make slides PILLAR=generative-ai/05-RL STRICT=1 PREVIEW=1`.
 
 | Lab | What it shows | Run |
 |---|---|---|
-| [01-q-learning-treasure-hunt](practice/01-q-learning-treasure-hunt/) | Tabular Q-learning on a text adventure with hidden rules: 0% wins at 1k episodes, 100% at 10k | offline; from the lab folder, `uv run --no-project --with numpy python test_rl_learning.py --episodes 1000 10000` (~10 s) |
+| [01-q-learning-treasure-hunt](../05-RL/practice/01-q-learning-treasure-hunt) | Tabular Q-learning on a text adventure with hidden rules: 0% wins at 1k episodes, 100% at 10k | offline; from the lab folder, `uv run --no-project --with numpy python test_rl_learning.py --episodes 1000 10000` (~10 s) |
 
 **Readings:** local PDFs in [sources/](sources/), indexed with arXiv ids in [references.md](references.md#core-papers). Open gaps (TRL notebook, reward-model architecture note) are in [references.md § Gaps](references.md#gaps).
 

@@ -1,5 +1,5 @@
 ---
-imported_hash: c9b88d1d7ce2cd11
+imported_hash: a871c735e7d9c247
 title: Moving Average
 summary: Given a stream of integers and a window size, calculate the moving average of all integers in the sliding window.
 order: 193
@@ -21,4 +21,4 @@ all integers in the sliding window.
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](solution.py) |
+| Python   | [solution.py](../moving_average/solution.py) |

@@ -1,5 +1,5 @@
 ---
-imported_hash: ebc3e89135bf3236
+imported_hash: 1ec2329b2c1e40d2
 title: 6 — When Not to Build a Graph
 summary: 'A graph drawn over work nobody understands yet fixes the first guess in place, and then charges for it: Anthropic reports multi-agent systems at about 15× a chat turn''s tokens, with more prompts to drift and more places for a wrong answer t…'
 order: 8
@@ -35,6 +35,8 @@ Sakana AI's **Fugu** report ([arXiv:2606.21228](https://arxiv.org/abs/2606.21228
 **AgentConductor** ([arXiv:2602.17100](https://arxiv.org/abs/2602.17100), Wang et al., 2026-02, preprint) trains a 3B orchestrator (SFT on 4,500 GPT-4o-written YAML topologies (the appendix says GPT-4o-mini), then GRPO) to emit a layered DAG per problem and regenerate it for up to two turns from execution feedback, with per-turn node caps of 4, 7 and 10 for easy, medium and hard problems. With gpt-4o-mini workers and pass@1 over three runs it scored **58.8 on APPS, 46.3 on LiveCodeBench v4 and 38.8 on CodeContests**. The paper's text claims margins of 14.6, 3.1 and 1.1 points over the second best, but its Table 2 gives MetaGPT 51.3 on APPS (a 7.5-point gap) and Chain-of-Agents 44.9 on LiveCodeBench (1.4). Its overall average (the mean of the contest-level and basic-code group averages) of 72.1 beat the fixed MetaGPT pipeline's 68.7. The paper's own account is that the learned-topology baselines (GPTSwarm, AgentPrune, MacNet, G-Designer, 63.7–66.0) scored below MetaGPT because their topologies stay rigid, which is the survey's static-versus-dynamic split on one task family. Limits: one orchestrator size and one worker model, baselines re-run under the authors' roles and capped at 20 nodes, the density metric and caps are the authors' own, and ADAS and MaAS were not run as baselines.
 
 **Archon** ([arXiv:2409.15254](https://arxiv.org/abs/2409.15254), Saad-Falcon et al., 2024, preprint v6 2025-06) searches instead of training, and over a deliberately narrow space: a linear stack of generate, critique, rank, fuse, verify and unit-test layers, 9,576 valid configurations, found by Bayesian optimisation on a 20% dev split. On seven benchmarks (held-out 80%) its task-specific architectures used 39–44 calls against 52 for ADAS and 48 for AFlow and scored higher (CodeContests 41.4% vs. ADAS 23.7% and AFlow 21.1%; MT-Bench 79.5% vs. 66.3% and 62.4%). A generalised architecture kept 91.7–94.2% of its task-specific score on unseen tasks, against 66.8–73.8% for generalised ADAS and AFlow. How those two baselines were run and tuned is not detailed, the judges were GPT-4-class models, and the main text and appendix disagree on some component gains. It costs up to 5x a single call and helps little with 7B models, so a constrained search space is a cheap first step before generating topologies.
+
+Searching for a topology with a meta-agent (ADAS) and learned codebooks of fixed graphs are covered in [05b](05b-running-multi-agent-systems.md#searching-for-the-topology-adas); this note keeps the argument for how little structure to commit to.
 
 ---
 

@@ -1,5 +1,5 @@
 ---
-imported_hash: 4f2048134c741958
+imported_hash: a0549f2bab961656
 title: 3 — Judge Pipelines over Trace Exports
 summary: By the end of chapter 2, Acme Books had a release gate that passed the billing category while billing answers were going wrong in production.
 order: 4
@@ -216,7 +216,7 @@ print(override(verdict))
 
 ## Stage 2: verify only what is expensive
 
-The strong model is many times the price of the fast one, so it should only look at what the fast one flagged. Hallucinations are a minority of turns, and false positives are what erodes trust in the report, so a second opinion aimed at exactly those gets the most from its budget. Upstream reports the strong second judge running on about 15% of traffic.
+The strong model is many times the price of the fast one, so it should only look at what the fast one flagged. This is the cascade pattern; [GA 08 note 5](../../08-eval/notes/05-llm-as-judge.md#cost) covers it as a way to cut judge cost. Hallucinations are a minority of turns, and false positives are what erodes trust in the report, so a second opinion aimed at exactly those gets the most from its budget. Upstream reports the strong second judge running on about 15% of traffic.
 
 ```python
 # verification fields upstream: verified, severity_adjustment (none|increase|decrease),

@@ -1,5 +1,5 @@
 ---
-imported_hash: f44abab9bb850336
+imported_hash: 4f1800bbb88122ad
 title: Course Schedule
 summary: Given numCourses and a list of prerequisites pairs, determine if it is possible to finish all courses.
 order: 153
@@ -20,4 +20,4 @@ Given `numCourses` and a list of `prerequisites` pairs, determine if it is possi
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](solution.py) |
+| Python   | [solution.py](../course_schedule/solution.py) |

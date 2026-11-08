@@ -1,5 +1,5 @@
 ---
-imported_hash: 5d9b4bd136c4a272
+imported_hash: c407f7582706ecb8
 title: Minimum Platforms
 summary: ''
 order: 122
@@ -20,4 +20,4 @@ Minimum Platforms
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](solution.py) |
+| Python   | [solution.py](../../arrays_and_strings/minimum_platforms/solution.py) |

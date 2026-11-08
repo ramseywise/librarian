@@ -1,5 +1,5 @@
 ---
-imported_hash: 58205ca04608e009
+imported_hash: 5162dc9ba0e088e2
 title: 7 — Modules, tsconfig and Tooling
 summary: '// main.ts import Calculator, { add } from ''./math.ts''; import type { Shape } from ''./shapes.ts''; // type-only: erased completely import  as path from ''node:path''; // the node: prefix for built-ins'
 order: 8
@@ -50,7 +50,7 @@ import * as path from 'node:path';             // the node: prefix for built-ins
 }
 ```
 
-The practice project's [`tsconfig.json`](../practice/tsconfig.json) leaves out the last two strictness options, because the vendored exercises predate them.
+The practice project's [`tsconfig.json`](../practice/tsconfig.json) leaves out `noUncheckedIndexedAccess`, `verbatimModuleSyntax` and `erasableSyntaxOnly`. It uses `"module": "preserve"` with `"moduleResolution": "bundler"` instead of `nodenext`.
 
 ## Running TS
 

@@ -1,5 +1,5 @@
 ---
-imported_hash: 8ef0cf123d9bd8bc
+imported_hash: a0fe8720accd0475
 title: 4 — Strings and Files
 summary: Strings are immutable. s[0] = "B" is an error.
 order: 5
@@ -29,6 +29,8 @@ Strings are **immutable**. `s[0] = "B"` is an error. Every method returns a *new
 
 ## Methods you'll use constantly
 
+For patterns these methods can't express, use [regular expressions](../../02-informatics/notes/01-regular-expressions.md).
+
 | Method | Example | Result |
 |---|---|---|
 | `strip()` / `rstrip()` | `"  hi\n".strip()` | `'hi'` |
@@ -52,7 +54,7 @@ f"{value=}"                        # 'value=42': handy when debugging
 ## Reading files
 
 ```python
-with open("mbox.txt", encoding="utf-8") as fh:     # the with block closes the file for you
+with open("mbox.txt", encoding="utf-8") as fh:     # any text file works; the with block closes it for you
     for line in fh:                                # one line at a time, so memory use stays constant
         line = line.rstrip()                       # drop the trailing newline
         if not line.startswith("From "):
@@ -78,3 +80,7 @@ with open("out.txt", "w", encoding="utf-8") as out:   # "w" truncates the file; 
 ## Exercises
 
 [`practice/exercises/04_strings_and_files.py`](../practice/exercises/04_strings_and_files.py): parse email headers, extract fields with slicing, and read a temporary file.
+
+## Next
+
+[5 — Lists, dictionaries and tuples](05-collections.md): storing what you read.

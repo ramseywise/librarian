@@ -1,5 +1,5 @@
 ---
-imported_hash: f2b86b1c35dac89c
+imported_hash: 63de9acf644ee274
 title: '10 — Building KGs with LLMs: Extraction and Resolution'
 summary: An LLM will turn any document into triples that look right, and that is the danger.
 order: 12
@@ -403,7 +403,7 @@ Source: *KG & LLMs in Action*, appendix C. The distances are over a miRNA–miRN
 
 ## Stage 6: evaluating extraction
 
-The hop table above is the reason this stage exists. Hand-label a gold set (50–100 mentions is enough to start), then measure:
+The hop table above is the reason this stage exists. The pipeline after extraction (assembly, fusion, lifecycle) is in [10b](10b-assembling-and-maintaining-kgs.md); this stage scores what comes out of extraction. Hand-label a gold set (50–100 mentions is enough to start), then measure:
 
 | Metric | Over | Catches |
 |---|---|---|

@@ -57,6 +57,8 @@ inter-rater agreement, and rubrics follow the gold program, so a valid alternati
 can score low. The models are from 2024.
 
 ## See Also
+- [[MedBrowseComp]] — related
+- [[PaperBench]] — related
 - [[Best-of-k Headline Inflation]] — related
 - [[MLE-bench]] — alternative-to
 - [[Eval Contamination Defenses]] — related

@@ -1,5 +1,5 @@
 ---
-imported_hash: ea945d2cdb503338
+imported_hash: cf895c1e3ee4b317
 title: Generate Paranthesis
 summary: Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.
 order: 137
@@ -19,4 +19,4 @@ well-formed parentheses.
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](solution.py) |
+| Python   | [solution.py](../generate_parenthesis/solution.py) |

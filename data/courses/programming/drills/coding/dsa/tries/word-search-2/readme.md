@@ -1,5 +1,5 @@
 ---
-imported_hash: 2f6caaf7b31d3b7e
+imported_hash: 4cf8d28b400f49d8
 title: Word Search II
 summary: Given a board of characters and a list of words, find all words that can be formed by traversing adjacent cells (no cell reuse per word).
 order: 230
@@ -20,4 +20,4 @@ Given a board of characters and a list of words, find all words that can be form
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](solution.py) |
+| Python   | [solution.py](../word_search_2/solution.py) |

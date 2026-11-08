@@ -65,6 +65,7 @@ It is a monitoring layer for [[Execution Boundaries and Guardrails]]; the monito
 agent's transcript, which is the material [[Trajectory Over Outcome]] argues should be graded.
 
 ## See Also
+- [[CLI Agent Failure Timeline]] — related
 - [[Trajectory Over Outcome]] — prerequisite-for
 - [[Execution Boundaries and Guardrails]] — related (the guardrail layer a monitor feeds)
 - [[LLM-as-Judge Evaluation]] — related (the monitor is a judge with an adversary)

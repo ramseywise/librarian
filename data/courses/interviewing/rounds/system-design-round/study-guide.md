@@ -1,5 +1,5 @@
 ---
-imported_hash: 037dd59649d7eed6
+imported_hash: 584065546df31c5a
 title: System Design Round — Study Guide
 summary: The method for the highest-weight technical round.
 order: 65
@@ -12,7 +12,9 @@ source: learn-ai-engineering/practice/interviewing/rounds/system-design-round/st
 
 The method for the highest-weight technical round. Domain content lives in the [RAG](../../../generative-ai/02-rag-retrieval/readme.md), [harness](../../../ai-engineering/03-harness-engineering/readme.md), [eval](../../../generative-ai/08-eval/readme.md), [context](../../../ai-engineering/02-context-engineering/readme.md) and [safety](../../../ai-engineering/09-safety-and-security/readme.md) pillars; this guide is the *process*.
 
-## 1. The five-step process (45-55 min, ~8 min/step)
+## 1. The six-step process (45-55 min)
+
+The backend track teaches a different six-step method for classic systems (requirements, estimate, API and data model, sketch, the hard part, failure): [backend chapter 8](../../../programming/backend-and-system-design/notes/08-design-walkthroughs-rate-limiter-notifications-scheduler.md#a-method-to-repeat). That one is for working out a design; this one is for narrating it under interview time. Use the backend method to find the design, then this one to present it.
 
 | Step | What to do | Time |
 |------|-----------|------|
@@ -90,7 +92,7 @@ Sidecars:
   - HITL queue
 ```
 
-For each box, know its **failure mode** and its **scaling story**.
+For each box, know its **failure mode** and its **scaling story**. [Backend chapter 10](../../../programming/backend-and-system-design/notes/10-ai-system-reference-architecture.md) builds this architecture's gateway (token budget, fallback, streaming) and links to the note behind each box.
 
 ### Component deep-dive pointers
 
@@ -181,7 +183,7 @@ Classic prompts to dry-run:
 ## Practice plan
 
 1. **Draw the reference architecture** from memory 3x this week. Time yourself — under 3 min.
-2. **Dry-run one classic prompt** per day: set a 40-min timer, talk through the 5 steps out loud, record yourself if possible.
+2. **Dry-run one classic prompt** per day: set a 40-min timer, talk through the 6 steps out loud, record yourself if possible.
 3. **Memorize the bottleneck + failure tables** — interviewers ask "what breaks first?" and expect instant answers.
 4. **Rehearse trade-off narration**: for each design decision, practice the formula (2-3 options → pros/cons → ask priority → justify pick).
 5. **Prepare the recovery move**: have a friend challenge your trade-off, practice adapting visibly instead of defending.

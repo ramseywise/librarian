@@ -36,11 +36,12 @@ ui:
 	cd app && npm run dev
 
 # api + ui together, hot reload, no Docker; Ctrl-C stops both. Open http://localhost:5173.
+# Open mode: the .env token (for make app) is blanked here, since the api binds loopback only.
 dev:
 	@if lsof -nP -iTCP:8000 -sTCP:LISTEN >/dev/null 2>&1; then \
 		echo "port 8000 is in use (make app still running? docker compose stop librarian)"; exit 1; fi
 	@[ -d app/node_modules ] || $(MAKE) install-ui
-	@trap 'kill 0' INT TERM EXIT; $(MAKE) api & $(MAKE) ui & wait
+	@trap 'kill 0' INT TERM EXIT; LIBRARIAN_API_TOKEN= $(MAKE) api & $(MAKE) ui & wait
 
 install-ui:
 	cd app && npm install

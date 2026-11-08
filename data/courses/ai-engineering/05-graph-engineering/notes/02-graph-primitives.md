@@ -1,5 +1,5 @@
 ---
-imported_hash: 584ce72e418e2ea0
+imported_hash: 2ca60dcac126f251
 title: 2 — Graph Primitives
 summary: Most graphs waste their first decision. A step that could be a function call becomes an agent, and the team pays tokens and variance for a parse.
 order: 3
@@ -13,6 +13,8 @@ source: learn-ai-engineering/ai-engineering/05-graph-engineering/notes/02-graph-
 > Nodes, edges, and the smallest LangGraph program. The design skill is deciding how much agency each node gets.
 
 Most graphs waste their first decision. A step that could be a function call becomes an agent, and the team pays tokens and variance for a parse. A router whose label nothing checks then sends a question down the wrong branch and returns a confident answer with no error anywhere. This chapter sets out what a node can be, how to budget agency per node, and how to make edges fail loudly.
+
+> **Skim note.** The code below uses `operator.add` reducers and a `checkpointer` before the notes that explain them. Read them as labels for now: reducers are [note 03](03-state-and-reducers.md), checkpointers are [note 04](04-durable-execution-and-interrupts.md). The LangGraph mechanics are also taught from scratch in [GA 04/01](../../../generative-ai/04-agentic-frameworks/notes/01-react-from-scratch-to-langgraph.md).
 
 ---
 

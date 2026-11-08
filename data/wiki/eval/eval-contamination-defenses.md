@@ -9,6 +9,13 @@ sources:
   - data/raw/papers/2026-11-05-chen-2024-scienceagentbench.md
   - data/raw/papers/2026-11-05-chan-2024-mle-bench.md
   - data/raw/papers/2026-11-05-borji-2023-categorical-archive-chatgpt-failures.md
+  - data/raw/papers/2026-11-05-mirzadeh-2024-gsm-symbolic.md
+  - data/raw/papers/2026-11-05-srivastava-2024-functional-benchmarks-robust-evaluation-reasoning.md
+  - data/raw/papers/2026-11-05-luong-2025-towards-robust-mathematical-reasoning.md
+  - data/raw/papers/2026-11-05-gandhi-2023-understanding-social-reasoning-language-models.md
+  - data/raw/papers/2026-11-05-guo-2023-evaluating-large-language-models.md
+  - data/raw/papers/2026-11-06-albayaydh-2026-beyond-leaderboard.md
+  - data/raw/papers/2026-11-05-shevlane-2023-model-evaluation-extreme-risks.md
 ---
 
 # Eval Contamination Defenses
@@ -52,6 +59,12 @@ verbatim; scores drop on paraphrased versions.
   checked submissions against public notebooks for copying (self-reported, one model tested;
   [[MLE-bench]]). An archive of chatbot failures found that rewording a question could flip a
   correct answer, which is also why a single phrasing is a weak test.
+- **Regenerate or alter the problems.** Template-based re-instantiation of maths questions
+  gave scores below the original-question score for most models tested, which the authors read
+  as possible contamination without testing it ([[GSM-Symbolic]]); a quarterly-regenerated
+  MATH variant with a private generator reported large accuracy drops
+  ([[Functional Benchmarks and the Reasoning Gap]]); a suite of Olympiad sets altered its
+  problems and also included novel ones ([[IMO-Bench]]). All self-reported.
 - **Keep a private held-out set** that never appears online; a public benchmark's examples
   can enter the next model's training.
 - **Generate synthetic rows with a different model family** from the candidate under test,
@@ -68,7 +81,27 @@ verbatim; scores drop on paraphrased versions.
 - **Tighten success conditions** until a superficial fix can't pass.
 - **Start some tasks mid-stream**, and accept more than one valid end state (OSWorld).
 
+## What two surveys and a position paper add
+
+- **Static-benchmark problems.** Guo et al.'s survey of LLM evaluation (arXiv 2310.19736, 2023;
+  no experiments, no stated search method) lists four problems with static benchmarks: they can
+  leak into training data, multiple-choice formats exclude open-ended questions, facts go
+  stale, and scores saturate. It also notes that LLM judges are cheaper than people but make
+  factual mistakes and show preferences of their own.
+- **Corrections to SWE-bench scores.** Albayaydh et al.'s narrative synthesis of 27 agent
+  papers (arXiv 2607.05775, 2026; every figure is second-hand, with no run count or grader
+  stated for most) reports from the cited studies that a representative SWE-agent setup dropped
+  from roughly 12.5% to roughly 4% once leakage and weak tests were fixed, and that adding
+  stronger generated tests reordered the leaderboard in roughly a quarter to two fifths of cases
+  on SWE-bench Lite and Verified. Neither figure comes with a model or sample size here.
+- **Training on the evaluation.** Shevlane et al.'s framework for extreme-risk evaluation
+  warns that if developers train models to pass an evaluation, it can no longer indicate risk;
+  it suggests private held-out evaluations ([[Extreme-Risk Model Evaluation]]).
+
 ## See Also
+- [[SWE-Lancer]] — related (private holdout)
+- [[Min-K% Prob Pretraining-Data Detection]] — related (membership test from token probabilities)
+- [[FreshQA]] — related (temporal freshness in a question set)
 - [[Hashed Fingerprint Contamination Gate]] — instance-of (a mechanical leak check)
 - [[Golden Set Mechanics]] — extends (curation and versioning of the rows themselves)
 - [[Eval Suite Maintenance]] — related (overfitting and saturation)
@@ -77,3 +110,12 @@ verbatim; scores drop on paraphrased versions.
 - [[Parameterised Benchmark Instances]] — instance-of
 - [[ScienceAgentBench]] — related (dummy test labels and dropped test points)
 - [[MLE-bench]] — related (familiarity, rewording and plagiarism checks)
+- [[GSM-Symbolic]] — related
+- [[Functional Benchmarks and the Reasoning Gap]] — related
+- [[BigToM Model-Generated Benchmark]] — related (the model under test helps write the test)
+- [[Private Variant Testing on Arena Leaderboards]] — related (test prompts that recur month to month)
+- [[ARC-AGI-3]] — related (public demo set against semi-private and private sets)
+- [[Agents' Last Exam (ALE)]] — related (rotating private tasks)
+- [[Extreme-Risk Model Evaluation]] — related (training on the evaluations removes their value as a risk indicator)
+- [[Holistic Agent Leaderboard (HAL)]] — related (leaked few-shot examples and gold-answer lookup found in logs)
+- [[Live Multi-Market Trading Benchmark]] — related (live data as a way around leakage, untested in the paper)

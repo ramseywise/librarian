@@ -1,5 +1,5 @@
 ---
-imported_hash: a91dd8eb17b63f65
+imported_hash: ca11dc7e9873c4a8
 title: Activity Selection
 summary: Given a list of activities with start and end times, select the maximum number of non-overlapping activities that can be performed by a single person.
 order: 160
@@ -25,4 +25,4 @@ Output: 4  →  [(1,4), (5,7), (8,11), (12,16)]
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](solution.py) |
+| Python   | [solution.py](../activity_selection/solution.py) |

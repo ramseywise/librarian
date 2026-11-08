@@ -364,6 +364,26 @@ def test_links_rewrite_across_courses(practice: tuple[Path, Path]) -> None:
     assert not (dest / "data-engineering").exists()  # linked to, not imported
 
 
+def test_root_readme_links_to_non_lessons_gain_a_level(practice: tuple[Path, Path]) -> None:
+    source, dest = practice
+    deck = source / "programming" / "python" / "slides"
+    deck.mkdir(parents=True)
+    (deck / "deck.pptx").write_bytes(b"PK")
+    (source / "programming" / "README.md").write_text(
+        "# Programming\n\n[Deck](python/slides/deck.pptx) [Drills](drills/sql/README.md)\n"
+    )
+    (source / "programming" / "python" / "notes.md").write_text(
+        "# Notes\n\n[Deck](slides/deck.pptx)\n"
+    )
+    _git(source, "add", "programming/")
+    ic.apply(ic.build_plan(source, ["programming"]), ["programming"], dry_run=False)
+    readme = (dest / "programming" / "00-start-here" / "readme.md").read_text()
+    assert "(../python/slides/deck.pptx)" in readme
+    assert "(../drills/sql/readme.md)" in readme
+    # a lesson whose folder keeps its layout keeps the link as written
+    assert "(slides/deck.pptx)" in (dest / "programming" / "python" / "notes.md").read_text()
+
+
 def test_vendored_paths_are_not_fooled_by_practice_dirs(tmp_path: Path) -> None:
     practice_dir = tmp_path / "practice"
     for name in ("drills", "interviewing"):

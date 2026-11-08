@@ -1,5 +1,5 @@
 ---
-imported_hash: dcb0c157e245fa8a
+imported_hash: 62793325e0f964aa
 title: 11 — Production and the Maturity Ladder
 summary: Offline evals only cover the failures you already thought of, and a system that passes them can still decay when a provider updates a model or the questions change.
 order: 16
@@ -165,7 +165,7 @@ The thumbs-down sample is good at finding failures and useless for estimating a 
 
 ---
 
-When no labels exist, the drift signal can be a behaviour probe instead of a score. [arXiv:2306.13651](https://arxiv.org/abs/2306.13651) (Jain et al., 2023, preprint) scores a model by how much its output changes when the input is transformed, e.g. perplexity before and after inserting "not" into a Wikipedia sentence. On 1,000 sentences per metric across about 25 open and API models (up to 7B open), the negation score tracked TriviaQA accuracy and the long-range-sensitivity score tracked LAMBADA accuracy in scatter plots, at under 30 minutes per model for most tests. **No correlation coefficients are reported, validation is on Wikipedia only, and the paper proposes monitoring live streams but runs no deployment experiment.** Treat it as a cheap tripwire to compare against a fixed corpus, not as a substitute for the labelled sample above.
+When no labels exist, the drift signal can be a behaviour probe instead of a score. [arXiv:2306.13651](https://arxiv.org/abs/2306.13651) (Jain et al., 2023, preprint) scores a model by how much its output changes when the input is transformed, e.g. [perplexity](../../01-llm-fundamentals/notes/06-pretraining-data-and-objectives.md#entropy-cross-entropy-kl-and-perplexity) before and after inserting "not" into a Wikipedia sentence. On 1,000 sentences per metric across about 25 open and API models (up to 7B open), the negation score tracked TriviaQA accuracy and the long-range-sensitivity score tracked LAMBADA accuracy in scatter plots, at under 30 minutes per model for most tests. **No correlation coefficients are reported, validation is on Wikipedia only, and the paper proposes monitoring live streams but runs no deployment experiment.** Treat it as a cheap tripwire to compare against a fixed corpus, not as a substitute for the labelled sample above.
 
 ![Negation sensitivity score (raw and normalised) against TriviaQA accuracy across model families and sizes](../assets/sources/images/jain-2023-self-supervised-sensitivity-fig3.png)
 *Image Source: Jain et al., [Bring Your Own Data! Self-Supervised Evaluation for Large Language Models](https://arxiv.org/abs/2306.13651) (2023), Fig. 3*

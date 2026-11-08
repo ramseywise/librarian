@@ -1,5 +1,5 @@
 ---
-imported_hash: b5dc82c7bc0c0ec2
+imported_hash: f770f81c421d0936
 title: 1 — Values, Expressions and Conditionals
 summary: 'Precedence follows PEMDAS. When in doubt, add parentheses: they cost nothing.'
 order: 2
@@ -77,3 +77,7 @@ Wrap only the line that can fail, and name the exception you expect. A bare `exc
 ## Exercises
 
 [`practice/exercises/01_values_and_conditionals.py`](../practice/exercises/01_values_and_conditionals.py): pay with overtime, a grade from a score, and safe numeric parsing.
+
+## Next
+
+[2 — Functions](02-functions.md): wrapping this logic so you can call it again.

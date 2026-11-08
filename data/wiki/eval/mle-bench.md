@@ -57,6 +57,11 @@ which makes repeated runs expensive. How the standard error combines seeds and c
 explained.
 
 ## See Also
+- [[SWE-Lancer]] — related (another outcome-graded benchmark of real engineering work)
+- [[PaperBench]] — related
+- [[ALE-Bench]] — related
 - [[Best-of-k Headline Inflation]] — related
 - [[ScienceAgentBench]] — alternative-to (another agent benchmark for data-driven science and ML work)
 - [[Eval Contamination Defenses]] — related
+- [[Holistic Agent Leaderboard (HAL)]] — related (scaffold and cost effects across nine benchmarks)
+- [[Agents' Last Exam (ALE)]] — related (another end-to-end benchmark graded on output artifacts)

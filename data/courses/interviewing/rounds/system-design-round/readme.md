@@ -1,5 +1,5 @@
 ---
-imported_hash: 596d0a661a7784bf
+imported_hash: 4b16cd0cb69d1dac
 title: System Design Round (ML/LLM/Agent)
 summary: 'The highest-weight technical round in 2026 AIE/MLE loops: structured ambiguity handling — clarify, requirements, design, shortcomings, iterate — with trade-off narration as the actual graded skill.'
 order: 61
@@ -26,7 +26,7 @@ The five-step process, trade-off narration formula, reference architecture, bott
 
 ## Prep checklist
 
-- [ ] Rehearse the five-step process until the clarifying questions are automatic (the two openers: priorities question + data-sensitivity question)
+- [ ] Rehearse the six-step process until the clarifying questions are automatic (the two openers: priorities question + data-sensitivity question)
 - [ ] Draw the reference architecture from memory in under 3 minutes
 - [ ] Dry-run the four classic prompts against a timer (8 min/step)
 - [ ] Rehearse the three librarian drill systems as full spoken answers — designs you've actually built beat memorized generic ones

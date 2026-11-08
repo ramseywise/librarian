@@ -1,5 +1,5 @@
 ---
-imported_hash: 68f705a3fb78d25b
+imported_hash: 50eecdf0a9f299da
 title: Two-tower retrieval and offline and online evaluation
 summary: Once a catalogue reaches millions of items and new ones arrive every hour, an item-item matrix no longer fits and a new item has no history to work from.
 order: 4
@@ -296,6 +296,8 @@ two-tower plain          0.0532     0.0382     0.0788
 All three metrics order these four models the same way, and they needn't. A model that places one liked film first and nothing else in the top 10 would score well on MRR and poorly on recall. Use MRR when a single good result ends the task, as it does for "find me something to watch tonight", and recall and NDCG when the list as a whole is the product. Popularity scores contain ties, and the code counts a tie in the item's favour, so its MRR is slightly generous.
 
 NDCG comes from [Järvelin and Kekäläinen](https://doi.org/10.1145/582415.582418) (ACM TOIS 2002; [preprint](https://trepo.tuni.fi/handle/10024/65718)), who wanted graded relevance and a discount for documents a user is less likely to reach. Our code has only binary hits and divides by $\log_2(\text{rank}+1)$, so here only the discount separates it from recall.
+
+How to pick between these metrics, and why the choice of metric is a choice of what you ask the model for, is in [DS 01/11](../../01-classical-ml/notes/11-choosing-a-metric.md#the-map), which runs MRR and NDCG against two rankers built to disagree.
 
 ## Offline evaluation: counterfactual estimates
 

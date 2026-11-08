@@ -1,5 +1,5 @@
 ---
-imported_hash: 8cd15008ef1f0a8e
+imported_hash: e73a8615f3e76b2b
 title: Leaders In Array
 summary: ''
 order: 110
@@ -20,4 +20,4 @@ Leaders in an array
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](solution.py) |
+| Python   | [solution.py](../../arrays_and_strings/leaders_in_array/solution.py) |

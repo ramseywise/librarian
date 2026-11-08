@@ -2,13 +2,14 @@
 title: Verification Loops
 tags: [llm, agents, eval, concept]
 summary: "Models stop at the first plausible solution and rate their own work generously — two distinct failures needing two distinct fixes: a forced verification pass, and an external evaluator that never generates — calibrated, thresholded per dimension, and bound by a written sprint contract."
-updated: 2026-11-05
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--05-verification-loops.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--05-verification-loops.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--reliable-agents.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--reliable-agents.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--reliable-agents.md
+  - data/raw/papers/2026-11-05-kwok-2026-llm-as-verifier.md
 ---
 
 # Verification Loops
@@ -316,3 +317,4 @@ afterward.
 - [[Text-to-SQL as a Retrieval Strategy]] — instance-of (mechanical validation replacing an LLM reviewer)
 - [[Agent Deployment Anti-Patterns]] — instance-of (acceptance criteria for #3)
 - [[Cheap-First Gating and Model Cascades]] — alternative-to (a gate on the cheap answer rather than an expensive verifier after execution)
+- [[LLM-as-a-Verifier]] — related (a learned verifier used to pick the best of N candidates)

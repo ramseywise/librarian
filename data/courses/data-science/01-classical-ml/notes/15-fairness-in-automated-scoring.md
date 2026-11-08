@@ -1,5 +1,5 @@
 ---
-imported_hash: 299528a5cb269192
+imported_hash: 18aef27b25eb0192
 title: 'Fairness in Automated Scoring: What to Measure, and What No Metric Settles'
 summary: Brackwater Freight is invented. It wants to screen applicants for shift supervisor with a model, and has capacity to interview the top 20%.
 order: 18
@@ -74,6 +74,8 @@ print("C against A: %.3f [%.3f, %.3f]" % ratio_interval(229, 1246, 3178, 13937))
 B against A: 0.469 [0.430, 0.512]
 C against A: 0.806 [0.714, 0.910]
 ```
+
+The delta method turns the counts' variances into a standard error for a ratio of two rates, here on the log scale; it is derived in [DA 02/04](../../../data-analytics/02-probability-and-statistics/notes/04-estimation.md#ratio-metrics-the-delta-method).
 
 ### The four-fifths rule: what it is
 

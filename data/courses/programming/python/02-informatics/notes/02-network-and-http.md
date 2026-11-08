@@ -1,5 +1,5 @@
 ---
-imported_hash: 335b70654159fd58
+imported_hash: 13def0ae0641271f
 title: 2 — Networks and HTTP
 summary: py4e starts with a raw socket to show that nothing is magic.
 order: 8
@@ -56,6 +56,8 @@ In real projects, use **`httpx`** or **`requests`**: `httpx.get(url, params={...
 
 ## Scraping HTML
 
+The parser below is a subclass; [note 04](04-objects.md#inheritance) explains `class X(Base)` and `super()`.
+
 ```python
 from html.parser import HTMLParser       # stdlib; BeautifulSoup (bs4) is friendlier
 
@@ -75,3 +77,7 @@ Scrape politely: check `robots.txt` and the terms of service, add a delay betwee
 ## Exercises
 
 [`practice/exercises/02_http.py`](../practice/exercises/02_http.py) starts a local HTTP server in a thread, so it runs offline: fetch with `urllib`, handle a 404, and parse links.
+
+## Next
+
+[3 — Web data: JSON, XML and APIs](03-web-data-json-xml.md): parsing what the server sends back.

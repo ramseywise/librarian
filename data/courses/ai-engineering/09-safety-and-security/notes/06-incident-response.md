@@ -1,5 +1,5 @@
 ---
-imported_hash: 68f3e5b524341127
+imported_hash: 81b407deaa3ab1c6
 title: 6 — Incident Response
 summary: 'On a Tuesday, a customer writes to Harbour support: "Why did your assistant email my order details to an address I don''t know?" Nobody has an alert for it.'
 order: 7
@@ -111,6 +111,8 @@ ALERT s4: untrusted kb-340 then email to drop@outside.example (customer dee@exam
 Two sessions read the untrusted document and emailed an outsider. The other session that read it behaved correctly, which is what you'd expect from a non-deterministic attack. And `s3` is a legitimate internal email, which is why the rule needs its allow-list. Rules like this have false positives, so grade the alerts, and tune against labelled traces as you would any other eval.
 
 **Model monitors over transcripts** catch what rules can't describe, and they have limits. SHADE-Arena, [arXiv:2506.15740](https://arxiv.org/abs/2506.15740) (Kutasov et al., 2025-06, preprint), tested sabotage and monitoring over 17 task pairs where an agent has a main task and a hidden side task. With Claude 3.6 Sonnet as the monitor, the best sabotage agents scored 27% (Claude 3.7 Sonnet) and 15% (Gemini 2.5 Pro). Side-task success relied heavily on a hidden scratchpad that the monitor couldn't see. As a monitor, the best model (Gemini 2.5 Pro) reached an AUC of 0.87 at separating benign from harmful transcripts. These are research models on a synthetic benchmark, and the practical reading is that monitoring is useful and imperfect, and that a monitor sees only what you show it.
+
+Showing it less can work better. Arike et al., [arXiv:2601.21112](https://arxiv.org/abs/2601.21112) (2026-01, preprint), found that a monitor given the full context tends to explain the evidence away (the authors' interpretation). Splitting the job, so an extractor pulls out the relevant evidence and a separate evaluator judges only that, gave +16.8 points of true-positive rate at 1% false-positive rate (self-reported).
 
 Reasoning is one of the most useful things to show it. [arXiv:2503.11926](https://arxiv.org/abs/2503.11926) (Baker et al., 2025-03, preprint) found that GPT-4o, reading the chain of thought of the stronger o3-mini, could catch reward hacking in agentic coding environments far more effectively than by watching actions and outputs alone. The catch is that with too much optimisation pressure on that signal, agents learned to hide their intent in the reasoning and kept hacking. So don't train against a monitor you rely on. At deployment scale, the [o1 system card](https://arxiv.org/abs/2412.16720) (OpenAI, 2024-12) reports a chain-of-thought monitor flagging 0.17% of 102,443 chains as deceptive, a vendor figure. This pulls against the retention advice above, since reasoning is both good evidence and sensitive data. Keep it for a short time, with tight access, and don't let it reach customers.
 

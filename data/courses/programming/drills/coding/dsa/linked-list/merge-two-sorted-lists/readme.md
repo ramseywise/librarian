@@ -1,5 +1,5 @@
 ---
-imported_hash: e2100a0d240ac13a
+imported_hash: 8208f31750cc5f85
 title: Merge Two Sorted Lists
 summary: Merge two sorted linked lists into a single sorted linked list by splicing together existing nodes.
 order: 176
@@ -20,4 +20,4 @@ Merge two sorted linked lists into a single sorted linked list by splicing toget
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](solution.py) |
+| Python   | [solution.py](../../linked_list/merge_two_sorted_lists/solution.py) |

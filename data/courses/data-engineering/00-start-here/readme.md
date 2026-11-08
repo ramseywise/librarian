@@ -1,5 +1,5 @@
 ---
-imported_hash: 4e19ddf69366a005
+imported_hash: 68b1fde5dfb74345
 title: Data Engineering
 summary: 'Position in the path: after programming (Python, SQL); data analytics is recommended, not required.'
 order: 1
@@ -41,13 +41,13 @@ By the end, you can build repeatable ingestion and well-modelled data; deliver t
 
 | Pillar | The stage | A silent failure it opens | What makes the trust explicit | Mastery evidence | Deck |
 |---|---|---|---|---|---|
-| [01 Storage and compute foundations](../01-storage-and-compute-foundations/readme.md) | Data systems, bytes on disk, concurrent writers, machines that fail and agree | A file with a new column is read with the first file's schema, and the column is dropped | Stated schemas, isolation levels, request IDs, read plans, measuring before scaling | Measured system design and failure analysis | [pptx](01-storage-and-compute-foundations/slides/storage-and-compute-foundations.pptx), [pdf](01-storage-and-compute-foundations/slides/storage-and-compute-foundations.pdf) |
-| [02 Ingest and modelling](../02-ingest-and-modelling/readme.md) | Getting data in, saying what a row means | A retried load doubles the day's rows | Keys, change capture, a declared grain, data contracts | Repeatable load, grain statement, contract | [pptx](02-ingest-and-modelling/slides/ingest-and-modelling.pptx), [pdf](02-ingest-and-modelling/slides/ingest-and-modelling.pdf) |
-| [03 Transform and orchestrate](../03-transform-and-orchestrate/readme.md) | Tested models, built for the right day | An inner join loses 5,680 trips and about $96,000 with every test green | Grain tests, logical dates, idempotent writes, write-audit-publish | Green build and idempotent backfill | [pptx](03-transform-and-orchestrate/slides/transform-and-orchestrate.pptx), [pdf](03-transform-and-orchestrate/slides/transform-and-orchestrate.pdf) |
-| [04 Warehouse, lakehouse and streaming](../04-warehouse-lakehouse-streaming/readme.md) | Where it rests, how it moves, what it costs | A rewrite dies halfway and a dashboard reads half of it as the truth | Table-format commits, event-time windows, committed offsets, byte limits | Costed architecture decision | [pptx](04-warehouse-lakehouse-streaming/slides/warehouse-lakehouse-streaming.pptx), [pdf](04-warehouse-lakehouse-streaming/slides/warehouse-lakehouse-streaming.pdf) |
-| [05 Quality, observability and operations](../05-quality-and-observability/readme.md) | Finding out it is wrong, and running it in production | A source switches from miles to kilometres without telling anyone | Tests, monitors against history, lineage, playbooks | Monitor, lineage trace, incident playbook | [pptx](05-quality-and-observability/slides/quality-and-observability.pptx), [pdf](05-quality-and-observability/slides/quality-and-observability.pdf) |
-| [06 ML platform](../06-ml-platform/readme.md) | Features, models and serving | A leaky join scores 2.79 offline and 5.48 in production | Point-in-time joins, a registry, gates, drift monitors | Point-in-time dataset and monitored service | [pptx](06-ml-platform/slides/ml-platform.pptx), [pdf](06-ml-platform/slides/ml-platform.pdf) |
-| [07 Architecture and governance](../07-architecture-and-governance/readme.md) | Many pipelines, many teams, the regulator | Two correct tables join on `CA` and `California`, and a filed figure is less than half the truth | Ownership, global rules that can fail a build, access control, erasure | Defended architecture scenario | [pptx](07-architecture-and-governance/slides/architecture-and-governance.pptx), [pdf](07-architecture-and-governance/slides/architecture-and-governance.pdf) |
+| [01 Storage and compute foundations](../01-storage-and-compute-foundations/readme.md) | Data systems, bytes on disk, concurrent writers, machines that fail and agree | A file with a new column is read with the first file's schema, and the column is dropped | Stated schemas, isolation levels, request IDs, read plans, measuring before scaling | Measured system design and failure analysis | [pptx](../01-storage-and-compute-foundations/slides/storage-and-compute-foundations.pptx), [pdf](../01-storage-and-compute-foundations/slides/storage-and-compute-foundations.pdf) |
+| [02 Ingest and modelling](../02-ingest-and-modelling/readme.md) | Getting data in, saying what a row means | A retried load doubles the day's rows | Keys, change capture, a declared grain, data contracts | Repeatable load, grain statement, contract | [pptx](../02-ingest-and-modelling/slides/ingest-and-modelling.pptx), [pdf](../02-ingest-and-modelling/slides/ingest-and-modelling.pdf) |
+| [03 Transform and orchestrate](../03-transform-and-orchestrate/readme.md) | Tested models, built for the right day | An inner join loses 5,680 trips and about $96,000 with every test green | Grain tests, logical dates, idempotent writes, write-audit-publish | Green build and idempotent backfill | [pptx](../03-transform-and-orchestrate/slides/transform-and-orchestrate.pptx), [pdf](../03-transform-and-orchestrate/slides/transform-and-orchestrate.pdf) |
+| [04 Warehouse, lakehouse and streaming](../04-warehouse-lakehouse-streaming/readme.md) | Where it rests, how it moves, what it costs | A rewrite dies halfway and a dashboard reads half of it as the truth | Table-format commits, event-time windows, committed offsets, byte limits | Costed architecture decision | [pptx](../04-warehouse-lakehouse-streaming/slides/warehouse-lakehouse-streaming.pptx), [pdf](../04-warehouse-lakehouse-streaming/slides/warehouse-lakehouse-streaming.pdf) |
+| [05 Quality, observability and operations](../05-quality-and-observability/readme.md) | Finding out it is wrong, and running it in production | A source switches from miles to kilometres without telling anyone | Tests, monitors against history, lineage, playbooks | Monitor, lineage trace, incident playbook | [pptx](../05-quality-and-observability/slides/quality-and-observability.pptx), [pdf](../05-quality-and-observability/slides/quality-and-observability.pdf) |
+| [06 ML platform](../06-ml-platform/readme.md) | Features, models and serving | A leaky join scores 2.79 offline and 5.48 in production | Point-in-time joins, a registry, gates, drift monitors | Point-in-time dataset and monitored service | [pptx](../06-ml-platform/slides/ml-platform.pptx), [pdf](../06-ml-platform/slides/ml-platform.pdf) |
+| [07 Architecture and governance](../07-architecture-and-governance/readme.md) | Many pipelines, many teams, the regulator | Two correct tables join on `CA` and `California`, and a filed figure is less than half the truth | Ownership, global rules that can fail a build, access control, erasure | Defended architecture scenario | [pptx](../07-architecture-and-governance/slides/architecture-and-governance.pptx), [pdf](../07-architecture-and-governance/slides/architecture-and-governance.pdf) |
 
 ```mermaid
 flowchart LR
@@ -104,13 +104,13 @@ Tools are easier to compare within a layer than across one. Snowflake against Ai
 
 **Objectives:** estimate scan cost; select layout and partitioning; explain table-format transactions ([Armbrust et al.](https://www.vldb.org/pvldb/vol13/p3411-armbrust.pdf)); evaluate lakehouse trade-offs; implement safe producer/consumer semantics; reason about event time, watermarks, and lag ([Akidau et al.](https://www.vldb.org/pvldb/vol8/p1792-Akidau.pdf)); compare warehouses by concept (storage and compute separation, layout, concurrency); reason about object store consistency and cost.
 
-**Learning:** [reading order](../04-warehouse-lakehouse-streaming/readme.md#reading-order), [deck](04-warehouse-lakehouse-streaming/slides/warehouse-lakehouse-streaming.pptx), and labelled practice. **Evidence:** a costed store decision plus a stream design that says exactly-once from where to where. **Book chapters and docs:** Kleppmann 3, 6, 7, 10–12; Kafka and Iceberg/Delta documentation.
+**Learning:** [reading order](../04-warehouse-lakehouse-streaming/readme.md#reading-order), [deck](../04-warehouse-lakehouse-streaming/slides/warehouse-lakehouse-streaming.pptx), and labelled practice. **Evidence:** a costed store decision plus a stream design that says exactly-once from where to where. **Book chapters and docs:** Kleppmann 3, 6, 7, 10–12; Kafka and Iceberg/Delta documentation.
 
 ### [05 Quality, observability and operations](../05-quality-and-observability/readme.md)
 
 **Objectives:** define quality dimensions ([Schelter et al.](https://www.vldb.org/pvldb/vol11/p1781-schelter.pdf)); write batch tests and time-aware monitors ([Beyer et al.](https://sre.google/sre-book/table-of-contents/)); use lineage to bound an incident; contain and repair safely; write a blameless playbook and postmortem; run an expand-contract migration with no downtime; prove a backup by restoring it; size connections and diagnose bloat and replica lag; build slim CI with `state:modified+` and `--defer`; set a freshness SLO and page on symptoms.
 
-**Learning:** [reading order](../05-quality-and-observability/readme.md#reading-order) and [deck](05-quality-and-observability/slides/quality-and-observability.pptx). **Evidence:** catch a planted fault, trace its impact, execute an idempotent repair, and add a preventive check. **Tools:** Great Expectations, dbt, OpenLineage.
+**Learning:** [reading order](../05-quality-and-observability/readme.md#reading-order) and [deck](../05-quality-and-observability/slides/quality-and-observability.pptx). **Evidence:** catch a planted fault, trace its impact, execute an idempotent repair, and add a preventive check. **Tools:** Great Expectations, dbt, OpenLineage.
 
 ### [06 ML platform](../06-ml-platform/readme.md)
 
@@ -166,17 +166,17 @@ Each pillar's README has its own full list. These are the ones that cross stages
 
 Labels: **offline** = runs on a laptop with no account once data is downloaded · **Docker** · **GCP** / **AWS** = needs a cloud account and billing · **pin** = unpinned dependencies; pin as stated · **legacy** = API or tool superseded · **reading** = videos or text, no code. These labels are read from the course material; the zoomcamp notebooks and modules were not executed. Module numbers are those of the 2024-era snapshot, and upstream has since renumbered, as [references.md](references.md#courses-and-videos) explains.
 
-**DE Zoomcamp** ([course README](02-ingest-and-modelling/practice/datatalks-de/README.md))
+**DE Zoomcamp** ([course README](../02-ingest-and-modelling/practice/datatalks-de/README.md))
 
 | Module | Folder | Chapter | Needs |
 |---|---|---|---|
-| `01-docker-terraform` | [02](02-ingest-and-modelling/practice/datatalks-de/01-docker-terraform) | [Ingest](../02-ingest-and-modelling/notes/01-ingest.md) | Docker (Postgres, pgAdmin, ingest container): offline. Terraform part: GCP (service-account key) |
-| `02-workflow-orchestration` | [03](03-transform-and-orchestrate/practice/datatalks-de/02-workflow-orchestration) | [Orchestrate](../03-transform-and-orchestrate/notes/02-orchestrate.md) | Reading (videos only in the snapshot); to follow along, Docker (Mage) + GCP |
-| `03-data-warehouse` | [04](04-warehouse-lakehouse-streaming/practice/datatalks-de/03-data-warehouse) | [Warehouse and store](../04-warehouse-lakehouse-streaming/notes/01-warehouse-and-store.md) | GCP (BigQuery, billing). BQML export: Docker (`tensorflow/serving`) |
-| `04-analytics-engineering` | [03](03-transform-and-orchestrate/practice/datatalks-de/04-analytics-engineering) | [Transform](../03-transform-and-orchestrate/notes/01-transform.md) | GCP (BigQuery + dbt Cloud), or offline with dbt Core + Postgres |
-| `05-batch` | [04](04-warehouse-lakehouse-streaming/practice/datatalks-de/05-batch) | [Warehouse and store](../04-warehouse-lakehouse-streaming/notes/01-warehouse-and-store.md) | Java 11 + Spark 3.3.2 (pin); offline locally. Dataproc and the GCS connector: GCP |
-| `06-streaming` | [04](04-warehouse-lakehouse-streaming/practice/datatalks-de/06-streaming) | [Kafka](../04-warehouse-lakehouse-streaming/notes/04-kafka-and-stream-semantics.md) | Docker (Kafka / Confluent compose, Redpanda); Java for the Kafka Streams examples; ksqlDB folder is SQL only |
-| `projects/` | [02](02-ingest-and-modelling/practice/datatalks-de/projects) | Capstone | Reading: project brief and dataset list |
+| `01-docker-terraform` | [02](../02-ingest-and-modelling/practice/datatalks-de/01-docker-terraform) | [Ingest](../02-ingest-and-modelling/notes/01-ingest.md) | Docker (Postgres, pgAdmin, ingest container): offline. Terraform part: GCP (service-account key) |
+| `02-workflow-orchestration` | [03](../03-transform-and-orchestrate/practice/datatalks-de/02-workflow-orchestration) | [Orchestrate](../03-transform-and-orchestrate/notes/02-orchestrate.md) | Reading (videos only in the snapshot); to follow along, Docker (Mage) + GCP |
+| `03-data-warehouse` | [04](../04-warehouse-lakehouse-streaming/practice/datatalks-de/03-data-warehouse) | [Warehouse and store](../04-warehouse-lakehouse-streaming/notes/01-warehouse-and-store.md) | GCP (BigQuery, billing). BQML export: Docker (`tensorflow/serving`) |
+| `04-analytics-engineering` | [03](../03-transform-and-orchestrate/practice/datatalks-de/04-analytics-engineering) | [Transform](../03-transform-and-orchestrate/notes/01-transform.md) | GCP (BigQuery + dbt Cloud), or offline with dbt Core + Postgres |
+| `05-batch` | [04](../04-warehouse-lakehouse-streaming/practice/datatalks-de/05-batch) | [Warehouse and store](../04-warehouse-lakehouse-streaming/notes/01-warehouse-and-store.md) | Java 11 + Spark 3.3.2 (pin); offline locally. Dataproc and the GCS connector: GCP |
+| `06-streaming` | [04](../04-warehouse-lakehouse-streaming/practice/datatalks-de/06-streaming) | [Kafka](../04-warehouse-lakehouse-streaming/notes/04-kafka-and-stream-semantics.md) | Docker (Kafka / Confluent compose, Redpanda); Java for the Kafka Streams examples; ksqlDB folder is SQL only |
+| `projects/` | [02](../02-ingest-and-modelling/practice/datatalks-de/projects) | Capstone | Reading: project brief and dataset list |
 
 **MLOps Zoomcamp** ([course repo at the commit these chapters read](https://github.com/DataTalksClub/mlops-zoomcamp/tree/e34bf8f540b75dfd712ffcc97d3c000ae1c2e3e7), all in pillar 06)
 
@@ -204,7 +204,7 @@ Labels: **offline** = runs on a laptop with no account once data is downloaded �
 
 ## Completion standard and next steps
 
-Complete a portfolio containing a repeatable ingest/model, tested and orchestrated pipeline, costed storage or streaming decision, quality incident response, ML-platform exercise, and governed architecture decision. Every item should state its grain or contract, failure handling, evidence, and trade-offs. The capstone is MLOps `07-project` or the DE [project brief](02-ingest-and-modelling/practice/datatalks-de/projects): self-score against the evaluation criteria in the brief, with LocalStack standing in for the cloud criterion.
+Complete a portfolio containing a repeatable ingest/model, tested and orchestrated pipeline, costed storage or streaming decision, quality incident response, ML-platform exercise, and governed architecture decision. Every item should state its grain or contract, failure handling, evidence, and trade-offs. The capstone is MLOps `07-project` or the DE [project brief](../02-ingest-and-modelling/practice/datatalks-de/projects): self-score against the evaluation criteria in the brief, with LocalStack standing in for the cloud criterion.
 
 Continue to [Data Science](../../data-science/00-start-here/readme.md) for modelling depth, or [Generative AI](../../generative-ai/00-start-here/readme.md) and [AI Engineering](../../ai-engineering/00-start-here/readme.md) for LLM systems.
 

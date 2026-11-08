@@ -1,5 +1,5 @@
 ---
-imported_hash: a0aedd204e072e24
+imported_hash: ae35bb1432b02582
 title: 3b — Metadata filters, hybrid search and evaluating a retriever
 summary: Keyword search and semantic search each fail where the other is strong, and neither knows which document a customer is allowed to see.
 order: 7
@@ -118,7 +118,7 @@ M3-Embedding puts the three scorers in one model. An XLM-RoBERTa-large extended 
 
 ## Evaluating a retriever
 
-You need a labelled set: for each query, which documents are relevant.
+You need a labelled set: for each query, which documents are relevant. The metric definitions and a framework comparison live in [GA 08 note 7](../../08-eval/notes/07-evaluating-rag-and-grounding.md#retrieval-metrics); this section keeps the worked numbers and code.
 
 | Metric | Formula | Question it answers |
 |---|---|---|

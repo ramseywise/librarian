@@ -1,5 +1,5 @@
 ---
-imported_hash: 3e66bdc773efefba
+imported_hash: 85c3444c438f50c1
 title: Four Sum
 summary: Given an array nums of n integers and an integer target, are there elements a, b, c, and d in nums such that a + b + c + d = target?
 order: 108
@@ -22,4 +22,4 @@ quadruplets in the array which gives the sum of target.
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](solution.py) |
+| Python   | [solution.py](../../arrays_and_strings/four_sum/solution.py) |

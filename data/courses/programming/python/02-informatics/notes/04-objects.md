@@ -1,5 +1,5 @@
 ---
-imported_hash: 4564c40d9e0b3502
+imported_hash: fd5d2c55d9d36f11
 title: 4 — Objects
 summary: 'def party(self) -> int: self.x += 1 return self.x'
 order: 10
@@ -49,6 +49,20 @@ class FootballFan(PartyAnimal):
 
 A subclass gets everything from its parent and adds to it or overrides it. Keep hierarchies shallow. Composition (an object that *has* another object) is usually more flexible than deep inheritance.
 
+## Validating in `__init__`
+
+An object should not exist in a bad state. Check the arguments in `__init__` and `raise` ([Python 01 · 02](../../01-foundations/notes/02-functions.md#rejecting-bad-arguments)):
+
+```python
+class Account:
+    def __init__(self, owner: str, balance: float = 0):
+        if balance < 0:
+            raise ValueError("opening balance cannot be negative")
+        self.owner, self.balance = owner, balance
+```
+
+[Python 03 · 01](../../03-language-for-engineers/notes/01-data-model-and-idioms.md) has the full table of dunder methods, and [Python 03 · 08](../../03-language-for-engineers/notes/08-objects-inheritance-and-mro.md) covers the MRO and descriptors.
+
 ## Dunder methods
 
 Special `__names__` hook your class into Python's syntax:
@@ -72,3 +86,7 @@ Write one when several functions share the same state, or when you need many ins
 ## Exercises
 
 [`practice/exercises/04_objects.py`](../practice/exercises/04_objects.py): a bank account with validation, a subclass, and `__repr__`/`__eq__`/sorting.
+
+## Next
+
+[5 — Using databases from Python](05-databases.md): storing your records in `sqlite3`.

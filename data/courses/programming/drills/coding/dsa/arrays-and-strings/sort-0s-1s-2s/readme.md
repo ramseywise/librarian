@@ -1,5 +1,5 @@
 ---
-imported_hash: 79c4d80b3aef749e
+imported_hash: e7e3384f34116192
 title: Sort0s1s2s
 summary: ''
 order: 128
@@ -20,4 +20,4 @@ Sort an array of 0s, 1s and 2s
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](solution.py) |
+| Python   | [solution.py](../../arrays_and_strings/sort_0s_1s_2s/solution.py) |

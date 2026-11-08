@@ -1,5 +1,5 @@
 ---
-imported_hash: 85db1fd8e83f1b1d
+imported_hash: ba71b22f6b6ce4b5
 title: 4 — Durable Execution and Interrupts
 summary: An agent asks for approval on Friday, the process restarts over the weekend, and on Monday there is nothing to approve because the run lived on the call stack.
 order: 5
@@ -221,7 +221,7 @@ This matches a standing checkpoint rule: checkpoint after each plan step, and in
 
    </details>
 
-4. In the [pillar lab](../practice/langgraph-graph/readme.md), do its "Things to try" step 4: swap `MemorySaver` for `SqliteSaver`, and split the pause and the resume into two runs of the program.
+4. In the [pillar lab](../practice/langgraph-graph/readme.md), do its "Things to try" step 4: swap the lab's in-memory saver (`MemorySaver`, the older name of `InMemorySaver`) for `SqliteSaver`, and split the pause and the resume into two runs of the program.
 
    <details><summary>Answer</summary>
 

@@ -1,4 +1,4 @@
-# imported_hash: 4425d64424e7ebf8
+# imported_hash: 8e85f5d33eac151a
 # TypeScript track: study deck (flashcards). Covers notes/01-09.
 # Build:  make slides PILLAR=programming/typescript [PREVIEW=1]
 # Spec:   .claude/skills/slides/references/deck-spec.md
@@ -352,4 +352,4 @@ parts:
           - "**The real API**: `node examples/claude.ts` with `ANTHROPIC_API_KEY` set"
         takeaway: Next is the AI engineering pillars, after finishing Python 03 and TypeScript 09, then the type challenges for practice.
         source: notes/09-typescript-for-ai-apps.md
-        notes: See programming/README.md for the order of the tracks.
+        notes: See the programming start-here readme for the order of the tracks.

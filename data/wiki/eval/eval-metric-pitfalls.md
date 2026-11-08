@@ -7,6 +7,7 @@ sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--09-reading-results.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--12-failure-modes.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--03-eval-datasets.md
+  - data/raw/papers/2026-11-05-zhang-2023-benchmarking-large-language-models-news.md
 ---
 
 # Eval Metric Interpretation Pitfalls
@@ -52,6 +53,17 @@ The quietest failure: everything works and the metric does not track what users 
 - Generic metrics instead of ones from [[Error Analysis (Open and Axial Coding)]].
 - Wrong unit — per-turn scores fine while conversations fail to resolve.
 - Offline–online gap — the set no longer looks like production.
+- Reference quality — in news summarization (Zhang et al., arXiv 2301.13848; 100 articles each
+  from CNN/DM and XSUM, three MTurk raters per summary, system-level Kendall's tau), the authors report that ROUGE-L,
+  METEOR, BERTScore, BARTScore and BLEURT correlated better with human ratings on aspects where the
+  reference summaries themselves rated well. On XSUM faithfulness the
+  correlations were negative (ROUGE-L -0.27) with the original references, and the authors report a
+  much more positive one with freelance-written references (figure only, no number). The authors found the
+  original references rated below most systems (CNN/DM faithfulness 0.84 against 0.99 for
+  zero-shot Instruct Davinci), and in a blinded comparison of 100 pairs six annotators preferred
+  freelance-writer summaries over Instruct Davinci 50.4% to 49.6%, with Krippendorff's alpha 0.07
+  for overall preference. Limits: news only, English, 2022 models, no LLM judge tested, no
+  inter-annotator agreement for the main MTurk study.
 
 Check periodically that offline scores **predict** online outcomes; if the offline winner
 doesn't win online, the eval measures something else.

@@ -18,7 +18,7 @@ Consider creating a bridge page or adding cross-references.
 
 ## adk ↔ prompting (0 cross-links)
   - adk: 20 pages
-  - prompting: 36 pages
+  - prompting: 37 pages
 
 ## context ↔ langgraph (0 cross-links)
   - context: 23 pages
@@ -29,7 +29,7 @@ Consider creating a bridge page or adding cross-references.
   - projects: 11 pages
 
 ## eval ↔ mcp (0 cross-links)
-  - eval: 89 pages
+  - eval: 124 pages
   - mcp: 9 pages
 
 ## foundations ↔ graph (0 cross-links)
@@ -46,7 +46,7 @@ Consider creating a bridge page or adding cross-references.
 
 ## graph ↔ prompting (0 cross-links)
   - graph: 13 pages
-  - prompting: 36 pages
+  - prompting: 37 pages
 
 ## harness ↔ projects (0 cross-links)
   - harness: 31 pages
@@ -66,7 +66,7 @@ Consider creating a bridge page or adding cross-references.
 
 ## langgraph ↔ prompting (0 cross-links)
   - langgraph: 17 pages
-  - prompting: 36 pages
+  - prompting: 37 pages
 
 ## loop ↔ projects (0 cross-links)
   - loop: 11 pages
@@ -78,18 +78,18 @@ Consider creating a bridge page or adding cross-references.
 
 ## mcp ↔ memory (0 cross-links)
   - mcp: 9 pages
-  - memory: 12 pages
+  - memory: 13 pages
 
 ## mcp ↔ prompting (0 cross-links)
   - mcp: 9 pages
-  - prompting: 36 pages
+  - prompting: 37 pages
 
 ## meta ↔ prompting (0 cross-links)
   - meta: 41 pages
-  - prompting: 36 pages
+  - prompting: 37 pages
 
 ## eval ↔ langgraph (1 cross-links)
-  - eval: 89 pages
+  - eval: 124 pages
   - langgraph: 17 pages
 
 ## graph ↔ interview (1 cross-links)
@@ -102,7 +102,7 @@ Consider creating a bridge page or adding cross-references.
 
 ## interview ↔ memory (1 cross-links)
   - interview: 35 pages
-  - memory: 12 pages
+  - memory: 13 pages
 
 ## interview ↔ projects (1 cross-links)
   - interview: 35 pages
@@ -117,8 +117,8 @@ Consider creating a bridge page or adding cross-references.
   - meta: 41 pages
 
 ## memory ↔ prompting (1 cross-links)
-  - memory: 12 pages
-  - prompting: 36 pages
+  - memory: 13 pages
+  - prompting: 37 pages
 
 ## adk ↔ interview (2 cross-links)
   - adk: 20 pages
@@ -126,23 +126,19 @@ Consider creating a bridge page or adding cross-references.
 
 ## adk ↔ memory (2 cross-links)
   - adk: 20 pages
-  - memory: 12 pages
+  - memory: 13 pages
 
 ## eval ↔ graph (2 cross-links)
-  - eval: 89 pages
+  - eval: 124 pages
   - graph: 13 pages
 
 ## foundations ↔ memory (2 cross-links)
   - foundations: 438 pages
-  - memory: 12 pages
+  - memory: 13 pages
 
 ## graph ↔ meta (2 cross-links)
   - graph: 13 pages
   - meta: 41 pages
-
-## harness ↔ memory (2 cross-links)
-  - harness: 31 pages
-  - memory: 12 pages
 
 ## harness ↔ meta (2 cross-links)
   - harness: 31 pages
@@ -166,12 +162,12 @@ Consider creating a bridge page or adding cross-references.
 
 ## loop ↔ memory (2 cross-links)
   - loop: 11 pages
-  - memory: 12 pages
+  - memory: 13 pages
 
 ## loop ↔ prompting (2 cross-links)
   - loop: 11 pages
-  - prompting: 36 pages
+  - prompting: 37 pages
 
 ## projects ↔ prompting (2 cross-links)
   - projects: 11 pages
-  - prompting: 36 pages
+  - prompting: 37 pages

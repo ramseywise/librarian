@@ -1,5 +1,5 @@
 ---
-imported_hash: 5becae9f5a1802ea
+imported_hash: 70ad4cc8d0178a78
 title: 1 — What an Eval Is
 summary: A prompt change ships because three test questions looked better, and a week later refund answers are wrong for one customer segment and nobody can say when it started.
 order: 2
@@ -40,14 +40,14 @@ Every layer below this one has its own eval chapter. Each says **what** to measu
 
 | Layer | Its eval chapter | Measures |
 |---|---|---|
-| Prompt | [01/09](../../../ai-engineering/01-prompt-engineering/notes/09-evaluating-prompts.md) | Output quality per prompt version |
+| Prompt | [01/08](../../../ai-engineering/01-prompt-engineering/notes/08-evaluating-prompts.md) | Output quality per prompt version |
 | Context | [02/12](../../../ai-engineering/02-context-engineering/notes/12-evaluating-context.md) | Whether the right content reached the model and got used |
 | Harness | [03/05](../../../ai-engineering/03-harness-engineering/notes/05-verification-loops.md) | Verification inside a run |
 | Loop | [04/03](../../../ai-engineering/04-loop-engineering/notes/03-the-scorekeeper.md) | The stop condition a loop optimises against |
 
 This topic owns **how** to measure, for all of them: datasets, graders, judge calibration, traces, statistics, gates and production monitoring. It stands as its own topic because that machinery is the same everywhere, and copies spread across the layers would drift apart.
 
-Without that machinery, every change to a prompt, model, tool or retrieval config is a guess. The GitHub Copilot team built their eval framework before the prompts and before the UI ([01/09](../../../ai-engineering/01-prompt-engineering/notes/09-evaluating-prompts.md#build-the-eval-first)). That order is the lesson.
+Without that machinery, every change to a prompt, model, tool or retrieval config is a guess. The GitHub Copilot team built their eval framework before the prompts and before the UI ([01/08](../../../ai-engineering/01-prompt-engineering/notes/08-evaluating-prompts.md#build-the-eval-first)). That order is the lesson.
 
 > **An eval is the definition of "better" for your system, written down so a machine can check it.**
 

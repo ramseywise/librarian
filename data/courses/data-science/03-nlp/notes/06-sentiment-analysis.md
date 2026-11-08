@@ -1,5 +1,5 @@
 ---
-imported_hash: fb1c9e2ac6f1c03b
+imported_hash: 4a0e45d80ae75c28
 title: Sentiment analysis
 summary: 'Your product has fifty thousand reviews, and a manager asks two questions: are people happy, and why not?'
 order: 7
@@ -374,7 +374,7 @@ Both outputs fail in instructive ways. The cloud draws "the", "a" and "i" larges
 
 | Notebook | Covers | Runs |
 |---|---|---|
-| [`Ch09a - Unsupervised Lexical`](../practice/text-analytics-with-python/Ch09%20-%20Sentiment%20Analysis/Ch09a%20-%20Sentiment%20Analysis%20-%20Unsupervised%20Lexical.ipynb) | TextBlob, AFINN, SentiWordNet, VADER | Needs data: `movie_reviews.csv.bz2` (not in this snapshot; IMDb 50k from the book repo). `afinn`, `textblob`, spaCy `en_core_web_sm` |
+| [`Ch09a - Unsupervised Lexical`](../practice/text-analytics-with-python/Ch09 - Sentiment Analysis/Ch09a - Sentiment Analysis - Unsupervised Lexical.ipynb) | TextBlob, AFINN, SentiWordNet, VADER | Needs data: `movie_reviews.csv.bz2` (not in this snapshot; IMDb 50k from the book repo). `afinn`, `textblob`, spaCy `en_core_web_sm` |
 | `Ch09b - Supervised` | BoW/TF-IDF + LR/SVM; word2vec and GloVe + dense net | Needs data as above; standalone `keras`, `keras.layers.normalization` (TF 1.x era), gensim 3 `size=` / `index2word`, spaCy vectors model |
 | `Ch09c - Advanced Deep Learning` | Embedding + LSTM | Needs data; standalone `keras`; `predict_classes` removed in TF 2.6 |
 | `Ch09d - Model Interpretation` | LIME explanations | Needs data; legacy: `skater` is unmaintained, swap in `lime` |

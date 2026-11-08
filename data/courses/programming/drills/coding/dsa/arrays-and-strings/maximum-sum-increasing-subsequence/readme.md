@@ -1,5 +1,5 @@
 ---
-imported_hash: 9c51439fd97a269e
+imported_hash: 61f05e18354e3672
 title: Maximum Sum Increasing Subsequence
 summary: ''
 order: 118
@@ -20,4 +20,4 @@ Maximum Sum Increasing Subsequence
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](solution.py) |
+| Python   | [solution.py](../../arrays_and_strings/maximum_sum_increasing_subsequence/solution.py) |

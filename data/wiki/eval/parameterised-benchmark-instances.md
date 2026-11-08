@@ -2,10 +2,12 @@
 title: Parameterised Benchmark Instances
 tags: [eval, concept]
 summary: The answer to benchmark leakage for agent evals — publish the instance generator, keep instances private and freshly drawn per run, grade on final environment state, and when training on a benchmark reuse its environments but hold out whole templates or domains, because parameterisation stops answer memorisation but not template overfitting.
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/sisyphus/interviewing--guides--6-evals-observability--interview-guide.md
   - data/raw/repos/sisyphus/interviewing--guides--2-llm-fundamentals--interview-guide.md
+  - data/raw/papers/2026-11-05-mirzadeh-2024-gsm-symbolic.md
+  - data/raw/papers/2026-11-05-srivastava-2024-functional-benchmarks-robust-evaluation-reasoning.md
 ---
 
 # Parameterised Benchmark Instances
@@ -52,3 +54,7 @@ saturates ([[Eval Suite Maintenance]]).
 - [[Hashed Fingerprint Contamination Gate]] — alternative-to (detect contamination instead of preventing it)
 - [[Golden Set Mechanics]] — extends (fixed golden cases vs generated instances)
 - [[Eval Contamination Defenses]] — related
+- [[GSM-Symbolic]] — instance-of (templates over 100 GSM8K questions, 50 instances each)
+- [[Functional Benchmarks and the Reasoning Gap]] — instance-of (a generator per MATH problem, snapshots every quarter)
+- [[ARC-AGI-3]] — related (a small public demo set with out-of-distribution private sets)
+- [[Min-K% Prob Pretraining-Data Detection]] — alternative-to (guess whether fixed items leaked instead of regenerating them)

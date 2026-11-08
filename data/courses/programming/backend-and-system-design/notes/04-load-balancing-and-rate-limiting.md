@@ -1,5 +1,5 @@
 ---
-imported_hash: 12d155479ecfb5d1
+imported_hash: 1d0447be3fc60408
 title: 4 — Load balancing and rate limiting
 summary: A balancer takes one address and spreads requests over many servers, removing dead ones.
 order: 5
@@ -27,7 +27,7 @@ Layer 7 needs a [parsed request and usually a TLS handshake](../../computer-scie
 
 ## Picking a server
 
-[nginx](https://nginx.org/en/docs/http/load_balancing.html) offers round robin by default, `least_conn`, and `ip_hash` for stickiness. [Envoy](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/upstream/load_balancing/load_balancers) adds *power of two choices* (P2C) when host weights are equal: pick two hosts at random and send to the one with fewer active requests. A simulation lets us compare them under the conditions they are really chosen for. The setup is invented: 50 servers, Poisson arrivals, exponential service times with mean 1, each server with its own queue.
+[nginx](https://nginx.org/en/docs/http/load_balancing.html) offers round robin by default, `least_conn`, and `ip_hash` for stickiness. [Envoy](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/upstream/load_balancing/load_balancers) adds *power of two choices* (P2C) when host weights are equal: pick two hosts at random and send to the one with fewer active requests. A simulation lets us compare them under the conditions they are really chosen for. The setup is invented: 50 servers, Poisson arrivals, exponential service times with mean 1, each server with its own queue. The tables report the mean and the p99, the wait that 99% of requests beat; [chapter 7](07-reliability-under-load.md#measuring-percentiles-and-histograms) says why p99 is the number to watch.
 
 ```python
 import heapq, random, statistics
@@ -381,7 +381,7 @@ The wrong-decision rate is far higher than Cloudflare's, and that's expected, no
 
 ## Sharing the count
 
-With 20 API servers, 20 private counters allow 20 times the limit. So the count moves to a shared store, and then the danger is read, decide, write as three separate steps. SQLite stands in for the shared store here, using one file and eight threads with separate connections:
+With 20 API servers, 20 private counters allow 20 times the limit. So the count moves to a shared store, and then the danger is read, decide, write as three separate steps. SQLite stands in for the shared store here, using one file and eight threads with separate connections ([chapter 8](08-design-walkthroughs-rate-limiter-notifications-scheduler.md#rate-limiter-the-race) forces the same interleaving and fixes it inside a full design):
 
 ```python
 import sqlite3, tempfile, threading

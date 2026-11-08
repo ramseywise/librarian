@@ -1,5 +1,5 @@
 ---
-imported_hash: dc3b65a684a869ff
+imported_hash: 1720c9aa0c5f5800
 title: Text classification
 summary: You have thousands of documents and a label you care about, and someone suggests a transformer.
 order: 3
@@ -430,7 +430,7 @@ Micro-F1 is 0.48, carried by frequent genres like Drama at 0.68. Macro-F1 of 0.2
 
 | Notebook | Covers | Runs |
 |---|---|---|
-| [`Ch05a`](../practice/text-analytics-with-python/Ch05%20-%20Text%20Classification), `Ch05b`, `Ch05c` | Metrics; six classifiers on 20 Newsgroups; word2vec/GloVe/FastText features | Needs internet once (`fetch_20newsgroups`); `Ch05c` needs spaCy `en_core_web_md` and `gensim` (the `size=` argument is `vector_size=` in gensim 4) |
+| [`Ch05a`](../practice/text-analytics-with-python/Ch05 - Text Classification), `Ch05b`, `Ch05c` | Metrics; six classifiers on 20 Newsgroups; word2vec/GloVe/FastText features | Needs internet once (`fetch_20newsgroups`); `Ch05c` needs spaCy `en_core_web_md` and `gensim` (the `size=` argument is `vector_size=` in gensim 4) |
 | [`07-working-with-text-data.ipynb`](../../01-classical-ml/practice/intro-to-ml-in-python/07-working-with-text-data.md) | IMDb sentiment with BoW/TF-IDF/n-grams, coefficients | Needs the `aclImdb` download into `data/` |
 | [`approaching-almost-any-nlp-problem-on-kaggle.ipynb`](../practice/approaching-almost-any-nlp-problem-on-kaggle.md) (own) | The full Kaggle ladder | Needs the Kaggle `spooky` data and `glove.840B.300d.txt` (5.6 GB) at `../input/`; `xgboost`, standalone `keras` 2.x (`keras.layers.recurrent`); `make_scorer(needs_proba=True)` removed in scikit-learn 1.6 |
 

@@ -769,6 +769,17 @@ def _rewrite_deck(text: str, deck_src: Path, deck_dest: Path, mod: Module, plan:
     return _YAML_IMAGE_RE.sub(image, text)
 
 
+def _mirror_path(target: Path, source: Path) -> Path | None:
+    """Where a non-lesson file of the sources repo sits in the mirror, or None if outside
+    every subject. Below the subject root the layout is the same in both."""
+    best: tuple[int, Path] | None = None
+    for subject in SUBJECTS:
+        root = (source / SUBJECT_SOURCES.get(subject, (LAE, subject))[1]).resolve()
+        if target.is_relative_to(root) and (best is None or len(root.parts) > best[0]):
+            best = (len(root.parts), COURSES_DIR / subject / target.relative_to(root))
+    return best[1] if best else None
+
+
 def _rewrite_body(
     body: str,
     lesson: Lesson,
@@ -805,9 +816,17 @@ def _rewrite_body(
         if not _is_relative(url):
             return url
         target = resolve(url)
+        anchor = "#" + url.split("#", 1)[1] if "#" in url else ""
         if target and target in src_to_dest:
-            anchor = "#" + url.split("#", 1)[1] if "#" in url else ""
             return os.path.relpath(COURSES_DIR / src_to_dest[target], lesson_dir) + anchor
+        # Decks, code and folders keep their source layout here, but a subject-root README
+        # moves down into 00-start-here, so its links to them need one more `../`. The
+        # sources/ dir is left alone: sources.py adjusts those links when it serves them.
+        if target and plan.source and "sources" not in Path(url.split("#")[0]).parts:
+            mirrored = _mirror_path(target, plan.source)
+            written = Path(os.path.normpath(lesson_dir / url.split("#")[0].split("?")[0]))
+            if mirrored is not None and mirrored != written:
+                return os.path.relpath(mirrored, lesson_dir) + anchor
         return url
 
     out: list[str] = []

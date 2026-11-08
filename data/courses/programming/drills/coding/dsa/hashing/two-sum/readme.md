@@ -1,5 +1,5 @@
 ---
-imported_hash: eea9577b567a9f57
+imported_hash: 18f3deec3f1d9144
 title: Two Sum
 summary: Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.
 order: 167
@@ -22,4 +22,4 @@ Given an array of integers `nums` and an integer `target`, return indices of the
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](solution.py) |
+| Python   | [solution.py](../two_sum/solution.py) |

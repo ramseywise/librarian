@@ -1,5 +1,5 @@
 ---
-imported_hash: c12535cc25eac6d9
+imported_hash: f3d9cac90a8e6426
 title: Coin Change Min Count
 summary: ''
 order: 146
@@ -16,4 +16,4 @@ source: learn-ai-engineering/programming/drills/coding/dsa/dynamic_programming/c
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](solution.py) |
+| Python   | [solution.py](../../dynamic_programming/coin_change_min_count/solution.py) |

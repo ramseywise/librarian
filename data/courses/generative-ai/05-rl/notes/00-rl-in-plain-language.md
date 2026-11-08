@@ -1,5 +1,5 @@
 ---
-imported_hash: f909811eb7aa2551
+imported_hash: 53b83e25ab980638
 title: 0 — Reinforcement Learning in Plain Language
 summary: Picture a text adventure with hidden rules.
 order: 2
@@ -167,7 +167,7 @@ So a table of values is a thing you can compute a policy *from*, and a policy is
 
 ## From a corridor to a real puzzle
 
-The corridor is a toy, but the same update rule scales a good way. The lab in [practice/01-q-learning-treasure-hunt](../practice/01-q-learning-treasure-hunt/) is the text adventure from the top of this chapter. Run it:
+The corridor is a toy, but the same update rule scales a good way. The lab in [practice/01-q-learning-treasure-hunt](../../05-RL/practice/01-q-learning-treasure-hunt) is the text adventure from the top of this chapter. Run it:
 
 ```bash
 cd generative-ai/05-RL/practice/01-q-learning-treasure-hunt

@@ -117,6 +117,8 @@ text**, can't verify anything, and scores near zero — or worse, scores from it
 `context_missing` in CI.
 
 ## See Also
+- [[RAGChecker]] — related (claim-level entailment against retrieved chunks)
+- [[Lookback Lens]] — alternative-to (attention-based contextual-hallucination detector)
 - [[RAG Evaluation]]
 - [[project-g Eval Architecture]]
 - [[CRAG Retry Logic]]

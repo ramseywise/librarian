@@ -2,7 +2,7 @@
 title: Self-Consistency
 tags: [prompting, llm, concept]
 summary: Sample several chain-of-thought completions at non-zero temperature and take the majority answer — reasoning paths that converge are more trustworthy than any single greedy path, at N× cost and only when there is a single extractable answer to vote on.
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--03-core-techniques.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--06-chaining-and-workflows.md
@@ -32,6 +32,7 @@ isn't affordable.
 - [[Tree of Thoughts]] generalizes from independent samples to a searched tree.
 
 ## See Also
+- [[Chain-of-Verification]] — related (the model checks its own draft with isolated questions)
 - [[Chain of Thought]] — extends
 - [[Prompting Technique Selection]] — instance-of
 - [[Tree of Thoughts]] — prerequisite-for

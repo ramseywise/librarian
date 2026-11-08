@@ -2,10 +2,11 @@
 title: Specialist Verdict Panel
 tags: [eval, pattern]
 summary: "Agent-output eval as a panel of single-dimension specialist judges — relevance, hallucination, completeness, escalation — each returning a structured verdict, so dimensions aggregate without a halo effect and each failure is attributable."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/articles/2026-07-19-langfuse-multi-agent-eval.md
   - data/raw/articles/2026-07-19-evaluating-ai-agents-deeplearning.md
+  - data/raw/papers/2026-11-05-ye-2023-flask.md
 ---
 
 # Specialist Verdict Panel
@@ -65,3 +66,5 @@ final-answer panel cannot see.
 - [[Grounding Claim Methodology]] — related (claim-level citation checking)
 - [[Decompose Low-Ceiling Dimensions into Checkable Sub-Signals]] — instance-of
 - [[Langfuse Platform]] — related (where the verdicts are attached as scores)
+- [[FLASK Skill-Set Evaluation]] — related (12 per-skill rubrics graded in one call)
+- [[GAMUT Meta-Rubric Benchmark]] — related (rubric items compiled to binary checks)

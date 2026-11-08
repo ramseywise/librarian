@@ -1,5 +1,5 @@
 ---
-imported_hash: 0e922b4a3db75982
+imported_hash: dd0f90781cb935e6
 title: '9 — Design walkthroughs: KV store and feed'
 summary: The method from chapter 8 applies, and every figure here is again hypothetical.
 order: 10
@@ -65,7 +65,7 @@ Two layers solve different problems: one node's storage engine, and the distribu
 
 ## One node: a log-structured store
 
-A B-tree updates pages in place, and random writes are expensive. The [LSM-tree paper](https://www.cs.umb.edu/~poneil/lsmtree.pdf) takes the other route: defer and batch index changes in memory, then merge them to disk in bulk. [Bigtable's tablet design](https://static.googleusercontent.com/media/research.google.com/en//archive/bigtable-osdi06.pdf) is the classic shape, and this code follows its parts. Updates go to a commit log first, recent ones stay in a sorted in-memory *memtable*, older ones sit in immutable sorted *SSTables*, and a read looks at a merged view of the memtable and the tables.
+A B-tree updates pages in place, and random writes are expensive. The [LSM-tree paper](https://www.cs.umb.edu/~poneil/lsmtree.pdf) takes the other route: defer and batch index changes in memory, then merge them to disk in bulk. [Bigtable's tablet design](https://static.googleusercontent.com/media/research.google.com/en//archive/bigtable-osdi06.pdf) is the classic shape, and this code follows its parts. Updates go to a commit log first, recent ones stay in a sorted in-memory *memtable*, older ones sit in immutable sorted *SSTables*, and a read looks at a merged view of the memtable and the tables. [DE 01's row and column stores](../../../data-engineering/01-storage-and-compute-foundations/notes/03-row-and-column-stores.md) measures an LSM's write amplification; this chapter builds one that survives a crash.
 
 ```python
 import bisect, hashlib, json, os, tempfile
@@ -502,7 +502,7 @@ R = W = 3. Together they make 6 > 5, so they overlap. With two nodes down, three
 
 </details>
 
-**2. `compact` in `b_lsm.py` merges every table, then drops tombstones. Why couldn't a compaction of only the two newest tables drop them too?**
+**2. `compact` in `mini_kv.py` merges every table, then drops tombstones. Why couldn't a compaction of only the two newest tables drop them too?**
 
 <details>
 <summary>Answer</summary>

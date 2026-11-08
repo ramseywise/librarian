@@ -2,12 +2,13 @@
 title: Cheap-First Gating and Model Cascades
 tags: [infra, pattern]
 summary: "Send each request to a cheap model and let a gate decide whether it escalates; published savings run from modest to large by task and date, simple baselines often match learned routers, and routers fail on unfamiliar or adversarial queries."
-updated: 2026-11-05
+updated: 2026-11-08
 sources:
   - data/raw/web/2026-11-05-model-cascades-routers-and-calibration.md
   - data/raw/web/2026-11-05-jev-independent-evaluations.md
   - data/raw/web/2026-11-05-citation-check-corrections-jev-and-cascades.md
   - data/raw/web/2026-11-05-citation-check-corrections-third-pass.md
+  - data/raw/papers/2026-11-05-li-2026-jev-as-judge.md
 ---
 
 # Cheap-First Gating and Model Cascades
@@ -89,3 +90,4 @@ while keeping its accuracy. Before training a router, compare it with the best s
 - [[Agentic Workflow Patterns]] — related (routing as a workflow shape)
 - [[Context Engineering and Cost Interview Study Guide]] — related (model routing among the cost levers)
 - [[LLM Inference Economics]] — prerequisite-for (where the price gap between models comes from)
+- [[JEV-as-a-Judge Cascade]] — instance-of (a cheap-first cascade for judging preference pairs)

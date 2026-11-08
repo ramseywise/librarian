@@ -1,5 +1,5 @@
 ---
-imported_hash: 38f3cbdddabb49ff
+imported_hash: 707b08714f4c2469
 title: Subarray With Given Sum
 summary: ''
 order: 132
@@ -20,4 +20,4 @@ Subarray with given sum
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](solution.py) |
+| Python   | [solution.py](../../arrays_and_strings/subarray_with_given_sum/solution.py) |

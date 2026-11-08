@@ -2,13 +2,14 @@
 title: Jev Decision Model
 tags: [infra, concept]
 summary: "TypeSafe AI's proprietary hosted model returns typed decisions with probabilities instead of text; its speed and price gains are partly confirmed independently against named comparators, while accuracy and calibration vary by task, and no peer-reviewed evaluation was found."
-updated: 2026-11-05
+updated: 2026-11-08
 sources:
   - data/raw/web/2026-11-05-jev-typesafe-vendor-sources.md
   - data/raw/web/2026-11-05-jev-independent-evaluations.md
   - data/raw/web/2026-11-05-jev-practitioner-roundups.md
   - data/raw/web/2026-11-05-citation-check-corrections-jev-and-cascades.md
   - data/raw/web/2026-11-05-citation-check-corrections-third-pass.md
+  - data/raw/papers/2026-11-05-li-2026-jev-as-judge.md
 ---
 
 # Jev Decision Model
@@ -92,3 +93,4 @@ Practitioner notes are leads rather than evidence, with no audited method behind
 - [[Confidence-Gated Escalation]] — related (how to set and check a threshold on it)
 - [[Structured Output]] — prerequisite-for (shape is not truth)
 - [[Three-Band Confidence Routing]] — related (the wider decision layer around a score)
+- [[JEV-as-a-Judge Cascade]] — extends (a preprint that tests it as the first stage of a judge cascade)

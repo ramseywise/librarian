@@ -1,5 +1,5 @@
 ---
-imported_hash: 1008977bb4af1df6
+imported_hash: 3a8f2bfde8a77a84
 title: Letter Combination Of Digits
 summary: Given a string containing digits from 2-9 inclusive, return all possible letter combinations that the number could represent.
 order: 139
@@ -21,4 +21,4 @@ combinations that the number could represent.
 
 | Language | File |
 |----------|------|
-| Python   | [solution.py](solution.py) |
+| Python   | [solution.py](../letter_combination_of_digits/solution.py) |

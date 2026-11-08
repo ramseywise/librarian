@@ -1,4 +1,4 @@
-# imported_hash: e0e43dc2124284a4
+# imported_hash: 517cef0418cafb26
 # Lecture deck for generative-ai/08-eval, notes 01-15.
 # Build: make slides PILLAR=generative-ai/08-eval STRICT=1 PREVIEW=1
 # Running example: a customer-support agent that answers from help-centre articles and can issue
@@ -7,7 +7,7 @@ deck:
   title: Eval Engineering
   subtitle: "Version B scores one point higher. Do you ship it?"
   tagline: "Define correct, trust no grader you have not checked, and put an error bar on every number"
-  reference: "Notes: generative-ai/08-eval/notes/01-14"
+  reference: "Notes: generative-ai/08-eval/notes/01-15"
   output: eval-engineering.pptx
   notes: >-
     This talk follows one decision from start to finish. A support agent has two versions, B scores
@@ -30,7 +30,7 @@ parts:
         attribution: "You cannot answer until better is written down so a machine can check it."
         takeaway: "An eval is the definition of better for your system, written down so a machine can check it."
         recall: "What does an eval give you that reading ten good outputs does not?"
-        source: notes/01-what-an-eval-is.md
+        source: notes/09-reading-results.md
         notes: >-
           Here is the running example for the whole talk. Our support agent answers from help-centre
           articles and can issue refunds. Someone changed the prompt and the score moved from 84 to 85.
@@ -718,10 +718,10 @@ parts:
             - "Most tasks pass or fail on both, so differences are mostly 0"
             - "SE(Δ) = sd(differences) / √n, much smaller"
             - "McNemar: only the **discordant** tasks count"
-            - "B wins **14–6** is evidence. **11–9** is not"
+            - "**15–5** is evidence (p = 0.041). **14–6** is not settled (p = 0.115)"
           tag: Pairing cuts variance for free
         takeaway: "Run both versions on identical tasks and analyse per-task differences, since only the tasks that flip carry evidence."
-        recall: "Under McNemar, which tasks count, and why is 14 to 6 evidence when 11 to 9 is not?"
+        recall: "Under McNemar, which tasks count, and why is 15 to 5 evidence when 14 to 6 is not settled?"
         source: notes/09-reading-results.md
         notes: >-
           Most of the variance between tasks has nothing to do with your change, since some tasks are simply
@@ -947,7 +947,7 @@ parts:
         header: [Grader, Δ, "Cohen's d", Verdict]
         widths: [5, 2, 2, 3]
         rows:
-          - ["**Custom answer_relevancy v3**", "**+0.214**", "0.75", "Strong: ship"]
+          - ["**Custom answer_relevancy v3**", "**+0.214**", "0.75", "Strong: gate on it once calibrated"]
           - [DeepEval answer_relevancy, "+0.086", "0.25", Weak]
           - [Custom completeness, "+0.030", "0.07", Marginal]
           - [DeepEval completeness, "−0.042", "—", "**Inverted**"]

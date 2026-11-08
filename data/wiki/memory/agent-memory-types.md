@@ -2,7 +2,7 @@
 title: Agent Memory Types
 tags: [memory, langgraph, concept]
 summary: Three-tier memory taxonomy (semantic/episodic/procedural) with storage patterns, context window strategies, reflection pattern, and SQLite preference store for assistant agents — backed by LangGraph BaseStore.
-updated: 2026-11-02
+updated: 2026-11-08
 sources:
   - data/raw/claude-docs/playground/docs/archived/agentic-rag-copilot-research.md
   - data/raw/claude-docs/playground/docs/archived/librarian-components.md
@@ -328,6 +328,7 @@ In nodes, access via `runtime.store` (Deep Agents) or `config["store"]` (plain L
 For Deep Agents, memory is surfaced through pluggable backends rather than direct `BaseStore` access. See [[Deep Agents Memory Backends]] for the `StateBackend` / `StoreBackend` / `CompositeBackend` pattern.
 
 ## See Also
+- [[Multi-Session Agent Benchmarks]] — related
 - [[LangGraph CRAG Pipeline]]
 - [[ADK Context Engineering]]
 - [[LangGraph Advanced Patterns]]

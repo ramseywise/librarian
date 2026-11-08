@@ -2,7 +2,7 @@
 title: Asynchronous Agent Event Loop
 tags: [llm, agents, infra, pattern]
 summary: "A resident agent drains a queue of structured events and consumes them only at safe points — cancel, queue, or answer in parallel — with placeholder results to keep tool calls paired, numbered batches so none are ignored, and async tool interfaces that name the initiation, not the completion."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--07-orchestration.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--03-tool-design.md
@@ -79,6 +79,7 @@ in one of four modes — **sync, async (task ID + later event), streaming, multi
 30-minute research job should never be a sync call.
 
 ## See Also
+- [[Gaia2]] — related
 - [[Harness Orchestration]] — extends (orchestration for resident, event-driven agents)
 - [[Tool Design as Harness Surface]] — extends (asynchronous tool interfaces)
 - [[Duplex Voice Breaks Discrete-Turn Assumptions]] — related (the same broken turn assumption in voice)

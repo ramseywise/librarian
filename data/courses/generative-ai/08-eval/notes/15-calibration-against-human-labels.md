@@ -1,5 +1,5 @@
 ---
-imported_hash: a0764ce30ea1c26a
+imported_hash: cede621ce744dac9
 title: 15 — Calibrating a Judge Against Human Labels
 summary: In this course's case study, an off-the-shelf judge scored the answers users disliked higher on completeness than the ones they liked, and nothing in its output showed that.
 order: 20
@@ -13,6 +13,8 @@ source: learn-ai-engineering/generative-ai/08-eval/notes/15-calibration-against-
 > A judge is a model making a measurement. Until you've checked it against human labels, you don't know what it measures. Report its two error rates separately, read κ before raw agreement, and re-calibrate when anything changes.
 
 In this course's case study, an off-the-shelf judge scored the answers users disliked higher on completeness than the ones they liked, and nothing in its output showed that. Asking a model to grade feels like measuring, but until a judge is compared with human labels nobody knows what its number means, and any change to its model, prompt or sampling makes it a new instrument. [Note 05](05-llm-as-judge.md) covers how to write a judge and which biases to test for. This chapter covers how to calibrate it on your own data, what to measure, how to correct a pass rate, and how to keep the judge calibrated.
+
+**Needs.** The first half (the procedure, TPR, TNR and κ, correcting the pass rate) stands alone after 05. The later sections lean on other notes: the case-study results in [13](13-case-study-support-agent.md), multiple comparisons and paired intervals in [09](09-reading-results.md), the regression gate in [10](10-evals-in-ci.md), and the multi-turn material in [06c](06c-agent-suites-and-environment-hygiene.md). Read those first if you jump to "A correction per vertical", "Not enough evidence" or the multi-turn section.
 
 ---
 

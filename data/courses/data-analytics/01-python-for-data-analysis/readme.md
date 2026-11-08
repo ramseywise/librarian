@@ -1,5 +1,5 @@
 ---
-imported_hash: bf400337ace604da
+imported_hash: 328dcdee996ef16a
 title: Python for data analysis
 summary: The working pandas, NumPy, matplotlib and seaborn you need to do analysis in Python.
 order: 1
@@ -49,7 +49,7 @@ The notebook numbers come from their original course, so notebook 5 goes with ch
 
 | Chapter | Why |
 |---|---|
-| [Programming: Python](../../programming/00-start-here/readme.md) | Assumes the Python track, then teaches pandas |
+| [Python track](../../programming/python/readme.md) | Assumes modules 01 to 03, then teaches pandas |
 
 **Feeds into**
 

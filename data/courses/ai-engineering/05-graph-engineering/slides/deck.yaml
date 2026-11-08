@@ -1,5 +1,5 @@
-# imported_hash: f9857b51d31fdca9
-# Lecture deck for ai-engineering/05-graph-engineering, notes 01-13.
+# imported_hash: b49107197ab9d6d9
+# Lecture deck for ai-engineering/05-graph-engineering, notes 01-13b; 05b, 10b and 11a are not covered by their own slides.
 # Build: make slides PILLAR=05-graph-engineering STRICT=1 PREVIEW=1
 # Running examples: one review graph (thread review-42) for parts 1-3, the SEC filings graph
 # from the Neo4j course for part 4, and a swarm writing to a shared graph for part 5.
@@ -507,7 +507,7 @@ parts:
             accent: D4621A
             body: Better prompts and roles improved ChatDev by only **+15.6%**
         takeaway: Most multi-agent failures are structural, so fix topology and verification before you reword prompts.
-        recall: Why don't timeouts and retries catch most agent failures?
+        recall: What do most multi-agent failures turn out to be, and what do you fix before rewording prompts?
         source: notes/07-failure-modes-at-scale.md
         notes: >-
           In the book's translation lab the glossary agent mistranslated reasoning. The translator applied it faithfully, and the proofreader,
@@ -928,7 +928,7 @@ parts:
         bullets:
           - "**The lab:** `practice/langgraph-graph`, in Python or TypeScript"
           - "**Your own domain:** build a small graph, then a shared-memory swarm"
-          - "**The notes:** every slide here has its code and figures in notes 01–13"
+          - "**The notes:** every slide here has its code and figures in the notes (01–13b)"
           - "**Knowledge Graphs for RAG:** the hosted DeepLearning.AI and Neo4j course"
           - "**Eval pillar (generative-ai):** measure whether the whole system is correct"
         aside:

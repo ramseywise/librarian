@@ -1,5 +1,5 @@
 ---
-imported_hash: a1c2ac28ae3ef851
+imported_hash: 1c25db4d0ce8d9de
 title: Semantic analysis and named entity recognition
 summary: Vectors tell you that two documents are alike, but not who did what, where, or to whom.
 order: 6
@@ -402,7 +402,7 @@ NER and relation extraction populate knowledge graphs, and WordNet-style taxonom
 
 | Notebook | Covers | Runs |
 |---|---|---|
-| [`Ch08a - Exploring WordNet`](../practice/text-analytics-with-python/Ch08%20-%20Semantic%20Analysis/Ch08a%20-%20Exploring%20WordNet.ipynb) | Synsets, relations, similarity, Lesk | Runs offline after `nltk.download("wordnet")` |
+| [`Ch08a - Exploring WordNet`](../practice/text-analytics-with-python/Ch08 - Semantic Analysis/Ch08a - Exploring WordNet.ipynb) | Synsets, relations, similarity, Lesk | Runs offline after `nltk.download("wordnet")` |
 | `Ch08b - Named Entity Recognition` | spaCy, Stanford NER, CoreNLP | spaCy part: needs `en_core_web_sm` (notebook uses the spaCy 2 `'en'` shortcut). Stanford parts: needs service (Java, Stanford NER jars, CoreNLP server; hard-coded Windows paths) |
 | `Ch08c - Building NER Taggers` | CRF tagger on GMB, end-to-end pipeline | Runs offline; `sklearn-crfsuite`; `ner_dataset.csv.gz` included; `sklearn.externals.joblib` fixed to `joblib` |
 | `Ch08d - Analyzing Semantic Representations` | Propositional and first-order logic in NLTK | Runs offline (resolution prover); Prover9 cells need the external binary |

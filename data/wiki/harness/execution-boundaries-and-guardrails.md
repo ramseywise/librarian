@@ -254,3 +254,4 @@ discipline — see [[Canary Testing for Permission Boundaries]].
 - [[Agent Deployment Anti-Patterns]] — instance-of (mechanism-based enforcement for #8)
 - [[Protocol-Driven Multi-Agent Collaboration]] — instance-of (the isolation boundary, mechanically)
 - [[Extract-and-Evaluate Monitoring]] — related (a transcript monitor feeding the guardrail layer)
+- [[Extreme-Risk Model Evaluation]] — related (the evaluation results that feed deployment and security decisions)

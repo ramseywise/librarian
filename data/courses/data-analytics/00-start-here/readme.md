@@ -1,5 +1,5 @@
 ---
-imported_hash: ecdd9fb143f24d46
+imported_hash: 15b4f74d184480fb
 title: Data Analytics
 summary: 'Position in the path: programming/python modules 01 to 03 come first, and SQL helps alongside.'
 order: 1
@@ -87,7 +87,7 @@ Name the distribution, fix the sample size before you look, and report effect si
 5. Compute grouped summaries and rates correctly, including when groups or denominators are missing.
 6. Work safely with time-indexed data and answer a question with an appropriate chart.
 
-**Review and practice:** [deck](01-python-for-data-analysis/slides/python-for-data-analysis.pptx) · chapter `Try it` exercises · progressive [practice notebooks](01-python-for-data-analysis/practice/).
+**Review and practice:** [deck](../01-python-for-data-analysis/slides/python-for-data-analysis.pptx) · chapter `Try it` exercises · progressive [practice notebooks](../01-python-for-data-analysis/practice).
 
 **Mastery lab:** From a raw retail-style export, create a documented analysis-ready table. Show a rerunnable cleaning workflow, validated join, correctly aggregated metric, and one chart with a plain-language interpretation.
 
@@ -110,7 +110,7 @@ Name the distribution, fix the sample size before you look, and report effect si
 7. Say what a model claims: write the data generating process you believe, and separate a better fit from better generalisation ([The data generating process](../02-probability-and-statistics/notes/07-data-generating-process.md)).
 8. Compare units with themselves using panel data and fixed effects, and say what that does and does not remove ([Panel data and fixed effects](../02-probability-and-statistics/notes/08-panel-data-and-fixed-effects.md)).
 
-**Review and practice:** [deck](02-probability-and-statistics/slides/probability-and-statistics.pptx) · chapter `Try it` exercises and interview checks · optional guided [statistical-analysis notebook](../02-probability-and-statistics/practice/5-statistical-analysis.md).
+**Review and practice:** [deck](../02-probability-and-statistics/slides/probability-and-statistics.pptx) · chapter `Try it` exercises and interview checks · optional guided [statistical-analysis notebook](../02-probability-and-statistics/practice/5-statistical-analysis.md).
 
 **Mastery lab:** Audit an unfamiliar extract, state the estimand and independent unit, report a point estimate and interval, answer one predeclared comparison, then fit and interpret a suitable regression with diagnostics.
 
@@ -132,7 +132,7 @@ Name the distribution, fix the sample size before you look, and report effect si
 6. Choose and qualify DiD, IV, RD, weighting, or synthetic control, naming its identifying assumption ([Cunningham](https://mixtape.scunning.com/)).
 7. Build a comparison group by matching or weighting, show balance before reading the outcome, and say what a hidden confounder would have to do to undo the result ([Matching and weighting](../03-experimentation-and-causality/notes/05-matching-and-weighting.md)).
 
-**Review and practice:** [deck](03-experimentation-and-causality/slides/experimentation-and-causality.pptx) · runnable chapter examples and drills, including the Larkspur checkout experiment and causal-reasoning examples.
+**Review and practice:** [deck](../03-experimentation-and-causality/slides/experimentation-and-causality.pptx) · runnable chapter examples and drills, including the Larkspur checkout experiment and causal-reasoning examples.
 
 **Mastery lab:** Analyse a checkout experiment and write a launch/no-launch brief. For an observational question, instead submit a causal diagram, proposed design, and the assumption that makes the estimate interpretable.
 
@@ -154,7 +154,7 @@ Name the distribution, fix the sample size before you look, and report effect si
 6. Translate posterior uncertainty into a decision by defining an appropriate loss function.
 7. Fit a multilevel model, choose between clustering and modelling a group, and read many segment effects with partial pooling ([Multilevel models and partial pooling](../04-bayesian-analysis/notes/07-multilevel-models-and-partial-pooling.md)).
 
-**Review and practice:** [deck](04-bayesian-analysis/slides/bayesian-analysis.pptx) · fixed-seed chapter examples · optional advanced [Bayesian ML coursework](../04-bayesian-analysis/practice/bayesianml/readme.md).
+**Review and practice:** [deck](../04-bayesian-analysis/slides/bayesian-analysis.pptx) · fixed-seed chapter examples · optional advanced [Bayesian ML coursework](../04-bayesian-analysis/practice/bayesianml/readme.md).
 
 **Mastery lab:** Reanalyse the checkout A/B case with a PyMC model. Run prior-predictive and sampler checks, quantify posterior uncertainty, define the cost of each mistake, and make a ship/no-ship recommendation.
 
@@ -175,7 +175,7 @@ Name the distribution, fix the sample size before you look, and report effect si
 5. Design a dashboard and narrative that give a decision-maker context, evidence, recommendation, and limitations ([Knaflic](https://www.storytellingwithdata.com/books)).
 6. Choose a dashboard stack by audience, interaction, data volume and maintainer, and get Python results to a browser without leaking or overloading ([chapter 6](../05-visualisation-and-storytelling/notes/06-dashboard-stacks-from-python-to-frontend.md)).
 
-**Review and practice:** [deck](05-visualisation-and-storytelling/slides/visualisation-and-storytelling.pptx) · chapter exercises · runnable [practice scripts and dashboard](05-visualisation-and-storytelling/practice/).
+**Review and practice:** [deck](../05-visualisation-and-storytelling/slides/visualisation-and-storytelling.pptx) · chapter exercises · runnable [practice scripts and dashboard](../05-visualisation-and-storytelling/practice).
 
 **Mastery lab:** Take one decision from an earlier unit and create a concise visual narrative or dashboard: audience and decision, chart choice, source and transformation notes, recommendation, and the limitation most likely to change it.
 
@@ -201,7 +201,7 @@ Name the distribution, fix the sample size before you look, and report effect si
 10. Turn a forecast's error distribution into stock and staffing decisions ([Operations and supply chain](../06-applied-analyses/notes/10-operations-and-supply-chain.md)).
 11. Design a survey, weight it to known totals, and report what its margin of error omits ([Surveys and sampling design](../06-applied-analyses/notes/12-surveys-and-sampling-design.md)).
 
-**Review and practice:** [deck](06-applied-analyses/slides/applied-analyses.pptx) · runnable [case-study scripts](06-applied-analyses/practice/) and their generated or documented datasets.
+**Review and practice:** [deck](../06-applied-analyses/slides/applied-analyses.pptx) · runnable [case-study scripts](../06-applied-analyses/practice) and their generated or documented datasets.
 
 **Mastery portfolio:** Complete at least two cases, including forecasting or credit scoring and one of cohort, funnel, segmentation, or SQL. For each: frame the decision, show a baseline, validate against something known, quantify an operational or financial implication, recommend an action, and state what could overturn it.
 

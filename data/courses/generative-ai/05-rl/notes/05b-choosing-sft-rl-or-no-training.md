@@ -1,5 +1,5 @@
 ---
-imported_hash: 01ec1e2153e793fe
+imported_hash: 98f8f80ff53cc29f
 title: 5b — Choosing SFT, RL or No Training
 summary: SFT writes stable mappings and protocols into weights.
 order: 11
@@ -302,7 +302,7 @@ Fail fast before you fail at scale.
 
 | Exp | Lab | Where |
 |---|---|---|
-| 7-1 | Q-learning treasure hunt | **[practice/01-q-learning-treasure-hunt](../practice/01-q-learning-treasure-hunt/)** (offline, numpy) |
+| 7-1 | Q-learning treasure hunt | **[practice/01-q-learning-treasure-hunt](../../05-RL/practice/01-q-learning-treasure-hunt)** (offline, numpy) |
 | 7-2 | LLM agent vs. Q-learning | [upstream](https://github.com/bojieli/ai-agent-book/tree/main/chapter1/learning-from-experience) (API key) |
 | 7-3 | MiniMind: train a 100M LLM from scratch (QK-Norm + Muon, ~14 h, ~$34) | [upstream](https://github.com/bojieli/ai-agent-book/tree/main/chapter8/MiniMind-pretrain) (GPU) |
 | 7-5 | Continued pretraining: Mistral 7B learns Korean | [upstream](https://github.com/bojieli/ai-agent-book/tree/main/chapter8/continued-pretraining) (GPU) |

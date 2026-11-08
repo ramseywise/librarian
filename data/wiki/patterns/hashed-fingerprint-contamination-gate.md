@@ -2,7 +2,7 @@
 title: Hashed Fingerprint Contamination Gate
 tags: [infra, eval, pattern]
 summary: To prove a new repo carries none of a set of excluded material, make the first commit a gate that hashes normalized lines (safe to publish), checks enum and vocabulary sets by overlap and numeric profiles by match, runs the plaintext checks only locally against a quarantine folder, and is calibrated by first making it flag the known-contaminated old tree.
-updated: 2026-10-16
+updated: 2026-11-08
 sources:
   - data/raw/claude-docs/diskoe/docs/research/2026-10-09-clean-room-repo-plan.md
   - data/raw/claude-docs/kiez-archive/docs/research/2026-10-09-clean-room-repo-plan.md
@@ -75,3 +75,4 @@ can.
 - [[Derive the Gate, Don't Copy It]] — related (gates as the mechanical form of a claim)
 - [[Artifact Is Not Evidence: Push and Probe]] — related (a stated "clean" is not a measured one)
 - [[Differential Parity Testing Against the Original]] — alternative-to (proving sameness vs. proving difference)
+- [[Min-K% Prob Pretraining-Data Detection]] — alternative-to (a probabilistic membership guess when you cannot hash the training data)

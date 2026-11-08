@@ -2,7 +2,7 @@
 title: Confidence-Gated Escalation
 tags: [infra, pattern]
 summary: "A gate that escalates when a cheap model's confidence is low needs its threshold set on one labelled sample and checked on another, because thresholds can overrun their error budget on held-out data and a score measured on one task may not hold on the next."
-updated: 2026-11-05
+updated: 2026-11-08
 sources:
   - data/raw/web/2026-11-05-jev-independent-evaluations.md
   - data/raw/web/2026-11-05-jev-typesafe-vendor-sources.md
@@ -10,6 +10,7 @@ sources:
   - data/raw/web/2026-11-05-model-cascades-routers-and-calibration.md
   - data/raw/web/2026-11-05-citation-check-corrections-jev-and-cascades.md
   - data/raw/web/2026-11-05-citation-check-corrections-third-pass.md
+  - data/raw/papers/2026-11-05-li-2026-jev-as-judge.md
 ---
 
 # Confidence-Gated Escalation
@@ -30,6 +31,11 @@ By arithmetic, 70% of 200–400 cases is 140–280, so a 1% budget there is one 
 check that small catches gross overruns and cannot certify the budget. When a contract names the
 error rate, use the bound in [[Selective Risk Guarantees: SGR and Conformal Sets]], which needs
 many more labels.
+
+Li et al. (arXiv 2609.26550, unrefereed) compared threshold rules for a judge cascade. Resampling
+1,850 preference pairs 2,000 times, a threshold picked on a point estimate risked losing more than 2
+points of accuracy in 40-50% of draws, against about 5% for a lower-confidence-bound rule (self-reported;
+one reused pool). See [[JEV-as-a-Judge Cascade]].
 
 ## The score may not carry across tasks
 
@@ -92,3 +98,4 @@ confidence of 0.96, so the score did not flag the failure. One-line descriptions
 - [[Hedging Belongs in the Gate, Not the Answer]] — related (where low confidence should surface)
 - [[CRAG Retry Logic]] — related (a graded retrieval step that also branches on a threshold)
 - [[Drift Seen and Unseen in an Automated Router]] — related (why a fixed threshold decays after it is set)
+- [[JEV-as-a-Judge Cascade]] — extends (the gate applied to an LLM judge, with a lower-bound threshold rule)
