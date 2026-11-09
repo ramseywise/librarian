@@ -2,7 +2,7 @@
 title: Reward Hacking and Overoptimization
 tags: [foundations, llm, eval, concept]
 summary: "The three failure modes of optimizing against a learned reward proxy — reward hacking, the inverse-U overoptimization curve against KL distance, and the ~15% alignment tax on academic NLP benchmarks."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--rlhf-pipeline.md
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--post-training-for-agents.md
@@ -106,3 +106,4 @@ and the most commonly missed).
 - [[Emergent Cheating in Research Swarms]] — instance-of
 - [[Train-Test Ablation Audit]] — instance-of
 - [[Subliminal Learning]] — related (hidden trait transfer through filtered data)
+- [[MACHIAVELLI Benchmark]] — instance-of (reward-driven harm in text games)

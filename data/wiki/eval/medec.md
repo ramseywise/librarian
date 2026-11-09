@@ -2,7 +2,7 @@
 title: MEDEC
 tags: [eval, reference]
 summary: A benchmark of clinical notes that are either correct or hold exactly one medical error of five types, with three subtasks (flag, locate, correct); LLMs lead on detection or correction in different ways and two doctors still beat all models.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-abacha-2024-medec.md
 ---
@@ -33,3 +33,5 @@ Setup: MEDEC test set; the extraction states zero-shot prompt P#1 only for the C
 ## See Also
 - [[MedBrowseComp]] — related (another medical benchmark)
 - [[Output Length Confounds Reference Metrics]] — related (reference metrics and long outputs)
+- [[PubMedQA]] — related (another biomedical text benchmark)
+- [[MultiMedQA and Med-PaLM]] — related

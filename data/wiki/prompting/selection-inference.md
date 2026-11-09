@@ -2,7 +2,7 @@
 title: Selection-Inference
 tags: [prompting, pattern]
 summary: "Split multi-step logical reasoning into alternating Selection calls (pick facts) and Inference calls (derive one new fact from only those facts), so each step depends on the last; the paper reports a 7B model beating larger baselines on 10 tasks (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-creswell-2022-selection-inference.md
 ---
@@ -21,7 +21,7 @@ A **causal reasoning trace**, in the paper's sense, is one in which every step i
 
 All numbers are the paper's own (self-reported).
 
-- Setup for the first group: a frozen Gopher-family 7B model with 5-shot prompts and no fine-tuning, scored by generative exact match over ten tasks: bAbI tasks 1, 2, 3, 15 and 16, plus ProofWriter open-world at depths 0, 1, 2, 3, 5 with Unknowns removed). Selection-Inference on the 7B model beats the same model prompted plainly, the same model with chain-of-thought prompts, and the plain and chain-of-thought 280B baselines. The abstract's headline is over 100% improvement against the equivalent plain baseline.
+- Setup for the first group: a frozen Gopher-family 7B model with 5-shot prompts and no fine-tuning, scored by generative exact match over ten tasks: bAbI tasks 1, 2, 3, 15 and 16, plus ProofWriter OWA at depths 0, 1, 2, 3, 5 with Unknowns removed. Selection-Inference on the 7B model beats the same model prompted plainly, the same model with chain-of-thought prompts, and the plain and chain-of-thought 280B baselines. The abstract's headline is over 100% improvement against the equivalent plain baseline.
 - Fine-tuned Selection-Inference on ProofWriter beats the prompt-engineered version, which scored 57.93%, and the baselines (7B fine-tuned on single steps). A Selection model fine-tuned for 4x10^4 steps keeps high accuracy across depths.
 - In multi-choice scoring the plain 7B model beats the plain 280B model; the authors speculate the larger model has stronger priors.
 - Gopher 280B, 5-shot, on 38 multi-choice logic tasks, is only modestly above chance. On a 2WikiMultiHop dev subset, models degrade when Wikipedia paragraphs are added.

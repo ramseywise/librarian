@@ -2,7 +2,7 @@
 title: Loop-to-Graph Escalation
 tags: [llm, agents, infra, pattern]
 summary: "A loop is a graph with one node and an edge back to itself — so graph is not a maturity level you graduate to but a cost you justify, and the five signals name what a single loop structurally cannot do."
-updated: 2026-10-30
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--graph-engineering.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--README.md
@@ -131,7 +131,7 @@ An anonymous, unreviewed 2026 note ("Independently compiled", not endorsed by th
 2. Add a tool only for a measured failure, with a typed schema and permissions.
 3. Plan only when the route through the task differs between runs; demand a JSON plan, check its dependencies, and cap retries and spend.
 4. Move to several agents with just a generator and a critic at first; each handoff is a contract about an artifact, and reviewers report defects per criterion.
-5. Start the graph as versioned JSON or relational tables, recording provenance on each edge.
+5. Keep the first graph in plain storage (versioned JSON files or relational tables), with provenance recorded on every edge.
 6. Widen to a swarm only when the work parallelises trivially, and specify the reducer ahead of the fan-out.
 
 It also advises a per-run complexity budget covering model calls, sub-agents, tool calls, elapsed time, tokens and retries, which, once used up, returns the strongest artifact so far along with why it stopped. It also says agents alone are no reason for a graph: a relational table is enough when it answers every query, or when nothing persists across sessions. Relayed figures, all reported by the note from secondary sources: about 700 experiments in two days with roughly 20 retained optimisations for Karpathy's autoresearch loop, up to 16 concurrent sub-agents with a hard cap of 1,000 per Dynamic Workflow, and a roughly 750,000-line port completed in eleven days at a 99.8% test pass rate. Its authors concede that metrics can be gamed, that dynamic workflows cost a lot and yield errors that correlate, and that false entity merges are catastrophic. Several references lack authors or dates.

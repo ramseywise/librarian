@@ -2,7 +2,7 @@
 title: Llama2Vec Unsupervised LLM Adaptation for Dense Retrieval
 tags: [rag, pattern]
 summary: Continued pre-training of LLaMA-2-7B with two label-free tasks (predict the input's own words and the next sentence's words from the final-token embedding) before standard retriever fine-tuning; reported gains over RepLLaMA on MS MARCO and BEIR.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-liu-2023-llama2vec.md
 ---
@@ -30,3 +30,6 @@ Llama2Vec adds an unlabelled adaptation step so that an LLM's final-token embedd
 - [[Tuning an Embedding Model from Match Labels]] — related
 - [[GritLM (Generative Representational Instruction Tuning)]] — alternative-to
 - [[Syntriever Synthetic Retriever Training]] — alternative-to
+- [[Contriever Unsupervised Contrastive Retrieval]] — related
+- [[ModernBERT Encoder Backbone]] — related
+- [[GTR Large Dual Encoders]] — related

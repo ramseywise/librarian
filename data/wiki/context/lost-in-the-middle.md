@@ -2,8 +2,9 @@
 title: "Lost in the Middle"
 tags: [context, concept]
 summary: "Models given a long prompt use information at its start and end better than information in the middle; GPT-3.5-Turbo with 20 documents scored 75.8% with the answer first but 53.8% at index 9, below its closed-book 56.1% (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
+  - data/raw/papers/2026-11-07-building-ai-agents-llms-rag-kgs-ch06-advanced-rag-techniques-information-retriev.md
   - data/raw/papers/2026-11-07-liu-2023-lost-middle.md
   - data/raw/papers/2026-11-08-wu-2024-efficient-recipe-long-context-extension.md
   - data/raw/papers/2026-11-08-xiong-2024-artificial-needles-real-haystacks.md
@@ -29,6 +30,10 @@ Six models were prompted as-is with k NaturalQuestions-Open passages, only one o
 - Fine-tuning on synthetic numeric key-value retrieval, with an answer template, flattened the U-shaped curve of GPT-3.5 Turbo and removed one 7B model's primacy bias on 20-document QA, with TriviaQA essentially unchanged for the 7B model (+0.11) while three long-context baselines lost 2.19 to 6.33 points (self-reported). It did not help when distractors were retrieved to be relevant.
 - A needle recall study with GPT-4 Turbo as judge found recall depends on the needle: a needle that conflicts with training knowledge was recalled far worse than a made-up one at haystacks up to 128k, while another needle was recalled perfectly. Among 7B-class models, one version was unreliable beyond roughly 1k tokens and its successor recalled much better after three simultaneous changes that were not ablated.
 
+## Reordering as a mitigation
+
+A chapter on advanced RAG recommends placing the strongest passages at the start and end of the prompt and the weakest in the middle, as a response to this effect. The chapter reports no measurement of that reordering.
+
 ## Limits
 
 - The original study uses one QA dataset and a synthetic task, exactly one relevant document, greedy decoding only, a GPT-4 run on a 500-example subset, API model versions that have since been retired, a single run per setting with no significance tests, and hypothesized mechanisms.
@@ -40,3 +45,4 @@ Six models were prompted as-is with k NaturalQuestions-Open passages, only one o
 - [[NeedleBench]] — related
 - [[LongBench]] — related
 - [[Context Failure Modes]] — related
+- [[NoiserBench Beneficial and Harmful RAG Noise]] — related (gold-in-the-middle noise study)

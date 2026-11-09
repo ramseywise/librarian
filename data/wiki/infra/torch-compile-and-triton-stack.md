@@ -2,7 +2,7 @@
 title: Torch Compile and Triton Stack
 tags: [infra, concept]
 summary: "How the book describes PyTorch profiling and the torch.compile stack (Dynamo, AOT Autograd, Inductor, Triton, XLA): one illustrative MoE speedup, graph-break and dynamic-shape advice, and internal inconsistencies about compile modes."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-ai-systems-performance-engineering-ch13-profiling-tuning-scaling-pytorch.md
   - data/raw/papers/2026-11-08-ai-systems-performance-engineering-ch14-pytorch-compiler-openai-triton-xla-backe.md
@@ -18,7 +18,7 @@ Compiling that MoE example brought one iteration down from roughly 248 ms in eag
 
 ## The compiler stack (ch14)
 
-Dynamo captures graphs from Python, AOT Autograd traces forward and backward, Inductor generates code, and Triton or other backends run it. PrimTorch defines about 250 primitive operations against more than 2,000 ATen operations, which means a new backend need cover only the primitives (claim). A toy function containing a print and a branch on tensor data produced 3 graphs and 2 graph breaks. In one Proton profile (8192x8192 matmuls, K=512) a Triton persistent kernel beat cuBLAS (165.349 ms for the Triton matmul kernel against 174.671 ms for torch; GPU and dtype not stated).
+The compiler stack names Dynamo, AOT Autograd, Inductor and Triton or other backends. PrimTorch defines about 250 primitive operations against more than 2,000 ATen operations, which means a new backend need cover only the primitives (claim). A toy function containing a print and a branch on tensor data produced 3 graphs and 2 graph breaks. In one Proton profile (8192x8192 matmuls, K=512) a Triton persistent kernel beat cuBLAS (165.349 ms for the Triton matmul kernel against 174.671 ms for torch; GPU and dtype not stated).
 
 Shape advice (claims, no measurement): if sequence lengths vary only 10-20%, pad to a fixed length with static shapes; reduce-overhead mode uses CUDA Graphs and needs stable shapes, so dynamic shapes remove its gains.
 

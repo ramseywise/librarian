@@ -1,8 +1,8 @@
 ---
 title: Scratchpads and Self-Notes
 tags: [prompting, pattern]
-summary: "Let a model write intermediate computation as text before the answer (scratchpads, 2021) or inline while reading the context (Self-Notes, 2023); both papers report gains mainly on synthetic and small-model tasks (self-reported)."
-updated: 2026-11-08
+summary: "Let a model write intermediate computation as text before the answer (scratchpads, 2021) or inline while reading the context (Self-Notes, 2023); Nye et al. report results on 137B and 8B models, while Self-Notes is mostly small GPT-2 work on synthetic tasks (self-reported)."
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-nye-2021-show-your-work.md
   - data/raw/papers/2026-11-08-lanchantin-2023-learning-reason-memorize-self-notes.md

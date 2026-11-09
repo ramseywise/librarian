@@ -2,7 +2,7 @@
 title: Prompt Optimization
 tags: [prompting, eval, concept]
 summary: Treat the prompt as a versioned artifact searched against a fixed eval set and metric — by hand (cheapest layer first, one change at a time), by an LLM proposer (APE, OPRO, meta-prompting) or by a framework (DSPy, TextGrad); an optimizer without a metric is just a rewriter.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--08-prompt-optimization.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--07-prompting-reasoning-models.md
@@ -44,7 +44,7 @@ case: **a fixed eval set, a metric, and a record of every version** ([[Evaluatin
 - **Prompt-OIRL**: offline inverse RL to pick query-dependent prompts.
 - Gradient-based search (AutoPrompt, prefix and prompt tuning) needs model access and
   borders on [[Fine-Tuning as Prompt Compression]]. [[PEZ Gradient-Based Hard Prompt Discovery]]
-  keeps the result as readable hard tokens by projecting a continuous prompt onto the vocabulary.
+  finds discrete vocabulary tokens (often unreadable) by projecting a continuous prompt onto the vocabulary.
 - **Reflective evolution:** [[GEPA Reflective Prompt Evolution]] has a model read run traces in
   natural language and keeps a Pareto frontier of candidates; [[Coding-Agent Skill Distillation (CASD)]]
   uses a coding agent as the optimizer and compares itself against GEPA.
@@ -102,7 +102,7 @@ Lakshmanan and Hapke (Generative AI Design Patterns, 2025) describe the optimise
 
 Yang et al. (2023) give an LLM optimizer a meta-prompt holding the best 20 solutions so far with their scores, and sample 8 candidates per step. With a PaLM 2-L scorer on GSM8K, an instruction beginning "Take a deep breath" scores 80.2, where "Let's think step by step" gets 71.8; the best instructions transfer to MultiArith (95.3) and AQuA (54.3) (self-reported). Training accuracy runs 5 to 20 points above test, text-bison shows no clear win, and the extraction notes the best instructions were chosen by test accuracy. On travelling-salesman instances at n=50, gpt-4 reaches a gap of 11.0 against 9.8 for farthest insertion (self-reported).
 
-Ein-Dor et al. (2024) build a prompt through chat from unlabeled data with Llama-3-70B. Across 12 sessions the best zero-shot prompt scored 53% and the best few-shot prompt 47%, not a significant difference (self-reported). Convergence took about 25 minutes and 32 turns, with satisfaction 4.6 of 5. See also [[SkillOpt Agent Skill Optimization]] for a gated optimizer over skill documents.
+Ein-Dor et al. (2024) build a prompt through chat from unlabeled data with Llama-3-70B. Across 12 sessions participants ranked the zero-shot summaries best on 53% of the 112 test instances and the few-shot summaries best on 47%, not a significant difference (self-reported); these are ranking shares, not prompt scores. Convergence took about 25 minutes and 32 turns, with satisfaction 4.6 of 5. See also [[SkillOpt Agent Skill Optimization]] for a gated optimizer over skill documents.
 
 ## APE (Zhou et al., 2022)
 

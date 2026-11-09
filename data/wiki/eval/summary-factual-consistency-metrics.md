@@ -2,7 +2,7 @@
 title: Summary Factual Consistency Metrics
 tags: [eval, concept]
 summary: "Three ways to check whether a summary's claims are supported by its source: FactCC (a BERT classifier trained on rule-made corruptions), QAGS (ask questions of the summary, answer them from summary and source, compare) and TrueTeacher (an LLM labels real model summaries to train a smaller checker); each paper reports its own gains (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-kryscinski-2020-evaluating-factual-consistency-abstractive-text.md
   - data/raw/papers/2026-11-07-wang-2020-asking-answering-questions-evaluate-factual.md
@@ -53,3 +53,6 @@ Gekhman et al. (EMNLP 2023) replace the rule-made corruptions with real model su
 - [[Tool-Augmented Factuality Checking]] — alternative-to (checks claims against outside evidence)
 - [[SelfCheckGPT]] — alternative-to (a hallucination check from sampled consistency)
 - [[LLM-as-Judge Evaluation]] — related (TrueTeacher distills an LLM labeller into a small classifier)
+- [[Intrinsic vs Extrinsic Hallucination]] — related
+- [[Summarization and Translation Hallucination Studies]] — related (human annotation of XSum against which such proxies were tested)
+- [[PEGASUS Gap-Sentence Pretraining]] — related (summariser whose factuality the paper did not evaluate)

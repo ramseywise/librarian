@@ -2,7 +2,7 @@
 title: Outlines Guided Generation
 tags: [prompting, concept]
 summary: Outlines casts constrained generation as a finite-state machine over the vocabulary, precomputing an index from state to allowed tokens so each step applies a logit mask at roughly constant cost; it guarantees format, not correctness, and the paper's evidence is thin.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-willard-2023-efficient-guided-generation-large-language.md
 ---
@@ -32,3 +32,4 @@ The one runtime test is a single sample: GPT-2, one regular expression, compared
 - [[Structured Output]] — prerequisite-for
 - [[Ctrl-G HMM Logical Control]] — alternative-to (the Ctrl-G paper contrasts the two approaches)
 - [[Length Limits Are a Fit Layer, Not a Prompt]] — related (deterministic enforcement of output constraints)
+- [[Logits Masking and Grammar-Constrained Generation]] — alternative-to

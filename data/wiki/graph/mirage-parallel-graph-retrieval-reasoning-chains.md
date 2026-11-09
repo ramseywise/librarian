@@ -1,8 +1,8 @@
 ---
 title: MIRAGE Parallel Graph-Retrieval Reasoning Chains
 tags: [graph, concept]
-summary: "MIRAGE splits a medical question into entity-grounded sub-questions, runs parallel reasoning chains that query a knowledge graph in anchor or bridge mode, and has a synthesizer cross-check the chains; with QwQ-32B it ranked best by GPT-4o on three medical QA sets, by small margins on two (self-reported)."
-updated: 2026-11-08
+summary: "MIRAGE splits a medical question into entity-grounded sub-questions, runs parallel reasoning chains that query a knowledge graph in anchor or bridge mode, and has a synthesizer cross-check the chains; with QwQ-32B it ranked best or tied-best by GPT-4o on three medical QA sets, by small margins on two (self-reported)."
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-wei-2025-mirage.md
 ---

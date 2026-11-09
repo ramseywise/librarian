@@ -2,7 +2,7 @@
 title: Task Decomposition Patterns
 tags: [agents, llm, pattern]
 summary: "Four axes for splitting work across agents — functional, spatial, temporal, and data-driven — distinguished by what each one assumes about independence, and the dependency structure that decides which axis a given task actually admits."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/claude-docs/playground/skills/workflow-build/SKILL.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--agents-design.md
@@ -120,3 +120,6 @@ for the measurements and rationale.
 - [[Conductor Learned Orchestration]] — instance-of (learned decomposition into worker subtasks)
 - [[SAT Self-Organizing Agent Teams]] — instance-of (learned strategy bank for team structure)
 - [[Task-Decoupled Planning]] — instance-of (a DAG of subtasks with per-node scoped context)
+- [[LLM Action Grounding for Embodied Planning]] — instance-of
+- [[HuggingGPT Controller LLM]] — instance-of
+- [[Plan-and-Solve Prompting]] — instance-of

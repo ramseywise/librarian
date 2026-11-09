@@ -1,8 +1,8 @@
 ---
 title: Text Metrics Beyond N-gram Overlap
 tags: [eval, concept]
-summary: "Four 2019-2020 metrics that replace word overlap with something else: BERTScore (greedy embedding matching), BLEURT (BERT pretrained on synthetic perturbations, then tuned on human ratings), CodeBLEU (BLEU plus syntax-tree and data-flow matches) and USR (reference-free dialog scoring); each reports gains on its own correlation setup (self-reported)."
-updated: 2026-11-08
+summary: "Four 2019-2020 metrics that replace word overlap with something else: BERTScore (greedy embedding matching), BLEURT (BERT pretrained on synthetic perturbations, then tuned on human ratings), CodeBLEU (BLEU plus syntax-tree and data-flow matches) and USR (reference-free dialog scoring), each reporting gains on its own correlation setup (self-reported), plus a 2022 study where ROUGE and human preference ranked prompted GPT-3 summaries in opposite order."
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-zhang-2019-bertscore.md
   - data/raw/papers/2026-11-07-sellam-2020-bleurt.md
@@ -57,14 +57,13 @@ Mehri and Eskenazi (ACL 2020) combine three RoBERTa sub-metrics, a masked-langua
 
 Goyal, Li and Durrett (2022 preprint) compare zero-shot text-davinci-002 with BRIO and T0 in an A/B study on 100 recent articles each from CNN and BBC, where three Prolific annotators voted on each article. Annotators preferred GPT-3 by at least 20 points over the next system, significant by paired bootstrap (self-reported). Reference-based metrics ranked it the other way: ROUGE-L on 500 test articles was 31.44 for BRIO against 24.71 for GPT-3 on CNN, and 41.04 against 20.60 on XSum. The paper also reports that existing reference-free metrics fail on these summaries. Agreement among annotators was low (Krippendorff alpha 0.05 to 0.18) and unanimous best-summary choice for GPT-3 occurred for under 30% of articles.
 
-Limits: annotators made one overall-quality choice with no stated definition of quality, English news only, one model that has since been superseded, and GPT-3's training data unknown, possibly including summarization preference data.
-
 ## Limits
 
 - BERTScore: no configuration wins everywhere. It misses factual slips (Tuesday for Monday) and unit equivalences, needs a reference, and the layer choice came from WMT16, which belongs to the same family as the test years. The evidence is translation, captioning, paraphrase detection and one compression set, with no open-ended generation.
 - BLEURT is English, sentence-level and reference-based; the authors leave open whether to drop the BLEU and ROUGE signals. No seeds, variance or significance tests are reported, and the drift tests use a synthetic skew, not real drift.
 - CodeBLEU: each correlation comes from just three or four systems with 50 rated samples, and the correlations themselves have no significance test, and the weights were tuned on the same human scores with no held-out check. The extraction gives the refinement correlation as 0.980 in the results and 0.979 in the limits, and does not reconcile the 0.981 (recommended weights) and 0.977 (ablation) text-to-code figures. It also flags the keyword weight in the keyword-weighted n-gram component as inconsistent (5x against 4x), which bears on the 0.985 refinement figure. Only Java and C# are covered; nothing is executed.
 - USR: only 60 contexts per corpus, annotated by six researchers; the system-level figures come from very few systems (the extraction infers 5 for Topical-Chat and 4 for PersonaChat). The best sub-metric differs between corpora, training hyperparameters are not stated, and it may not suit non-generative systems.
+- Goyal et al.: the extraction notes annotators made one overall-quality choice with no stated definition of quality, the study covers English news only and one model since superseded, and GPT-3's training data is unknown and may include summarization preference data.
 
 ## See Also
 - [[Eval Metric Interpretation Pitfalls]] — prerequisite-for
@@ -73,3 +72,6 @@ Limits: annotators made one overall-quality choice with no stated definition of 
 - [[Long-Form QA Evaluation Hurdles]] — related (ROUGE-L tested with trivial baselines)
 - [[Summary Factual Consistency Metrics]] — related (QAGS reports BERTScore as a baseline)
 - [[ROSCOE Reasoning Chain Metrics]] — related (uses BERTScore and BLEURT as baselines)
+- [[MAUVE]] — instance-of
+- [[BARTScore]] — instance-of (a likelihood-based metric)
+- [[PEGASUS Gap-Sentence Pretraining]] — related (ROUGE-based claims)

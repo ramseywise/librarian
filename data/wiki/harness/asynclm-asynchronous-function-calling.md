@@ -2,7 +2,7 @@
 title: AsyncLM Asynchronous Function Calling
 tags: [harness, pattern]
 summary: "Let the model keep decoding while function calls run in background workers, injecting results as interrupt blocks in a small markup protocol (CML); the preliminary paper reports up to 5.4x lower task latency than synchronous calling on BFCL workloads, with accuracy neutral at best (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-gim-2024-asynchronous-llm-function-calling.md
 ---
@@ -23,7 +23,7 @@ All numbers are the paper's own (self-reported); workloads are Berkeley Function
 - Fine-tuned Llama-3B, multi-step parallel: 65.97% AST accuracy under async against 57.33% under sync; sync inside CML scores 66.07%.
 - Few-shot prompted models: GPT-4o 59.61% async against 57.84% sync, but GPT-4o-mini falls from 55.08% to 41.44% and Llama-3B from 16.98% to 5.46%.
 - Overhead on Llama-3B: roughly 20 more tokens, about 90 ms of delay and 27.5 MB of added KV cache (under 5% of memory).
-- Naive async on the OpenAI API, one new request per interrupt, is 1.5x slower than synchronous-parallel because of 310 ms average time to first token per interrupt.
+- Naive async on the OpenAI API, one new request per interrupt, is 1.5x slower than synchronous-parallel because of 310 ms TTFT per interrupt.
 - LPT is 8% faster on average than random choice. When tasks arrive as interrupts triggered by the user, async cuts latency 2.4x against sync, while synchronous-parallel cuts it only 1.1x.
 - Theory, for independent functions: async latency is at most synchronous-parallel, which is below synchronous.
 

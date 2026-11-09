@@ -2,7 +2,7 @@
 title: Voice Agent Paradigms
 tags: [foundations, voice, comparison]
 summary: "Cascaded (VAD → ASR → LLM → TTS), end-to-end omnimodal, and full-duplex voice agents differ in one thing — how far each gets from VAD's assumption that conversation happens in discrete turns — and all three coexist as trade-offs; the cascade's serial latency budget is about 1–2 s before queueing multiplies it."
-updated: 2026-10-30
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--07-agentic-applications--real-time-multimodal-agents.md
 ---
@@ -96,3 +96,4 @@ Both are true; quote the configuration with the number.
 - [[Realtime Voice Architecture Reference]] — related (the streamed cascade budget)
 - [[Voice Agent Patterns]] — extends (implementation patterns for a voice agent)
 - [[Duplex Voice Breaks Discrete-Turn Assumptions]] — extends (what full-duplex breaks downstream)
+- [[Speech and Audio Generation and Recognition]] — related

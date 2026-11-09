@@ -2,11 +2,12 @@
 title: Goodput and Inference Metrics
 tags: [infra, reference]
 summary: "Reference for the serving metrics the inference sources use (TTFT, TPOT, throughput, goodput, MFU, MBU): two different goodput definitions, worked examples, and the advice to report percentiles."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-huyen-ai-engineering-ch09-inference-optimization.md
   - data/raw/papers/2026-11-07-ai-systems-performance-engineering-ch01-introduction-ai-system-overview.md
   - data/raw/papers/2026-11-07-ai-systems-performance-engineering-ch17-scaling-disaggregated-prefill-decode-inf.md
+  - data/raw/papers/2026-11-08-lakshmanan-hapke-genai-design-patterns-ch08-addressing-constraints.md
 ---
 
 # Goodput and Inference Metrics
@@ -33,10 +34,16 @@ The two should not be mixed in one comparison; the extraction notes chapter 1's 
 - Training MFU figures quoted from the PaLM paper: PaLM 540B 46.2%, Gopher 280B 32.5%, Megatron-Turing NLG 530B 30.2%, GPT-3 175B 21.3% (reported).
 - LinkedIn is quoted as saying throughput can often double or triple if TTFT and TPOT are sacrificed. Output tokens cost about 2-4x input tokens across providers; Anyscale is quoted as finding one output token costs the latency of about 100 input tokens.
 
+## Degradation testing metrics (Pattern 27)
+
+The chapter measures time to first token (TTFT), end-to-end request latency (EERL, including queueing, network and KV-cache creation, at P50/P95/P99), output tokens per second (TPS) and requests per second (RPS), and says to find the degradation point rather than just the failure point, with scalability, stress and load tests. Example benchmark: gpt-4o-mini via the OpenAI API, 100 users x 25 requests, max 150 tokens, temperature 0.7, a single short prompt: a mean TTFT of 3.556 s with throughput of 1914.5 tokens/s overall, 2499 requests succeeded and 1 failed in 190.57 s (self-reported, the authors' own benchmark tool). An unnamed setup under similar load averaged 52 s TTFT with mostly failed requests (self-reported). Levers named for lowering TTFT: a shorter prompt, a cached prefix, a smaller max context window, and retrieved text placed late in the prompt.
+
 ## Limits
 
 - Prices, batch-API discounts (50% cheaper, hours of turnaround), MFU benchmarks and hardware specs date from the books' writing (2024-2025).
 - The extraction lost the MBU equations and figures, and most chapter-1 figures are uncited or quoted from vendors; the chapter text conflicts on H800 memory.
+Limits of this section:
+- One run per setup, a single prompt, no variance. The chapter calls Pattern 27 by a different name in its summary.
 
 ## See Also
 - [[Disaggregated Prefill-Decode Serving]] — related

@@ -2,7 +2,7 @@
 title: MoE-LLaVA and MoE-Tuning
 tags: [foundations, concept]
 summary: "MoE-LLaVA turns a vision-language model sparse in three stages, copying the feed-forward layer into experts in the last stage; a 3.6B-activated model beats LLaVA-1.5-7B on some benchmarks and POPE against 13B (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-lin-2024-moe-llava.md
 ---
@@ -37,3 +37,5 @@ The router is linear with top-2 of 4 experts, placed in every other layer, with 
 - [[Mixture-of-Transformers]] — alternative-to (fixed per-modality weights instead of a learned router)
 - [[MoE Expert Offloading]] — related (mixture-of-experts at inference)
 - [[DeepSeekMoE Fine-Grained Expert Segmentation]] — related
+- [[LLaVA Visual Instruction Tuning]] — prerequisite-for (the dense baseline it builds on)
+- [[V-MoE Sparse Mixture of Experts for Vision]] — related

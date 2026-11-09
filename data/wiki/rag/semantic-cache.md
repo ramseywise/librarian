@@ -8,6 +8,7 @@ sources:
   - data/raw/claude-docs/project-g/docs/rag/semantic-cache.md
   - data/raw/claude-docs/project-g/docs/stakeholders/agent-comparison-findings.md
   - data/raw/papers/2026-11-06-li-2025-plan-reuse-mechanism-llm-driven.md
+  - data/raw/papers/2026-11-08-lakshmanan-hapke-genai-design-patterns-ch08-addressing-constraints.md
 ---
 
 # Semantic Cache for RAG Agents
@@ -141,12 +142,18 @@ AgentReuse (a 2025 preprint) caches agent plans rather than answers. It embeds t
 
 ---
 
+## Tradeoffs in a design-patterns book (Pattern 25)
+
+Lakshmanan and Hapke motivate caching with call-centre shares of repeated questions (31%, 30%, 40%, cited without source). Semantic caching gives up some nuance in exchange for hits, and a similarity threshold must be chosen. In multitenant systems the cache can leak across users, so include a user identifier in the key or system prompt, and flush the cache whenever the model version changes. Server-side prefix caching mainly cuts time to first token, and providers need prompts over about 1,024 tokens; vendor savings figures (90%, 85%, 80%, 50%) are quoted without references.
+
 ## Limits
 
 AgentReuse (the plan-reuse section above):
 
 - Chinese assistant commands only and one embedder; the authors describe the work as exploratory. The 93.12% latency figure rests on an assumed per-plan cost, not a measured end-to-end run.
 - The extraction notes internal inconsistencies: the request count appears as 2,664 and as 2,644; a line says other overhead does not exceed 1 ms next to values of 5.228 ms; and one passage calls the 60.61% latency reduction "60.61 percentage points" although it is a relative reduction.
+Limits of this section:
+- All figures in this section are reported from vendors or unsourced call-centre examples.
 
 ## See Also
 - [[RAG Evaluation]] <!-- auto-linked -->

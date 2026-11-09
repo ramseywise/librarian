@@ -2,7 +2,7 @@
 title: RLHF Pipeline
 tags: [foundations, llm, concept]
 summary: "The three-stage InstructGPT pipeline — SFT, then a Bradley-Terry reward model on ~33k comparisons, then PPO with a KL penalty against the SFT policy — and why all three stages are load-bearing."
-updated: 2026-10-30
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--rlhf-pipeline.md
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--README.md
@@ -113,3 +113,5 @@ policy will faithfully optimize toward whatever the labels actually encoded.
 - [[Post-Training for Agents]] — extends (SFT vs RL, and RL for tool-using agents)
 - [[DAPO]] — extends (a GRPO variant that drops the KL term)
 - [[RLVP — Verifiable Path Penalties]] — extends
+- [[Chain of Hindsight]] — alternative-to
+- [[Harmful Fine-Tuning of Aligned Models]] — related (fine-tuning can undo the alignment the pipeline installs)

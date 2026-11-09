@@ -2,7 +2,7 @@
 title: The Augmentation Gate
 tags: [eval, rag, concept]
 summary: "The A in RAG is the gate nobody evaluates — retrieval can be perfect and generation can be sound while the failure lives entirely in how much retrieved context got handed to the model."
-updated: 2026-10-30
+updated: 2026-11-09
 sources:
   - own-prose
 ---
@@ -108,3 +108,5 @@ will both correctly conclude the problem is not theirs.**
 - [[Context Engineering]] — instance-of (augmentation is context assembly with one source)
 - [[Safeguards Architecture — Five Protection Layers]] — related (Layer 3, the retrieval quality gate)
 - [[RAG Retrieval Strategies]] — prerequisite-for (the retrieval decisions this gate audits)
+- [[RAGate Adaptive Augmentation Gate]] — instance-of
+- [[Skill-RAG Failure-State-Aware Retrieval]] — instance-of

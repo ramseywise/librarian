@@ -2,7 +2,7 @@
 title: GPTScore
 tags: [eval, llm, pattern]
 summary: "GPTScore rates a generated text by the language-model probability of that text under a prompt stating the task and aspect, with no training; across 19 backbones, 4 tasks and 37 datasets the authors found instructions and demonstrations help on some aspects and not others, and text-davinci-003 beat -001 in summarisation but not in dialogue (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-fu-2023-gptscore.md
 ---
@@ -35,3 +35,4 @@ The evaluation sets are random subsets, drawn to limit GPT3 API cost, and their 
 - [[Output Length Confounds Reference Metrics]] — related (reference-based text metrics it is compared against)
 - [[Text Metrics Beyond N-gram Overlap]] — related (embedding and learned metrics, the other non-overlap family)
 - [[ROSCOE Reasoning Chain Metrics]] — related (a reference-free metric for reasoning chains)
+- [[BARTScore]] — alternative-to (earlier likelihood-based scorer)

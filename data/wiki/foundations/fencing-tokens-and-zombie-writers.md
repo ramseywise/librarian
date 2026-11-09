@@ -2,7 +2,7 @@
 title: "Fencing Tokens and Zombie Writers"
 tags: [foundations, pattern]
 summary: "A paused or deposed worker still believes it holds a lock; majority quorums settle truth inside a cluster, and a monotonically increasing fencing token checked at the resource stops stale writers, which is how zombie task attempts are neutralised."
-updated: 2026-11-04
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--01-storage-and-compute-foundations--notes--06-when-distributed-systems-fail.md
 ---
@@ -35,3 +35,4 @@ A task loses its heartbeat, the scheduler starts a second attempt, and the first
 - [[Atomic Commit and Why Two-Phase Commit Blocks]] — related
 - [[Consensus and Coordination Services]] — extends
 - [[Idempotent Retries and Request IDs]] — related
+- [[Runtime-Independent Persistent Agents (RIPA)]] — related

@@ -2,7 +2,7 @@
 title: LADDER and TTRL Verified Variant Trees
 tags: [loop, pattern]
 summary: "LADDER trains a model with reinforcement learning on a model-generated tree of easier variants of problems it cannot yet solve, scored by a programmatic checker; TTRL repeats the trick per question at test time and then rolls back."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-simonds-2025-ladder.md
 ---
@@ -24,7 +24,7 @@ LADDER (Simonds and Yoshiyama, Tufa Labs, March 2025) is a self-improvement loop
 - A DeepSeek-R1-distilled Qwen2.5 7B moved from 50% to 73% on the qualifier exam of the 2025 MIT Integration Bee (20 questions, mean of 3 runs), against 42% for GPT-4o and 80% for o1 as the paper reports them. TTRL on the questions LADDER missed lifted it to 90%, with two questions unsolved.
 - Variant quality control is weak: roughly 8% of Llama variants timed out unsolved at 5 seconds, and many came out harder than the problem they derived from.
 
-The pattern is a verifier-bounded cousin of [[Recursive Self-Improvement]]: improvement only works where a cheap, sound checker exists, a point [[Oracle-Gap Recovery by Selection]] makes from the inference side.
+The pattern is a verifier-bounded cousin of [[Recursive Self-Improvement]]: improvement only works where a cheap, sound checker exists.
 
 ## Limits
 
@@ -37,3 +37,4 @@ The pattern is a verifier-bounded cousin of [[Recursive Self-Improvement]]: impr
 - [[Recursive Self-Improvement]] — prerequisite-for
 - [[Evolve Loop]] — related
 - [[SIFT Judge-Guided Self-Improvement Tree Search]] — alternative-to
+- [[Oracle-Gap Recovery by Selection]] — related (the inference-side counterpart)

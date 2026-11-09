@@ -2,7 +2,7 @@
 title: Production Reliability Primitives
 tags: [llm, agents, infra, pattern]
 summary: "Four unglamorous mechanisms that keep a Stage 2–3 harness running under real traffic — per-step checkpointing, cross-provider fallback, fail-fast on ambiguity, and confidence-routed quarantine."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--08-maturity-and-failure-modes.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--08-maturity-and-failure-modes.md
@@ -101,3 +101,4 @@ The chapter wraps a pre-flight check on the goal and a post-flight check on the 
 - [[Provider-Agnostic Model Adapter]] — extends (the uniform interface cross-provider fallback assumes)
 - [[Team of Rivals Critic-Veto Orchestration]] — related
 - [[Stochastic-Deterministic Boundary Runtime Patterns]] — related
+- [[Robustness and Fault-Tolerance Pattern Ladder]] — extends

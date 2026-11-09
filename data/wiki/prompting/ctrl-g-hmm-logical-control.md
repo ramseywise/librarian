@@ -2,7 +2,7 @@
 title: Ctrl-G HMM Logical Control
 tags: [prompting, pattern]
 summary: Ctrl-G distills a hidden Markov model from the LLM, compiles a logical constraint to a DFA, and reweights next-token probabilities by the chance of satisfying the constraint; it reached full constraint success on text editing, but needs logit access and a distilled model per LLM.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-zhang-2024-adaptable-logical-control-large-language.md
 ---
@@ -16,8 +16,8 @@ Ctrl-G constrains an LLM to satisfy logical constraints, such as required keywor
 All are (self-reported), with TULU2-7B as the controlled model unless noted.
 
 - Text editing: 100% constraint success, while GPT-4 tops out at 60%.
-- Insertion constraint satisfaction: 79% against 24% for GPT-4.
-- CommonGen: BLEU-4 of 31.5 against 29.0.
+- Human-evaluated overall satisfaction (fluent and constraint-satisfying), averaged over the K, L and K&L settings: 79% against 24% for GPT-4.
+- CommonGen (GPT2-large, compared with GeLaTo, not TULU2-7B): BLEU-4 of 31.5 against 29.0.
 - A human evaluation reports Kendall's W of 0.449.
 
 ## Comparison with grammar-constrained decoding
@@ -35,3 +35,4 @@ The paper's section 3.3 contrasts Ctrl-G with grammar-constrained decoding such 
 - [[Structured Output]] — prerequisite-for
 - [[Outlines Guided Generation]] — alternative-to
 - [[Length Limits Are a Fit Layer, Not a Prompt]] — related
+- [[Logits Masking and Grammar-Constrained Generation]] — alternative-to

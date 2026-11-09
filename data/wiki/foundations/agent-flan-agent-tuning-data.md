@@ -2,7 +2,7 @@
 title: Agent-FLAN Agent Tuning Data Design
 tags: [foundations, llm, pattern]
 summary: "Agent-FLAN tunes Llama2 for agent tasks by rewriting ReAct and JSON traces as chat, weighting data by capability and adding negative samples; it reports a 3.5-point overall gain over a re-implemented AgentTuning baseline and fewer hallucinated tool calls (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-chen-2024-agent-flan.md
 ---
@@ -37,3 +37,4 @@ Setup: Llama2-7B, full SFT, one epoch on 24,703 samples mixed 1:1 with ShareGPT,
 - [[Rejection Sampling Fine-Tuning]] — alternative-to (FireAct-style filtered trajectories versus mixture design)
 - [[APIGen Verified Function-Calling Data]] — alternative-to
 - [[ReAct Pattern]] — related
+- [[AgentTuning and AgentInstruct]] — alternative-to

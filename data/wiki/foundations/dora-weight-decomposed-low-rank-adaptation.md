@@ -2,7 +2,7 @@
 title: DoRA Weight-Decomposed Low-Rank Adaptation
 tags: [foundations, concept]
 summary: "DoRA splits a pretrained weight into a magnitude vector and a direction, trains the magnitude directly and the direction with LoRA, and merges back with no inference overhead; commonsense-8 average on LLaMA-7B 74.7 to 78.4 over LoRA (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-liu-2024-dora.md
 ---
@@ -33,3 +33,4 @@ Setup: eight commonsense reasoning tasks, average accuracy against LoRA at the s
 - [[Vision-Language Model Training Families]] — related (parameter-efficient adaptation options)
 - [[PCA, NMF and Low-Rank Factorisation]] — prerequisite-for (the low-rank idea underneath)
 - [[CALM Composition to Augment LLMs]] — alternative-to (added cross-attention to a second model instead of low-rank updates)
+- [[Intrinsic Dimension of Objective Landscapes]] — related (why few trainable parameters can suffice)

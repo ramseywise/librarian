@@ -2,7 +2,7 @@
 title: World Knowledge Model for Agent Planning
 tags: [foundations, llm, pattern]
 summary: "WKM gives an agent a separately trained knowledge model: task knowledge written once from contrasting good and bad trajectories, and state knowledge retrieved per step and mixed into action probabilities; 7-8B models beat fine-tuned baselines on ALFWorld, WebShop and ScienceWorld (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-qiao-2024-agent-planning-world-knowledge-model.md
   - data/raw/papers/2026-11-06-chu-2026-agentic-world-modeling.md
@@ -42,3 +42,5 @@ A 2026 survey in the same group of sources proposes three levels of world model 
 - [[Rejection Sampling Fine-Tuning]] — related
 - [[DreamGym Synthetic Experience RL]] — alternative-to (learned model of the environment, used for RL)
 - [[Agent Fundamentals]] — related
+- [[DECKARD LLM-Hypothesized World Model]] — related
+- [[ScienceWorld Benchmark]] — related

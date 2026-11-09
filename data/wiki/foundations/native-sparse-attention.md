@@ -2,14 +2,14 @@
 title: Native Sparse Attention
 tags: [foundations, concept]
 summary: "Native Sparse Attention (NSA) pretrains a model with three gated attention branches (compressed blocks, top-n selected blocks, sliding window) and Triton kernels, reporting 9.0x forward and 6.0x backward speedup over Triton FlashAttention-2 at 64k with quality at or above full attention on a 27B MoE (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-yuan-2025-native-sparse-attention.md
 ---
 
 # Native Sparse Attention
 
-Yuan et al. (DeepSeek and collaborators, preprint 2025) argue that sparse attention is usually applied at inference to a model trained with full attention. NSA is trained sparse from the start. Per query it sums three branches with learned gates: attention over compressed blocks, over top-n selected blocks, and over a sliding window, each with its own keys and values. Block selection is shared across a GQA group, and the kernels are written for arithmetic intensity, how many compute operations are done per memory access.
+Yuan et al. (preprint, 2025) argue that sparse attention is usually applied at inference to a model trained with full attention. NSA is trained sparse from the start. Per query it sums three branches with learned gates: attention over compressed blocks, over top-n selected blocks, and over a sliding window, each with its own keys and values. Block selection is shared across a GQA group, and the kernels are written for arithmetic intensity, how many compute operations are done per memory access.
 
 ## Results (self-reported)
 
@@ -27,7 +27,7 @@ Yuan et al. (DeepSeek and collaborators, preprint 2025) argue that sparse attent
 - Efficiency is measured only on A100 against Triton FlashAttention-2; reasoning evaluation is SFT distillation only and AIME 24 is small.
 
 ## See Also
-- [[KV Cache Reduction Methods]] — prerequisite-for (the sparse-attention family)
+- [[KV Cache Reduction Methods]] — related (the family this page belongs to)
 - [[Self-Attention Mechanism]] — prerequisite-for
 - [[MiniMax Sparse Attention]] — alternative-to
 - [[FlashAttention and FlashAttention-2]] — related (the speed baseline)

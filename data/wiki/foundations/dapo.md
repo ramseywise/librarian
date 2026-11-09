@@ -2,7 +2,7 @@
 title: DAPO
 tags: [foundations, llm, concept]
 summary: "Four changes to PPO/GRPO-style RL — Clip-Higher, token-level loss, dynamic sampling and overlong reward shaping — each aimed at stopping the policy from collapsing early onto a single strategy; the reported state-of-the-art recipe for verifiable-reward math RL."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--post-training-for-agents.md
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--preference-optimization.md
@@ -61,3 +61,4 @@ Liu et al. (Alibaba ROLL team, arXiv 2508.08221, preprint) ran one-seed ablation
 - [[LaMer Meta-RL Exploration]] — related
 - [[Critical-State RL]] — related
 - [[GUI Agent RL with GUI-R1 and ARPO]] — related
+- [[Tool-N1 Binary-Reward Tool-Calling RL]] — related (binary reward for tool calls)

@@ -2,7 +2,7 @@
 title: Vector Database Comparison
 tags: [rag, infra, comparison]
 summary: Side-by-side of vector stores used across RAG pipelines — DuckDB (embedded local), ChromaDB, pgvector, OpenSearch (Bedrock), Pinecone, GCP Discovery Engine — with when-to-use guidance and migration notes.
-updated: 2026-11-04
+updated: 2026-11-09
 sources:
   - data/raw/claude-docs/playground/docs/rag/vector-databases.md
   - data/raw/claude-docs/project-g/docs/rag/vector-databases.md
@@ -111,3 +111,10 @@ Best for: fully managed RAG on GCP. Two modes: Agentic RAG (Gemini ADK agentic l
 - [[Data Pipeline Pattern Selection]] — extends (backend choice scales with corpus size and deployment target)
 - [[Upgrade-Invariant Retrieval Contract]] — prerequisite-for
 - [[How Far Plain Postgres Stretches]] — related (how far pgvector's host goes)
+- [[Cosmos DB DiskANN Integrated Vector Index]] — extends (vendor study of an in-database DiskANN index)
+- [[Lucene HNSW and Pyserini Dense Retrieval]] — extends (Lucene HNSW as an alternative to a dedicated store)
+- [[HNSW Hierarchical Navigable Small World Index]] — related
+- [[FAISS GPU Similarity Search]] — related
+- [[NoiserBench Beneficial and Harmful RAG Noise]] — related (ANN recall versus gold-document recall)
+- [[LIMIT Embedding Dimension Retrieval Benchmark]] — related (embedding dimension ceiling, separate from ANN loss)
+- [[Cosine Similarity Rescaling Freedom]] — related (cosine is not automatically the semantic metric)

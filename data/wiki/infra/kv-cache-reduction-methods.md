@@ -2,9 +2,10 @@
 title: KV Cache Reduction Methods
 tags: [infra, concept]
 summary: "The KV cache grows with batch, sequence length, hidden size and layers, so reduction methods cut it along different axes (tokens, precision, channels, layers, sparsity); this page maps the axes and records the survey's reported numbers and its caution that sparse attention does not by itself shrink KV memory."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-xu-2024-survey-resource-efficient-llm-multimodal.md
+  - data/raw/papers/2026-11-07-ai-agents-definitive-guide-ch04-models-behind-agents-capabilities-optimization.md
 ---
 
 # KV Cache Reduction Methods
@@ -25,10 +26,15 @@ The survey of resource-efficient models (Xu et al., 2024) gives the single-preci
 
 The survey states that most sparse attention designs target computational complexity and do not necessarily reduce KV cache memory. A method that reads fewer entries still needs them resident unless it also offloads or never stores them.
 
+## Grouped-query attention and cache invalidation in practice
+
+Koenigstein (ch. 4) reads the config of Qwen2.5-7B-Instruct-1M: 28 query heads share 4 key/value heads, a 7x grouping, which the chapter says shrinks KV cache memory and decode bandwidth by about 7x (reported from the model config, not measured). Operational advice: watch cache hit ratio and memory pressure; any structural change to the context should trigger selective cache invalidation; keep static system prompts first so part of the cache survives; as the context limit approaches, apply a sliding window or trim the prefix, which the chapter says also eases the haystack problem (a flattened softmax at long context).
+
 ## Limits
 
 - Every number is quoted from the cited papers with hardware, models and baselines mostly unstated in the survey; they are not comparable across rows.
 - The survey covers work to early 2024; its mapping of methods to these axes beyond the cases it names is this page's grouping, not the survey's.
+- Section from a draft practitioner chapter; the 7x figure is arithmetic from head counts, with no measured memory or latency.
 
 ## See Also
 - [[LLM Inference Economics]] — prerequisite-for (the decode memory problem)

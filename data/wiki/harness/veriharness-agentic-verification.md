@@ -2,7 +2,7 @@
 title: VeriHarness Agentic Verification
 tags: [harness, pattern]
 summary: A same-model verifier with workspace and evidence tools audits ten rollouts of a long-horizon task, resolves disputed claims, challenges shared errors and revises the best rollout.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-zhang-2026-veriharness.md
 ---
@@ -25,7 +25,7 @@ All numbers are self-reported. Setup: five document, spreadsheet and code worksp
 - Average baselines with Flash: majority vote scores 47.5; a best-of-N judge 47.3; a pairwise tournament 49.1; and LLM-as-a-Verifier, 49.5; and an agentic verifier that can reach the environment but follows no protocol scores 49.4, which by the authors' account recovers about half of the gain only. The selection oracle is 62.7.
 - Ablation (Opus, full harness with revision), scores by variant: 54.3 with the resolver alone, 52.6 with the challenger alone, 56.1 with both, 53.8 without skills, and 55.3 with one merged context.
 - Selection gain is +0.6 on 154 unanimous pools and +6.1 on 262 disputed ones.
-- Verifier cost per task for selection is $1.44 with Flash and $3.92 with Opus, and revision multiplies it roughly threefold.
+- Verifier cost per task for selection is $1.44 with Flash and $3.92 with Opus, and revision adds about three times that again.
 - Self-evolving the skill library on held-out subsets (single run): +11.0 on APEX-Agents from an empty library.
 
 ## Limits

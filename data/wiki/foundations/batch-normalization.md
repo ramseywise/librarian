@@ -2,7 +2,7 @@
 title: Batch Normalization
 tags: [foundations, concept]
 summary: Batch Normalization (Ioffe & Szegedy, 2015) normalizes layer inputs using mini-batch statistics during training to reduce internal covariate shift — enables higher learning rates, reduces sensitivity to initialization, and acts as a regularizer. Rethinking BatchNorm (Wu & Johnson, 2021) exposes pitfalls with EMA population statistics, train/inference inconsistency, and domain shift.
-updated: 2026-11-04
+updated: 2026-11-09
 sources:
   - data/raw/pdfs/2015-02-11-batch-normalization.md
   - data/raw/pdfs/2021-05-01-rethinking-batch-norm.md
@@ -80,3 +80,4 @@ The [[Transformer Architecture]] uses Layer Normalization instead of BN — norm
 - [[LLM Fundamentals Interview Study Guide]] — instance-of
 - [[Batch Norm Eval Mode and Small-Batch Failure]] — extends
 - [[Pre-Norm vs Post-Norm and Warm-Up]] — related (where normalisation sits in the layer)
+- [[NFNet Adaptive Gradient Clipping]] — alternative-to (trains deep ResNets without normalization)

@@ -2,14 +2,14 @@
 title: GCG Adversarial Suffix Attack
 tags: [prompting, pattern]
 summary: "GCG appends an optimised token suffix to a harmful request by gradient-guided greedy search so an aligned model starts with an affirmative reply; suffixes tuned on open models transferred to some closed models in mid-2023 tests, and the paper also introduced the AdvBench harmful-behaviour set."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-zou-2023-universal-transferable-adversarial-attacks-aligned.md
 ---
 
 # GCG Adversarial Suffix Attack
 
-The Greedy Coordinate Gradient (GCG) attack searches for a suffix that, appended to a harmful request, makes an aligned model begin its reply with an affirmative phrase ("Sure, here is ..."). It minimises the negative log-probability of that target prefix. At each step it shortlists the top-k tokens by gradient for every suffix position, tries B random swaps drawn from those shortlists, and keeps whichever swap gives the lowest loss. It is a variant of AutoPrompt that searches all positions rather than one. For a **universal** attack, losses and clipped gradients are aggregated over many prompts (added incrementally) and over models that share a tokenizer. The paper also released **AdvBench**: 500 harmful strings and 500 harmful behaviours, later reused by other jailbreak and defence papers.
+The Greedy Coordinate Gradient (GCG) attack searches for a suffix that, appended to a harmful request, makes an aligned model begin its reply with an affirmative phrase ("Sure, here is ..."). It minimises the negative log-probability of that target prefix. At each step it shortlists the top-k tokens by gradient for every suffix position, tries B random swaps drawn from those shortlists, and keeps whichever swap gives the lowest loss. It is a variant of AutoPrompt that searches all positions rather than one. For a **universal** attack, losses and clipped gradients are aggregated over many prompts (added incrementally) and over models that share a tokenizer. The paper also released **AdvBench**: 500 harmful strings and 500 harmful behaviours.
 
 ## Results
 

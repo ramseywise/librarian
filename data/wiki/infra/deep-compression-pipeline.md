@@ -2,7 +2,7 @@
 title: Deep Compression Pipeline
 tags: [infra, concept]
 summary: "Deep Compression chains magnitude pruning, trained weight-sharing quantization and Huffman coding to shrink CNNs 35x to 49x with no reported accuracy loss; speed and energy gains were measured only on the pruned layers."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-han-2015-deep-compression.md
 ---
@@ -22,7 +22,7 @@ Han, Mao and Dally test whether pruning and quantization can be stacked without 
 
 - Speed and energy are measured only on pruned layers, not the quantized or Huffman-coded model, because sparse libraries lack indirect lookup and relative indexing; the full benefit needs custom kernels or hardware.
 - Pruning's advantage disappears at batch size 64 (Titan X, AlexNet FC6: dense 19.8 us against sparse 94.6 us).
-- Inconsistency: index width is 8 bits for convolution and 5 for fully connected layers in Section 2, but 4 bits in Section 5.2 and Table 4.
+- The extraction notes an inconsistency: index width is 8 bits for convolution and 5 for fully connected layers in Section 2, but 4 bits in Section 5.2 and Table 4.
 - Optimiser, learning rate, epochs, pruning threshold and training hardware are not stated; no data augmentation; one run per cell. The memory-energy figures are cited without a named source.
 
 ## See Also

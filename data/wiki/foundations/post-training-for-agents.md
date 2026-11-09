@@ -2,7 +2,7 @@
 title: Post-Training for Agents
 tags: [foundations, llm, concept]
 summary: "How SFT, RL and distillation divide the work of training an agent — SFT writes form and protocol, RL learns transferable strategy, on-policy distillation gives RL's on-policy data with SFT's dense signal — and why the environment, data and reward shape matter more than the choice of algorithm."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--post-training-for-agents.md
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--README.md
@@ -253,3 +253,8 @@ on a sample? Reuse benchmark *environments* for training, never benchmark *items
 - [[RoboCat Self-Improving Robot Generalist]] — related
 - [[Subliminal Learning]] — related (traits can pass through distillation data)
 - [[Past-Tense Refusal Jailbreak]] — related (refusal training generalises poorly to rephrasings)
+- [[Chain of Hindsight]] — related (feedback-conditioned fine-tuning)
+- [[Harmful Fine-Tuning of Aligned Models]] — related
+- [[Self-Improvement Flywheel]] — related
+- [[Tool-N1 Binary-Reward Tool-Calling RL]] — instance-of
+- [[PDDL-INSTRUCT Logical-CoT Planning]] — instance-of

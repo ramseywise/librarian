@@ -2,7 +2,7 @@
 title: Spider Text-to-SQL Benchmark
 tags: [eval, concept]
 summary: "Spider is a human-labeled text-to-SQL dataset of 10,181 questions over 200 multi-table databases, split so test databases are unseen; in 2018 the best baseline reached 9.7% exact match on that split against 34.3% when databases were shared (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-yu-2018-spider.md
 ---
@@ -29,9 +29,9 @@ Baselines were 2014-2018 neural parsers adapted to take the schema as a column l
 
 ## Limits
 
-- No baseline has its hyperparameters, optimizers, epochs or seeds reported. Condition values are neither predicted nor evaluated. Column names were cleaned by hand, which means real abbreviated schemas go untested.
+- The extraction notes that no baseline has its hyperparameters, optimizers, epochs or seeds reported. Condition values are neither predicted nor evaluated. Column names were cleaned by hand, which means real abbreviated schemas go untested.
 - The baselines are pre-LLM parsers and their scores have since been far surpassed.
-- Internal inconsistency: the abstract says 200 databases, while the split counts 206, which adds six existing datasets (752 queries, 1659 questions).
+- The extraction notes an internal inconsistency: the abstract says 200 databases, while the split counts 206, which adds six existing datasets (752 queries, 1659 questions).
 
 ## See Also
 - [[Text-to-SQL as a Retrieval Strategy]] — prerequisite-for (the use of text-to-SQL this benchmark measures)

@@ -2,14 +2,14 @@
 title: Code-Based Self-Verification and Weighted Voting
 tags: [harness, pattern]
 summary: Prompting a code-interpreter model to verify its answer with code, then weighting sampled answers by verification state, lifted MATH accuracy where natural-language verification did not.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-zhou-2023-solving-challenging-math-word-problems.md
 ---
 
 # Code-Based Self-Verification and Weighted Voting
 
-Zhou et al. (CUHK MMLab and others, arXiv preprint, August 2023) study GPT-4 Code Interpreter (GPT4-Code) on math word problems. The authors prompt it to check its answer with code, and then vote over sampled paths weighted by the check's outcome. Numbers are the authors' own.
+A paper (CUHK MMLab and others, arXiv preprint, August 2023) studies GPT-4 Code Interpreter (GPT4-Code) on math word problems. The authors prompt it to check its answer with code, and then vote over sampled paths weighted by the check's outcome. Numbers are the authors' own.
 
 ## Mechanism
 

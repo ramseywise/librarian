@@ -2,7 +2,7 @@
 title: Prompting Technique Selection
 tags: [prompting, llm, reference]
 summary: Which named prompting technique to reach for by problem shape — zero-shot first, few-shot for non-obvious format, CoT and self-consistency for reasoning, ToT for search, PAL for exact computation, ReAct for fresh information, Reflexion when a checker exists, chaining for separable stages.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--03-core-techniques.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--README.md
@@ -65,7 +65,7 @@ zero-shot fails in a way you can name.
   `# Conclusion`) so the app can strip it.
 
 ## See Also
-- [[Prompt Engineering]] — instance-of
+- [[Prompt Engineering]] — related (the discipline this selection guide sits in)
 - [[Chain of Thought]] — extends
 - [[Self-Consistency]] — extends
 - [[Tree of Thoughts]] — extends
@@ -75,3 +75,5 @@ zero-shot fails in a way you can name.
 - [[Four Prompt Criteria]] — prerequisite-for
 - [[Rephrase and Respond]] — related
 - [[Principled Instructions (26 Prompt Principles)]] — related
+- [[Buffer of Thoughts]] — related (retrieved thought templates)
+- [[Self-Discover]] — related

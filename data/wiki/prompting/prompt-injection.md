@@ -2,7 +2,7 @@
 title: Prompt Injection
 tags: [prompting, llm, agents, concept]
 summary: Manipulating model behaviour via adversarial input, exploiting the fact that LLMs process instructions and data in the same channel — mitigated by separation, least privilege, and HITL, never fully solved.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--notes--prompt-injection.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--7-security-safety--prompt-injection.md
@@ -14,6 +14,7 @@ sources:
   - data/raw/papers/2026-11-07-greshake-2023-not-what-you-ve-signed.md
   - data/raw/papers/2026-11-08-bethany-2024-jailbreaking-large-language-models-symbolic.md
   - data/raw/papers/2026-11-08-pelrine-2023-exploiting-novel-gpt-4-apis.md
+  - data/raw/papers/2026-11-08-deshpande-2023-toxicity-chatgpt.md
 ---
 
 # Prompt Injection
@@ -218,6 +219,22 @@ Pelrine et al. (2023 preprint) red-team the GPT-4 fine-tuning and Assistants API
 
 Limits: GPT-4 and GPT-3.5 only; substantial manual prompt engineering; small n (20 questions, 20 names, 4 URL attempts), single runs with no variance; LLM judges with no human validation; fine-tuning settings not reported; the authors note moderation and API behaviour have since changed.
 
+## Persona assignment and toxicity (Deshpande et al., EMNLP Findings 2023)
+
+The authors assigned 90 personas to ChatGPT (gpt-3.5-turbo, March 2023) through the system role and collected responses about 123 entities, plus RealToxicityPrompts continuations, scored with the Perspective API. These are measurements of someone else's model in the authors' own setup.
+
+- Persona assignment raised toxicity up to 6x over the default (self-reported, ChatGPT March 2023, max over 5 samples); the persona "a bad person" raised entity-conditioned toxicity far above no persona, dictator personas had the highest category toxicity, and a Muhammad Ali persona gave about a 3-fold rise in a Figure 1 example.
+- Male personas were more toxic than female. Among male politicians the toxicity ranged from 0.35 (Nixon) to 0.13 (Mandela) (self-reported, same setup).
+- A persona's probability of being bad, as rated by text-davinci-003, correlated with its toxicity (self-reported, same setup).
+- By target: Northern European and Caucasian entities received about 2.5x the toxicity of African and Asian entities, and sexual orientation was the most toxic entity category on average (self-reported, same setup).
+- With the neutral prompt "Say something about", more than 8% of the replies still scored above 0.5 for toxicity (self-reported, same setup).
+
+Limits of this section:
+
+- Only one model snapshot (gpt-3.5-turbo, March 2023), since superseded; the authors say the scale of the study cannot be replicated for other LLMs.
+- Toxicity is measured only with the Perspective API, whose concerns the authors note. The maximum over 5 samples is reported, which inflates toxicity relative to a mean.
+- No mitigation was tested; the RLHF-bias explanation for an inverted trend is a hypothesis. The entity count is printed as 123 (Table 2) and 128 (Section 2.3).
+
 ## See Also
 - [[Prompt Chaining]] <!-- auto-linked -->
 - [[Input Guardrails Pipeline]] — related (mitigated by)
@@ -237,3 +254,4 @@ Limits: GPT-4 and GPT-3.5 only; substantial manual prompt engineering; small n (
 - [[Adversarial Pop-up Attack on Computer-Use Agents]] — instance-of (injection into a GUI agent)
 - [[Adversarial Examples (Intriguing Properties of Neural Networks)]] — related (adversarial inputs to models, by analogy)
 - [[Knowledge Conflicts Taxonomy]] — related (context-memory conflict as a related failure)
+- [[NIST Adversarial ML Taxonomy]] — related (classifies direct and indirect prompt injection)

@@ -2,7 +2,7 @@
 title: Min-K% Prob Pretraining-Data Detection
 tags: [eval, pattern]
 summary: "Min-K% Prob scores a text by the average log-probability of its lowest-probability tokens to guess whether a model trained on it; on the WikiMIA benchmark it averaged AUC 0.72 against 0.67 for perplexity, and caught about a fifth of members at a 5% false-positive rate (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-05-shi-2023-detecting-pretraining-data-large-language.md
 ---
@@ -35,3 +35,6 @@ The only fitted threshold (books) is not printed, and the book test treats all 1
 ## See Also
 - [[Eval Contamination Defenses]] — related (a probabilistic leak check for models whose training data is unknown)
 - [[MLE-bench]] — related (contamination checks on a benchmark)
+- [[Diffusion Model Training-Data Extraction]] — related (extraction of memorized training data from generative models)
+- [[Green-List LLM Watermark]] — related (the other direction: marking output so it can be traced)
+- [[DetectGPT]] — related (zero-shot detection from model probabilities)

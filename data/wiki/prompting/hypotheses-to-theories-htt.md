@@ -2,14 +2,14 @@
 title: "Hypotheses-to-Theories (HtT)"
 tags: [prompting, pattern]
 summary: Two-stage prompting that induces a library of rules from training questions, filters them by coverage and confidence, then prepends the library so the model retrieves rules rather than generating them.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-zhu-2023-large-language-models-can-learn.md
 ---
 
 # Hypotheses-to-Theories (HtT)
 
-HtT targets reasoning tasks where a chain of thought fails because the model produces wrong or hallucinated rules. It adds a learned rule library to a few-shot prompt, with no training.
+HtT targets reasoning tasks where a chain of thought fails because the model produces incorrect implicit rules. It adds a learned rule library to a few-shot prompt, with no training.
 
 ## Mechanism
 

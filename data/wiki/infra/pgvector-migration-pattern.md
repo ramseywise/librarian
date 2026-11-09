@@ -2,7 +2,7 @@
 title: PGVector Migration Pattern
 tags: [infra, rag, pattern]
 summary: Migrating a vector store from in-memory NumPy arrays to PostgreSQL + pgvector — preserving the public API, using cosine distance operator, adding an IVFFlat index, and moving embeddings to Cloud SQL without re-embedding.
-updated: 2026-10-17
+updated: 2026-11-09
 sources:
   - data/raw/claude-docs/chat-agent/docs/architecture/PGVector_migration.md
   - data/raw/claude-docs/chat-agent/docs/TODO_production.md
@@ -206,3 +206,5 @@ Consider Vertex AI embeddings when: already on GCP with ADC auth, processing at 
 - [[Split Service Deployment]] — related (Supabase Postgres as shared vector + app store)
 - [[Upgrade-Invariant Retrieval Contract]] — related (FTS → pgvector behind a frozen response shape)
 - [[Persist Paid Work Per Chunk]] — extends (the chunked, idempotent backfill)
+- [[Cosmos DB DiskANN Integrated Vector Index]] — related
+- [[Lucene HNSW and Pyserini Dense Retrieval]] — related

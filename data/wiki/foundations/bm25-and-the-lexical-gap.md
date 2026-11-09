@@ -2,7 +2,7 @@
 title: "BM25 and the Lexical Gap"
 tags: [foundations, concept]
 summary: "BM25 ranks documents by saturated, length-normalised term matches; both it and TF-IDF cosine are blind to synonyms, which is the gap dense encoders and hybrid retrieval fill."
-updated: 2026-11-04
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--03-nlp--notes--04-embeddings-and-similarity.md
 ---
@@ -31,3 +31,6 @@ On a catalogue of film descriptions, 7 documents match "motel" and none of the 3
 - [[Bag of Words, n-grams and TF-IDF]] — prerequisite-for
 - [[RAG Retrieval Strategies]] — related
 - [[Reciprocal Rank Fusion (RRF)]] — related
+- [[Probabilistic Relevance Framework (BM25 and BM25F)]] — extends (the framework BM25 comes from)
+- [[LIMIT Embedding Dimension Retrieval Benchmark]] — related (BM25 beats single-vector models, then collapses without overlap)
+- [[M3-Embedding Self-Knowledge Distillation]] — related (learned sparse head against BM25)

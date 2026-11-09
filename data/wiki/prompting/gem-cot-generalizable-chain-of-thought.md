@@ -2,7 +2,7 @@
 title: GeM-CoT
 tags: [prompting, pattern]
 summary: Routes each question to a typed demonstration pool by embedding similarity, falls back to zero-shot CoT for unmatched questions, and grows the pool by clustering cached fallbacks into auto-built demonstrations.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-zou-2023-generalizable-chain-thought-prompting-mixed.md
 ---
@@ -21,7 +21,7 @@ GeM-CoT handles mixed-task input streams, where fixed demonstrations from one da
 
 - Ten reasoning datasets, GPT-3.5-Turbo: 82.3 against 81.4 for few-shot CoT, 82.1 for Auto-CoT, 79.4 for zero-shot CoT and 80.7 for General-CoT. GPT-4 on AQuA, GSM8K and SVAMP: 86.6 against 85.5 and 81.0.
 - Diversity-based selection beats similarity and random on AddSub (93.7 against 90.1 and 92.2).
-- An LLM task classifier with 10 demonstrations is only 42% accurate, while typing by category plus answer form reaches 99%. Using an LLM as the type classifier reaches similar accuracy (AddSub 93.4, Strategy 64.5) at the price of extra API calls; an oracle with gold types gets AddSub 90.1 and Strategy 65.0.
+- An LLM task classifier with 10 demonstrations is only 42% accurate, while category+form typing reaches 99%. Using an LLM as the type classifier reaches similar accuracy (AddSub 93.4, Strategy 64.5) at the price of extra API calls; an oracle with gold types gets AddSub 90.1 and Strategy 65.0.
 - BBH streaming, 2000 questions in five batches: from the second batch on, GeM-CoT is ahead of zero-shot CoT.
 
 ## Limits

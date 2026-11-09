@@ -2,7 +2,7 @@
 title: Context Window Budgeting
 tags: [context, context-management, llm, concept]
 summary: "Deciding the token split across instructions, evidence and working space before the window fills — reserve output first, cap every growing component, value each chunk by its marginal information, and set the budget by ablation against the effective (not advertised) window."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--03-budgeting-the-window.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--02-context-anatomy.md
@@ -109,3 +109,4 @@ Limits: one dataset and one model; the extraction notes that Table II disagrees 
 - [[Multi-Agent Context]] — extends
 - [[Budget Tracker and BATS]] — instance-of (a plug-in budget counter and a budget-gated agent loop)
 - [[SheetCompressor Spreadsheet Encoding]] — related (serialization that cuts tokens for tables)
+- [[KnowledGPT Unsupervised Knowledge Selection]] — related

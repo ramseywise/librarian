@@ -2,7 +2,7 @@
 title: Soft Context Compression for RAG (CLaRa and REFRAG)
 tags: [rag, foundations, llm, concept]
 summary: "Two 2025 papers feed the decoder compressed chunk embeddings instead of passage tokens: CLaRa trains retrieval and generation together through a straight-through top-k, REFRAG buys time-to-first-token with chunk embeddings and an RL policy that expands some chunks."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-he-2025-clara.md
   - data/raw/papers/2026-11-06-lin-2025-refrag.md
@@ -43,3 +43,4 @@ REFRAG (arXiv 2509.01092) feeds precomputed chunk embeddings (RoBERTa-large enco
 - [[RL for Retrieval Policies]] — alternative-to (RL over retrieval versus CLaRa's straight-through gradient)
 - [[RAG Reranking]] — alternative-to (CLaRa replaces a separate trained reranker with a generator-trained scorer)
 - [[Prefix Caching]] — related (another way to cut time-to-first-token on repeated context)
+- [[COCOM Context Embeddings Compression]] — alternative-to

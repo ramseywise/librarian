@@ -2,9 +2,10 @@
 title: Dialogue Transformers — TED Policy
 tags: [foundations, concept]
 summary: Transformer Embedding Dialogue (TED) policy (Rasa, 2020) applies self-attention at the discourse level — over dialogue turns rather than tokens — outperforming LSTM-based policies on sub-dialogue handling while being simpler and faster than REDP.
-updated: 2026-07-19
+updated: 2026-11-09
 sources:
   - data/raw/pdfs/2020-10-01-rasa-dialogue-transformers.md
+  - data/raw/papers/2026-11-08-vlasov-2019-dialogue-transformers.md
 ---
 
 # Dialogue Transformers — TED Policy
@@ -59,6 +60,9 @@ On MultiWOZ 2.1 (10,438 dialogues, 7 domains):
 - **History independence discovered**: reducing history from 10 to 2 turns barely affects scores — MultiWOZ depends weakly on dialogue history
 - TED and LSTM perform comparably on this dataset (as expected, since long-range dependencies are absent)
 
+### MultiWOZ setup (from the 2019 preprint)
+The MultiWOZ 2.1 runs use 7249 training and 1812 test dialogues, action-level prediction, and retrieval over 56128 responses in end-to-end mode, with history capped at 10 or 2 turns. The extraction notes these scores are not comparable to prior work.
+
 ### Practical Advantages
 - Faster training than REDP (fewer epochs needed)
 - No specialized architecture (no copy mechanism, no attention modifications)
@@ -75,6 +79,6 @@ TED demonstrates that transformer self-attention is not just for language modeli
 - [[Transformer Architecture]] <!-- auto-linked -->
 - [[DIET Architecture]] — extends (DIET provides NLU for TED's modular mode)
 - [[Self-Attention Mechanism]] — prerequisite-for
-- [[Open-Domain Dialogue Systems]] — instance-of
+- [[Open-Domain Dialogue Systems]] — related (parent survey)
 - [[HistoryCondenser]] — extends (both address selective history attention)
 - [[Summarization Node]] — extends (compaction as alternative to attention-based selection)

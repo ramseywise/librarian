@@ -21,6 +21,7 @@ Moved from CLAUDE.md. The routing rule (patterns vs subject vs interview) and th
   - `data/wiki/graph/` — Graph engineering and knowledge graphs: node, edge and state primitives, graph governance, entity resolution, text-to-Cypher, graph ML, graph retrieval, multi-agent topology and failure modes
   - `data/wiki/harness/` — Agent harness engineering: harness anatomy and maturity, execution boundaries and guardrails, retry and termination design, verification loops, tool design, deployment anti-patterns
   - `data/wiki/loop/` — Loop engineering: the cycle that re-prompts, checks and stops an agent unattended (autonomy ladder, termination design, state files, evolve loop, self-modification, where lessons are stored)
+  - `data/wiki/multimodal/` — Image, video and audio models: generation (GANs, diffusion, text-to-image and video), vision-language models and multimodal understanding, vision and speech encoders, embodied and robot policies built on them
   - `data/wiki/projects/` — Per-project knowledge (generic, public — librarian, listen-wiseer, etc.)
   - `data/wiki/private/` — Company/project-specific pages; **gitignored, never committed**. Move pages here when they contain proprietary context, client names, or internal project details. Use the same page format — they are still compiled and queryable locally.
   - `data/wiki/_index.md` — Auto-generated TOC, updated after every ingest. Do not list `data/wiki/private/` entries here.
@@ -52,6 +53,7 @@ Moved from CLAUDE.md. The routing rule (patterns vs subject vs interview) and th
 | `context-management` | Prefix caching, session compaction, history pruning, context windows |
 | `foundations` | ML/DS/data-engineering fundamentals — classical ML, deep learning, NLP, data systems, MLOps |
 | `interview` | Coding-interview patterns, algorithms, system design, prep material |
+| `multimodal` | Image, video and audio generation, vision-language models, multimodal encoders and benchmarks |
 
 ## Domains index
 

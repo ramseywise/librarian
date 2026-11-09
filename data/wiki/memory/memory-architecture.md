@@ -2,7 +2,7 @@
 title: Memory Architecture
 tags: [memory, langgraph, adk, pattern, concept]
 summary: Three-tier cognitive memory model (semantic/episodic/procedural), SQLite implementation pattern, context window management strategies, and self-improving reflection pattern for assistant agents.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/claude-docs/playground/docs/research/agentic-ai/memory-architecture.md
 ---
@@ -147,3 +147,7 @@ store.get(namespace=("agent", agent_name, user_id), key="history")
 - [[ACC Bounded Memory Control for Agents]] — related (bounded schema-governed working state)
 - [[OCR-Memory Optical Context Retrieval]] — related (episodic history retrieved from rendered images)
 - [[LM2 Large Memory Models]] — related (memory bank inside the model)
+- [[Generative Agents Memory Stream]] — instance-of
+- [[Self-Controlled Memory Framework]] — instance-of
+- [[A-Mem Zettelkasten Agentic Memory]] — instance-of
+- [[AutoMem Coordinate-Keyed File Memory]] — instance-of

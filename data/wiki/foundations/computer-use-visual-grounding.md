@@ -5,6 +5,8 @@ summary: "How a GUI agent turns a screenshot into a click — Set-of-Mark labell
 updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--07-agentic-applications--real-time-multimodal-agents.md
+  - data/raw/papers/2026-11-08-hu-2024-dawn-gui-agent.md
+  - data/raw/papers/2026-11-08-zhang-2024-large-language-model-brained-gui.md
 ---
 
 # Computer Use Visual Grounding
@@ -60,6 +62,14 @@ takes an agent minutes. There is no systematic fix yet; agents cannot predict th
 action while the current one runs. The workaround is to decouple a fast voice front from
 the slow GUI agent ([[Fast-Slow Thinking Architecture]]).
 
+## Case study: Claude 3.5 Computer Use (2024)
+
+Hu et al. ran Claude 3.5 Computer Use on hand-picked Windows and macOS desktop tasks through a PyAutoGUI-based framework and judged each final state by hand. By the extractor's count of the paper's Table 1, 15 of 19 listed tasks succeeded (the paper reports no aggregate rate; single run each). Screens were 1366x768 on Windows and 1344x756 on macOS. The authors sort failures into Planning, Action and Critic errors across four analysed cases; in the Word case a double-click selected only part of the text and the model still declared success. Limits: about 19-20 tasks, no baseline, no benchmark, success judged by the authors, a first public beta now superseded.
+
+## A 2024 survey of LLM-brained GUI agents
+
+Zhang et al. (v12, 6 May 2025) catalogue frameworks, datasets, models, metrics and benchmarks. Its figures are statements about other work, not its own experiments: for example WebArena 812 tasks, Mind2Web over 2,000, VisualWebArena 910 and ST-WebAgentBench 235. It offers practices and metrics but no result synthesis, and states no search method.
+
 ## See Also
 - [[ACI (Agent-Computer Interface)]] — extends (the interface design discipline, applied to screens)
 - [[Real-Time Multimodal Agents]] — instance-of (the GUI setting)
@@ -69,4 +79,9 @@ the slow GUI agent ([[Fast-Slow Thinking Architecture]]).
 - [[ComputerRL API-GUI Agent RL]] — related
 - [[GUI Agent RL with GUI-R1 and ARPO]] — related
 - [[Agent S Hierarchical GUI Agent]] — related
+- [[AppAgent Exploration Documents]] — instance-of
+- [[SeeAct Grounding Strategies]] — instance-of
+- [[UI-TARS Native GUI Agent]] — instance-of
+- [[OpenCUA and AgentNet]] — instance-of
+- [[LLM Prompting for Mobile UI Screens]] — instance-of
 - [[Adversarial Pop-up Attack on Computer-Use Agents]] — related (attack on the grounding step)

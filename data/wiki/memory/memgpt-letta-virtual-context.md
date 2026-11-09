@@ -2,7 +2,7 @@
 title: MemGPT / Letta Virtual Context Memory
 tags: [memory, context-management, concept]
 summary: "The LLM-as-operating-system memory design — the agent pages facts between a fixed in-context core block (RAM) and external archival/recall stores (disk) through its own tool calls, so it authors its context rather than just consuming it."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/articles/2026-07-19-llms-as-os-agent-memory-letta.md
   - data/raw/papers/2026-11-07-packer-2023-memgpt.md
@@ -82,3 +82,4 @@ Results (self-reported):
 - [[AIOS]] — related (an OS kernel view of agent memory and scheduling)
 - [[JAZ Invoke Loop]] — alternative-to (history searched by code instead of a memory store; compared against Letta)
 - [[Agent S Hierarchical GUI Agent]] — alternative-to
+- [[Agent-Native Memory Systems Evaluation]] — related (Letta results in a later benchmark)

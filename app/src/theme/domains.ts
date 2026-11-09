@@ -34,6 +34,7 @@ export const KNOWN: Record<string, string> = {
   harness: "#9C7D72",
   loop: "#AED581",
   graph: "#4DD0E1",
+  multimodal: "#FFAB91",
   private: "#9E9E9E",
 };
 

@@ -2,7 +2,7 @@
 title: Multimodal Chain-of-Thought
 tags: [prompting, pattern]
 summary: "A two-stage recipe for sub-1B T5 models: stage one writes a rationale from text plus ViT image features, stage two reads the rationale and answers; the paper reports 90.45% on ScienceQA with 738M parameters and traces text-only failures to hallucinated rationales (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-zhang-2023-multimodal-chain-thought-reasoning-language.md
 ---
@@ -38,3 +38,5 @@ All numbers are the paper's own (self-reported). Unless stated, ScienceQA test, 
 - [[Chain-of-Thought Prompting]] — prerequisite-for
 - [[LM-Guided Chain-of-Thought]] — related (also splits rationale from answer)
 - [[Scratchpads and Self-Notes]] — related
+- [[Visual Instruction Tuning and Tool-Using VLMs]] — related
+- [[ScienceQA]] — instance-of (the benchmark it is evaluated on)

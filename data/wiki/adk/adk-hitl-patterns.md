@@ -2,7 +2,7 @@
 title: HITL and Interrupt Patterns
 tags: [adk, langgraph, pattern, concept]
 summary: Six HITL patterns for LangGraph agents — static breakpoints, dynamic interrupt(), clarification loop (budget-bounded), scheduler confirmation gate, tool approval for irreversible actions, and time-travel/replay/fork.
-updated: 2026-10-17
+updated: 2026-11-09
 sources:
   - data/raw/articles/2026-07-19-ai-agents-in-langgraph.md
   - data/raw/claude-docs/playground/docs/research/agentic-ai/hitl-and-interrupts.md
@@ -147,3 +147,4 @@ turn from an autonomous one. One free-text channel carries three intents without
 - [[LangGraph CRAG Pipeline]]
 - [[Plan and Execute Pattern]]
 - [[ADK Context Engineering]]
+- [[Human-Agent Interaction Patterns]] — related

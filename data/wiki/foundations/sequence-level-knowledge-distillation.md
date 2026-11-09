@@ -2,7 +2,7 @@
 title: Sequence-Level Knowledge Distillation
 tags: [foundations, pattern]
 summary: "Seq-KD trains a small student on the teacher's beam-search outputs instead of its word distributions; Kim and Rush (2016) report students about 10x faster than the teacher with little BLEU loss on English-German translation."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-kim-2016-sequence-level-knowledge-distillation.md
 ---
@@ -32,7 +32,7 @@ Setup unless stated: English-German, WMT 2014, newstest2014, tokenized BLEU, a 2
 
 ## Side effects the paper reports
 
-The Seq-KD student puts 16.9% of its probability mass on its greedy output against 0.9% for the baseline, so it is more peaked. Its perplexity was worse (22.7 against 8.2) even though BLEU was better, so lower perplexity did not mean higher BLEU. The teacher's single beam-1 output held only 1.3% of its distribution.
+On English-German test data, the 2x500 Seq-KD student puts 16.9% of its probability mass on its greedy output against 0.9% for the baseline (self-reported), so it is more peaked. Its perplexity was worse (22.7 against 8.2) even though BLEU was better, so lower perplexity did not mean higher BLEU. The 4x1000 teacher's beam-1 output held only 1.3% of its distribution (self-reported).
 
 ## Limits
 

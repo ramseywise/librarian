@@ -2,7 +2,7 @@
 title: Graph Neural Prompting
 tags: [graph, concept]
 summary: "Graph Neural Prompting encodes a retrieved knowledge-graph subgraph with a GNN into one soft prompt for a frozen FLAN-T5; it beat Prompt Tuning by about 13 percent on six QA sets while pasting raw triples into the prompt hurt the model (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-tian-2023-graph-neural-prompting-large-language.md
 ---
@@ -29,7 +29,7 @@ Tian et al. (arXiv 2309.15427 v2, December 2023; AAAI 2024 format). A plug-and-p
 ## Limits
 
 - Only FLAN-T5 3B and 11B (encoder-decoder, open-weight, soft prompts need embedding access), multiple-choice QA, and fixed public graphs. Retrieval is plain entity linking plus 2-hop expansion and is not evaluated alone. Per-dataset training and layer search are needed; no cost, latency, seeds or intervals are reported.
-- No limitations section; the authors note only that retrieved graphs carry irrelevant entities. KG Flattening and KAPING are reimplemented zero-shot into a frozen model and untuned. The case study is two hand-picked examples. The method predates GraphRAG-style summarisation and LLM-written graph queries.
+- No limitations section; the authors note only that retrieved graphs carry irrelevant entities. KG Flattening and KAPING are reimplemented zero-shot into a frozen model and untuned. The extraction notes that the case study is two hand-picked examples and that the method predates GraphRAG-style summarisation and LLM-written graph queries.
 
 ## See Also
 - [[Knowledge Graph Retrieval]] — prerequisite-for

@@ -2,7 +2,7 @@
 title: Code Generation Prompting
 tags: [prompting, pattern]
 summary: Prompt shapes for code — instruction→code, comments→code, signature completion with stop sequences, schema→SQL, explain-code, parseable unit-test prompts and fill-in-the-middle — plus the over-refusal trap of generic safety system prompts; context and verification remain the biggest levers.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--11-applications.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--prompt-library.md
@@ -48,7 +48,7 @@ refusals** ([[Evaluating Prompts]]).
 ## Execution Feedback Loops
 
 - **Self-Debug (Chen et al., 2023).** A few-shot loop with no training: generate a program, execute it, have the model explain it or trace it, build a feedback message from the explanation and unit-test results, and repeat for up to 10 turns. Gains were reported on TransCoder, MBPP and Spider (about 12 points for Codex on TransCoder with unit-test and explanation feedback, self-reported); the extraction notes that without execution feedback the gains are small or negative.
-- **OpenCodeInterpreter (Zheng et al., 2024).** Training on multi-turn execution-feedback data (Code-Feedback) raised a 33B model from 79.0 (70.4) single-turn to 83.2 (76.4) with execution feedback on average benchmark scores (self-reported). Feedback lowered the scores of two baselines (WizardCoder at 33B and Magicoder-S-DS at 6.7B), and the oracle variant that is shown the reference solution (91.6) is a ceiling and cannot be deployed. This is distillation from a stronger model rather than self-improvement, and one table cell carries a typo.
+- **OpenCodeInterpreter (Zheng et al., 2024).** Training on multi-turn execution-feedback data (Code-Feedback) raised a 33B model from 79.0 (70.4) single-turn to 83.2 (76.4) with execution feedback on average benchmark scores (self-reported). Feedback lowered the scores of two baselines (WizardCoder at 33B and Magicoder-S-DS at 6.7B), and the oracle variant that is shown the reference solution (91.6) is a ceiling and cannot be deployed. The extraction notes that the training data comes from GPT-3.5 and GPT-4, so part of the gain is distillation from a stronger model and should not be read as self-improvement, and that one Table 2 cell (66.7 against 76.6, plus score above base) is probably a typo in the paper.
 
 ## See Also
 - [[Stop Sequences and Completion Anatomy]] — extends
@@ -59,3 +59,5 @@ refusals** ([[Evaluating Prompts]]).
 - [[Chain of Code]] — related
 - [[PIE Performance-Improving Edits Benchmark]] — instance-of (C++ speed-up edits benchmark)
 - [[CodeRL Unit-Test Actor-Critic]] — related (trained, not prompted)
+- [[DS-1000]] — related (execution-based code benchmark)
+- [[SPoC Pseudocode-to-Code]] — related

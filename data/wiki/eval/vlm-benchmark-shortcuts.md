@@ -2,7 +2,7 @@
 title: VLM Benchmark Shortcuts
 tags: [eval, concept]
 summary: "Vision-language benchmarks can be passed without seeing: a model of all-zero weights scores 100% on caption-pair tests when ties go to the first, correct, caption; for one question type in the original VQA, 'yes' is right 98% of the time; exact-match VQA accuracy under-scores free-form answers; and CHAIR misleads on long outputs."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-03-bordes-2024-introduction-vision-language-modeling.md
 ---
@@ -62,3 +62,10 @@ describes has since moved on.
 - [[Vision-Language Model Training Families]] — prerequisite-for
 - [[Eval Metric Interpretation Pitfalls]] — related
 - [[LLM Judge Biases]] — related (the judge that replaces exact match has its own biases)
+- [[POPE Object Hallucination Probing]] — instance-of (polling probes)
+- [[MMBench]] — instance-of (CircularEval)
+- [[SEED-Bench]] — instance-of (likelihood-scored options)
+- [[Visual Instruction Tuning and Tool-Using VLMs]] — related (compares the models these benchmarks score)
+- [[Visual Question Answering Benchmarks]] — related
+- [[MMMU]] — related
+- [[MM-Vet]] — related

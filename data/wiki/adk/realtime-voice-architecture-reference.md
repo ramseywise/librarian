@@ -2,7 +2,7 @@
 title: Realtime Voice Architecture Reference
 tags: [voice, adk, infra, reference]
 summary: Numbers and tradeoffs for building a realtime voice agent — cascaded ASR→LLM→TTS vs speech-to-speech, the latency budget in which LLM time-to-first-token dominates, endpointing strategies, domain-specific transcription failure modes, and the regulated-domain constraints (GDPR Art. 9/17/22, health-data hosting) that shape the architecture before any code.
-updated: 2026-10-30
+updated: 2026-11-09
 sources:
   - data/raw/claude-docs/galactus/docs/research/2026-08-10_voice-tooling_realtime-sota.md
   - data/raw/claude-docs/galactus/docs/research/2026-08-10_voice-tooling_regulated-domain.md
@@ -99,3 +99,4 @@ The existing specs covered PII masking but not compliance *architecture*. Findin
 - [[Data Clusters by Writer and Trust]] — extends (erasure must reach every representation)
 - [[Safeguards Architecture — Five Protection Layers]] — extends
 - [[Voice Agent Paradigms]] — related (the fully serial cascade budget, where the VAD wait dominates)
+- [[Speech and Audio Generation and Recognition]] — related

@@ -2,7 +2,7 @@
 title: Dynamic Tool Discovery
 tags: [llm, agents, mcp, pattern]
 summary: "Eagerly loading every tool schema can spend ~30% of a window before the first message — three lighter alternatives (retrieval pre-filter, proactive discovery via a tool_search meta-tool, skills as a greppable catalog) and the KV-cache rule for where a newly loaded schema goes."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--03-tool-design.md
   - data/raw/papers/2026-11-06-lumer-2025-tool-agent-retrieval.md
@@ -71,3 +71,6 @@ When tools belong to agents or MCP servers, retrieving tools alone drops what th
 - [[Alita]] — related (creating a tool when none is found)
 - [[UPRISE Universal Prompt Retrieval]] — related (retrieving demonstrations, not tools, with a trained retriever)
 - [[OpenDev Terminal Coding Agent]] — related (lazy MCP discovery)
+- [[ToolLLM ToolBench and DFSDT]] — related
+- [[HuggingGPT Controller LLM]] — related
+- [[Chain-of-Tools Frozen-Model Tool Retrieval]] — instance-of (tool retrieval with a frozen model)

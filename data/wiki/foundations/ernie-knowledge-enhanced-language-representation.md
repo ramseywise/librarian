@@ -2,7 +2,7 @@
 title: ERNIE Knowledge-Enhanced Language Representation
 tags: [foundations, concept]
 summary: "ERNIE (Zhang et al. 2019) stacks a knowledge encoder over a BERT-style text encoder to fuse knowledge-graph entity embeddings into token representations during pre-training; it improved entity typing and relation classification over BERT and was comparable on GLUE (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-zhang-2019-ernie.md
 ---
@@ -14,7 +14,7 @@ Zhang et al. (ACL 2019). The question: can a BERT-style model do better on knowl
 ## Mechanism
 
 - Two stacked encoders: the lower textual encoder (T-Encoder) has 6 layers, matches BERT and starts from BERT-BASE weights; above it a knowledgeable encoder (K-Encoder) of 6 aggregators fuses token embeddings with entity embeddings. Mentions are linked to Wikidata with TAGME, and each entity is a frozen 100-dimension TransE vector.
-- Pre-training on English Wikipedia aligned to Wikidata uses masked language modelling, next-sentence prediction and a new denoising entity auto-encoder (dEA): some token-entity alignments are masked (15%) or randomised (5%) and the model must predict the entities from aligned tokens. This also gives some tolerance to linking errors.
+- Pre-training on English Wikipedia aligned to Wikidata uses MLM and NSP and a new denoising entity auto-encoder (dEA): some token-entity alignments are masked (15%) or randomised (5%) and the model must predict the entities from aligned tokens. This also gives some tolerance to linking errors.
 - For entity typing and relation classification, fine-tuning wraps entities in marker tokens. The knowledge components cost roughly 4M extra parameters (114M against 110M for BERT-BASE). TransE was trained on a Wikidata sample of 5,040,986 entities, and the text corpus holds close to 4,500M subwords.
 
 ## Results (self-reported)

@@ -2,7 +2,7 @@
 title: Context-Aware Compression
 tags: [context, context-management, agents, pattern]
 summary: "Compressing tool results with the query and the agent's known state in the compressor prompt — in a course experiment it finished in 7 iterations and 40k tokens where per-result and combined summaries took 10–12 iterations and 93k–277k, while keeping identifiers verbatim; compression is understanding, so the compressor needs near-main-model capability."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--05-compression-compaction.md
 ---
@@ -73,3 +73,4 @@ index time and *adds* context to chunks; compression runs at query time and *rem
 - [[Context Window Budgeting]] — related
 - [[Learned Proactive Compaction]] — alternative-to (the agent decides when and what to keep, by training)
 - [[Soft Context Compression for RAG (CLaRa and REFRAG)]] — alternative-to (compresses retrieved text into embeddings)
+- [[COCOM Context Embeddings Compression]] — related (compresses retrieved passages into context embeddings)

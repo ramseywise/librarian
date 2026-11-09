@@ -2,7 +2,7 @@
 title: MCP Protocol
 tags: [mcp, concept]
 summary: Model Context Protocol — how it separates tool definitions from agents, enabling independent deployment and runtime tool discovery; includes AWS Bedrock AgentCore deployment pattern from the Hypernova PoC.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/claude-docs/playground/docs/archived/agentic-rag-copilot-research.md
   - data/raw/claude-docs/playground/docs/archived/adk-samples-patterns-analysis.md
@@ -197,9 +197,12 @@ Chapters 1 to 4 of an early-release book, AI Agents with MCP, cover the client s
 - **Many servers.** Two primitives sharing a name cannot coexist in a ClientSessionGroup, so a name hook renames them to avoid collisions. Tool-choice accuracy may fall as tools accumulate (unquantified); the chapters suggest evaluating before and after adding a server.
 - **Resumption and pagination.** Streamable HTTP connections resume from the last event id, and only list methods paginate, through nextCursor.
 - **Transports and auth.** Always support stdio and add Streamable HTTP for remote use; transports that include authorisation must implement OAuth 2.1; do not pass all environment variables to a stdio server.
-- **Ecosystem counts** (about 350 official and under 650 community servers listed, 4,800 specification-repo stars) are as of writing in 2025 and have dated.
+- **Ecosystem counts** (over 350 official servers and under 650 community servers listed, over 4,800 specification-repo stars; self-reported) are as of writing in 2025 and have dated.
 
-Inconsistencies noted by the extraction: some figure numbering in chapter 2 is wrong (the sampling figure is cited as 2-3 but is 2-4), and the chapter 3 text ends after the prompts example although its introduction promises more. Code in the chapters is simplified and lacks the human approval the text says is required.
+## Limits
+
+- The extraction notes that some figure numbering in chapter 2 is wrong (the sampling figure is cited as 2-3 but is 2-4), and that the chapter 3 text ends after the prompts example although its introduction promises more.
+- The extraction also notes that code in the chapters is simplified and lacks the human approval the text says is required.
 
 ## See Also
 - [[Karpathy LLM Wiki Pattern]]
@@ -216,3 +219,4 @@ Inconsistencies noted by the extraction: some figure numbering in chapter 2 is w
 - [[Alita]] — related (generated tool scripts packaged as MCPs)
 - [[Agent Communication Protocol Taxonomy]] — related
 - [[EvoOntology Self-Evolving Ontology Layer]] — related (an ontology served to a data agent through browse and resolve MCP tools)
+- [[TURA Tool-Augmented Unified Retrieval Agent]] — instance-of

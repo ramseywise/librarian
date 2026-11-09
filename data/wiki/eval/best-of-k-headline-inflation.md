@@ -2,7 +2,7 @@
 title: Best-of-k Headline Inflation
 tags: [eval, concept]
 summary: "Agent benchmarks often headline the best of several runs, which can sit far above what one run delivers: ScienceAgentBench's o1 scores 42.2% best-of-3 but 27.1% averaged over runs, and MLE-bench's medal rate doubles from pass@1 to pass@8; check which number is reported and how the best run was chosen."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-05-chan-2024-mle-bench.md
   - data/raw/papers/2026-11-05-chen-2024-scienceagentbench.md
@@ -65,3 +65,4 @@ the selected run only. The models in both are 2024 vintage.
 - [[TUMIX Tool-Use Mixture]] — related (matched by inference count, with starred baselines selected on the test benchmark)
 - [[PIE Performance-Improving Edits Benchmark]] — related (reports Best@8 speedups)
 - [[Oracle-Gap Recovery by Selection]] — related
+- [[PlanBench o1 Evaluation]] — related

@@ -2,7 +2,7 @@
 title: Adversarial Examples (Intriguing Properties of Neural Networks)
 tags: [foundations, concept]
 summary: Szegedy et al. (2013) found that small, minimum-norm input perturbations found with L-BFGS flip a trained network's prediction, that the perturbed inputs transfer across models and training sets, and that training on them lowered test error in a preliminary run.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-szegedy-2013-intriguing-properties-neural-networks.md
 ---
@@ -28,3 +28,4 @@ All figures are (self-reported), from the paper's own models.
 ## See Also
 - [[GCG Adversarial Suffix Attack]] — extends (a gradient-based attack on language models)
 - [[Prompt Injection]] — related
+- [[NIST Adversarial ML Taxonomy]] — related (places evasion attacks in a broader taxonomy)

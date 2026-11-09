@@ -2,8 +2,9 @@
 title: Text-to-SQL as a Retrieval Strategy
 tags: [rag, llm, pattern]
 summary: "Querying structured data as the second half of a hybrid retriever — dynamic schema subsetting, a semantic layer of retrieved few-shot SQL examples, mechanical validation that replaced a deleted LLM reviewer, and bounded error-as-context retry."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
+  - data/raw/papers/2026-11-08-huyen-ai-engineering-ch06-rag-agents.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--reliable-agents.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--reliable-agents.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--reliable-agents.md
@@ -137,6 +138,10 @@ All figures are self-reported.
 - **Table-augmented generation (TAG).** A three-step paradigm: synthesise a database query from the request, execute it, then generate the answer from the returned rows plus the request. The authors present Text2SQL and RAG as special cases and define it for one iteration, leaving multi-hop and agentic extensions to future work. Setup: a set of 80 queries adapted from BIRD, answered by a 70B Llama 3.1 Instruct model and scored by exact match. Text2SQL scored 0.17, RAG 0.00, retrieval plus LM rank 0.02, Text2SQL plus LM 0.13; a hand-written TAG pipeline (LOTUS, written with expert knowledge of the schema) scored 0.55 overall, 0.65 on comparison queries. The hand-written pipeline is not automatic query synthesis.
 - **Retrieval to cut hallucinated steps in structured output.** A fine-tuned retriever suggests step and table names to a StarCoderBase workflow generator (JSON workflows, 157-example human-eval split, greedy decoding, one run). Hallucinated steps fell from about 0.14-0.16 to 0.017-0.072, and hallucinated tables from about 0.19-0.21 to 0.016-0.044. A 3B model with the retriever matched a 15.5B model without it on trigger exact match (0.615 against 0.632). Fine-tuning the 110M encoder (step recall@15 0.743) mattered much more than using a bigger untuned one (0.561 for a 4.8B encoder); mixing random, BM25 and ANCE negatives beat any single strategy.
 
+## Tabular RAG in a book chapter
+
+An AI-engineering text names text-to-SQL as the route for tabular RAG: generate the query, run it, and pass the result to the answering model. It cites Chameleon at +11.37% on ScienceQA and +17% on TabMWP as reported by that work (second-hand).
+
 ## Limits
 
 - TAG: the 80 queries are a small, modified benchmark; the extraction notes the abstract and conclusion word the 20 to 65 point gain loosely ("higher accuracy"), and notes a typo in the paper: Appendix B says 80B while the body says 70B.
@@ -157,3 +162,5 @@ All figures are self-reported.
 - [[ChatDB SQL Symbolic Memory]] — instance-of (SQL as the memory store)
 - [[Structured Output]] — related (retrieval used to keep generated names valid)
 - [[Spider Text-to-SQL Benchmark]] — instance-of (the benchmark that measures text-to-SQL)
+- [[PlanRAG Plan-then-Retrieve]] — related (plans SQL or Cypher analyses before retrieving)
+- [[TableRAG and HeteQA]] — related

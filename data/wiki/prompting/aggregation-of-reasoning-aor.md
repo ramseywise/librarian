@@ -2,7 +2,7 @@
 title: "Aggregation of Reasoning (AoR)"
 tags: [prompting, pattern]
 summary: Replaces majority voting over sampled chains of thought with an LLM evaluation of the chains themselves, scored locally within answer buckets and globally across buckets, with dynamic sampling.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-yin-2024-aggregation-reasoning.md
 ---
@@ -36,5 +36,5 @@ Self-consistency picks the most frequent answer among sampled chains. AoR starts
 
 - [[Self-Consistency]] — prerequisite-for
 - [[Chain-of-Thought Prompting]] — prerequisite-for
-- [[Complexity-Based Prompting]] — extends
+- [[Complexity-Based Prompting]] — related (a complexity-based consistency baseline)
 - [[Tree of Thoughts]] — alternative-to

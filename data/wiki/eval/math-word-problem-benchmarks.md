@@ -2,7 +2,7 @@
 title: Math Word Problem Benchmarks
 tags: [eval, comparison]
 summary: "Four 2017 to 2021 math word problem datasets (AQuA-RAT, MathQA, ASDiv, SVAMP) and what each paper found: noisy rationales, annotation errors, low lexical diversity, and solvers that answer without reading the question; all with pre-LLM solvers, so none of it is a statement about prompted LLMs."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-wang-2017-program-induction-rationale-generation.md
   - data/raw/papers/2026-11-08-amini-2019-mathqa.md
@@ -40,3 +40,5 @@ The paper first shows shallow heuristics suffice: with the question deleted, Gra
 - [[Program-Aided Language Models (PAL)]] — related (programs as the solution format)
 - [[GSM-Symbolic]] — related (the same concern about benchmark patterns, for LLMs)
 - [[Functional Benchmarks and the Reasoning Gap]] — related
+- [[LILA Math Reasoning Benchmark]] — instance-of
+- [[SciBench]] — instance-of

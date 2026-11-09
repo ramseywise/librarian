@@ -2,7 +2,7 @@
 title: Chain of Thought
 tags: [llm, concept, pattern]
 summary: Inference-time technique where the LLM is prompted to show its reasoning before answering — improves accuracy on multi-step logic, arithmetic, and routing decisions with no training cost.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/claude-docs/playground/docs/research/evaluation-and-learning/self-learning-agents.md
 ---
@@ -109,3 +109,6 @@ See [[Agent Memory Types]] for the reflection implementation.
 - [[Contrastive Chain of Thought]] — extends (adds an invalid rationale to each demonstration)
 - [[Chain-of-Thought Prompting]] — related (the paper-level treatment: setup, scale, ablations)
 - [[CoT-Decoding]] — related
+- [[Plan-and-Solve Prompting]] — extends
+- [[REFINER Critic Feedback on Reasoning Steps]] — related
+- [[Coconut Continuous Latent Reasoning]] — alternative-to

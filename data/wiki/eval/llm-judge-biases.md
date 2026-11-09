@@ -2,7 +2,7 @@
 title: LLM Judge Biases
 tags: [eval, llm, concept]
 summary: "Position, verbosity, self-preference, leniency, format/authority and capability limits — the documented ways LLM judges go wrong, each with a mitigation (both-order pairwise, different model family, binary criteria with tricky-FAIL examples), plus the pairwise-vs-pointwise and Elo/Bradley–Terry choices."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--05-llm-as-judge.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--12-failure-modes.md
@@ -115,3 +115,5 @@ UI agents from screenshots, video from sampled frames — each with its own cali
 - [[AlpacaFarm Simulated Human Feedback]] — related
 - [[BBQ Bias Benchmark]] — related
 - [[Chain-of-Thought Unfaithfulness Under Biased Context]] — related
+- [[ChatEval Multi-Agent Debate Judges]] — related (diverse judge personas)
+- [[Arena-Hard-Auto and BenchBuilder]] — related (measures self-preference and style effects)

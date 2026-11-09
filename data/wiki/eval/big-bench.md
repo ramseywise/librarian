@@ -2,7 +2,7 @@
 title: BIG-bench
 tags: [eval, reference]
 summary: "A community-built benchmark of 204 tasks from 450 authors at 132 institutions, run on models from 2M to 175B parameters; the best models scored under 20 on the normalised aggregate where expert raters would score close to 100, and about 5% of tasks showed sudden gains with scale (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-srivastava-2022-beyond-imitation-game.md
 ---
@@ -76,3 +76,5 @@ saw only a subsample of each task, and could search the internet.
 - [[AGIEval]] — alternative-to (a human-exam benchmark of the same period)
 - [[GPQA]] — alternative-to (narrow, expert-written questions in place of a broad community set)
 - [[Benchmark Prompt Format Sensitivity]] — related (option-in-query and decoding effects)
+- [[bAbI Toy Tasks]] — related (synthetic task suite lineage)
+- [[CLUE Chinese Benchmark]] — related (multi-task benchmark in another language setting)

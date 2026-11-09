@@ -2,7 +2,7 @@
 title: Self-Learning Agents
 tags: [langgraph, adk, memory, eval, concept]
 summary: Four-level improvement stack for production agents — inference-time (ReAct, CoT, self-critique), session-time (reflection, procedural memory), operational (learning loop, HITL), and training-time (DPO). Most agents need the first three; DPO is a late-stage investment.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/claude-docs/playground/docs/research/evaluation-and-learning/self-learning-agents.md
 ---
@@ -123,3 +123,9 @@ See [[Copilot Learning Loop]] for the full operational process.
 - [[LaMer Meta-RL Exploration]] — related
 - [[Agent S Hierarchical GUI Agent]] — related
 - [[RoboCat Self-Improving Robot Generalist]] — related
+- [[Memento Case-Bank Retrieval]] — instance-of (case-based learning without weight updates)
+- [[Memex(RL) Indexed Experience Memory]] — related
+- [[JARVIS-1 Multimodal Experience Memory]] — related
+- [[ALMA Meta-Learned Memory Designs]] — related
+- [[MSCE Memory-to-Skills Governance]] — related
+- [[Recuris Experiential and Working Memory]] — related

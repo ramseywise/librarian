@@ -2,7 +2,7 @@
 title: Multi-Agent Orchestration Patterns
 tags: [adk, langgraph, deep-agents, concept]
 summary: Multi-agent architecture patterns — supervisor/handoff/parallel swarm trade-offs, try-agent history for fallback routing, tool count budget, and the [client] ADK POC selection rationale.
-updated: 2026-11-02
+updated: 2026-11-09
 sources:
   - data/raw/gdrive/2026-04-15-adk-overview-poc-architecture.md
   - data/raw/claude-docs/playground/docs/research/agentic-ai/orchestration-patterns.md
@@ -167,3 +167,4 @@ This prevents schema drift as agents evolve independently.
 - [[Product Design Patterns]]
 - [[Runtime Topology and Checkpointer Alignment]]
 - [[ADK Workflow Agents]]
+- [[Agentic Coordination Patterns Catalog]] — related

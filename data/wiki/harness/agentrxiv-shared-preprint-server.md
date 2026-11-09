@@ -2,7 +2,7 @@
 title: AgentRxiv Shared Preprint Server
 tags: [harness, pattern]
 summary: "AgentRxiv gives research-agent labs a shared preprint server to upload to and retrieve from; one lab with access to prior reports kept improving on MATH-500 while a lab without plateaued, and parallel labs got there sooner at about triple the cost."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-schmidgall-2025-agentrxiv.md
 ---
@@ -32,3 +32,4 @@ AgentRxiv (Schmidgall and Moor, March 2025) adds a preprint server to the Agent 
 - [[Recursive Self-Improvement]] — related
 - [[Knowledge Graph as Shared Agent Memory]] — related
 - [[Emergent Cheating in Research Swarms]] — related (shared library as a channel)
+- [[Agent Laboratory and mle-solver]] — related

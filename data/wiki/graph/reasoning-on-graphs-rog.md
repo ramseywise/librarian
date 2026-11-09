@@ -2,7 +2,7 @@
 title: Reasoning on Graphs
 tags: [graph, concept]
 summary: "Reasoning on Graphs (RoG) fine-tunes an LLM to generate relation paths over a knowledge graph as plans, executes them to retrieve reasoning paths, then answers from them; it reached 85.7 Hits@1 on WebQSP and 62.6 on CWQ with LLaMA2-Chat-7B (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-luo-2023-reasoning-graphs.md
 ---
@@ -29,7 +29,7 @@ Luo et al. (ICLR 2024). A planning, retrieval and reasoning framework for knowle
 
 - Entity linking is not evaluated: question and answer entities arrive labelled and linked. The planner is fine-tuned per graph, and testing covered just two Freebase datasets plus one transfer set.
 - The evidence for faithfulness comes from retrieval coverage and case studies; no faithfulness metric is computed. Baseline figures are taken from other papers, the LLM baselines run zero-shot, and there are no seeds, variance estimates or significance tests.
-- Table 3 appears to have swapped WebQSP columns for two models, and the WebQSP-only F1 (61.8) is below UniKGQA. No limitations section.
+- The extraction notes that Table 3 appears to have swapped WebQSP columns for two models, and that the WebQSP-only F1 (61.8) is below UniKGQA. No limitations section.
 
 ## See Also
 - [[Knowledge Graph Retrieval]] — prerequisite-for

@@ -2,7 +2,7 @@
 title: Counterfactual Task Variants
 tags: [eval, pattern]
 summary: "Test whether a model's success is general by changing the task's world (number base, indexing, axes, chess setup) while keeping the reasoning procedure fixed, with a comprehension check to separate misunderstanding from failure; GPT-4 showed a large drop from base-10 to base-9 addition across 1,000 additions per base (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-wu-2024-reasoning-or-reciting.md
 ---
@@ -63,3 +63,5 @@ rows, so the findings below are directional.
 - [[GSM-Symbolic]] — alternative-to (changes names, numbers and clauses of one benchmark instead of the task's world)
 - [[Embers of Autoregression]] — alternative-to (tests sensitivity to output probability and task frequency rather than to a changed world)
 - [[Eval Contamination Defenses]] — related (the pretraining-exposure question both address)
+- [[DS-1000]] — related
+- [[PromptBench]] — related (dynamic sample generation)

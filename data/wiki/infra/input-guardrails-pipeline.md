@@ -2,7 +2,7 @@
 title: Input Guardrails Pipeline
 tags: [llm, concept, pattern]
 summary: 7-stage deterministic safety pipeline (normalise → size check → domain classify → injection detect → PII redact → XML envelope → advisory) that runs before every LLM call — LLM-free by design.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/claude-docs/playground/docs/research/agentic-ai/guardrails-pipeline.md
   - data/raw/papers/2026-11-07-huyen-ai-engineering-ch10-ai-engineering-architecture-user-feedback.md
@@ -207,3 +207,4 @@ The composable-workflow chapter runs an LLM-as-judge input check on a small mode
 - [[Open-Domain Dialogue Systems]] — prerequisite-for
 - [[Streaming Output Scrubbing]] — extends (the output-side twin; no stream seam on the input side)
 - [[Three-Surface Guardrail Asymmetry]] — extends (block input, neutralize retrieved content, scrub output)
+- [[Llama Guard]] — instance-of (an LLM-based input and output safeguard)

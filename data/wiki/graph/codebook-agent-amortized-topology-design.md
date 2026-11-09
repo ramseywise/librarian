@@ -2,7 +2,7 @@
 title: Codebook Agent Amortized Topology Design
 tags: [graph, concept]
 summary: "Codebook Agent replaces per-query topology generation with a learned codebook of about sixteen graphs and one MLP scoring call, reporting 84.62 average accuracy on six benchmarks and 21.9 to 33.2 percent fewer tokens than a generate-and-score pipeline (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-yu-2026-codebook-agent.md
 ---
@@ -28,7 +28,7 @@ Yu et al. (arXiv 2609.02264, September 2026, preprint). The paper argues that ch
 ## Limits
 
 - One run per configuration, no variance. Ablations run on 200 tasks for each benchmark. Six of the seven design settings use homogeneous teams; on the one heterogeneous setting (HumanEval) the incumbent was a little more accurate (78.8 against 78.1). The authors describe the incumbent's token figures as not comparable with the full pipeline.
-- Two backbones and small teams, on math, code and MMLU rather than open-ended agentic work. A codebook is trained per benchmark and needs real runs for each new setting. Accuracy headroom from topology design is small, since fixed graphs come within 1.4 points. The causal story behind the -0.4 correlation is stated, not tested, and baselines appear to be rerun by the authors.
+- Two backbones and small teams, on math, code and MMLU rather than open-ended agentic work. A codebook is trained per benchmark and needs real runs for each new setting. Accuracy headroom from topology design is small, since fixed graphs come within 1.4 points. The extraction notes that the causal story behind the -0.4 correlation is stated, not tested, and that baselines appear to be rerun by the authors.
 
 ## See Also
 - [[Graph Topology Primitives]] — prerequisite-for

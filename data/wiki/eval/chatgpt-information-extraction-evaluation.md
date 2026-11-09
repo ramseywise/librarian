@@ -2,7 +2,7 @@
 title: ChatGPT Information Extraction Evaluation
 tags: [eval, concept]
 summary: "A 2023 preprint scored ChatGPT zero-shot on seven information-extraction tasks across 14 datasets, finding it far below supervised models except on entity typing, and its verbalised confidence badly calibrated while its self-judged explanation quality sat near 100%."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-li-2023-evaluating-chatgpt-s-information-extraction.md
 ---
@@ -31,3 +31,4 @@ Li and colleagues evaluated a March-to-April 2023 ChatGPT through its API on sev
 - [[Language Model Self-Knowledge]] — related (stated confidence versus actual correctness)
 - [[Logprobs as Confidence Signal]] — alternative-to (probabilities rather than a written confidence number)
 - [[LLM-as-Judge Evaluation]] — related (self-judged quality inflated against human checking)
+- [[ChatGPT Zero-Shot NLP and Annotation Studies]] — related (same zero-shot approach on extraction)

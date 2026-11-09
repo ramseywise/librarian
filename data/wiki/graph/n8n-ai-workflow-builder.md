@@ -2,7 +2,7 @@
 title: n8n AI Workflow Builder
 tags: [langgraph, infra, agents, reference]
 summary: "A shipped supervisor-pattern LangGraph with published operational constants — five specialist subgraphs, prompt-only specialization, per-node iteration bounds, and an agent never allowed to fill its own context with the artifact it is editing."
-updated: 2026-10-30
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--graph-engineering.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--08-governance-and-production.md
@@ -102,6 +102,6 @@ a graph system you intend to **operate** rather than demo.
 - [[Loop Termination Design]] — instance-of (per-node caps)
 - [[LangGraph State Reducers]] — instance-of (optimistic locking as single-writer enforcement)
 - [[Context Compaction]] — instance-of (the 75% compact trigger)
-- [[Multi-Agent Topology Patterns]] — instance-of (the supervisor pattern, shipped)
+- [[Multi-Agent Topology Patterns]] — related (the general topology this builder ships as a supervisor)
 - [[Graph Governance and Attribution]] — extends
 - [[Differential Parity Testing Against the Original]] — extends (porting n8n code nodes in-process: run the originals in a vm sandbox as the reference)

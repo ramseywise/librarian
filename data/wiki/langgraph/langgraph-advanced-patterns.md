@@ -2,7 +2,7 @@
 title: LangGraph Advanced Patterns
 tags: [langgraph, pattern]
 summary: Advanced LangGraph patterns beyond the basics — subgraphs, Send API fan-out, streaming modes, time-travel, breakpoints/interrupts, error handling, and Plan-and-Execute.
-updated: 2026-10-30
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--04-durable-execution-and-interrupts.md
   - data/raw/claude-docs/playground/docs/archived/agentic-rag-copilot-research.md
@@ -17,6 +17,8 @@ sources:
   - data/raw/claude-docs/project-g/docs/frameworks/langgraph.md
   - data/raw/claude-docs/playground/docs/plans/hardening.md
   - data/raw/repos/playground/.claude--docs--plans--hardening.md
+  - data/raw/papers/2026-11-07-ai-agents-definitive-guide-ch01-llms-agents-foundational-blueprint.md
+  - data/raw/papers/2026-11-07-ai-agents-definitive-guide-ch02-architectures-patterns-planning-reactivity-multi.md
 ---
 
 # LangGraph Advanced Patterns
@@ -322,6 +324,14 @@ for chunk in graph.stream({"data": "test"}, stream_mode="custom"):
 ## Command + Static Edge Warning
 
 `Command(goto="node_c")` adds a **dynamic** edge only. If you also have `graph.add_edge("node_a", "node_b")`, **both** `node_b` and `node_c` will run. Only use `Command` routing when the node has no static outgoing edges.
+
+## Agents as state machines, and supervisor, hierarchical and swarm builds (Definitive Guide ch. 1-2)
+
+A book on LangGraph agents maps agent control onto finite state machines: states, events, guard checks that choose a transition, and a checkpoint at each node for crash recovery. A hierarchical state machine puts shared policy (rate limits, safety filters, circuit breakers) on a parent state so its child states inherit it, which LangGraph subgraphs express. Guards are meant to stay plain deterministic code so they remain auditable. The author also recommends a step cap on tool loops with a closing instruction, so a final answer exists when the cap is hit, and a checkpointer with thread ids for per-thread state.
+
+Chapter 2 compares supervisor (suits small teams, but with one coordinator that can bottleneck and fail the whole team), hierarchical (supervisors of supervisors) and swarm (peers hand off control; the handoff tool passes the full message history unless filtered). It advises keeping side effects out of the node that calls the interrupt, since the node re-runs on resume.
+
+**Limits of this source:** an early-release draft with single demo runs. The hierarchical team wrote a white paper in about two minutes and the swarm answered in about 30 seconds (both self-reported single runs with no stated model settings or repeats). The chapter says agents cannot redesign their own control graph. Its weather tool-trace example looks inconsistent in printed output.
 
 ## See Also
 - [[LangGraph CRAG Pipeline]]

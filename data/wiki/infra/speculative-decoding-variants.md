@@ -2,7 +2,7 @@
 title: Speculative Decoding Variants
 tags: [infra, concept]
 summary: "Speculative decoding drafts several tokens cheaply and verifies them with the target model in one pass; the sources list draft-model, EAGLE, Medusa, self-speculative and consistency variants with speedups quoted from other work."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-ai-systems-performance-engineering-ch15-multinode-inference-parallelism-decoding.md
   - data/raw/papers/2026-11-07-huyen-ai-engineering-ch09-inference-optimization.md
@@ -10,7 +10,7 @@ sources:
 
 # Speculative Decoding Variants
 
-Decode is memory-bandwidth-bound, so the GPU has spare compute while it generates one token at a time. Speculative decoding spends that spare compute: a cheap drafter proposes k tokens, and the target model checks them together, keeping the longest accepted prefix. Huyen advises it when decode is bandwidth-bound and says it makes less sense when utilisation is already maxed out.
+Decode is memory-bandwidth-bound, so the GPU has spare compute while it generates one token at a time. Speculative decoding spends that spare compute: a cheap drafter proposes k tokens, and the target model checks them together. Huyen advises it when decode is bandwidth-bound and says it makes less sense when utilisation is already maxed out.
 
 ## Variants
 
@@ -30,7 +30,6 @@ Decode is memory-bandwidth-bound, so the GPU has spare compute while it generate
 - The PyTorch case study gives no quality data.
 
 ## See Also
-- [[Speculative Decoding]] — prerequisite-for
 - [[Medusa Decoding Heads]] — instance-of
 - [[LLM Inference Economics]] — prerequisite-for
 - [[Goodput and Inference Metrics]] — related

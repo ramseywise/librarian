@@ -2,7 +2,7 @@
 title: SparseGPT and Wanda Post-Training Pruning
 tags: [infra, comparison]
 summary: "SparseGPT prunes GPT-scale models one-shot with a layer-wise Hessian-based solver, while Wanda scores weights by magnitude times input activation norm with no weight update; both reach about 50% sparsity with little loss and break down at high sparsity."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-frantar-2023-sparsegpt.md
   - data/raw/papers/2026-11-07-sun-2023-simple-effective-pruning-approach-large.md
@@ -39,5 +39,5 @@ Both papers prune pretrained language models without retraining, using a small c
 
 - [[LLM.int8 Outlier-Aware Quantization]] — related
 - [[Model Compression Landscape]] — related
-- [[Deep Compression Pipeline]] — extends
+- [[Deep Compression Pipeline]] — related
 - [[ThinK Key Cache Channel Pruning]] — related

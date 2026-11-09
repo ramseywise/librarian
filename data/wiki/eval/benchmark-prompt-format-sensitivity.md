@@ -2,7 +2,7 @@
 title: Benchmark Prompt Format Sensitivity
 tags: [eval, concept]
 summary: "The same model on the same benchmark can move by more than 20 accuracy points, and swap ranks with its rivals, when only the prompt template, answer format or scoring choice changes; report the exact prompt, keep per-item outputs and never mix numbers from different harnesses."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-huyen-ai-engineering-ch04-evaluate-ai-systems.md
   - data/raw/papers/2026-11-05-biderman-2024-lessons-trenches-reproducible-evaluation-language.md
@@ -113,3 +113,4 @@ numbers are not comparable to Google's. HELM's format results (see [[HELM Holist
 - [[Evaluation-Driven Model Selection]] — related (benchmark choice and aggregation for model selection)
 - [[XML Prompt Structuring]] — related (prompt-format study with JSON, Markdown, YAML and plain text on 2023 GPT models)
 - [[FormatSpread]] — related (measures format spread with a bandit)
+- [[PromptBench]] — related (adversarial prompts as sensitivity probes)

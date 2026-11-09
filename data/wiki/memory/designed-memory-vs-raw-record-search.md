@@ -2,7 +2,7 @@
 title: Designed Memory vs Raw-Record Search
 tags: [memory, context, comparison]
 summary: "Extraction-based memory (fact stores, temporal graphs) decides what to keep before any question arrives; a 2026 study found it beat full context only with the weakest model, that a weak writer caps every stronger reader, and that a strong agent searching the verbatim history did best at under half full context's cost — directional evidence from one conversation."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--06-memory.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--references.md
@@ -67,3 +67,8 @@ The two later studies are single-run and report no variance. The extraction of t
 - [[MemInsight Attribute Augmentation]] — instance-of (attributes mined at write time)
 - [[OCR-Memory Optical Context Retrieval]] — instance-of (raw history kept, retrieval trained)
 - [[ArcMemo Concept-Level Memory]] — instance-of (abstracted concepts instead of raw traces)
+- [[Stateless Decision Memory (DPM)]] — related
+- [[Agent-Native Memory Systems Evaluation]] — related (raw text versus summaries)
+- [[AutoMem Coordinate-Keyed File Memory]] — related
+- [[A-Mem Zettelkasten Agentic Memory]] — related
+- [[Memo, Not Memory: Frozen State Position]] — related

@@ -2,7 +2,7 @@
 title: Few-Shot Prompting
 tags: [prompting, llm, concept]
 summary: Providing worked examples before the task — the most reliable lever for steering output format, tone and structure without fine-tuning, but examples teach more than intended (distribution, order, range), so use them only for what is genuinely non-obvious.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt--prompt-engineering.md
   - data/raw/papers/2026-11-07-huyen-ai-engineering-ch05-prompt-engineering.md
@@ -11,6 +11,7 @@ sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--10-adversarial-prompting.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--08-prompt-optimization.md
   - data/raw/papers/2026-11-08-song-2023-pre-trained-large-language-models.md
+  - data/raw/papers/2026-11-08-dong-2024-survey-context-learning.md
 ---
 
 # Few-Shot Prompting
@@ -119,6 +120,26 @@ Song et al. (2023 technical report) prompt GPT-4 as an HVAC controller in the BE
 
 Limits: a single target scenario; the "fewer samples" claim is not measured, since the expert demonstrations come from PPO trained for 100M steps; many differences are within one standard deviation; no significance test; GPT-4 version and decoding settings not stated.
 
+## Survey evidence on in-context learning (Dong et al., EMNLP 2024)
+
+A survey of in-context learning (ICL) defines it as a paradigm where language models learn a task from a few demonstration examples with no parameter update. It treats ICL as a subclass of prompt tuning where demonstrations are part of the prompt. Scoring functions come in three forms: Direct, P(y|C,x); PPL, the perplexity of the whole sequence with the candidate label; and Channel, the probability of the input given the label.
+
+The authors ran a small experiment of their own: 8 demonstrations per prompt and perplexity-based inference, run on four models (the older GPT-2 and GPT-J, plus Qwen2-7B-Instruct and Llama3-8B-Instruct) over five classification sets (SST2, SST5, CommonsenseQA, AG News, SNLI) with 1000 test items for each.
+
+- Demonstration selection depends on the model: mdl won on GPT-2, while top-k nearest-neighbour selection won on the other three (self-reported; 8 demonstrations, 1000 test items per dataset).
+- Latency with 8 in-context examples: PPL scoring runs about 2.61x the cost of Direct scoring and Channel about 2.90x, averaged over the four models (self-reported).
+- Over 5 random seeds, each drawing 8 examples from 5k training items, Channel scoring varied most from one demonstration set to the next and PPL varied least (self-reported).
+
+Findings the survey reports from other work: adding demonstrations does not always help and can hurt in many-shot long-context use; warmup gains plateau as training data grows; whether the input-label mapping matters is disputed (Min et al. saw little effect; later work found correct mappings matter a lot); results are sensitive to order across models, and k demonstrations can be arranged in k! ways; current ICL methods do badly at planning and at reasoning about actions and change.
+
+Its practice list: optionally warm up with instruction tuning before inference; start from nearest-neighbour selection (kNN, KATE) and try supervised retrievers (EPR) to beat it; check selection on the target model; put the most similar example last or sort from simple to complex; choose Direct scoring when efficiency matters, PPL when stability and coverage do, and Channel when classes are imbalanced.
+
+Limits of this section:
+
+- The survey's authors admit omissions, and many of the papers it covers used older models; theory work mostly addresses simple tasks and small models.
+- The authors' own experiment is small (8 demonstrations, four models of at most 8B, five classification datasets) and excludes agent, planning and tool-use settings. The caption of Table 5 says the test set has 10k items, while Appendix B gives 1000 items for some datasets, an internal conflict.
+- Distilling demonstrations to fix efficiency needs parameter access, which closed models do not give.
+
 ## See Also
 - [[Prompt Engineering]] — related (part of)
 - [[XML Prompt Structuring]] — prerequisite-for
@@ -138,3 +159,8 @@ Limits: a single target scenario; the "fewer samples" claim is not measured, sin
 - [[Prompt Order Sensitivity and Entropy Probing]] — extends (order of the same examples)
 - [[LM-BFF and PET Prompt-Based Fine-Tuning]] — related
 - [[LLM-R Learned In-Context Example Retriever]] — extends (learned example selection)
+- [[LLM Prompting for Mobile UI Screens]] — instance-of
+- [[Analogical Prompting]] — extends
+- [[Context-Faithful Prompting]] — related
+- [[RAG+ Application-Aware Retrieval]] — related
+- [[HiAR-ICL Thought Cards]] — extends

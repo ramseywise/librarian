@@ -2,10 +2,14 @@
 title: Agent Fundamentals
 tags: [foundations, llm, concept]
 summary: "Agent = LLM + Context + Tools, read as policy, observation space and action space — the five-part context and what breaks when each part is removed, the four-step tool call, why RL-trained 'model-as-agent' still needs a harness, the three places an agent can learn, and when a workflow beats an autonomous agent."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--03-agentic-foundations--agent-fundamentals.md
   - data/raw/repos/learn-ai-engineering/generative-ai--03-agentic-foundations--README.md
+  - data/raw/papers/2026-11-07-ai-agents-definitive-guide-ch04-models-behind-agents-capabilities-optimization.md
+  - data/raw/papers/2026-11-07-building-applications-with-ai-agents-ch02-designing-agent-systems.md
+  - data/raw/papers/2026-11-07-building-ai-agents-llms-rag-kgs-ch04-building-web-scraping-agent-llm.md
+  - data/raw/papers/2026-11-07-building-ai-agents-llms-rag-kgs-ch11-future-ahead.md
 ---
 
 # Agent Fundamentals
@@ -143,6 +147,26 @@ content validation). [[Constitutional Classifiers]] are the reference design for
 classifier layer. Escalate to a human when retries pass their cap and before high-risk
 operations, at least until reliability is proven ([[Execution Boundaries and Guardrails]]).
 
+## Model sizing and role staffing (two book chapters)
+
+Albada (Building Applications with AI Agents, ch. 2) gives a selection table built from HELM MMLU scores, reported by the book with no date or run settings: the 8B Llama 3.1 Instruct Turbo is listed at an MMLU of 56.1 and fits on one RTX 3090; the 70B Llama 3 is listed at 79.3 and needs about 160 GB of VRAM spread over four A100s; the 405B Llama 3.1 reaches 84.5 at the cheapest relative price; DeepSeek-v3 reaches 87.2 for 2.75x that price; Claude 4 Opus with extended thinking reaches 86.5 for 75x (table values the book reports, not its own runs, so self-reported). Rules of thumb it states: a single 24 GB consumer GPU can serve models of roughly 14B parameters or fewer, flagship models need at least 12 GPUs. Its advice is to use big models for open-ended tasks, small ones for repetitive well-defined tasks, route dynamically, and compare candidates on your own task because benchmarks only guide.
+
+Koenigstein (AI Agents: The Definitive Guide, ch. 4) staffs a multi-agent team by role: quick decoder-only models do the worker jobs, a reasoning model takes the analyst seat, an encoder (ModernBERT) scores relevance, and a slower, more deliberate LLM supervises. In its LangGraph example the analyst runs Qwen3-235B-A22B-Thinking with a 1536-token thinking budget, the workers run Qwen3-32B with thinking off and the supervisor is GPT-4.1, all at temperature 0. Its practitioner rule (no experiment shown) is that a thinking budget of 1000 tokens or more suits non-trivial reasoning; enable thinking for planning, tool selection and verification, disable it for short low-risk turns. Closed-model prices in the chapter run to $150 input and $600 output per million tokens (o1-pro) against about $0.3 and $3 for large open models on cheap clouds, undated. Its sequencing advice is to begin with managed APIs and shift toward self-hosting open models once the team has grown into it.
+
+Limits of this section:
+
+- Both chapters are practitioner guidance with no experiments. Albada's tables carry no date, MMLU protocol or run settings, and prices are relative and undated. Koenigstein's chapter is an Early Release draft; prices and model choices will age.
+- Albada's example agent handles one tool though three are stated, its printed code is incomplete, and the text says three design patterns but lists two.
+- Koenigstein's thinking budget is 1024 in one snippet and 1536 in the team setup, and a ModernBERT rope_scaling example claims 32k to 128k although its native length is 8192 per the chapter's own table.
+
+## Brain, perception, action, and open problems (Raieli and Iuculano, ch. 4 and 11)
+
+One book frames an LLM agent as a brain (reasoning, memory, decisions), perception (extra input modalities) and action (tools that change the environment). It sorts planning into decomposition-first, interleaved decomposition, multi-plan selection and memory-augmented planning, and suggests a formulate-then-reflect two-stage plan check. Its worked agent wraps search tools with a zero-shot ReAct prompt, keeps the sources used so answers can be traced, and gives each tool a name and description.
+
+Chapter 11 surveys open problems: human-agent communication (show progress, confirm the goal before acting, say which actions need approval), multi-agent value, reasoning and creativity limits. It reports an expert-annotated taxonomy of multi-agent failures with 14 causes in three groups (specification and design, inter-agent misalignment, verification and termination), drawn from another paper's annotation of 150 traces (reported). It also states that multi-agent systems give marginal gains at higher cost, attributing this to unnamed studies.
+
+**Limits of this source:** no experiments of its own. Chapter 4 describes a "web scraping" agent that only wraps search tools, uses a legacy agent API, and has no memory. Several figures in chapter 11 (share of jobs at risk, inference share of energy) lack a named study. Table 11.1 is captioned as failure causes yet compares single-agent and multi-agent trade-offs.
+
 ## See Also
 - [[ReAct Pattern]] — prerequisite-for (the loop that ties the three terms together)
 - [[Harness Engineering]] — extends (the production view: Model + Harness)
@@ -156,3 +180,7 @@ operations, at least until reliability is proven ([[Execution Boundaries and Gua
 - [[SayCan Affordance-Grounded Skill Selection]] — related (an LLM's choice among skills weighted by what the robot can do now)
 - [[SayCan Affordance-Grounded Skill Selection]] — related (an LLM's choice among skills weighted by what the robot can do now)
 - [[World Knowledge Model for Agent Planning]] — related
+- [[Foundation Models as Decision Makers (MDP View)]] — extends
+- [[Code, Workflow, RAG or Agent Decision Guide]] — extends
+- [[Agentic vs Agentive: Agent Model Position]] — related
+- [[Adapting While Learning Tool Usage Adaptation]] — related

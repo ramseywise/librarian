@@ -2,7 +2,7 @@
 title: Direct Preference Optimization
 tags: [llm, concept]
 summary: Training-time technique that fine-tunes a model on human preference pairs (preferred vs rejected responses) without a reward model — replaces PPO/RLHF for preference alignment. Not applicable to API-only models.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/claude-docs/playground/docs/research/evaluation-and-learning/self-learning-agents.md
   - data/raw/papers/2026-11-05-whitehouse-2025-j1.md
@@ -77,3 +77,4 @@ DPO belongs at the "Scaled" stage — after the operational learning loop has ac
 - [[Constitutional AI and RLAIF]] — related (where the preference pairs can come from without human labelers)
 - [[Reinforcement Learning Foundations]] — prerequisite-for (MDP, policy, and the actor-critic split DPO discards)
 - [[J1 Reinforcement-Learned Judge]] — alternative-to (online RL on the same pairs versus offline DPO, for training a judge)
+- [[Chain of Hindsight]] — related

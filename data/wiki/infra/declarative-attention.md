@@ -2,7 +2,7 @@
 title: Declarative Attention
 tags: [infra, concept]
 summary: "Declarative Attention prompts a model to declare, in its own output, whether each step attends globally, to chosen chunks, or only locally; a decode-time mask on block tables then cut attended tokens 45.8% on Gemma-4-31B at 1.40 points accuracy cost, with no training (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-ho-2026-language-models-can-control-their.md
 ---
@@ -23,11 +23,11 @@ Ho et al. (2026) have the model choose its own attention span. A prompt asks it 
 
 - Zero-shot only; thinking mode was disabled because models failed to follow the protocol inside thinking tags.
 - The 15-source suite is the set where the method works; on six outside sources Gemma lost 30 and 21 points on two.
-- With a sparse-attention indexer the per-step scan fell but the total rose to 1.28x of vanilla because of about a third more decode steps.
+- With a sparse-attention indexer the per-step scan fell but the total rose to 1.28x of vanilla because decode steps were 2.78x vanilla (per-step scan 0.46 of vanilla). The extraction notes this clashes with the "about a third more" figure in the text.
 - No matched-budget comparison with Quest, H2O or SnapKV; end-to-end speedup is estimated, not measured; most results are single runs, and the Qwen savings differed between runs (31.1%, 5.8% and 21.9%).
 - The local mode can hallucinate masked content.
 
 ## See Also
-- [[KV Cache Reduction Methods]] — prerequisite-for (model-declared sparsity as one route)
+- [[KV Cache Reduction Methods]] — related (the family this page belongs to)
 - [[Lookahead Sparse Attention]] — alternative-to (a separate indexer chooses what stays on GPU)
 - [[Native Sparse Attention]] — alternative-to (sparsity trained into the architecture)

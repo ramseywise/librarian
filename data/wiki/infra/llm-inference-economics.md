@@ -2,7 +2,7 @@
 title: LLM Inference Economics
 tags: [infra, llm, concept]
 summary: Why prompt tokens and output tokens have different unit costs — the prefill/decode split — and the four levers (quantization, distillation, speculative decoding, output-length discipline) that move serving cost and latency.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--guides--2-llm-fundamentals--interview-guide.md
   - data/raw/repos/sisyphus/interviewing--guides--2-llm-fundamentals--interview-guide.md
@@ -10,6 +10,7 @@ sources:
   - data/raw/papers/2026-11-06-xu-2024-survey-resource-efficient-llm-multimodal.md
   - data/raw/papers/2026-11-07-huyen-ai-engineering-ch09-inference-optimization.md
   - data/raw/papers/2026-11-08-rostam-2024-achieving-peak-performance-large-language.md
+  - data/raw/papers/2026-11-08-lakshmanan-hapke-genai-design-patterns-ch08-addressing-constraints.md
 ---
 
 # LLM Inference Economics
@@ -78,6 +79,13 @@ that invite preamble.
 A system design answer that says "we'll cache" without distinguishing prefill from decode
 is not yet a cost argument. The distinction is what makes the [[LLM System Bottleneck Table]]
 mitigations follow from mechanism rather than from a list.
+
+## Distillation, quantization and batching figures (Lakshmanan and Hapke, ch. 8)
+
+Single-run demonstrations, not benchmarks; the figures below are the authors' own (self-reported) unless marked quoted. Distilling Gemma 3 12B into Gemma 3 1B on 1,000 Claude-generated Python prompts ran 10 epochs in roughly an hour on a single A100-80 GB. Loading the distilled 1B in 4 bits (nf4) brought generation from several minutes down to 19 seconds, with output the authors judge unchanged by eye (hardware for this timing not stated); the chapter puts memory savings at about 8x versus 32-bit by arithmetic, and weights alone for a 70B model in FP32 come to about 280 GB. Continuous batching on 100 samples took 4.60 s against 106.11 s one at a time; the text says a 20x speedup while the repo figure is about 23x. Serving Llama 4 Scout is quoted at 4 x H100 and over $10 per hour (June 2025). Vendor batching figures (37% throughput, 28% latency) are quoted without a reference.
+
+Limits of this section:
+- No quality metrics for distillation or quantization; the authors concede students lose generality and inherit teacher biases. The speedup is stated as 20x in text and 23x in the repo. Prices and model names are June 2025.
 
 ## See Also
 - [[Prefix Caching]] — instance-of

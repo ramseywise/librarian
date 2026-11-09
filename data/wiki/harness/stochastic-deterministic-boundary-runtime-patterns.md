@@ -2,7 +2,7 @@
 title: Stochastic-Deterministic Boundary Runtime Patterns
 tags: [harness, pattern]
 summary: A position paper that names the contract between an LLM proposer and a deterministic verifier, commit step and typed reject signal as the core of a production agent runtime, with six composable patterns.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-srinivasan-2026-methodology-selecting-composing-runtime-architecture.md
 ---
@@ -19,17 +19,17 @@ Srinivasan (independent researcher, arXiv preprint, May 2026, not peer reviewed)
 
 ## Reported numbers (author-classified)
 
-- An audit of 5 open-source frameworks found logic for verifying and committing at 19 of the 21 places where an LLM output turns into an action.
-- Of 21 published post-mortems, the author classified 15 (71.4%) as localised to the boundary, and 17 of the fixes (81%) made it stronger.
-- Quoted second-hand from Promptfoo: moving from GPT-4o to GPT-4.1 reduced resistance to prompt injection from 94% to 71%.
-- A cited issue in openai-agents-js reported rejected tool calls as completed, so the model hallucinated success.
+- An audit of 5 open-source frameworks found logic for verifying and committing at 19 of the 21 places where an LLM output turns into an action (self-reported).
+- Of 21 published post-mortems, the author classified 15 (71.4%) as localised to the boundary, and 17 of the fixes (81%) made it stronger (self-reported).
+- Quoted second-hand from Promptfoo: moving from GPT-4o to GPT-4.1 reduced resistance to prompt injection from 94% to 71% (the paper's second-hand citation).
+- A cited issue in openai-agents-js reported rejected tool calls as completed, so the model hallucinated success (as the paper reports it).
 - The reference application is a demo built on 100 renewal scenarios drawn from the IBM Telco Churn dataset, and it reports no measured results.
 
 ## Limits
 
-- No benchmark, deployed system or measured reliability gain; no ablation, with alternatives argued in prose.
-- The author built all five worked cases and classified the failures; the paper admits construction bias and no independent replication. The audit sample is tiny and its detail sits in a companion repository.
-- Observed on contemporary models only; replay divergence is asserted, not measured; sandboxing and security isolation are out of scope.
+- The extraction notes: no benchmark, deployed system or measured reliability gain; no ablation, with alternatives argued in prose.
+- The extraction notes the author built all five worked cases and classified the failures; the paper admits construction bias and no independent replication. The audit sample is tiny and its detail sits in a companion repository.
+- The extraction notes results were observed on contemporary models only; replay divergence is asserted, not measured; sandboxing and security isolation are out of scope.
 
 ## See Also
 - [[Execution Boundaries and Guardrails]] — related (gates and kill switch)

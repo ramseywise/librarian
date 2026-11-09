@@ -2,7 +2,7 @@
 title: LLM-R Learned In-Context Example Retriever
 tags: [rag, pattern]
 summary: "Train a dense retriever to pick few-shot examples by ranking BM25 candidates with a frozen LLM's log-likelihood of the gold output, distilling through a cross-encoder reward model; the paper reports gains over random and BM25 selection on 30 tasks and weaker gains on knowledge-heavy tasks (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-wang-2023-learning-retrieve-context-examples-large.md
 ---
@@ -44,3 +44,4 @@ Setup for every row: LLaMA-7B both ranks and evaluates, with 8 in-context exampl
 - [[Few-Shot Prompting]] — prerequisite-for
 - [[RAG Retrieval Strategies]] — related
 - [[Prompt Order Sensitivity and Entropy Probing]] — related
+- [[Retrieval-Pretrained Transformer Self-Retrieval]] — related

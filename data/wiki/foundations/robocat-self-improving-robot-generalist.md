@@ -2,7 +2,7 @@
 title: RoboCat Self-Improving Robot Generalist
 tags: [foundations, llm, pattern]
 summary: "RoboCat trains one vision-based goal-conditioned policy across robot arms and tasks, fine-tunes it on a few hundred demonstrations, lets it collect its own data and retrains; the appendix evidence shows self-generated data is mostly failures and matches the data's success rate (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-bousmalis-2023-robocat.md
 ---
@@ -37,3 +37,5 @@ Each self-improvement task used an earlier RoboCat version, not the final one. S
 - [[Post-Training for Agents]] — prerequisite-for
 - [[Rejection Sampling Fine-Tuning]] — related (success-filtered fine-tuning versus RoboCat's mixed data)
 - [[DreamGym Synthetic Experience RL]] — related
+- [[RT-1 Robotics Transformer]] — related
+- [[PaLM-E Embodied Multimodal Language Model]] — related

@@ -2,10 +2,11 @@
 title: "SHAP Attributions and the Limits of Explanations"
 tags: [foundations, concept]
 summary: "SHAP splits one prediction into a baseline plus per-feature log-odds that sum exactly; it explains the model, not the world, and studies show explanations help only for some tasks and people."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-huang-2023-can-large-language-models-explain.md
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--08-model-interpretability.md
+  - data/raw/papers/2026-11-07-1901-07694v1.md
 ---
 
 # SHAP Attributions and the Limits of Explanations
@@ -33,7 +34,7 @@ LIME fits a small linear model on perturbed copies of one input, weighted by clo
 
 ## Does explaining help?
 
-Evidence on the human step is sobering. People want explanations that are contrastive, selected and causal, which a default bar chart is not. A perceived-fairness study (160 raters, six predictions) found local styles widened rating gaps more than global ones, with marginal significance (p = 0.07) and no decision outcomes measured. A study of four explanation types on two tasks found that on the low-expertise task no type improved understanding, spotting uncertainty and calibrated trust all at once; feature contributions helped with more expertise and counterfactuals did not improve calibrated trust. Test an explanation on the person it is for, and evaluate decisions made with it, not satisfaction with it.
+Evidence on the human step is sobering. People want explanations that are contrastive, selected and causal, which a default bar chart is not. A perceived-fairness study (Dodge and colleagues, IUI 2019: 160 MTurk raters, six predictions each, a logistic regression on COMPAS data, four explanation styles) found local styles widened rating gaps more than global ones, with marginal significance (p = 0.07) and no decision outcomes measured. The extraction notes the study had no no-explanation control, and the three-way interaction the authors expected became significant only once individual-difference terms (race position, ML position) were added post hoc. A study of four explanation types on two tasks found that on the low-expertise task no type improved understanding, spotting uncertainty and calibrated trust all at once; feature contributions helped with more expertise and counterfactuals did not improve calibrated trust. Test an explanation on the person it is for, and evaluate decisions made with it, not satisfaction with it.
 
 ## When the model explains itself
 

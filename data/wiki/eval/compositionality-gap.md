@@ -2,7 +2,7 @@
 title: Compositionality Gap
 tags: [eval, concept]
 summary: "The share of 2-hop questions a model gets wrong although it answers both sub-questions right: about 40% across GPT-3 sizes on Compositional Celebrities (self-reported), and a related gap for chained GSM8K pairs, measured against the product of the two separate accuracies, was 2-12x worse for cheaper models at similar GSM8K scores (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-press-2023-measuring-narrowing-compositionality-gap-language.md
   - data/raw/papers/2026-11-08-hosseini-2024-not-all-llm-reasoners-created.md
@@ -86,3 +86,5 @@ own setups, given beside them.
 - [[Eval Contamination Defenses]] — related (the leakage question both papers touch)
 - [[Selection-Inference]] — related (alternating select and infer calls)
 - [[Iterated Decomposition]] — related
+- [[2WikiMultiHopQA]] — related (multi-hop benchmark)
+- [[FLARE Forward-Looking Active Retrieval]] — related

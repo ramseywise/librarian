@@ -2,7 +2,7 @@
 title: RAG Retrieval Strategies
 tags: [rag, concept]
 summary: Comprehensive reference for chunking, embedding, vector store, and hybrid search strategies — component choices, tradeoffs, and swap paths used in the Librarian pipeline.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/articles/2026-07-19-rag-deeplearning.md
   - data/raw/claude-docs/playground/docs/archived/rag-tradeoffs.md
@@ -330,3 +330,31 @@ This avoids pre-ingesting all artists upfront and handles the corpus freshness g
 - [[RA-DIT Dual Instruction Tuning]] — instance-of (tuning the retriever and the generator separately)
 - [[RAG vs Long Context: Evaluation Evidence]] — related (when retrieval beats or loses to a long window)
 - [[LLM-R Learned In-Context Example Retriever]] — related
+- [[HyDE Hypothetical Document Embeddings]] — instance-of (LLM-written passage embedded in place of the query)
+- [[Query2doc LLM Query Expansion]] — instance-of (pseudo-document appended to the query)
+- [[Generate-then-Read Contextual Documents]] — instance-of (LLM-generated context in place of retrieval)
+- [[FILCO Sentence-Level Context Filtering]] — instance-of (trained filter before generation)
+- [[RAG Sequence and RAG Token]] — instance-of
+- [[Atlas Retrieval-Augmented Few-Shot Learning]] — related
+- [[Contriever Unsupervised Contrastive Retrieval]] — related
+- [[ANCE Global Hard Negatives for Dense Retrieval]] — related
+- [[GTR Large Dual Encoders]] — related
+- [[Promptagator Few-Shot Synthetic Retrieval Data]] — related
+- [[ModernBERT Encoder Backbone]] — related
+- [[Dense Passage Retrieval (DPR)]] — instance-of (dual-encoder retriever)
+- [[Fusion-in-Decoder]] — instance-of (reader that fuses many passages)
+- [[ORQA and the Inverse Cloze Task]] — instance-of (retriever trained without labelled passages)
+- [[REALM Retrieval-Augmented Pre-Training]] — instance-of (retriever trained during pre-training)
+- [[DrQA Machine Reading at Scale]] — instance-of (sparse retrieval plus reader)
+- [[Demonstrate-Search-Predict (DSP)]] — instance-of (retrieval programs)
+- [[IRCoT Interleaved Retrieval and Chain-of-Thought]] — instance-of (multi-step retrieval)
+- [[Retrieval Augmented Thoughts (RAT)]] — instance-of
+- [[UniversalRAG Modality and Granularity Routing]] — instance-of
+- [[TableRAG and HeteQA]] — instance-of
+- [[RAG+ Application-Aware Retrieval]] — instance-of
+- [[LongRAG Dual-Perspective Extractor and Filter]] — instance-of
+- [[RankRAG]] — instance-of
+- [[FLARE Forward-Looking Active Retrieval]] — instance-of
+- [[RECITE Recitation-Augmented Generation]] — alternative-to (recite from memory instead of retrieving)
+- [[HtmlRAG HTML as Retrieval Format]] — instance-of
+- [[DRAG and IterDRAG Inference Scaling]] — instance-of

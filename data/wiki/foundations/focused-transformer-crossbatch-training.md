@@ -2,7 +2,7 @@
 title: "Focused Transformer Crossbatch Training"
 tags: [foundations, pattern]
 summary: "Focused Transformer trains memory attention with keys from other documents as negatives (crossbatch training) to counter the distraction issue; LongLLaMA 3B reached 94.5% passkey accuracy at 100K tokens (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-tworkowski-2023-focused-transformer.md
 ---
@@ -26,7 +26,7 @@ LongLLaMA is OpenLLaMA fine-tuned this way at 8k context (3B: 10B tokens; memory
 ## Limits
 
 - Evaluation is largely synthetic (passkey, dictionary lookup) and on small models. The extraction notes that the released LongLLaMA uses dense attention over the cache in some layers, not only kNN retrieval.
-- TREC demonstrations are few enough at 2K that a class can be missing, which inflates the long-context gain. The comparison runs are single-seed apart from 20 sampling trials in the few-shot tables.
+- TREC demonstrations are few enough at 2K that a class can be missing.
 
 ## See Also
 - [[Why Context Is Finite]] — prerequisite-for

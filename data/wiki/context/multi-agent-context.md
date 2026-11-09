@@ -2,11 +2,12 @@
 title: Multi-Agent Context
 tags: [context, context-management, llm, agents, concept]
 summary: Sub-agent isolation is the highest-cost context lever — a sub-agent burns 100k tokens and returns 2k, and the discarding of its window is the feature, not a side effect.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--10-tools-and-multi-agent.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context--notes--06-multi-agent-context.md
   - data/raw/papers/2026-11-07-context-engineering-multi-agent-systems-ch02-building-multi-agent-system-mcp.md
+  - data/raw/papers/2026-11-07-context-engineering-multi-agent-systems-ch09-architecting-brand-agility-strategi.md
   - data/raw/papers/2026-11-07-context-engineering-multi-agent-systems-ch06-building-summarizer-agent-context-r.md
   - data/raw/papers/2026-11-07-context-engineering-multi-agent-systems-ch10-blueprint-production-ready-ai.md
   - data/raw/papers/2026-11-08-context-engineering-multi-agent-systems-appendix-a-context-engine-reference-guid.md
@@ -140,20 +141,25 @@ share no context make conflicting decisions — **pass the decisions, not just t
 
 ## A worked context engine from a 2025 book
 
-Chapters 2, 6 and 10 and Appendix A of Context Engineering for Multi-Agent Systems describe one running example, an engine in which agents hand each other context as structured messages. The extraction notes that none of it is evaluated: the chapters give design description, a few single runs and hypothetical numbers.
+Chapters 2, 6, 9 and 10 and Appendix A of Context Engineering for Multi-Agent Systems describe one running example, an engine in which agents hand each other context as structured messages. The extraction notes that none of it is evaluated: the chapters give design description, a few single runs and hypothetical numbers.
 
 - **Chapter 2 (orchestrator, researcher, writer).** The orchestrator only delegates and chains outputs; each agent has one narrow role through its system prompt. A validator agent fact-checks the writer, with the revision loop capped at two writing attempts and the validator's feedback appended to the writer's next prompt. A retry wrapper repeats a failed call up to 3 times, waiting 5 seconds between tries, and gives back None if all fail. The book's "MCP" message is just a Python dict (protocol version, sender, content, metadata) that stands in for JSON-RPC and is not the Model Context Protocol itself. The validator checks only that the dict has the four keys, and the pass decision is a substring test on the reply.
-- **Chapter 6 (summarizer).** A summarizer agent run before the writer cut its input from 253 to 110 tokens (56.5%) in one example, a single paragraph and a single run. Adding it broke the writer because the researcher emits facts and the summarizer a summary, so the writer was patched to accept both. Speed and quality gains are asserted, not measured.
-- **Chapter 10 (production).** Practices include enqueueing requests and returning a trace id, structured logs carrying that id, token counts before a call with a summarizer for inputs over a budget, sanitising retrieved chunks at ingestion and again at runtime, and moderating the goal before the task queue and the output before storage. The 40-50% token saving and the 85% time saving for contract review are labelled hypothetical.
+- **Chapter 6 (summarizer).** A summarizer agent run before the writer cut its input from 253 to 110 tokens (56.5%) in one example, a single paragraph and a single run (self-reported). Adding it broke the writer because the researcher emits facts and the summarizer a summary, so the writer was patched to accept both. Speed and quality gains are asserted, not measured.
+- **Chapter 10 (production).** Practices include enqueueing requests and returning a trace id, structured logs carrying that id, token counts before a call with a summarizer for inputs over a budget, sanitising retrieved chunks at ingestion and again at runtime, and moderating the goal before the task queue and the output before storage. The 40-50% token saving and the 85% time saving for contract review are labelled hypothetical by the book (self-reported).
+- **Chapter 9 (re-tasking to marketing).** The legal-research engine is pointed at seven marketing documents by changing only the knowledge base and goals; the book claims no core code changed, without a count. A competitive-analysis run with a four-agent plan took about 70 seconds in one run. A safeguard check ran moderation before and after, and a persuasive-pitch run wrote ROI claims that the style guide itself does not hold, which the author calls synthesis and the extraction notes had no grounding check. Each use case ran once, there is no quantitative evaluation, and the extraction notes that the chapter text and its runs disagree in places.
 - **Appendix A (reference).** A planner emits a JSON plan with step-output placeholders that an executor resolves. A registry hands each agent only its dependencies, and the researcher retrieves the top three chunks. Chunk size 400 and overlap 50 tokens are example values.
-
-Limits and inconsistencies: the chapter 2 notebook shows one console run on one topic against a hard-coded database. The model name differs between listings (gpt-5 in one, gpt-4 in another). Retry settings differ between chapter 2 (3 tries) and the appendix (up to six with exponential backoff). Business-value claims (return on investment, trust, a knowledge moat) are assertions without evidence.
 
 ## Dependency-Ordered Documentation Agents
 
 DocAgent, a 2025 code-documentation system, orders work by dependency so each component is documented using only the docs of what it directly depends on, not an ever-growing transitive context. A navigator builds a dependency graph, condenses cycles, and sorts topologically, so callees are documented first and methods before their class; a Reader, Searcher, Writer and Verifier run under an Orchestrator. On 366 components from 9 Python repos with a GPT-4o judge, a random-order ablation lowered helpfulness from 3.88 to 3.44 and the existence ratio from 94.64% to 86.75% (self-reported). Gains depended on the backbone (3.88 against 2.95 for a single-shot chat baseline with one model; 2.35 against 2.16 with a 34B open model).
 
 Limits: one small Python set, no repeats or variance; the extraction notes that table count columns do not reproduce the reported ratios and that prose values (3.69, 2.39) differ from table values (3.88, 2.35); context budgeting is done by truncation.
+
+## Limits
+
+- The extraction notes that the chapter 2 notebook shows one console run on one topic against a hard-coded database.
+- Internal inconsistencies: the model name differs between listings (gpt-5 in one, gpt-4 in another), and retry settings differ between chapter 2 (3 tries) and the appendix (up to six with exponential backoff).
+- Business-value claims (return on investment, trust, a knowledge moat) are assertions without evidence.
 
 ## See Also
 - [[Memory as Context]] <!-- auto-linked -->
@@ -171,3 +177,4 @@ Limits: one small Python set, no repeats or variance; the extraction notes that 
 - [[Agent Primitives Latent Composition]] — related (KV-cache messages between agents)
 - [[Diversity Collapse in Multi-Agent Ideation]] — related
 - [[LatentMAS and RecursiveMAS Latent Handoff]] — instance-of (latent handoff)
+- [[MASS-RAG]] — related (role-specific agents filtering retrieved passages)

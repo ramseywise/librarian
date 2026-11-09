@@ -2,7 +2,7 @@
 title: SQuAD
 tags: [eval, reference]
 summary: A span-extraction reading-comprehension benchmark of 107,785 crowdsourced questions on 536 Wikipedia articles, scored by exact match and token F1 against humans; the CNN/Daily Mail cloze corpus is its large semi-synthetic predecessor.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-rajpurkar-2016-squad.md
   - data/raw/papers/2026-11-07-hermann-2015-teaching-machines-read-comprehend.md
@@ -39,3 +39,5 @@ Hermann and colleagues (NIPS 2015) built a supervised reading dataset from news 
 ## See Also
 - [[TyDi QA]] — related (a native-language alternative to SQuAD-style data)
 - [[Output Length Confounds Reference Metrics]] — related (uses SQuAD as a test set)
+- [[Wizard of Wikipedia]] — related (used as multi-task training data)
+- [[LAMA Knowledge Probe]] — related

@@ -2,7 +2,7 @@
 title: AgentConductor Topology Evolution
 tags: [graph, concept]
 summary: "AgentConductor trains a 3B orchestrator with SFT then GRPO to emit a layered-DAG topology in YAML for each coding problem, regenerating it from execution feedback and scoring density by difficulty; it reached 58.8 pass@1 on APPS with gpt-4o-mini workers (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-wang-2026-agentconductor.md
 ---
@@ -29,8 +29,8 @@ Wang et al. (arXiv 2602.17100, February 2026, preprint). An orchestrator model w
 
 ## Limits
 
-- One orchestrator size and one worker model. Baselines were rerun under the authors' roles and prompts and capped at 20 nodes; the density metric and caps are the authors' own and partly tied to GPT-4o's topologies. Train and test draw on overlapping sources and the split is not clearly stated.
-- Max 2 turns. No ADAS or MaAS baseline. The appendix reads like a response to reviewers, a Chain-of-Agents citation shows as "(?)", and figure captions mislabel the RL curve; the ablation table says "Sdiameter" where the text says depth.
+- One orchestrator size and one worker model. The authors reran the baselines with their own role definitions and prompts, capped at 20 nodes; the density metric and caps are the authors' own and partly tied to GPT-4o's topologies. The extraction notes that train and test draw on overlapping sources and that the split is not clearly stated.
+- Max 2 turns. No ADAS or MaAS baseline. The extraction notes that the appendix reads like a response to reviewers, a Chain-of-Agents citation shows as "(?)", and figure captions mislabel the RL curve; it also notes that the ablation table says "Sdiameter" where the text says depth.
 
 ## See Also
 - [[Graph Topology Primitives]] — prerequisite-for

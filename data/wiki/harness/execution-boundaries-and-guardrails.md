@@ -2,7 +2,7 @@
 title: Execution Boundaries and Guardrails
 tags: [llm, agents, infra, concept]
 summary: "Sandboxes (the isolation ladder and identity sandbox), hooks, and permission gates with declared timeouts — the controls that cannot be argued with, governed by one rule: encode constraints rather than documenting them, and constrain the process as well as the outcome."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--04-execution-boundaries.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--04-execution-boundaries.md
@@ -258,3 +258,5 @@ discipline — see [[Canary Testing for Permission Boundaries]].
 - [[Skill Verification Levels and the Biconditional Check]] — instance-of (trust levels and approval for irreversible skill calls)
 - [[Tool Poisoning and Protocol-Level Attacks on Agents]] — instance-of (attacks through tool descriptions and agent-to-agent channels)
 - [[AIOS]] — related (an access manager at the kernel layer)
+- [[Llama Guard]] — instance-of (a safeguard classifier)
+- [[NIST Adversarial ML Taxonomy]] — related

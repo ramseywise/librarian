@@ -2,7 +2,7 @@
 title: Verification Loops
 tags: [llm, agents, eval, concept]
 summary: "Models stop at the first plausible solution and rate their own work generously — two distinct failures needing two distinct fixes: a forced verification pass, and an external evaluator that never generates — calibrated, thresholded per dimension, and bound by a written sprint contract."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--05-verification-loops.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--05-verification-loops.md
@@ -333,3 +333,9 @@ afterward.
 - [[Olympiad Proof Agents and Verifier Loops]] — instance-of (solver, verifier and corrector loop; Lean compiler as hard verifier)
 - [[Dependency Injection for LLM Chains]] — related (testing one chain step against mocks of the others)
 - [[Agentless Localize-Repair-Validate]] — related
+- [[AI Co-Mathematician]] — related
+- [[Self-Refine]] — instance-of
+- [[REFINER Critic Feedback on Reasoning Steps]] — instance-of
+- [[Instruction Fidelity Auditing]] — instance-of
+- [[MAG-V Trajectory Verification]] — related
+- [[SPoC Pseudocode-to-Code]] — related (compiler feedback inside a search loop)

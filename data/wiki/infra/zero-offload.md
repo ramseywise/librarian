@@ -2,7 +2,7 @@
 title: ZeRO-Offload
 tags: [infra, concept]
 summary: "ZeRO-Offload keeps fp16 parameters and the forward and backward pass on the GPU while gradients, optimizer states and the Adam update live on the CPU, which the paper reports lets one 32GB V100 train a 13B-parameter model."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-ren-2021-zero-offload.md
 ---
@@ -25,7 +25,7 @@ Ren et al. model mixed-precision Adam training as a weighted dataflow graph and 
 - The derivation covers only mixed-precision Adam, and activations stay on the GPU, so checkpointing is relied on.
 - ZeRO-2 is quicker at 64 and 128 GPUs, so offloading chiefly pays off where GPUs are scarce, and CPU compute may become the bottleneck with small batches.
 - DPU alters training semantics, and its check covers just GPT-2 over 100K iterations plus BERT-large on SQuAD.
-- Inconsistency: the single-GPU baseline is 1.2B in the introduction and 1.4B in Section 6.2.1.
+- The extraction notes an inconsistency: the single-GPU baseline is 1.2B in the introduction and 1.4B in Section 6.2.1.
 - One hardware platform (V100 32GB, PCIe at 32 GBps), which is the cost driver; no seeds or variance; GPT-2 data and learning-rate details are not printed.
 
 ## See Also

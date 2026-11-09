@@ -2,10 +2,12 @@
 title: OpenHands Generalist Agent Platform
 tags: [harness, concept]
 summary: An open platform with an event stream, Docker runtime, skills library and agent delegation, plus a follow-up that gave the base agent a few general tools and raised GAIA results.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-wang-2024-openhands.md
   - data/raw/papers/2026-11-06-soni-2025-coding-agents-multimodal-browsing-generalist.md
+  - data/raw/papers/2026-11-06-xie-2023-openagents.md
+  - data/raw/papers/2026-11-06-zhou-2023-agents.md
 ---
 
 # OpenHands Generalist Agent Platform
@@ -43,6 +45,12 @@ Soni et al. (2025) added code editing and execution, an API search tool, Set-of-
 - Versa: Claude models only, single runs, and comparisons with published multi-agent baselines mix models, so the claim that specialist agents fail to generalise confounds architecture with tool coverage.
 - Internal inconsistency in the extraction: the Versa abstract reports a TheAgentCompany gain of 9.1 points while the body gives 6.9 and 6.8.
 
+## Two 2023 open platforms for comparison
+
+**OpenAgents (Xie et al. 2023).** Three agents behind a web interface for non-expert users: a Data Agent (Python and SQL analysis with three tools that generate the code, Python in a Docker sandbox, SQL on SQLite), a Plugins Agent (over 200 plugins chosen by Instructor embeddings of plugin descriptions) and a Web Agent that controls the user's own Chrome through an extension. All follow a ReAct loop; the Data Agent prompt allows one tool per round, and at most 3 extra tool uses are allowed. Responses stream through a pushdown automaton parser, with a key pool for API limits and history truncation. The paper reports no quantitative evaluation, names failure modes without counting them, and the PDF does not state a venue.
+
+**Agents library (Zhou et al. 2023).** A library built around an SOP, a graph of states, each with its own prompts and tools, where a controller model picks the next agent; three core classes are built from a JSON config. Memory follows RecurrentGPT, and an `_is_human` flag lets a person take an agent's role (this is not checkpointing). Automatic SOP generation is deferred to an unpublished paper. Limits: system description only, no task-quality evaluation; its feature table (Table 1) is scored by the authors; the loop has no turn limit.
+
 ## See Also
 
 - [[Tool Design as Harness Surface]] — prerequisite-for
@@ -50,3 +58,4 @@ Soni et al. (2025) added code editing and execution, an API search tool, Set-of-
 - [[TheAgentCompany]] — related (a benchmark used in the follow-up)
 - [[Harness Orchestration]] — related
 - [[CoAct-1 Coding Actions for Computer Use]] — related
+- [[Multi-Agent Topology Patterns]] — related (the Agents library's SOP state graph)

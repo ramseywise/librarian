@@ -2,7 +2,7 @@
 title: PGD Adversarial Training
 tags: [foundations, pattern]
 summary: "Adversarial robustness cast as a min-max problem: the inner step attacks each input with multi-step projected gradient descent and the outer step trains on those worst cases; the paper reports robust MNIST and partly robust CIFAR10 classifiers (self-reported), for images only."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-madry-2017-towards-deep-learning-models-resistant.md
 ---
@@ -32,3 +32,4 @@ All numbers are the paper's own (self-reported). Setups differ per row.
 ## See Also
 - [[GCG Adversarial Suffix Attack]] — related (adversarial attacks on language models; this paper covers images only)
 - [[Constitutional Classifiers]] — related (a robustness approach for language models)
+- [[Laplace Mechanism and Sensitivity-Calibrated Noise]] — related

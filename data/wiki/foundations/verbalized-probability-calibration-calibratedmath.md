@@ -2,14 +2,14 @@
 title: Verbalized Probability Calibration and CalibratedMath
 tags: [foundations, concept]
 summary: Finetuning GPT-3 to append a stated confidence, as a number or a word, to its arithmetic answers, tested for calibration under distribution shift on a 21-task suite.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-lin-2022-teaching-models-express-their-uncertainty.md
 ---
 
 # Verbalized Probability Calibration and CalibratedMath
 
-Lin, Hilton and Evans (a preprint) ask whether a language model can state calibrated confidence in its own answers in words, and whether that holds when the task distribution shifts. They introduce CalibratedMath, a suite of 21 arithmetic tasks. The authors ran every experiment.
+Lin, Hilton and Evans (a preprint) ask whether a language model can state calibrated confidence in its own answers in words, and whether that holds when the task distribution shifts. They introduce CalibratedMath, a suite of 21 arithmetic tasks.
 
 ## Method
 

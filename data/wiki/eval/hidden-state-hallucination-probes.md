@@ -2,7 +2,7 @@
 title: Hidden-State Hallucination Probes
 tags: [eval, pattern]
 summary: "Small classifiers on a frozen model's hidden activations to tell true from false output: SAPLMA (Azaria and Mitchell) trained one on a 6,084-sentence true-false set, and WACK (Simhi et al.) builds per-model datasets that separate hallucinations from missing knowledge (HK-) from hallucinations despite knowing (HK+), where probes reached 60-70% in the best settings (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-azaria-2023-internal-state-llm-knows-when.md
   - data/raw/papers/2026-11-08-simhi-2024-distinguishing-ignorance-error-llm-hallucinations.md
@@ -42,3 +42,5 @@ SAPLMA was tested only in English on OPT-6.7b and LLAMA2-7b. Statements are clas
 - [[Language Model Self-Knowledge]] — alternative-to (a trained value head and stated uncertainty rather than a probe on activations)
 - [[Contrast-Consistent Search]] — related (an unsupervised probe on hidden states, needing no labels)
 - [[Open NLP Questions Large Language Models Do Not Solve]] — related (position paper listing persistent hallucination)
+- [[Skill-RAG Failure-State-Aware Retrieval]] — related
+- [[Summarization and Translation Hallucination Studies]] — related (a trained token-level detector from the encoder-decoder era)

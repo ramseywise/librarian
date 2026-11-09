@@ -403,3 +403,17 @@ The two may differ in scope (debate at matched compute vs sequential chains and 
 
 **Status:** Unresolved
 **Impact:** Whether the new-information test should say same-model collaboration "matches" or "at best matches, often loses to" a single agent; [[Multi-Agent Topology Patterns]], [[Multi-Agent Failure Modes]], [[Protocol-Driven Multi-Agent Collaboration]].
+
+## Conflict: Does distilled memory beat raw-record retrieval on LoCoMo? — 2026-11-09
+
+**Claim A** (from `[[Zero-Mem Zero-Token Memory Operations]]`, sourced from `data/raw/papers/2026-11-06-xiao-2026-zero-mem.md`):
+> Keeping raw conversation traces and organising them with deterministic retrieval machinery beats every LLM-distilled memory system. On LoCoMo with a GPT-4o-mini reader, plain RAG over raw text (44.73 F1) is ahead of MemoryOS, A-Mem and LightMem, and Mem0 leads it by only 0.4 F1 (self-reported). With a Qwen2.5-14B reader, A-Mem, Mem0 and LightMem all fall below plain RAG and the long-context baseline (self-reported).
+
+**Claim B** (from new source `data/raw/papers/2026-11-06-yao-2026-atommem.md`, recorded in `[[AtomMem Atomic-Fact Memory]]`):
+> Storage quality is what matters most, and distilling dialogue into verified atomic facts beats keeping the raw history. On LoCoMo with GPT-4o-mini, facts alone lift multi-hop F1 from about 21 to about 37 over the raw-history baseline, and the full system beats five prior memory systems, Mem0 included (self-reported).
+
+The setups differ (F1 against judge-scored metrics, each paper's own re-implemented baselines, top-5 against top-10 cap, and AtomMem's raw-history baseline is unspecified), so the numbers are not directly comparable. The conflict is in the design claim each page states: Claim A says extraction is unnecessary or harmful once raw text is retrievable, Claim B says extraction is the main lever. Both are on the same benchmark with the same reader. The pages link to each other as opposites but the tension is not otherwise recorded. [[Designed Memory vs Raw-Record Search]] sides with raw storage for strong models and with extraction only for the weakest model, and [[Mem0 Extract-and-Update Memory]] (self-reported, company authors) puts Mem0 above the best RAG setting on its own harness.
+
+**Status:** Unresolved — needs human review
+**Impact:** Whether the memory design guidance should default to storing raw traces with search, or to distilling facts at write time; [[Memory Lifecycle]], [[Designed Memory vs Raw-Record Search]], [[Memory Architecture]].
+**Would settle it:** One harness run on LoCoMo (and one longer-context set) with a fixed reader, a fixed top-k and one metric, comparing a specified raw-text retriever, Mem0, A-Mem, AtomMem and Zero-Mem, with seeds and intervals and a no-memory arm (neither paper has one).

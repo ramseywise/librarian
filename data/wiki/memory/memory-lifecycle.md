@@ -2,7 +2,7 @@
 title: Memory Lifecycle
 tags: [memory, llm, agents, concept]
 summary: "Five stages — represent, store, retrieve, use, update/forget — with the fifth being the one production systems skip, and consolidation designed so a failed merge can roll back instead of losing history."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--memory.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--memory.md
@@ -132,3 +132,8 @@ The 2026 papers above:
 - [[OCR-Memory Optical Context Retrieval]] — instance-of (episodic retrieval over rendered history)
 - [[ACC Bounded Memory Control for Agents]] — instance-of (bounded working state)
 - [[Memory-R1 RL Memory Manager]] — instance-of (learned memory operations)
+- [[MemoryBank Long-Term Memory]] — related
+- [[Shared Epistemic Memory]] — related
+- [[Mem0 Extract-and-Update Memory]] — instance-of (extract and update operations)
+- [[AtomMem Atomic-Fact Memory]] — related
+- [[Zero-Mem Zero-Token Memory Operations]] — related

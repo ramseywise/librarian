@@ -2,12 +2,13 @@
 title: Tool-Augmented Factuality Checking
 tags: [eval, pattern]
 summary: "Check a generated answer by splitting it into short claims, generating a search or code query per claim, running the tool and asking a model whether the evidence agrees; with GPT-4 as verifier on ChatGPT responses, FacTool beat a 3-shot self-check on response-level F1 in all four domains it tested (scientific citations 94.7 vs 21.5, self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-05-chern-2023-factool.md
   - data/raw/papers/2026-11-05-wang-2023-survey-factuality-large-language-models.md
   - data/raw/papers/2026-11-05-rawte-2023-survey-hallucination-large-foundation-models.md
   - data/raw/papers/2026-11-06-cossio-2025-comprehensive-taxonomy-hallucinations-large-language.md
+  - data/raw/papers/2026-11-08-quelle-2023-perils-promises-fact-checking-large.md
 ---
 
 # Tool-Augmented Factuality Checking
@@ -62,6 +63,10 @@ themselves, with no inter-annotator agreement. Claim extraction is scored only o
 from another dataset, not on the responses verified. No cost, latency or call counts are
 reported, and the GPT-3.5 and GPT-4 versions used are 2023 snapshots.
 
+## Search-agent fact-checking of political claims (Quelle and Bovet, 2023)
+
+A preprint compares GPT-3.5 and GPT-4 on PolitiFact claims (3000 claims, 500 per six-way label) with and without a LangChain ReAct agent that issues up to three Google searches (10 result previews each, fact-checking domains filtered). Self-reported: with context, non-ambiguous verdicts exceed 80% and 89% accuracy (the source gives no model mapping) against 63-75% average without; GPT-4 on true claims goes from 71.30% to 84.92%. Both models do worse on the middle labels (GPT-4 on mostly-false falls from 68.70% without context to 55.82% with it), and exact six-way accuracy is very low. GPT-3.5 without context predicts false for 58.2% of claims against 22.89% for GPT-4. For multilingual claims (GPT-3.5, up to 500 per language, 13 languages), translating to English raised F1 in most languages; for Telugu without context accuracy went from 26.99 to 59.79. An informal attempt to condense full web pages with BM25 did no better than search previews, and no numbers are given. Limits: no model versions, prompts or temperature printed, single run, no variance, possible leakage of fact-checks into training data, and only two models.
+
 ## Definitions from three surveys (2023 and 2025)
 
 Wang et al. (arXiv 2310.07521) define factuality as generating content consistent with facts that can be traced to reliable sources for instance dictionaries, Wikipedia and textbooks. They treat it as a separate axis from hallucination, which they define as departure from the source or prompt. Their table gives four cells: an output can be unfaithful to the prompt yet factually correct, and a non-factual output need not be a hallucination (for example "I don't know" or a partly correct answer). They report, second-hand, that GPT-3.5 as a grader of answer correctness on NQ and TriviaQA gave negative results even with the gold answer shown. The survey runs no experiments of its own, excludes summarisation faithfulness, and warns that its method-comparison rows are not directly comparable. Rawte et al. (arXiv 2309.05922) define hallucination as content not based on factual or accurate information, with no faithfulness-versus-factuality split. That survey also reports no results of its own; it groups about 25 papers by modality, its coverage ends September 2023, and the extraction notes citation errors in it, so neither survey is a source for the numbers it restates.
@@ -79,3 +84,4 @@ Cossio (arXiv 2508.01781, 2025), a single-author survey, runs no experiments. It
 - [[FActScore]] — alternative-to (atomic facts scored against Wikipedia instead of tools)
 - [[SelfCheckGPT]] — alternative-to (the model's own samples as the evidence, no tool)
 - [[Summary Factual Consistency Metrics]] — alternative-to (source-grounded checkers for summaries)
+- [[ReAct Pattern]] — related (the search-agent loop used for claim checking)

@@ -2,7 +2,7 @@
 title: Darwin Gödel Machine
 tags: [loop, pattern]
 summary: "The Darwin Gödel Machine keeps an archive of coding agents, has each parent rewrite its own code, and keeps a child only if a benchmark says it works; HyperAgents extend it by making the improvement procedure itself editable."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-zhang-2025-darwin-godel-machine.md
   - data/raw/papers/2026-11-06-zhang-2026-hyperagents.md
@@ -10,7 +10,7 @@ sources:
 
 # Darwin Gödel Machine
 
-The Darwin Gödel Machine (DGM, Zhang et al., ICLR 2026) replaces the proof of benefit in Schmidhuber's Gödel machine with an empirical check. A coding agent built from a frozen model plus bash and edit tools is the first archive entry. Each iteration samples parents by a performance-and-novelty weight; a parent reads its own benchmark logs, picks a feature to add and codes it into a copy of itself, and the child is scored on staged evaluations. The archive keeps weak but different agents as stepping stones. [[SIFT Judge-Guided Self-Improvement Tree Search]] and [[Red Queen Gödel Machine]] both start from this design.
+The Darwin Gödel Machine (DGM, Zhang et al., ICLR 2026) replaces the proof of benefit in Schmidhuber's Gödel machine with an empirical check. A coding agent built from a frozen model plus bash and edit tools is the first archive entry. Each iteration samples parents by a performance-and-novelty weight; a parent reads its own benchmark logs, picks a feature to add and codes it into a copy of itself, and the child is scored on staged evaluations. The archive keeps weak but different agents as stepping stones.
 
 ## Results (self-reported)
 

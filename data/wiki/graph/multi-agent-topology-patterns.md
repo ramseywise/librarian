@@ -2,11 +2,12 @@
 title: Multi-Agent Topology Patterns
 tags: [graph, langgraph, agents, comparison, conflict]
 summary: "The five recurring graph shapes (generate-then-verify, supervisor, fan-out/fan-in, subgraph, handoff), what each costs and how each fails, plus the two design questions underneath them: is context shared, and who decides what runs next."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--05-topology-patterns.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--03-state-and-reducers.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--OUTLINE.md
+  - data/raw/papers/2026-11-07-building-applications-with-ai-agents-ch08-one-agent-many.md
 ---
 
 # Multi-Agent Topology Patterns
@@ -129,6 +130,10 @@ So **a reviewer earns its node when it can run something**: tests, a browser, a 
 checker. More steps alone also plateau — agents spend steps poorly unless told their budget,
 so a manager should **allocate step budgets per worker**.
 
+## Coordination styles from one book chapter
+
+One book chapter (Albada ch08) describes four ways to coordinate several agents: democratic (peers decide together), manager (one agent assigns work), hierarchical (managers of managers) and actor-critic (one agent produces, another critiques). Its advice is to start with a single agent and add more only when one cannot cope, and to prefer a single agent when latency matters. It lists communication options between agents and suggests an actor framework once the agent count passes roughly 10-20; the chapter gives no data for that threshold, which is a rule of thumb. The extraction shows no measured comparison between the styles.
+
 ## The runtime as an operating system
 
 | OS | Agent runtime |
@@ -182,3 +187,10 @@ bytes**, so every interface needs a contract the receiver can check.
 - [[Codebook Agent Amortized Topology Design]] — instance-of (codebook-selected topology)
 - [[Workflow Graph Static vs Dynamic Taxonomy]] — related (survey taxonomy of workflow graphs)
 - [[OneManCompany Talent Container Organisation]] — instance-of (organisation-style topology)
+- [[CAMEL Role-Playing Inception Prompting]] — instance-of
+- [[Multiagent Debate for Factuality and Reasoning]] — instance-of
+- [[Encouraging Divergent Thinking with Multi-Agent Debate]] — instance-of
+- [[Self-Collaboration Role-Based Code Generation]] — instance-of
+- [[MedAgents Expert Consultation]] — instance-of
+- [[CoELA Modular Embodied Agents]] — instance-of
+- [[MetaCogAgent Self-Aware Task Delegation]] — related

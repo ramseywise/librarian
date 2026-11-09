@@ -2,7 +2,7 @@
 title: Context Engineering
 tags: [context, llm, agents, concept]
 summary: "The discipline of assembling the context window — a minimization problem, not a filling problem: find the smallest set of high-signal tokens that maximizes the likelihood of the desired outcome."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/articles/2026-07-19-context-engineering-karpathy.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context--context-engineering.md
@@ -140,3 +140,5 @@ added context source is added attack surface*. See [[Prompt Injection]] and
 - [[Trace as State]] — instance-of (trace as working state)
 - [[ReContext Attention Evidence Replay]] — instance-of (replaying evidence)
 - [[MemAgent and InfMem Bounded Memory Reading]] — instance-of (bounded reading)
+- [[FILCO Sentence-Level Context Filtering]] — related
+- [[DeepSeek-OCR Optical Context Compression]] — instance-of

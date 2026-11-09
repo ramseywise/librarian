@@ -2,7 +2,7 @@
 title: Multi-Agent Role Specialization
 tags: [llm, pattern]
 summary: Multiple agents with distinct roles and tool sets coordinated by an orchestrator — the highest-complexity orchestration, justified only when quality genuinely requires different modes of thinking, and explicitly never a starting point.
-updated: 2026-10-30
+updated: 2026-11-09
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/agent-orchestration.md
 ---
@@ -68,3 +68,4 @@ Never start with multi-agent."*
 - [[Multi-Step Graph Orchestration]] — prerequisite-for
 - [[Complexity Floor]] — related (constrains)
 - [[Agentic Workflow Patterns]] — related (orchestrator-workers)
+- [[ChatDev Chat Chain Software Company]] — instance-of

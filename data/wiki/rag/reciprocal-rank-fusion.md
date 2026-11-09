@@ -2,8 +2,10 @@
 title: Reciprocal Rank Fusion (RRF)
 tags: [rag, concept]
 summary: Score-free fusion algorithm that combines multiple ranked lists by position — the standard method for merging BM25 and dense vector retrieval results, and for amplifying cross-query agreement in multi-query retrieval.
-updated: 2026-10-30
+updated: 2026-11-09
 sources:
+  - data/raw/papers/2026-11-08-huyen-ai-engineering-ch06-rag-agents.md
+  - data/raw/papers/2026-11-07-building-ai-agents-llms-rag-kgs-ch06-advanced-rag-techniques-information-retriev.md
   - data/raw/claude-docs/playground/docs/rag/rrf.md
   - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
   - data/raw/claude-docs/playground/docs/archived/rag-agent-template-research.md
@@ -144,6 +146,10 @@ RRF solves BM25-vs-cosine score normalization. It does not fix the query classes
 Route these to an explicit reranking or override path. Do not try to tune `k` until they go
 away (there is no evidence `k` fixes negation). In a shared index the candidate pools RRF
 fuses must already be ACL-filtered: [[ACL-Aware Retrieval and Tenant Isolation]].
+
+## Second-hand figures from two book chapters
+
+A chapter on advanced RAG describes hybrid search as a weighted blend with an alpha parameter, with 0 as pure vector and 1 as pure keyword and typical settings of 0.4 to 0.5; the extraction notes this direction is the reverse of the one Weaviate documents. A chapter on RAG and agents gives the RRF constant as k=60. Neither chapter reports an experiment of its own.
 
 ## See Also
 - [[RAG Retrieval Strategies]]

@@ -2,7 +2,7 @@
 title: Pull-Only Event Transport
 tags: [infra, decision]
 summary: Decision to have a local scheduled tick poll GitHub directly (`gh` + `since`/ETag) rather than build any Actions push channel — `repository_dispatch` is POST-only and unconsumable by a poller, a state-branch is strictly dominated, and pull makes failure visible at the call site where push fails by going quiet.
-updated: 2026-10-17
+updated: 2026-11-09
 sources:
   - data/raw/claude-docs/guacamayo/docs/research/2026-08-15_GUA-119_event-transport.md
   - data/raw/claude-docs/guacamayo/docs/research/2026-08-15_GUA-119_synthesis.md
@@ -71,4 +71,4 @@ of the world, and a confirmed *decision* was not treated as authorization to mak
 ## See Also
 - [[Silence Reads as Clean]] — extends (the defect this decision optimises against)
 - [[Reversibility Cliff]] — extends (sibling decision from the same research on what the loop may do with the events)
-- [[Production Reliability Primitives]] — instance-of (idempotent re-read as the replay primitive)
+- [[Production Reliability Primitives]] — related (the primitive catalogue this transport draws on: idempotent re-read)

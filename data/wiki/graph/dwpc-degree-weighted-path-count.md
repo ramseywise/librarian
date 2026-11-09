@@ -2,7 +2,7 @@
 title: Degree-Weighted Path Count (DWPC)
 tags: [graph, concept]
 summary: "DWPC scores how strongly two nodes are linked along a typed path pattern while damping paths that run through high-degree hubs; a Neo4j book's worked examples use it to rank disease-linked gene processes and miRNA targets."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-kg-and-llms-in-action-ch04-multisource-integration.md
   - data/raw/papers/2026-11-07-kg-and-llms-in-action-ch10-graph-feature-engineering.md
@@ -13,13 +13,13 @@ sources:
 
 DWPC ranks the connection between a source node and a target node along a **metapath**, meaning a pattern of node and relationship types that real paths can follow (compound, binds, gene, associates, disease is written CbGaD). The plain **path count** (PC) gives every path a value of 1, so a node that sits on many paths looks important simply because it is a hub. DWPC instead multiplies the degrees of the nodes along each path, raises each degree to the power -w (a damping exponent, w at least 0), and sums the result over all paths of the metapath. Larger w discounts hubs more. The book's examples all use w = 0.4, written in Cypher as a `reduce` over the degrees on each path (`pdp * d ^ -0.4`).
 
-The book's chapter 4 adapts the measure from PathPredict, which came from social network analysis, and credits Hetionet's authors with introducing it for biomedical graphs.
+The book's chapter 4 adapts the measure from PathPredict, which came from social network analysis, and cites a separate reference for introducing DWPC.
 
 ## Worked examples
 
-- **Celiac disease on Hetionet** (chapter 4; metapath DaG-GpBP, w = 0.4, filter of at least 5 genes and PC of at least 2). T cell costimulation comes first, with DWPC 0.03347 over PC 10 and 75 genes. A process covering 880 genes, despite PC 21, sits near the bottom. A longer metapath (DaG-GiG-GpBP, restricted to 5 to 100 genes) that also brings in GWAS-only links, a protein-interaction step and tissue upregulation promotes glycoprotein processes instead, and the best DWPC drops to 0.00665.
-- **Metformin and type 2 diabetes** (chapter 10; Hetionet in Neo4j, CbGaD, w = 0.4): DWPC is 0.0007.
-- **Celiac disease on a miRNA graph** (appendix C; exponent -0.4, filter of at least 5 miRNAs and PC of at least 2): the leading target is NM_080601, scoring DWPC 0.00417 across 2 paths that involve 25 miRNAs.
+- **Celiac disease on Hetionet** (chapter 4; metapath DaG-GpBP, w = 0.4, filter of at least 5 genes and PC of at least 2). T cell costimulation comes first, with DWPC 0.03347 over PC 10 and 75 genes (self-reported). A process covering 880 genes, despite PC 21, sits near the bottom. A longer metapath (DaG-GiG-GpBP, restricted to 5 to 100 genes) that also brings in GWAS-only links, a protein-interaction step and tissue upregulation promotes glycoprotein processes instead, and the best DWPC drops to 0.00665 (self-reported).
+- **Metformin and type 2 diabetes** (chapter 10; Hetionet in Neo4j, CbGaD, w = 0.4): DWPC is 0.0007 (self-reported).
+- **Celiac disease on a miRNA graph** (appendix C; exponent -0.4, filter of at least 5 miRNAs and PC of at least 2): the leading target is NM_080601, scoring DWPC 0.00417 across 2 paths that involve 25 miRNAs (self-reported).
 
 ## Using it
 

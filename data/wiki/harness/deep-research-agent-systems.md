@@ -8,6 +8,7 @@ sources:
   - data/raw/papers/2026-11-06-alzubi-2025-open-deep-search.md
   - data/raw/papers/2026-11-06-chen-2024-mindsearch.md
   - data/raw/papers/2026-11-06-li-2025-towards-ai-search-paradigm.md
+  - data/raw/papers/2026-11-08-lakshmanan-hapke-genai-design-patterns-ch04-adding-knowledge-syncopation.md
 ---
 
 # Deep Research Agent Systems
@@ -30,6 +31,10 @@ A planner writes Python that builds a search graph step by step; each node spawn
 
 A blueprint of Master, Planner, Executor and Writer agents. The Master chooses among three team setups according to query complexity; the Planner emits a whole task DAG once, which the Executor runs layer by layer; failures trigger re-planning of the affected subgraph only; tools are narrowed to about a dozen by retrieval first. Against the legacy engine, blind side-by-side net win rate was 0.00% on simple queries, +5.00% on moderately complex and +13.00% on complex ones (sample size not stated); a 1% traffic A/B test showed daily active users +1.85%.
 
+## Deep Search as a design pattern (Lakshmanan and Hapke, Pattern 12)
+
+The chapter frames Deep Search as a loop of retrieve, think, generate that ends once the answer is adequate or the time or cost budget is used up; deep research is the variant producing a long-form report. Advice: keep state across iterations, start from a simple question and fill gaps, parallelise subqueries, cap the budget, and evaluate with a framework such as Ragas over relevance, comprehensiveness, accuracy, coherence, citation quality and efficiency. The main drawback it names is slowness. The demo (Wikipedia, depth=1, two questions) reports no timings or accuracy.
+
 ## Limits
 
 - The survey itself names, in a closing limitation paragraph, weak generalisation across varied tasks, rigid workflows, trouble wiring in fine-grained external tools, and heavy compute for advanced planning and optimisation. Its open challenges add narrow information sources, linear planning, single-agent designs, benchmarks that models can answer from memory, and underdeveloped self-evolution.
@@ -37,6 +42,8 @@ A blueprint of Master, Planner, Executor and Writer agents. The Master chooses a
 - ODS: no cost, latency or variance; closed systems score higher on SimpleQA; ablation SimpleQA uses 500 questions. The extraction notes inconsistencies: ODS-v1 with Llama3.1-70B is 83.4 in Table 2 and 84.0 in Table 3, and the text names OpenPerplex in one place and serper.dev in another.
 - MindSearch: the extraction notes that the text says multi-query generation matters most, but Table 3 shows removing page selection costs more (58.0 against 60.6, self-reported); the open-set human study has 100 queries and 5 raters; speed claims lack hardware details.
 - Baidu: a blueprint with no ablation of the DAG against ReAct or a single agent, and no cost data; the extraction notes that its win-rate labels (WTL and NWR) are used inconsistently.
+Limits of this section:
+- Qualitative description; the demo has no measurements.
 
 ## See Also
 - [[WebThinker Deep Research Agent]] — instance-of

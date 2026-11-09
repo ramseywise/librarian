@@ -2,7 +2,7 @@
 title: MVoT Multimodal Visualization of Thought
 tags: [foundations, pattern]
 summary: "MVoT interleaves generated images with text steps during reasoning (Anole-7B with a token discrepancy loss), scoring 92.95, 95.14 and 85.60 on Maze, MiniBehavior and FrozenLake (self-reported), but plain CoT does better on the two easier tasks."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-li-2025-imagine-while-reasoning-space.md
 ---
@@ -27,3 +27,4 @@ MVoT (Li et al., 2025) lets a multimodal model draw its intermediate state. Afte
 - [[Prompting Reasoning Models]] — related
 - [[Tree of Thoughts]] — related (another way to extend the reasoning trace beyond plain text)
 - [[Visualization-of-Thought (VoT)]] — prerequisite-for
+- [[VPRL Visual Planning with Reinforcement Learning]] — related (plans with generated image sequences, trained with GRPO)

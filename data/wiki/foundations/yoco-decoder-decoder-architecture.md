@@ -2,7 +2,7 @@
 title: YOCO Decoder-Decoder Architecture
 tags: [foundations, concept]
 summary: "YOCO splits a language model into a self-decoder with a constant-size cache and a cross-decoder that reuses one global KV cache, so the cache is stored once; at 3B it cut 1M-token inference memory 9.38x and 512K prefill from 180 s to under 6 s (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-sun-2024-you-only-cache-once.md
 ---
@@ -31,6 +31,6 @@ The cross-decoder reads the cache without producing it, so prefill can stop afte
 - The extraction notes that the mapping of Figure 7-10 ratios to context lengths was inferred from axis order.
 
 ## See Also
-- [[KV Cache Reduction Methods]] — prerequisite-for (the family it belongs to)
+- [[KV Cache Reduction Methods]] — related (the family this page belongs to)
 - [[Layer-Condensed KV Cache]] — alternative-to (another way to keep one layer's KV)
 - [[Self-Attention Mechanism]] — prerequisite-for (the layer-wise cache it shrinks)

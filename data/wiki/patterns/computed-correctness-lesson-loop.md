@@ -2,7 +2,7 @@
 title: Computed-Correctness Lesson Loop
 tags: [patterns, memory, pattern]
 summary: "Close an agent's learning loop by recording what an upstream agent predicted next to what actually happened downstream, with correctness as a generated column (computed, never judged), and make human promotion through one RPC the only path by which a lesson becomes visible to the agent that consumes it."
-updated: 2026-10-17
+updated: 2026-11-09
 sources:
   - data/raw/repos/nonprofit-success-ai/.claude--docs--plans--2026-10-07-r9-lessons.md
   - data/raw/repos/nonprofit-success-ai/.claude--docs--archive--specs--design-requirements.md
@@ -56,7 +56,7 @@ memory proxy exists to inject memory into third-party agents you cannot modify. 
 extraction from conversation history was scoped out for operational cost.
 
 ## See Also
-- [[Memory Lifecycle]] — instance-of
+- [[Memory Lifecycle]] — related (the lifecycle this loop implements a promotion step of)
 - [[Self-Learning Agents]] — instance-of
 - [[Four-Source Provenance Contract]] — extends
 - [[Single-Writer Transition Command]] — extends

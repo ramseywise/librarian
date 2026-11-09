@@ -2,7 +2,7 @@
 title: "Probability Calibration and Reliability Curves"
 tags: [foundations, concept]
 summary: "A score is calibrated when a 0.8 happens 80% of the time; check with a reliability diagram and Brier score, and fix on held-out data with isotonic, Platt or temperature scaling."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--04-model-evaluation.md
 ---
@@ -41,3 +41,4 @@ These are 2021 image classifiers; do not carry the ranking to other domains.
 - [[Prior Shift Correction for Oversampled Defaults]] — related
 - [[Confidence-Gated Escalation]] — extends (calibration measured per task for an LLM gate)
 - [[MC Dropout]] — related (an uncertainty estimate whose calibration is a separate check)
+- [[Platt Scaling for SVM Probabilistic Outputs]] — instance-of

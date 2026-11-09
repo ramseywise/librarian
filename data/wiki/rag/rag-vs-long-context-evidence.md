@@ -2,7 +2,7 @@
 title: "RAG vs Long Context: Evaluation Evidence"
 tags: [rag, llm, comparison]
 summary: "Two 2024 evaluations disagree in emphasis: one finds long context ahead of RAG on filtered QA but RAG winning on about 10% of questions, the other finds RAG accuracy peaking then falling as more passages are retrieved, driven by hard negatives."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-li-2024-long-context-vs-rag-llms.md
   - data/raw/papers/2026-11-06-jin-2024-long-context-llms-meet-rag.md
@@ -18,7 +18,7 @@ Both papers are preprints and both report their own results (self-reported).
 - **Setup:** 12 datasets, questions answerable without context removed using GPT-4o with strict exact match, then distractor passages added. 19,188 questions after expansion, 13,628 kept. The RAG arm used summarization-tree retrieval (RAPTOR); the same GPT-4o or GPT-4-Turbo answered in both arms. Long-context input was truncated from the back when over the window.
 - **Result (strict EM):** long context answered 56.3% correctly and RAG 49.0%. Long context alone was right on 2,287 questions and RAG alone on 1,294, so close to 10% of questions only RAG answered correctly. The authors read this as retrievers not being replaceable by long-context models.
 - **By source:** Wikipedia 873 long-context-only wins against 348 RAG-only; stories 842 against 391; papers and reports 531 against 507; dialogue 31 against 44. Yes/no "other" questions favour RAG, 54 against 140.
-- **Retriever choice** (a sample of about 1,563 questions, an inference by the extractor): RAPTOR 38.5% correct, then window parsing at 35.5% and tree index at 30.1%, text-embedding-3-small (21.6%), BM25 (20.4%) and Contriever (20.1%). Chunk-based retrievers trail the summarization-based one.
+- **Retriever choice** (a sample of about 1,563 questions; the sample size is the extraction notes' inference): the summarization-based RAPTOR leads at 38.5% correct. Window parsing (35.5%) and tree index (30.1%) follow. The chunk-based retrievers sit near 20%: text-embedding-3-small at 21.6%, Contriever at 20.1% and BM25 at 20.4% (all self-reported).
 
 ## Jin et al.: more retrieved passages is not monotone
 
@@ -51,3 +51,4 @@ Chapter 6 of Building Applications with AI Agents (Albada) says long-context mod
 - [[Knowledge Conflicts Taxonomy]] — related (conflicts between retrieved context and model memory)
 - [[BABILong Benchmark]] — related (long-context versus retrieval on hidden facts)
 - [[LC-Boost Short-Context Processing of Long Inputs]] — related
+- [[DRAG and IterDRAG Inference Scaling]] — related

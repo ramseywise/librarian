@@ -2,7 +2,7 @@
 title: SWE-agent Agent-Computer Interface
 tags: [harness, pattern]
 summary: SWE-agent gives a language model a purpose-built command interface (windowed file viewer, linted edit, capped search, collapsed history) over a shell; ablations show interface design moves SWE-bench scores without changing weights.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-yang-2024-swe-agent.md
   - data/raw/papers/2026-11-08-meng-2024-empirical-study-llm-based-agents.md
@@ -34,14 +34,14 @@ All numbers are the authors' own (self-reported), single runs unless stated, pas
 
 ## A later post-hoc study
 
-Meng et al. (2024) compared six leaderboard systems on the 500-instance SWE-bench Verified using submitted patches and trajectories, with no reruns and uncontrolled backbones. 404 instances were solved by at least one system, 96 by none and 181 by all six. A system that localised fewer files could still resolve more conditional on a hit (Learn-by-interact 82.2% against 69.6% for the top system). Their two-agent RepoFixer resolved 255 issues, and 76.8% of its reproduction scripts changed output when the reference patch was applied. The authors' claim that reproduction followed by patch verification marks the best systems is qualitative: no experiment isolates reproduction, and the link is correlational.
+Meng et al. (2024) compared six leaderboard systems on the 500-instance SWE-bench Verified using submitted patches and trajectories, with no reruns and uncontrolled backbones. 404 instances were solved by at least one system, 96 by none and 181 by all six. A system that localised fewer files could still resolve more conditional on a hit (Learn-by-interact 82.2% against 69.6% for the top system). Their two-agent RepoFixer resolved 255 issues, and 76.8% of its reproduction scripts changed output when the reference patch was applied. The authors' claim that reproduction followed by patch verification marks the best systems is qualitative; the extraction notes that no experiment isolates reproduction and that the link is correlational. All Meng et al. figures here are self-reported.
 
 ## Limits
 
-- The interface was designed manually for GPT-4 Turbo, and ablations are single runs whose gaps are similar in size to the 0.49 run-to-run std.
-- Only two models; Python and software engineering only; results are 2024-era and since far exceeded.
-- It is unclear whether demonstrations teach problem solving or only command format.
-- Meng et al.: backbone differences uncontrolled, one submitted run per system, fail-to-pass tests only, issue quality scored by an LLM with a limited human check, Python repos only.
+- The extraction notes the interface was designed manually for GPT-4 Turbo, and ablations are single runs whose gaps are similar in size to the 0.49 run-to-run std.
+- The extraction notes only two models; Python and software engineering only; results are 2024-era and since far exceeded.
+- The extraction notes it is unclear whether demonstrations teach problem solving or only command format.
+- The extraction notes for Meng et al.: backbone differences uncontrolled, one submitted run per system, fail-to-pass tests only, issue quality scored by an LLM with a limited human check, Python repos only.
 
 ## See Also
 

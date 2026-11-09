@@ -2,7 +2,7 @@
 title: OCR-Memory Optical Context Retrieval
 tags: [memory, pattern]
 summary: "OCR-Memory renders an agent's history as images, has a trained retriever pick segment indices, and returns the stored verbatim text; on Mind2Web and AppWorld it beats text baselines at a 4096-token memory budget and cuts injected text tokens 6.7x, at the price of more disk and latency (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-li-2026-ocr-memory.md
 ---
@@ -31,3 +31,4 @@ OCR-Memory (a 2026 preprint) stores long-horizon agent history as rendered image
 - [[Context Compaction]] — alternative-to (shrinking history by compression)
 - [[Memory-Augmented Conversational RAG]] — alternative-to (text retrieval over history)
 - [[Memory Intelligence Agent]] — related
+- [[DeepSeek-OCR Optical Context Compression]] — related

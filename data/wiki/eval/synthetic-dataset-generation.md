@@ -2,7 +2,7 @@
 title: Synthetic Dataset Generation for RAG Eval
 tags: [eval, rag, pattern]
 summary: Four-mode pipeline for generating and maintaining a versioned synthetic test dataset from a knowledge base — article fingerprinting drives incremental refresh, stable content-derived IDs make Langfuse upserts idempotent, and four query categories cover the full quality surface.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/claude-docs/chat-agent/docs/kb-analysis/intercom_kb_analysis.md
   - data/raw/claude-docs/chat-agent/docs/eval/pipeline.md
@@ -278,3 +278,6 @@ Zhang et al.: the human and model question sets come from different contexts (Ho
 - [[BigToM Model-Generated Benchmark]] — related (a model fills a causal template to write test items)
 - [[Silicon Sampling and Algorithmic Fidelity]] — related (simulating human respondents with a model; a different synthetic-data use)
 - [[PII Masking Approaches]] — related (masking source text before generating test items)
+- [[Promptagator Few-Shot Synthetic Retrieval Data]] — related
+- [[ARES Automated RAG Evaluation]] — related
+- [[Model-Written Evaluations]] — related (another model-generated test set pipeline)

@@ -2,7 +2,7 @@
 title: Reflexion
 tags: [prompting, llm, concept]
 summary: Verbal reinforcement learning — an actor attempts, an evaluator scores, a self-reflection step turns the score into natural-language feedback kept in memory for the retry; it works only when you get a do-over and an objective evaluator, and reinforces confident mistakes with a weak one.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--03-core-techniques.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--06-chaining-and-workflows.md
@@ -57,3 +57,10 @@ Yao et al. (2026) find that the diversity of an agent's reflections correlates w
 - [[RISE Recursive Introspection]] — related (trains multi-turn self-correction into the weights instead of prompting for it)
 - [[Self-Consistency]] — alternative-to (at equal token cost, sampling more beat reflection in a small-model study)
 - [[Learned Skill and Action Libraries]] — related
+- [[DECKARD LLM-Hypothesized World Model]] — related (learning from experience)
+- [[Self-Refine]] — alternative-to (feedback without episode memory)
+- [[ExpeL Experiential Learning]] — extends
+- [[ReST Meets ReAct Agent Self-Improvement]] — related
+- [[ReAct Synergizing Reasoning and Acting]] — related
+- [[DERA Dialog-Enabled Resolving Agents]] — related
+- [[Buffer of Thoughts]] — related (reusable templates across tasks)

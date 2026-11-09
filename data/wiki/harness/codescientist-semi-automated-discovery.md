@@ -2,7 +2,7 @@
 title: CodeScientist Semi-Automated Discovery
 tags: [harness, pattern]
 summary: "CodeScientist generates ideas from papers and code blocks, runs experiments, and relies on external reviewers plus a vetoing expert; the denominators matter, because 6 surviving discoveries came from 250 runs on 50 human-picked ideas."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-jansen-2025-codescientist.md
   - data/raw/papers/2026-11-06-jayaram-2026-towards-automating-scientific-review-google.md
@@ -35,3 +35,4 @@ Google's Paper Assistant Tool (Jayaram et al., June 2026) defines four roles for
 - [[Loop Autonomy Ladder]] — related
 - [[Paper-Replication Completion Gate]] — related
 - [[Proposer-Reviewer and Sidecar Gating]] — related
+- [[AI Scientist Automated Research Pipeline]] — related

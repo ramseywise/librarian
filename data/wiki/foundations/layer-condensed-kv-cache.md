@@ -2,7 +2,7 @@
 title: Layer-Condensed KV Cache
 tags: [foundations, concept]
 summary: "The Layer-Condensed KV Cache pairs every layer's queries with the keys and values of only the top layer, so one layer's KV is cached; it reports up to 26x throughput against a standard Transformer but costs about 3x pretraining time and was checked for quality only at 1.1B (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-wu-2024-layer-condensed-kv-cache-efficient.md
 ---
@@ -31,6 +31,6 @@ Training runs n bottom-up iterations in parallel, each using the previous iterat
 - The extraction notes that the memory bars in Figure 5 show smaller savings than the headline figures.
 
 ## See Also
-- [[KV Cache Reduction Methods]] — prerequisite-for (the family it belongs to)
+- [[KV Cache Reduction Methods]] — related (the family this page belongs to)
 - [[YOCO Decoder-Decoder Architecture]] — alternative-to (also keeps a single global KV layer)
 - [[Self-Attention Mechanism]] — prerequisite-for (the per-layer attention it changes)

@@ -2,7 +2,7 @@
 title: Efficient Attention Approximations
 tags: [foundations, comparison]
 summary: "Three 2020-2021 routes to sub-quadratic attention, random-feature kernels (Performer), global plus window plus random sparsity (BigBird) and learned cluster routing (Routing Transformer), with their reported results and limits."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-choromanski-2020-rethinking-attention-performers.md
   - data/raw/papers/2026-11-08-zaheer-2020-big-bird.md
@@ -11,7 +11,7 @@ sources:
 
 # Efficient Attention Approximations
 
-Three papers cut the quadratic cost of attention in different ways. All three pre-date fused exact-attention kernels, which changed the speed trade-off.
+Three papers cut the quadratic cost of attention in different ways. The extraction notes that all three pre-date fused exact-attention kernels, which changed the speed trade-off.
 
 ## Performer (FAVOR+)
 
@@ -20,7 +20,7 @@ Choromanski et al. estimate softmax attention with positive orthogonal random fe
 - Protein data (TrEMBL, 36 layers, L = 1024): the softmax Performer matches the exact Transformer on bidirectional test accuracy; a generalized-ReLU variant beats it. On out-of-distribution families the Performer is slightly worse.
 - Concatenated proteins at L = 8192: the memory-limited Transformer plateaus near 19%, the full-size Performer reaches about 24%.
 - On ImageNet64, after 100K steps, the ReLU (3.67), softmax (3.69) and SMREG (3.67) variants give nearly the same bits per dimension.
-- Trigonometric features gave unstable training and NaNs on PG-19; a Linear Transformer (elu+1) hit exploding gradients in the same setup.
+- Trigonometric features gave unstable training and NaNs on PG-19; separately, a Linear Transformer (elu+1) hit exploding gradients in the ProGen 36-layer TrEMBL protein setting, not on PG-19.
 
 ## BigBird
 

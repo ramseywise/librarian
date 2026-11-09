@@ -2,7 +2,7 @@
 title: Zero-Shot Chain-of-Thought
 tags: [prompting, concept]
 summary: A trigger sentence appended to the question, plus a second call to extract the answer, elicits step-by-step reasoning with no exemplars; strong on arithmetic and symbolic tasks, flat on commonsense.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-kojima-2022-large-language-models-zero-shot.md
   - data/raw/papers/2026-11-08-zhao-2023-enhancing-zero-shot-chain-thought.md
@@ -42,3 +42,4 @@ Zhao et al. start from a zero-shot-CoT chain and verify each step: the model wri
 - [[GeM-CoT]] — extends
 - [[CoT-Decoding]] — alternative-to
 - [[Chain-of-Thought Unfaithfulness Under Biased Context]] — related
+- [[ChatGPT Zero-Shot NLP and Annotation Studies]] — related (two-stage prompt used for reasoning tasks)

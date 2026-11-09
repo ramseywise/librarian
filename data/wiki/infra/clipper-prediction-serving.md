@@ -2,7 +2,7 @@
 title: Clipper Prediction Serving
 tags: [infra, concept]
 summary: "Clipper is a 2016-17 serving layer that sits between applications and unmodified ML frameworks, adding per-model caching, AIMD adaptive batching against a latency target, and bandit-based model selection; batching raised throughput up to 26x under a 20 ms target (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-crankshaw-2016-clipper.md
 ---
@@ -31,7 +31,7 @@ The batch size is found by AIMD against a latency target: it grows until a batch
 - Hardware and models date from 2016-17, and no LLM or token-level workload is tested.
 
 ## See Also
-- [[LLM Inference Economics]] — prerequisite-for (batching trades throughput against first-token latency)
+- [[LLM Inference Economics]] — related (batching trades throughput against first-token latency)
 - [[S-LoRA Multi-Adapter Serving]] — related (batching shared work across many models)
 - [[Cheap-First Gating and Model Cascades]] — related (online model selection in front of several models)
 - [[TurboTransformers Variable-Length Serving]] — related (length-aware batching for transformers)

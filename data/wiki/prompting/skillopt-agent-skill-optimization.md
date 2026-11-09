@@ -1,8 +1,8 @@
 ---
 title: SkillOpt Agent Skill Optimization
 tags: [prompting, pattern]
-summary: SkillOpt optimizes an agent's skill document as external state with weight-training controls, namely a bounded edit budget, a held-out acceptance gate, a rejected-edit buffer and an epoch-level slow update; the paper reports best or tied-best on every cell, with several reporting gaps.
-updated: 2026-11-08
+summary: "SkillOpt optimizes an agent's skill document as external state borrowing training controls: capped edits, a gate on held-out data, a store of rejected edits and a slow epoch-end update; the paper reports the best or equal-best score on every cell, with several reporting gaps."
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-yang-2026-skillopt.md
 ---

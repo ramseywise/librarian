@@ -1,8 +1,8 @@
 ---
 title: LM-BFF and PET Prompt-Based Fine-Tuning
 tags: [prompting, pattern]
-summary: "Two 2021 recipes that recast classification as a cloze task for a small masked language model and fine-tune on 16 to 32 examples per task: LM-BFF (RoBERTa-large, searched templates, sampled demonstrations) and PET (ALBERT, ensembled patterns distilled into a classifier); each reports its own gains (self-reported)."
-updated: 2026-11-08
+summary: "Two 2021 recipes that recast classification as a cloze task for a small masked language model and fine-tune on few labels (LM-BFF 16 per class, PET 32 in total): LM-BFF (RoBERTa-large, searched templates, sampled demonstrations) and PET (ALBERT, ensembled patterns distilled into a classifier); each reports its own gains (self-reported)."
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-gao-2021-making-pre-trained-language-models.md
   - data/raw/papers/2026-11-07-schick-2021-its-not-just-size-that.md

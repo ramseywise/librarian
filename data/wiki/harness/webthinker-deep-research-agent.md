@@ -2,7 +2,7 @@
 title: WebThinker Deep Research Agent
 tags: [harness, pattern]
 summary: A reasoning model that decides for itself when to search, delegates page exploration to a sub-agent, and drafts a report section by section; trained with iterative online DPO.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-li-2025-webthinker.md
 ---
@@ -29,3 +29,4 @@ WebThinker wraps a large reasoning model (QwQ-32B in the main runs) in a loop th
 - [[Deep Research Agent Systems]] — prerequisite-for
 - [[GAIA General-Assistant Benchmark]] — related
 - [[Task Decomposition Patterns]] — related
+- [[Search-o1 Reason-in-Documents]] — alternative-to

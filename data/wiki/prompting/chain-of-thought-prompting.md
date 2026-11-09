@@ -1,8 +1,8 @@
 ---
 title: Chain-of-Thought Prompting
 tags: [prompting, concept]
-summary: Few-shot exemplars that include written-out intermediate reasoning steps; the reference point for most later reasoning-prompt methods, with scale-dependent gains and a contested account of why it works.
-updated: 2026-11-08
+summary: Few-shot exemplars that include written-out intermediate reasoning steps; a prompting technique with scale-dependent gains and a contested account of why it works.
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-wei-2022-chain-thought-prompting-elicits-reasoning.md
   - data/raw/papers/2026-11-08-wang-2022-towards-understanding-chain-thought-prompting.md
@@ -34,7 +34,7 @@ Of 50 wrong LaMDA 137B GSM8K chains read by hand, 46% were almost correct and 54
 
 A follow-up ablation study (InstructGPT text-davinci-002, greedy, GSM8K subset of 800 and Bamboogle 125 questions) reports that exemplars with invalid reasoning keep over 80 to 90 percent of CoT performance (self-reported). Removing relevance to the query, or scrambling the order of steps or templates, hurts much more: on GSM8K the no-relevance setting scored 11.0 against 15.4 for standard prompting (self-reported). The authors read this as demonstrations specifying format and eliciting pretrained reasoning. Flan-PaLM, trained on CoT data, showed no sensitivity to any ablation (self-reported), and the two models in that study disagree on Bamboogle about which component matters.
 
-A 2024 survey of prompting methods (Vatsal and Dhingra) catalogues CoT as the root of the reasoning-prompt family. The extraction notes that the survey is internally inconsistent on GSM-IC, naming different best methods in different places, so its rankings should be read with care.
+A 2024 survey of prompting methods relays the original CoT gains over basic prompting, reaching roughly 39% for math and 26% for commonsense reasoning (maximum gaps across datasets and models, relayed from Wei et al.). The extraction notes that the survey is internally inconsistent on GSM-IC, naming different best methods in different places, so its rankings should be read with care.
 
 ## Model-written rationales (AutoReason)
 
@@ -66,3 +66,8 @@ Sevinc and Gumus (2024) have GPT-4-1106-preview write sub-question traces for ea
 - [[Chain-of-Thought Unfaithfulness Under Biased Context]] — related (tests whether stated reasoning matches the cause of the answer)
 - [[Multimodal Chain-of-Thought]] — extends
 - [[LM-Guided Chain-of-Thought]] — extends
+- [[IRCoT Interleaved Retrieval and Chain-of-Thought]] — extends (retrieval inside the reasoning chain)
+- [[Retrieval Augmented Thoughts (RAT)]] — extends
+- [[Plan-and-Solve Prompting]] — extends
+- [[LILA Math Reasoning Benchmark]] — related (program output versus direct answers)
+- [[SciBench]] — related (chain-of-thought and tool prompting compared)

@@ -2,7 +2,7 @@
 title: HELM Holistic Evaluation
 tags: [eval, reference]
 summary: "HELM scores 30 language models on 42 scenarios under one standardized prompting setup across seven metric categories, so that accuracy, robustness, fairness and cost can be read side by side; the paper's own ablations show prompt format and in-context examples changing accuracy, with the best adaptation method differing by model (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-bommasani-2023-holistic-evaluation-language-models.md
   - data/raw/papers/2026-11-08-chang-2023-survey-evaluation-large-language-models.md
@@ -85,3 +85,6 @@ safety and human alignment. LLM-as-judge is only mentioned in the survey, not as
 - [[Eval Error Bars and Sample Size]] — related (HELM's three-seed, 1,000-instance setup is thin)
 - [[TruthfulQA]] — related (one of HELM's core scenarios)
 - [[Holistic Agent Leaderboard]] — related (applies the multi-metric idea to agents)
+- [[Self-Supervised LLM Evaluation by Text Transformations]] — related (a label-free complement to multi-metric benchmarks)
+- [[CLUE Chinese Benchmark]] — related (GLUE-style leaderboard design)
+- [[PromptBench]] — alternative-to (another evaluation framework)

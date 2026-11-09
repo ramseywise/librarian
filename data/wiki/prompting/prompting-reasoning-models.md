@@ -2,7 +2,7 @@
 title: Prompting Reasoning Models
 tags: [prompting, llm, pattern]
 summary: Reasoning models do chain-of-thought natively, so prompts shift from how to think to what to achieve — state goals and constraints, drop manual CoT (it can degrade instruction-following), escalate effort gradually against an eval, and never treat the visible thinking as a faithful audit trail.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--07-prompting-reasoning-models.md
   - data/raw/papers/2026-11-06-wu-2024-comparative-study-reasoning-patterns-openai.md
@@ -13,6 +13,7 @@ sources:
   - data/raw/papers/2026-11-07-sivakumaran-2026-balancing-faithfulness-performance-reasoning-multi.md
   - data/raw/papers/2026-11-07-wang-2025-thoughts-all-over-place.md
   - data/raw/papers/2026-11-07-weinberger-2026-prompt-induced-waste-coding-agents.md
+  - data/raw/papers/2026-11-07-ai-agents-definitive-guide-ch04-models-behind-agents-capabilities-optimization.md
 ---
 
 # Prompting Reasoning Models
@@ -96,8 +97,11 @@ Each item gives its setup; figures are (self-reported) by the paper unless noted
 - **Faithfulness training.** REMuL rewards a model when listener models, reading 25/50/75% prefixes of its chain of thought, reach its answer. On Qwen3-14B and Phi-4-reasoning-plus (1250 BBH pairs, out-of-domain tests) it gives +2.5% faithfulness with +1.8% and +1.5% accuracy. Faithfulness-only training costs accuracy; sycophancy rises 38.6 to 41.8.
 - **Meta-CoT position paper.** A MATH-test prompting study over five strategies and eight models found regret under 0.5% for baseline and CoT; the highest value, 25.67%, was Llama 3.1 70B with Think and Verify. Prompt overhead was 23, 35, 1,895, 4,659 and 2,111 tokens across strategies. It cites one search tree costing up to 20M tokens, about $100.
 - **ChatGPT on word problems (2023).** On DRAW-1K, 84% failure when asked for no work against 20% when work is shown, with 51% fully correct versus 59% reported for a specialised system.
+- **Prompt-induced waste in coding agents.** A preregistered benchmark of prompt components on coding agents see [[Prompt-Induced Waste in Coding Agents]].
 
-- **Prompt-induced waste in coding agents.** A preregistered benchmark of prompt components on coding agents is summarised on [[Prompt-Induced Waste in Coding Agents]]; the instruction-length and token-cost findings sit there.
+## Thinking-budget guidance from a practitioner chapter
+
+Koenigstein (ch. 4) advises turning thinking on for planning, decomposition, tool selection and verification and off for short low-risk turns, with a thinking-token budget of 1000 or more for non-trivial reasoning, raised for math, code and multi-tool plans. This is a rule of thumb stated without an experiment; the chapter's own snippets use 1024 and 1536.
 
 ## Limits
 
@@ -106,6 +110,7 @@ Each item gives its setup; figures are (self-reported) by the paper unless noted
 - The Meta-CoT pipeline is proposed and not run; its regret metric is phrase matching.
 - The word-problem study confounds prompt and show-work, uses different access tiers, and runs once.
 - The faithfulness study is 14B only, with small gains, no seeds and keyword-detected hints.
+- No evidence behind the 1000-token threshold; the two budget values in the chapter disagree.
 
 ## See Also
 - [[Chain of Thought]] — supersedes (for reasoning-model endpoints, manual CoT is replaced by effort settings)
@@ -122,3 +127,4 @@ Each item gives its setup; figures are (self-reported) by the paper unless noted
 - [[MAKER Million-Step Decomposition]] — related (small non-reasoning models for single steps)
 - [[MVoT Multimodal Visualization of Thought]] — related
 - [[Prompt-Induced Waste in Coding Agents]] — instance-of (coding-agent prompt waste benchmark)
+- [[PlanBench o1 Evaluation]] — related (planning results for o1)

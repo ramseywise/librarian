@@ -2,10 +2,11 @@
 title: Memory Store Operations
 tags: [memory, infra, reference]
 summary: "Running a memory store in production — caching and async indexing for latency, memory hit rate as the metric that says whether memory is earning its cost, and the deletion requirement that makes memory a compliance surface rather than a cache."
-updated: 2026-10-30
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--memory.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--memory.md
+  - data/raw/papers/2026-11-08-lakshmanan-hapke-genai-design-patterns-ch08-addressing-constraints.md
 ---
 
 # Memory Store Operations
@@ -119,6 +120,13 @@ overload is the context budget, staleness is [[Memory Decay Weighting]], conflic
 E of [[Memory Lifecycle]]. Worth noting that the stale-context mitigation says **archive
 while maintaining version history**, not delete: the same rollback-friendly property,
 arrived at again from the operations side.
+
+## Four memory types and Mem0 (Pattern 28)
+
+Chapter 8 divides long-term memory into working (current session), episodic (all messages stored and searched, mostly by recency), procedural (system instructions and user-profile attributes) and semantic (content-based). The authors advise preferring semantic over episodic memory since fetching raw messages costs latency and debugging cache misses is hard (their claim, no data). Practices: cap working memory by tokens while keeping whole message pairs and the system prompt; save memories from a background thread; deploy Mem0 as its own service. The Mem0 example embeds with text-embedding-3-small (1536 dimensions) into ChromaDB with gpt-4o-mini at temperature 0.1.
+
+Limits of this section:
+- Design guidance and a worked example only; no retrieval or accuracy measurements.
 
 ## See Also
 - [[Memory Lifecycle]] — extends (running the lifecycle in production)

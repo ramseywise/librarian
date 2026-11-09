@@ -2,7 +2,7 @@
 title: Eval Metric Interpretation Pitfalls
 tags: [eval, llm, concept]
 summary: "Ways a correct-looking eval number misleads — flat headlines hiding cancelling slice moves (Simpson's paradox), dropped errored rows shrinking the denominator, ratio metrics whose denominator moves, novelty effects — and the rule: count errors and refusals as failures or report them separately."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--09-reading-results.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--12-failure-modes.md
@@ -87,3 +87,4 @@ Optimize the target; test several doses, not just on/off, to see the dose–resp
 - [[Text Metrics Beyond N-gram Overlap]] — related (embedding and learned replacements for word overlap)
 - [[Summary Factual Consistency Metrics]] — related (source-grounded checks in place of reference overlap)
 - [[Perplexity and Bits-per-Byte]] — related (the intrinsic language-model metric and its units)
+- [[WikiQA]] — related (question-level scoring when no answer exists)

@@ -2,7 +2,7 @@
 title: Dependency Injection for LLM Chains
 tags: [harness, pattern]
 summary: "Pass each step of an LLM chain in as a function argument whose default is the real call, so one step can be tested against a mock while the others run and so a model swap touches one function; Lakshmanan and Hapke present it as the alternative to vibe-checking a nondeterministic pipeline."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-lakshmanan-hapke-genai-design-patterns-ch06-improving-reliability.md
   - data/raw/papers/2026-11-06-lakshmanan-hapke-genai-design-patterns-ch10-composable-agentic-workflows.md
@@ -30,7 +30,7 @@ The problem the authors name: LLM steps are nondeterministic, hosted models chan
 
 The source is a book chapter whose examples are single illustrative runs with no benchmark or ablation, so this page records a design pattern and its stated rationale, not evidence that it reduces defects.
 
-## Hardening a notebook engine (Rothman, Context Engineering for Multi-Agent Systems, ch. 5)
+## Hardening a notebook engine (ch. 5)
 
 The chapter splits a prototype planner-executor notebook into modules with injected clients, model names and namespaces, logging in place of prints, and retries (random exponential wait of 1 to 60 seconds, 6 attempts) that log and re-raise. It reports that agents returning raw strings broke a downstream Writer until outputs were wrapped in keyed dicts, and that taking the code out of the notebook brought implicit global dependencies to light. The only measurements are two single-run wall-clock times (148.33 and 151.31 seconds). It has no tests or evals, errors halt the plan with no fallback beyond retries, and the summary's "fault-tolerant" label is stronger than that supports.
 

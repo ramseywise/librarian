@@ -2,7 +2,7 @@
 title: LongICLBench and Many-Shot ICL Scaling
 tags: [prompting, concept]
 summary: Two 2024 studies of in-context learning with hundreds to thousands of demonstrations. Many-shot ICL keeps improving on classification up to about 1,000 examples, while LongICLBench shows most models collapse when the label space is large (self-reported).
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-bertsch-2024-context-learning-long-context-models.md
   - data/raw/papers/2026-11-06-li-2024-long-context-llms-struggle-long.md
@@ -31,7 +31,7 @@ Six classification sets with large label spaces (GoEmotions with 28 labels, BANK
 
 ## Hybrid demonstration selection (Golchin et al., 2025)
 
-Similarity selection beats random demonstrations but breaks prompt caching. The paper keeps s=20 per-query similar demonstrations and adds a large cached block of random or k-means-chosen ones. Setup: Gemini 1.5 Pro and Gemini 2.0 Flash, temperature 0; ANLI r3, TREC, GSM Plus and MetaTool; 1,000 test samples each; 50 to 200 total shots. The hybrids match or beat similarity-only at proportional cost nearly two times lower at 50 shots and ten times lower at 200 shots, where cost is derived from attention complexity, not measured dollars or latency (self-reported). On TREC at 50 shots the k-means hybrid gains over 11% (Flash) and over 6% (Pro) against k-means-with-mapping at half the cost; the paper does not say whether this is absolute or relative. In a 100-demonstration pool on three BBH tasks, mixing similar and random demonstrations gained about 3% to 6% over the full pool.
+Similarity selection beats random demonstrations but breaks prompt caching. The paper keeps s=20 per-query similar demonstrations and adds a large cached block of random or k-means-chosen ones. Setup: Gemini 1.5 Pro and Gemini 2.0 Flash, temperature 0; ANLI r3, TREC, GSM Plus and MetaTool; 1,000 test samples each; 50 to 200 total shots. The hybrids match or beat similarity-only at proportional cost nearly two times lower at 50 shots and ten times lower at 200 shots, where cost is derived from attention complexity, not measured dollars or latency (self-reported). On TREC at 50 shots the k-means hybrid gains over 11% (Flash) and over 6% (Pro) (self-reported) against k-means-with-mapping at half the cost; the paper does not say whether this is absolute or relative. In a 100-demonstration pool on three BBH tasks, mixing similar and random demonstrations gained about 3% to 6% over the full pool (self-reported).
 
 Limits: only Gemini models and up to 200 shots; the k-means variant needs the test set up front and its cluster count was tuned on test data; no variance reported. The paper argues repetition helps in the low-data regime, whereas Agarwal et al. found it does not (reported as a contradiction, not resolved).
 

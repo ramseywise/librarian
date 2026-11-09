@@ -2,7 +2,7 @@
 title: Simulated User Evaluation
 tags: [eval, llm, agents, pattern]
 summary: "Evaluate multi-turn agents with an LLM playing the user toward a goal — realistic only with progressive information disclosure (known facts plus rules for when to reveal them), optionally dual-control where the user acts on shared state — graded per turn and per conversation, versus canned conversations that cannot see compounding errors."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--06-evaluating-agents.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--references.md
@@ -74,3 +74,4 @@ and **interaction protocol** (single-shot, multi-turn, simulated user, dual cont
 - [[Silicon Sampling and Algorithmic Fidelity]] — related (backstory-conditioned model as a simulated respondent, group-level match only)
 - [[MIMESIS User Simulator Training]] — related (simulator realism against real users, and simulators as training environments)
 - [[Lost in Conversation (Sharded Multi-Turn Simulation)]] — related
+- [[Generative Agents Memory Stream]] — related (simulated social behaviour)

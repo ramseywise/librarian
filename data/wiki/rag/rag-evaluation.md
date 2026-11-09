@@ -2,7 +2,7 @@
 title: RAG Evaluation
 tags: [rag, eval, concept]
 summary: Three-tier evaluation architecture for RAG pipelines — golden datasets, LLM-as-judge, failure clustering, ragas vs deepeval, and retrieval lift measurement.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
   - data/raw/claude-docs/playground/docs/archived/rag-agent-template-research.md
@@ -285,3 +285,16 @@ This is especially important for edge cases — judge prompts optimized on avera
 - [[SummHay Benchmark]] — instance-of (summarisation over a haystack with insight coverage and citation scoring)
 - [[Sufficient Context Autorater]] — instance-of (labelling whether retrieved context suffices to answer)
 - [[FRAMES Benchmark]] — instance-of (multi-hop factual questions scoring retrieval and reasoning together)
+- [[ARES Automated RAG Evaluation]] — instance-of (fine-tuned judges plus prediction-powered inference)
+- [[ELI5 Long-Form QA Dataset]] — instance-of (long-form answers benchmark)
+- [[FEVER Fact Verification Dataset]] — instance-of (claim verification benchmark)
+- [[LongCite and LongBench-Cite]] — instance-of
+- [[RAGEval and DragonBall]] — instance-of
+- [[FollowIR Instruction-Following Retrieval Benchmark]] — instance-of
+- [[ClashEval Prior Versus Context Benchmark]] — instance-of
+- [[ALCE Citation Benchmark]] — instance-of
+- [[KILT Benchmark]] — instance-of
+- [[LFQA Attribution and SALAD]] — instance-of
+- [[ALCUNA New Knowledge Benchmark]] — instance-of
+- [[HotpotQA]] — related (multi-hop question answering with supporting-fact scoring)
+- [[WikiQA]] — related (answer selection with unanswerable questions)

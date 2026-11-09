@@ -2,7 +2,7 @@
 title: PIE Performance-Improving Edits Benchmark
 tags: [eval, project]
 summary: PIE is a dataset of more than 77K pairs of slow and fast C++ programs timed in the gem5 simulator; the paper reports that fine-tuned and retrieval-prompted models reach multi-fold speedups, that chain-of-thought prompting adds little, and that conditioning on speed lowers correctness.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-shypula-2023-learning-performance-improving-code-edits.md
 ---
@@ -17,7 +17,7 @@ All figures are (self-reported); the metric is the best speedup over eight sampl
 
 - GPT-3.5 fine-tuned on high-quality pairs plus self-play: 6.86x, with 87.63% of programs optimized, against 3.66x for human programmers.
 - CodeLlama 13B fine-tuned with performance conditioning: 5.65x.
-- GPT-4 with retrieved examples (K=4): 3.93x. Chain-of-thought prompting: 1.60x.
+- GPT-4 with retrieved examples (K=4): 3.93x. GPT-3.5 with chain-of-thought prompting: 1.60x.
 - Performance conditioning lowers correctness, 70.96 against 85.07.
 - The extraction records a phantom speedup of 1.12x when timing with hyperfine, and 42.8M gem5 simulations to build the measurements.
 

@@ -2,9 +2,13 @@
 title: DIET Architecture
 tags: [foundations, concept]
 summary: Dual Intent and Entity Transformer (Rasa, 2020) — a multi-task NLU architecture for joint intent classification and entity recognition that outperforms fine-tuned BERT while being 6x faster to train, using plug-and-play pre-trained embeddings with sparse features.
-updated: 2026-11-04
+updated: 2026-11-09
 sources:
   - data/raw/pdfs/2020-04-01-rasa-dual-intent-entity-transformer.md
+  - data/raw/papers/2026-11-07-liu-2016-attention-based-recurrent-neural-network.md
+  - data/raw/papers/2026-11-07-goo-2018-slot-gated-modeling-joint-slot.md
+  - data/raw/papers/2026-11-07-chen-2019-bert-joint-intent-classification-slot.md
+  - data/raw/papers/2026-11-08-bunk-2020-diet.md
 ---
 
 # DIET Architecture
@@ -69,6 +73,22 @@ Sparse + ConveRT: 90.18% intent F1, 86.04% entity F1, **10 hours training**
 
 ### Joint training helps entities, slightly hurts intents
 Entity F1 drops from 86.04% to 82.57% when trained separately — strong correlation between intents and entities (e.g., `play_game` intent always co-occurs with `game_name` entity).
+
+### Further numbers from the paper (self-reported)
+- Fine-tuned BERT took 60 hours against 10 hours for frozen ConveRT plus sparse features, over all 10 folds.
+- Sparse features with the mask loss beat HERMIT on intents (88.19 against 87.55).
+- Frozen BERT did worse than GloVe.
+- Joint training improved entities (86.04 against 82.57) and slightly hurt intents.
+- On ATIS and SNIPS the model lands within 1 to 2 points of Joint BERT; inference is about 80 ms.
+
+## Earlier joint intent and slot models
+DIET's two-task setup follows earlier joint models of intent and slot tags, all self-reported on ATIS and Snips:
+- **Liu and Lane 2016**, an attention-based recurrent network: joint BiRNN on ATIS 95.98 slot F1 and 1.79% intent error, from best runs, with gains over independent models.
+- **Slot gate (Goo et al. 2018)**: a gate lets the intent representation condition slot prediction. Frame accuracy 78.9 to 82.2 on ATIS and 74.1 to 75.5 on Snips, averaged over 20 runs, hidden size 64.
+- **Joint BERT (Chen et al. 2019)**: against the slot-gated model, Snips slot F1 +8.2 and frame accuracy 75.5 to 92.8; ATIS intent +3.4, slot F1 +0.9, frame accuracy 82.6 to 88.2. Its baselines are copied from Goo et al., with no variance and an ablation on Snips only.
+
+## Limits
+- All figures come from the authors' own experiments, mostly on one benchmark with ten folds. The paper gives no parameter counts, no learning-rate schedule, dropout or seeds, and no statistical test.
 
 ## Practical Implications
 

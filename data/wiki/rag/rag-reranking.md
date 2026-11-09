@@ -2,12 +2,13 @@
 title: RAG Reranking
 tags: [rag, concept]
 summary: Reranking strategies for RAG pipelines — cross-encoder vs LLM listwise, confidence scoring, and when each is appropriate.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/claude-docs/playground/docs/archived/rag-tradeoffs.md
   - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
   - data/raw/claude-docs/playground/docs/archived/rag-agent-template-research.md
   - data/raw/agent-skills/langchain-rag/references/rag-strategies.md
+  - data/raw/papers/2026-11-08-lakshmanan-hapke-genai-design-patterns-ch04-adding-knowledge-syncopation.md
 ---
 
 # RAG Reranking
@@ -75,6 +76,13 @@ Too many into reranker → latency spike. Too few → no gain over CRAG grading 
 
 **Reranker caveat:** at small corpus sizes (<1K chunks), cross-encoder reranking can *degrade* quality by overfitting to surface-level similarity. Test on actual corpus before committing to reranking.
 
+## Node postprocessing options (Lakshmanan and Hapke, ch. 4)
+
+The chapter's Pattern 10 inserts a step between retrieval and generation. Options: use a reranker, LLM-based or fine-tuned, because an embedding must squeeze a chunk into one vector; merge two retrievers when the store lacks hybrid search; compress each chunk to the query-relevant text; filter obsolete chunks by metadata such as latest year rather than pairwise LLM checks (N*(N-1) calls versus N-1 when each chunk is checked only against the first); add conversation summary and user history for personalization. Each model call per node raises latency and cost; a single structured-output call can do compression, disambiguation and scoring together, which saves calls but excludes a dedicated fine-tuned reranker. In a geology example (two old textbooks, one query) top_k=2 and top_k=4 both answered wrongly, and compressing plus reranking fixed it.
+
+Limits of this section:
+- Every example is one illustrative query on one corpus; no metric or baseline. The claim that rerankers beat embedding models is uncited.
+
 ## See Also
 - [[Text-to-SQL as a Retrieval Strategy]] <!-- auto-linked -->
 - [[Agentic RAG — Advanced Patterns]] <!-- auto-linked -->
@@ -90,3 +98,8 @@ Too many into reranker → latency spike. Too few → no gain over CRAG grading 
 - [[Pairwise Ranking Prompting (PRP)]] — instance-of (prompted pairwise comparison as the reranker)
 - [[RankZephyr Listwise Reranker Distillation]] — instance-of (an open listwise reranker distilled from GPT models)
 - [[RAG Survey Taxonomies]] — related (survey vocabulary for re-ranking versus filtering)
+- [[monoBERT duoBERT Multi-Stage Ranking]] — instance-of (pointwise then pairwise BERT rerankers)
+- [[KnowledGPT Unsupervised Knowledge Selection]] — alternative-to (learned sentence selection)
+- [[RankRAG]] — instance-of (generator also reranks)
+- [[FollowIR Instruction-Following Retrieval Benchmark]] — related (benchmark for instruction-following in rankers)
+- [[HtmlRAG HTML as Retrieval Format]] — related (prunes HTML blocks by embedding and generative scores)

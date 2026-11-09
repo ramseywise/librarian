@@ -2,7 +2,7 @@
 title: UL2 Mixture of Denoisers
 tags: [foundations, concept]
 summary: "UL2 pre-trains one model on a mixture of three denoising objectives (regular, sequential, extreme) tagged with mode tokens, arguing the objective matters more than encoder-decoder versus decoder-only; the paper reports gains over T5 and GPT-like baselines and a 20B model (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-tay-2022-ul2.md
 ---
@@ -46,3 +46,5 @@ All numbers are the paper's own (self-reported); ablations are single runs.
 - [[Chain-of-Thought Prompting]] — related (CoT results at 20B)
 - [[Self-Consistency]] — related
 - [[Mixture-of-Transformers]] — related
+- [[PEGASUS Gap-Sentence Pretraining]] — related (another pre-training objective study)
+- [[PaLI and PaLI-X Jointly Scaled VLMs]] — related

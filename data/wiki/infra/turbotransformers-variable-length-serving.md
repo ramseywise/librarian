@@ -2,7 +2,7 @@
 title: TurboTransformers Variable-Length Serving
 tags: [infra, pattern]
 summary: "TurboTransformers (PPoPP 2021) serves encoder transformers on GPUs with fused kernels, a sequence-length-aware memory allocator and a dynamic-programming batch scheduler; the paper reports gains on variable-length BERT but parity or losses against tuned fixed-length runtimes."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-fang-2021-turbotransformers.md
 ---
@@ -13,8 +13,8 @@ TurboTransformers targets one problem: transformer requests arrive with differen
 
 ## Mechanisms
 
-- Kernel fusion and batch reductions: non-GEMM kernels between matrix multiplies are fused, and Softmax and LayerNorm use a multi-element warp reduction. The motivating profile (Tesla V100, BERT) found PyTorch spending 38.2% of its time outside matrix multiplies at batch 20 and length 128, and leaving the GPU idle for 80.64% of a batch-1, length-40 run, which the paper attributes to kernel launch overhead.
-- Sequence-length-aware allocator: once a request's length is known, tensor offsets are computed once from the computation graph and packed into chunks. Allocating on demand left 50% of compute idle on a Tesla M40 (batch 20, length 128). Offset scheduling cost 0.07% to 5.77% of inference latency (self-reported); the paper says PyTorch and onnxruntime caches grow after a length-460 request and do not shrink.
+- Kernel fusion and batch reductions: non-GEMM kernels between matrix multiplies are fused, and Softmax and LayerNorm use a multi-element warp reduction. The motivating profile (Tesla V100, BERT) found PyTorch spending 38.2% of its time outside matrix multiplies at batch 20 and length 128 (self-reported), and leaving the GPU idle for 80.64% of a batch-1, length-40 run (self-reported), which the paper attributes to kernel launch overhead.
+- Sequence-length-aware allocator: once a request's length is known, tensor offsets are computed once from the computation graph and packed into chunks. Allocating on demand left 50% of compute idle on a Tesla M40 at batch 20, length 128 (self-reported). Offset scheduling cost 0.07% to 5.77% of inference latency (self-reported); the paper says PyTorch and onnxruntime caches grow after a length-460 request and do not shrink.
 - Dynamic-programming batch scheduler: queued requests are sorted by length and batch boundaries come from dynamic programming over a table of measured costs, so that short requests are not padded to the length of long ones. In the paper's worked example (five requests of lengths 17, 18, 52, 63 and 77) three batches beat one batch of five, a 35% throughput gain (illustrative, 20.62 ms against 15.24 ms in the figure).
 
 ## Reported results (self-reported)

@@ -2,14 +2,14 @@
 title: Symbol Tuning
 tags: [foundations, pattern]
 summary: Finetuning on in-context input-label pairs whose labels are replaced by arbitrary symbols and whose instructions are removed, so the model must infer the task from exemplars; helps most when prompts carry no meaningful labels.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-wei-2023-symbol-tuning-improves-context-learning.md
 ---
 
 # Symbol Tuning
 
-Symbol tuning finetunes a model on in-context classification examples in which the natural-language labels are swapped for arbitrary symbols (integers, character strings, words; about 30k symbols) and instructions are dropped. The model can only succeed by reading the input-label mapping from the exemplars. Setup in the paper: 22 classification datasets with 2 to 10 exemplars per class; Flan-PaLM at 8B, 62B and 540B plus a continued-training 62B variant.
+Symbol tuning finetunes a model on in-context classification examples in which the natural-language labels are swapped for arbitrary symbols (integers, character strings, words; about 30k symbols) and instructions are dropped. The model can only succeed by reading the input-label mapping from the exemplars. Setup in the paper: 22 classification datasets with 2 to 10 exemplars per class; the 8B, 62B and 540B Flan-PaLM models and Flan-cont-PaLM-62B.
 
 ## Reported results (self-reported)
 
@@ -28,7 +28,7 @@ Evaluation covers 11 tasks unseen in tuning, with four exemplars per class and n
 
 - The extraction skimmed appendices B to E and made no claims from per-task tables or prompts. Venue is not printed; treat as a preprint.
 - Only Flan-PaLM family models, classification tasks and at most 100 eval examples per task; the large gains shrink with scale on algorithmic tasks.
-- Small models can be hurt, and the authors attribute that to overfitting or treating all labels as arbitrary without testing it. The exemplar-count figure has no printed numbers.
+- Small models can be hurt (Flan-PaLM-8B dropped with relevant labels); the extraction gives no tested explanation. The exemplar-count figure has no printed numbers.
 
 ## See Also
 

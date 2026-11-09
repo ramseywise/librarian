@@ -2,7 +2,7 @@
 title: Self-Consistency
 tags: [prompting, llm, concept]
 summary: Sample several chain-of-thought completions at non-zero temperature and take the majority answer — reasoning paths that converge are more trustworthy than any single greedy path, at N× cost and only when there is a single extractable answer to vote on.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--03-core-techniques.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--06-chaining-and-workflows.md
@@ -43,7 +43,7 @@ Mirzaei et al. (2026) compared self-consistency with reflection-style methods at
 
 ## Prompting versus tools and abstention (8B study)
 
-Barkley and van der Merwe (2024) ran an 8B Llama-3 instruct model quantised to Q6_K, served through Ollama and LangChain, three runs per setting. Self-consistency at temperature 0.8 was best on GSM8K: 83.89 for SC-CoT against 77.08 for a control (self-reported). On TriviaQA, a Chat Protect method reached 82.49% on the 571 of 1000 questions it answered and cut hallucinated answers from 399.67 to 100 (self-reported). A ReAct agent on Llama-3.1-8B scored 60.23 against 83.47 for a prompting setup on GSM8K. Limits: one 8B model, no statistical tests, agent and prompting setups differ, and abstaining methods are not comparable without their Correct counts.
+Barkley and van der Merwe (2024) ran an 8B Llama-3 instruct model quantised to Q6_K, served through Ollama and LangChain, three runs per setting. On GSM8K, SC-CoT at temperature 0.5 scored 83.89, close to plain SC at 83.80, against a 77.08 control (self-reported); the source gives no figure for SC at 0.8. On TriviaQA, a Chat Protect method reached 82.49% on the 571 of 1000 questions it answered and cut hallucinated answers from 399.67 to 100 (self-reported). A ReAct agent on Llama-3.1-8B scored 60.23 on GSM8K, against 83.47 for a no-tool control agent on the same model. Limits: one 8B model, no statistical tests, agent and prompting setups differ, and abstaining methods are not comparable without their Correct counts.
 
 ## Selecting among samples without a vote (RankPrompt, PEDAL)
 
@@ -76,3 +76,6 @@ Small question sets, three small models, and several internal count inconsistenc
 - [[CoT-Decoding]] — alternative-to
 - [[Chain-of-Thought Prompting]] — related (the sampled chains it votes over)
 - [[Multi-Expert Prompting]] — alternative-to
+- [[RECITE Recitation-Augmented Generation]] — related
+- [[Multiagent Debate for Factuality and Reasoning]] — related
+- [[MultiMedQA and Med-PaLM]] — instance-of (used as a deferral signal)

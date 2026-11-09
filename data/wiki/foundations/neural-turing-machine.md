@@ -2,7 +2,7 @@
 title: Neural Turing Machine
 tags: [foundations, concept]
 summary: "A controller network coupled to a memory matrix through differentiable read and write heads, using content-based and location-based addressing, trained by gradient descent to learn copy, recall and sort; on small synthetic tasks it generalised to longer inputs where an LSTM did not (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-graves-2014-neural-turing-machines.md
 ---
@@ -34,12 +34,13 @@ Training used RMSProp on five synthetic algorithmic tasks, compared with a three
 ## Limits
 
 - The authors call the experiments preliminary: they use small synthetic tasks and no real-world data. The text gives no seeds, no repeated runs, no error bars, and omits batch size, step counts and hardware.
-- Copy generalisation is capped by the 128 memory locations. The authors attribute the failure to count repeats beyond the trained range to the numeric repeat encoding.
-- Descriptions of the learned algorithms (a heap-sort hypothesis, pseudocode for copy) come from inspection and are phrased as belief, not proof.
-- The only baseline is the LSTM, which is much larger in parameters than the NTM on most tasks.
+- The extraction notes that copy generalisation is capped by the 128 memory locations. The authors attribute the failure to count repeats beyond the trained range to the numeric repeat encoding.
+- The extraction notes that descriptions of the learned algorithms (a heap-sort hypothesis, pseudocode for copy) come from inspection and are phrased as belief, not proof.
+- The extraction notes the only baseline is the LSTM, which is much larger in parameters than the NTM on most tasks.
 
 ## See Also
 - [[End-to-End Memory Networks]] — related (a closely related continuous memory; content-only addressing)
 - [[Recurrent Memory Transformer (RMT)]] — related (a later route to external memory over long inputs)
 - [[LSTM Forget-Gate Bias and Vanishing Gradients]] — related (the baseline and one controller)
 - [[Seq2seq Bottleneck and Attention]] — related (the attention idea the heads build on)
+- [[Stored Instruction Computer LLM Memory Universality]] — related

@@ -2,7 +2,7 @@
 title: WaveNet — Autoregressive Audio Generation
 tags: [foundations, voice, concept]
 summary: WaveNet (van den Oord et al., 2016) is a deep autoregressive generative model for raw audio waveforms using dilated causal convolutions — achieved state-of-the-art TTS naturalness (MOS >4.0) and demonstrated multi-speaker conditioning, music generation, and speech recognition from raw audio.
-updated: 2026-07-19
+updated: 2026-11-09
 sources:
   - data/raw/pdfs/2016-09-12-wavenet.md
 ---
@@ -82,8 +82,13 @@ WaveNet established that autoregressive neural models can generate high-quality 
 - The autoregressive generation paradigm shared with GPT-family LLMs
 - Conditioning mechanisms (global/local) used in controllable generation
 
+Related speech generators are compared on [[Speech and Audio Generation and Recognition]].
+
 ## See Also
 - [[Dilated Causal Convolutions]] — extends
+- [[Speech and Audio Generation and Recognition]] — related (later codec-token and flow-matching audio generators)
 - [[Voice Agent Patterns]] — instance-of (modern voice agents build on WaveNet lineage)
 - [[Transformer Architecture]] — alternative-to (autoregressive but attention-based vs convolution-based)
 - [[LLM Fundamentals Interview Study Guide]] — instance-of
+- [[SoundStream Neural Audio Codec]] — related
+- [[VALL-E Neural Codec Language Model TTS]] — related

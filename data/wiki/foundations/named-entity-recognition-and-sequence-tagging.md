@@ -2,7 +2,7 @@
 title: "Named Entity Recognition and Sequence Tagging"
 tags: [foundations, concept]
 summary: "NER is sequence labelling with BIO tags; a CRF learns tag-transition grammar, closed lists beat models via rules, and evaluation must be entity-level because O dominates tokens."
-updated: 2026-11-04
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--03-nlp--notes--05-semantic-analysis-and-ner.md
 ---
@@ -47,3 +47,4 @@ Exact span and type match (as `seqeval` does), not token level, because O is mos
 - [[Semantic Analysis, WordNet and Lexical Ambiguity]] — related
 - [[Text Preprocessing and the Stop-Word Negation Trap]] — prerequisite-for
 - [[Regularisation as a Prior]] — related (CRF penalties)
+- [[DIET Architecture]] — related (joint intent and slot models)

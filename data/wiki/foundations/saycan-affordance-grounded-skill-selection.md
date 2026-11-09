@@ -2,7 +2,7 @@
 title: SayCan Affordance-Grounded Skill Selection
 tags: [foundations, concept]
 summary: "SayCan picks a robot's next skill by multiplying a language model's score for the skill text by a learned value-function affordance for the current scene; with PaLM 540B on 101 instructions it planned correctly 84% of the time and executed 74% in a mock kitchen (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-ahn-2022-do-as-i-can-not.md
 ---
@@ -73,3 +73,5 @@ Plan success means the chosen skills are right, whether or not they execute.
 - [[Agent Fundamentals]] — related (the tool-using loop with a grounded action set)
 - [[Chain of Thought]] — related (used for the negation case study)
 - [[KnowNo Conformal Ask-for-Help]] — extends (adds a calibrated decision to ask a human)
+- [[RT-1 Robotics Transformer]] — related
+- [[PaLM-E Embodied Multimodal Language Model]] — related

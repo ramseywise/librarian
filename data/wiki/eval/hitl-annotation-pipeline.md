@@ -2,7 +2,7 @@
 title: HITL Annotation Pipeline
 tags: [eval, concept]
 summary: Human-in-the-loop annotation workflow for conversation data — two-queue structure (random + edge case), inter-annotator agreement as quality gate, and feedback routing to eval dataset vs failure taxonomy.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-05-veselovsky-2023-artificial-artificial-artificial-intelligence.md
   - data/raw/linear/2026-04-24-evaluation-and-improvement.md
@@ -118,3 +118,5 @@ Limits: the gold standard is the trained annotators, and accuracy counts only te
 - [[Snapshot the Judged Value on the Verdict Row]] — extends (verdict rows for pre-canonical or mutable subjects)
 - [[LangSmith Platform]] — instance-of (annotation queues as the review surface)
 - [[Silicon Sampling and Algorithmic Fidelity]] — related (a model standing in for human respondents, as here for human labelers)
+- [[Dynabench]] — related (human validation of model errors)
+- [[ChatGPT Zero-Shot NLP and Annotation Studies]] — related (model versus human labelling)

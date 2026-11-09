@@ -2,7 +2,7 @@
 title: LC-Boost Short-Context Processing of Long Inputs
 tags: [context, pattern]
 summary: "LC-Boost has a short-context LLM walk a long input chunk by chunk, choosing actions such as retrieve, append and merge to accumulate evidence before answering; with a 4K working context it led on multi-document QA but not on code completion, and cost more tokens on aggregation tasks (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-qian-2024-long-llms-necessity-long-context.md
 ---
@@ -31,9 +31,9 @@ Twelve datasets, mostly LongBench, with GPT-3.5-turbo-16K as the base.
 ## Limits
 
 - The authors concede some tasks may need the whole context, where LC-Boost may fail. Only GPT-3.5 was used as base, because the open-source models lacked zero-shot instruction following.
-- There are no seeds, variance or significance tests, and chunk size, top-k and decoding settings go unstated, as does any code release. The self-constructed set has 32 queries.
-- The theory depends on assumptions, namely independent chunks and optimal compression, which seldom hold in practice.
-- The energy comparison pits Llama2-7B-128K against Llama2-7B-chat-4K, different models, and includes multi-GPU effects; no numbers are in the text.
+- The extraction notes there are no seeds, variance or significance tests, and that chunk size, top-k and decoding settings go unstated, as does any code release. The self-constructed set has 32 queries.
+- The extraction notes that the theory depends on assumptions, namely independent chunks and optimal compression, which seldom hold in practice.
+- The extraction notes that the energy comparison pits Llama2-7B-128K against Llama2-7B-chat-4K, different models, and includes multi-GPU effects; the text gives no numbers.
 
 ## See Also
 - [[Long-Context Prompting]] — related (the brute-force alternative this compares with)

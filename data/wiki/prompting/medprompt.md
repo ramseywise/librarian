@@ -2,7 +2,7 @@
 title: Medprompt
 tags: [prompting, pattern]
 summary: Medprompt combines nearest-neighbour few-shot exemplars, self-generated chain-of-thought and a choice-shuffle ensemble to push GPT-4 past specialist medical models on multiple-choice benchmarks.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-nori-2023-can-generalist-foundation-models-outcompete.md
 ---
@@ -46,3 +46,5 @@ Choice shuffling is meant to counter position bias and add diversity beyond temp
 - [[Self-Consistency]] — prerequisite-for
 - [[LLM Judge Biases]] — related (position bias, the problem choice shuffling targets)
 - [[MEDEC]] — related
+- [[PubMedQA]] — related (PubMedQA is one of its evaluation sets)
+- [[MultiMedQA and Med-PaLM]] — related (another medical QA prompting result)

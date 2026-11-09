@@ -2,7 +2,7 @@
 title: Sakana Fugu Learned Orchestration
 tags: [graph, concept]
 summary: "Sakana's Fugu trains a small orchestrator over a pool of three frontier models, either to pick one worker per input or (Fugu-Ultra) to write a workflow with an access list per step; the report claims best results on SWE-Bench Pro and Terminal Bench 2.1 but runs no ablations (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-tang-2026-sakana-fugu-technical-report.md
 ---
@@ -32,7 +32,7 @@ Vendor technical report from Sakana AI's Fugu team (arXiv 2606.21228, 2026), not
 - "State of the art" is claimed against publicly accessible models only. Model names and benchmark versions are mid-2026.
 
 ## See Also
-- [[Conductor Learned Orchestration]] — extends (Fugu-Ultra builds on the Conductor RL workflow orchestrator)
+- [[Conductor Learned Orchestration]] — prerequisite-for (Fugu-Ultra builds on the Conductor RL workflow orchestrator)
 - [[Multi-Agent Topology Patterns]] — prerequisite-for
 - [[Self-MoA Single-Model Aggregation]] — alternative-to (fixed-aggregator mixing)
 - [[Archon Inference-Time Architecture Search]] — related

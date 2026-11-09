@@ -2,7 +2,7 @@
 title: Prompt Chaining
 tags: [prompting, llm, agents, concept]
 summary: Decomposing a complex task into simpler prompts with fixed I/O contracts — trading a general/weak prompt for strong single-job steps wired as a pipeline or (by default) a DAG; the boundary case between prompting and harness engineering.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt--prompt-engineering.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--06-chaining-and-workflows.md
@@ -97,10 +97,10 @@ agent architecture.
 
 ## AI Chains: a 2022 study of chaining with visible intermediate data
 
-Wu et al. (CHI '22) call the technique LLM Chaining: a series of model calls, each on a small well-scoped sub-task, with the **data layer** (each step's input and output) visible and editable. They derive eight primitive operations from 73 online demos (Classification, Factual Query, Generation and Ideation, Information Extraction, Rewriting, plus Split Points and Compose Points), each with a prompt template and default temperature. In a within-subject study with 20 people, comparing against a one-prompt Sandbox interface, both on non-dialog LaMDA 137B, two blinded raters preferred the Chaining result in most pairs (the extraction gives no count), and participants rated Chaining higher on thinking through the task, control, transparency and their own results, with collaboration a smaller difference.
+All figures in this section are the paper's own (self-reported). Wu et al. (CHI '22) call the technique LLM Chaining: a series of model calls, each on a small well-scoped sub-task, with the **data layer** (each step's input and output) visible and editable. They derive eight primitive operations from 73 online demos (Classification, Factual Query, Generation and Ideation, Information Extraction, Rewriting, plus Split Points and Compose Points), each with a prompt template and default temperature. In a within-subject study with 20 people, comparing against a one-prompt Sandbox interface, both on non-dialog LaMDA 137B, two blinded raters preferred the Chaining result in most pairs (the extraction gives no count), and participants rated Chaining higher on thinking through the task, control, transparency and their own results, with collaboration a smaller difference.
 
 - Logged behaviour: Sandbox users re-ran the model without changes more often (t = 3.5, p = .001), and edits leaned toward curating existing output (UNDO 18% and CREATE 5% with Chaining; UNDO 45% and CREATE 14% in Sandbox). Completion time did not differ (p = .278).
-- Fifteen of the 20 proposed a change to the default Chain, 11 of them built and ran their own, and nine found Chains more complex.
+- 15 proposed a change to the default Chain, 11 implemented their own, and nine found Chains more complex.
 - In a VegaLite bug-fixing case study the Chain surfaced the broken constraint in every one of 5 test cases but produced a usable fix in just two.
 
 Limits: two researcher-authored Chains on tasks that decompose naturally; tasks with interdependent parts may lose coherence; no cost measurement for the extra calls; the case study is anecdotal (five cases judged by one author); outcome quality is rater preference, not ground-truth accuracy; instruction-tuned and chat models were not tested.

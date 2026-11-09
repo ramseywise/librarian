@@ -2,7 +2,7 @@
 title: GPQA
 tags: [eval, reference]
 summary: "A set of graduate-level biology, physics and chemistry multiple-choice questions written by PhD-level contractors and kept only if experts agree on the answer while skilled non-experts with web access mostly fail; the non-experts reached 34% and the best baseline, GPT-4 few-shot chain of thought, 38.7% on the extended set (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-rein-2023-gpqa.md
 ---
@@ -72,3 +72,4 @@ quality-conditional bonuses. Questions are then sorted into three nested sets:
 - [[Self-Ask Prompting]] — related (the open-book search baseline is built on it)
 - [[AGIEval]] — alternative-to (human-exam questions rather than expert-written ones)
 - [[OlympiadBench]] — related
+- [[Search-o1 Reason-in-Documents]] — related

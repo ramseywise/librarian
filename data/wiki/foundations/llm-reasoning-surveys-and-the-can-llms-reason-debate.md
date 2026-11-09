@@ -10,6 +10,7 @@ sources:
   - data/raw/papers/2026-11-06-kambhampati-2024-can-large-language-models-reason.md
   - data/raw/papers/2026-11-07-wei-2022-emergent-abilities-large-language-models.md
   - data/raw/papers/2026-11-08-li-2025-implicit-reasoning-large-language-models.md
+  - data/raw/papers/2026-11-08-qiao-2023-reasoning-language-model-prompting.md
   - data/raw/papers/2026-11-08-sun-2023-survey-reasoning-foundation-models.md
   - data/raw/papers/2026-11-08-zhu-2025-survey-latent-reasoning.md
 ---
@@ -29,6 +30,8 @@ sources:
 - **Sun et al. (2023), reasoning with foundation models.** Covers over 650 papers with a cut-off around October 2023; its practice lists include demonstration selection, Plan-and-Solve and Adaptive-Consistency.
 - **Wei et al. (2022), emergent abilities.** Chain-of-thought helped on GSM8K only near 1e23 FLOPs (about 100B parameters), instruction finetuning hurt at 8B or smaller, scratchpad use emerged near 9e19 FLOPs, and MMLU stayed near random at about 10B or below (self-reported, from scaling curves). The extraction notes a later critique (Schaeffer, 2023) which this paper predates.
 
+- **Qiao et al. (2023), reasoning with language model prompting.** Sorts prompting work into strategy-enhanced and knowledge-enhanced methods and compares them by model, prompt source and training scenario. It runs no new experiments; the scale statements come from Wei et al. (2022b), namely that below about 100B parameters CoT shows no benefit and can even hurt. The survey speculates that PaLM-62B beating LaMDA-137B points to pre-training data quality, and that Codex beating GPT-3 at the same scale points to code pre-training. Its reading is that CoT only works on large models. The only new material is a few hand-picked ChatGPT cases (a GSM8K item solved, a Last Letter Concatenation item failed); the survey itself notes the GSM8K output matches the gold format, which suggests contamination. It cites Toolformer, ART, Chameleon, Reflexion, Self-Refine and STaR but predates ReAct-era agent surveys and o1-style models.
+
 ## The skeptic position
 
 Kambhampati (2024) is an opinion piece. It cites about 30% GPT-4 accuracy on Blocks World planning (self-reported: IPC-derived instances, GPT-3, 3.5 and 4, run by the author's own group during 2022-23, no instance counts) and a collapse when names are obfuscated, reads this as approximate retrieval rather than reasoning, and reports in the author's lab studies that self-verification made results worse. Its proposed remedy, LLM-Modulo, pairs a generator with an external verifier. It predates reasoning models.
@@ -39,6 +42,7 @@ Kambhampati (2024) is an opinion piece. It cites about 30% GPT-4 accuracy on Blo
 - Patil and Jadon has no selection method and no numbers; the Fig 1 content is image-only.
 - Kambhampati: position paper, numbers from the author's own studies, and later reasoning models are not covered.
 - Ke et al.: relayed figures are not re-checked here.
+- Qiao et al.: conclusions are speculation from existing empirical work (the authors say they may not be macroscopic enough), coverage is mostly 2022, and the ChatGPT cases are anecdotes without counts.
 
 ## See Also
 - [[Chain of Thought]] — prerequisite-for

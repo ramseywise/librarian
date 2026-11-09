@@ -2,7 +2,7 @@
 title: AiScientist File-as-Bus
 tags: [harness, pattern]
 summary: "AiScientist coordinates a long-horizon ML research agent through durable, schema-governed files rather than conversation, keeping orchestration thin; removing the file bus costs far more on later-round refinement than on producing a first runnable result."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-chen-2026-toward-autonomous-long-horizon-engineering.md
 ---
@@ -30,3 +30,4 @@ AiScientist (Chen et al., an April 2026 preprint, revised May) is a hierarchical
 - [[MLE-bench]] — prerequisite-for
 - [[Loop State File]] — prerequisite-for
 - [[Paper-Replication Completion Gate]] — related
+- [[AI Scientist Automated Research Pipeline]] — related

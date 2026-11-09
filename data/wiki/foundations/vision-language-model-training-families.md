@@ -2,7 +2,7 @@
 title: Vision-Language Model Training Families
 tags: [foundations, concept]
 summary: "Most VLMs are built by connecting a pretrained vision encoder to a pretrained LLM and training only the connector (a linear map, an MLP or a Q-Former), which is cheap but inherits the LLM's hallucinations and biases; resolution, encoder capacity and visual data matter more than how the two are joined."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-03-bordes-2024-introduction-vision-language-modeling.md
   - data/raw/papers/2026-11-06-han-2023-imagebind-llm.md
@@ -91,3 +91,45 @@ Setups differ per paper; each number is the authors' own (self-reported).
 - [[MoE-LLaVA and MoE-Tuning]] — instance-of (a sparse mixture-of-experts vision-language model)
 - [[Mixture-of-Transformers]] — instance-of (per-modality weights with global attention)
 - [[DoRA Weight-Decomposed Low-Rank Adaptation]] — related (a LoRA variant)
+- [[Visual Instruction Tuning and Tool-Using VLMs]] — extends (compares LLaVA, Emu, SPAE and tool-composition systems)
+- [[LLaVA Visual Instruction Tuning]] — instance-of (linear and MLP projector instruction tuning)
+- [[Emu Generative Pretraining in Multimodality]] — instance-of (regressed visual embeddings with a diffusion decoder)
+- [[SPAE Semantic Pyramid AutoEncoder]] — instance-of (frozen LLM reads images as vocabulary words)
+- [[MedGemma 1.5 Medical Vision-Language Model]] — instance-of (domain adaptation of a general VLM)
+- [[Diffusion and GAN Image Generation]] — related
+- [[Contrastive and Masked Vision-Language Pretraining]] — instance-of (per-method pages and family comparison)
+- [[CLIP Contrastive Language-Image Pretraining]] — instance-of
+- [[ALIGN Noisy Alt-Text Dual Encoder]] — instance-of
+- [[SigLIP Sigmoid Loss for Language-Image Pretraining]] — instance-of
+- [[Florence UniCL Vision Foundation Model]] — instance-of
+- [[ALBEF Align Before Fuse]] — instance-of
+- [[BLIP Bootstrapped Captioning and Filtering]] — instance-of
+- [[SimVLM PrefixLM Pretraining]] — instance-of
+- [[ViLT Patch Projection Vision-Language Transformer]] — instance-of
+- [[ViLBERT Co-Attention Two-Stream Pretraining]] — instance-of
+- [[ImageBind Emergent Cross-Modal Alignment]] — instance-of
+- [[VIOLET Masked Visual-Token Modeling]] — instance-of
+- [[MERLOT Multimodal Script Knowledge]] — instance-of
+- [[InstructBLIP Instruction-Aware Query Transformer]] — instance-of
+- [[MultiInstruct Multimodal Instruction Benchmark]] — instance-of
+- [[LENS Frozen LLM with Vision Modules]] — instance-of
+- [[DreamLLM Interleaved Comprehension and Creation]] — instance-of
+- [[Segment Anything SAM and SA-1B]] — related (segmentation foundation model)
+- [[Swin Transformer Shifted Windows]] — related (vision backbone)
+- [[DALL-E and Parti Autoregressive Text-to-Image]] — related (token-based image generation)
+- [[Speech and Audio Generation and Recognition]] — related (audio counterpart)
+- [[Donut OCR-Free Document Understanding]] — related
+- [[MERLOT Reserve Audio-Video-Text Pretraining]] — related
+- [[Depth Anything Monocular Depth from Unlabeled Data]] — related
+- [[Visual Question Answering Benchmarks]] — related
+- [[LXMERT]] — related
+- [[RA-CM3 Retrieval-Augmented Multimodal Modeling]] — related
+- [[Vision-Language Model Architectures]] — related
+- [[Flamingo Gated Cross-Attention VLM]] — instance-of
+- [[Frozen Visual Prefix Few-Shot Learning]] — instance-of
+- [[GIT Generative Image-to-Text Transformer]] — related
+- [[OBELICS Interleaved Web Document Dataset]] — related
+- [[Multimodal Fusion and Multipurpose Models]] — related
+- [[CogVLM Visual Expert]] — related
+- [[PaLI and PaLI-X Jointly Scaled VLMs]] — related
+- [[Chameleon Mixed-Modal Early Fusion]] — related

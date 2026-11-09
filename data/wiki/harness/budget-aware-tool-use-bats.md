@@ -2,7 +2,7 @@
 title: Budget Tracker and BATS
 tags: [harness, pattern]
 summary: "Showing a tool-using agent its remaining tool-call budget each turn (Budget Tracker), and the fuller BATS loop that adds budget-aware planning and answer verification, changed how a ReAct agent spent search calls on BrowseComp (all self-reported, mostly Gemini-2.5-Pro)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-liu-2025-budget-aware-tool-use-enables.md
 ---
@@ -37,3 +37,4 @@ The authors' reading is that budget awareness changes strategy, broad when budge
 - [[Verification Loops]] — related (the verifier step in BATS)
 - [[Loop Detection and the Two-Retry Rule]] — related (another cap on agent loops)
 - [[Effective Feedback Compute]] — related
+- [[Cost-of-Pass and Efficient Agent Design]] — related

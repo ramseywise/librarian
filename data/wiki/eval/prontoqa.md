@@ -2,9 +2,10 @@
 title: PrOntoQA
 tags: [eval, reference]
 summary: A synthetic first-order-logic question set over fictional ontologies, with unique parseable proofs, used to check chain-of-thought step by step rather than by final label.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-saparov-2022-language-models-greedy-reasoners.md
+  - data/raw/papers/2026-11-06-xu-2024-faithful-logical-reasoning-symbolic-chain.md
 ---
 
 # PrOntoQA

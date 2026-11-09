@@ -2,7 +2,7 @@
 title: ETHICS Benchmark
 tags: [eval, reference]
 summary: "ETHICS is a dataset of over 130,000 scenarios for testing whether a language model predicts everyday moral judgments across justice, deontology, virtue, utilitarianism and commonsense morality; on its adversarially filtered Hard Test every model tested averaged under 50% (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-hendrycks-2020-aligning-ai-shared-human-values.md
 ---
@@ -58,3 +58,5 @@ Setup is fine-tuning on Dev, best run, scores averaged over the five tasks, unle
 - [[Constitutional AI and RLAIF]] — related (an alternative way to specify values to a model)
 - [[TruthfulQA]] — related (another alignment-flavoured benchmark built adversarially against a model)
 - [[Benchmark Prompt Format Sensitivity]] — related
+- [[LLM Trustworthiness Taxonomy]] — related (a social-norm data source)
+- [[MACHIAVELLI Benchmark]] — extends (uses its utility and morality data for harm models)

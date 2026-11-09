@@ -2,14 +2,14 @@
 title: ChatTester Intention Prompt and Compile Repair
 tags: [harness, pattern]
 summary: An LLM unit-test generator that first asks for the method's intention and then repairs compile errors in a bounded loop, built on an empirical study of ChatGPT-generated Java tests.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-yuan-2023-no-more-manual-tests.md
 ---
 
 # ChatTester Intention Prompt and Compile Repair
 
-Yuan et al. (FSE 2024, arXiv v3 of 2305.04207) first study ChatGPT-generated unit tests, then propose ChatTester. The authors built it and report the results.
+Yuan et al. (FSE, Article 76; the arXiv version is v3, 2305.04207) first study ChatGPT-generated unit tests, then propose ChatTester. The authors built it and report the results.
 
 ## Mechanism
 

@@ -2,7 +2,7 @@
 title: Multi-Agent Failure Modes at Scale
 tags: [graph, agents, eval, reference]
 summary: "A single loop fails by not converging; a graph fails mechanically (cycles, deadlocks, races, unbounded fan-out, mis-routing) and through control failures between loops — and swarm-scale faults like correlated errors and Byzantine workers are caught only by independent checks and anchors."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--07-failure-modes-at-scale.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--02-graph-primitives.md
@@ -117,3 +117,4 @@ escalate rather than override), **frozen nodes** (some measurements deliberately
 - [[Role Anchor and Role Drift]] — extends
 - [[Multi-Agent Debate Failure Modes]] — instance-of (debate degrades or wastes compute)
 - [[Reasoning-Trace Disagreement States]] — instance-of (consensus is not evidence of correctness)
+- [[AI Co-Mathematician]] — related (false consensus in review loops)

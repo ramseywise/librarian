@@ -2,7 +2,7 @@
 title: SheetCompressor Spreadsheet Encoding
 tags: [context, pattern]
 summary: "SheetCompressor serializes a spreadsheet for an LLM by keeping rows and columns near structural anchors, inverting the index to value-to-address and aggregating by number format, reaching 24.79x average token compression; Chain of Spreadsheet then detects the table before answering (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-dong-2024-spreadsheetllm.md
 ---
@@ -36,9 +36,9 @@ Table detection uses a test set of 188 spreadsheets with 311 tables, scored by E
 ## Limits
 
 - Cell formatting such as colour, borders and bold goes unused, as it is too token-expensive and models make poor use of it. Natural-language cells get no semantic compression.
-- The QA set is small and its questions each need only one operation. The text mentions no repeated runs, seeds or significance tests, and states no code or data release.
-- Fine-tuned and in-context rows use different GPT-4 versions, the baselines were truncated when over their limits, and baselines did not share budgets with the authors' method.
-- The abstract's headline 78.9% F1 belongs to the variant lacking aggregation, not to the full pipeline with about 25x compression, which scored 0.759.
+- The extraction notes the QA set is small and its questions each need only one operation. The text mentions no repeated runs, seeds or significance tests, and states no code or data release.
+- The extraction notes that fine-tuned and in-context rows use different GPT-4 versions, the baselines were truncated when over their limits, and baselines did not share budgets with the authors' method.
+- The extraction notes that the abstract's headline 78.9% F1 belongs to the variant lacking aggregation, not to the full pipeline with about 25x compression, which scored 0.759.
 
 ## See Also
 - [[Context Window Budgeting]] — related (serialization choices spend the same token budget)

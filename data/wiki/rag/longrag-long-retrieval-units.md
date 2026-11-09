@@ -2,7 +2,7 @@
 title: LongRAG Long Retrieval Units
 tags: [rag, llm, pattern]
 summary: "LongRAG makes the retrieval unit about 4K tokens (whole documents or hyperlink-grouped ones) instead of 100-token passages, so a few units reach recall that took 100 passages and a long-context reader does the extraction."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-jiang-2024-longrag.md
 ---
@@ -33,3 +33,5 @@ LongRAG (arXiv 2406.15319, preprint) shifts the load from retriever to reader. D
 - [[Long-Context Prompting]] — prerequisite-for (the reader side)
 - [[Contextual Retrieval]] — alternative-to (adding context to small chunks instead of enlarging the unit)
 - [[BlockSearch In-Context Retrieval at Million-Token Scale]] — related (retrieval inside the long context instead of long retrieval units)
+- [[LongRAG Dual-Perspective Extractor and Filter]] — related (different paper, similar name)
+- [[DRAG and IterDRAG Inference Scaling]] — related

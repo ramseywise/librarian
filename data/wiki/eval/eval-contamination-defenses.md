@@ -2,7 +2,7 @@
 title: Eval Contamination Defenses
 tags: [eval, llm, pattern]
 summary: "If eval rows reach a model's training data, prompts or index, the score measures memory — public benchmarks fight it with unique multi-source answers, parameterized task templates refilled every run, temporal freshness and canary GUIDs, and each tactic transfers to a private suite."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--03-eval-datasets.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--12-failure-modes.md
@@ -124,3 +124,7 @@ verbatim; scores drop on paraphrased versions.
 - [[BIG-bench]] — instance-of (a canary GUID in every task file)
 - [[Counterfactual Task Variants]] — related (default against counterfactual task conditions)
 - [[Evaluation-Driven Model Selection]] — related (the 13-token overlap rule and reported contamination rates)
+- [[Self-Supervised LLM Evaluation by Text Transformations]] — related (scoring fresh text as a contamination answer)
+- [[Dynabench]] — related (saturation and fresh adversarial data)
+- [[DS-1000]] — instance-of (perturbation as a memorisation probe)
+- [[CCNet Web Crawl Corpus Pipeline]] — related

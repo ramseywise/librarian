@@ -2,7 +2,7 @@
 title: Sufficient Context Autorater
 tags: [rag, eval, llm, pattern]
 summary: "Label each (query, retrieved context) pair as sufficient or not with an LLM autorater, then use that label to split RAG errors into retrieval failures and generation failures and to gate abstention."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-joren-2024-sufficient-context.md
 ---
@@ -43,3 +43,5 @@ Mistral 3 7B with LoRA, 2,000 training examples, with "I don't know" targets on 
 - [[CRAG Retry Logic]] — alternative-to (a retrieval grader that triggers a retry rather than an abstention)
 - [[FreshQA]] — related (one of the three benchmarks the labels were applied to)
 - [[RAG Retrieval Strategies]] — prerequisite-for (what the retrieval half of the split is measuring)
+- [[FILCO Sentence-Level Context Filtering]] — related
+- [[Context-Faithful Prompting]] — related (prompting for faithfulness to given context)

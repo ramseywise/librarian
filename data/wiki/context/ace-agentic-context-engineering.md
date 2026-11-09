@@ -2,7 +2,7 @@
 title: ACE Agentic Context Engineering Playbooks
 tags: [context, pattern]
 summary: "ACE keeps an agent's context as an itemized playbook updated by small merged deltas instead of full rewrites, to avoid brevity bias and context collapse; with DeepSeek-V3.1 it beat prompt optimizers on AppWorld and finance tasks, but degrades without a reliable feedback signal (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-zhang-2025-agentic-context-engineering.md
 ---
@@ -37,9 +37,9 @@ All with DeepSeek-V3.1 in all roles unless stated.
 
 - The authors acknowledge that ACE depends on a reasonably capable Reflector; without reliable feedback (no labels or execution signal) both ACE and Dynamic Cheatsheet can fall below the base model, as in online FiNER.
 - Rich context is not always needed: concise instructions suit HotPotQA and Game of 24 better.
-- There are no seeds, repeats or significance tests, and neither decoding temperature nor max tokens is given. The headline numbers rely on a single backbone across all roles, and the Llama-3.3-70B gains are small (+1.1 to +2.4).
-- The cost claim depends on prompt caching, since evaluation input is 117.4% larger than GEPA's. Context collapse is shown in a single case study, not measured across runs. The leaderboard snapshot is from September 2025.
-- Internal inconsistency: Tables 18 and 19 report different test-normal averages, 70.3 and 67.6, for what looks like one five-round offline setup.
+- The extraction notes there are no seeds, repeats or significance tests, and that neither decoding temperature nor max tokens is given. The headline numbers rely on a single backbone across all roles, and the Llama-3.3-70B gains are small (+1.1 to +2.4).
+- The extraction notes that the cost claim depends on prompt caching, since evaluation input is 117.4% larger than GEPA's, that context collapse is shown in a single case study and not measured across runs, and that the leaderboard snapshot is from September 2025.
+- The extraction notes an internal inconsistency: Tables 18 and 19 report different test-normal averages, 70.3 and 67.6, for what looks like one five-round offline setup.
 
 ## See Also
 - [[Context Engineering]] — prerequisite-for

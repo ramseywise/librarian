@@ -2,7 +2,7 @@
 title: FActScore
 tags: [eval, reference]
 summary: "A long-form factual-precision metric: split a generation into atomic facts and report the share a knowledge source supports; on 183 people biographies it showed ChatGPT falling from 80% to 16% as entities got rarer, and an automatic estimator came within 2% error of the human score (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-min-2023-factscore.md
 ---
@@ -41,3 +41,5 @@ Precision only: the score has no recall term, so abstaining or writing fewer fac
 - [[FACTS Leaderboard]] — alternative-to (a four-part factuality suite averaged into one score)
 - [[Summary Factual Consistency Metrics]] — alternative-to (checks a summary against its own source document, not a knowledge base)
 - [[Generative Search Engine Verifiability Audit]] — related (judges citation support, not fact truth)
+- [[LFQA Attribution and SALAD]] — related
+- [[LLM Hallucination Surveys]] — related (surveyed as an atomic-fact detection method)

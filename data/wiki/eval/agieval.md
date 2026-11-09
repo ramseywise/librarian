@@ -2,7 +2,7 @@
 title: AGIEval
 tags: [eval, reference]
 summary: "A benchmark of 8,062 objective questions from 20 human exams (Gaokao, SAT, law, LSAT, civil service, GRE/GMAT, AMC/AIME) in English and Chinese; GPT-4 averaged 58.4 under zero-shot chain of thought against a human average of 67 (self-reported), but the human figures are not measured on the same items."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-05-zhong-2023-agieval.md
 ---
@@ -71,3 +71,5 @@ five demonstrations.
 - [[Eval Error Bars and Sample Size]] — related
 - [[GPQA]] — alternative-to (expert-written questions in place of exam questions)
 - [[BIG-bench]] — alternative-to (a community-built task set of the same period)
+- [[CLUE Chinese Benchmark]] — related
+- [[SciBench]] — related (college-level exam problems)

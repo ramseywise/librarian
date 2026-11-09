@@ -2,7 +2,7 @@
 title: AgentBench
 tags: [eval, reference]
 summary: "A 2023 benchmark of eight interactive environments for LLMs as agents, scoring 29 models at temperature 0; gpt-4 had the top overall score and Task Limit Exceeded was the most common failure cause (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-liu-2023-agentbench.md
 ---
@@ -39,3 +39,5 @@ One run per model at temperature 0, with no variance reported. Only simple chain
 - [[Holistic Agent Leaderboard (HAL)]] — related (agent evaluation across many benchmarks)
 - [[Text-Game Agent Environments (Jericho, ALFWorld, CALM)]] — related (the ALFWorld environment behind House Holding)
 - [[ComputerRL API-GUI Agent RL]] — related
+- [[API-Bank]] — related
+- [[WebArena]] — related

@@ -2,7 +2,7 @@
 title: PAIR Black-Box Jailbreak Refinement
 tags: [prompting, pattern]
 summary: "PAIR has an attacker LLM rewrite a jailbreak prompt over a few rounds using the target's reply and a judge's score; the paper reports tens of queries per success on some targets, weak results on heavily safety-tuned ones, and better transfer than GCG (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-chao-2025-jailbreaking-black-box-large-language.md
 ---
@@ -22,7 +22,7 @@ All numbers are the paper's own (self-reported), single runs, JBB-Behaviors (100
 - Static defences (prompts found on an undefended target, SmoothLLM at N=10, q=10%): PAIR prompts held up much better than GCG's.
 - Transfer: prompts found on GPT-4 transferred to GPT-3.5 at 65% and Vicuna at 71%, ahead of GCG.
 - Ablations on Vicuna with Mixtral: dropping the in-context example prompts cut success from 93% to 76%; dropping the improvement field gave 87%. Role-playing prompts accounted for 82 of 88 successes. Most successes came on the first or second query; depths beyond 50 degraded as the attacker looped.
-- The authors' top-10 human-written templates scored 56% on Vicuna, then 20% on GPT-3.5, Gemini at 17%, and zero on Llama-2, though picking the top ten biases this upward.
+- The ten most successful human-written jailbreakchat templates scored 56% on Vicuna, then 20% on GPT-3.5, Gemini at 17%, and zero on Llama-2, though picking the top ten biases this upward.
 
 ## Limits
 

@@ -2,7 +2,7 @@
 title: LLM-as-Judge Evaluation
 tags: [eval, llm, pattern]
 summary: A separate LLM scoring outputs against a rubric — the approach for subjective quality where exact matching fails, requiring calibration against human grades and recommended as a complement to golden-set grading rather than a replacement.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-05-luong-2025-towards-robust-mathematical-reasoning.md
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/eval-approaches.md
@@ -200,3 +200,8 @@ Judges that score by token probability instead of a generated verdict are [[GPTS
 - [[ChatGPT Information Extraction Evaluation]] — related (self-judged explanation quality near 100% against human checks)
 - [[Oracle-Gap Recovery by Selection]] — related
 - [[AlpacaFarm Simulated Human Feedback]] — related (simulated annotators for preference data)
+- [[ARES Automated RAG Evaluation]] — instance-of (small fine-tuned judges for RAG axes)
+- [[ChatEval Multi-Agent Debate Judges]] — extends (debate-style judges)
+- [[Arena-Hard-Auto and BenchBuilder]] — instance-of (an automatic pairwise judge with confidence intervals)
+- [[MAG-V Trajectory Verification]] — alternative-to (classifiers on trajectory similarity instead of a judge)
+- [[LMSYS-Chat-1M]] — related (LLM-scored prompt difficulty)

@@ -2,7 +2,7 @@
 title: Agent S Hierarchical GUI Agent
 tags: [harness, agents, pattern]
 summary: "Agent S drives a desktop through a Manager that plans and a Worker that executes, with web knowledge plus two retrieved experience stores and a bounded action interface; with GPT-4o it roughly doubled the best prior OSWorld result (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-agashe-2024-agent-s.md
 ---
@@ -35,3 +35,4 @@ Agent S (an October 2024 preprint from Simular Research) is a computer-use agent
 - [[MemGPT / Letta Virtual Context Memory]] — alternative-to (context paging, where Agent S retrieves task experience)
 - [[Self-Learning Agents]] — related
 - [[ComputerRL API-GUI Agent RL]] — alternative-to (trains weights where Agent S retrieves)
+- [[AppAgent Exploration Documents]] — related

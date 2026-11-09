@@ -2,7 +2,7 @@
 title: Structured Output
 tags: [prompting, llm, concept]
 summary: Getting machine-parseable output via a six-rung ladder (ask, show, fence, prefill, constrain, route through a tool) — a schema guarantees shape not truth, so pair it with content validation, and beware that a strict template can lower accuracy.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt--prompt-engineering.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--04-controlling-output.md
@@ -84,7 +84,7 @@ Limits: one snapshot through one channel, with requested temperature not honoure
 
 ## Complex table generation (Struc-Bench)
 
-Tang et al. (2023) built a text-to-table benchmark in raw text, HTML and LaTeX tables from RotoWire and The Stack. On RotoWire, MTurk annotation found just 3% of GPT-3.5 outputs and 9% of GPT-4 outputs fully accurate. They fine-tuned LLaMA-7B on format descriptions that GPT-3.5 wrote for each target table (FormatCoT). It reached SacreBLEU 90.6 on raw-text tables against 68.13 for GPT-4, and 89.13 against 78.15 on LaTeX, while GPT-4 narrowly won on HTML (79.25 against 77.50) (self-reported). The un-finetuned 7B model scored 9.9, so that row cannot separate the effect of FormatCoT from that of ordinary fine-tuning. The GPT-3.5 judged P-Score tracked human content scores at 0.5301 and the heuristic H-Score at 0.1059. Limits: no fine-tuning settings or variance, the FormatCoT ablation is one qualitative example, and model versions are unstated.
+Tang et al. (2023) built a text-to-table benchmark in raw text, HTML and LaTeX tables from RotoWire and The Stack. On RotoWire, MTurk annotation found just 3% of GPT-3.5 outputs and 9% of GPT-4 outputs fully accurate. They fine-tuned LLaMA-7B on format descriptions that GPT-3.5 wrote for each target table (FormatCoT). It reached SacreBLEU 90.6 on raw-text tables against 68.13 for GPT-4, and 89.13 against 78.15 on LaTeX, while GPT-4 narrowly won on HTML (79.25 against 77.50) (self-reported). The un-finetuned 7B model scored 9.9, so, the extraction notes, that row cannot separate the effect of FormatCoT from that of ordinary fine-tuning. The GPT-3.5 judged P-Score tracked human content scores at 0.5301 and the heuristic H-Score at 0.1059. Limits: no fine-tuning settings or variance, the FormatCoT ablation is one qualitative example, and model versions are unstated.
 
 ## See Also
 - [[Prompt Engineering]] — related (part of)
@@ -101,3 +101,4 @@ Tang et al. (2023) built a text-to-table benchmark in raw text, HTML and LaTeX t
 - [[Outlines Guided Generation]] — instance-of (FSM index and logit mask)
 - [[Ctrl-G HMM Logical Control]] — instance-of (HMM and DFA constraint control)
 - [[Chain-of-Table]] — related (table-reasoning prompt format)
+- [[Logits Masking and Grammar-Constrained Generation]] — related

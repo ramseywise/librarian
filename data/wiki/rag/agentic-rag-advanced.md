@@ -2,7 +2,7 @@
 title: Agentic RAG — Advanced Patterns
 tags: [rag, pattern]
 summary: Self-RAG vs CRAG distinction, Adaptive RAG complexity tiers, GraphRAG for relationship traversal, HyDE for lexical gap, Multi-Query RAG-Fusion, agentic latency budgets, A2A protocol mapping to LangGraph, and the production-readiness gate.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/claude-docs/playground/docs/research/rag/agentic-rag-patterns.md
   - data/raw/agent-skills/advanced-rag-patterns/SKILL.md
@@ -232,3 +232,21 @@ All figures are self-reported by the papers, each on its own setup.
 - [[FRAMES Benchmark]] — related (a multi-step retrieval-planning benchmark)
 - [[Sufficient Context Autorater]] — related (a gate on whether retrieved context is enough)
 - [[CoAT Associative-Memory MCTS]] — related (tree search over reasoning with node memory)
+- [[HyDE Hypothetical Document Embeddings]] — extends (benchmark evidence for the HyDE section)
+- [[Query2doc LLM Query Expansion]] — related
+- [[Demonstrate-Search-Predict (DSP)]] — related (programmatic search and predict)
+- [[PopQA and Popularity-Gated Adaptive Retrieval]] — related (retrieve-or-not gating evidence)
+- [[ADAPT-LLM Learned RET Token]] — related
+- [[CRAG Corrective Retrieval Evaluator]] — instance-of (trained evaluator, three actions)
+- [[Astute RAG]] — instance-of (internal-versus-external consolidation)
+- [[ITER-RETGEN]] — instance-of (iterative retrieve-generate)
+- [[Self-Reasoning Retrieval-Augmented Model]] — instance-of
+- [[EfficientRAG]] — instance-of (no LLM per hop)
+- [[Skill-RAG Failure-State-Aware Retrieval]] — instance-of
+- [[RARE Retrieval-Augmented Reasoning]] — instance-of
+- [[RAGate Adaptive Augmentation Gate]] — instance-of
+- [[MASS-RAG]] — instance-of
+- [[Search-o1 Reason-in-Documents]] — instance-of (condensing retrieved pages inside a reasoning model's chain of thought)
+- [[Auto-RAG Autonomous Iterative Retrieval]] — instance-of (learned stop and re-query decisions)
+- [[Adaptive-RAG Query Complexity Routing]] — instance-of (classifier routes by query complexity)
+- [[RepoCoder Iterative Retrieval-Generation]] — instance-of (repository-level code completion)

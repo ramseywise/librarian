@@ -2,18 +2,18 @@
 title: Straight-Through Estimator
 tags: [foundations, concept]
 summary: "The straight-through estimator trains hard-threshold or stochastic binary gates by backpropagating through the threshold as if it were the identity; Bengio and colleagues (2013) tested it against three other estimators on a small gated-layer experiment."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-bengio-2013-estimating-or-propagating-gradients-through.md
 ---
 
 # Straight-Through Estimator
 
-A hard threshold has zero gradient almost everywhere, so a gate built from one cannot be trained by ordinary backpropagation. The 2013 paper by Bengio, Leonard and Courville compares ways to get a usable training signal through such stochastic or non-smooth neurons, motivated by conditional computation: a small gater network switches parts of a large layer on or off so that only a fraction of the compute runs.
+The 2013 paper by Bengio, Leonard and Courville compares ways to get a usable training signal through such stochastic or non-smooth neurons, motivated by conditional computation: a small gater network switches parts of a large layer on or off so that only a fraction of the compute runs.
 
 ## The four estimators
 
-1. Noisy rectifier: inject noise into a rectifier unit so that exact zeros appear and sparsity is learned.
+1. Noisy rectifier: inject noise into a rectifier unit.
 2. STS (stochastic times smooth) unit: a probability p from a sigmoid, a binary draw with parameter sqrt(p), and an output of the draw divided by sqrt(p).
 3. Unbiased estimator for a stochastic binary neuron: the gradient estimate is (h minus sigmoid of the pre-activation) times the loss, with a centred minimum-variance baseline. The paper proves this as a theorem and notes that REINFORCE is a special case. The extraction records that no gradient is backpropagated into the gater with this estimator.
 4. Straight-through: treat the hard threshold as the identity when computing the backward pass. The paper reports the estimator is biased yet has the correct sign for one layer, and does better when the sigmoid derivative is left out.

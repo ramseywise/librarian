@@ -2,7 +2,7 @@
 title: GritLM (Generative Representational Instruction Tuning)
 tags: [rag, pattern]
 summary: One model fine-tuned for both text embedding and generation, so retriever and reader are the same network and a RAG pipeline can reuse cached key-value states; reported to lose nothing on either task, with the speedup shown on long documents only.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-muennighoff-2024-generative-representational-instruction-tuning.md
 ---
@@ -32,3 +32,7 @@ GRIT trains one Mistral 7B model on two objectives at once: a contrastive embedd
 - [[RAG Reranking]] — prerequisite-for
 - [[Llama2Vec Unsupervised LLM Adaptation for Dense Retrieval]] — alternative-to
 - [[Tuning an Embedding Model from Match Labels]] — related
+- [[ANCE Global Hard Negatives for Dense Retrieval]] — related
+- [[GTR Large Dual Encoders]] — related
+- [[M3-Embedding Self-Knowledge Distillation]] — alternative-to
+- [[INSTRUCTOR Instruction-Finetuned Embeddings]] — alternative-to

@@ -2,7 +2,7 @@
 title: DeepSeekMoE Fine-Grained Expert Segmentation
 tags: [infra, concept]
 summary: "DeepSeekMoE splits each feed-forward expert into many smaller ones, activates proportionally more of them, and keeps a few shared experts always on; the paper reports a 16B model matching dense 7B models at about 40% of the computation."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-dai-2024-deepseekmoe.md
 ---
@@ -18,7 +18,7 @@ Dai et al. argue that conventional top-K mixture-of-experts layers (GShard) suff
 
 - Validation scale (9 layers, hidden 1280, about 2B total and 0.3B activated parameters, 100B tokens, 8K vocabulary): DeepSeekMoE beats GShard on Pile loss at equal parameters and compute, equals GShard with 1.5x the expert parameters and computation, and nearly reaches a Dense x16 upper bound, a dense model with 16 shared experts.
 - Removing the shared expert and instead activating an extra routed expert, at equal compute, sharply worsens Pile loss. With only 3 routed experts activated (half the activated expert parameters) it still outperforms GShard when trained from scratch.
-- Scaled to 16.4B total and 2.8B activated parameters on 2T tokens: comparable to LLaMA2 7B and DeepSeek 7B dense models at about 40% of the computation (those two take 187.9T and 183.5T FLOPs per 4K tokens in the report's table). The extraction records relative strengths on knowledge tasks (TriviaQA) and code (HumanEval) but not the figures.
+- Scaled to 16.4B total and 2.8B activated parameters on 2T tokens: comparable to LLaMA2 7B and DeepSeek 7B dense models at about 40% of the computation (those two take 187.9T and 183.5T in the report's Table 2). The extraction records relative strengths on knowledge tasks (TriviaQA) and code (HumanEval) but not the figures.
 - The released 16B checkpoint is deployable on one 40 GB GPU.
 
 ## Limits

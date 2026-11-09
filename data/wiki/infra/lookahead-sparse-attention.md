@@ -2,7 +2,7 @@
 title: Lookahead Sparse Attention
 tags: [infra, concept]
 summary: "Lookahead Sparse Attention (FlashMemory-DeepSeek-V4) keeps only the compressed KV chunks a small Memory Indexer predicts will be needed over the next 64 decode steps on the GPU and mirrors the rest in CPU memory; GPU KV fell to 13.5% of full with average accuracy 77.5 against 76.9 on DeepSeek-V4-Flash (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-wang-2026-flashmemory-deepseek-v4.md
 ---
@@ -30,6 +30,6 @@ Labels come from the frozen backbone by cross-layer majority voting (an entry co
 - The over-90% figure (requests over 64K resolved from the last 8K tokens) cites unnamed real-world logs.
 
 ## See Also
-- [[KV Cache Reduction Methods]] — prerequisite-for (the family LSA belongs to)
+- [[KV Cache Reduction Methods]] — related (the family this page belongs to)
 - [[MiniMax Sparse Attention]] — alternative-to
 - [[LLM Inference Economics]] — prerequisite-for (memory-bound long-context serving)

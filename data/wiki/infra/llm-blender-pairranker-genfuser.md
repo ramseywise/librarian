@@ -2,7 +2,7 @@
 title: LLM-Blender PairRanker and GenFuser
 tags: [infra, concept]
 summary: "LLM-Blender runs 11 open-source LLMs on every input, ranks all candidate pairs with a cross-attention ranker, and fuses the top three with a generator; it beats any single model but costs more than one call, so it is an ensemble, not a cost-saving router."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-jiang-2023-llm-blender.md
 ---
@@ -31,3 +31,4 @@ Setup: MixInstruct test set (5,000 examples), 11 open-source LLMs, ChatGPT pairw
 - [[Cheap-First Gating and Model Cascades]] — alternative-to (a cascade saves cost where this method adds it)
 - [[RouteLLM Preference-Trained Routers]] — alternative-to
 - [[LLM Inference Economics]] — related
+- [[Open-Domain Dialogue Systems]] — alternative-to (per-turn random model mixing in the Blended paper)

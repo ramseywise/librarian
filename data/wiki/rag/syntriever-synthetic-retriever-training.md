@@ -2,7 +2,7 @@
 title: Syntriever Synthetic Retriever Training
 tags: [rag, pattern]
 summary: Train a small retriever from black-box LLM output only, in two stages (distil on synthetic positives, queries and hard negatives, then align to the LLM's pairwise preferences); hallucinated positives are relabelled as hard negatives.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-kim-2025-syntriever.md
 ---
@@ -30,3 +30,5 @@ Syntriever needs no LLM logits. **Stage 1 (distillation):** GPT-4o writes chain-
 - [[Tuning an Embedding Model from Match Labels]] — related
 - [[Llama2Vec Unsupervised LLM Adaptation for Dense Retrieval]] — alternative-to
 - [[RAG Reranking]] — related
+- [[Promptagator Few-Shot Synthetic Retrieval Data]] — alternative-to
+- [[Reader-Attention Distillation for Retrievers]] — alternative-to (retriever training signal from a reader)

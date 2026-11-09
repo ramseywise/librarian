@@ -2,7 +2,7 @@
 title: Lethal Triad
 tags: [llm, agents, infra, concept]
 summary: "Private data plus untrusted content plus an external communication channel makes prompt injection an exfiltration path — persistent memory is a fourth amplifier — and the reliable defence is to cut a leg deterministically in the sandbox, not to filter the injection."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--04-execution-boundaries.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--03-tool-design.md
@@ -57,7 +57,7 @@ sidecar gate ([[Proposer-Reviewer and Sidecar Gating]]) in front of risky calls.
 Skills combined with network access are a specific instance — see
 [[Skill Authoring Discipline]].
 
-## Generic safeguard checklist (Albada, Building Applications with AI Agents, ch. 12)
+## Generic safeguard checklist (ch. 12)
 
 The chapter lists scoped roles and permissions, a policy-enforcement layer that validates each action, sandboxing, input and output validation, rate limiting, immutable logs and fail-safe states. It reports Lakera Guard at 92.5% and Llama Prompt Guard at 61.4% on the PINT benchmark (4,314 inputs), figures quoted from the benchmark, not rerun. The extraction notes the chapter's incident statistics are uncited and inconsistent (73% averaging $4.8 million in the introduction against 97% averaging $4.4 million later), its alert thresholds (error rate above 5% per hour, similarity below 0.85) are illustrative, and it gives no evidence of effectiveness against prompt injection beyond those two scores.
 

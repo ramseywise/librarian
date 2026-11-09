@@ -2,7 +2,7 @@
 title: Chain of Code
 tags: [prompting, pattern]
 summary: "The model writes reasoning as code; a Python interpreter runs each line and an LM emulator fills in lines that fail to execute (semantic helpers), giving 84 on BIG-Bench Hard against 72 for CoT in the paper (self-reported, text-davinci-003)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-li-2023-chain-code.md
 ---
@@ -33,3 +33,4 @@ The paper executes model-written code as though it were benign. Anyone reusing t
 - [[Chain of Thought]] — prerequisite-for
 - [[Execution Boundaries and Guardrails]] — related (sandboxing generated code)
 - [[Self-Consistency]] — related (a vote over several sampled programs is a natural combination, not tested here)
+- [[ViperGPT Visual Inference via Python Execution]] — related

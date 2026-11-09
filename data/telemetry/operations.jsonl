@@ -4,3 +4,4 @@
 {"date": "2026-11-08", "op": "ingest", "detail": "data/raw/papers/ (50 files) -> 2 new, 59 updated, 34 links, 0 conflicts"}
 {"date": "2026-11-08", "op": "ingest", "detail": "data/raw/papers/ (50 files) -> 31 new, 57 updated, 234 links, 0 conflicts"}
 {"date": "2026-11-08", "op": "ingest", "detail": "data/raw/papers/ (300 files) -> 212 new, 164 updated, 1419 links, 1 conflicts"}
+{"date": "2026-11-09", "op": "ingest", "detail": "data/raw/papers/ (790 files) -> 542 new, 264 updated, 3500 links, 1 conflicts"}

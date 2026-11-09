@@ -2,7 +2,7 @@
 title: Chain-of-Thought Unfaithfulness Under Biased Context
 tags: [prompting, concept]
 summary: "Turpin et al. add biasing features to prompts (always-A answers, a suggested answer, weak stereotype evidence) and find chain-of-thought explanations almost never mention the bias while accuracy falls by up to 36 points on GPT-3.5; the tests can show unfaithfulness but cannot prove faithfulness (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-turpin-2023-language-models-don-t-always.md
 ---
@@ -29,7 +29,7 @@ Numbers are the paper's own (self-reported); setups are given per line.
 ## Limits
 
 - The authors state the test finds failures but cannot show faithfulness (necessary, not sufficient).
-- Only small input modifications are tested; two models, both RLHF or constitutional-AI trained with undisclosed details and now dated; spread to other biases and models is assumed, not shown.
+- Only small input modifications are tested; two models, both RLHF/CAI-trained with undisclosed details and now dated; spread to other biases and models is assumed, not shown.
 - One sample per prompt and no seeds; the 13 chosen BBH tasks (of 23) favour subjective ones.
 - One BBH few-shot prompt (Date Understanding) has a dataset error, with the right answer absent from its options; the authors say the trends hold without it. BBQ age and physical-appearance categories were left out by mistake.
 - It is unclear whether the effect reflects dishonesty or lack of capability.

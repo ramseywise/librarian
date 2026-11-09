@@ -2,7 +2,7 @@
 title: "LatentMAS and RecursiveMAS Latent Handoff"
 tags: [graph, pattern]
 summary: "LatentMAS and RecursiveMAS let agents pass hidden states or KV caches instead of text; LatentMAS reports 70.8-83.7% fewer output tokens, RecursiveMAS 34.6-75.6% fewer across recursion rounds, both against text hand-off (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-zou-2025-latent-collaboration-multi-agent-systems.md
   - data/raw/papers/2026-11-06-zou-2026-recursive-multi-agent-systems.md
@@ -28,7 +28,7 @@ Frozen agents are linked by small trained RecursiveLink adapters that pass laten
 
 ## Limits
 
-- Both are white-box and same-family; models are small (1B-14B). A person cannot read or audit latent messages, and the papers do not address that.
+- Both need white-box access to hidden states or KV caches, and the models are small (1B-14B). LatentMAS agents share one architecture, while RecursiveMAS mixes model families (Qwen3, Llama3.2, Qwen2.5-Math, Gemma3). Latent messages are not human-readable; LatentMAS offers a debug-mode text probe, validated on only 100 GSM8K cases, where 96.2% of intermediate texts were correct when the final answer was and 90.0% were wrong when it was wrong (self-reported).
 - The text comparator in RecursiveMAS is the authors' own text recursion that decodes all intermediate text again in each round, so the savings are against a deliberately naive hand-off. AIME has 30 problems per year, so those gains are noisy. RecursiveMAS has no limitations section; its theory rests on stated assumptions.
 - LatentMAS reports tables with several ties and small drops; no isolated test of the alignment matrix is summarized here.
 

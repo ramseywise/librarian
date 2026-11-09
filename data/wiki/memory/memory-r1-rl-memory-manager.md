@@ -2,7 +2,7 @@
 title: "Memory-R1 RL Memory Manager"
 tags: [memory, pattern]
 summary: "Memory-R1 trains a Memory Manager that picks ADD, UPDATE, DELETE or NOOP using only downstream answer exact match as reward, plus an Answer Agent that distills retrieved memories; F1 45.02 against 35.04 for the strongest baseline on LoCoMo (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-yan-2025-memory-r1.md
 ---
@@ -27,7 +27,7 @@ Setup: LoCoMo without the adversarial subset (1307 questions in the test set) us
 ## Limits
 
 - Dialogue only; multimodal untested. Manager and Answer Agent are trained separately because rewards are sparse; end-to-end training is future work.
-- Internal inconsistencies in the extraction: the abstract and introduction name Mem0 as the baseline for the headline gain while Section 4.2 names MemoryOS; split sizes and turn counts differ between sections (24 against 50); some ablation values behave oddly.
+- Internal inconsistencies in the extraction: the abstract and introduction name Mem0 as the baseline for the headline gain while Section 4.2 names MemoryOS; turn counts differ between sections (24 against 50); some ablation values behave oddly.
 - Baselines were re-implemented by the authors; training data is small.
 
 ## See Also

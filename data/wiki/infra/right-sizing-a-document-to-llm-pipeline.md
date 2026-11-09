@@ -2,7 +2,7 @@
 title: Right-Sizing a Document-to-LLM Pipeline
 tags: [infra, pattern]
 summary: For a stateless "documents in, one structured LLM output back" service, the defensible shape is three tiers (ingest → enrich → serve) on serverless compute with a queue, a dedup key and a dead-letter topic, a hand-rolled typed loop instead of a graph framework, plain HTTP with 202-and-poll instead of MCP — and an explicit omit list, because cost is dominated by input tokens, not infrastructure.
-updated: 2026-10-16
+updated: 2026-11-09
 sources:
   - data/raw/claude-docs/sisyphus/docs/research/2026-08-08_ml6-prototyping_cloud-architecture.md
   - data/raw/claude-docs/sisyphus/docs/research/2026-08-08_ml6-prototyping_orchestration.md
@@ -86,7 +86,7 @@ weeks; the platform stack adds months of setup for an MVP whose success is unkno
 ## See Also
 - [[Deployment Topology Ladder]] — extends (picks the serverless rung for a stateless generation workload)
 - [[LLM Inference Economics]] — extends (input-token depth as the dominant cost driver in practice)
-- [[Loop-to-Graph Escalation]] — instance-of (a one-loop pipeline that does not earn a graph)
+- [[Loop-to-Graph Escalation]] — related (the escalation rule this one-loop pipeline stays below)
 - [[Integration Pattern Selection]] — instance-of (HTTP over MCP for a deterministic backend)
 - [[Canonical Document IR for Ingest]] — prerequisite-for (the ingest tier's output contract)
 - [[Length Limits Are a Fit Layer, Not a Prompt]] — extends (the constrain/fit steps of the loop)

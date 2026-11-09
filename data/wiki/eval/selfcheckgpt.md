@@ -2,7 +2,7 @@
 title: SelfCheckGPT
 tags: [eval, pattern]
 summary: "A black-box hallucination detector that samples the model several times and scores each sentence of the main answer by how far the samples disagree with it; on 238 GPT-3 WikiBio passages the LLM-prompt variant was best on the AUC-PR and passage-correlation measures reported (self-reported), but it detects inconsistency, not falsehood."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-manakul-2023-selfcheckgpt.md
 ---
@@ -44,3 +44,4 @@ Only 238 passages, mostly about individuals; there are no locations or objects. 
 - [[Language Model Self-Knowledge]] — alternative-to (a self-evaluation route from the model's own probabilities)
 - [[Self-Consistency]] — related (sampling consistency applied to reasoning answers)
 - [[Output Length Confounds Reference Metrics]] — related (a later re-scoring of hallucination detectors with a judge instead of ROUGE)
+- [[LLM Hallucination Surveys]] — related (surveyed as a sampling-consistency detector)

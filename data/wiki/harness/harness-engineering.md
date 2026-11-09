@@ -2,7 +2,7 @@
 title: Harness Engineering
 tags: [llm, agents, infra, concept]
 summary: "Agent = Model + Harness — the discipline of building everything between request and output except the weights (context, tools, constrain, verify, correct), why reliability compounding makes the harness dominate the model, and why coding agents matured first."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--README.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--README.md
@@ -328,3 +328,4 @@ Atomic pages: [[Harness Subsystem Attribution]] · [[Dynamic Tool Discovery]] ·
 - [[OpenDev Terminal Coding Agent]] — instance-of
 - [[CORAL LLM-Native Recommender Harness]] — instance-of
 - [[DeepCode Information-Flow Management]] — instance-of
+- [[AI Assistance Skill Formation RCT]] — related

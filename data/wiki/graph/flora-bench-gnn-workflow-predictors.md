@@ -2,7 +2,7 @@
 title: FLORA-Bench GNN Workflow Predictors
 tags: [graph, foundations, concept]
 summary: "A position paper builds FLORA-Bench to test whether a graph neural network can predict whether an agentic workflow graph succeeds, finding it works within a domain and as a cheap reward for workflow search but fails across domains."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-zhang-2025-gnns-as-predictors-agentic-workflow.md
 ---
@@ -26,12 +26,12 @@ The benchmark holds 600k workflow-task pairs in 6 domains with an 80/10/10 split
 
 ## Limits
 
-- Each cell is one run, with no seeds, variance or significance testing; labels were produced by a single LLM at temperature 0, using 3 inference runs for stability.
-- Workflows average around 6 nodes, produced by two generators only; the AFlow search limits workflow size, which leaves large topologies untested.
+- The extraction notes that each cell is one run, with no seeds, variance or significance testing; labels were produced by a single LLM at temperature 0, using 3 inference runs for stability.
+- The extraction notes that workflows average around 6 nodes, produced by two generators only; the AFlow search limits workflow size, which leaves large topologies untested.
 - The search experiment used just a GCN, just AFlow and 3 benchmarks. Its time and cost figures cover the loop itself and leave out the one-time expense of producing training labels.
-- Prompt embeddings are frozen and the MLP, which reads raw text, is the only control, so the contribution of graph structure is weakly isolated.
+- Prompt embeddings are frozen and the MLP, which reads raw text, is the only control, so, per the extraction notes, the contribution of graph structure is weakly isolated.
 - The task filter keeps tasks within a middle band of success rates; the text says 10 to 90 percent while Table 6 uses narrower per-dataset ranges. Reported accuracy is on this filtered set.
-- Internal inconsistencies: Table 2's OFA Coding-AF entry repeats the OFA Coding-GD row and disagrees with Table 9 (0.8345 and 0.7104), probably a copy slip; Llama is called 3B in places and 3.1-8B in others; the Figure 11 caption repeats Figure 10's; the 125x speed-up is slightly above the ratio of the table times (about 122x).
+- Internal inconsistencies, per the extraction notes: Table 2's OFA Coding-AF entry repeats the OFA Coding-GD row and disagrees with Table 9 (0.8345 and 0.7104), probably a copy slip; Llama is called 3B in places and 3.1-8B in others; the Figure 11 caption repeats Figure 10's; the 125x speed-up is slightly above the ratio of the table times (about 122x).
 - The extraction notes that the LLMs involved (GPT-4o-mini, DeepSeek V3 and Llama 3.x) have since aged.
 
 ## See Also

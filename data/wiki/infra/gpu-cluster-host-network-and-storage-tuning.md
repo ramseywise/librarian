@@ -2,7 +2,7 @@
 title: GPU Cluster Host, Network and Storage Tuning
 tags: [infra, reference]
 summary: "Synthesis of one book's chapters on NVL72 rack hardware, host OS and container tuning, NCCL and collective communication, and GPU storage I/O; the figures are vendor specifications, unsourced ranges or illustrations."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-ai-systems-performance-engineering-ch02-ai-system-hardware-overview.md
   - data/raw/papers/2026-11-07-ai-systems-performance-engineering-ch03-os-docker-kubernetes-tuning-gpu-based.md
@@ -12,7 +12,7 @@ sources:
 
 # GPU Cluster Host, Network and Storage Tuning
 
-The four chapters are training-centred; inference appears only in side remarks. None reports an experiment of its own at a stated hardware and software level, so read every figure as a vendor number, a rule of thumb or an illustration.
+Chapters 3 and 5 are training-centred, with inference only in side remarks; chapter 4 reports some inference figures. None reports an experiment of its own at a stated hardware and software level, so read every figure as a vendor number, a rule of thumb or an illustration.
 
 ## Rack hardware (ch2)
 

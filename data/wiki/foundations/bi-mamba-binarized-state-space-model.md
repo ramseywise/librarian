@@ -2,7 +2,7 @@
 title: Bi-Mamba Binarized State Space Model
 tags: [foundations, concept]
 summary: "Bi-Mamba binarizes the input and output projections of Mamba-2 to 1-bit weights with learnable scale and shift, trained from scratch with distillation from a LLaMA2-7B teacher, and keeps most of full-precision accuracy where post-training binarization collapses."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-tang-2024-bi-mamba.md
 ---
@@ -24,7 +24,7 @@ Tang et al. swap the linears for the input and output projections in Mamba-2 (78
 
 - Real 1-bit packing is evaluated only on CPU through llama.cpp; accuracy numbers use simulated weights; hardware support is needed for full gains.
 - The 1-bit models trail FP16 Mamba-2 by about 7-9 points; HumanEval and GSM8K are near zero for all base models, so those rows are uninformative.
-- Only Mamba-2 was tested; the BitNet comparison is not size-matched. No seeds or context length stated. The text says training runs "until convergence" while the appendix says otherwise.
+- Only Mamba-2 was tested; the BitNet comparison is not size-matched. The extraction notes that no seeds or context length are stated, and that the text says training runs "until convergence" while the appendix says otherwise.
 
 ## See Also
 

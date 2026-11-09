@@ -1,8 +1,8 @@
 ---
 title: Direct-Indirect Reasoning (DIR)
 tags: [prompting, pattern]
-summary: Adds indirect reasoning prompts, contrapositive and proof by contradiction, alongside direct reasoning chains and votes over both, improving factual and mathematical proof tasks.
-updated: 2026-11-08
+summary: Adds indirect reasoning prompts, contrapositive and proof by contradiction, alongside direct reasoning chains and votes over both, improving logical reasoning and mathematical proof tasks.
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-zhang-2024-large-language-models-as-indirect.md
 ---

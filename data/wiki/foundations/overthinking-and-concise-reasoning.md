@@ -2,7 +2,7 @@
 title: Overthinking and Concise Reasoning
 tags: [foundations, concept]
 summary: "Longer reasoning is not better reasoning: o1-like models spend thousands of extra tokens on easy questions after a correct first answer, and several methods (self-training, length caps, token-complexity thresholds) trade a small accuracy loss for large token savings."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-chen-2024-do-not-think-that-much.md
   - data/raw/papers/2026-11-06-lee-2025-how-well-do-llms-compress.md
@@ -46,3 +46,4 @@ Sui et al. (2025) survey the area with three groups: model-based, output-based a
 - [[Prompt-Induced Waste in Coding Agents]] — related (prompt components and token waste)
 - [[Chain of Draft]] — instance-of (terse-draft prompt)
 - [[Delethink Markovian Thinker]] — related (bounds reasoning context with fixed-size chunks)
+- [[Coconut Continuous Latent Reasoning]] — related

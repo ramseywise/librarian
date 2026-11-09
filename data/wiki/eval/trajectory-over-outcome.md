@@ -2,7 +2,7 @@
 title: Trajectory Over Outcome
 tags: [eval, agents, concept]
 summary: "Why an agent has to be scored on the path and not just the answer — a correct output from a lucky trajectory is a latent failure, and routing and stopping point are the two decisions an outcome score cannot see."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/articles/2026-07-19-evaluating-ai-agents-deeplearning.md
   - own-prose
@@ -198,3 +198,5 @@ The chapter runs no experiments and all its numbers are illustrative. Its code l
 - [[Hidden-DFA Environment Inference Testbed]] — related (graded by whether the gathered evidence sufficed)
 - [[ROSCOE Reasoning Chain Metrics]] — related (scores the reasoning steps rather than the final answer)
 - [[Golden Set Mechanics]] — related (how the evaluation rows carrying these expected calls are grown and kept)
+- [[MACHIAVELLI Benchmark]] — related (scores trajectories of harms, not only reward)
+- [[MAG-V Trajectory Verification]] — related

@@ -2,7 +2,7 @@
 title: Constitutional Classifiers
 tags: [foundations, infra, pattern]
 summary: "Reference design for classifier guardrails — a natural-language constitution generates the synthetic training data, question and answer are judged together so coded requests are caught, and a near-free activation probe screens everything and escalates only suspicious traffic to a stronger classifier."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--03-agentic-foundations--agent-fundamentals.md
 ---
@@ -39,3 +39,5 @@ cover the input and output positions only; the execution position needs hard gat
 - [[Self-Evaluation Defense Against Adversarial Suffixes]] — alternative-to (cheaper self-check defence)
 - [[Jailbreak Rapid Response]] — alternative-to (adapt after observing attacks)
 - [[PGD Adversarial Training]] — related (classic adversarial robustness)
+- [[Llama Guard]] — alternative-to (another LLM-based safeguard classifier)
+- [[XSTest]] — related (measures false refusals of safe prompts)

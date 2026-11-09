@@ -2,7 +2,7 @@
 title: Transformer Architecture
 tags: [foundations, llm, concept]
 summary: The Transformer model architecture (Vaswani et al., 2017) — encoder-decoder stacks of self-attention and feed-forward layers that replaced RNNs/CNNs for sequence transduction, enabling parallelized training and constant-length dependency paths.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/pdfs/2017-06-12-attention-is-all-you-need.md
 ---
@@ -100,3 +100,4 @@ The Transformer is the foundation of every LLM used in agent systems. Understand
 - [[RWKV Linear-Time Recurrent Language Model]] — alternative-to (attention-free recurrent formulation)
 - [[Cut Cross-Entropy]] — extends (loss layer for large vocabularies)
 - [[UL2 Mixture of Denoisers]] — related (a pretraining objective mix on the encoder-decoder transformer)
+- [[Conformer Convolution-Augmented Transformer for ASR]] — related

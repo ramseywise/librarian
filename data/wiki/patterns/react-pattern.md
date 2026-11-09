@@ -2,7 +2,7 @@
 title: ReAct Pattern
 tags: [langgraph, adk, concept, pattern]
 summary: Reasoning + Acting loop — the foundational single-agent pattern where the LLM alternates thought and tool calls until it has enough information to answer. Implemented via create_react_agent in LangGraph.
-updated: 2026-10-30
+updated: 2026-11-09
 sources:
   - data/raw/claude-docs/playground/docs/research/evaluation-and-learning/self-learning-agents.md
 ---
@@ -80,3 +80,7 @@ Only graduate beyond ReAct when you have evidence that it's breaking down.
 - [[Tool Definitions as Prompts]] — extends (function-calling APIs do the ReAct bookkeeping; definitions are prompt text)
 - [[Agent Fundamentals]] — extends (agent = LLM + context + tools, and the loop around it)
 - [[TypeScript for AI Apps]] — instance-of (a ReAct loop driven by stop_reason)
+- [[PlanRAG Plan-then-Retrieve]] — extends (adds plan and re-plan steps for decision questions over databases)
+- [[ReAct Synergizing Reasoning and Acting]] — instance-of (paper results)
+- [[KnowAgent Action Knowledge Base]] — extends
+- [[ChemCrow Chemistry Tool Agent]] — instance-of

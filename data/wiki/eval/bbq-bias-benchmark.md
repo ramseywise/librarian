@@ -2,7 +2,7 @@
 title: BBQ Bias Benchmark
 tags: [eval, reference]
 summary: "BBQ is 58,492 hand-written three-choice questions probing nine social bias categories in ambiguous and disambiguated contexts; the authors found QA models fell back on stereotypes when the context was under-informative, with bias scores that cannot certify a model unbiased (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-parrish-2022-bbq.md
 ---
@@ -38,3 +38,4 @@ All numbers are the paper's own (self-reported). UnifiedQA was run zero-shot; Ro
 - [[Chain-of-Thought Unfaithfulness Under Biased Context]] — related (reuses BBQ to test stereotype-driven answers)
 - [[LLM Judge Biases]] — related
 - [[Benchmark Prompt Format Sensitivity]] — related
+- [[LLM Bias and Fairness Survey]] — related (survey that places BBQ among bias datasets)

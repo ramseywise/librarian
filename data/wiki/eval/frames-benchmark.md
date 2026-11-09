@@ -2,7 +2,7 @@
 title: FRAMES Benchmark
 tags: [eval, rag, llm, reference]
 summary: "FRAMES is an 824-question multi-hop Wikipedia benchmark that scores factuality, retrieval and reasoning together; the paper's multi-step BM25 loop with search-planning prompts took Gemini-1.5-Pro from 0.408 to 0.66."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-krishna-2024-fact-fetch-reason.md
 ---
@@ -43,3 +43,4 @@ The model writes k search queries per step for n steps; BM25 returns n_docs per 
 - [[FreshQA]] — related (also date-anchored; the FRAMES authors cite it for anchoring)
 - [[Agentic RAG — Advanced Patterns]] — prerequisite-for (multi-step retrieval with planning)
 - [[Sufficient Context Autorater]] — related (separating retrieval from reasoning errors)
+- [[HotpotQA]] — related (a later multi-hop set)

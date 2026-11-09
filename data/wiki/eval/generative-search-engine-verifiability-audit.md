@@ -2,7 +2,7 @@
 title: Generative Search Engine Verifiability Audit
 tags: [eval, reference]
 summary: A 2023 human audit of four commercial answer engines scoring each sentence's citations for recall and precision; the engines were fluent but often unsupported, and citation precision moved opposite to perceived utility.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-liu-2023-evaluating-verifiability-generative-search-engines.md
 ---
@@ -38,3 +38,5 @@ Averaged over the four, recall is 51.5% and precision 74.5%; fluency is 4.48 and
 - [[FActScore]] — related
 - [[Long-Form QA Evaluation Hurdles]] — related
 - [[Deep Research Agent Systems]] — related
+- [[LFQA Attribution and SALAD]] — related
+- [[ALCE Citation Benchmark]] — related

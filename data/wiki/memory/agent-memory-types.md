@@ -2,7 +2,7 @@
 title: Agent Memory Types
 tags: [memory, langgraph, concept]
 summary: Three-tier memory taxonomy (semantic/episodic/procedural) with storage patterns, context window strategies, reflection pattern, and SQLite preference store for assistant agents — backed by LangGraph BaseStore.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/claude-docs/playground/docs/archived/agentic-rag-copilot-research.md
   - data/raw/claude-docs/playground/docs/archived/librarian-components.md
@@ -356,3 +356,9 @@ For Deep Agents, memory is surfaced through pluggable backends rather than direc
 - [[Agent S Hierarchical GUI Agent]] — instance-of (narrative and episodic experience retrieval for a GUI agent)
 - [[Memory-R1 RL Memory Manager]] — instance-of (RL-trained memory manager)
 - [[BEAM Benchmark and LIGHT Memory Framework]] — instance-of (memory benchmark)
+- [[Generative Agents Memory Stream]] — instance-of (memory stream with reflection)
+- [[MemoryBank Long-Term Memory]] — instance-of (decay-weighted long-term store)
+- [[ExpeL Experiential Learning]] — instance-of
+- [[Self-Controlled Memory Framework]] — instance-of
+- [[RAISE Conversational Agent Memory]] — instance-of
+- [[Stateless Decision Memory (DPM)]] — instance-of

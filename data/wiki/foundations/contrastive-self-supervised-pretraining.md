@@ -2,7 +2,7 @@
 title: "Contrastive Self-Supervised Pretraining"
 tags: [foundations, comparison]
 summary: "Learn embeddings without labels by pulling positives together and pushing negatives apart (triplet loss, SimCLR, MoCo) or by avoiding negatives with a predictor plus moving-average target (BYOL), or by masking and reconstructing patches; collapse is the central failure and toy-scale runs do not reproduce paper gains."
-updated: 2026-11-04
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--04-convolutional-networks.md
 ---
@@ -33,3 +33,16 @@ NT-Xent plus a linear probe on digits lost to a supervised CNN at 20, 50 and 100
 - [[Convolution, Shift Sensitivity and Parameter Sharing]] — prerequisite-for
 - [[Transfer and Multi-Task Learning Conditions]] — related
 - [[Neural Probabilistic Language Model]] — related (embeddings learned by prediction)
+- [[SimCSE Contrastive Sentence Embeddings]] — instance-of (dropout positives)
+- [[Contrastive and Masked Vision-Language Pretraining]] — instance-of
+- [[CLIP Contrastive Language-Image Pretraining]] — instance-of
+- [[ALIGN Noisy Alt-Text Dual Encoder]] — instance-of
+- [[SigLIP Sigmoid Loss for Language-Image Pretraining]] — extends (sigmoid in place of softmax)
+- [[BYOL Bootstrap Your Own Latent]] — instance-of (no negatives)
+- [[DINOv2 Curated-Data Self-Supervised Features]] — extends
+- [[BEiT Masked Image Modeling with Visual Tokens]] — alternative-to
+- [[Masked Autoencoders Pixel Reconstruction]] — alternative-to
+- [[EVA Masked CLIP-Feature Regression]] — alternative-to
+- [[Florence UniCL Vision Foundation Model]] — instance-of
+- [[HuBERT Masked Prediction of Hidden Units]] — instance-of
+- [[W2V-BERT Contrastive and Masked Speech Pretraining]] — instance-of

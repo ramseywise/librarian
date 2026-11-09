@@ -2,7 +2,7 @@
 title: Tool Poisoning and Protocol-Level Attacks on Agents
 tags: [mcp, concept]
 summary: "Two 2025 surveys describe attacks that ride the agent-to-tool and agent-to-agent channel: poisoned tool descriptions, tampered tools, retrieved-document injection, chained tool calls and loop exhaustion; one survey shows five single-run demos and Ferrag et al. collect second-hand attack rates."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-kong-2025-survey-llm-driven-ai-agent.md
   - data/raw/papers/2026-11-06-ferrag-2025-prompt-injections-protocol-exploits.md
@@ -40,3 +40,4 @@ A taxonomy survey that ran no experiments. It rates input manipulation and proto
 - [[Agent Security Risk Taxonomy]] — prerequisite-for
 - [[Execution Boundaries and Guardrails]] — related
 - [[Agent Communication Protocol Taxonomy]] — related
+- [[Code Completion Poisoning]] — related (poisoning attack on a coding assistant)

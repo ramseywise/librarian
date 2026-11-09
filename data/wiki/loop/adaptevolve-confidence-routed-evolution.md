@@ -2,7 +2,7 @@
 title: AdaptEvolve Confidence-Routed Evolution
 tags: [loop, pattern]
 summary: "AdaptEvolve lets a small model draft each mutation in an evolutionary coding loop and escalates to a large model only when a classifier on the small model's token confidence predicts failure."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-ray-2026-adaptevolve.md
   - data/raw/papers/2026-11-06-zhou-2026-agent-as-router.md
@@ -40,7 +40,7 @@ Only model choice varies; the loop's prompts and harness are unchanged, so the e
 
 ## Related: Agent-as-a-Router (ACRouter)
 
-Zhou et al. (2026) frame model routing for coding tasks as a context-action-feedback loop in which the router reads memory of verified scores and costs and writes the outcome back, so it self-evolves through memory alone. Adding per-dimension performance statistics lifted a zero-shot router from 41.41 to 47.74 average performance (oracle 57.00), which the paper reads as an information deficit; ACRouter reached 49.98 in distribution with the lowest cumulative regret (self-reported), while static trained routers fell below random out of distribution. The statistics-augmented router had worse performance per dollar (1.71 against 1.97). It is a preprint with a single benchmark family.
+Zhou et al. (2026) frame model routing for coding tasks as a context-action-feedback loop in which the router reads memory of verified scores and costs and writes the outcome back, so it self-evolves through memory alone. Adding per-dimension performance statistics lifted a zero-shot router from 41.41 to 47.74 average performance (oracle 57.00), which the paper reads as an information deficit; ACRouter reached 49.98 in distribution with the lowest cumulative regret (self-reported), while static trained routers fell below random out of distribution. The statistics-augmented router had worse performance per dollar (1.71 against 1.97). It is a preprint; the evaluation uses a 9-dimension in-distribution set and an out-of-distribution set drawn from four benchmarks.
 
 ## See Also
 - [[Cheap-First Gating and Model Cascades]] — prerequisite-for

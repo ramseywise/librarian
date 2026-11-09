@@ -2,7 +2,7 @@
 title: ThinK Key Cache Channel Pruning
 tags: [infra, concept]
 summary: "ThinK prunes the channel dimension of the key cache, keeping the channels with the highest query-key score per head; pruning 40% of key channels cut total KV memory 20% with LongBench accuracy kept or raised on top of H2O or SnapKV (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-xu-2024-think.md
 ---
@@ -29,7 +29,7 @@ The motivating observations: the attention matrix is low-rank (top 50 singular v
 - The 20% saving is half of λ because only keys are pruned; the kernel path was still being optimised and no paged-serving integration is reported.
 
 ## See Also
-- [[KV Cache Reduction Methods]] — prerequisite-for (token, precision and channel axes of KV reduction)
+- [[KV Cache Reduction Methods]] — related (the family this page belongs to)
 - [[LLM Inference Economics]] — prerequisite-for (why decode memory matters)
 - [[Prefix Caching]] — related (the other KV-cache lever)
 - [[SparseGPT and Wanda Post-Training Pruning]] — related

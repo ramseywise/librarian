@@ -2,7 +2,7 @@
 title: Past-Tense Refusal Jailbreak
 tags: [foundations, pattern]
 summary: Rewriting a harmful request in the past tense bypasses refusal training on several frontier models, and fine-tuning on past-tense refusals closes the gap at a cost in overrefusal.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-andriushchenko-2024-does-refusal-training-llms-generalize.md
 ---
@@ -51,3 +51,4 @@ Setup: the GPT-3.5 Turbo 0125 checkpoint was fine-tuned on 394 past-tense reform
 - [[LM Red Teaming]] — prerequisite-for
 - [[Constitutional Classifiers]] — alternative-to (a defence that screens outputs)
 - [[Preference Optimization Algorithms]] — related
+- [[Harmful Fine-Tuning of Aligned Models]] — related (a training-time route to the same loss of refusals)

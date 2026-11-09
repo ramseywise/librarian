@@ -2,7 +2,7 @@
 title: GEPA Reflective Prompt Evolution
 tags: [prompting, pattern]
 summary: "GEPA is a prompt optimizer for multi-module LLM systems that has a reflection model read run traces and textual feedback, rewrite one module's prompt, and keep candidates on a per-instance Pareto frontier; the paper reports it beating GRPO on five of six tasks with far fewer rollouts (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-agrawal-2025-gepa.md
 ---
@@ -29,7 +29,7 @@ All numbers are the paper's own (self-reported) and come from single runs.
 - Qwen3 8B on six tasks (HotpotQA, IFBench, HoVer, PUPA, AIME-2025 and LiveBench-Math), compared with GRPO with LoRA at 24,000 rollouts: GEPA outperformed GRPO by 6% on average (up to 20%) while using as many as 35x fewer rollouts. Aggregate test scores were 45.23 for the baseline, 48.91 for GRPO and 47.84 for MIPROv2.
 - Qwen3 8B, IFBench test set: GEPA reached 38.61 after 678 rollouts, against GRPO's 35.88 at 24,000.
 - Qwen3 8B, AIME-2025 (30 problems, 5 repeats): GRPO scored 38.00 and GEPA 32.00, the one task of six where GRPO won.
-- GPT-4.1 Mini, six benchmarks, equal rollout budget: aggregate gain over baseline was +5.64 for MIPROv2, +6.11 for TextGrad and +3.27 for Trace; GEPA beat each.
+- GPT-4.1 Mini, six benchmarks, equal rollout budget: aggregate gain over baseline was +5.64 for MIPROv2, +6.11 for TextGrad and +3.27 for Trace.
 - Qwen3 8B, four tasks, evolution harness fixed: Pareto-based selection gave +12.44 aggregate against +6.05 for always taking the best candidate and +5.11 for beam search with width 4.
 - Prompts tuned for Qwen3 8B, then transferred unchanged to GPT-4.1 Mini, outperformed baselines tuned on GPT-4.1 Mini itself.
 - Prompts from GEPA and GEPA+Merge were shorter than MIPROv2 prompts by as much as 9.2x.

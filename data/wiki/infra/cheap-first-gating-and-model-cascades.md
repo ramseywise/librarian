@@ -2,7 +2,7 @@
 title: Cheap-First Gating and Model Cascades
 tags: [infra, pattern]
 summary: "Send each request to a cheap model and let a gate decide whether it escalates; published savings run from modest to large by task and date, simple baselines often match learned routers, and routers fail on unfamiliar or adversarial queries."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/web/2026-11-05-model-cascades-routers-and-calibration.md
   - data/raw/web/2026-11-05-jev-independent-evaluations.md
@@ -58,7 +58,7 @@ equalled or bettered that LLM on its own while costing a quarter to half as much
 
 FrugalGPT's own cost figures (March 2023 prices, cascade length 3, same test set used for evaluation, no variance): the
 cost to match the best single model fell from $33.1 to $0.6 on HEADLINES (GPT-4), $9.7 to $2.6 on OVERRULING (GPT-4) and
-$72.5 to $29.6 on COQA (GPT-3). The paper also reports that GPT-3 is right on 13% of COQA items where GPT-4 is wrong, and
+$72.5 to $29.6 on COQA (GPT-3) (self-reported). The paper also reports that GPT-3 is right on 13% of COQA items where GPT-4 is wrong, and
 that the cascade needs labelled examples from a similar distribution to train. Its prompt-adaptation and approximation
 strategies are described but not evaluated.
 

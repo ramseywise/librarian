@@ -2,7 +2,7 @@
 title: Controllable Text Generation Taxonomy
 tags: [prompting, reference]
 summary: "A 2024 survey sorts control of LLM output into content (hard) and attribute (soft) tasks, and into training-stage and inference-stage methods; prompting, latent steering and decoding-time edits sit on the inference side. It ran no experiments, so it ranks nothing."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-liang-2024-controllable-text-generation-large-language.md
 ---
@@ -24,7 +24,7 @@ Liang, Wang, Wang et al. (preprint, 2024) survey **controllable text generation 
 
 - **Prompting** controls output through the input only, as `Model(control prompt + input)`. A **hard prompt** is discrete natural language; a **soft prompt** is a trainable continuous vector. The survey says hard prompts are simple but sensitive to word choice and may give limited fine-grained control, while soft prompts fix that at a cost in interpretability and initial tuning. Success depends on the model following instructions.
 - **Latent space manipulation** (activation engineering) adds a guiding vector to activations in some layers. The survey says results differ with the model and the task, which makes it harder to predict.
-- **Decoding-time intervention** adjusts logits or the next-token distribution. It is plug-and-play but adds inference time and can harm fluency by forcing less likely tokens. Examples it describes: DExperts adds the scaled difference between expert and anti-expert logits, and PREADD contrasts log-probabilities with and without a prefix, weighted by a multiplier.
+- **Decoding-time intervention** adjusts logits or the next-token distribution. It is plug-and-play but adds inference time and can harm fluency by forcing less likely tokens. Examples it describes: DExperts adds a scaled difference of two logit sets to the base logits (z_t + alpha(z'_t - z''_t)), and PREADD contrasts log-probabilities with and without a prefix, weighted by a multiplier.
 
 ## Evaluation and open problems
 
@@ -33,8 +33,8 @@ For evaluation it names automatic metrics (overlap, LM-based, distance-based, at
 ## Limits
 
 - No experiments, so no method is ranked; the cutoff is August 2024.
-- Prompting takes roughly two pages, built around AutoPrompt, discrete prompts, grammar-based prompts and soft-prompt tuning. The survey does not treat system prompts, few-shot examples or structured-output modes as control methods.
-- Most surveyed methods target GPT-2 or T5 scale models, and the survey does not say which carry over to chat LLMs.
+- Prompting gets roughly two pages, which cover AutoPrompt, DAs, PCFG and soft-prompt tuning. The extraction notes that the survey does not treat system prompts, few-shot examples or structured-output modes as control methods.
+- Most surveyed methods target GPT-2 or T5 scale models, and the extraction notes the survey does not say which carry over to chat LLMs.
 
 ## See Also
 - [[Prompt Engineering]] — prerequisite-for

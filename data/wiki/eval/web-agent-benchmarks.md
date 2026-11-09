@@ -2,7 +2,7 @@
 title: Web Agent Benchmarks (WebShop and Mind2Web)
 tags: [eval, comparison]
 summary: "Two early web-agent datasets: WebShop (a simulated Amazon-style shop, best trained agent 28.7% success against 59.6% for expert humans) and Mind2Web (real websites, offline scoring, best step success 52.0% but whole-task success at most 7.1%); all numbers self-reported."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-yao-2022-webshop.md
   - data/raw/papers/2026-11-07-deng-2023-mind2web.md
@@ -48,3 +48,4 @@ Mind2Web: open-loop offline scoring, so a valid path missing from the cached dat
 - [[ACI (Agent-Computer Interface)]] — related
 - [[DreamGym Synthetic Experience RL]] — related
 - [[WebAgent and HTML-T5 Modular Web Automation]] — related (agent evaluated on web tasks)
+- [[WebArena]] — related

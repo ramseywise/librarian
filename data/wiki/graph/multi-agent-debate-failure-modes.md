@@ -2,7 +2,7 @@
 title: Multi-Agent Debate Failure Modes
 tags: [graph, concept]
 summary: "Wynn et al. test all-to-all debate with majority vote on three small models and find debate often scores below majority vote over the same agents' first answers, with agents flipping from correct to incorrect more than the reverse (self-reported, small samples)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-wynn-2025-talk-isn-t-always-cheap.md
 ---
@@ -37,3 +37,5 @@ Models: Mistral-7B-Instruct-v0.2, Llama-3.1-8B-Instruct and GPT-4o-mini, in grou
 - [[Self-MoA Single-Model Aggregation]] — related (aggregation without exchange)
 - [[Reasoning-Trace Disagreement States]] — related
 - [[HSE and Router Robustness in Model Societies]] — related
+- [[Encouraging Divergent Thinking with Multi-Agent Debate]] — related
+- [[Multiagent Debate for Factuality and Reasoning]] — related

@@ -2,7 +2,7 @@
 title: GUI Agent RL with GUI-R1 and ARPO
 tags: [foundations, llm, comparison]
 summary: "Two GRPO recipes for GUI agents: GUI-R1 uses rule-based rewards on 3K filtered examples for action prediction, while ARPO adds a replay buffer of successful trajectories so groups of all failures still carry signal; both report gains with large caveats in their own text."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-luo-2025-gui-r1.md
   - data/raw/papers/2026-11-06-lu-2025-arpo.md
@@ -38,3 +38,4 @@ Both papers apply GRPO to vision-language GUI agents, but at different levels of
 - [[ComputerRL API-GUI Agent RL]] — alternative-to
 - [[DAPO]] — related (the same reward-variance concern)
 - [[Rejection Sampling Fine-Tuning]] — alternative-to
+- [[UI-TARS Native GUI Agent]] — related (ARPO builds on a UI-TARS model)

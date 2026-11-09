@@ -2,7 +2,7 @@
 title: GPU Kernel Tuning Workflow
 tags: [infra, reference]
 summary: "Checklist-style synthesis of one book's CUDA chapters: occupancy, memory access, warp efficiency, arithmetic intensity, pipelining, streams and graphs, plus AI-generated kernels; almost all numbers are the book's own illustrations or unsourced rules of thumb."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-ai-systems-performance-engineering-ch06-gpu-architecture-cuda-programming-maximi.md
   - data/raw/papers/2026-11-07-ai-systems-performance-engineering-ch07-profiling-tuning-gpu-memory-access-patte.md
@@ -17,11 +17,11 @@ sources:
 
 # GPU Kernel Tuning Workflow
 
-The book's chapters 6 to 12 walk one loop: profile, decide whether a kernel is memory-bound or compute-bound, then apply the matching fix. Each chapter states that the numbers in its metrics tables are illustrative and that real benchmarks live in the book's code repository, so every number below is a rule of thumb or an illustration, not a measurement.
+The book's chapters 6 to 12 walk one loop: profile, decide whether a kernel is memory-bound or compute-bound, then apply the matching fix. Most chapters state that the numbers in its metrics tables are illustrative and that real benchmarks live in the book's code repository, so every number below is a rule of thumb or an illustration, not a measurement.
 
 ## The loop, by stage
 
-1. Occupancy (ch6, ch8): start blocks at 256 threads; a Blackwell B200 SM holds at most 64 warps (2,048 threads). Chapter 8 recommends achieved occupancy of about 50-75% with diminishing returns past 60-70%, and says two to four independent operations per thread is the usual ILP sweet spot (claims). Consumer-class parts with compute capability 12.x allow 48 warps.
+1. Occupancy (ch6, ch8): start blocks at 256 threads; a Blackwell B200 SM holds at most 64 warps (2,048 threads). Chapter 8 recommends achieved occupancy of about 50-75% with diminishing returns past 60-70%, and says two to four independent operations per thread is the usual ILP sweet spot (claims). On the RTX PRO 6000 and the DGX Spark GB10 (capability 12.x), the limit is 48 warps.
 2. Memory access (ch7): coalesce loads, use vector loads, tile through shared memory, pad tiles to avoid bank conflicts, mark read-only data. Illustrative before-and-after: a stride-2 copy falling from 4.8 to 1.3 ms; a float4 copy falling from 4.2 to 1.2 ms; 32x32 tiling from 15 to 170 GFLOPS; TMA double buffering from 18 ms to 7 ms.
 3. Warp efficiency (ch8): replacing a divergent if/else with predication halves an illustrative threshold kernel from 30 ms to 15 ms; the chapter says that in the ideal case, eliminating a branch that splits threads evenly can almost double throughput, and warp-level fixes typically give 5-30%.
 4. Arithmetic intensity (ch9): fuse kernels to cut memory traffic (an illustrative 4-kernel L2-normalize at 0.083 FLOPs/byte, fused near 0.25 and still memory-bound); use FP8, 2:4 sparsity and CUTLASS, which the chapter says matches hand-tuned kernels within about 2% (illustrative table). Inline PTX on an optimised kernel gave about 7% in a hypothetical example.

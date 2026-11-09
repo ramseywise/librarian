@@ -2,7 +2,7 @@
 title: "Group Fairness Criteria and the Impossibility Results"
 tags: [foundations, concept]
 summary: "Demographic parity, equal opportunity, equalized odds, calibration and predictive parity ask different questions; with unequal base rates and an imperfect score they cannot all hold, so someone must choose and own the metric."
-updated: 2026-11-04
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--15-fairness-in-automated-scoring.md
 ---
@@ -49,3 +49,4 @@ Fairness is a social and ethical concept, not a statistical one: someone account
 - [[Probability Calibration and Reliability Curves]] — prerequisite-for
 - [[Auditing Selection Rates With Intervals and Intersections]] — extends
 - [[Label Bias, Proxies and the Cost of Mitigation]] — extends
+- [[LLM Bias and Fairness Survey]] — related (applies group and individual fairness to LLMs)

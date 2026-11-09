@@ -2,7 +2,7 @@
 title: Framework Selection — LangChain vs LangGraph vs Deep Agents
 tags: [langgraph, deep-agents, concept, comparison]
 summary: Decision guide for choosing between LangChain, LangGraph, and Deep Agents — layered frameworks where higher layers add planning, memory, and middleware on top of lower ones.
-updated: 2026-10-30
+updated: 2026-11-09
 sources:
   - data/raw/articles/2026-07-19-autogen-agentic-design-patterns.md
   - data/raw/articles/2026-07-19-agentic-ai-frameworks-exploration.md
@@ -184,3 +184,4 @@ AutoGen equivalent, with no difference in end-user experience versus vanilla RAG
 - [[LangChain RAG Implementation Patterns]]
 - [[Duplex Voice Breaks Discrete-Turn Assumptions]] — extends (the duplex row asked first)
 - [[HITL and Interrupt Patterns]] — related (graph-level interrupt vs AutoGen's agent-level human flag)
+- [[OpenHands Generalist Agent Platform]] — related (the Agents library and OpenAgents sections)

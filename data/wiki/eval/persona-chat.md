@@ -2,7 +2,7 @@
 title: PERSONA-CHAT
 tags: [eval, reference]
 summary: A crowd-sourced dialogue dataset in which each speaker plays a written persona, used to test whether profile-conditioned chit-chat models predict the next utterance better and seem more engaging; persona conditioning helped ranking models but not the generative one in the human study.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-zhang-2018-personalizing-dialogue-agents.md
 ---
@@ -32,3 +32,4 @@ Ranking models (IR, Starspace, profile memory, key-value profile memory) and gen
 ## See Also
 - [[Seq2seq Bottleneck and Attention]] — prerequisite-for
 - [[Output Length Confounds Reference Metrics]] — related (limits of automatic text metrics)
+- [[Wizard of Wikipedia]] — extends (personas seeded its topics)

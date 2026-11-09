@@ -2,7 +2,7 @@
 title: RA-DIT Dual Instruction Tuning
 tags: [rag, foundations, llm, pattern]
 summary: "RA-DIT fine-tunes the language model on retrieved-chunk prompts and, separately, the retriever's query encoder on the LM's own preferences, giving a small average gain over off-the-shelf retrieval-augmented prompting at 65B."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-lin-2023-ra-dit.md
 ---
@@ -39,3 +39,7 @@ Setup: a 65B LLaMA with the DRAGON+ retriever over a 399M-chunk corpus, ten chun
 - [[RAG Retrieval Strategies]] — prerequisite-for (retrieval choices the tuned model sits on)
 - [[RAG Reranking]] — related (another way to adapt retrieval to the reader)
 - [[UPRISE Universal Prompt Retrieval]] — related (a retriever trained from a frozen LM's scores)
+- [[RAG Sequence and RAG Token]] — prerequisite-for
+- [[Atlas Retrieval-Augmented Few-Shot Learning]] — related
+- [[RAFT Retrieval-Augmented Fine-Tuning]] — alternative-to
+- [[Chain-of-Note]] — related

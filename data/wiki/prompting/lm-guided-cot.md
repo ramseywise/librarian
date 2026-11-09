@@ -2,7 +2,7 @@
 title: LM-Guided Chain-of-Thought
 tags: [prompting, pattern]
 summary: "A small fine-tuned LM (FLAN-T5 80M) writes the rationale and a frozen larger LM (FLAN-T5 XXL 11B) answers; distilled rationales beat plain CoT on 2WikiMultiHopQA by about 10% EM/F1, while the RL stage adds only tenths of a point (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-lee-2024-can-small-language-models-help.md
 ---
@@ -13,7 +13,7 @@ Lee, Yang, Tran et al. (preprint, 2024) test whether splitting chain-of-thought 
 
 ## Method
 
-A FLAN-T5 small model (80M) is first instruction-tuned on rationales from a large LM that were filtered (knowledge distillation, KD). It is then refined with PPO using two rewards: rationale-quality aspects scored by classifiers (eight aspects) and a task reward taken from the answers of a frozen FLAN-T5 XXL (11B). At test time the small model's rationale is inserted into the large model's prompt. Evaluation is on HotpotQA and 2WikiMultiHopQA with hand-filtered hard eval sets of 1000 correct plus 1000 incorrect examples.
+A FLAN-T5 small model (80M) is first instruction-tuned on rationales from a large LM that were filtered (rationale distillation, KD). It is then refined with PPO using two rewards: rationale-quality aspects scored by classifiers (eight aspects) and a task reward taken from the answers of a frozen FLAN-T5 XXL (11B). At test time the small model's rationale is inserted into the large model's prompt. Evaluation is on HotpotQA and 2WikiMultiHopQA with hand-filtered hard eval sets of 1000 correct plus 1000 incorrect examples.
 
 ## Results
 

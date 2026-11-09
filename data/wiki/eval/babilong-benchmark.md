@@ -2,7 +2,7 @@
 title: BABILong Benchmark
 tags: [eval, concept]
 summary: "BABILong hides bAbI reasoning facts inside PG19 book text padded to any length; on it GPT-4-Turbo failed for most of its 128K window and retrieval failed on multi-fact tasks, while a small recurrent-memory GPT-2 held up to 10M tokens on the simple tasks tested (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-08-kuratov-2024-search-needles-11m-haystack.md
 ---
@@ -13,7 +13,7 @@ The 2024 preprint asks how GPT-4-Turbo, Mistral, retrieval-augmented generation 
 
 ## How the benchmark is built
 
-BABILong takes the sentences of a bAbI task (a short reasoning question with its supporting facts) and places them between sentences of unrelated PG19 book text, padded sentence by sentence until the input reaches a target length. Length is therefore a free parameter, and the supporting facts are spread through the text rather than adjacent. The main evaluation uses the first five bAbI tasks (qa1 to qa5), with qa1 needing one fact and qa2 and qa3 needing two or three.
+BABILong takes the sentences of a bAbI task (a short reasoning question with its supporting facts) and places them between sentences of unrelated PG19 book text, padded sentence by sentence until the input reaches a target length. Length is therefore a free parameter, and the supporting facts are spread through the text rather than adjacent. The main evaluation uses the first five bAbI tasks (qa1 to qa5), with qa2 and qa3 needing two or three facts.
 
 ## Findings (self-reported)
 
@@ -27,9 +27,9 @@ BABILong takes the sentences of a bAbI task (a short reasoning question with its
 ## Limits
 
 - Background is only PG19 and Wikipedia; interference from similar facts could make the task harder. The tasks are simple algorithmic bAbI tasks, chosen on purpose.
-- The retrieval component was not tuned (OpenAI embeddings only), the GPT-4 and Mistral prompts may be suboptimal, and no seeds, decoding settings or temperature are stated. The authors say part of RAG's failure is that default retrieval pays no attention to temporal order.
+- The retrieval component was not tuned (OpenAI embeddings only), the GPT-4 and Mistral prompts may be suboptimal, and the text gives no seeds, decoding settings or temperature. The authors say part of RAG's failure is that default retrieval pays no attention to temporal order.
 - RMT models are trained per task on a small GPT-2, RMT has finite storage, and RMT-R storage grows linearly with segment count.
-- The extraction gives no numbers for the main RMT results, which are in Figure 9; the 10M-token evaluation uses only 100 samples.
+- The extraction notes that it has no numbers for the main RMT results, which are in Figure 9, and that the 10M-token evaluation uses only 100 samples.
 - Models are early-2024 snapshots (GPT-4-Turbo, Mistral).
 
 ## See Also
@@ -37,3 +37,4 @@ BABILong takes the sentences of a bAbI task (a short reasoning question with its
 - [[Long-Context Prompting]] — related
 - [[RAG vs Long Context: Evaluation Evidence]] — related (a second body of long-context versus retrieval evidence)
 - [[Neural Turing Machine]] — related (an earlier external-memory design)
+- [[bAbI Toy Tasks]] — prerequisite-for (the synthetic tasks it embeds in long text)

@@ -2,9 +2,10 @@
 title: Knowledge Conflicts Taxonomy
 tags: [context, concept]
 summary: "A 2024 survey sorts the ways an LLM's inputs and weights can disagree into context-memory, inter-context and intra-memory conflicts, with causes, observed behaviour and fixes for each; the survey compiles other papers' numbers and says they are not comparable."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-06-xu-2024-knowledge-conflicts-llms.md
+  - data/raw/papers/2026-11-08-wadhwa-2024-rags-rich-parameters.md
 ---
 
 # Knowledge Conflicts Taxonomy
@@ -24,6 +25,7 @@ The survey (an arXiv preprint, version 2, 2024) sorts conflicts into three types
 - **Between contexts.** The evidence models favour is what agrees with their memory, what more documents back, entities of higher popularity, and text relevant to the query. They react to evidence order and give relevance more weight than the style-based credibility signals people rely on. With noise above 0.8, all models lost more than 20% (Chen 2023b, RGB benchmark, as compiled); on contradiction detection only GPT-4 passed 70%, others under 50% (Li 2023a, CONTRADOC).
 - **Inside memory.** GPT-4 showed a 13% inconsistency rate on commonsense QA (Zhao 2023b); self-contradiction ran 15.7% to 22.9% across four models, fewer for stronger ones (Mundler 2023). The survey notes that cross-lingual inconsistency did not improve with model size.
 - **Mechanism.** One cited study (Jin 2024b) reports late-layer "memory heads" that recall internal knowledge and "context heads" that read the context, and prunes them to resolve conflicts without parameter updates.
+- **Mechanism, a probing study (Wadhwa et al. 2024, self-reported).** The study applies causal tracing, attention contribution and attention knockout to the 7B Llama-2 and the 2.7B Phi-2, using factual queries from the Knowns dataset and a GPT-4-written context that states the answer once. Once the context is present, the indirect effect of the MLPs at the final subject token shrinks roughly fivefold in Llama-2 (from 0.2 to 0.0375 over 50 prompts), and the last token drew more on the context's attribute token than on the query's subject token. Knocking out subject attention lowered answer probability by under 5% under RAG but by 95% in Llama-2 without context; knocking out attribute attention cut it 20% (Llama-2) and 25% (Phi-2). The authors read this as a shortcut to the context. The extraction notes observe that the study's prompt tells the model to ignore prior knowledge, which may drive this.
 
 ## Solutions
 
@@ -35,9 +37,15 @@ The survey groups fixes by goal: stay faithful to context (fine-tuning on counte
 - Most analyses build their conflicts artificially, by entity substitution or LLM generation, so the authors caution that results may not carry over to practice; conflicts arising in real RAG deployments have had little study.
 - Evaluation is mostly English text QA, with little on legal, medical or financial tasks. No single fix covers every case: current methods either assume a prior or address only one subclass.
 - Coverage ends around early 2024 and the models studied include ChatGPT, GPT-4, PaLM2, Llama2 and Vicuna. The extraction notes a typo in the source: one remark says "inter-memory conflict" where intra-memory is meant.
+- Wadhwa et al. (probing study) use two small base models, causal tracing on 50 prompts, short synthetic context with the answer once and no condition without the ignore-prior instruction; no seeds or significance tests, and, per the extraction notes, a figure caption's ratios disagree with its text.
 
 ## See Also
 - [[Context Failure Modes]] — prerequisite-for (clash and poisoning are two of its named failures)
 - [[RAG vs Long Context: Evaluation Evidence]] — related (retrieved text that disagrees with the model or itself)
 - [[Prompt Injection]] — related (one route for misinformation into context)
 - [[Compression Strips the Epistemic Frame]] — related
+- [[NoiserBench Beneficial and Harmful RAG Noise]] — related (counterfactual noise)
+- [[PopQA and Popularity-Gated Adaptive Retrieval]] — related
+- [[ClashEval Prior Versus Context Benchmark]] — instance-of
+- [[Astute RAG]] — instance-of
+- [[ALCUNA New Knowledge Benchmark]] — related

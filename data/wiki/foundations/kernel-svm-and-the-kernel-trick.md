@@ -2,7 +2,7 @@
 title: "Kernel SVM and the Kernel Trick"
 tags: [foundations, concept]
 summary: "A kernel SVM is a linear model in an implicit richer feature space; C and gamma must be tuned together and features must be scaled."
-updated: 2026-11-04
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--02-supervised-learning.md
 ---
@@ -38,3 +38,4 @@ Good: small and medium data (up to about 10k samples), similar-scale features, c
 ## See Also
 - [[Supervised Model Families and Complexity Knobs]] — prerequisite-for
 - [[Penalised Linear Models: Ridge, Lasso and Elastic Net]] — related
+- [[Platt Scaling for SVM Probabilistic Outputs]] — related

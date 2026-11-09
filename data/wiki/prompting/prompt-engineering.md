@@ -2,7 +2,7 @@
 title: Prompt Engineering
 tags: [prompting, llm, concept]
 summary: The innermost layer of the agent stack — the instructions and examples themselves, grounded in the document-completion mental model; ends where decisions about what to include in the window begin.
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt--prompt-engineering.md
   - data/raw/papers/2026-11-07-huyen-ai-engineering-ch05-prompt-engineering.md
@@ -143,3 +143,5 @@ is the primary security concern for any system with external inputs. See
 - [[Chain-of-Thought Prompting]] — instance-of
 - [[Strategic Chain-of-Thought (SCoT)]] — instance-of
 - [[Controllable Text Generation Taxonomy]] — related
+- [[Analogical Prompting]] — instance-of
+- [[Context-Faithful Prompting]] — instance-of

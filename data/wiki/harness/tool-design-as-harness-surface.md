@@ -2,12 +2,14 @@
 title: Tool Design as Harness Surface
 tags: [llm, agents, mcp, concept]
 summary: "Tools are designed for a reader with no docs and no follow-up question — capability form and granularity, the five-section contract whose negative sections do the work, parameter fidelity, output discipline, and the four gating questions that decide confirmation, retry, and serialization."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--03-tool-design.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--03-tool-design.md
   - data/raw/papers/2026-11-06-lakshmanan-hapke-genai-design-patterns-ch07-enabling-agents-to-take-action.md
   - data/raw/papers/2026-11-07-building-applications-with-ai-agents-ch04-tool-use.md
+  - data/raw/papers/2026-11-08-liang-2023-taskmatrix-ai.md
+  - data/raw/papers/2026-11-06-zhang-2023-igniting-language-intelligence.md
 ---
 
 # Tool Design as Harness Surface
@@ -255,6 +257,26 @@ The chapter is guidance with no experiment, so each point is the author's claim.
 - Least power: expose to the model no more tools than the task needs.
 - The MCP security and transport statements and the ChatGPT plug-in section date from 2025 or earlier and have since changed; the extraction notes bugs in the chapter's MCP example code.
 
+## API documentation as the tool interface (TaskMatrix.AI)
+
+Liang et al. (preprint) propose TaskMatrix.AI, in which a conversational multimodal model sits in front of a large catalogue of APIs. The design has four parts: the model, the API platform, an API selector and an action executor. Given a request, the model drafts a step-by-step outline in text, chooses among documented APIs and generates code to call them. Every API is described with the same five-part documentation schema, plus an optional field of composition instructions that tells the model how several APIs combine. The authors suggest the documentation itself be treated as something to tune, using feedback sent back to API authors.
+
+The only evidence is illustrative. In one PowerPoint dialogue (ChatGPT, python-pptx and PyAutoGUI APIs), a single complex instruction expanded into roughly 25 API calls. When composition instructions were absent, the calls came out in the wrong order (inserting before selecting) and text ran together in long blocks; with them, the text box was selected first every time. In a further example ChatGPT converted a request containing wrong and right calls into documentation feedback, and two of the five points it listed lined up with the instructions a person had written for composition.
+
+Limits of this section:
+
+- The extraction notes this is a position paper with no benchmark, success rate, baseline or ablation; the selector and the RLHF step are only described, and the promised system had not been released.
+- The ordering effect is shown on one task, and the authors note the model sometimes got it right without composition instructions. The reliance on early-2023 ChatGPT is dated, and documentation-only APIs later became standard function calling.
+
+## Tool use as an expansion of the ability boundary (Zhang et al. survey)
+
+A 2023 survey of chain-of-thought and language agents describes tool use as widening what a language model can do. It names three purposes: carrying out actions, bringing in outside knowledge, and supporting reasoning or verification. The survey cites work where self-verification gains came from oracles or external tools rather than the model checking itself, and it credits environment feedback such as code or action error messages as the route to self-correction.
+
+Limits of this section:
+
+- The extraction notes that the survey covers ReAct and tool use only briefly: no ReAct benchmark numbers, nothing on function-calling schemas, and no analysis of how tool agents fail.
+- Its coverage stops at late 2023, so it predates standard function calling and MCP.
+
 ## See Also
 - [[Agentic Engineering and the New SDLC]] <!-- auto-linked -->
 - [[Harness Maturity and Failure Modes]] <!-- auto-linked -->
@@ -282,3 +304,8 @@ The chapter is guidance with no experiment, so each point is the author's claim.
 - [[SWE-agent Agent-Computer Interface]] — instance-of (the original ACI)
 - [[CoAct-1 Coding Actions for Computer Use]] — related
 - [[OS-Copilot FRIDAY Tool Repository]] — related
+- [[Gorilla and APIBench]] — instance-of
+- [[ToolLLM ToolBench and DFSDT]] — instance-of
+- [[Toolformer Self-Supervised Tool Use]] — instance-of
+- [[GAP Graph-Based Parallel Tool Planning]] — related
+- [[Routine Structured Plan for Tool Calls]] — related

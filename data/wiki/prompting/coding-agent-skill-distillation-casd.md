@@ -2,7 +2,7 @@
 title: Coding-Agent Skill Distillation (CASD)
 tags: [prompting, pattern]
 summary: "CASD hands an unmodified coding agent a static corpus of agent trajectories and lets it analyse the whole corpus with code, then write a skill file used as the system prompt; the paper reports it beating GEPA on three of four agentic benchmarks at lower cost (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-singh-2026-coding-agents-strong-prompt-optimizers.md
 ---
@@ -34,10 +34,10 @@ The authors also give a theory, not tested empirically, that offline distillatio
 
 - One target model and one coding agent; how results change with the distiller's capability was not tested.
 - CASD cannot discover behaviours absent from the logged rollouts.
-- Only three seeds and three skills, no significance tests; the authors note that sampling error alone is roughly 7 points per seed at these test sizes (binomial). The CASD deviation is skill-to-skill, the baseline's is seed-to-seed.
+- The extraction notes only three seeds and three skills and no significance tests; the authors note that sampling error alone is roughly 7 points per seed at these test sizes (binomial). The CASD deviation is skill-to-skill, the baseline's is seed-to-seed.
 - The extraction notes several gaps are within noise, GEPA wins SpreadsheetBench in both regimes, and in the telecom head-to-head SkillOpt comes out ahead (44.2).
-- GEPA was run at a single budget of 120 metric calls; CASD uses an agentic tool-using harness while baselines use their native reflection.
-- All four benchmarks are agentic; the extraction notes the authors are at Microsoft, with GEPA's authors being a different group.
+- The extraction notes GEPA was run at a single budget of 120 metric calls; CASD uses an agentic tool-using harness while baselines use their native reflection.
+- The extraction notes all four benchmarks are agentic and the authors are at Microsoft, with GEPA's authors being a different group.
 - The extraction flags that the arXiv ID conflicts with the stamped date, so check the ID before citing.
 
 ## See Also

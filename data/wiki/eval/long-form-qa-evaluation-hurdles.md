@@ -2,7 +2,7 @@
 title: Long-Form QA Evaluation Hurdles
 tags: [eval, concept]
 summary: "Krishna et al.'s 2021 control experiments on long-form QA (ELI5, KILT): random retrievals barely move ROUGE-L, a copied question beats a retrieval-augmented system on it, and humans prefer gold answers 68% to 14%, so leaderboard gains there say little about answer quality (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-09
 sources:
   - data/raw/papers/2026-11-07-krishna-2021-hurdles-progress-long-form-question.md
 ---
@@ -43,3 +43,7 @@ In interviews, the volunteer annotators said each pair took them around two minu
 - [[RAG Evaluation]] — related (checking that the generator uses what was retrieved)
 - [[Text Metrics Beyond N-gram Overlap]] — related (learned and embedding alternatives to ROUGE and BLEU)
 - [[Generative Search Engine Verifiability Audit]] — instance-of (human audit of cited answers)
+- [[ELI5 Long-Form QA Dataset]] — instance-of (the dataset and its metric issues)
+- [[LFQA Attribution and SALAD]] — contradicts (finds LLMs treat random and relevant documents differently)
+- [[ALCE Citation Benchmark]] — extends
+- [[ASQA]] — related
