@@ -2,7 +2,7 @@
 title: LLM System Bottleneck Table
 tags: [infra, llm, reference]
 summary: The five recurring bottlenecks in a production LLM system — token overload, queue congestion, vector index bloat, model cold start, rate-limited APIs — each with its cause and the mitigation that follows from the cause.
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--guides--9-system-design--interview-guide.md
   - data/raw/repos/sisyphus/interviewing--guides--9-system-design--interview-guide.md
@@ -69,3 +69,5 @@ confident and become wrong.
 - [[Why Context Is Finite]] — prerequisite-for (the mechanism under token overload)
 - [[Safeguards Architecture — Five Protection Layers]] — alternative-to (failure prevention vs failure capacity)
 - [[System Design Interview Study Guide]] — instance-of (where this is examined)
+- [[Goodput and Inference Metrics]] — related
+- [[GPU Cluster Host, Network and Storage Tuning]] — related

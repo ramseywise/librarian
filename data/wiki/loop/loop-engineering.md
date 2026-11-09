@@ -14,6 +14,7 @@ sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop-engineering--notes--04-building-blocks.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop-engineering--notes--09-failure-modes-and-guardrails.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop-engineering--notes--10-framework-bindings.md
+  - data/raw/papers/2026-11-08-building-applications-with-ai-agents-ch11-improvement-loops.md
 ---
 
 # Loop Engineering
@@ -306,6 +307,10 @@ loop length. **Anything longer must checkpoint and resume rather than hold the p
 8. [[Four Media for Agent Lessons]] — where a learned lesson should live
 9. [[Self-Modification as a Release Process]] — shipping harness changes like releases
 10. [[Sleep Learning]] — offline consolidation of lessons between runs
+
+## Improvement-Loop Practices (practitioner chapter)
+
+A book chapter on agent improvement loops (feedback pipelines, experimentation, continuous learning) recommends clustering failures from traces, escalating to humans by model uncertainty or outcome consequence, validating prompt and tool refinements offline and then in shadow deployment or A/B test, and logging each refinement with the problem, the change and how it will be measured. Its numbers (escalate below 0.7 certainty, keep escalated cases under 10%, an ensemble divergence rule of 20%) are illustrative with no data behind them. Its own limits table notes that in-context adaptations are lost when the session ends, shadow runs cannot exercise human-in-the-loop agents safely, and bandits can create pathological feedback loops.
 
 ## See Also
 - [[Eval Harness Anatomy]] <!-- auto-linked -->

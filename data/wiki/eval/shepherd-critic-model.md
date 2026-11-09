@@ -34,3 +34,4 @@ The paper reports no agreement between raters, number of raters, intervals or te
 - [[LLM Judge Biases]] — related (pairwise versus pointwise scoring)
 - [[LLM-as-Judge Evaluation]] — related
 - [[Chain-of-Verification]] — related (another way a model's own errors get flagged)
+- [[Self-Critiquing Models for Human Evaluators]] — alternative-to

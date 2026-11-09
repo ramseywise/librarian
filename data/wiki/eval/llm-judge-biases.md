@@ -112,3 +112,6 @@ UI agents from screenshots, video from sampled frames — each with its own cali
 - [[FACTS Leaderboard]] — related (concedes judge self-preference and averages two judges to reduce it)
 - [[HITL Annotation Pipeline]] — related (LLM annotators compared with crowd workers, with the Gilardi limits)
 - [[Medprompt]] — related (a choice-shuffle ensemble that targets option-order bias)
+- [[AlpacaFarm Simulated Human Feedback]] — related
+- [[BBQ Bias Benchmark]] — related
+- [[Chain-of-Thought Unfaithfulness Under Biased Context]] — related

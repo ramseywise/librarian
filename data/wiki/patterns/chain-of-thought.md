@@ -105,3 +105,7 @@ See [[Agent Memory Types]] for the reflection implementation.
 - [[Skeleton-of-Thought]] — extends (skeleton then parallel expansion, for latency)
 - [[Overthinking and Concise Reasoning]] — related (token savings from shorter chains)
 - [[LLM Reasoning Surveys and the Can-LLMs-Reason Debate]] — related
+- [[Chain of Draft]] — extends (five-word step drafts to cut tokens)
+- [[Contrastive Chain of Thought]] — extends (adds an invalid rationale to each demonstration)
+- [[Chain-of-Thought Prompting]] — related (the paper-level treatment: setup, scale, ablations)
+- [[CoT-Decoding]] — related

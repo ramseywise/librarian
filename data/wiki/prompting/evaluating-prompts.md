@@ -2,10 +2,11 @@
 title: Evaluating Prompts
 tags: [prompting, eval, concept]
 summary: Prompt-level evaluation — build the eval before the prompt; match test style to what changes (model, single prompt, composition); climb from a git-diffed example suite to an automated harness by solving sample sourcing and scoring independently; then A/B online with success and guardrail metrics fixed up front.
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--09-evaluating-prompts.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--08-prompt-optimization.md
+  - data/raw/papers/2026-11-06-yeadon-2024-comparison-human-gpt-3-5.md
 ---
 
 # Evaluating Prompts
@@ -87,8 +88,14 @@ Clavié et al. (2023), job-posting classification, one modification at a time:
 - Instructions plus reiteration of key points was the largest single driver.
 - The tiny gains are model-specific; **the methodology is the lesson — change one thing, re-score.**
 
+## A course-marking study
+
+Yeadon et al. (2024) compared students with GPT-4 on a university coding course, using a marker for scoring. Students averaged 91.9% (the body text says 91.1%, an internal inconsistency in the extraction) against 81.1% for GPT-4 with prompt engineering. Prompt engineering moved GPT-4 from 71.9 to 81.1 and GPT-3.5 from 30.9 to 48.8; a mixed condition scored 76.0. Marker accuracy was 85.3% with an ICC of 0.932 (all self-reported). Limits: one course, small samples, 2024-era models.
+
 ## See Also
 - [[SOMA Judge Rubric]] — extends
 - [[LLM-as-Judge Evaluation]] — extends
 - [[Prompt Optimization]] — prerequisite-for
 - [[Logprobs as Confidence Signal]] — extends
+- [[FormatSpread]] — related (format spread as a reporting practice)
+- [[Prompt Order Sensitivity and Entropy Probing]] — related

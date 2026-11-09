@@ -7,6 +7,13 @@ sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop--loop-engineering.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop-engineering--notes--08-self-improving-loops.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop-engineering--notes--03-the-scorekeeper.md
+  - data/raw/papers/2026-11-06-zhang-2026-autogenesis.md
+  - data/raw/papers/2026-11-06-zhang-2026-harnessing-agentic-evolution.md
+  - data/raw/papers/2026-11-06-zhang-2026-self-harness.md
+  - data/raw/papers/2026-11-06-zheng-2026-llms-improving-llms.md
+  - data/raw/papers/2026-11-06-tian-2026-cedar.md
+  - data/raw/papers/2026-11-06-zweiger-2025-self-adapting-language-models.md
+  - data/raw/papers/2026-11-06-ye-2026-fragility-self-improving-agents.md
 ---
 
 # Recursive Self-Improvement
@@ -153,6 +160,21 @@ The outer loop autonomously reached for combinatorial optimization, multi-armed 
 design of experiments **without being told those domains existed** — succeeding, per the
 authors, by *breaking the inner loop's deterministic search patterns*.
 
+## 2026 Self-Improvement Systems and Their Caveats
+
+Five 2026 preprints change what gets edited and what gates the edit. Numbers are the papers' own (self-reported).
+
+- **Autogenesis (AGP).** Separates what evolves (RSPL: prompts, agents, tools, environments and memory held as registered, versioned resources) from the way updates are made (SEPL: reflect, select, improve, evaluate, commit). Rejecting a proposal keeps the active version. On GPQA-Diamond with GPT-4o, joint prompt and solution evolution reached 59.09% against 54.04% for simple reflection, at about 61% more output tokens, over three runs. The evaluator is a second call to the same backbone, given no reference labels, and checks consistency and format rather than correctness, and the cases never exercise rollback.
+- **AEvo (Harnessing Agentic Evolution).** A meta-agent edits the mechanism that produces candidates, not the next candidate, with rounds, records and feedback held outside its loop so it cannot stop early. Terminal-Bench 53.8 (DGM and AFlow 44.3) and ARC-AGI-2 47.0 (ADAS 36.0), and 1138 cycles on a VLIW kernel task, at about three times the per-round cost of procedure baselines (Gemini-3-Flash as executor, 3 runs). Without the external harness, two of three kernel runs reward-hacked.
+- **Self-Harness.** A fixed model proposes bounded edits to its own harness, and a non-regression gate accepts a change only if neither a held-in nor a held-out split drops and one rises. All nine model-benchmark combinations improved, the largest being GLM-5 on AppWorld, up from 44.4% to 85.0% (subsets of 64 to 180 cases, two attempts). The extraction notes that the held-out split is used for selection and so is contaminated as an estimate.
+- **AutoTTS.** A coding agent writes a test-time-scaling controller and scores it by replaying 128 stored trajectories per problem, so no base-model calls are made during search: about $39.9 and 160 minutes over 5 rounds, with about 69.5% fewer tokens than self-consistency at matched accuracy on held-out AIME25 and HMMT25. Forcing one monotone knob (beta) held held-out accuracy at 53.1 against 49.0 without it, and giving the explorer execution traces beat scalar feedback (53.1 against 51.6).
+- **CEDAR.** Monte Carlo tree search with an LLM editor and an LLM judge. The extraction flags that the judge and editor share a model class, a circularity risk, and that the appendix gives 10 MCTS iterations where the main text gives 20 by 5 expansions.
+- **SEAL.** The model writes its own fine-tuning data, rewarded by the updated model's accuracy: single-passage knowledge incorporation rose from 33.5 to 47.0 (GPT-4.1-written data 46.3), and ARC reached 72.5% on a tiny evaluation set (8 tasks). Forgetting under repeated edits is not addressed.
+
+A caution that cuts across all of them: Ye et al. (Salesforce, 2026) find that memory-based self-improvement on WebArena gives +1.5 points over a no-memory GPT-5-mini agent (Welch p=0.23, 3 runs), shuffling task order turns it into about -4.5, variance rises in 17 of 24 cases, and extra specification closes only 31% of the degradation. The default benchmark order acts as an easy-to-hard curriculum the methods may depend on. See [[Oracle-Gap Recovery by Selection]] on selector quality and [[Forgetting Reset for Discovery Teams]] on session length.
+
+Limits specific to this section: Autogenesis's gate is self-assessed and its GPQA gain costs extra tokens; AEvo's Table 2 ARC score (47.0) and an appendix figure (0.35, 7 of 20) are not reconciled; Self-Harness and AutoTTS use subsets and 2 to 3 repeats; CEDAR's gains cannot be separated from its shared-model judge.
+
 ## See Also
 - [[Loop Engineering]] — extends
 - [[Evolve Loop]] — extends
@@ -179,3 +201,9 @@ authors, by *breaking the inner loop's deterministic search patterns*.
 - [[AIRA Draft-Debug-Improve Search]] — instance-of
 - [[Self-Evolving Agent Taxonomies]] — related
 - [[Evaluator Exploits in Discovery Loops]] — related
+- [[Darwin Gödel Machine]] — instance-of (archive-based self-modifying coding agent)
+- [[LADDER and TTRL Verified Variant Trees]] — instance-of (verifier-bounded self-training)
+- [[Self-Generated Task Practice]] — instance-of
+- [[Learned Skill and Action Libraries]] — instance-of
+- [[Forgetting Reset for Discovery Teams]] — related
+- [[Oracle-Gap Recovery by Selection]] — related

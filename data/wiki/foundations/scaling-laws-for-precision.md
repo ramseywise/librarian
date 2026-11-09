@@ -31,3 +31,4 @@ Setup: OLMo-style models of 30M to 220M parameters trained on Dolma, with GPTQ p
 - [[LLM Inference Economics]] — prerequisite-for (quantization as a serving lever)
 - [[BitNet b1.58 Ternary Weights]] — related (training at very low precision)
 - [[MoE Expert Offloading]] — related (hard quantization of expert weights in practice)
+- [[FP8-LM Mixed-Precision FP8 Training]] — related

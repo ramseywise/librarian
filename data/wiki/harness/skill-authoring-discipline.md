@@ -162,3 +162,4 @@ this is R3 and R8 with an egress path attached.
 - [[Natural-Language Agent Harnesses]] — related
 - [[AGENTS.md Context File Evaluation]] — related
 - [[Synthetic Computers at Scale]] — related
+- [[Learned Skill and Action Libraries]] — related

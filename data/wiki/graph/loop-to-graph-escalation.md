@@ -12,6 +12,7 @@ sources:
   - data/raw/repos/galactus/.claude--docs--plans--2026-08-14-orchestrator-design.md
   - data/raw/claude-docs/galactus/docs/plans/2026-08-14-pipeline-orchestration.md
   - data/raw/repos/galactus/.claude--docs--plans--2026-08-14-pipeline-orchestration.md
+  - data/raw/papers/2026-11-08-graph-engineering-karpathy-loop-anthropic-playbook-2026.md
 ---
 
 # Loop-to-Graph Escalation
@@ -121,6 +122,19 @@ the qualifying band, run mechanical nodes on a cheap model tier, bound loop-back
 The deciding number is the per-cycle pass rate, which nobody had measured — so the design
 shipped the documented contract first and let its hook-recorded transitions produce that
 rate (see [[Decision-Seat Inventory for a Control Plane]]).
+
+## A staged path in an anonymous 2026 playbook
+
+An anonymous, unreviewed 2026 note ("Independently compiled", not endorsed by the people it names) lays out a route that starts with a single measured loop and ends in a swarm grounded in a graph. It contains no original measurement; the extraction says every number is relayed from cited web sources and that the "1000x" in its title is supported by no figure in the body (1,000 appears only as a sub-agent cap). The stages are recommendations, not tested:
+
+1. One LLM call with an evaluable output, plus a stored first draft, an evaluator with explicit criteria, a revision step and a stopping rule.
+2. Add a tool only for a measured failure, with a typed schema and permissions.
+3. Plan only when the route through the task differs between runs; demand a JSON plan, check its dependencies, and cap retries and spend.
+4. Move to several agents with just a generator and a critic at first; each handoff is a contract about an artifact, and reviewers report defects per criterion.
+5. Start the graph as versioned JSON or relational tables, recording provenance on each edge.
+6. Widen to a swarm only when the work parallelises trivially, and specify the reducer ahead of the fan-out.
+
+It also advises a per-run complexity budget covering model calls, sub-agents, tool calls, elapsed time, tokens and retries, which, once used up, returns the strongest artifact so far along with why it stopped. It also says agents alone are no reason for a graph: a relational table is enough when it answers every query, or when nothing persists across sessions. Relayed figures, all reported by the note from secondary sources: about 700 experiments in two days with roughly 20 retained optimisations for Karpathy's autoresearch loop, up to 16 concurrent sub-agents with a hard cap of 1,000 per Dynamic Workflow, and a roughly 750,000-line port completed in eleven days at a 99.8% test pass rate. Its authors concede that metrics can be gamed, that dynamic workflows cost a lot and yield errors that correlate, and that false entity merges are catastrophic. Several references lack authors or dates.
 
 ## See Also
 - [[Recursive Self-Improvement]] <!-- auto-linked -->

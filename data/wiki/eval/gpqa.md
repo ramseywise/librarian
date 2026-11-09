@@ -71,3 +71,4 @@ quality-conditional bonuses. Questions are then sorted into three nested sets:
 - [[Eval Error Bars and Sample Size]] — related (the authors state the effect size needed for 80% power at this set size)
 - [[Self-Ask Prompting]] — related (the open-book search baseline is built on it)
 - [[AGIEval]] — alternative-to (human-exam questions rather than expert-written ones)
+- [[OlympiadBench]] — related

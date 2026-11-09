@@ -71,3 +71,6 @@ correlated biases. Model names and leaderboard positions are a mid-2026 snapshot
 - [[Best-of-k Headline Inflation]] — related (selection over several attempts versus a single run)
 - [[Self-Consistency]] — related (repetition as a way to pool answers)
 - [[Universal Verifier for Computer-Use Agents]] — alternative-to (rubric-based verifier for computer-use trajectories)
+- [[VeriHarness Agentic Verification]] — related
+- [[Team of Rivals Critic-Veto Orchestration]] — related
+- [[Code-Based Self-Verification and Weighted Voting]] — related

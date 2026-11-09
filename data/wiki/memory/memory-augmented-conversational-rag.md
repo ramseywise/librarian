@@ -104,3 +104,4 @@ xMemory (preprint, 2026) retrieves over a hierarchy of decoupled memory units ra
 - [[Execution Boundaries and Guardrails]] — related (retrieval as a gated tool call)
 - [[Memory as Context]] — extends (conversational memory as one tier of the context-engineering memory design)
 - [[Memory Forms Taxonomy]] — instance-of (the retrieval-timing decision)
+- [[LLM Personalization Taxonomy]] — related

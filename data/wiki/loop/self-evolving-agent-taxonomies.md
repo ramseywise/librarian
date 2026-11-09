@@ -7,6 +7,9 @@ sources:
   - data/raw/papers/2026-11-06-fang-2025-comprehensive-survey-self-evolving-ai.md
   - data/raw/papers/2026-11-06-gao-2025-survey-self-evolving-agents.md
   - data/raw/papers/2026-11-06-duan-2026-last-ai-built-humans.md
+  - data/raw/papers/2026-11-06-tao-2024-survey-self-evolution-large-language.md
+  - data/raw/papers/2026-11-08-dong-2024-survey-llm-inference-time-self.md
+  - data/raw/papers/2026-11-06-weston-2025-ai-human-co-improvement-safer.md
 ---
 
 # Self-Evolving Agent Taxonomies
@@ -31,8 +34,22 @@ A baseline B0 (output changes, nothing persists) and five levels, each adding a 
 - Duan's section 4 carries a broken appendix cross-reference; the extraction did not read the reference list.
 - All three are preprints or surveys with no new measurements; none tests a cadence, a config-file rewrite or a "no change needed" outcome.
 
+## Three More Framings
+
+- **Tao et al. (2024).** A single repeated cycle with four phases, beginning with experience acquisition (task evolution, solution evolution, feedback), refinement (filtering or correcting), updating (in-weight, with replay, regularisation and architecture routes against forgetting, or in-context) and evaluation, which the survey calls underexplored. Autonomy is low (the user fixes the objective and designs each module), medium (the model builds the modules) or high (the model sets its own objective); most work sits at low. Two second-hand claims it makes, that methods struggle to improve after about three rounds and that self-correction appears above 22 billion parameters, cite other papers and carry no numbers here.
+- **Dong et al. (2024), inference-time self-improvement.** Scope is frozen weights only: independent (decoding and sampling), context-aware (prompt or retrieval) and model-aided (external model) methods. It says datastore-dependent methods need ongoing maintenance and that sampling many generations costs more time than changing the decoding itself. It excludes agent loops, reflection and weight changes, and was written before most later test-time reasoning work.
+- **Weston and Foerster (2025), co-improvement.** A position paper arguing that fully autonomous self-improvement is the wrong goal on both speed and safety, and that humans should stay in the research loop at each step, optimising research quality instead of artifact throughput. It gives no measurements and no thresholds for the human share.
+
+## Limits (added)
+
+- Tao and Dong are surveys with no experiments; Dong cites mainly a few venues and concedes it cannot give full technical detail.
+- Weston is a position paper, not peer reviewed; its Table 1 of collaboration stages lists twelve rows.
+
 ## See Also
 - [[Recursive Self-Improvement]] — related
 - [[Loop Autonomy Ladder]] — related
 - [[Self-Modification as a Release Process]] — related
 - [[Harness Continual Learning]] — related
+- [[LADDER and TTRL Verified Variant Trees]] — related
+- [[Learned Skill and Action Libraries]] — related
+- [[Forgetting Reset for Discovery Teams]] — related

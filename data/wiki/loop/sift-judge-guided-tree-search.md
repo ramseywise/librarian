@@ -43,3 +43,4 @@ The authors suggest a tiered judge: cheap for bulk comparisons, strong for the f
 - [[Harness Updating vs Harness Benefit]] — related (evolver capability)
 - [[AI Research Preference Model]] — alternative-to
 - [[Rehearse Focused Outcome Memory]] — alternative-to
+- [[Darwin Gödel Machine]] — prerequisite-for

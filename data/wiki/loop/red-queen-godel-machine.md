@@ -34,3 +34,4 @@ All figures are the authors' own (self-reported).
 - [[Reward Hacking and Overoptimization]] — prerequisite-for
 - [[Meta^n Recursive Operator Stack]] — alternative-to
 - [[Harness Updating vs Harness Benefit]] — related (evolver capability)
+- [[Darwin Gödel Machine]] — prerequisite-for

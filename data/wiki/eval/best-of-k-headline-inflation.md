@@ -63,3 +63,5 @@ the selected run only. The models in both are 2024 vintage.
 - [[Adaptive Branching MCTS]] — related (Pass@k results depend on the call budget)
 - [[Olympiad Proof Agents and Verifier Loops]] — related (pipeline results compared against best-of-32 leaderboard baselines)
 - [[TUMIX Tool-Use Mixture]] — related (matched by inference count, with starred baselines selected on the test benchmark)
+- [[PIE Performance-Improving Edits Benchmark]] — related (reports Best@8 speedups)
+- [[Oracle-Gap Recovery by Selection]] — related

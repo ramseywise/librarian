@@ -30,3 +30,5 @@ LM2 (a 2025 preprint) is a decoder-only transformer with an auxiliary memory mod
 - [[Memory Forms Taxonomy]] — prerequisite-for
 - [[MeMo Memory as a Model]] — alternative-to (memory held in model parameters versus a memory bank)
 - [[Delta-Mem Fixed-Size State Memory]] — alternative-to
+- [[Neural Turing Machine]] — related (earlier addressable external memory)
+- [[End-to-End Memory Networks]] — related

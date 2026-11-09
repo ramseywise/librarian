@@ -29,3 +29,4 @@ UPRISE does not rewrite a prompt. It retrieves prompt text from a pool of demons
 - [[Dynamic Tool Discovery]] — related
 - [[RAG Reranking]] — related
 - [[Tuning an Embedding Model from Match Labels]] — related
+- [[LLM-R Learned In-Context Example Retriever]] — related

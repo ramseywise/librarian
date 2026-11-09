@@ -52,3 +52,4 @@ contain them fail invisibly. See parameter fidelity in [[Tool Design as Harness 
 - [[Harness Anatomy]] — related (part of; bash and the minimal coding kit)
 - [[OpenDev Terminal Coding Agent]] — related (nine-pass edit matcher)
 - [[DeepCode Information-Flow Management]] — related
+- [[SWE-agent Agent-Computer Interface]] — related

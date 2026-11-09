@@ -8,6 +8,9 @@ sources:
   - data/raw/repos/learn-ai-engineering/interviewing--notes--loop-engineering.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop-engineering--notes--07-autonomy-ladder.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop-engineering--notes--06-triggers-and-schedules.md
+  - data/raw/papers/2026-11-06-shao-2025-future-work-ai-agents.md
+  - data/raw/papers/2026-11-06-tomasev-2026-intelligent-ai-delegation.md
+  - data/raw/papers/2026-11-07-building-applications-with-ai-agents-ch13-human-agent-collaboration.md
 ---
 
 # Loop Autonomy Ladder
@@ -153,6 +156,16 @@ just on failure.
 - [ ] **Has the verifier been observed catching a real failure — not just passing?**
 - [ ] For rung 3+: what is the cost ceiling per run, and what happens when it trips?
 - [ ] For rung 4: whose credentials does this run under, and who owns them?
+
+## How Others Grade Autonomy
+
+Three sources grade human involvement on different axes from this ladder; none validates its rungs.
+
+- **Human Agency Scale (Shao et al., Stanford, 2026).** Five levels running from H1, where the human is not involved, to H5, where the human is essential, rated per task by workers and by AI experts across 844 tasks and 104 occupations. Workers wanted more human agency than experts judged necessary: 26.9% of tasks matched, and H3 (equal partnership) was the dominant worker-desired level in 47 of 104 occupations (self-reported). This is a preference scale, not a runtime autonomy ladder, and agreement among experts was moderate (Krippendorff alpha 0.539 and 0.511, ICC 0.050). The text gives 46.6% for two different quantities in the extraction.
+- **Intelligent AI delegation (Tomasev et al., 2026).** A conceptual paper with no experiments. It argues that autonomy is granted per delegation and not fixed, that authority should be graduated by trust, that a sub-task should be delegated only when its outcome can be verified (otherwise decompose it further), that sub-delegation should use privilege attenuation, and that oversight needs deliberate cognitive friction to avoid rubber-stamping. It has no rung ladder.
+- **Albada, human-agent collaboration chapter.** A practitioner's four human roles as autonomy grows, executor, reviewer, collaborator and governor, with progressive delegation and escalation thresholds by decision type, risk or confidence. The examples are uncited anecdotes and the thresholds illustrative.
+
+Limit: these framings do not measure any handoff on this ladder, so mapping them to its rungs is an inference.
 
 ## See Also
 - [[Eval Ladder]] <!-- auto-linked -->

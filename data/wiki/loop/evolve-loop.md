@@ -143,3 +143,4 @@ and separate evidence collection from scheduled consolidation ([[Sleep Learning]
 - [[AdaptEvolve Confidence-Routed Evolution]] — instance-of
 - [[SIFT Judge-Guided Self-Improvement Tree Search]] — instance-of
 - [[Meta^n Recursive Operator Stack]] — instance-of
+- [[LADDER and TTRL Verified Variant Trees]] — related

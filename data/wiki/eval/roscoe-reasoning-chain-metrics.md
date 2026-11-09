@@ -41,3 +41,4 @@ All figures are the authors' own and self-reported; they are the maximum over pe
 - [[LLM-as-Judge Evaluation]] — alternative-to (an LLM grades the chain instead of embedding and NLI scores)
 - [[Chain of Thought]] — prerequisite-for (the step-by-step output it scores)
 - [[GPTScore]] — related (another reference-free text metric)
+- [[PrOntoQA]] — related (synthetic benchmark with parsed reasoning chains)

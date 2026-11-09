@@ -7,12 +7,15 @@ torch, fastapi) load only for the verbs that need them.
 
     librarian wiki stats|snapshot|check|gaps|log|ask   wiki health telemetry
     librarian wiki graph|rename|relink                 link graph, safe rename, link suggestions
-    librarian wiki lint|verify|index-add               lint findings, orphan/index check and index insert for new pages
+    librarian wiki lint|verify|index-add|see-also      lint findings, orphan/index check, index insert,
+                                                       append backlinks for new pages
     librarian wiki sync-check|compact-signals|week     taxonomy drift, compaction evidence, weekly trend
     librarian ingest mark|status|pending                manifest: record compiled files, show pending
     librarian jobs run <name>|list                     unattended jobs through the Agent SDK
-    librarian ingest triage|lint-raw|overlap|closeout  gate a raw source, validate raw filenames,
-                                                       find wording copied from a source, close a batch
+    librarian ingest triage|lint-raw|overlap|precheck|closeout
+                                                       gate a raw source, validate raw filenames,
+                                                       find copied wording and mechanical defects,
+                                                       close a batch
     librarian ingest notion|linear|pdf                 pull a source into data/raw/
     librarian scrape sessions|docs|repos|feeds|arxiv|bookmarks
     librarian courses import                           mirror learn-ai-engineering coursework into data/courses/
@@ -79,6 +82,9 @@ GROUPS: dict[str, dict[str, Verb]] = {
             "librarian.wiki.landing:main", ("verify",), "orphan and index check for new pages"
         ),
         "index-add": Verb("librarian.wiki.landing:main", ("index-add",), "add pages to _index.md"),
+        "see-also": Verb(
+            "librarian.wiki.landing:main", ("see-also",), "append backlinks to a page's See Also"
+        ),
         "sync-check": Verb(
             "librarian.wiki.sync_check:main",
             help="taxonomy drift: directories vs code domain lists",
@@ -103,6 +109,9 @@ GROUPS: dict[str, dict[str, Verb]] = {
         "lint-raw": Verb("librarian.ingest.lint_raw:main", help="validate data/raw/ filenames"),
         "overlap": Verb(
             "librarian.ingest.overlap:main", help="wording a page copies from its raw sources"
+        ),
+        "precheck": Verb(
+            "librarian.ingest.precheck:main", help="mechanical paper-page defects before review"
         ),
         "closeout": Verb(
             "librarian.ingest.closeout:main", help="batch close-out: pages per source, flags, mark"

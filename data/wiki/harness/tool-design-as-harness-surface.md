@@ -7,6 +7,7 @@ sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--03-tool-design.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--03-tool-design.md
   - data/raw/papers/2026-11-06-lakshmanan-hapke-genai-design-patterns-ch07-enabling-agents-to-take-action.md
+  - data/raw/papers/2026-11-07-building-applications-with-ai-agents-ch04-tool-use.md
 ---
 
 # Tool Design as Harness Surface
@@ -243,6 +244,17 @@ task ID `get_status` / `cancel` verbs, and give event-trigger tools precise filt
 
 The book states the mechanism plainly: the model only names a tool and supplies arguments; the calling application runs it and passes the result back in a further model call. For accuracy it recommends few tools and parameters, observing in June 2025 a limit of roughly 3 to 10 tools depending on the model (the authors' observation, with no data). Other rules: clear names and parameter descriptions, a system-prompt policy for when to use each tool, enumerated parameter values, not asking the model to fill in what the caller already knows, and descriptive error messages so a retry can follow. Where the input would be a long phrase in a domain language such as SQL, the authors prefer having the model write that code and executing it in a sandbox (limits on CPU, memory, network and time, validate before running, feed errors back), and say code execution was unreliable in mid-2025 outside narrow languages or tightly controlled sandboxes. The six prompt-injection design patterns they list are covered elsewhere in the wiki.
 
+## Tool use guidance (Albada, Building Applications with AI Agents, ch. 4)
+
+The chapter is guidance with no experiment, so each point is the author's claim.
+
+- What the model picks depends on tool metadata, namely name, description and schema: names should be narrow, descriptions distinct and schemas strict.
+- Register narrow operations rather than an arbitrary-SQL endpoint. The chapter reports, without data, an agent that dropped half the rows of a production table while optimising performance. Read-only agents get no write rights, and unavoidable free-form SQL needs bound parameters and a minimum-privilege account.
+- Tool-choice modes trade flexibility for determinism: auto, any or required, none, or a pinned tool. After each response, validate, retry with backoff (regenerating only the broken part), fall back, and log everything.
+- Model-drafted tool wrappers from OpenAPI specs need a sandbox run, human review and CI. Recreating tools at run time costs repeatability.
+- Least power: expose to the model no more tools than the task needs.
+- The MCP security and transport statements and the ChatGPT plug-in section date from 2025 or earlier and have since changed; the extraction notes bugs in the chapter's MCP example code.
+
 ## See Also
 - [[Agentic Engineering and the New SDLC]] <!-- auto-linked -->
 - [[Harness Maturity and Failure Modes]] <!-- auto-linked -->
@@ -266,3 +278,7 @@ The book states the mechanism plainly: the model only names a tool and supplies 
 - [[AutoHarness Synthesized Code Harness]] — related
 - [[Dependency Injection for LLM Chains]] — related (mocking tools and steps in tests)
 - [[EvoOntology Self-Evolving Ontology Layer]] — related
+- [[LIFE-Harness Runtime Interface Adaptation]] — related
+- [[SWE-agent Agent-Computer Interface]] — instance-of (the original ACI)
+- [[CoAct-1 Coding Actions for Computer Use]] — related
+- [[OS-Copilot FRIDAY Tool Repository]] — related

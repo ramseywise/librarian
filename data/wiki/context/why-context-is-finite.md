@@ -7,6 +7,7 @@ sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--01-why-context-is-finite.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context--notes--01-why-context-is-finite.md
   - data/raw/papers/2026-11-06-mohsin-2025-fundamental-limits-llms-scale.md
+  - data/raw/papers/2026-11-06-xiong-2023-effective-long-context-scaling-foundation.md
 ---
 
 # Why Context Is Finite
@@ -91,6 +92,12 @@ sub-agent isolation — all exist to keep the window on the left side of that cu
 Mohsin (arXiv 2511.12869, preprint under review at TMLR) is a theory-plus-survey paper with no experiments of its own; the extraction judges that its numbers are all borrowed and that nothing citable comes from it beyond the cited sources. What it offers is labelled theory: Lemma 4 and Corollary 1 argue that softmax attention needs a margin of about ln N over N items, and a failure bound for retrieval multiplies how much a distractor is exposed by how much attention it gets.
 
 Its empirical claims are cited from others, so cite the originals. A single irrelevant passage cutting accuracy by up to 30% comes from Yang et al. 2025b (setup not given in this paper); poisoned retrieval reaching about 90% attack success with five poisoned documents per query in a knowledge base of millions of entries comes from the PoisonedRAG work; and a "70B model with 64K effective context" figure comes from Wang et al. 2024c.
+
+## Effective Window Against Nominal Window
+
+A 2023 study on Llama 2 continual pretraining (self-reported) fits validation loss as a power law in context length up to 32,768 tokens, L(c) = (alpha/c)^beta + gamma, with beta rising with model size (0.45 at 7B to 0.51 at 70B). It reports that the original RoPE gave no useful attention past roughly 4,000-6,000 tokens despite long continual pretraining, and that setting the RoPE base frequency to 500,000 instead of 10,000 repaired this (7B, a first-sentence-retrieval probe, 80B tokens at 32,768 sequence length). A model's usable window may be far shorter than its advertised one, and finding it takes a probe task. Continued pretraining came close to the quality of pretraining on long sequences from the start while spending about 40% fewer FLOPs, and long documents in the data mattered less than data quality.
+
+Limits: Llama 2 only, no needle-in-a-haystack test, dated models; the loss result is not a task result, and one QuALITY series in the extraction is flat after 8k although the text calls the trend monotonic.
 
 ## Limits
 

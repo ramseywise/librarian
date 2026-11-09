@@ -8,6 +8,7 @@ sources:
   - data/raw/papers/2026-11-07-sellam-2020-bleurt.md
   - data/raw/papers/2026-11-07-ren-2020-codebleu.md
   - data/raw/papers/2026-11-07-mehri-2020-usr.md
+  - data/raw/papers/2026-11-07-goyal-2022-news-summarization-evaluation-era-gpt.md
 ---
 
 # Text Metrics Beyond N-gram Overlap
@@ -51,6 +52,12 @@ Mehri and Eskenazi (ACL 2020) combine three RoBERTa sub-metrics, a masked-langua
 - A constant reply made of the ten most common tokens beat the corpus's Transformer on F-1 (Topical-Chat).
 - On PersonaChat the retrieval sub-metric alone, given the context, beats the full metric on Overall Quality; on Topical-Chat, METEOR is the best non-USR metric for Maintains Context.
 - The authors say USR should be used alongside human evaluation.
+
+## Metrics on prompted GPT-3 summaries
+
+Goyal, Li and Durrett (2022 preprint) compare zero-shot text-davinci-002 with BRIO and T0 in an A/B study on 100 recent articles each from CNN and BBC, where three Prolific annotators voted on each article. Annotators preferred GPT-3 by at least 20 points over the next system, significant by paired bootstrap (self-reported). Reference-based metrics ranked it the other way: ROUGE-L on 500 test articles was 31.44 for BRIO against 24.71 for GPT-3 on CNN, and 41.04 against 20.60 on XSum. The paper also reports that existing reference-free metrics fail on these summaries. Agreement among annotators was low (Krippendorff alpha 0.05 to 0.18) and unanimous best-summary choice for GPT-3 occurred for under 30% of articles.
+
+Limits: annotators made one overall-quality choice with no stated definition of quality, English news only, one model that has since been superseded, and GPT-3's training data unknown, possibly including summarization preference data.
 
 ## Limits
 

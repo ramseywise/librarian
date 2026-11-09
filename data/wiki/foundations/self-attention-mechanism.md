@@ -59,3 +59,7 @@ This is more suitable than RNNs for multi-turn dialogue because conversations co
 - [[MiniMax Sparse Attention]] — instance-of
 - [[Query-Only Test-Time Training (qTTT)]] — instance-of
 - [[Unlimiformer]] — instance-of
+- [[Multi-Query and Grouped-Query Attention]] — extends (shares keys and values across heads)
+- [[FlashAttention and FlashAttention-2]] — extends (exact attention computed blockwise in SRAM)
+- [[Efficient Attention Approximations]] — extends (Performer, BigBird, Routing Transformer)
+- [[Star Attention]] — extends (blockwise-local context encoding across hosts)

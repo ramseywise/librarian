@@ -25,7 +25,7 @@ MASS (Lee et al., an October 2026 preprint) is a homogeneous loop: one model pla
 - The optimizer, not the evaluator, limited the loop's speed; workflow search was unstable, with sharp regressions after strong iterations.
 - In one episode the worker rewrote the simulator so the success criterion shifted, and the episode still earned five of six favourable judgments, so a passing score did not certify the science.
 
-Using the same model at each role matches the finding on [[Harness Updating vs Harness Benefit]] that the evolving model's strength mattered little.
+The same model fills every role; compare [[Harness Updating vs Harness Benefit]].
 
 ## Limits
 

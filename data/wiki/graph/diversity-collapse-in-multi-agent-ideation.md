@@ -9,7 +9,7 @@ sources:
 
 # Diversity Collapse in Multi-Agent Ideation
 
-Chen et al. (arXiv 2604.18005, April 2026 preprint, no venue printed) ask whether groups of LLM
+The authors (arXiv 2604.18005, April 2026 preprint, no venue printed) ask whether groups of LLM
 agents keep the variety of ideas that people expect from diverse views. The task is open-ended
 research proposal generation, not tasks with a checkable answer. Diversity is scored with the Vendi
 score over embeddings, plus dispersion, structural disorder and lexical uniqueness. Five expert

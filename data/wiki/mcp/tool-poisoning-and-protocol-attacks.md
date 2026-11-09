@@ -1,7 +1,7 @@
 ---
 title: Tool Poisoning and Protocol-Level Attacks on Agents
 tags: [mcp, concept]
-summary: "Two 2025 surveys describe attacks that ride the agent-to-tool and agent-to-agent channel: poisoned tool descriptions, tampered tools, retrieved-document injection, chained tool calls and loop exhaustion; Kong et al. show five single-run demos and Ferrag et al. collect second-hand attack rates."
+summary: "Two 2025 surveys describe attacks that ride the agent-to-tool and agent-to-agent channel: poisoned tool descriptions, tampered tools, retrieved-document injection, chained tool calls and loop exhaustion; one survey shows five single-run demos and Ferrag et al. collect second-hand attack rates."
 updated: 2026-11-08
 sources:
   - data/raw/papers/2026-11-06-kong-2025-survey-llm-driven-ai-agent.md
@@ -12,7 +12,7 @@ sources:
 
 Both sources are surveys. Their threat model is the communication layer between agent, tool and peer, not sandbox or runtime isolation.
 
-## Kong et al. (Zhejiang University, arXiv June 2025, v4 November 2025)
+## The agent-communication survey (arXiv June 2025, v4 November 2025)
 
 The survey classifies 19 communication protocols and argues prompt injection is a flaw at the semantic layer where traditional security is blind. Its only empirical content is five single-case demos, four on MCP with Claude as the client (Sonnet 3.7, Sonnet 4.0 and Opus 4) and one on an A2A sample client:
 
@@ -30,7 +30,7 @@ A taxonomy survey that ran no experiments. It rates input manipulation and proto
 
 ## Limits
 
-- Kong: no success rates or variance beyond the 20-query baseline, one model family, no defence run against any attack; the authors say agent communication research is nascent. Adoption statistics are third-party and unverified.
+- The agent-communication survey: no success rates or variance beyond the 20-query baseline, one model family, no defence run against any attack; the authors say agent communication research is nascent. Adoption statistics are third-party and unverified.
 - Ferrag: every number is second-hand and mixes models, datasets and targets, including chat and training attacks that are not tool boundaries; the claimed expert review has no detail; sandboxing gets one sentence; the extraction notes that the survey files the Codex CLI sandbox-escape CVE under "Model Compromise", a debatable label, and that MCP is misnamed in places.
 - Both are current to mid-2025 specs.
 

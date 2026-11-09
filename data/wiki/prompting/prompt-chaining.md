@@ -7,6 +7,8 @@ sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt--prompt-engineering.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--06-chaining-and-workflows.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--03-core-techniques.md
+  - data/raw/papers/2026-11-08-wu-2022-ai-chains.md
+  - data/raw/papers/2026-11-08-wu-2022-promptchainer.md
 ---
 
 # Prompt Chaining
@@ -93,6 +95,20 @@ control flow — and that belongs to the harness/loop layer.
 This is the natural escalation path: chaining is the gateway from prompt engineering to
 agent architecture.
 
+## AI Chains: a 2022 study of chaining with visible intermediate data
+
+Wu et al. (CHI '22) call the technique LLM Chaining: a series of model calls, each on a small well-scoped sub-task, with the **data layer** (each step's input and output) visible and editable. They derive eight primitive operations from 73 online demos (Classification, Factual Query, Generation and Ideation, Information Extraction, Rewriting, plus Split Points and Compose Points), each with a prompt template and default temperature. In a within-subject study with 20 people, comparing against a one-prompt Sandbox interface, both on non-dialog LaMDA 137B, two blinded raters preferred the Chaining result in most pairs (the extraction gives no count), and participants rated Chaining higher on thinking through the task, control, transparency and their own results, with collaboration a smaller difference.
+
+- Logged behaviour: Sandbox users re-ran the model without changes more often (t = 3.5, p = .001), and edits leaned toward curating existing output (UNDO 18% and CREATE 5% with Chaining; UNDO 45% and CREATE 14% in Sandbox). Completion time did not differ (p = .278).
+- Fifteen of the 20 proposed a change to the default Chain, 11 of them built and ran their own, and nine found Chains more complex.
+- In a VegaLite bug-fixing case study the Chain surfaced the broken constraint in every one of 5 test cases but produced a usable fix in just two.
+
+Limits: two researcher-authored Chains on tasks that decompose naturally; tasks with interdependent parts may lose coherence; no cost measurement for the extra calls; the case study is anecdotal (five cases judged by one author); outcome quality is rater preference, not ground-truth accuracy; instruction-tuned and chat models were not tested.
+
+## PromptChainer: authoring chains visually
+
+Wu et al. (CHI '22 extended abstract) built a node-and-edge editor with three node kinds (LLM, helper, communication) and three debugging modes: unit, end-to-end and breakpoints. Four participants at one company built their own chains on LaMDA 137B, and all four finished a chain in the session. Across the user-study and pilot chains (8 in total), pre-defined helper nodes were used at three times the rate of custom JS nodes. Of 27 LLM nodes, 7 categorize, 13 source information and 7 re-organize, coded by one author. Parallel paragraphs generated independently reduced coherence in one story chain. Limits: four participants, qualitative only, participants pre-drafted prompts, tasks may be easy to decompose, and no baseline tool comparison.
+
 ## See Also
 - [[Loop Detection and the Two-Retry Rule]] <!-- auto-linked -->
 - [[Iterative Harness Simplification]] <!-- auto-linked -->
@@ -109,3 +125,7 @@ agent architecture.
 - [[Stop Sequences and Completion Anatomy]] — prerequisite-for
 - [[Skeleton-of-Thought]] — extends (a two-call chain whose second call fans out in parallel)
 - [[Branch-Solve-Merge]] — extends (plan, parallel solve, merge as one program)
+- [[GEPA Reflective Prompt Evolution]] — related (compound AI systems optimised end to end)
+- [[ATF Analysis-to-Filtration Prompting]] — related
+- [[Selection-Inference]] — extends
+- [[Iterated Decomposition]] — extends

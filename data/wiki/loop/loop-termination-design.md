@@ -121,3 +121,4 @@ producing "needs human re-scope."
 - [[Bounding Agents Rather Than Trusting Them]] — instance-of (the fourth bound)
 - [[Aegean Stability-Horizon Consensus]] — instance-of (quorum plus stability horizon as a stopping rule)
 - [[Strategy Lock-In in Post-Training Agents]] — related
+- [[Forgetting Reset for Discovery Teams]] — related

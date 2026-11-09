@@ -69,3 +69,4 @@ the slow GUI agent ([[Fast-Slow Thinking Architecture]]).
 - [[ComputerRL API-GUI Agent RL]] — related
 - [[GUI Agent RL with GUI-R1 and ARPO]] — related
 - [[Agent S Hierarchical GUI Agent]] — related
+- [[Adversarial Pop-up Attack on Computer-Use Agents]] — related (attack on the grounding step)

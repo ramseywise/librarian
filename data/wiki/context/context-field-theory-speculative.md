@@ -2,10 +2,11 @@
 title: Context Field Theory (Speculative)
 tags: [context, llm, reference]
 summary: "Provisional — the neural-field / attractor / resonance / quantum-semantics vocabulary from part of a context-engineering course is metaphor, not method; only three ideas survive translation (early framing is sticky, salience comes from structure and repetition, ambiguity is resolved by context), and one underlying result (a symbolic abstraction→induction→retrieval circuit) is real."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--99-speculative-field-track.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--references.md
+  - data/raw/papers/2026-11-06-zhuge-2026-neural-computers.md
 ---
 
 # Context Field Theory (Speculative)
@@ -44,6 +45,14 @@ The "field operations" written as protocols behave like any structured prompt
 
 **Heuristic:** when "attractor", "resonance" or "field" appears in an agent-design
 discussion, ask what the measurable behaviour is and map it to a concrete lever.
+
+## Neural Computers: a vision paper, not evidence
+
+A 2026 preprint from Meta AI and KAUST (Zhuge et al., arXiv 2604.06425) proposes folding compute, memory and input/output into one learned runtime state that a model updates and renders in a loop, so that the model itself is the running computer rather than a layer above one. The only part that touches context engineering is a proposed run/update contract: running an installed capability must not silently change persistent behaviour, and any behaviour change goes through an explicit programming interface. The authors hypothesise that gating, as in LSTMs, could give this separation. They label these remarks hypotheses rather than empirical conclusions.
+
+The extraction rates the paper as a poor fit, largely off the subject of context engineering: no experiment touches context windows, retrieval, memory management or prompt budgets. Its prototype is a small video-model system on a Wan2.1 backbone. One number gets quoted often and needs its setup: reprompting raised command-line arithmetic accuracy from 4% to 83% on a 100-problem probe, but the reprompt hands the model the answer as a hint, and the paper itself says this shows steerability, not native computation (self-reported). Treat it as a pointer to what might follow context windows, not as support for any practice.
+
+Limits: evaluation is open-loop, there is a single backbone, no seeds or variance are given, and install-reuse, long-horizon consistency and update governance are untested roadmap items. The extraction also notes that the PDF header dates v2 at 16 April 2026 while the title block says 20 April.
 
 ## See Also
 - [[Context Engineering]] — extends

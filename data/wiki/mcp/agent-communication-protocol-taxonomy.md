@@ -9,7 +9,7 @@ sources:
 
 # Agent Communication Protocol Taxonomy
 
-Sander et al. (Technical University of Munich; a June 2026 preprint) built a taxonomy with the Nickerson method over five iterations. The sample was open-source, actively maintained protocols with a running implementation, so Agent Protocol (no commit since June 2024) and AITP (20 GitHub stars) were left out, as of 7 July 2025.
+Sander et al. (a June 2026 preprint) built a taxonomy with the Nickerson method over five iterations. The sample was open-source, actively maintained protocols with a running implementation, so Agent Protocol (no commit since June 2024) and AITP (20 GitHub stars) were left out, as of 7 July 2025.
 
 ## Dimensions
 

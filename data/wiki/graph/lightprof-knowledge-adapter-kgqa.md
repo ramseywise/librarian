@@ -27,3 +27,6 @@ LightPROF (Ao et al., 2025) is a Retrieve-Embed-Reason pipeline for knowledge-gr
 - [[Knowledge Graph Retrieval]] — prerequisite-for
 - [[Graph-R1 Agentic GraphRAG]] — alternative-to (agentic retrieval with RL instead of a trained adapter)
 - [[GraphReader]] — related
+- [[TANS Node Descriptions for Text-Free Graphs]] — related
+- [[Graph Neural Prompting]] — alternative-to (soft prompt from a GNN)
+- [[Reasoning on Graphs]] — alternative-to

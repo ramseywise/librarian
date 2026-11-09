@@ -2,7 +2,7 @@
 title: Constitutional AI and RLAIF
 tags: [foundations, llm, eval, concept]
 summary: "Anthropic's two-phase replacement for human preference labels — critique-and-revise SL-CAI followed by RLAIF against a written constitution — plus what AI feedback provably matches and where it still underperforms humans."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--constitutional-ai.md
 ---
@@ -137,3 +137,4 @@ its own judgment has no external reference to drift *against*.
 - [[LM Red Teaming]] — related (automated red-team prompt generation)
 - [[ETHICS Benchmark]] — related (a dataset for testing predicted human moral judgments)
 - [[LM Red Teaming]] — related (automated red-team prompt generation)
+- [[Self-Critiquing Models for Human Evaluators]] — related

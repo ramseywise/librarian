@@ -87,3 +87,4 @@ in one of four modes — **sync, async (task ID + later event), streaming, multi
 - [[Long-Horizon Execution]] — related
 - [[Python Concurrency Models]] — prerequisite-for (asyncio primitives; never block the loop)
 - [[AsyncThink Fork-Join Organizer]] — related (fork and join inside one model's reasoning)
+- [[AsyncLM Asynchronous Function Calling]] — related

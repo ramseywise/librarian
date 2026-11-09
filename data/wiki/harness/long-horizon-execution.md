@@ -6,6 +6,7 @@ updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--06-long-horizon-execution.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--06-long-horizon-execution.md
+  - data/raw/papers/2026-11-06-yu-2026-agentic-hardware-design-as-repository.md
 ---
 
 # Long-Horizon Execution
@@ -136,6 +137,10 @@ The scaffolding existed to compensate for a limitation the model no longer had.
 See [[Harness Orchestration]] for when decomposition is worth its cost, and
 [[Harness Maturity and Failure Modes]] for the subtraction pass that removes it.
 
+## Git-Worktree Loop for Hardware Design (HORIZON)
+
+Yu et al. (NVIDIA, 2026) run a hands-free loop over git worktrees in which the suite's own harness pass condition is the acceptance gate, and report all 12 RTL benchmark suites reaching 100% from 47.8% overall at iteration 0, using GPT-5.3, a single run and single-agent mode (self-reported). Cost is concentrated: 209.9M tokens in total, 97.1% on the CVDP suites, and the authors call token efficiency the metric most in need of improvement. Limits: no baseline; the same harness repairs and scores, so the gate defines what is optimised; iteration 0 is not a Pass@1 figure; and one residual ChipBench task is a defect in the specification harness, counted as resolved.
+
 ## See Also
 - [[ALE-Bench]] — related
 - [[Repository-Level Coding Benchmarks]] — related
@@ -159,3 +164,6 @@ See [[Harness Orchestration]] for when decomposition is worth its cost, and
 - [[Paper-Replication Completion Gate]] — related
 - [[AiScientist File-as-Bus]] — instance-of
 - [[AutoScientists Self-Organizing Teams]] — instance-of
+- [[Effective Feedback Compute]] — related
+- [[Confucius Code Agent]] — related
+- [[Stagewise Recoverability Harness Granularity]] — related

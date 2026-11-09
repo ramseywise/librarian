@@ -8,6 +8,7 @@ sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context--notes--06-multi-agent-context.md
   - data/raw/repos/datathon_mcp/CLAUDE.md
   - data/raw/papers/2026-11-07-qin-2024-tool-learning-foundation-models.md
+  - data/raw/papers/2026-11-07-ai-agents-with-mcp-ch05-building-mcp-servers-providing-tools-prompts.md
 ---
 
 # Tool Design as Context Engineering
@@ -116,6 +117,23 @@ Per the extraction, the text and Table 1 disagree on Calculator datasets and Sto
 few-shot claim conflicts with the HotpotQA row, and
 the authors concede scores across tools are not comparable. The models predate native function calling.
 
+## Server-side advice from an early-release MCP book
+
+Chapter 5 of AI Agents with MCP (a raw draft with no experiments) gives advice for people building the server:
+
+- Make each tool a complete end-to-end action instead of a fine-grained REST-style call, and keep the building blocks as private functions.
+- Tools should have distinct action names, descriptions that inform without rambling, clearly defined inputs and outputs, and a namespace prefix joined by an underscore to help selection.
+- Keep the exposed tool count reasonable, since tool-choice accuracy drops past soft limits.
+- Avoid generating servers automatically from REST APIs; if generation is used, treat it as a starting point and then curate hard, or start from scratch using agent stories (user-story style descriptions of what an agent wants to do, credited to a Prefect author).
+- Resources should be light, with no heavy computation or side effects. Prompts should give direction, specify format and include examples; the chapter says to avoid saying what not to do.
+
+The chapter's two numbers are illustrative: five sequential tool choices at 95% each give about 77% success, and five tools per action push token use up roughly 8x and cost up nearly 7x. It shows no calculation for the second and measures neither.
+
+## Limits of the book chapter
+
+- The extraction notes unfinished cross-references, version-dependent SDK details (the bundled FastMCP lacks resource annotations), and no author name in the text.
+- The cost and error figures are rough estimates, calculated on the back of an envelope.
+
 ## See Also
 - [[Context Engineering]] — related (part of)
 - [[Multi-Agent Context]] — related
@@ -125,3 +143,4 @@ the authors concede scores across tools are not comparable. The models predate n
 - [[Curl-Bridge Context Injection]] — alternative-to (instructions to curl instead of tool definitions)
 - [[Dynamic Tool Discovery]] — extends
 - [[MCP Server Architecture Patterns]] — related (tool-count study)
+- [[AsyncLM Asynchronous Function Calling]] — related

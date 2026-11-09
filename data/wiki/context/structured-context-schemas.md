@@ -2,7 +2,7 @@
 title: Structured Context and Schemas
 tags: [context, llm, concept]
 summary: "Structure compresses meaning rather than tokens — tags for boundaries, markdown for prose, JSON for anything code reads back; schemas belong in three places (input, state carried across turns, output), and state should be small, structured, versioned, validated and overwritten rather than appended."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--07-structured-context.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--06-memory.md
@@ -89,3 +89,4 @@ selectively injected is the same pattern as structured memory ([[Memory as Conte
 - [[Agent Status Bar]] — instance-of
 - [[Protocol Shells]] — extends (an input schema with the process made explicit)
 - [[SKILL.state]] — instance-of (schema-checked state carried between skill steps)
+- [[SheetCompressor Spreadsheet Encoding]] — related

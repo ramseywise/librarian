@@ -6,6 +6,8 @@ updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--06-memory.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--references.md
+  - data/raw/papers/2026-11-06-sen-2026-grep-all-you-need.md
+  - data/raw/papers/2026-11-06-yuan-2026-diagnosing-retrieval-vs-utilization-bottlenecks.md
 ---
 
 # Designed Memory vs Raw-Record Search
@@ -45,6 +47,17 @@ and full context differ by one answer. **Read it as a direction, not a benchmark
 This sits in tension with update-in-place consolidation designs ([[Identity Memory: Revision vs Accretion]],
 [[Memory Lifecycle]]): those optimise the store; this evidence questions whether a lossy
 store should be the only record.
+
+## Two further studies on raw search and write strategy
+
+Two further 2026 studies bear on the same question; both are single-run.
+
+- **Grep against vectors on LongMemEval.** A LongMemEval-S subset (116 questions), five models by four harnesses, inline against programmatic delivery, GPT-4o as grader. With inline delivery, grep beat vector search on all 10 model-harness pairs; the largest gap was 86.2 against 62.9 and the smallest 76.7 against 75.0 (self-reported). One model scored 93.1 in the authors' own harness but 76.7 in Claude Code, and programmatic delivery reshuffled the ranking (one Codex grep run fell from 93.1 to 55.2). The extraction notes the authors' own harness, no hybrid condition, no significance tests, distractors redrawn per limit, and table values that disagree (for example 93.1 against 89.7 for one cell; one appendix table says inline where the text says programmatic).
+- **Retrieval against write strategy on LoCoMo.** Setup: LoCoMo with 10 conversations and 1,540 questions (adversarial ones excluded), GPT-5-mini, k=5, nine cells crossing three write strategies with three retrieval methods, one run per cell, LLM-judge accuracy. By retrieval method, average accuracy was 57.1% with BM25, 73.4% with cosine and 77.2% with hybrid plus reranking, while write strategies differed by only 3-8 points within a retrieval column (self-reported). Raw 3-turn chunks scored 77.9% (cosine) and 81.1% (hybrid) against 72.2% and 77.3% for extracted facts and 70.1% and 73.3% for summarized episodes; BM25 was the exception, where summaries (62.7%) beat raw chunks (59.2%). Precision@5 against accuracy gave r=0.98 over nine points. Retrieval failures were 11.4-46.3% of questions, utilization failures 3.9-8.1%.
+
+## Limits
+
+The two later studies are single-run and report no variance. The extraction of the grep-against-vectors study notes inconsistent table values (for example 93.1 against 89.7 for one cell) and an appendix table that says inline where the text says programmatic, so exact cell values need checking against the source.
 
 ## See Also
 - [[Memory as Context]] — extends

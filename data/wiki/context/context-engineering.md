@@ -137,3 +137,6 @@ added context source is added attack surface*. See [[Prompt Injection]] and
 - [[SKILL.state]] — instance-of (structured state in place of a growing transcript)
 - [[MCP Server Architecture Patterns]] — related (tool-count study)
 - [[AGENTS.md Context File Evaluation]] — instance-of (measured effect of repository context files)
+- [[Trace as State]] — instance-of (trace as working state)
+- [[ReContext Attention Evidence Replay]] — instance-of (replaying evidence)
+- [[MemAgent and InfMem Bounded Memory Reading]] — instance-of (bounded reading)

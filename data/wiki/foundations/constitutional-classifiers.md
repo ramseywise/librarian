@@ -36,3 +36,6 @@ cover the input and output positions only; the execution position needs hard gat
 - [[Input Guardrails Pipeline]] — alternative-to (rule- and model-based input screening)
 - [[Execution Boundaries and Guardrails]] — extends (the execution-position controls classifiers do not cover)
 - [[Past-Tense Refusal Jailbreak]] — related (a simple attack on refusal-trained models)
+- [[Self-Evaluation Defense Against Adversarial Suffixes]] — alternative-to (cheaper self-check defence)
+- [[Jailbreak Rapid Response]] — alternative-to (adapt after observing attacks)
+- [[PGD Adversarial Training]] — related (classic adversarial robustness)

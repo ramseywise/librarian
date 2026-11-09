@@ -2,13 +2,14 @@
 title: Production Reliability Primitives
 tags: [llm, agents, infra, pattern]
 summary: "Four unglamorous mechanisms that keep a Stage 2–3 harness running under real traffic — per-step checkpointing, cross-provider fallback, fail-fast on ambiguity, and confidence-routed quarantine."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--08-maturity-and-failure-modes.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--08-maturity-and-failure-modes.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--reliable-agents.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--reliable-agents.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--reliable-agents.md
+  - data/raw/papers/2026-11-07-context-engineering-multi-agent-systems-ch08-architecting-reality-moderation-lat.md
 ---
 
 # Production Reliability Primitives
@@ -84,6 +85,10 @@ wrong.
 The threshold is a tunable knob, and **moving it as measured accuracy improves is the ratchet
 running in the direction of less human work.**
 
+## Moderation wrapper and latency budget (Rothman, Context Engineering for Multi-Agent Systems, ch. 8)
+
+The chapter wraps a pre-flight check on the goal and a post-flight check on the output around the engine, failing safe (flagged) if the moderation call errors, and argues policy ambiguity should be settled by human-defined organisational policy outside the engine rather than more sanitiser patterns. Its latency budget for a three-step plan sums to about 10.7 seconds from per-call estimates, which the chapter labels illustrative. Its legal-domain demonstrations are one run each, over three very small documents, and give no precision or recall, and the meta-controller it recommends is described, not built.
+
 ## See Also
 - [[Iterative Harness Simplification]] <!-- auto-linked -->
 - [[Runtime Topology and Checkpointer Alignment]] <!-- auto-linked -->
@@ -94,3 +99,5 @@ running in the direction of less human work.**
 - [[Harness Engineering]] — instance-of
 - [[Pull-Only Event Transport]] — instance-of (idempotent re-read as the replay primitive for a local poller)
 - [[Provider-Agnostic Model Adapter]] — extends (the uniform interface cross-provider fallback assumes)
+- [[Team of Rivals Critic-Veto Orchestration]] — related
+- [[Stochastic-Deterministic Boundary Runtime Patterns]] — related

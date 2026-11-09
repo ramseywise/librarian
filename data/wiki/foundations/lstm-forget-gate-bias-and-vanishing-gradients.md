@@ -2,7 +2,7 @@
 title: "LSTM Forget-Gate Bias and Vanishing Gradients"
 tags: [foundations, pattern]
 summary: "Default-initialised LSTMs pass a gradient of about 10^-12 from the first step, no better than a plain RNN; setting the forget-gate bias to 1 or 2 (mind PyTorch's two bias vectors) restores long memory, and gradient clipping handles the opposite failure."
-updated: 2026-11-04
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--05-sequence-models.md
 ---
@@ -35,3 +35,4 @@ Training feeds the true previous character (teacher forcing); sampling feeds bac
 - [[Seq2seq Bottleneck and Attention]] — extends
 - [[Sequence Models vs Hand-Built Event Windows]] — related
 - [[Weight Initialisation and Activation Scale]] — related
+- [[Neural Turing Machine]] — related

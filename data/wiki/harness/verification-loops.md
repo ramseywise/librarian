@@ -332,3 +332,4 @@ afterward.
 - [[SelfCheck Step Verification]] — instance-of (four independent calls check each reasoning step)
 - [[Olympiad Proof Agents and Verifier Loops]] — instance-of (solver, verifier and corrector loop; Lean compiler as hard verifier)
 - [[Dependency Injection for LLM Chains]] — related (testing one chain step against mocks of the others)
+- [[Agentless Localize-Repair-Validate]] — related

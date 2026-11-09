@@ -42,3 +42,5 @@ A-RAG (arXiv 2602.03442, a work-in-progress preprint) gives a ReAct-style agent 
 - [[Reciprocal Rank Fusion (RRF)]] — prerequisite-for (the fusion step in hypergraph retrieval)
 - [[Agentic RAG — Advanced Patterns]] — prerequisite-for (agentic retrieval in general)
 - [[LightPROF Knowledge Adapter for KGQA]] — alternative-to
+- [[MIRAGE Parallel Graph-Retrieval Reasoning Chains]] — alternative-to
+- [[Reasoning on Graphs]] — alternative-to

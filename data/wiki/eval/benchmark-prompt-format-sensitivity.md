@@ -112,3 +112,4 @@ numbers are not comparable to Google's. HELM's format results (see [[HELM Holist
 - [[TyDi QA]] — related (benchmark whose design aims to limit answer overlap)
 - [[Evaluation-Driven Model Selection]] — related (benchmark choice and aggregation for model selection)
 - [[XML Prompt Structuring]] — related (prompt-format study with JSON, Markdown, YAML and plain text on 2023 GPT models)
+- [[FormatSpread]] — related (measures format spread with a bandit)

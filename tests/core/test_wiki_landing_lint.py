@@ -10,7 +10,7 @@ import pytest
 
 import librarian.ingest.manifest as manifest_module
 from librarian.ingest.manifest import main as manifest_main
-from librarian.wiki.landing import add_to_index, verify
+from librarian.wiki.landing import add_see_also, add_to_index, verify
 from librarian.wiki.landing import main as landing_main
 from librarian.wiki.lint import lint
 
@@ -126,3 +126,42 @@ def test_manifest_mark_cli(tmp_path: Path) -> None:
         assert entries["data/raw/web/a.md"]["wiki_pages"] == ["data/wiki/rag/x.md"]
         assert manifest_module.check(src)[0] is False
         assert manifest_main(["mark", str(raw / "missing.md")]) == 2
+
+
+def test_see_also_appends_at_section_end_and_skips_present(tmp_path: Path) -> None:
+    wiki = _wiki(tmp_path)
+    path = _page(wiki, "rag/target.md", "Target", "Body.")
+    added, notes = add_see_also(
+        path,
+        ["- [[Linked Page]] — instance-of (a note)", "- [[Hub]] — related"],
+        wiki,
+        today=date(2026, 11, 9),
+    )
+    assert added == ["- [[Linked Page]] — instance-of (a note)"]
+    assert notes == ["skip, already linked: [[Hub]]"]
+    text = path.read_text()
+    assert text.rstrip().endswith("- [[Hub]]\n- [[Linked Page]] — instance-of (a note)")
+    assert "updated: 2026-11-09" in text
+
+
+def test_see_also_refuses_unknown_target_and_type(tmp_path: Path) -> None:
+    wiki = _wiki(tmp_path)
+    path = _page(wiki, "rag/target.md", "Target", "Body.")
+    before = path.read_text()
+    added, notes = add_see_also(
+        path, ["- [[Nowhere]] — related", "- [[Linked Page]] — part-of", "no link"], wiki
+    )
+    assert added == []
+    assert len(notes) == 3
+    assert path.read_text() == before
+
+
+def test_see_also_creates_missing_section(tmp_path: Path) -> None:
+    wiki = _wiki(tmp_path)
+    path = wiki / "rag/bare.md"
+    path.write_text(
+        "---\ntitle: Bare\ntags: [rag, concept]\nupdated: 2026-11-01\n---\n\n# Bare\n\nx\n"
+    )
+    added, _ = add_see_also(path, ["- [[Hub]] — related"], wiki)
+    assert added
+    assert path.read_text().endswith("x\n\n## See Also\n- [[Hub]] — related\n")

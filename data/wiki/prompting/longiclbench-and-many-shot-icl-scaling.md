@@ -6,6 +6,7 @@ updated: 2026-11-08
 sources:
   - data/raw/papers/2026-11-06-bertsch-2024-context-learning-long-context-models.md
   - data/raw/papers/2026-11-06-li-2024-long-context-llms-struggle-long.md
+  - data/raw/papers/2026-11-07-golchin-2025-towards-compute-optimal-many-shot.md
 ---
 
 # LongICLBench and Many-Shot ICL Scaling
@@ -27,6 +28,12 @@ Six classification sets with large label spaces (GoEmotions with 28 labels, BANK
 - GPT-4-turbo at five rounds: BANKING77 84.4, TacRED 84.2, DialogRE 57.7, Discovery 0.5.
 - Most models peak at about 13K to 25K tokens and then decline; only GPT-4-turbo and GPT-4o kept improving on TacRED and DialogRE. RWKV and Mamba-2.8B scored near zero, as did open models claiming 100K to 200K windows.
 - Grouping same-label demonstrations hurts: on TacRED at three rounds (10K tokens) Mistral fell from 51.6 to 5.1, GPT-4-turbo from 79.5 to 59.2 and Gemini-1.5-Pro from 79.6 to 57.3.
+
+## Hybrid demonstration selection (Golchin et al., 2025)
+
+Similarity selection beats random demonstrations but breaks prompt caching. The paper keeps s=20 per-query similar demonstrations and adds a large cached block of random or k-means-chosen ones. Setup: Gemini 1.5 Pro and Gemini 2.0 Flash, temperature 0; ANLI r3, TREC, GSM Plus and MetaTool; 1,000 test samples each; 50 to 200 total shots. The hybrids match or beat similarity-only at proportional cost nearly two times lower at 50 shots and ten times lower at 200 shots, where cost is derived from attention complexity, not measured dollars or latency (self-reported). On TREC at 50 shots the k-means hybrid gains over 11% (Flash) and over 6% (Pro) against k-means-with-mapping at half the cost; the paper does not say whether this is absolute or relative. In a 100-demonstration pool on three BBH tasks, mixing similar and random demonstrations gained about 3% to 6% over the full pool.
+
+Limits: only Gemini models and up to 200 shots; the k-means variant needs the test set up front and its cluster count was tuned on test data; no variance reported. The paper argues repetition helps in the low-data regime, whereas Agarwal et al. found it does not (reported as a contradiction, not resolved).
 
 ## Limits
 

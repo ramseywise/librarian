@@ -32,3 +32,4 @@ In one-hot form every pair of words is equally far apart. Embeddings give geomet
 - [[Scheduled Sampling]] — related (a training schedule for the decoder of such models)
 - [[PERSONA-CHAT]] — related (dialogue dataset with generative baselines)
 - [[Multi-News]] — related (pointer-generator summarisation benchmark)
+- [[End-to-End Memory Networks]] — related

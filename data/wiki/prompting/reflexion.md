@@ -7,6 +7,7 @@ sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--03-core-techniques.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--06-chaining-and-workflows.md
   - data/raw/papers/2026-11-06-lakshmanan-hapke-genai-design-patterns-ch06-improving-reliability.md
+  - data/raw/papers/2026-11-06-yao-2026-parammem.md
 ---
 
 # Reflexion
@@ -43,6 +44,10 @@ biggest lever after context ([[Code Generation Prompting]]).
 
 The reliability chapter describes the generate, critique, regenerate loop and notes that exactly one retry is common because it avoids defining what good enough means. In their single run, a weighted rubric scored the real Pydantic logo and a generated sushi-restaurant logo at 0.9 each (self-reported), which the authors say makes it hard to separate good enough from great, which is why they used one fixed round of critique with a different model as critic to limit self-bias. They warn reflection adds calls and tail latency when API availability is poor (a 2025 statement), and, in the authors' view, that code generation, with a compiler or sandbox as the evaluator, justifies multiple stages.
 
+## ParamMem
+
+Yao et al. (2026) find that the diversity of an agent's reflections correlates with task success (average Pearson r 0.76 across datasets, but 0.22 on MBPP) and train a small LoRA module on synthetic data to generate reflections from patterns learned across samples instead of retrieving them. On HumanEval with Llama-3.1-8B it scored 82.93 against 76.22 for Reflexion (self-reported). Limits: no variance reported, small test sets, a token cost 10 to 24 times higher, and on MATH Retroformer scored better than the ParamMem variant.
+
 ## See Also
 - [[Verification Loops]] — extends
 - [[Prompting Technique Selection]] — instance-of
@@ -51,3 +56,4 @@ The reliability chapter describes the generate, critique, regenerate loop and no
 - [[MetaCrit Adaptive Critique]] — related (a critique pipeline whose paper found unconditional critique lowered accuracy)
 - [[RISE Recursive Introspection]] — related (trains multi-turn self-correction into the weights instead of prompting for it)
 - [[Self-Consistency]] — alternative-to (at equal token cost, sampling more beat reflection in a small-model study)
+- [[Learned Skill and Action Libraries]] — related

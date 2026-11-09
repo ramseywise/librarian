@@ -26,3 +26,4 @@ MVoT (Li et al., 2025) lets a multimodal model draw its intermediate state. Afte
 - [[Chain of Thought]] — prerequisite-for
 - [[Prompting Reasoning Models]] — related
 - [[Tree of Thoughts]] — related (another way to extend the reasoning trace beyond plain text)
+- [[Visualization-of-Thought (VoT)]] — prerequisite-for

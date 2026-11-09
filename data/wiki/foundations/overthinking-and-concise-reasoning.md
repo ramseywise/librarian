@@ -7,6 +7,7 @@ sources:
   - data/raw/papers/2026-11-06-chen-2024-do-not-think-that-much.md
   - data/raw/papers/2026-11-06-lee-2025-how-well-do-llms-compress.md
   - data/raw/papers/2026-11-06-nayab-2024-concise-thoughts.md
+  - data/raw/papers/2026-11-07-sui-2025-stop-overthinking.md
 ---
 
 # Overthinking and Concise Reasoning
@@ -23,8 +24,13 @@ Lee et al. (2025) argue accuracy depends on how many tokens the reasoning uses, 
 
 Nayab et al. (2024) cap zero-shot chain-of-thought at a word budget (CCoT). Llama2-70b on GSM8K: 36 with plain CoT, 37 at a 30-word cap and 41.77 at a 100-word cap, with time falling from 30.09 s to at most 23.86 s (self-reported). Results were mixed on Falcon-40b and it failed on small models.
 
+## An efficient-reasoning survey
+
+Sui et al. (2025) survey the area with three groups: model-based, output-based and prompt-based methods. Their snapshot is one run in March 2025: R1 spent 602 words and 42 s on a question comparing 0.9 and 0.11, and QwQ-32B 616 words and 19 s. The survey quotes prompt-based methods, among them the [[Chain of Draft]] prompt and a token-budget prompt; the numbers it relays from other papers are unchecked.
+
 ## Limits
 
+- Sui: one-run anecdotes, relayed numbers not verified.
 - Chen: maths and science only; the text and Figure 7 disagree on the level-1 efficiency figure.
 - Lee: the 90% vs 94% classifier figures differ between sections.
 - Nayab: several table inconsistencies; models are 2023 vintage and the cap is a prompt, not enforced.
@@ -37,3 +43,6 @@ Nayab et al. (2024) cap zero-shot chain-of-thought at a word budget (CCoT). Llam
 - [[DeepConf Confidence-Filtered Voting]] — related
 - [[Price Reversal in Reasoning-Model Costs]] — related
 - [[Scaling Axes and Customer-Triggered Cost Cliffs]] — related
+- [[Prompt-Induced Waste in Coding Agents]] — related (prompt components and token waste)
+- [[Chain of Draft]] — instance-of (terse-draft prompt)
+- [[Delethink Markovian Thinker]] — related (bounds reasoning context with fixed-size chunks)

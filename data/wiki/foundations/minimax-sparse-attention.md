@@ -29,3 +29,8 @@ Lai et al. (MiniMax, 2026) add an Index Branch to grouped-query attention: one i
 - [[Artificial Hippocampus Networks]] — alternative-to
 - [[LazyLLM Dynamic Token Pruning]] — alternative-to
 - [[LLM Inference Economics]] — related
+- [[Native Sparse Attention]] — alternative-to
+- [[KV Cache Reduction Methods]] — related (parent map of KV axes)
+- [[Star Attention]] — related
+- [[StreamingLLM Attention Sinks]] — related
+- [[Efficient Attention Approximations]] — prerequisite-for

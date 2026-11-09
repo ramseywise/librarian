@@ -37,3 +37,7 @@ Li et al. (Tencent, TMLR 2024, arXiv 2402.05120) sample the same model N times a
 - [[TUMIX Tool-Use Mixture]] — related (heterogeneous agents beat one repeated agent there, which the TUMIX authors note differs from Self-MoA)
 - [[HSE and Router Robustness in Model Societies]] — related
 - [[Best-of-k Headline Inflation]] — related
+- [[Team of Thoughts Heterogeneous Model Orchestration]] — related
+- [[Multi-Agent Debate Failure Modes]] — related
+- [[HeavySkill Heavy Thinking Skill File]] — related
+- [[Code-Based Self-Verification and Weighted Voting]] — related

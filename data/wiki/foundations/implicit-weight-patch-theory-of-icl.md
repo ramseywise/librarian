@@ -5,6 +5,8 @@ summary: Dherin et al. show algebraically that the effect of a prompt on a trans
 updated: 2026-11-08
 sources:
   - data/raw/papers/2026-11-06-dherin-2025-learning-without-training.md
+  - data/raw/papers/2026-11-07-bigelow-2025-belief-dynamics-reveal-dual-nature.md
+  - data/raw/papers/2026-11-08-yadlowsky-2023-pretraining-data-mixtures-enable-narrow.md
 ---
 
 # Implicit Weight-Patch Theory of In-Context Learning
@@ -24,6 +26,11 @@ The paper (Dherin et al., Google Research) asks what a context does to a block m
 
 Block outputs of a 10-layer pre-LN transformer trained on in-context linear regression agreed to about 1e-6. The implicit update tracked explicit SGD on the MLP (normalised inner product read from a plot axis at 0.95 to 1.0). An attention layer gave decaying updates and an RNN layer unstable ones, in one small run.
 
+## Related empirical studies of in-context learning
+
+- **Belief dynamics (Bigelow et al., 2025).** In-context learning and activation steering add in log-odds: log o = a·m + b + γ·N^(1−α), where m is steering magnitude and N the number of in-context examples. The fit gives r=0.98 on Llama-3.1-8B-Instruct over 5 persona datasets with 10-fold cross-validation, and crossover prediction r=0.97 (self-reported). Steering vectors use contrastive activation addition. Limits: binary concepts only, one steering method, models up to 70B at 4-bit, no system-prompt or text-persona prompts tested.
+- **Pretraining mixtures (Yadlowsky et al., 2023).** A 9.5M-parameter decoder trained from scratch on synthetic function classes (d=20) selects among the mixture's functions in context at near-zero cost, but fails on out-of-distribution convex combinations (self-reported). Limits: synthetic only, a single small model.
+
 ## Limits
 
 - Every experiment is toy: linear regression with feature dimension 2 and transformers of at most 10 layers, d_model 32 or 64. No pretrained LLMs or natural-language prompts. The authors call the work mainly theoretical.
@@ -36,3 +43,5 @@ Block outputs of a 10-layer pre-LN transformer trained on in-context linear regr
 - [[Transformer Architecture]] — prerequisite-for
 - [[Doc-to-LoRA]] — related (context turned into weights in practice)
 - [[Mixtures of In-Context Learners]] — related
+- [[Symbol Tuning]] — related
+- [[Flipped-Label In-Context Learning]] — related

@@ -2,7 +2,7 @@
 title: Graph Topology Primitives
 tags: [llm, agents, langgraph, infra, reference]
 summary: "The four things a graph is made of — nodes that spend agency, edges that route, state that carries the coupling, and checkpointers that make interrupts and crash-resume the same mechanism."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--graph-engineering.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--02-graph-primitives.md
@@ -154,3 +154,5 @@ radius of a stuck node instead of letting it consume the whole run's budget.
 - [[Multi-Agent Topology Patterns]] — prerequisite-for
 - [[LangGraph Advanced Patterns]] — prerequisite-for
 - [[Graph Governance and Attribution]] — prerequisite-for
+- [[AgentConductor Topology Evolution]] — instance-of (evolves the topology)
+- [[Codebook Agent Amortized Topology Design]] — instance-of

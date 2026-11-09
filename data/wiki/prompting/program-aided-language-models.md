@@ -6,6 +6,7 @@ updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--03-core-techniques.md
   - data/raw/papers/2026-11-06-imani-2023-mathprompter.md
+  - data/raw/papers/2026-11-06-yang-2024-number-cookbook.md
 ---
 
 # Program-Aided Language Models (PAL)
@@ -43,6 +44,10 @@ decomposition; Python does the computation.
 
 Imani et al. (2023) add a consistency check to program-aided arithmetic. With GPT-3 175B the model writes an algebraic template with variables, produces both an algebraic expression and a Python function for it, evaluates both on random values, accepts when they agree, and votes over several agreeing runs. On MultiArith accuracy went from 78.7 to 92.5 (self-reported, one dataset).
 
+## Number understanding without tools
+
+Yang et al. (2024, NUPA Test) measure GPT-4o on plain arithmetic with no tool. Integer addition is about 100% at 1 to 4 digits, 80% at 5 to 8, 40% at 9 to 14 and 15% at 15 to 20; float addition runs 90, 60, 15 and under 5. "Get digit" on 61 to 100 digit numbers scores 20% against a 10% random baseline (self-reported). The extraction notes the study tests no tool use and no frontier chain-of-thought models, uses different bin sizes per task, and covers 2024-era models. In its small from-scratch tokenizer experiments and a LoRA fine-tune of Llama-3.1-8B, a rule-following chain of thought ran about 17x slower per sample (5.625 vs 0.371 s, one GPU, 2k context).
+
 ## Limits
 
 One dataset, and a failure case where both expressions agree and are wrong, so agreement is not proof.
@@ -55,3 +60,5 @@ One dataset, and a failure case where both expressions agree and are wrong, so a
 - [[DualDistill Agentic-R1]] — related (student chooses between code and text)
 - [[Chain of Code]] — extends (an LM emulator covers lines the interpreter cannot run)
 - [[Logic-of-Thought]] — related (code expands logic facts, then appended to the prompt)
+- [[Scratchpads and Self-Notes]] — related
+- [[Math Word Problem Benchmarks]] — related

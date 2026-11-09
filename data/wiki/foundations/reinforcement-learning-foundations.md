@@ -102,3 +102,4 @@ task complete?) and the difficulty is credit assignment across a long trajectory
 - [[RLMF Metacognitive Advantage Scaling]] — related
 - [[Multi-Agent Evolve Self-Play]] — instance-of
 - [[Autodata Agentic Self-Instruct]] — instance-of
+- [[CodeRL Unit-Test Actor-Critic]] — instance-of

@@ -2,7 +2,7 @@
 title: Graph Engineering
 tags: [llm, agents, infra, langgraph, concept]
 summary: "The fifth layer of the stack — designing which nodes exist, which transitions are permitted, and how the runtime work graph mutates, so multi-agent work has an organizational structure rather than just more agents."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--README.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--graph-engineering.md
@@ -12,6 +12,7 @@ sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--01-graph-vs-loop.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--05-topology-patterns.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--06-when-not-to-build-a-graph.md
+  - data/raw/papers/2026-11-07-building-ai-agents-llms-rag-kgs-ch09-creating-single-multi-agent-systems.md
 ---
 
 # Graph Engineering
@@ -233,6 +234,17 @@ rather than execution topology. The distinction is worth keeping sharp:
 Both live in this pillar. See [[Knowledge Graph Retrieval]] for the retrieval side and
 [[Knowledge Graph as Shared Agent Memory]] for where the two senses converge.
 
+## Single- and multi-agent walk-through (Packt chapter 9)
+
+Raieli and Iuculano's chapter relays, without metrics of its own, a four-module agent view (profiling, memory, planning, action) and several systems. Points relevant to topology:
+
+- **HuggingGPT** runs task planning, model selection, execution and response generation, with an LLM call in three of the four steps, which the book names as an efficiency cost. Planning fills four slots per task (ID, type, dependencies, arguments); a resource placeholder carries dependencies and independent tasks run in parallel; when model descriptions exceed context, it filters by task type, ranks, and shows the LLM only the top k.
+- **Homogeneous judges.** A nine-judge court simulation takes the majority opinion; the book warns that copies of one model share bias and repeat each other, and advises ensembles built from different models.
+- **Fixed-order teams.** The toy travel planner runs four agents in a fixed order under a controller and computes cost in code because LLMs are weak at arithmetic; it uses GPT-2 for size and reports no evaluation.
+- **Research teams.** Virtual Lab (a lead agent, scientist agents and a critic, with a round cap on meetings and a human leading) is relayed as producing experimentally validated antibody designs; its named limits are hand-crafted agendas, drift off task and the need for human guidance. Agent Laboratory's named limits are weak novelty, code bugs, cost and imperfect agent communication.
+
+The chapter also compares SaaS, MaaS, DaaS and RaaS qualitatively and says costs leave no room for trial and error in choosing one.
+
 ## Adoption Methodology
 
 1. **AUDIT** — document current workflows and where they bottleneck.
@@ -303,3 +315,6 @@ human-in-the-loop interrupts **from the same mechanism**.
 - [[Multi-Agent Topology Patterns]] — prerequisite-for
 - [[Multi-Agent Failure Modes at Scale]] — prerequisite-for
 - [[Knowledge Graph Fundamentals and Cypher]] — prerequisite-for
+- [[GitSwarm Decentralized Compounding Inference]] — related (swarm on a shared commit graph)
+- [[Workflow Graph Static vs Dynamic Taxonomy]] — related
+- [[Multi-Agent Debate Failure Modes]] — related

@@ -84,3 +84,5 @@ own setups, given beside them.
 - [[GSM-Symbolic]] — alternative-to (another GSM8K perturbation that tests reasoning depth)
 - [[Functional Benchmarks and the Reasoning Gap]] — alternative-to (a differently defined "reasoning gap": relative drop under regenerated inputs)
 - [[Eval Contamination Defenses]] — related (the leakage question both papers touch)
+- [[Selection-Inference]] — related (alternating select and infer calls)
+- [[Iterated Decomposition]] — related

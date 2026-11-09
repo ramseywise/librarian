@@ -2,9 +2,11 @@
 title: Text-to-Cypher
 tags: [graph, rag, pattern]
 summary: "LLM-generated Cypher over a knowledge graph is reliable only as a generate-then-verify loop: an annotated LLM-ready schema, relationships-before-query output ordering, intent detection, a pre-execution EXPLAIN validator and a bounded retry edge — and it belongs last in the retrieval order, after vector search and canned traversals."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--11-kg-rag-and-text-to-cypher.md
+  - data/raw/papers/2026-11-08-kg-and-llms-in-action-ch14-natural-language-kg-questions.md
+  - data/raw/papers/2026-11-07-kg-and-llms-in-action-ch15-qa-agent-with-langgraph.md
 ---
 
 # Text-to-Cypher
@@ -105,6 +107,24 @@ is cheaper.
 Summaries are generated only for graph or map outputs where analysis was asked for, and should
 point out what the visualisation does not make obvious rather than restate it.
 
+## Evidence from the Manning book chapters
+
+The Manning book *Knowledge Graphs and LLMs in Action* devotes chapters 14 and 15 to this design (read here through extractions); they present a demonstration, not an evaluated system.
+
+- **Why not plain RAG.** The chapter's illustration is five invented witness statements in a detective prompt: removing a single statement turned the model's verdict on whether the perpetrator is left-handed from probably yes to probably no. It is one anecdotal run with an unnamed model.
+- **Intent detection.** One question was classified as Data-Related by a smaller or quantized model but as System-Related or Documentation-Related by a full-scale model (models unnamed, no accuracy). The chapter recommends a reason field in the classifier output to debug misclassifications and to harvest boundary cases as new few-shot examples, and biasing the fallback class toward graph output.
+- **Schema as YAML.** A YAML file with skip lists (classes, relationships, properties) and descriptions turns `apoc.meta.schema` output into the conceptual schema. The implementation's schema provider reads the entire database through `apoc.meta.schema`, with no sampling.
+- **Reasoning-first output.** The authors assert that listing relationships before the reasoning and query significantly reduces relationship hallucination, and that reasoning-first beats answer-first because the model commits to an early answer (they call this semantic consistency). Both are shown qualitatively on one path-finding task, not measured. For classification they put the answer first, since the reasoning there is for diagnosis.
+- **Pipeline behaviour (chapter 15).** When a query fails, the text-to-Cypher node is run again with the error attached, at most three times. A summary step exists only for graph and map results; a table ends the run. Events are streamed as (type, payload, state) tuples to a Streamlit front end. A five-step investigation on a crime and ANPR-camera KG is shown with screenshots only.
+- **Future work.** The authors cite studies that in-context learning underperforms task-specific adaptation and propose fine-tuning; for large KGs they suggest agents that enrich the schema, and layered schemas.
+
+### Limits of these chapters
+
+- No quantitative evaluation anywhere (accuracy, latency, cost), no model identity or temperature for the pipeline, and the law-enforcement data is invented, so generality is asserted.
+- The chapters compare against no schema-free or alternative text-to-Cypher approach, and their hallucination-reduction claims go unmeasured. The authors call the code a foundation rather than a turnkey solution.
+- Chapter 15's listings are inconsistent (a state key named `output_reason` against `output_type_reason`, a misspelt `summary_analisys`, an undefined `self.memory`), and the code catches only `ClientError`, which means an empty result never triggers a retry.
+- The reference list is not in the chapter 14 extraction.
+
 ## See Also
 - [[Knowledge Graph Retrieval]] — extends
 - [[Text-to-SQL as a Retrieval Strategy]] — alternative-to
@@ -112,3 +132,5 @@ point out what the visualisation does not make obvious rather than restate it.
 - [[Graph Topology Primitives]] — instance-of
 - [[Multi-Agent Failure Modes at Scale]] — extends
 - [[Knowledge Graph Entity Resolution]] — prerequisite-for
+- [[Degree-Weighted Path Count (DWPC)]] — related (LLM-drafted metapath Cypher)
+- [[GrailQA Three Levels of KBQA Generalization]] — related

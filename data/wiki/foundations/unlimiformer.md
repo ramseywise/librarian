@@ -37,3 +37,5 @@ Bertsch et al. (2023) wrap a pretrained encoder-decoder (BART-base, PRIMERA) so 
 - [[Recurrent Memory Transformer (RMT)]] — alternative-to (recurrent memory instead of retrieval)
 - [[Context Retrieval Strategies]] — related (retrieval outside attention)
 - [[Why Context Is Finite]] — related
+- [[MemLong Retrieval Memory Layers]] — related (retrieval-based long context)
+- [[Focused Transformer Crossbatch Training]] — related (kNN memory attention)

@@ -63,3 +63,5 @@ from Oct, Nov and Dec 2023.
 - [[Compositionality Gap]] — related (a differently defined reasoning gap, for chained GSM8K pairs)
 - [[TheoremQA]] — related
 - [[LLM Reasoning Surveys and the Can-LLMs-Reason Debate]] — related
+- [[ReClor Logical Reasoning Reading Comprehension]] — related
+- [[Math Word Problem Benchmarks]] — related

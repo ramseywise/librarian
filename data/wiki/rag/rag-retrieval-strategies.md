@@ -329,3 +329,4 @@ This avoids pre-ingesting all artists upfront and handles the corpus freshness g
 - [[LongRAG Long Retrieval Units]] — instance-of (long retrieval units that shift work from the retriever to the reader)
 - [[RA-DIT Dual Instruction Tuning]] — instance-of (tuning the retriever and the generator separately)
 - [[RAG vs Long Context: Evaluation Evidence]] — related (when retrieval beats or loses to a long window)
+- [[LLM-R Learned In-Context Example Retriever]] — related

@@ -156,3 +156,4 @@ All figures are self-reported.
 - [[SQL Join Patterns]] — related (fan-out and the LEFT JOIN WHERE trap as generated-SQL failure modes)
 - [[ChatDB SQL Symbolic Memory]] — instance-of (SQL as the memory store)
 - [[Structured Output]] — related (retrieval used to keep generated names valid)
+- [[Spider Text-to-SQL Benchmark]] — instance-of (the benchmark that measures text-to-SQL)

@@ -38,3 +38,4 @@ The benchmark has 300 synthetic template queries over 2,209 real skills (entries
 - [[Skill Discovery Failure Modes]] — related
 - [[Skill Authoring Discipline]] — related (descriptions drive retrieval)
 - [[AnyTool]] — alternative-to (hierarchical retrieval over a large API pool)
+- [[Learned Skill and Action Libraries]] — related

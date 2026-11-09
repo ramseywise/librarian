@@ -33,3 +33,6 @@ Quality (Table 1, base model, MMLU 5-shot): FP16 70.51%, 4-bit attention with 2-
 - [[LLM in a Flash]] — alternative-to (paging dense feed-forward neurons instead of experts)
 - [[MoE-LLaVA and MoE-Tuning]] — related (another sparse mixture-of-experts design)
 - [[Scaling Laws for Precision]] — related (how far weights can be quantized)
+- [[Straight-Through Estimator]] — related (gated conditional computation)
+- [[DeepSpeed Inference and ZeRO-Inference]] — alternative-to (streams weights from CPU or NVMe)
+- [[DeepSeekMoE Fine-Grained Expert Segmentation]] — related

@@ -36,3 +36,4 @@ The authors' reading is that budget awareness changes strategy, broad when budge
 - [[ReAct Pattern]] — prerequisite-for
 - [[Verification Loops]] — related (the verifier step in BATS)
 - [[Loop Detection and the Two-Retry Rule]] — related (another cap on agent loops)
+- [[Effective Feedback Compute]] — related

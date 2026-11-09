@@ -6,6 +6,7 @@ updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--04-execution-boundaries.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--03-tool-design.md
+  - data/raw/papers/2026-11-08-building-applications-with-ai-agents-ch12-protecting-agentic-systems.md
 ---
 
 # Lethal Triad
@@ -56,6 +57,10 @@ sidecar gate ([[Proposer-Reviewer and Sidecar Gating]]) in front of risky calls.
 Skills combined with network access are a specific instance — see
 [[Skill Authoring Discipline]].
 
+## Generic safeguard checklist (Albada, Building Applications with AI Agents, ch. 12)
+
+The chapter lists scoped roles and permissions, a policy-enforcement layer that validates each action, sandboxing, input and output validation, rate limiting, immutable logs and fail-safe states. It reports Lakera Guard at 92.5% and Llama Prompt Guard at 61.4% on the PINT benchmark (4,314 inputs), figures quoted from the benchmark, not rerun. The extraction notes the chapter's incident statistics are uncited and inconsistent (73% averaging $4.8 million in the introduction against 97% averaging $4.4 million later), its alert thresholds (error rate above 5% per hour, similarity below 0.85) are illustrative, and it gives no evidence of effectiveness against prompt injection beyond those two scores.
+
 ## See Also
 - [[Prompt Injection]] — extends (when injection becomes exfiltration)
 - [[Execution Boundaries and Guardrails]] — related (part of)
@@ -64,3 +69,6 @@ Skills combined with network access are a specific instance — see
 - [[Agent Credential Ceiling]] — related
 - [[Bad Memory File-Based Prompt Injection]] — instance-of (memory as the injection channel)
 - [[Tool Poisoning and Protocol-Level Attacks on Agents]] — instance-of (poisoned tool descriptions and retrieved documents)
+- [[Adversarial Pop-up Attack on Computer-Use Agents]] — related (injection through the screen)
+- [[Muses-Bench Multi-User Agent Benchmark]] — related
+- [[Stochastic-Deterministic Boundary Runtime Patterns]] — related

@@ -48,3 +48,9 @@ All numbers are self-reported by the authors, and baselines (Static Harness, RAG
 - [[Synthetic Computers at Scale]] — related
 - [[Procedural Graphs]] — related
 - [[Self-Evolving Agent Taxonomies]] — related
+- [[Learned Skill and Action Libraries]] — related
+- [[Harness-R1 Learned Harness Editing]] — related
+- [[Meta-Harness End-to-End Optimization]] — related
+- [[JIT-Agent Just-in-Time Harness Evolution]] — related
+- [[Harness-of-Harness Cross-Loop Development]] — related
+- [[Confucius Code Agent]] — related

@@ -12,6 +12,9 @@ sources:
   - data/raw/papers/2026-11-06-lin-2026-stellar-colosseum.md
   - data/raw/papers/2026-11-06-qi-2026-beyond-individual-intelligence.md
   - data/raw/papers/2026-11-06-benkovich-2026-agyn.md
+  - data/raw/papers/2026-11-07-building-applications-with-ai-agents-ch05-orchestration.md
+  - data/raw/papers/2026-11-07-context-engineering-multi-agent-systems-ch04-assembling-context-engine.md
+  - data/raw/papers/2026-11-08-building-applications-with-ai-agents-ch03-user-experience-design-agentic-systems.md
 ---
 
 # Harness Orchestration
@@ -215,6 +218,14 @@ Each bullet is one preprint's own result under its own setup; none is a replicat
 - **Survey taxonomy** (Qi et al., arXiv 2605.14892): organises multi-agent work along role, communication, orchestration and interaction axes, and failure analysis into three families (system structure, execution stage, causal lifecycle). It reports no experiments of its own; figures it quotes for other systems (2.8x gain with 90% fewer tokens, 4.55% and 15% of cost) are second-hand and unverified, and its attribution-benchmark sizes range from 148 to over 2,000 cases.
 - **Agyn** (Benkovich and Valkov, arXiv 2602.01465, under review): an issue-resolution team with four roles (manager, researcher, engineer, reviewer), each running in a separate sandbox, with all traffic routed through the manager's manage tool. Manager and researcher ran GPT-5 (medium reasoning) and engineer and reviewer GPT-5-Codex (medium); a task counts only if the reviewer approves the pull request. It reports 72.2% on SWE-bench Verified text-only (500 tasks, fixed configuration, apparently one run) against 71.8% for OpenHands with GPT-5, 71.8% for mini-SWE-agent with GPT-5.2 (high) and 65.0% for mini-SWE-agent with GPT-5 (medium); the paper's "7.4% higher" is 72.2 against the 65.0 row, and mini-SWE-agent with Gemini 3 Pro scored 74.2. There is no ablation against a single agent, no cost or token figures, and the authors say small leaderboard gaps need caution. The GitHub MCP integration bloated context, so they moved to the gh command line. Failures reported include manager stalls waiting on agents that had finished.
 
+## Book guidance on tool selection, plan-execute engines and interaction design
+
+These are book chapters with no experiments; each point is the author's claim.
+
+- **Tool selection and topology (Albada ch. 5):** start with the simplest planning approach that fits. Semantic tool selection (embed the tool catalogue once, embed the query with the same model) is called the most common and recommended for most cases; hierarchical selection is slower, often more accurate, and only worth it with many similar tools. Cap chain length because errors compound; use a chain for linear tasks and a graph only to branch and consolidate, with capped depth and branching and a unit test for each router. The chapter's code listings are partly broken and its LangChain agent types have dated.
+- **Plan-execute engine (Rothman, Context Engineering for Multi-Agent Systems, ch. 4):** a Planner emits a JSON plan, an Executor runs it, and a Tracer records plan, resolved inputs and outputs. An Agent Registry's capability descriptions are the Planner's context, and `$$STEP_N_OUTPUT$$` placeholders chain outputs. The chapter shows one worked run with no evaluation or baseline; the plan is not re-planned on failure, no reflection step is built despite the name, and its "MCP" is a homegrown message envelope.
+- **Interaction design (Albada ch. 3):** expose autonomy as adjustable levels (manual, ask, agent) with stated risks, decide up front which experiences are synchronous and which asynchronous, and on failure explain, preserve progress and escalate to a human. The chapter reports no user study, and its only figures are uncited speech and reading rates.
+
 ## See Also
 - [[Agent Orchestration Patterns]] <!-- auto-linked -->
 - [[Loop Detection and the Two-Retry Rule]] <!-- auto-linked -->
@@ -242,3 +253,12 @@ Each bullet is one preprint's own result under its own setup; none is a replicat
 - [[CAID Centralized Asynchronous Isolated Delegation]] — instance-of (git-worktree delegation)
 - [[HERMES Dev-Primitives]] — instance-of (dev-process primitives as orchestration)
 - [[Harness Effect on Token Economics]] — related
+- [[Harness-of-Harness Cross-Loop Development]] — related
+- [[OpenHands Generalist Agent Platform]] — related
+- [[Team of Rivals Critic-Veto Orchestration]] — related
+- [[Agensh Orchestrator-Free Agent Scaling]] — related
+- [[Team of Thoughts Heterogeneous Model Orchestration]] — related
+- [[WebAgent and HTML-T5 Modular Web Automation]] — related
+- [[CoAct-1 Coding Actions for Computer Use]] — related
+- [[Muses-Bench Multi-User Agent Benchmark]] — related
+- [[OS-Copilot FRIDAY Tool Repository]] — related

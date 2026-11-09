@@ -9,6 +9,7 @@ sources:
   - data/raw/papers/2026-11-06-guo-2026-memfactory.md
   - data/raw/papers/2026-11-06-ding-2026-always-onagents.md
   - data/raw/papers/2026-11-06-piskala-2026-maple.md
+  - data/raw/papers/2026-11-06-xiao-2026-recurrent-harness-agentic-continual-learning.md
 ---
 
 # Memory Lifecycle
@@ -99,6 +100,12 @@ split this repo uses.
 - **Always-On agents survey** scores each stored state item on authority, scope, mutability, provenance, recoverability and actionability, and widens the lifecycle into ten steps that run from observing and writing through validation, organization, retrieval, acting, updating and forgetting to audit and rollback. Rollback is exposed by 27 of 435 coded works (a corpus the authors scoped and coded). Its AOEP-v0 pilot covers nine fault patterns and seven systems with a local Qwen2.5-7B reader under greedy decoding, scoring obligations passed out of 15: hand-built governed reducer 15, no memory 0, naive append 7, full context 7, vector RAG 7, Mem0-style 4, real mem0ai 3 (self-reported); sampled decoding gives a mean of 6.6. The authors call it not a benchmark; the reducer is an oracle, no frontier models, the envelope ablation was not run, and the extraction did not read the full 136-page paper.
 - **MAPLE** splits memory, learning and personalization into sub-agents, with learning run asynchronously and both episodic and semantic records kept (reference store: JSON files). On 150 synthetic personas with 10-turn dialogues, the personalization score goes 4.17 to 4.78 (+14.6%, d=0.95), trait incorporation 45% to 75% (self-reported). See Limits for the caveats.
 
+## Revising Stored Reflections Backward
+
+A 2026 paper adds a backward revision step to stored reflections. Once an instance finishes, a separate revision agent edits the reflections that were pulled in for it, using the new trajectory as its feedback, with new content required to stay grounded in the reflection. Across three benchmarks, three backbones, three stream rollouts and top-k=5, the average normalized gain was 0.240 against 0.164 for keeping full raw history and 0.168 for top-k raw retrieval (self-reported). In an ablation on one benchmark with one backbone, no revision scored 0.144 and revision 0.217 (self-reported). One rollout cost about 41.57M tokens, against 52.66M for top-k raw and 142.12M for full raw (self-reported).
+
+Limits: needs a reward signal; two p-values (0.039 and 0.043) sit close to the threshold; a counterfactual-replay upper bound (0.335) breaks the streaming protocol.
+
 ## Limits
 
 The 2026 papers above:
@@ -124,3 +131,4 @@ The 2026 papers above:
 - [[Memory Intelligence Agent]] — instance-of
 - [[OCR-Memory Optical Context Retrieval]] — instance-of (episodic retrieval over rendered history)
 - [[ACC Bounded Memory Control for Agents]] — instance-of (bounded working state)
+- [[Memory-R1 RL Memory Manager]] — instance-of (learned memory operations)

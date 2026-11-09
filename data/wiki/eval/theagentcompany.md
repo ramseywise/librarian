@@ -53,3 +53,4 @@ agent. Finance has only 12 tasks, so one task moves it 8.33 points. The model li
 - [[Multi-Session Agent Benchmarks]] — related (OdysseyBench contrasts itself with this benchmark)
 - [[AlphaEval]] — related (tasks sourced from deploying companies)
 - [[E-Commerce Operation Benchmarks]] — alternative-to (another simulated-business agent benchmark)
+- [[OpenHands Generalist Agent Platform]] — related

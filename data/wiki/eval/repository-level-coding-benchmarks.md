@@ -68,3 +68,5 @@ The models date from 2024-2026.
 - [[Terminal-Bench]] — related
 - [[InterCode]] — related (interactive coding with execution feedback)
 - [[SUSVIBES (Vibe-Coding Security Benchmark)]] — related (repo-level tasks scored on security as well as function)
+- [[Agentless Localize-Repair-Validate]] — related
+- [[CodeRL Unit-Test Actor-Critic]] — related

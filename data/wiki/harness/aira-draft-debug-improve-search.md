@@ -36,3 +36,4 @@ Four operators: Draft makes initial candidates, Debug fixes execution or logic e
 - [[Recursive Self-Improvement]] — prerequisite-for
 - [[Loop Scorekeeper]] — prerequisite-for
 - [[AI Research Preference Model]] — extends
+- [[Oracle-Gap Recovery by Selection]] — related

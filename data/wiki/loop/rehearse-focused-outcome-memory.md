@@ -43,3 +43,4 @@ The store is plain files; nothing is fine-tuned.
 - [[Loop Scorekeeper]] — prerequisite-for
 - [[AI Research Preference Model]] — alternative-to
 - [[SIFT Judge-Guided Self-Improvement Tree Search]] — alternative-to
+- [[Forgetting Reset for Discovery Teams]] — alternative-to

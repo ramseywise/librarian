@@ -68,3 +68,5 @@ output; returning three empty lists accepts the prior answer.
 - [[Multi-Agent Topology Patterns]] — prerequisite-for
 - [[SALE Strategy Auction]] — alternative-to (a different way to assign agents to tasks)
 - [[Task Decomposition Patterns]] — related
+- [[Sakana Fugu Learned Orchestration]] — alternative-to (learned orchestrator, different training)
+- [[AgentConductor Topology Evolution]] — alternative-to

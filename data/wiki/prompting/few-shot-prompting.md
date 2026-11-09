@@ -5,10 +5,12 @@ summary: Providing worked examples before the task — the most reliable lever f
 updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt--prompt-engineering.md
+  - data/raw/papers/2026-11-07-huyen-ai-engineering-ch05-prompt-engineering.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--03-core-techniques.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--09-evaluating-prompts.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--10-adversarial-prompting.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--08-prompt-optimization.md
+  - data/raw/papers/2026-11-08-song-2023-pre-trained-large-language-models.md
 ---
 
 # Few-Shot Prompting
@@ -102,6 +104,21 @@ needing no expert knowledge — the examples anchored the model ([[Evaluating Pr
 Default to zero-shot CoT, and add worked reasoning examples only when the task has real
 intermediate steps and an eval shows they help.
 
+## Reported limited gains
+
+Huyen (AI Engineering, ch. 5) relays a 2023 Microsoft analysis in which examples added little over zero-shot for GPT-4-class models. The chapter adds that domain tasks, such as the Ibis dataframe API, may still benefit, so the study could understate that use. The chapter runs no experiment and gives no figures. A compact example format also cost fewer tokens than Input/Output blocks on a three-item labelling prompt with the GPT-4 tokenizer. For a variant that adds a wrong rationale to each example, see [[Contrastive Chain of Thought]].
+
+## Demonstration selection for GPT-4 control (Song et al.)
+
+Song et al. (2023 technical report) prompt GPT-4 as an HVAC controller in the BEAR simulator, with historical (H), representative (R) and expert (E) demonstrations written as H/R/E plus a count. Setup: one target scenario (OfficeMedium/CoolDry), 240 steps, five seeds, reward compared with a PPO controller (1.21); all numbers self-reported.
+
+- With no demonstrations GPT-4 scores 1.01; two expert demonstrations alone score lower than none; eight randomly sampled demonstrations are far worse than selected ones.
+- Using only its own four historical demonstrations gave the best GPT result, above PPO. Counting only historical demonstrations, two score 1.15, four score 1.23 and eight score 1.21.
+- Manual feedback comments on demonstrations raised reward from 0.99 to 1.16, while self-generated comments dropped it to 0.59. Writing real numbers in the prompt as rounded integers raised it from 1.07 to 1.16.
+- Adding instructions to a task description lowered reward from 1.12 to 1.07. Under noise added to the outside temperature, GPT-4 moved from 1.16 to 1.15 and PPO fell from 1.21 to 1.07.
+
+Limits: a single target scenario; the "fewer samples" claim is not measured, since the expert demonstrations come from PPO trained for 100M steps; many differences are within one standard deviation; no significance test; GPT-4 version and decoding settings not stated.
+
 ## See Also
 - [[Prompt Engineering]] — related (part of)
 - [[XML Prompt Structuring]] — prerequisite-for
@@ -114,3 +131,10 @@ intermediate steps and an eval shows they help.
 - [[Implicit Weight-Patch Theory of In-Context Learning]] — related
 - [[Rephrase and Respond]] — related (combined with few-shot in the paper's tests)
 - [[Medprompt]] — instance-of (kNN-selected few-shot examples)
+- [[Contrastive Chain of Thought]] — extends
+- [[Chain-of-Thought Prompting]] — extends
+- [[Symbol Tuning]] — extends
+- [[Flipped-Label In-Context Learning]] — extends
+- [[Prompt Order Sensitivity and Entropy Probing]] — extends (order of the same examples)
+- [[LM-BFF and PET Prompt-Based Fine-Tuning]] — related
+- [[LLM-R Learned In-Context Example Retriever]] — extends (learned example selection)

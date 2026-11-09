@@ -34,3 +34,9 @@ Bulatov et al. (2023, AAAI 2024 version) add memory tokens to a pretrained trans
 - [[Why Context Is Finite]] — related
 - [[LM2 Large Memory Models]] — alternative-to (gated memory bank in every block)
 - [[Offline Recurrence Sleep for Language Models]] — alternative-to
+- [[Neural Turing Machine]] — related
+- [[End-to-End Memory Networks]] — related
+- [[BABILong Benchmark]] — related (the benchmark its long-input results come from)
+- [[Focused Transformer Crossbatch Training]] — related (memory attention for long context)
+- [[LongMem Side-Network Memory]] — related (side-network memory)
+- [[MemLong Retrieval Memory Layers]] — related (retrieval memory layers)

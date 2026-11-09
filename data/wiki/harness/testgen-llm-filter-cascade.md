@@ -33,3 +33,5 @@ TestGen-LLM (Alshahwan et al., Meta, FSE 2024) generates Kotlin unit tests for A
 - [[Verification Loops]] — prerequisite-for
 - [[Three-Layer Termination Check]] — related
 - [[AlphaCodium Flow Engineering]] — related (also generates extra tests to gate a solution)
+- [[VeriHarness Agentic Verification]] — related
+- [[ChatTester Intention Prompt and Compile Repair]] — related

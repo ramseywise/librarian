@@ -2,11 +2,12 @@
 title: Context Window Budgeting
 tags: [context, context-management, llm, concept]
 summary: "Deciding the token split across instructions, evidence and working space before the window fills — reserve output first, cap every growing component, value each chunk by its marginal information, and set the budget by ablation against the effective (not advertised) window."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--03-budgeting-the-window.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--02-context-anatomy.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--README.md
+  - data/raw/papers/2026-11-06-shen-2026-efficiency-frontier.md
 ---
 
 # Context Window Budgeting
@@ -88,6 +89,15 @@ not make bloat harmless for quality.
 The ablation and sweep protocols are in [[Evaluating Context]]; measuring the fixed
 overhead a harness adds is in [[Measuring Fixed Context Overhead]].
 
+## Amortizing Preprocessing Cost: the Efficiency Frontier
+
+A 2026 framework scores a context-management strategy as `w * F1 - (1 - w) * log(EffectiveTokens)`, with `EffectiveTokens = T_stage2 + T_stage1 / N`: preprocessing cost is amortized over N reuses and w is left to the deployer. On HotpotQA, with 5,000 sampled questions and GPT-5.4 mini, the best strategy depends on reuse and on the F1 target (self-reported):
+- At N=100, memory compression replaced TF-IDF retrieval QA at F1 0.78 and cost about 25% fewer effective tokens (566 to 424), with overlapping confidence intervals.
+- Near F1 0.80, moving from N=1 to N=100 swapped full-context prompting (1308 effective tokens) for memory compression (584), over 50% cheaper.
+- Full context reached the highest F1 (0.82 in Table I; 0.84 in the prose) at more than twice the tokens of the balanced configurations; TF-IDF retrieval (k=16) and memory compression at 2.5x tied at 0.78.
+
+Limits: one dataset and one model; the extraction notes that Table II disagrees with the prose and that the 1308-token point at F1 about 0.80 sits against Table I's 0.82.
+
 ## See Also
 - [[Why Context Is Finite]] — prerequisite-for
 - [[Context Engineering]] — extends
@@ -98,3 +108,4 @@ overhead a harness adds is in [[Measuring Fixed Context Overhead]].
 - [[Context-Aware Compression]] — extends
 - [[Multi-Agent Context]] — extends
 - [[Budget Tracker and BATS]] — instance-of (a plug-in budget counter and a budget-gated agent loop)
+- [[SheetCompressor Spreadsheet Encoding]] — related (serialization that cuts tokens for tables)

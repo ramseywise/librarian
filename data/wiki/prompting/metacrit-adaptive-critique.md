@@ -33,3 +33,4 @@ The extraction also notes that the preference rates in Appendix L.2 do not match
 - [[Reflexion]] — related (another critique-then-revise loop; Reflexion relies on an external evaluator)
 - [[Chain-of-Verification]] — related (a verification pass over the model's own answer)
 - [[RLMF Metacognitive Advantage Scaling]] — related
+- [[Self-Critiquing Models for Human Evaluators]] — related

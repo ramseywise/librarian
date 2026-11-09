@@ -115,3 +115,5 @@ escalate rather than override), **frozen nodes** (some measurements deliberately
 - [[Diversity Collapse in Multi-Agent Ideation]] — extends
 - [[Coordination Network Measurement in Multi-Agent Coding]] — extends
 - [[Role Anchor and Role Drift]] — extends
+- [[Multi-Agent Debate Failure Modes]] — instance-of (debate degrades or wastes compute)
+- [[Reasoning-Trace Disagreement States]] — instance-of (consensus is not evidence of correctness)

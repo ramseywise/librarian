@@ -1273,7 +1273,7 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[Provenance-Tracked Agent Beliefs]] — Design proposal: A2A beliefs carry source and contradictions, PeerModels track what peers know, AttentionBrief is the default message
 - [[REST-First, MCP as Adapter]] — versioned REST is the service boundary; MCP servers are thin adapters with no business logic
 - [[A2UI Protocol]] — declarative agent-to-UI JSON: flat adjacency list, JSON-Pointer data binding, v0.8 vs v0.9, blank-screen failure ladder
-- [[Tool Poisoning and Protocol-Level Attacks on Agents]] — Two 2025 surveys describe attacks that ride the agent-to-tool and agent-to-agent channel: poisoned tool descriptions, tampered tools, retrieved-document injection, chained tool calls and loop exhaustion; Kong et al. show five single-run demos and Ferrag et al. collect second-hand attack rates.
+- [[Tool Poisoning and Protocol-Level Attacks on Agents]] — Two 2025 surveys describe attacks that ride the agent-to-tool and agent-to-agent channel: poisoned tool descriptions, tampered tools, retrieved-document injection, chained tool calls and loop exhaustion; one survey shows five single-run demos and Ferrag et al. collect second-hand attack rates.
 
 ## Evaluation
 

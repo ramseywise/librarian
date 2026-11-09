@@ -37,3 +37,4 @@ InfCode (Li et al., Beihang University and Beijing Tokfinity, a November 2025 pr
 - [[Three-Layer Termination Check]] — related
 - [[Proposer-Reviewer and Sidecar Gating]] — related
 - [[AlphaCodium Flow Engineering]] — related
+- [[Agentless Localize-Repair-Validate]] — alternative-to

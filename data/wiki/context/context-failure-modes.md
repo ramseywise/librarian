@@ -143,3 +143,7 @@ from a prompt problem.
 - [[Catastrophic Remembering in Context Files]] — instance-of (instruction files that only grow)
 - [[Memory Curse Expanded Recall]] — instance-of (longer recalled history changing behavior)
 - [[IN2 Training and VAL Probes]] — instance-of (training fix for the lost-in-the-middle failure)
+- [[Knowledge Conflicts Taxonomy]] — instance-of (conflicts between context and memory as a failure source)
+- [[Lost in Conversation (Sharded Multi-Turn Simulation)]] — instance-of (multi-turn degradation measured by simulation)
+- [[ATF Analysis-to-Filtration Prompting]] — related (a prompt that filters irrelevant context before reasoning)
+- [[Lost in the Middle]] — instance-of (position sensitivity)

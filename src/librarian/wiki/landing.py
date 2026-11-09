@@ -4,21 +4,27 @@
 links to it and whether `_index.md` lists it (the blocking orphan check of the ingest
 protocol). `librarian wiki index-add <pages>` inserts the missing index lines in place,
 alphabetically within the page's domain section, and updates the page count.
+`librarian wiki see-also <page> --line "- [[X]] — type (note)"` appends backlinks at the end of
+the page's `## See Also` without an anchor line, so concurrent writers to one hub page don't
+collide: the file is locked while it is rewritten, a target the section already links is
+skipped, and a target that does not resolve to a public page, or an unknown type, is refused.
 Private pages are never indexed and never checked: they are outside every graph rate.
 """
 
 from __future__ import annotations
 
 import argparse
+import fcntl
 import re
 import sys
 from dataclasses import dataclass
+from datetime import date
 from pathlib import Path
 
 import frontmatter
 
 from librarian.config import get_settings
-from librarian.wiki.common import slugify
+from librarian.wiki.common import ANY_TYPED_LINK_RE, CANONICAL_LINK_TYPES, link_name, slugify
 from librarian.wiki.telemetry import (
     _link_edges,  # pyright: ignore[reportPrivateUsage]
     _link_index,  # pyright: ignore[reportPrivateUsage]
@@ -40,6 +46,9 @@ SECTION_NAMES = {
 }
 _PAGE_COUNT_RE = re.compile(r"\*\*(\d+) pages\*\*")
 _ENTRY_RE = re.compile(r"^- \[\[(.+?)\]\]")
+_SEE_ALSO_RE = re.compile(r"^##\s+See Also\s*$", re.IGNORECASE)
+_LINE_LINK_RE = re.compile(r"^-\s*\[\[([^\]]+)\]\]")
+_UPDATED_RE = re.compile(r"^updated:.*$", re.MULTILINE)
 
 
 @dataclass(frozen=True)
@@ -128,6 +137,76 @@ def add_to_index(paths: list[Path], wiki_dir: Path = WIKI_DIR) -> tuple[list[str
     return added, problems
 
 
+def add_see_also(
+    path: Path, new_lines: list[str], wiki_dir: Path = WIKI_DIR, today: date | None = None
+) -> tuple[list[str], list[str]]:
+    """Append See Also lines to one page. Returns (added lines, problems or skips)."""
+    links = _link_index(_public_pages(wiki_dir))
+    self_rel = _rel(path, wiki_dir)
+    added: list[str] = []
+    notes: list[str] = []
+    with path.open("r+") as fh:
+        fcntl.flock(fh, fcntl.LOCK_EX)  # released when the file closes
+        lines = fh.read().splitlines()
+        head = next((i for i, ln in enumerate(lines) if _SEE_ALSO_RE.match(ln)), None)
+        if head is None:
+            while lines and not lines[-1].strip():
+                lines.pop()
+            lines += ["", "## See Also"]
+            head = len(lines) - 1
+        end = next(
+            (i for i in range(head + 1, len(lines)) if lines[i].startswith("## ")), len(lines)
+        )
+        present = {
+            p.rel
+            for ln in lines[head + 1 : end]
+            if (m := _LINE_LINK_RE.match(ln)) and (p := links.resolve(m.group(1)))
+        }
+        pos = end
+        while pos > head + 1 and not lines[pos - 1].strip():
+            pos -= 1
+        for line in new_lines:
+            line = line.strip()
+            m = _LINE_LINK_RE.match(line)
+            if not m:
+                notes.append(f"not a '- [[Target]]' line: {line!r}")
+                continue
+            target = links.resolve(m.group(1))
+            if target is None:
+                notes.append(f"no public page named [[{link_name(m.group(1))}]]")
+                continue
+            typed = ANY_TYPED_LINK_RE.match(line)
+            if typed and typed.group(2) not in CANONICAL_LINK_TYPES:
+                notes.append(f"unknown link type {typed.group(2)!r}: {line!r}")
+                continue
+            if target.rel == self_rel or target.rel in present:
+                notes.append(f"skip, already linked: [[{target.title}]]")
+                continue
+            lines.insert(pos, line)
+            pos += 1
+            present.add(target.rel)
+            added.append(line)
+        if added:
+            text = "\n".join(lines) + "\n"
+            stamp = f"updated: {(today or date.today()).isoformat()}"
+            text = _UPDATED_RE.sub(stamp, text, count=1)
+            fh.seek(0)
+            fh.write(text)
+            fh.truncate()
+    return added, notes
+
+
+def _see_also_main(args: argparse.Namespace) -> int:
+    added, notes = add_see_also(args.pages[0], args.line, args.wiki_dir)
+    for line in added:
+        print(f"added     {line}")
+    for note in notes:
+        print(f"{'SKIP' if note.startswith('skip') else 'PROBLEM'}   {note}")
+    problems = sum(not n.startswith("skip") for n in notes)
+    print(f"see-also: {len(added)} added, {problems} problem(s)")
+    return 1 if problems else 0
+
+
 def _verify_main(args: argparse.Namespace) -> int:
     bad = 0
     for st in verify(args.pages, args.wiki_dir):
@@ -167,6 +246,11 @@ def main(argv: list[str] | None = None) -> int:
         sub.add_argument("pages", nargs="+", type=Path)
         sub.add_argument("--wiki-dir", type=Path, default=WIKI_DIR)
         sub.set_defaults(func=func)
+    sub = commands.add_parser("see-also", help="append backlinks to a page's See Also")
+    sub.add_argument("pages", nargs=1, type=Path, metavar="page")
+    sub.add_argument("--line", action="append", required=True, help="'- [[X]] — type (note)'")
+    sub.add_argument("--wiki-dir", type=Path, default=WIKI_DIR)
+    sub.set_defaults(func=_see_also_main)
     args = parser.parse_args(argv)
     missing = [str(p) for p in args.pages if not p.is_file()]
     if missing:

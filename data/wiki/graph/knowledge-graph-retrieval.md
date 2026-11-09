@@ -13,6 +13,9 @@ sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--graph-engineering.md
   - data/raw/papers/2026-11-06-klein-2025-ark-v1.md
   - data/raw/papers/2026-11-06-dong-2026-wfm.md
+  - data/raw/papers/2026-11-08-peng-2024-graph-retrieval-augmented-generation.md
+  - data/raw/papers/2026-11-07-building-ai-agents-llms-rag-kgs-ch07-creating-connecting-knowledge-graph-ai-agen.md
+  - data/raw/papers/2026-11-07-kg-and-llms-in-action-ch13-kg-powered-rag.md
 ---
 
 # Knowledge Graph Retrieval
@@ -175,10 +178,19 @@ All figures are self-reported by preprints.
 - **WFM, a graph foundation model used as a retriever.** A text-augmented graph with dense passage nodes and a GAT-style encoder. Setup: 1,000 held-out questions per set, DeepSeek V4 Flash generator, DeepSeek V4 Pro judge. Accuracy in open and reject mode was 89.6 and 84.3 on HotpotQA, 90.2 and 82.4 on 2Wiki, and 69.8 and 52.6 on MuSiQue, ahead of Youtu-GraphRAG by 2.8 to 5.1 points. Replacing the passage-node graph with an entity-only graph cost 7.48 points of recall.
 - **Prompt-only GraphRAG against plain RAG.** A-RAG and Graph-R1 both report graph methods that rely on prompting underperforming or not consistently beating chunk RAG; see [[Graph-R1 Agentic GraphRAG]].
 
+## Surveys and book chapters on GraphRAG (2024-2025)
+
+Method pages for named approaches: [[GraphRAG Local-to-Global Community Summaries]], [[Reasoning on Graphs]], [[MIRAGE Parallel Graph-Retrieval Reasoning Chains]], [[Graph Neural Prompting]], [[Knowledge Graph Prompting for Multi-Document QA]]; the KBQA benchmark behind several of them is [[GrailQA Three Levels of KBQA Generalization]].
+
+- **Survey workflow (Peng and co-authors, J. ACM preprint).** The survey divides GraphRAG into three stages (G-Indexing, G-Retrieval, G-Generation) and describes it as fetching graph elements (nodes, triples, paths, subgraphs) in place of text chunks, aiming at three RAG weaknesses: ignored relationships, repetitive context and no global view. Its statements are qualitative, with no experiment of its own: hybrid indexing over graph, text and vector indices is preferred; non-parametric retrievers are cheap but may be inaccurate while LM and GNN retrievers cost more, so multi-stage designs are common; once-only retrieval suits real-time use and iterative retrieval is slower but can be more accurate; fine granularity suits simple or latency-bound queries and hybrid granularity complex ones; a graph language for the generator should be complete, concise and comprehensible, whereas graph embeddings avoid long input but lose exact entity names. It describes TIARA (constrained decoding over KB classes and relations) and UniOQA (a Cypher answer and a triplet answer, chosen by a selection step), and lists GRBench, 1,740 questions over 10 domain graphs, as described from its original authors. Open problems it names: most methods target graphs of thousands of entities while industrial graphs hold millions or billions, there is no unified benchmark, lossless compression of linearised graph context is unsolved, and retrievers trained on this task have no labelled retrieval targets, so they rely on distant supervision or RL.
+- **Packt chapter 7 (Raieli and Iuculano).** It adopts the same three-step framing, citing the survey without naming its authors, and gives a five-stage construction path (creation, assessment, cleaning, enrichment, deployment). It states without data that a graph distilled from a small LLM by prompting for triplets is competitive with text-built ones, and relays MedGraphRAG, HybridRAG and a materials-science multi-agent graph with no scores. Its open problems include weaker GraphRAG results on abstractive questions and on questions that do not name an entity. It reports that LLMs read graphs as linear text and weight node labels over topology (one illustrative figure). The extraction notes that its graph-of-thoughts worked example mixes miles and kilometres.
+- **Manning chapter 13 (Negro and co-authors).** A ReAct agent with three tools (a KG retriever, a KG-enhanced document retriever and a vector-search backup) runs over the Rockefeller Archive Center graph in Neo4j, with gpt-4o-mini at temperature 0. Setup: single illustrative runs, no accuracy measured. For a question about Lauritsen and cyclotron research, just one of the three best vector hits mentioned Lauritsen, even though all three scored almost the same cosine similarity; a question about Wrinch took four reasoning-action-observation steps; a Harvard versus Johns Hopkins aggregate was answered from a correct but clumsy Cypher query. Its advice: use parametrised, precanned Cypher tools for frequent question types, put the KG schema in tool descriptions, and test repeatedly with the same input.
+
 ## Limits
 
 - WFM: the authors flag the new table cells and diagnostic sweeps as planning values they built, to be validated later, so the headline numbers are unverified. In its memory table the RHELM zero-shot full-context baseline (46.8) beats every retrieval method except WFM, and WFM without reflection (48.90) leads it by only 2.1. The ACM template is unfilled.
 - ARK-V1: one dataset with binary tasks; large-backbone rows are single runs at temperature 0 with no variance.
+- Surveys and chapters above: the Peng survey has no scores in its benchmark table, so no method comparison follows from it; chapter 7 shows partial tutorial code with LangChain classes since moved; chapter 13 is illustration only, calls itself not production-ready and names missing re-ranking and Cypher self-correction.
 
 ## See Also
 - [[Graph Engineering]] — extends
@@ -196,3 +208,6 @@ All figures are self-reported by preprints.
 - [[GraphReader]] — instance-of
 - [[LightPROF Knowledge Adapter for KGQA]] — related (a trained adapter encodes retrieved paths for a frozen LLM)
 - [[CoAT Associative-Memory MCTS]] — related
+- [[TANS Node Descriptions for Text-Free Graphs]] — related (LLM-generated node text for GNNs)
+- [[Knowledge Graph Prompting for Multi-Document QA]] — instance-of
+- [[Graph Neural Prompting]] — instance-of

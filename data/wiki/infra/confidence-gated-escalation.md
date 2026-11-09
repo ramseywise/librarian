@@ -102,3 +102,4 @@ confidence of 0.96, so the score did not flag the failure. One-line descriptions
 - [[KnowNo Conformal Ask-for-Help]] — related (escalating to a human on a calibrated set)
 - [[DeepConf Confidence-Filtered Voting]] — related
 - [[AutoMix Self-Verification Routing]] — related (sampled self-verification as the confidence signal, routed by a POMDP)
+- [[Verbalized Probability Calibration and CalibratedMath]] — related (verbalized confidence as a gate input)

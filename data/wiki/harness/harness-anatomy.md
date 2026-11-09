@@ -237,3 +237,11 @@ Six items. Everything else here is elaboration on those.
 - [[Harness Effect on Token Economics]] — related
 - [[Prime Agent State Hierarchy]] — related
 - [[OpenDev Terminal Coding Agent]] — related
+- [[Agentic Harness Engineering]] — related
+- [[JIT-Agent Just-in-Time Harness Evolution]] — related
+- [[Harness Handbook Behavior-Organized Map]] — related
+- [[LIFE-Harness Runtime Interface Adaptation]] — related
+- [[Agensh Orchestrator-Free Agent Scaling]] — related
+- [[HeavySkill Heavy Thinking Skill File]] — related
+- [[Stagewise Recoverability Harness Granularity]] — related
+- [[Stochastic-Deterministic Boundary Runtime Patterns]] — related

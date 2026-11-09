@@ -5,6 +5,7 @@ summary: "AdaptEvolve lets a small model draft each mutation in an evolutionary 
 updated: 2026-11-08
 sources:
   - data/raw/papers/2026-11-06-ray-2026-adaptevolve.md
+  - data/raw/papers/2026-11-06-zhou-2026-agent-as-router.md
 ---
 
 # AdaptEvolve Confidence-Routed Evolution
@@ -36,6 +37,10 @@ Only model choice varies; the loop's prompts and harness are unchanged, so the e
 - The extraction flags a contradiction in the direction of the confidence metric between the main text and the appendix.
 - The MBPP static-tree comparison uses a different routing ratio.
 - The authors call their results "first" without verification, and name a concurrent work.
+
+## Related: Agent-as-a-Router (ACRouter)
+
+Zhou et al. (2026) frame model routing for coding tasks as a context-action-feedback loop in which the router reads memory of verified scores and costs and writes the outcome back, so it self-evolves through memory alone. Adding per-dimension performance statistics lifted a zero-shot router from 41.41 to 47.74 average performance (oracle 57.00), which the paper reads as an information deficit; ACRouter reached 49.98 in distribution with the lowest cumulative regret (self-reported), while static trained routers fell below random out of distribution. The statistics-augmented router had worse performance per dollar (1.71 against 1.97). It is a preprint with a single benchmark family.
 
 ## See Also
 - [[Cheap-First Gating and Model Cascades]] — prerequisite-for

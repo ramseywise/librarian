@@ -36,3 +36,4 @@ Llama 2 7B and XGen 7B on LongBench, run on an A100 and timed by wall-clock afte
 - [[Prefix Caching]] — related
 - [[MiniMax Sparse Attention]] — alternative-to
 - [[Context Window Budgeting]] — related
+- [[StreamingLLM Attention Sinks]] — related

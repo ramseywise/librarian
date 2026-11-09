@@ -34,3 +34,4 @@ Setup: seven benchmarks (instruction-following, mixed-QA, maths and coding sets 
 - [[TUMIX Tool-Use Mixture]] — related
 - [[LLMSelector Per-Module Model Assignment]] — related (searches model assignment, not topology)
 - [[DSPy]] — related
+- [[FLORA-Bench GNN Workflow Predictors]] — alternative-to (learned surrogate instead of real evaluations)

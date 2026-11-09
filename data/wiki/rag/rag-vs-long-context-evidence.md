@@ -6,6 +6,7 @@ updated: 2026-11-08
 sources:
   - data/raw/papers/2026-11-06-li-2024-long-context-vs-rag-llms.md
   - data/raw/papers/2026-11-06-jin-2024-long-context-llms-meet-rag.md
+  - data/raw/papers/2026-11-07-building-applications-with-ai-agents-ch06-knowledge-memory.md
 ---
 
 # RAG vs Long Context: Evaluation Evidence
@@ -17,7 +18,7 @@ Both papers are preprints and both report their own results (self-reported).
 - **Setup:** 12 datasets, questions answerable without context removed using GPT-4o with strict exact match, then distractor passages added. 19,188 questions after expansion, 13,628 kept. The RAG arm used summarization-tree retrieval (RAPTOR); the same GPT-4o or GPT-4-Turbo answered in both arms. Long-context input was truncated from the back when over the window.
 - **Result (strict EM):** long context answered 56.3% correctly and RAG 49.0%. Long context alone was right on 2,287 questions and RAG alone on 1,294, so close to 10% of questions only RAG answered correctly. The authors read this as retrievers not being replaceable by long-context models.
 - **By source:** Wikipedia 873 long-context-only wins against 348 RAG-only; stories 842 against 391; papers and reports 531 against 507; dialogue 31 against 44. Yes/no "other" questions favour RAG, 54 against 140.
-- **Retriever choice** (a sample of about 1,563 questions, an inference by the extractor): RAPTOR 38.5% correct, then window parsing at 35.5% and tree index at 30.1%, an OpenAI embedding model (21.6%), BM25 (20.4%) and Contriever (20.1%). Chunk-based retrievers trail the summarization-based one.
+- **Retriever choice** (a sample of about 1,563 questions, an inference by the extractor): RAPTOR 38.5% correct, then window parsing at 35.5% and tree index at 30.1%, text-embedding-3-small (21.6%), BM25 (20.4%) and Contriever (20.1%). Chunk-based retrievers trail the summarization-based one.
 
 ## Jin et al.: more retrieved passages is not monotone
 
@@ -29,6 +30,10 @@ Both papers are preprints and both report their own results (self-reported).
 ## Reading the two together
 
 They test different variables (long context against retrieval, versus the size of the retrieved set), on different models and datasets, so their numbers do not combine. They agree that retrieval quality and the kind of irrelevant text matter.
+
+## An assertion without data
+
+Chapter 6 of Building Applications with AI Agents (Albada) says long-context models have not made retrieval obsolete: on fact-seeking and enterprise queries RAG can beat pure long-context models, and production systems pair long windows with selective retrieval. The extraction records this as community consensus asserted without data, for mid-2025 models, and the chapter has no experiments. It sits in tension with Li et al. above, where long context was ahead on filtered QA; neither claim settles the other, and this one is not evidence.
 
 ## Limits
 
@@ -43,3 +48,6 @@ They test different variables (long context against retrieval, versus the size o
 - [[RAG Retrieval Strategies]] — prerequisite-for (the retrieval side of the comparison)
 - [[Context Retrieval Strategies]] — related (assembling retrieved context)
 - [[BlockSearch In-Context Retrieval at Million-Token Scale]] — related (in-context retrieval collapses at 10,000 documents; a fix is reported)
+- [[Knowledge Conflicts Taxonomy]] — related (conflicts between retrieved context and model memory)
+- [[BABILong Benchmark]] — related (long-context versus retrieval on hidden facts)
+- [[LC-Boost Short-Context Processing of Long Inputs]] — related

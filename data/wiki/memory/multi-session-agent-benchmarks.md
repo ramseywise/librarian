@@ -58,3 +58,4 @@ Neo score went up, 39.44 with two apps and 45.61 with three.
 - [[Memory Architecture]] — related
 - [[TheAgentCompany]] — related (OdysseyBench contrasts itself with it)
 - [[Long-Horizon Execution]] — related
+- [[BEAM Benchmark and LIGHT Memory Framework]] — instance-of (benchmark)

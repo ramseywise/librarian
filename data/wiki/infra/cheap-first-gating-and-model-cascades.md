@@ -10,6 +10,8 @@ sources:
   - data/raw/web/2026-11-05-citation-check-corrections-third-pass.md
   - data/raw/papers/2026-11-05-li-2026-jev-as-judge.md
   - data/raw/papers/2026-11-07-huyen-ai-engineering-ch10-ai-engineering-architecture-user-feedback.md
+  - data/raw/papers/2026-11-07-chen-2023-frugalgpt.md
+  - data/raw/papers/2026-11-07-ong-2024-routellm.md
 ---
 
 # Cheap-First Gating and Model Cascades
@@ -53,6 +55,12 @@ RouteLLM's spread is the lesson: the best router on the same model pair saves mo
 as much on one benchmark as on another, and each benchmark's figure comes from its own router and training data. A 2026
 preprint (Ibrahim & Zaki, unrefereed, abstract read) escalated a decision model's low-confidence items to an LLM and
 equalled or bettered that LLM on its own while costing a quarter to half as much, on computational social science tasks.
+
+FrugalGPT's own cost figures (March 2023 prices, cascade length 3, same test set used for evaluation, no variance): the
+cost to match the best single model fell from $33.1 to $0.6 on HEADLINES (GPT-4), $9.7 to $2.6 on OVERRULING (GPT-4) and
+$72.5 to $29.6 on COQA (GPT-3). The paper also reports that GPT-3 is right on 13% of COQA items where GPT-4 is wrong, and
+that the cascade needs labelled examples from a similar distribution to train. Its prompt-adaptation and approximation
+strategies are described but not evaluated.
 
 ## Failure modes
 
@@ -101,3 +109,7 @@ Limits: no measurements; tool gateways are left out because the chapter calls th
 - [[AutoMix Self-Verification Routing]] — instance-of (self-verified escalation with a learned router)
 - [[LLMSelector Per-Module Model Assignment]] — related (assigning a model per module of a pipeline, not per query)
 - [[HSE and Router Robustness in Model Societies]] — related (whether a routed pool differs enough to be worth routing)
+- [[RouteLLM Preference-Trained Routers]] — instance-of
+- [[Intelligence per Watt]] — related (routing arm of its energy-saving simulation)
+- [[LLM-Blender PairRanker and GenFuser]] — alternative-to (runs every model, so it adds cost)
+- [[Verbalized Probability Calibration and CalibratedMath]] — related

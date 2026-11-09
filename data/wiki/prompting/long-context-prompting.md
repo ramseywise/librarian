@@ -7,6 +7,7 @@ sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt--prompt-engineering.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--02-prompt-anatomy.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--01-how-models-read-prompts.md
+  - data/raw/papers/2026-11-07-shi-2023-large-language-models-can-be.md
 ---
 
 # Long-Context Prompting
@@ -62,6 +63,16 @@ These rules govern arrangement of content already in the window. Deciding *which
 documents belong there at all — retrieval, ranking, token budgeting — is
 [[Context Engineering]], not prompt engineering.
 
+## Distraction by Irrelevant Context (GSM-IC)
+
+GSM-IC, a 2023 dataset, inserts a single templated irrelevant sentence into each of 100 easy GSM8K problems (58,052 examples; 4,000 sampled), and tests four prompting techniques on code-davinci-002 and text-davinci-003 (self-reported, greedy unless stated):
+- Chain-of-thought overall micro accuracy was 72.4 but macro accuracy, where a base problem counts only if solved under every distractor, was 6.0. Least-to-most was the most robust base technique (77.5 and 18.0); zero-shot chain-of-thought was the most distracted (29.0 against a base of 44.0).
+- Twenty-sample self-consistency raised micro accuracy by over 11 points (chain-of-thought plus self-consistency reached 88.1 micro, 30.0 macro).
+- The instruction "Feel free to ignore irrelevant information" lifted chain-of-thought micro 72.4 to 77.8 and macro 6.0 to 15.0; an exemplar containing an irrelevant sentence lifted micro to 76.8. Neither hurt clean GSM8K.
+- In-topic distractors were harder than off-topic (63.1 against 80.7) and role-name overlap hurt (68.3 against 76.6).
+
+Limits: two GPT-3-family models, now retired; an easy base subset chosen because some prompt solves it; one-sentence template distractors; no seeds or significance tests.
+
 ## See Also
 - [[Prompt Engineering]] — related (part of)
 - [[XML Prompt Structuring]] — prerequisite-for
@@ -73,3 +84,7 @@ documents belong there at all — retrieval, ranking, token budgeting — is
 - [[RAG vs Long Context: Evaluation Evidence]] — related (head-to-head evaluations)
 - [[LongRAG Long Retrieval Units]] — related (a long-context reader over long retrieval units)
 - [[LongICLBench and Many-Shot ICL Scaling]] — instance-of
+- [[LC-Boost Short-Context Processing of Long Inputs]] — related
+- [[BABILong Benchmark]] — related
+- [[System 2 Attention]] — instance-of (regenerating context before answering)
+- [[Lost in the Middle]] — related (position effects)

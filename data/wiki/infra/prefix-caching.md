@@ -116,3 +116,7 @@ tokens, so nothing was ever cached.
 - [[LazyLLM Dynamic Token Pruning]] — related (changes which tokens are kept per layer, a different lever from cache reuse)
 - [[Cache-Augmented Generation]] — instance-of (a preloaded corpus whose key-value cache is reused across queries)
 - [[Skeleton-of-Thought]] — related (per-point requests repeat the question and skeleton; KV reuse proposed, not tested)
+- [[Disaggregated Prefill-Decode Serving]] — related (KV cache moves between phases)
+- [[Chunked Prefill and Adaptive Batching]] — related
+- [[KV Cache Reduction Methods]] — related (other ways to shrink the KV cache)
+- [[Multi-Head Latent Attention]] — related (smaller key-value cache per token)

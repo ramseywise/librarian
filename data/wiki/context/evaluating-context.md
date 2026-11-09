@@ -101,3 +101,5 @@ accuracy: a pipeline that matches quality with half the context is better.
 - [[Paired Eval Comparison]] — prerequisite-for
 - [[Memory Store Operations]] — extends (memory hit rate in production)
 - [[SummHay Benchmark]] — instance-of
+- [[NeedleBench]] — instance-of (long-context benchmark)
+- [[LongBench]] — instance-of (long-context benchmark)

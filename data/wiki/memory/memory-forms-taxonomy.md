@@ -6,6 +6,7 @@ updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--memory.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--memory.md
+  - data/raw/papers/2026-11-08-zhang-2025-survey-memory-mechanism-large-language.md
 ---
 
 # Memory Forms Taxonomy
@@ -101,6 +102,16 @@ when-to-retrieve policy in [[Memory-Augmented Conversational RAG]]. **Post-retri
 processing** is the augmentation gate: having retrieved the right memories, you still
 choose how much of them to hand the model.
 
+## A survey's sources, forms and operations (Zhang and co-authors)
+
+A survey of LLM-agent memory (arXiv v1 preprint, covering work to early 2024, no experiments of its own) organises memory along three dimensions and one loop:
+
+- **Sources:** history within one trial, history across trials, and outside knowledge; a check-mark table records which of 25 systems draw on each.
+- **Forms:** textual (complete history, recent history, retrieved, external) and parametric (fine-tuning, editing). The survey says textual memory can be structured as tuples or databases as well as free text; the extraction notes it never names graphs as a memory form.
+- **Operations:** write, manage (merge, reflect, forget) and read, composed as one loop before the LLM acts. It argues they should be designed together because the write form constrains the read.
+
+Statements it makes: retrieved memory scores entries and takes the top K, and retrieval stores homogeneous information well but struggles with heterogeneous information; full-history textual memory has quadratic attention cost, length limits and position bias; textual memory is cheaper to write and parametric memory cheaper to read; fine-tuning is mostly offline and editing suits small online updates; textual memory suits recent, context-specific tasks and parametric memory large, well-established knowledge. For evaluation it separates direct measures (answer correctness, F1 on the memories retrieved, plus time and hardware cost) from indirect ones (end-to-end tasks, with and without memory), and concedes no open-source benchmark is tailored to memory modules. Multi-agent memory (synchronisation, communication, information asymmetry) and lifelong learning (temporal memory, forgetting) appear as future directions. The extraction flags that the cached copy is v1, so graph-memory or benchmark material added later may be present only in the published version.
+
 ## See Also
 - [[Agent Memory Types]] — related (the practitioner taxonomy this frames as one cell)
 - [[Memory Lifecycle]] — extends (Dynamics, at finer grain)
@@ -113,3 +124,4 @@ choose how much of them to hand the model.
 - [[Jev-Mem System-One Memory Control]] — instance-of (a fast controller over memory operations)
 - [[Delta-Mem Fixed-Size State Memory]] — instance-of (latent state memory beside a frozen model)
 - [[Offline Recurrence Sleep for Language Models]] — instance-of (latent memory consolidated offline)
+- [[LLM Personalization Taxonomy]] — related

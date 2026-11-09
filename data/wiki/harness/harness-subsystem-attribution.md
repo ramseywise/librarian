@@ -80,3 +80,6 @@ strips anything.
 - [[Runtime vs Process Observability]] — prerequisite-for
 - [[Model or Harness Failure Taxonomy]] — extends
 - [[SoL-Pi Auto-Research Harness]] — related
+- [[Meta-Harness End-to-End Optimization]] — related
+- [[Agentic Harness Engineering]] — related
+- [[Stagewise Recoverability Harness Granularity]] — related

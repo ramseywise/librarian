@@ -48,3 +48,4 @@ All numbers below are self-reported by the authors.
 - [[Harness Continual Learning]] — alternative-to (harness evolved against anchors rather than a per-game simulator)
 - [[VERA Co-Evolving Model and Harness]] — alternative-to
 - [[ADAS Meta Agent Search]] — related
+- [[Harness-R1 Learned Harness Editing]] — related

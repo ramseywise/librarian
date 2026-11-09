@@ -224,3 +224,10 @@ gone. The same pruning was implemented in both the Python and the TypeScript age
 - [[LongHarness Evidence State]] — alternative-to
 - [[Gist Tokens]] — alternative-to
 - [[Doc-to-LoRA]] — alternative-to
+- [[ACE Agentic Context Engineering Playbooks]] — related (full rewrites cause context collapse)
+- [[Focus Active Context Compression]] — instance-of (agent-triggered compression)
+- [[AgentFold Context Folding]] — instance-of (folding history)
+- [[AdaCoM Learned Context Manager]] — instance-of (learned manager)
+- [[LightThinker Gist-Token Compression]] — instance-of (compressing reasoning)
+- [[Codified Context Three-Tier Infrastructure]] — related
+- [[Confucius Code Agent]] — related

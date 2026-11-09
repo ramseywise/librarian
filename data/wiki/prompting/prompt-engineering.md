@@ -5,6 +5,7 @@ summary: The innermost layer of the agent stack — the instructions and example
 updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt--prompt-engineering.md
+  - data/raw/papers/2026-11-07-huyen-ai-engineering-ch05-prompt-engineering.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt--README.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--README.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--01-how-models-read-prompts.md
@@ -94,6 +95,10 @@ advice from *how to think* to *what to achieve* ([[Prompting Reasoning Models]])
 Build the eval first ([[Evaluating Prompts]], judges via a [[SOMA Judge Rubric]]), then
 search against it ([[Prompt Optimization]], [[DSPy]]).
 
+## Evidence from a book chapter
+
+Huyen (AI Engineering, ch. 5) quotes, without running experiments of its own: few-shot gave limited gains on GPT-4-class models in a 2023 Microsoft analysis (the chapter says domain-specific tasks may still benefit), instructions at the start or end of a prompt are handled better than in the middle, and a GoDaddy support prompt that bloated past 1,500 tokens improved after decomposition. On attacks it quotes PAIR needing fewer than twenty queries, instruction-hierarchy training raising robustness by up to 63%, default LangChain templates reaching 100% injection success, and memorization near 1% in a divergence attack. Every number is relayed from other work, often without baselines. See [[Prompt Injection]] and [[Prompt Templates and Variables]].
+
 ## Applications
 
 [[Diversity Seeding for Synthetic Data]], [[Code Generation Prompting]], and interface design
@@ -135,3 +140,6 @@ is the primary security concern for any system with external inputs. See
 - [[Rephrase and Respond]] — instance-of (model rewrites the question before answering)
 - [[EmotionPrompt]] — instance-of (emotional stimuli appended to a prompt)
 - [[Principled Instructions (26 Prompt Principles)]] — instance-of (a catalogue of prompt rules)
+- [[Chain-of-Thought Prompting]] — instance-of
+- [[Strategic Chain-of-Thought (SCoT)]] — instance-of
+- [[Controllable Text Generation Taxonomy]] — related

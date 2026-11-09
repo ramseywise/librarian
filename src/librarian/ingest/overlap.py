@@ -9,12 +9,17 @@ the `--source` files given, and prints `page:line — "phrase"` for each run of 
 more consecutive words (default 8) that also appears in a source. Case and punctuation are
 ignored; a run that spans lines is reported at its first line. Exit 1 when anything matches.
 Run it before the ingest reviewer, which then only has to judge what is left.
+
+`--since REV` reports only runs that start on a line added since that git revision (a page not
+in REV counts as all added), so an ingest that appends one line to an old page is not charged
+with the page's older wording: `--since HEAD` checks just the uncommitted text.
 """
 
 from __future__ import annotations
 
 import argparse
 import re
+import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -92,6 +97,31 @@ def overlaps(page: Path, sources: list[Path] | None = None, n: int = DEFAULT_WOR
     return matches
 
 
+_HUNK_RE = re.compile(r"^@@ -\S+ \+(\d+)(?:,(\d+))? @@", re.MULTILINE)
+
+
+def added_lines(page: Path, rev: str) -> set[int] | None:
+    """Line numbers of `page` added since `rev`; None when the page is not in `rev` (all new)."""
+    rel = _rel(page)
+    known = subprocess.run(
+        ["git", "cat-file", "-e", f"{rev}:{rel}"], cwd=REPO_ROOT, capture_output=True
+    )
+    if known.returncode != 0:
+        return None
+    diff = subprocess.run(
+        ["git", "diff", "-U0", rev, "--", rel],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout
+    lines: set[int] = set()
+    for m in _HUNK_RE.finditer(diff):
+        start, count = int(m.group(1)), int(m.group(2) or 1)
+        lines.update(range(start, start + count))
+    return lines
+
+
 def _rel(path: Path) -> str:
     try:
         return str(path.resolve().relative_to(REPO_ROOT))
@@ -109,6 +139,7 @@ def main(argv: list[str] | None = None) -> int:
         help="raw file to compare with (repeatable); default: each page's sources:",
     )
     ap.add_argument("--words", type=int, default=DEFAULT_WORDS, help="shortest run reported")
+    ap.add_argument("--since", metavar="REV", help="only runs on lines added since this revision")
     args = ap.parse_args(argv)
     found = 0
     for page in args.pages:
@@ -117,7 +148,10 @@ def main(argv: list[str] | None = None) -> int:
         missing = [s for s in listed if not s.is_file()]
         for path in missing:
             print(f"WARN {_rel(page)}: source not found: {_rel(path)}", file=sys.stderr)
+        fresh = added_lines(page, args.since) if args.since else None
         for m in overlaps(page, sources, args.words):
+            if args.since and fresh is not None and m.line not in fresh:
+                continue
             found += 1
             print(f'{_rel(m.page)}:{m.line} — "{m.phrase}"')
     if found:

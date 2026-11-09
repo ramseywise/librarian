@@ -33,3 +33,7 @@ Ma et al. (Microsoft, arXiv 2504.12285, technical report, 2025) release a 2B-par
 - [[LLM in a Flash]] — alternative-to (fitting a model into limited memory by paging)
 - [[LLM Inference Economics]] — prerequisite-for (the quantization lever)
 - [[Weight Initialisation and Activation Scale]] — related
+- [[Straight-Through Estimator]] — related
+- [[Bi-Mamba Binarized State Space Model]] — extends (1-bit weights in a state space model)
+- [[LLM.int8 Outlier-Aware Quantization]] — alternative-to
+- [[Model Compression Landscape]] — related

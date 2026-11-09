@@ -5,6 +5,7 @@ summary: "ADAS defines an agent as code and has a meta agent program new agents 
 updated: 2026-11-08
 sources:
   - data/raw/papers/2026-11-06-hu-2024-automated-design-agentic-systems.md
+  - data/raw/papers/2026-11-07-building-applications-with-ai-agents-ch08-one-agent-many.md
 ---
 
 # ADAS Meta Agent Search
@@ -23,11 +24,16 @@ Search ran independently per domain for 30 iterations; the meta agent was GPT-4 
 - Transfer within maths was strong (GSM8K 69.5 against 43.6). Transfer to reading comprehension was positive, to multi-task mixed (one agent below the best baseline), and to science at best a match. The authors hypothesise that models lack the knowledge for the science and multi-task questions, so better structure helps less; this is untested.
 - Agents found on ARC with the weaker model kept their lead on stronger models, though the best agent on one model was not best on the others.
 
+## Secondhand description
+
+A trade-book chapter on moving from one agent to many (Albada, *Building Applications with AI Agents*, O'Reilly) devotes a section to Meta Agent Search and quotes the paper's DROP, MGSM, MMLU and GPQA numbers (79.4 F1, 53.4%, 69.6%, 34.6%), with +13.6 F1 on DROP over the Role Assignment baseline. It adds that each new agent gets up to five debugging refinements and that the search often runs 25 to 30 generations; all of this is reported from the paper, not rerun by the chapter.
+
 ## Limits
 
 - The text says the search used GPT-4 while the model name in the appendix is a gpt-4o checkpoint.
 - The authors' claim of outperforming on multi-task transfer is generous given one agent scored 62.4 against a 65.9 baseline.
 - Small test sets and intervals around 3 points on MMLU and GPQA.
+- The chapter that re-describes ADAS runs no experiments of its own, and the numbers in it are quoted from the original paper.
 - Searching from an empty archive still beat baselines, but seeding with human baselines helped in three of four domains.
 
 ## See Also
@@ -35,3 +41,4 @@ Search ran independently per domain for 30 iterations; the meta agent was GPT-4 
 - [[Harness Updating vs Harness Benefit]] — related (the meta agent here is a stronger model than the agents it designs)
 - [[AutoHarness Synthesized Code Harness]] — related
 - [[Recursive Self-Improvement]] — prerequisite-for
+- [[Darwin Gödel Machine]] — alternative-to

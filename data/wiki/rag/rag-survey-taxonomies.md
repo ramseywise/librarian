@@ -35,3 +35,4 @@ This KDD '25 survey organises work by retrieval, structuring and generation. Its
 - [[RAG Reranking]] — related
 - [[Reciprocal Rank Fusion]] — related
 - [[Agentic RAG — Advanced Patterns]] — related
+- [[Knowledge Graph Prompting for Multi-Document QA]] — related

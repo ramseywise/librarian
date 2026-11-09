@@ -25,7 +25,7 @@ Dual averaging runs during burn-in (M_adapt iterations) and the step size is the
 
 ## Reported results (self-reported)
 
-Setup: the metric is effective sample size (ESS) per gradient evaluation. HMC is represented by its best result over 10 trial simulation lengths. Each run is 2000 iterations (the first 1000 for burn-in and adaptation), with 10 seeds, on four targets (a 250-D multivariate normal, a 25-parameter German-credit logistic regression, a 301-parameter hierarchical logistic regression, and a 3001-parameter stochastic volatility model).
+Setup: the metric is ESS per gradient evaluation. HMC is represented by its best result over 10 trial simulation lengths. Each run is 2000 iterations (the first 1000 for burn-in and adaptation), with 10 seeds, on four targets (a 250-D multivariate normal, a 25-parameter German-credit logistic regression, a 301-parameter hierarchical logistic regression, and a 3001-parameter stochastic volatility model).
 
 - On the two logistic regressions NUTS roughly matched tuned HMC; on the multivariate normal and stochastic volatility targets it was about 3x better in ESS per gradient (self-reported, delta = 0.6).
 - The best HMC simulation length varied about 100x across the four problems (0.17 to 17.62), which is why HMC needs preliminary tuning runs (self-reported).

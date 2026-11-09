@@ -42,3 +42,5 @@ The authors suggest omitting LLM-generated files for now, and keeping human-writ
 - [[Harness Engineering]] — prerequisite-for
 - [[Skill Authoring Discipline]] — related
 - [[Natural-Language Agent Harnesses]] — related
+- [[Harness Handbook Behavior-Organized Map]] — related
+- [[Codified Context Three-Tier Infrastructure]] — related

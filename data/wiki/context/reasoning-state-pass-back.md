@@ -2,7 +2,7 @@
 title: Reasoning State Pass-Back
 tags: [context, llm, agents, concept]
 summary: "The server renders API messages into one token stream through a model-specific chat template, so mislabelled roles change behaviour (a tool result sent as a user turn can reset reasoning mid-task), and current reasoning models expect their prior reasoning returned verbatim inside the tool loop — stripping it makes agents repeat ruled-out hypotheses."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--02-context-anatomy.md
 ---
@@ -49,3 +49,4 @@ when a behaviour change follows a seemingly cosmetic message-format change.
 - [[Context Anatomy]] — extends (the message-history layer, at the token level)
 - [[Cache-Stable Context Layout]] — extends
 - [[Context Compaction]] — prerequisite-for (what a compactor must not strip mid-loop)
+- [[Delethink Markovian Thinker]] — related (carries a text state across chunk boundaries)

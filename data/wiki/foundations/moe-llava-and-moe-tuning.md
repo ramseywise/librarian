@@ -36,3 +36,4 @@ The router is linear with top-2 of 4 experts, placed in every other layer, with 
 - [[Vision-Language Model Training Families]] — prerequisite-for (the dense stages it starts from)
 - [[Mixture-of-Transformers]] — alternative-to (fixed per-modality weights instead of a learned router)
 - [[MoE Expert Offloading]] — related (mixture-of-experts at inference)
+- [[DeepSeekMoE Fine-Grained Expert Segmentation]] — related

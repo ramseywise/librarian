@@ -12,6 +12,10 @@ sources:
   - data/raw/agent-skills/langchain-rag/references/advanced-patterns.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--03-tool-design.md
   - data/raw/papers/2026-11-06-lakshmanan-hapke-genai-design-patterns-ch07-enabling-agents-to-take-action.md
+  - data/raw/papers/2026-11-08-ai-agents-with-mcp-ch01-agentic-ai-mcp.md
+  - data/raw/papers/2026-11-08-ai-agents-with-mcp-ch02-introduction-model-context-protocol.md
+  - data/raw/papers/2026-11-08-ai-agents-with-mcp-ch03-making-intelligent-application-agentic-mcp-clients.md
+  - data/raw/papers/2026-11-08-ai-agents-with-mcp-ch04-mcp-clients-advanced-use-best-practices.md
 ---
 
 # MCP Protocol
@@ -181,6 +185,21 @@ See Hypernova MCP for the full production deployment of this pattern.
 ## Limits stated in a 2025 book
 
 Lakshmanan and Hapke (Generative AI Design Patterns, ch. 7) list three MCP limits as of May 2025 and flag them as likely to date: the protocol does not enforce authentication or authorisation; communication is mostly one-way, with agent-to-agent protocols arriving to fill it; and standard calls were terminated after 30-60 seconds depending on network setup, with streamable HTTP enabling longer streams. Their split of work: MCP eases supplying tool definitions, while a client framework eases invoking tools and returning results. Stdio transport suits Python-only clients and streamable HTTP other languages or machines.
+
+## Client-side details from an early-release MCP book
+
+Chapters 1 to 4 of an early-release book, AI Agents with MCP, cover the client side. The extraction describes it as a raw draft with no experiments, so these are the chapters' claims and worked examples, not measurements, and the SDK details are tied to one Python SDK version.
+
+- **MxN to M+N.** With one connector per model-tool pair, 3 models and 4 tools need 12 connectors; under MCP every model gets a client and every tool a server, which makes 7 (a worked example).
+- **Roots are advisory.** In the specification servers should respect them but are not required to, so roots cannot serve as a security control. The chapters advise validating URIs against path traversal and keeping access control in the host.
+- **Rug pull.** A server that was safe when installed can be made malicious by its owner; the chapters say to treat servers as attack surface, local and remote.
+- **Sampling and elicitation.** A client that offers sampling should have a human approve the request before the LLM is called and approve the reply before it goes back. Elicitation replies are accept, decline or cancel, and decline and cancel carry no content. A client must advertise each capability it supports.
+- **Many servers.** Two primitives sharing a name cannot coexist in a ClientSessionGroup, so a name hook renames them to avoid collisions. Tool-choice accuracy may fall as tools accumulate (unquantified); the chapters suggest evaluating before and after adding a server.
+- **Resumption and pagination.** Streamable HTTP connections resume from the last event id, and only list methods paginate, through nextCursor.
+- **Transports and auth.** Always support stdio and add Streamable HTTP for remote use; transports that include authorisation must implement OAuth 2.1; do not pass all environment variables to a stdio server.
+- **Ecosystem counts** (about 350 official and under 650 community servers listed, 4,800 specification-repo stars) are as of writing in 2025 and have dated.
+
+Inconsistencies noted by the extraction: some figure numbering in chapter 2 is wrong (the sampling figure is cited as 2-3 but is 2-4), and the chapter 3 text ends after the prompts example although its introduction promises more. Code in the chapters is simplified and lacks the human approval the text says is required.
 
 ## See Also
 - [[Karpathy LLM Wiki Pattern]]

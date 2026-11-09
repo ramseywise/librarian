@@ -96,3 +96,7 @@ The Transformer is the foundation of every LLM used in agent systems. Understand
 - [[Recurrent Memory Transformer (RMT)]] — instance-of
 - [[Gist Tokens]] — instance-of
 - [[Mixture-of-Transformers]] — extends (per-modality weights with shared attention)
+- [[Multi-Head Latent Attention]] — extends (low-rank key-value cache)
+- [[RWKV Linear-Time Recurrent Language Model]] — alternative-to (attention-free recurrent formulation)
+- [[Cut Cross-Entropy]] — extends (loss layer for large vocabularies)
+- [[UL2 Mixture of Denoisers]] — related (a pretraining objective mix on the encoder-decoder transformer)

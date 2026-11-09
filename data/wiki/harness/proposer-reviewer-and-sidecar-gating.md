@@ -58,3 +58,5 @@ can write down; a reviewer covers the judgement calls you cannot.
 - [[InfCode Adversarial Test-Patch Refinement]] — related
 - [[TestGen-LLM Filter Cascade]] — related
 - [[CodeScientist Semi-Automated Discovery]] — related
+- [[VeriHarness Agentic Verification]] — related
+- [[ChatTester Intention Prompt and Compile Repair]] — related
