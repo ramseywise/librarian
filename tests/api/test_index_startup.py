@@ -185,7 +185,7 @@ def test_a_model_change_re_embeds_everything(
     fake_model.dim = 16
     monkeypatch.setattr(embeddings, "MODEL_NAME", "fake-b")
     index.open_index().close()
-    assert len(fake_model.texts) == 2
+    assert len(fake_model.texts) == 4  # 2 pages + their 2 sections
     assert _meta("embedding_model") == "fake-b"
     assert _meta("embedding_dim") == "16"
 
@@ -219,8 +219,9 @@ def test_the_index_still_embeds_the_file_text_with_its_frontmatter(
 ) -> None:
     """Pinned: embedding the body instead lowered the eval gate (see `_embed_pages`)."""
     index.rebuild_index()
-    assert fake_model.texts
-    assert all("tags: [rag, concept]" in t for t in fake_model.texts)
+    page_texts = [t for t in fake_model.texts if "\n---\n" in t]
+    assert len(page_texts) == 2
+    assert all("tags: [rag, concept]" in t for t in page_texts)
 
 
 def test_embeddings_unavailable_is_degraded_in_readyz(monkeypatch: pytest.MonkeyPatch) -> None:

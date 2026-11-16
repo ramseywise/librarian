@@ -50,7 +50,8 @@ class LessonRec:
     concepts: list[str] = field(default_factory=list)  # wiki page ids, ranked
     drill: dict[str, Any] = field(default_factory=dict)  # DRILL_KEYS, kind == "drill" only
     flashcards: int = 0
-    questions: int = 0
+    questions: int = 0  # multiple choice
+    problems: int = 0  # worked problems
     private: bool = False  # under data/courses/private/: local only
 
 
@@ -239,7 +240,7 @@ def _build_decks(
 def _build_quizzes(
     course: str, module: str, title: str, questions: list[quiz.Question], recs: list[LessonRec]
 ) -> dict[str, dict[str, Any]]:
-    """The module's quiz, plus one per lesson with questions. Sets each lesson's question count."""
+    """The module's quiz, plus one per lesson with questions. Sets each lesson's question and problem counts."""
     if not questions:
         return {}
     module_id = f"{course}/{module}"
@@ -248,7 +249,8 @@ def _build_quizzes(
     }
     for r in recs:
         mine = [q for q in questions if q.lesson == r.id]
-        r.questions = len(mine)
+        r.problems = sum(q.worked for q in mine)
+        r.questions = len(mine) - r.problems
         if mine:
             quizzes[r.id] = {"id": r.id, "title": r.title, "course": course, "questions": mine}
     return quizzes
@@ -264,6 +266,7 @@ def _outline(r: LessonRec) -> dict[str, Any]:
         **({"drill": r.drill} if r.drill else {}),
         **({"flashcardCount": r.flashcards} if r.flashcards else {}),
         **({"quizCount": r.questions} if r.questions else {}),
+        **({"problemCount": r.problems} if r.problems else {}),
         **({"private": True} if r.private else {}),
     }
 

@@ -4,6 +4,8 @@ Callers (the MCP server, the chat agent, the eval harness) use only the names ex
 
     search(query, domain, limit, expand)  rendered results, as the `search_wiki` tool returns
     search_rows(...)                      ranked rows plus the degradation reasons they ran under
+    best_sections(query, paths, table)    each ranked page's section that best fits the query
+    best_section_block(ref, section)      that section rendered for a model (capped, with its ref)
     degraded_notice(reasons)              the warning line to put in front of a model
     read_page(path_or_title)              one page or lesson, private pages excluded
     list_domain(domain), list_pages(...)  listings; domain_briefing(domain) concatenates a domain
@@ -24,7 +26,7 @@ index as a built file, `librarian index build`), `handle` (the read-only handle)
 
 from librarian.retrieval.artifact import rebuild_index
 from librarian.retrieval.embeddings import embeddings_ready, embeddings_unavailable
-from librarian.retrieval.format import degraded_notice
+from librarian.retrieval.format import SECTION_RESULTS, best_section_block, degraded_notice
 from librarian.retrieval.format import search_text as search
 from librarian.retrieval.handle import IndexHandle, IndexNotReadyError
 from librarian.retrieval.index import (
@@ -35,12 +37,15 @@ from librarian.retrieval.index import (
     set_handle,
 )
 from librarian.retrieval.pages import domain_briefing, list_domain, list_pages, read_page
-from librarian.retrieval.ranking import disabled, search_rows
+from librarian.retrieval.ranking import best_sections, disabled, search_rows
 
 __all__ = [
+    "SECTION_RESULTS",
     "IndexBusyError",
     "IndexHandle",
     "IndexNotReadyError",
+    "best_section_block",
+    "best_sections",
     "degraded_notice",
     "disabled",
     "domain_briefing",

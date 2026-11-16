@@ -63,18 +63,69 @@ describe("LessonView report", () => {
   });
 });
 
-describe("LessonView labs", () => {
-  it("links the labs that back the note", () => {
-    const lab = {
-      id: "ds/01-m/practice/importance_noise.py", title: "Importance noise", course: "ds", module: "01-m",
-      path: "practice/importance_noise.py", purpose: "P", pattern: "evaluation", language: "python",
-      runsOffline: true, hasRun: true, hasCheck: false,
-    };
+describe("LessonView parts", () => {
+  const lab = {
+    id: "ds/01-m/practice/importance_noise.py", title: "Importance noise", course: "ds", module: "01-m",
+    path: "practice/importance_noise.py", purpose: "P", pattern: "evaluation", language: "python",
+    runsOffline: true, hasRun: true, hasCheck: false,
+  };
+  const body = [
+    "## Idea", "", "The idea in words.", "",
+    "```python", "a = 1", "b = 2", "c = a + b", "print(c)", "```", "",
+    "## Try it", "", "1. Change b.", "", "<details>", "<summary>Answers</summary>", "", "Seven.", "", "</details>", "", "---", "",
+    "## Interview checklist", "", "| Prompt | Answer |", "|---|---|", "| Why add? | To get three |",
+  ].join("\n");
+  const renderNote = () => render(
+    <LessonView lesson={{ ...drill, kind: "reading", drill: undefined, labs: [lab], quizCount: 2, body }} courseTitle="DS" done={false}
+      decks={[{ id: "programming/ts", title: "Classical ML" }, { id: "programming/ts/other-note", title: "Other" }]}
+      onMarkDone={vi.fn()} onOpen={vi.fn()} onOpenConcept={vi.fn()} onAsk={vi.fn()} onToc={vi.fn()} onActiveHeading={vi.fn()} />,
+  );
+
+  it("opens on the lecture: the deck and the prose, without the code, exercises or review table", () => {
+    renderNote();
+    expect(screen.getByRole("tab", { name: "Lecture" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("link", { name: /Lecture deck: Classical ML/ })).toHaveAttribute("href", "#/slides/programming/ts");
+    expect(screen.queryByRole("link", { name: /Lecture deck: Other/ })).toBeNull();
+    expect(screen.getByText("The idea in words.")).toBeInTheDocument();
+    expect(screen.queryByText(/c = a \+ b/)).toBeNull();
+    expect(screen.queryByText("Change b.")).toBeNull();
+    expect(screen.queryByText("Why add?")).toBeNull();
+  });
+
+  it("puts the levels and the review questions on Study", async () => {
+    renderNote();
+    await userEvent.click(screen.getByRole("tab", { name: "Study" }));
+    expect(screen.getByRole("link", { name: "Level 1: multiple choice, 2 questions" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Review questions" })).toBeInTheDocument();
+    expect(screen.getByText("Why add?")).toBeInTheDocument();
+    expect(screen.queryByText("The idea in words.")).toBeNull();
+  });
+
+  it("puts the labs, the exercises and the code on Labs", async () => {
+    renderNote();
+    await userEvent.click(screen.getByRole("tab", { name: "Labs" }));
+    expect(screen.getByRole("link", { name: /Importance noise/ })).toHaveAttribute("href", "#/labs/ds/01-m/practice/importance_noise.py");
+    expect(screen.getByText("Change b.")).toBeInTheDocument();
+    expect(screen.getByText(/c = a \+ b/)).toBeInTheDocument();
+    expect(screen.queryByText("Seven.")).toBeNull();
+    expect(document.querySelector("details")).toBeNull();
+    await userEvent.click(screen.getByRole("button", { name: "Show answers" }));
+    expect(screen.getByText("Seven.")).toBeInTheDocument();
+  });
+
+  it("opens with the lecture made for this note when the module has one", () => {
     render(
-      <LessonView lesson={{ ...drill, kind: "reading", drill: undefined, labs: [lab] }} courseTitle="DS" done={false}
+      <LessonView lesson={{ ...drill, kind: "reading", drill: undefined, body }} courseTitle="DS" done={false}
+        decks={[{ id: "programming/ts", title: "Whole" }, { id: "programming/ts/group-by", title: "Grouping", subtitle: "Why group" }]}
         onMarkDone={vi.fn()} onOpen={vi.fn()} onOpenConcept={vi.fn()} onAsk={vi.fn()} onToc={vi.fn()} onActiveHeading={vi.fn()} />,
     );
-    expect(screen.getByText("Labs for this note")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Importance noise/ })).toHaveAttribute("href", "#/labs/ds/01-m/practice/importance_noise.py");
+    expect(screen.getByRole("link", { name: /Lecture deck: Grouping/ })).toHaveTextContent("Why group");
+    expect(screen.queryByRole("link", { name: /Lecture deck: Whole/ })).toBeNull();
+  });
+
+  it("opens Labs from a code link in the lecture", async () => {
+    renderNote();
+    await userEvent.click(screen.getByRole("link", { name: /Code 1 in Labs/ }));
+    expect(screen.getByRole("tab", { name: "Labs" })).toHaveAttribute("aria-selected", "true");
   });
 });

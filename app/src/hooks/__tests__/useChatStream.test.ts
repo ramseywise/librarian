@@ -251,10 +251,19 @@ describe("useChatStream", () => {
     vi.stubGlobal("fetch", fetchMock);
     const { result } = renderHook(() => useChatStream(() => {}));
     const lab = { id: "ds/01-m/practice/a.py", files: { "a.py": "x" }, output: "out", exit: 1 };
-    await act(() => result.current.sendQuery("why?", lab));
+    await act(() => result.current.sendQuery("why?", { lab }));
     expect(JSON.parse(fetchMock.mock.calls[0][1]!.body as string)).toEqual({ query: "why?", history: [], lab });
     await act(() => result.current.sendQuery("and?"));
     expect(JSON.parse(fetchMock.mock.calls[1][1]!.body as string)).not.toHaveProperty("lab");
+  });
+
+  it("sends the card or question being studied by id", async () => {
+    const fetchMock = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(async () => streamResponse([frame({ type: "done" })]));
+    vi.stubGlobal("fetch", fetchMock);
+    const { result } = renderHook(() => useChatStream(() => {}));
+    const study = { quiz: "prog/01-clean", question: "q1", revealed: false };
+    await act(() => result.current.sendQuery("hint?", { study }));
+    expect(JSON.parse(fetchMock.mock.calls[0][1]!.body as string)).toEqual({ query: "hint?", history: [], study });
   });
 
   it("clear() aborts and empties the conversation", async () => {

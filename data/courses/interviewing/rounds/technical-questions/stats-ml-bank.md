@@ -1,5 +1,5 @@
 ---
-imported_hash: 4c7051946c74481e
+imported_hash: d7aad0d87798ba3b
 title: Probability, Statistics and ML Screen Bank
 summary: Short-answer questions and worked probability problems for a first-round screen on maths, probability, statistics and basic machine learning.
 order: 78
@@ -11,8 +11,13 @@ source: learn-ai-engineering/practice/interviewing/rounds/technical-questions/st
 # Probability, Statistics and ML Screen Bank
 
 Short-answer questions and worked probability problems for a first-round screen on maths, probability,
-statistics and basic machine learning. Multiple-choice versions are sections L, M and N of
-[mcq-bank.md](mcq-bank.md); the one-page formulas are in [stats-ml-cheat-sheet.md](stats-ml-cheat-sheet.md).
+statistics and basic machine learning. The one-page formulas are in [stats-ml-cheat-sheet.md](stats-ml-cheat-sheet.md).
+
+**Three levels**: this bank is the middle one. Go through the topics once at each level.
+
+1. Recognise: the multiple-choice sections L to S of [mcq-bank.md](mcq-bank.md).
+2. Recall: this bank, answered out loud with the answer covered.
+3. Calculate: [stats-ml-problems.md](stats-ml-problems.md), 38 problems with one numeric answer each.
 
 **How to use**: cover the answer, say yours out loud, then compare. Each entry has a short **Answer** (what to
 say in 30 to 60 seconds), sometimes a **Working** block (the steps to write on a whiteboard), and a **Deeper**

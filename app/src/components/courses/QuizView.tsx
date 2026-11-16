@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Quiz, QuizAnswerResult, QuizQuestion } from "./types";
 import { InlineMarkup } from "./FlashcardsView";
 import { quizOrder } from "./studyQueue";
 import { pageTitle, useDocumentTitle } from "./useDocumentTitle";
 import "./courses.css";
 import { apiFetch } from "../../utils/api";
+import type { StudyChatContext } from "../../hooks/useChatStream";
 
 function shuffled<T>(items: T[]): T[] {
   const out = [...items];
@@ -15,15 +16,30 @@ function shuffled<T>(items: T[]): T[] {
   return out;
 }
 
-/** One module's or lesson's multiple-choice quiz. The server grades (the answer is never sent ahead) and
- * stores each result; a wrong answer is due again tomorrow, like a missed flashcard. `#/quiz/<id>[?due]`. */
-export function QuizView({ quizId: route }: { quizId: string }) {
-  const [quizId, query] = route.split("?");
+const LEVELS = { choice: "Level 1 · Multiple choice", worked: "Level 3 · Worked problems" } as const;
+
+/** One module's or lesson's quiz: multiple choice, and worked problems where the answer is a typed number.
+ * The server grades (the answer is never sent ahead) and stores each result; a wrong answer is due again
+ * tomorrow, like a missed flashcard. `#/quiz/<id>[?choice|worked][&due]`: one format, or both without a flag. */
+export function QuizView({
+  quizId: route,
+  onChatContext,
+}: {
+  quizId: string;
+  /** Registers what the chat is told about the question on screen: its ids, and whether it is answered. */
+  onChatContext?: (get: (() => StudyChatContext | null) | null) => void;
+}) {
+  const [quizId, query = ""] = route.split("?");
+  const flags = query.split("&");
+  const level = flags.includes("worked") ? "worked" : flags.includes("choice") ? "choice" : null;
+  const dueOnly = flags.includes("due");
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [queue, setQueue] = useState<QuizQuestion[]>([]);
   const [pos, setPos] = useState(0);
   const [picked, setPicked] = useState<string | null>(null);
+  const [typed, setTyped] = useState("");
+  const [notANumber, setNotANumber] = useState(false);
   const [result, setResult] = useState<QuizAnswerResult | null>(null);
   const [right, setRight] = useState(0);
   const [saveFailed, setSaveFailed] = useState(false);
@@ -37,20 +53,33 @@ export function QuizView({ quizId: route }: { quizId: string }) {
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(r.status === 404 ? "No quiz here" : `HTTP ${r.status}`))))
       .then((q: Quiz) => {
         if (cancelled) return;
-        setQuiz(q);
-        setQueue(quizOrder(q.questions, query === "due"));
+        // The route's level is the whole quiz for this view: counts and restarts stay inside it.
+        const questions = level ? q.questions.filter((x) => (x.kind ?? "choice") === level) : q.questions;
+        setQuiz({ ...q, questions });
+        setQueue(quizOrder(questions, dueOnly));
         setPos(0);
         setPicked(null);
+        setTyped("");
         setResult(null);
         setRight(0);
       })
       .catch((e: Error) => !cancelled && setError(e.message));
     return () => { cancelled = true; };
-  }, [quizId, query]);
+  }, [quizId, level, dueOnly]);
 
   const question: QuizQuestion | undefined = queue[pos];
   // Options are shuffled once per question; the answer is an option's text, so order carries nothing.
   const options = useMemo(() => (question ? shuffled(question.options) : []), [question]);
+
+  // The chat reads the question on screen through a ref; the answer goes in its brief only once
+  // this question is graded.
+  const shownRef = useRef<StudyChatContext | null>(null);
+  shownRef.current = quiz && question ? { quiz: quiz.id, question: question.id, revealed: result !== null } : null;
+  useEffect(() => {
+    if (!onChatContext) return;
+    onChatContext(() => shownRef.current);
+    return () => onChatContext(null);
+  }, [onChatContext]);
 
   if (error) return <div className="course-centered"><div>{error}</div></div>;
   if (!quiz) return <div className="course-centered"><div>Loading…</div></div>;
@@ -59,12 +88,18 @@ export function QuizView({ quizId: route }: { quizId: string }) {
     if (!question || result) return;
     setPicked(choice);
     setSaveFailed(false);
+    setNotANumber(false);
     try {
       const r = await apiFetch("/api/courses/quiz-results", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ quiz: quiz.id, question: question.id, choice }),
       });
+      if (r.status === 422) {
+        setPicked(null);
+        setNotANumber(true);
+        return;
+      }
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       const graded = (await r.json()) as QuizAnswerResult;
       setResult(graded);
@@ -78,12 +113,14 @@ export function QuizView({ quizId: route }: { quizId: string }) {
   const next = () => {
     setPos(pos + 1);
     setPicked(null);
+    setTyped("");
     setResult(null);
   };
   const restart = (dueOnly: boolean) => {
     setQueue(quizOrder(quiz.questions, dueOnly));
     setPos(0);
     setPicked(null);
+    setTyped("");
     setResult(null);
     setRight(0);
   };
@@ -93,6 +130,7 @@ export function QuizView({ quizId: route }: { quizId: string }) {
       <div className="course-page-inner course-page-inner--practice">
         <a href={`#/courses/${quiz.course}`} className="link-btn">← Course</a>
         <h1 className="course-page-title course-page-title--overview">{quiz.title}</h1>
+        {level && <p className="slides-status">{LEVELS[level]}</p>}
         {!question ? (
           <div className="quiz-done">
             <p className="flashcard-done">
@@ -108,6 +146,21 @@ export function QuizView({ quizId: route }: { quizId: string }) {
         ) : (
           <>
             <div className="quiz-prompt"><InlineMarkup text={question.prompt} /></div>
+            {question.kind === "worked" ? (
+              <form className="quiz-worked" onSubmit={(e) => { e.preventDefault(); if (typed.trim()) void answer(typed.trim()); }}>
+                <input
+                  value={typed}
+                  onChange={(e) => setTyped(e.target.value)}
+                  readOnly={!!result}
+                  inputMode="decimal"
+                  autoComplete="off"
+                  aria-label="Your answer, a number"
+                  placeholder="Your answer"
+                  className={!result ? "" : result.correct ? "is-right" : "is-wrong"}
+                />
+                {!result && <button type="submit" disabled={!typed.trim() || !!picked} className="btn-primary">Check</button>}
+              </form>
+            ) : (
             <div className="quiz-options" role="group" aria-label="Answers">
               {options.map((o) => {
                 const state = !result ? "" : o === result.answer ? " is-right" : o === picked ? " is-wrong" : "";
@@ -124,11 +177,20 @@ export function QuizView({ quizId: route }: { quizId: string }) {
                 );
               })}
             </div>
+            )}
+            {notANumber && <p className="slides-status" role="alert">Type a number, such as 0.16, 18.7 or 1/6.</p>}
             {result && (
-              <div className="quiz-feedback" role="status">
-                <strong>{result.correct ? "Correct." : "Not quite."}</strong>{" "}
-                {!result.correct && <>The answer is <InlineMarkup text={result.answer} />. </>}
-                {result.explanation && <InlineMarkup text={result.explanation} />}
+              <div className={`quiz-feedback ${result.correct ? "is-right" : "is-wrong"}`} role="status">
+                <p className="quiz-verdict">
+                  <strong>{result.correct ? "Correct." : "Not quite."}</strong>
+                  {!result.correct && <> The answer is <InlineMarkup text={result.answer} />.</>}
+                </p>
+                {result.explanation && (
+                  <>
+                    <div className="quiz-why-label">Why</div>
+                    <p className="quiz-why"><InlineMarkup text={result.explanation} /></p>
+                  </>
+                )}
                 {question.lesson && (
                   <div className="flashcard-source">From <a href={`#/courses/${question.lesson}`}>{question.lessonTitle}</a></div>
                 )}

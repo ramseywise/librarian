@@ -82,6 +82,11 @@ def client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> TestClient:
     )
     _write(root / "gen-ai" / "02-agents" / "_module.md", "---\ntitle: Agents\norder: 2\n---\n")
     _write(root / "gen-ai" / "02-agents" / "loop.md", "---\ntitle: The Loop\n---\n\nAgents loop.\n")
+    _write(root / "gen-ai" / "01-rag" / "slides" / "deck.yaml", "deck:\n  title: RAG deck\n")
+    _write(
+        root / "gen-ai" / "01-rag" / "slides" / "lectures" / "01-intro.yaml",
+        "deck:\n  title: Intro\n  subtitle: Why retrieve\n",
+    )
     _write(root / "gen-ai" / "01-rag" / "assets" / "fig.png", "png")
     _write(root / "gen-ai" / "01-rag" / "assets" / "notes.txt", "not an image")
     _write(root / "basics" / "01-python" / "vars.md", "---\ntitle: Variables\n---\n\nx = 1\n")
@@ -110,6 +115,15 @@ def test_catalog_orders_courses_modules_and_lessons(client: TestClient) -> None:
         "gen-ai/01-rag/deep/rerank",
     ]
     assert gen["modules"][0]["lessons"][1]["section"] == "Deep"
+
+
+def test_catalog_lists_a_modules_lecture_decks(client: TestClient) -> None:
+    rag, agents = client.get("/api/courses").json()[1]["modules"]
+    assert rag["decks"] == [
+        {"id": "gen-ai/01-rag", "title": "RAG deck"},
+        {"id": "gen-ai/01-rag/01-intro", "title": "Intro", "subtitle": "Why retrieve"},
+    ]
+    assert "decks" not in agents
 
 
 def test_lesson_links_concepts_and_excludes_private_and_tombstones(client: TestClient) -> None:

@@ -305,17 +305,19 @@ function DomainTree({ areas, curriculum, ...row }: RowProps & { areas: Area[]; c
     .sort((a, b) => count(dirFacet(b)) - count(dirFacet(a)) || a.localeCompare(b));
 
   return (
-    <ul className="cur-tree" role="group" aria-label="Filter by domain">
-      {present.map((a) => (
-        <CourseRow key={a.id} area={a} course={courseById.get(a.id) ?? null} curriculum={curriculum} {...row} />
-      ))}
-      {looseCourses.map((c) => (
-        <CourseRow key={c.id} area={null} course={c} curriculum={curriculum} {...row} />
-      ))}
-      {looseDirs.map((d) => (
-        <LooseDirectoryRow key={d} dir={d} curriculum={curriculum} {...row} />
-      ))}
-    </ul>
+    <div role="group" aria-label="Filter by domain">
+      <ul className="cur-tree">
+        {present.map((a) => (
+          <CourseRow key={a.id} area={a} course={courseById.get(a.id) ?? null} curriculum={curriculum} {...row} />
+        ))}
+        {looseCourses.map((c) => (
+          <CourseRow key={c.id} area={null} course={c} curriculum={curriculum} {...row} />
+        ))}
+        {looseDirs.map((d) => (
+          <LooseDirectoryRow key={d} dir={d} curriculum={curriculum} {...row} />
+        ))}
+      </ul>
+    </div>
   );
 }
 

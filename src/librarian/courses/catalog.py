@@ -3,7 +3,7 @@
 Layout: data/courses/<course>/_course.md, <course>/<module>/_module.md, and lesson
 .md files anywhere below a module. Ordering and titles come from frontmatter. Flashcards live
 in <course>/<module>/_flashcards.md, frontmatter `cards: [{front, back, lesson?}, ...]`; multiple-choice
-questions in <course>/<module>/_quiz.md (see quiz.py).
+questions and worked problems in <course>/<module>/_quiz.md (see quiz.py).
 
 Lesson ↔ concept links come from four places, ranked in this order:
 - explicit: `wiki: [page-id, ...]` in lesson frontmatter, or inline [[Wiki Title]]
@@ -42,7 +42,7 @@ import frontmatter
 import yaml
 
 from librarian.config import get_settings
-from librarian.courses import quiz
+from librarian.courses import quiz, slides
 from librarian.courses.assets import (
     ASSET_TYPES as ASSET_TYPES,
 )
@@ -201,6 +201,9 @@ from librarian.courses.queries import (
 )
 from librarian.courses.queries import (
     search_lessons as search_lessons,
+)
+from librarian.courses.queries import (
+    study_brief as study_brief,
 )
 from librarian.courses.queries import (
     study_deck as study_deck,
@@ -365,6 +368,14 @@ def _load(
                 q for d in mod_dirs for q in quiz.load(d / quiz.QUIZ_FILE, {r.id for r in recs})
             ]
             quizzes |= _build_quizzes(course_name, module_name, module_title, questions, recs)
+            problems = sum(q.worked for q in questions)
+            # Lecture decks are served from the public tree only (slides.resolve), so list only those.
+            lecture_decks = [
+                deck
+                for d in mod_dirs
+                if not is_under_private(d, private_root)
+                for deck in slides.decks_in(d / "slides", course_name, module_name)
+            ]
             modules.append(
                 {
                     "id": module_name,
@@ -376,8 +387,14 @@ def _load(
                     "readingsCount": readings_count,
                     "references": mmeta.get("references") or [],
                     "lessons": [_outline(r) for r in recs],
+                    **({"decks": lecture_decks} if lecture_decks else {}),
                     **({"flashcardCount": len(cards)} if cards else {}),
-                    **({"quizCount": len(questions)} if questions else {}),
+                    **(
+                        {"quizCount": len(questions) - problems}
+                        if len(questions) > problems
+                        else {}
+                    ),
+                    **({"problemCount": problems} if problems else {}),
                     **({"private": True} if all(r.private for r in recs) and recs else {}),
                 }
             )

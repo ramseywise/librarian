@@ -9,12 +9,16 @@ from __future__ import annotations
 
 from collections.abc import Iterator
 from contextlib import contextmanager
+from typing import TYPE_CHECKING
 
 import duckdb
 
+if TYPE_CHECKING:
+    import numpy as np
+
 from librarian.log_config import get_logger
 from librarian.observability import experiment, timed
-from librarian.retrieval import corpus, embeddings, index
+from librarian.retrieval import corpus, embeddings, index, sections
 from librarian.retrieval.graph_expansion import expand_one_hop
 
 log = get_logger(__name__)
@@ -105,7 +109,9 @@ def _cosine(a: list[float], b: list[float]) -> float:
     return dot / (na * nb + 1e-9)
 
 
-def rerank(query: str, rows: list[tuple], limit: int) -> list[tuple]:
+def rerank(
+    query: str, rows: list[tuple], limit: int, section_sims: dict[str, float] | None = None
+) -> list[tuple]:
     """Blend text relevance and semantic similarity, best first.
 
     rows are 8-tuples (path, title, tags, summary, content, backlinks, embedding,
@@ -117,6 +123,9 @@ def rerank(query: str, rows: list[tuple], limit: int) -> list[tuple]:
     Backlinks are deliberately not a signal. They say how central a page is, not whether
     it answers this query, so they buried specific pages under hubs. A golden set whose
     answers are mostly hubs will read that as an improvement: see evals/run_eval.py.
+
+    `section_sims` (experiments `section-*` only) maps a path to its best section's cosine,
+    combined with the page cosine by `_combine_section`.
     """
     raw_scores = [r[7] for r in rows]
     max_bm25 = max((s for s in raw_scores if s is not None), default=0.0)
@@ -130,14 +139,15 @@ def rerank(query: str, rows: list[tuple], limit: int) -> list[tuple]:
     if embeddings.HAS_EMBEDDINGS and len(rows) > 1:
         try:
             q_vec = embeddings.encode([query])[0].tolist()
+
+            def semantic(row: tuple) -> float:
+                page = _cosine(q_vec, embeddings.blob_to_floats(row[6])) if row[6] else 0.0
+                if section_sims is None:
+                    return page
+                return _combine_section(page, section_sims.get(row[0]))
+
             scored = [
-                (
-                    TEXT_WEIGHT * text_score(i)
-                    + SEMANTIC_WEIGHT
-                    * (_cosine(q_vec, embeddings.blob_to_floats(row[6])) if row[6] else 0.0),
-                    i,
-                    row,
-                )
+                (TEXT_WEIGHT * text_score(i) + SEMANTIC_WEIGHT * semantic(row), i, row)
                 for i, row in enumerate(rows)
             ]
             # Sort on (score, -original index) so equal-scoring rows keep candidate order.
@@ -147,6 +157,58 @@ def rerank(query: str, rows: list[tuple], limit: int) -> list[tuple]:
             log.warning("hybrid_rerank_failed", error=str(e))
 
     return [(*row[:6], text_score(i)) for i, row in enumerate(rows[:limit])]
+
+
+# ---------------------------------------------------------------------------
+# Best section of a ranked page (what search returns in full)
+# ---------------------------------------------------------------------------
+
+
+def best_sections(query: str, paths: list[str], table: str = "pages") -> dict[str, tuple[str, str]]:
+    """For each page in `paths`, the `(heading_path, text)` of its section that best fits `query`.
+
+    Scored only among that page's own sections, so this picks what to show and never changes
+    which pages rank: `TEXT_WEIGHT` × share of query terms present + `SEMANTIC_WEIGHT` × cosine.
+    Ties keep page order (the introduction first). A page with no stored sections is absent
+    from the result, as is everything when the index predates the section tables: callers fall
+    back to their snippet.
+    """
+    if not paths:
+        return {}
+    stable = index.SECTION_TABLES[table]
+    placeholders = ", ".join("?" for _ in paths)
+    con = index.open_index()
+    try:
+        # Ask the catalog first: on a missing table DuckDB would scan a Python object of that
+        # name instead (this module imports one called `sections`).
+        if not con.execute(
+            "SELECT 1 FROM duckdb_tables() WHERE table_name = ?", [stable]
+        ).fetchone():
+            return {}
+        rows = con.execute(
+            f"SELECT path, ordinal, heading_path, text, embedding FROM {stable} "
+            f"WHERE path IN ({placeholders}) ORDER BY path, ordinal",
+            paths,
+        ).fetchall()
+    finally:
+        con.close()
+
+    q_vec = None
+    if embeddings.HAS_EMBEDDINGS and any(r[4] for r in rows):
+        try:
+            q_vec = embeddings.encode([query])[0].tolist()
+        except Exception as e:
+            log.warning("section_query_embed_failed", error=str(e))
+    terms = sections.query_terms(query)
+
+    best: dict[str, tuple[float, str, str]] = {}
+    for path, _ordinal, heading_path, text, emb in rows:
+        score = TEXT_WEIGHT * sections.term_score(terms, text)
+        if q_vec is not None and emb:
+            score += SEMANTIC_WEIGHT * _cosine(q_vec, embeddings.blob_to_floats(emb))
+        if path not in best or score > best[path][0]:
+            best[path] = (score, heading_path, text)
+    return {path: (h, t) for path, (_, h, t) in best.items()}
 
 
 # ---------------------------------------------------------------------------
@@ -177,6 +239,105 @@ def union_candidates(
     has_scores = any(r[7] is not None for r in bm25_rows)
     extra = [(*r[:7], 0.0 if has_scores else None) for _, _, r in scored[:k]]
     return [*bm25_rows, *extra]
+
+
+# ---------------------------------------------------------------------------
+# Sections as a ranking signal (experiments, off by default)
+# ---------------------------------------------------------------------------
+
+# section-sim: semantic = max(page cosine, best section cosine).
+# section-blend: their mean, which damps the edge a page with many sections gets from the max.
+# section-union: section-sim, plus pages whose sections are in the cosine top `limit * 3` over
+# all sections, so a page BM25 missed can still enter through one section.
+SECTION_SIM_EXPERIMENT = "section-sim"
+SECTION_BLEND_EXPERIMENT = "section-blend"
+SECTION_UNION_EXPERIMENT = "section-union"
+
+
+def _section_mode() -> str:
+    """The `section-*` experiment in force, or ''."""
+    variant = experiment()
+    for name in (SECTION_UNION_EXPERIMENT, SECTION_BLEND_EXPERIMENT, SECTION_SIM_EXPERIMENT):
+        if name in variant:
+            return name
+    return ""
+
+
+def _combine_section(page: float, section: float | None) -> float:
+    if section is None:
+        return page
+    if _section_mode() == SECTION_BLEND_EXPERIMENT:
+        return (page + section) / 2
+    return max(page, section)
+
+
+def _section_matrix(
+    con: duckdb.DuckDBPyConnection, table: str, tag_filter: str, tag_params: list
+) -> tuple[list[str], np.ndarray]:
+    """Every section vector of the pages `tag_filter` admits, as (paths, unit-row matrix)."""
+    import numpy as np  # experiments only: the default search path needs no numpy
+
+    stable = index.SECTION_TABLES[table]
+    if not con.execute("SELECT 1 FROM duckdb_tables() WHERE table_name = ?", [stable]).fetchone():
+        return [], np.zeros((0, 0), dtype=np.float32)
+    rows = con.execute(
+        f"SELECT s.path, s.embedding FROM {stable} s JOIN {table} USING (path) "
+        f"WHERE s.embedding IS NOT NULL {tag_filter}",
+        tag_params,
+    ).fetchall()
+    if not rows:
+        return [], np.zeros((0, 0), dtype=np.float32)
+    mat = np.stack([np.frombuffer(blob, dtype=np.float32) for _, blob in rows])
+    mat /= np.linalg.norm(mat, axis=1, keepdims=True) + 1e-9
+    return [path for path, _ in rows], mat
+
+
+def _with_section_signal(
+    query: str, rows: list[tuple], table: str, tag_filter: str, tag_params: list, limit: int
+) -> tuple[list[tuple], dict[str, float] | None]:
+    """Experiments `section-*`: each candidate's best section cosine, and for `section-union`
+    the extra candidate rows its sections bring in. On any failure, the rows unchanged."""
+    import numpy as np
+
+    mode = _section_mode()
+    try:
+        q = embeddings.encode([query])[0].astype(np.float32)
+        q /= np.linalg.norm(q) + 1e-9
+        con = index.connect()
+        try:
+            paths, mat = _section_matrix(con, table, tag_filter, tag_params)
+            if not paths:
+                return rows, None
+            sims = mat @ q
+            best: dict[str, float] = {}
+            for path, s in zip(paths, sims.tolist(), strict=True):
+                if s > best.get(path, -1.0):
+                    best[path] = s
+            if mode == SECTION_UNION_EXPERIMENT:
+                seen = {r[0] for r in rows}
+                extra = [p for p, _ in sorted(best.items(), key=lambda kv: -kv[1]) if p not in seen]
+                extra = extra[: limit * 3]
+                if extra:
+                    has_scores = any(r[7] is not None for r in rows)
+                    placeholders = ", ".join("?" for _ in extra)
+                    found = {
+                        r[0]: r
+                        for r in con.execute(
+                            f"SELECT path, title, tags, summary, content, backlinks, embedding "
+                            f"FROM {table} WHERE path IN ({placeholders})",
+                            extra,
+                        ).fetchall()
+                    }
+                    rows = [
+                        *rows,
+                        *((*found[p], 0.0 if has_scores else None) for p in extra if p in found),
+                    ]
+        finally:
+            con.close()
+        return rows, best
+    except Exception as e:
+        log.warning("section_signal_failed", error=str(e))
+        return rows, None
 
 
 # ---------------------------------------------------------------------------
@@ -303,13 +464,17 @@ def _search_rows(
     if HYBRID_EXPERIMENT in experiment() and embeddings.HAS_EMBEDDINGS:
         rows = _with_cosine_candidates(query, rows, table, tag_filter, tag_params, limit)
 
+    section_sims = None
+    if _section_mode() and embeddings.HAS_EMBEDDINGS:
+        rows, section_sims = _with_section_signal(query, rows, table, tag_filter, tag_params, limit)
+
     if not rows:
         corpus.log_retrieval(
             tool, query=query, domain=domain, n_results=0, top_paths=[], degraded=degraded
         )
         return [], degraded
 
-    ranked = rerank(query, rows, limit)
+    ranked = rerank(query, rows, limit, section_sims)
     expansion_edges: list[tuple[str, str, str]] = []
     if expand:
         ranked, expansion_edges = _expand_rows(ranked, limit)

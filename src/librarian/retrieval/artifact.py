@@ -1,6 +1,6 @@
 """The search index as a build artifact: `librarian index build` writes one complete index file.
 
-The indexer job writes `<id>.duckdb` (pages, FTS, embeddings and the meta that says what built
+The indexer job writes `<id>.duckdb` (pages, sections, FTS, embeddings and the meta that says what built
 it), then repoints `current` at it. The servers only ever read a built file (see `handle`).
 
 `<id>` is a hash of what the index is made of: the schema version, the embedding model and the
@@ -168,6 +168,8 @@ def canonical_digest(path: Path) -> str:
             "pages": "SELECT * FROM pages ORDER BY path",
             "course_pages": "SELECT * FROM course_pages ORDER BY path",
             "edges": "SELECT * FROM edges ORDER BY ALL",
+            "sections": "SELECT * FROM sections ORDER BY path, ordinal",
+            "course_sections": "SELECT * FROM course_sections ORDER BY path, ordinal",
             "meta": f"SELECT * FROM meta WHERE key NOT IN ({volatile}) ORDER BY key",
         }
         for name, sql in queries.items():

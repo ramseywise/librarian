@@ -1,8 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { Course, Lesson, LessonOutline, SearchHit } from "./types";
+import { useCallback, useEffect, useState } from "react";
+import type { Course, CourseModule, Lesson, SearchHit } from "./types";
 import { useCourseProgress } from "../../hooks/useCourseProgress";
-import { useCourses } from "../../hooks/useCourses";
+import { useCourses, useLabs } from "../../hooks/useCourses";
+import { Check } from "./Check";
 import { LessonView, type TocEntry } from "./LessonView";
+import { StudyLevels } from "./StudyLevels";
 import { pageTitle, useDocumentTitle } from "./useDocumentTitle";
 import "./courses.css";
 import { apiFetch } from "../../utils/api";
@@ -24,9 +26,10 @@ export function CoursesView({ route, navigate, onOpenConcept, onAsk }: Props) {
 
   const courseId = route.split("/")[0];
   const course = courses?.find((c) => c.id === courseId);
-  const isLesson = !!course && route.includes("/");
+  const module = course?.modules.find((m) => route === `${course.id}/${m.id}`);
+  const isLesson = !!course && route.includes("/") && !module;
   // Lesson routes set their own title once the lesson has loaded.
-  useDocumentTitle(isLesson ? null : course ? pageTitle(course.title) : pageTitle("Courses"));
+  useDocumentTitle(isLesson ? null : module && course ? pageTitle(module.title, course.title) : course ? pageTitle(course.title) : pageTitle("Courses"));
 
   if (error) {
     return (
@@ -42,11 +45,12 @@ export function CoursesView({ route, navigate, onOpenConcept, onAsk }: Props) {
   }
 
   if (!route || !course) {
-    return <Catalog courses={courses} done={progress.done} last={progress.last} onOpen={open} />;
+    return <Catalog courses={courses} done={progress.done} onOpen={open} />;
   }
   if (!route.includes("/")) {
     return <Overview course={course} done={progress.done} last={progress.last[course.id]} onOpen={open} />;
   }
+  if (module) return <ModulePage course={course} module={module} done={progress.done} onOpen={open} />;
   return (
     <LessonLayout
       course={course}
@@ -65,8 +69,8 @@ export function CoursesView({ route, navigate, onOpenConcept, onAsk }: Props) {
 
 const lessonsOf = (c: Course) => c.modules.flatMap((m) => m.lessons);
 
-function Catalog({ courses, done, last, onOpen }: {
-  courses: Course[]; done: Set<string>; last: Record<string, string>; onOpen: (p: string) => void;
+function Catalog({ courses, done, onOpen }: {
+  courses: Course[]; done: Set<string>; onOpen: (p: string) => void;
 }) {
   const [query, setQuery] = useState("");
   return (
@@ -85,7 +89,7 @@ function Catalog({ courses, done, last, onOpen }: {
               const ids = lessonsOf(c).map((l) => l.id);
               const n = ids.filter((id) => done.has(id)).length;
               return (
-                <button key={c.id} onClick={() => onOpen(last[c.id] ?? c.id)} className="course-card">
+                <button key={c.id} onClick={() => onOpen(c.id)} className="course-card">
                   <div className="course-card-title">{c.title}</div>
                   <div className="course-card-summary">{c.summary}</div>
                   <div className="course-card-meta">
@@ -93,7 +97,6 @@ function Catalog({ courses, done, last, onOpen }: {
                     {n > 0 && <span className="text-success"> · {n} done</span>}
                   </div>
                   <ProgressBar value={ids.length ? n / ids.length : 0} />
-                  {last[c.id] && <div className="course-card-continue">Continue →</div>}
                 </button>
               );
             })}
@@ -136,50 +139,112 @@ function SearchResults({ query, onOpen }: { query: string; onOpen: (p: string) =
 // Course overview
 // ---------------------------------------------------------------------------
 
+/** One course: a card per module with what it holds. A card opens the module's page. */
 function Overview({ course, done, last, onOpen }: {
   course: Course; done: Set<string>; last?: string; onOpen: (p: string) => void;
 }) {
+  const { data: labsData } = useLabs();
   const first = lessonsOf(course)[0];
+  const resume = last ?? first?.id;
   return (
     <div className="course-scroll course-page">
-      <div className="course-page-inner course-page-inner--overview">
+      <div className="course-page-inner course-page-inner--wide">
         <button onClick={() => onOpen("")} className="link-btn">← All courses</button>
         <h1 className="course-page-title course-page-title--overview">{course.title}</h1>
         <p className="course-overview-summary">{course.summary}</p>
-        {(last ?? first) && (
-          <button onClick={() => onOpen(last ?? first.id)} className="btn-primary">
+        {resume && (
+          <button onClick={() => onOpen(resume)} className="btn-primary">
             {last ? "Continue where you left off" : "Start the course"} →
           </button>
         )}
-        {course.modules.map((m, i) => (
-          <section key={m.id} className="course-module">
-            <div className="course-module-kicker">Module {i + 1}</div>
-            <h2 className="course-module-title">{m.title}</h2>
-            {m.summary && <p className="course-module-summary">{m.summary}</p>}
-            {!!m.flashcardCount && (
-              <a href={`#/flashcards/${course.id}/${m.id}`} className="flashcard-link">
-                Study {m.flashcardCount} flashcards
-              </a>
-            )}
-            {!!m.quizCount && (
-              <a href={`#/quiz/${course.id}/${m.id}`} className="flashcard-link">
-                Take the {m.quizCount}-question quiz
-              </a>
-            )}
-            <div className="course-module-list">
-              {m.lessons.map((l) => (
-                <button key={l.id} onClick={() => onOpen(l.id)} className="course-nav-item course-row">
-                  <Check on={done.has(l.id)} />
-                  <span className="course-row-title">{l.title}</span>
-                  {l.section && <span className="course-row-section">{l.section}</span>}
-                  {l.kind === "notebook" && <span className="kind-badge">notebook</span>}
-                </button>
-              ))}
+        <div className="course-grid">
+          {course.modules.map((m, i) => {
+            const labs = (labsData?.labs ?? []).filter((l) => l.course === course.id && l.module === m.id).length;
+            const n = m.lessons.filter((l) => done.has(l.id)).length;
+            const tests = [
+              m.quizCount && `${m.quizCount} questions`,
+              m.flashcardCount && `${m.flashcardCount} flashcards`,
+              m.problemCount && `${m.problemCount} problems`,
+            ].filter(Boolean);
+            return (
+              <button key={m.id} onClick={() => onOpen(`${course.id}/${m.id}`)} className="course-card">
+                <div className="course-module-kicker">Module {i + 1}</div>
+                <div className="course-card-title">{m.title}</div>
+                <div className="course-card-summary">{m.summary}</div>
+                <div className="course-card-meta">
+                  {m.lessons.length} lessons{labs > 0 && ` · ${labs} labs`}
+                  {n > 0 && <span className="text-success"> · {n} done</span>}
+                </div>
+                {tests.length > 0 && <div className="course-card-meta course-card-tests">Test yourself: {tests.join(" · ")}</div>}
+                <ProgressBar value={m.lessons.length ? n / m.lessons.length : 0} />
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Module page
+// ---------------------------------------------------------------------------
+
+/** One module with everything it has, all in view and in the order it is used: lectures (the decks), lessons,
+ * study (the three levels) and labs, then the readings. A part the module lacks says so. */
+function ModulePage({ course, module: m, done, onOpen }: {
+  course: Course; module: CourseModule; done: Set<string>; onOpen: (p: string) => void;
+}) {
+  const { data: labsData } = useLabs();
+  const labs = (labsData?.labs ?? []).filter((l) => l.course === course.id && l.module === m.id);
+  return (
+    <div className="course-scroll course-page">
+      <div className="course-page-inner course-page-inner--overview">
+        <button onClick={() => onOpen(course.id)} className="link-btn">← {course.title}</button>
+        <h1 className="course-page-title course-page-title--overview">{m.title}</h1>
+        {m.summary && <p className="course-overview-summary">{m.summary}</p>}
+        <h2 className="section-label course-module-label">Lectures</h2>
+        {m.decks?.length ? (
+          <div className="course-module-list">
+            {m.decks.map((d) => (
+              <div key={d.id} className="course-row">
+                <a href={`#/slides/${d.id}`} className="course-row-title">▶ {d.title}</a>
+                <span className="course-row-section">{d.subtitle || (d.id === `${course.id}/${m.id}` ? "The whole module" : "Lecture")}</span>
+              </div>
+            ))}
+          </div>
+        ) : <p className="course-none">No lecture deck yet.</p>}
+        <h2 className="section-label course-module-label">Lessons</h2>
+        <div className="course-module-list">
+          {m.lessons.map((l) => (
+            <div key={l.id} className="course-row">
+              <Check on={done.has(l.id)} />
+              <a href={`#/courses/${l.id}`} className="course-row-title">{l.title}</a>
+              {l.quizCount ? <a href={`#/quiz/${l.id}?choice`} className="course-row-test">{l.quizCount} questions</a> : null}
+              {l.flashcardCount ? <a href={`#/flashcards/${l.id}`} className="course-row-test">{l.flashcardCount} flashcards</a> : null}
+              {l.problemCount ? <a href={`#/quiz/${l.id}?worked`} className="course-row-test">{l.problemCount} problems</a> : null}
+              {l.section && <span className="course-row-section">{l.section}</span>}
+              {l.kind === "notebook" && <span className="kind-badge">notebook</span>}
             </div>
-            <SourceList label="Readings" items={m.readings} count={m.readingsCount} />
-            <SourceList label="Reference material (not imported)" items={m.references} />
-          </section>
-        ))}
+          ))}
+        </div>
+        <h2 className="section-label course-module-label">Study</h2>
+        {(m.quizCount || m.flashcardCount || m.problemCount) ? (
+          <StudyLevels id={`${course.id}/${m.id}`} quizCount={m.quizCount} flashcardCount={m.flashcardCount} problemCount={m.problemCount} />
+        ) : <p className="course-none">No questions or flashcards yet.</p>}
+        <h2 className="section-label course-module-label">Labs</h2>
+        {labs.length > 0 ? (
+          <div className="course-module-list">
+            {labs.map((lab) => (
+              <div key={lab.id} className="course-row course-row--stack">
+                <a href={`#/labs/${lab.id}`} className="course-row-title">{lab.title}</a>
+                <span className="course-row-section">{lab.purpose}</span>
+              </div>
+            ))}
+          </div>
+        ) : <p className="course-none">No labs yet.</p>}
+        <SourceList label="Readings" items={m.readings} count={m.readingsCount} />
+        <SourceList label="Reference material (not imported)" items={m.references} />
       </div>
     </div>
   );
@@ -193,8 +258,8 @@ function SourceList({ label, items, count }: {
     return count ? <p className="course-sources">{label}: {count} (the list is kept locally)</p> : null;
   }
   return (
-    <details className="course-sources">
-      <summary>{label} ({items.length})</summary>
+    <div className="course-sources">
+      <h2 className="section-label course-module-label">{label}</h2>
       <ul>
         {items.map((it) => (
           <li key={it.source}>
@@ -203,12 +268,12 @@ function SourceList({ label, items, count }: {
           </li>
         ))}
       </ul>
-    </details>
+    </div>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Lesson layout: sidebar + lesson
+// Lesson layout: lesson + page contents
 // ---------------------------------------------------------------------------
 
 function LessonLayout({ course, lessonId, progress, onOpen, onOpenConcept, onAsk }: {
@@ -225,40 +290,6 @@ function LessonLayout({ course, lessonId, progress, onOpen, onOpenConcept, onAsk
   const [activeHeading, setActiveHeading] = useState<string | null>(null);
   const { markVisited, markDone } = progress;
   const loaded = lesson?.id === lessonId ? lesson : null;
-  // Narrow screens only: the sidebar is a drawer behind a toggle (CSS hides both otherwise).
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const drawerRef = useRef<HTMLDivElement>(null);
-  const drawerBtnRef = useRef<HTMLButtonElement>(null);
-  const mainRef = useRef<HTMLDivElement>(null);
-
-  // Picking a lesson from the drawer closes it.
-  useEffect(() => setDrawerOpen(false), [lessonId]);
-
-  useEffect(() => {
-    if (!drawerOpen) return;
-    drawerRef.current?.querySelector<HTMLElement>("button, input, a[href]")?.focus();
-    // The drawer is modal (backdrop): keep Tab and screen readers out of the lesson
-    // behind it. Widening past the drawer breakpoint turns it back into a sidebar, so
-    // close it then rather than leave the lesson inert.
-    const main = mainRef.current;
-    if (main) main.inert = true;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key !== "Escape") return;
-      e.preventDefault();
-      setDrawerOpen(false);
-      if (main) main.inert = false; // before focusing the toggle inside it
-      drawerBtnRef.current?.focus();
-    };
-    document.addEventListener("keydown", onKey);
-    const wide = window.matchMedia?.("(min-width: 1100px)");
-    const onWide = () => wide?.matches && setDrawerOpen(false);
-    wide?.addEventListener("change", onWide);
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      if (main) main.inert = false;
-      wide?.removeEventListener("change", onWide);
-    };
-  }, [drawerOpen]);
   useDocumentTitle(pageTitle(loaded?.title ?? "Loading…", course.title));
 
   useEffect(() => {
@@ -277,40 +308,16 @@ function LessonLayout({ course, lessonId, progress, onOpen, onOpenConcept, onAsk
 
   return (
     <div className="lesson-layout">
-      <div id="course-sidebar" ref={drawerRef} className={`course-drawer${drawerOpen ? " is-open" : ""}`}>
-        <Sidebar
-          course={course}
-          activeId={lessonId}
-          done={progress.done}
-          onOpen={onOpen}
-          toc={lesson?.id === lessonId ? toc : []}
-          activeHeading={activeHeading}
-        />
-      </div>
-      {drawerOpen && <div className="course-drawer-backdrop" onClick={() => setDrawerOpen(false)} />}
-      <div className="lesson-main" ref={mainRef}>
-        <div className="course-drawer-bar">
-          <button
-            ref={drawerBtnRef}
-            type="button"
-            className="pill-btn"
-            aria-expanded={drawerOpen}
-            aria-controls="course-sidebar"
-            onClick={() => setDrawerOpen((o) => !o)}
-          >
-            Lessons
-          </button>
-          <span className="course-drawer-bar-title">{course.title}</span>
-        </div>
-        <div className="lesson-main-body">
+      <div className="lesson-main">
         {error ? <Centered>{error}</Centered>
-          : !lesson || lesson.id !== lessonId ? <Centered>Loading…</Centered>
+          : !loaded ? <Centered>Loading…</Centered>
           : (
             <LessonView
-              lesson={lesson}
+              lesson={loaded}
               courseTitle={course.title}
-              done={progress.done.has(lesson.id)}
-              onMarkDone={() => markDone(lesson.id)}
+              decks={course.modules.find((m) => m.lessons.some((l) => l.id === lessonId))?.decks}
+              done={progress.done.has(loaded.id)}
+              onMarkDone={() => markDone(loaded.id)}
               onOpen={onOpen}
               onOpenConcept={onOpenConcept}
               onAsk={onAsk}
@@ -318,135 +325,20 @@ function LessonLayout({ course, lessonId, progress, onOpen, onOpenConcept, onAsk
               onActiveHeading={setActiveHeading}
             />
           )}
-        </div>
       </div>
-    </div>
-  );
-}
-
-function Sidebar({ course, activeId, done, onOpen, toc, activeHeading }: {
-  course: Course; activeId: string; done: Set<string>; onOpen: (p: string) => void;
-  toc: TocEntry[]; activeHeading: string | null;
-}) {
-  const [tocOpen, setTocOpen] = useState(true);
-  const [filter, setFilter] = useState("");
-  const activeModule = course.modules.find((m) => m.lessons.some((l) => l.id === activeId))?.id;
-  const [collapsed, setCollapsed] = useState<Set<string>>(
-    () => new Set(course.modules.map((m) => m.id).filter((id) => id !== activeModule))
-  );
-
-  // Expand the module of the lesson being viewed (e.g. after prev/next across modules).
-  useEffect(() => {
-    if (!activeModule) return;
-    setCollapsed((prev) => {
-      if (!prev.has(activeModule)) return prev;
-      const next = new Set(prev);
-      next.delete(activeModule);
-      return next;
-    });
-    document.getElementById(`nav-${activeId}`)?.scrollIntoView({ block: "nearest" });
-  }, [activeModule, activeId]);
-
-  const f = filter.trim().toLowerCase();
-  const modules = useMemo(
-    () => course.modules
-      .map((m) => ({ ...m, lessons: f ? m.lessons.filter((l) => `${l.title} ${l.section}`.toLowerCase().includes(f)) : m.lessons }))
-      .filter((m) => m.lessons.length),
-    [course.modules, f]
-  );
-
-  const toggle = (id: string) => setCollapsed((prev) => {
-    const next = new Set(prev);
-    if (next.has(id)) next.delete(id); else next.add(id);
-    return next;
-  });
-
-  return (
-    <nav className="course-sidebar" aria-label="Lessons">
-      <div className="course-sidebar-head">
-        <button onClick={() => onOpen("")} className="link-btn">← All courses</button>
-        <button onClick={() => onOpen(course.id)} className="link-btn course-sidebar-title">
-          {course.title}
-        </button>
-        <SearchBox value={filter} onChange={setFilter} placeholder="Filter lessons…" small />
-      </div>
-      <div className="course-scroll course-sidebar-list">
-        {modules.map((m) => {
-          const open = !!f || !collapsed.has(m.id);
-          const n = m.lessons.filter((l) => done.has(l.id)).length;
-          return (
-            <div key={m.id}>
-              <button onClick={() => toggle(m.id)} className="course-nav-item course-module-head">
-                <span className="course-module-caret">{open ? "▾" : "▸"}</span>
-                <span className="grow">{m.title}</span>
-                <span className="course-module-count">{n}/{m.lessons.length}</span>
-              </button>
-              {open && (
-                <ModuleLessons
-                  lessons={m.lessons} activeId={activeId} done={done} onOpen={onOpen}
-                  toc={toc} activeHeading={activeHeading} tocOpen={tocOpen} onToggleToc={() => setTocOpen((o) => !o)}
-                />
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </nav>
-  );
-}
-
-function ModuleLessons({ lessons, activeId, done, onOpen, toc, activeHeading, tocOpen, onToggleToc }: {
-  lessons: LessonOutline[]; activeId: string; done: Set<string>; onOpen: (p: string) => void;
-  toc: TocEntry[]; activeHeading: string | null; tocOpen: boolean; onToggleToc: () => void;
-}) {
-  let prevSection = "";
-  return (
-    <div className="course-lessons">
-      {lessons.map((l) => {
-        const header = l.section && l.section !== prevSection ? l.section : null;
-        prevSection = l.section;
-        const active = l.id === activeId;
-        const hasToc = active && toc.length > 1;
-        return (
-          <div key={l.id}>
-            {header && <div className="course-section-head">{header}</div>}
-            <div className={`course-lesson-row${active ? " is-active" : ""}`}>
-              <button
-                id={`nav-${l.id}`}
-                onClick={() => onOpen(l.id)}
-                aria-current={active ? "page" : undefined}
-                className="course-nav-item course-lesson-link"
-              >
-                <Check on={done.has(l.id)} small />
-                <span className="grow">{l.title}</span>
-              </button>
-              {hasToc && (
-                <button
-                  onClick={onToggleToc}
-                  aria-expanded={tocOpen}
-                  aria-controls={`toc-${l.id}`}
-                  aria-label={tocOpen ? "Hide page contents" : "Show page contents"}
-                  title={tocOpen ? "Hide page contents" : "Show page contents"}
-                  className="course-nav-item course-toc-toggle"
-                >
-                  {tocOpen ? "▾" : "▸"}
-                </button>
-              )}
-            </div>
-            {hasToc && tocOpen && (
-              <div id={`toc-${l.id}`} className="course-toc">
-                {toc.map((t) => (
-                  <a key={t.id} href={`#${t.id}`}
-                    onClick={(e) => { e.preventDefault(); document.getElementById(t.id)?.scrollIntoView({ behavior: "smooth" }); }}
-                    className={`course-nav-item course-toc-link course-toc-link--h${t.level === 3 ? 3 : 2}${activeHeading === t.id ? " is-active" : ""}`}>
-                    {t.text}
-                  </a>
-                ))}
-              </div>
-            )}
-          </div>
-        );
-      })}
+      {loaded && toc.length > 1 && (
+        <nav className="lesson-toc" aria-label="On this page">
+          <div className="section-label">On this page</div>
+          {toc.map((t) => (
+            <a key={t.id} href={`#${t.id}`}
+              onClick={(e) => { e.preventDefault(); document.getElementById(t.id)?.scrollIntoView({ behavior: "smooth" }); }}
+              aria-current={activeHeading === t.id ? "location" : undefined}
+              className={`lesson-toc-link${t.level === 3 ? " lesson-toc-link--h3" : ""}`}>
+              {t.text}
+            </a>
+          ))}
+        </nav>
+      )}
     </div>
   );
 }
@@ -463,8 +355,8 @@ function Centered({ children }: { children: React.ReactNode }) {
   );
 }
 
-function SearchBox({ value, onChange, placeholder, small }: {
-  value: string; onChange: (v: string) => void; placeholder: string; small?: boolean;
+function SearchBox({ value, onChange, placeholder }: {
+  value: string; onChange: (v: string) => void; placeholder: string;
 }) {
   return (
     <input
@@ -472,7 +364,7 @@ function SearchBox({ value, onChange, placeholder, small }: {
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       data-view-search
-      className={`search-box${small ? " search-box--small" : ""}`}
+      className="search-box"
     />
   );
 }
@@ -482,12 +374,5 @@ function ProgressBar({ value }: { value: number }) {
     <div className="progress-bar">
       <div className="progress-bar-fill" style={{ width: `${Math.round(value * 100)}%` }} />
     </div>
-  );
-}
-
-export function Check({ on, small }: { on: boolean; small?: boolean }) {
-  const s = small ? 12 : 14;
-  return (
-    <span className={`check${on ? " is-on" : ""}`} style={{ width: s, height: s, fontSize: s - 4 }}>{on ? "✓" : ""}</span>
   );
 }

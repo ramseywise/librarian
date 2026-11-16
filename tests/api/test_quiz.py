@@ -46,6 +46,8 @@ def test_question_key_is_shared_by_module_and_lesson_quiz() -> None:
         ("- {id: 'bad id', prompt: P, options: [a, b], answer: a}\n", "characters outside"),
         ("- {prompt: P, options: [a, b], answer: a, lesson: c/m/gone}\n", "not in this module"),
         ("- text\n", "not a mapping"),
+        ("- {prompt: P, answer: about six}\n", "needs a number"),
+        ("- {prompt: P, answer: '6', tolerance: -1}\n", "tolerance must be"),
     ],
 )
 def test_strict_check_names_each_problem(tmp_path: Path, raw: str, fragment: str) -> None:
@@ -76,7 +78,43 @@ def test_the_catalog_loader_drops_bad_questions_and_unknown_lessons(tmp_path: Pa
 def test_the_payload_never_carries_the_answer_or_explanation(tmp_path: Path) -> None:
     (q,) = quiz.load(_file(tmp_path, GOOD), LESSONS)
     payload = quiz.public_payload(q, "Intro")
-    assert set(payload) == {"id", "prompt", "options", "lesson", "lessonTitle"}
+    assert set(payload) == {"id", "prompt", "options", "kind", "lesson", "lessonTitle"}
+    assert payload["kind"] == "choice"
+
+
+WORKED = "- {id: w, prompt: Variance of Bernoulli(0.2)?, answer: '0.16', explanation: p(1 - p).}\n"
+
+
+def test_a_question_with_no_options_is_a_worked_problem_graded_within_tolerance(
+    tmp_path: Path,
+) -> None:
+    (q,) = quiz.load(_file(tmp_path, WORKED), LESSONS)
+    assert q.worked and q.tolerance == pytest.approx(0.005)
+    assert quiz.public_payload(q, None)["kind"] == "worked"
+    assert [quiz.is_correct(q, typed) for typed in ("0.16", " 0.164 ", "4/25", "0.17")] == [
+        True,
+        True,
+        True,
+        False,
+    ]
+    with pytest.raises(ValueError, match="not a number"):
+        quiz.is_correct(q, "a sixth")
+
+
+@pytest.mark.parametrize(
+    ("answer", "extra", "right", "wrong"),
+    [
+        ("6400", "", "6,400", "6401"),  # a whole number is exact
+        ("18.7", "", "18.7%", "18.8"),
+        ("1068", ", tolerance: 1", "1067", "1070"),
+    ],
+)
+def test_worked_tolerance_follows_the_answer_unless_given(
+    tmp_path: Path, answer: str, extra: str, right: str, wrong: str
+) -> None:
+    (q,) = quiz.load(_file(tmp_path, f"- {{prompt: P, answer: '{answer}'{extra}}}\n"), LESSONS)
+    assert quiz.is_correct(q, right)
+    assert not quiz.is_correct(q, wrong)
 
 
 def test_check_quiz_run_reads_module_quizzes_and_their_lessons(tmp_path: Path) -> None:

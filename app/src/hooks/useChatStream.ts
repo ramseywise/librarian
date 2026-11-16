@@ -33,6 +33,23 @@ export interface LabChatContext {
   exit: number | null;
 }
 
+/** What the user is studying beside the chat (POST /api/chat/stream `study`), by catalog id only:
+ * a flashcard, a quiz question or a lesson. `revealed` once the question is answered. */
+export interface StudyChatContext {
+  deck?: string;
+  card?: string;
+  quiz?: string;
+  question?: string;
+  lesson?: string;
+  revealed?: boolean;
+}
+
+/** What one send carries beside the query: the open lab or study item, if any. */
+export interface ChatContext {
+  lab?: LabChatContext;
+  study?: StudyChatContext;
+}
+
 interface HistoryTurn {
   role: "user" | "assistant";
   content: string;
@@ -145,7 +162,7 @@ export function useChatStream(onHighlight: (pages: string[]) => void) {
     onHighlightRef.current = onHighlight;
   }, [onHighlight]);
 
-  const sendQuery = useCallback(async (query: string, lab?: LabChatContext | null) => {
+  const sendQuery = useCallback(async (query: string, context?: ChatContext | null) => {
     if (streamingRef.current) return;
     streamingRef.current = true;
     const requestId = ++requestRef.current;
@@ -179,7 +196,7 @@ export function useChatStream(onHighlight: (pages: string[]) => void) {
       const resp = await apiFetch("/api/chat/stream", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(lab ? { query, history, lab } : { query, history }),
+        body: JSON.stringify({ query, history, ...context }),
         signal: controller.signal,
       });
       responded = true;

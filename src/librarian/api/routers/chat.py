@@ -54,10 +54,24 @@ class LabContext(BaseModel):
     exit: int | None = None
 
 
+class StudyContext(BaseModel):
+    """What the user is studying beside the chat, by catalog id only: a flashcard (`deck`, `card`),
+    a quiz question (`quiz`, `question`) or a lesson. The server builds the brief from the catalog.
+    `revealed` says the user has answered the question, so its answer may go in the brief."""
+
+    deck: str | None = Field(default=None, max_length=400)
+    card: str | None = Field(default=None, max_length=400)
+    quiz: str | None = Field(default=None, max_length=400)
+    question: str | None = Field(default=None, max_length=400)
+    lesson: str | None = Field(default=None, max_length=400)
+    revealed: bool = False
+
+
 class ChatRequest(BaseModel):
     query: str = Field(min_length=1, max_length=_MAX_MESSAGE_CHARS)
     history: list[ChatTurn] = Field(default_factory=list, max_length=_MAX_HISTORY_ITEMS)
     lab: LabContext | None = None
+    study: StudyContext | None = None
 
     @model_validator(mode="after")
     def _alternating(self) -> Self:
@@ -91,6 +105,21 @@ async def chat_stream(req: ChatRequest, user: SignedIn, request: Request) -> Str
         )
         if brief is None:
             raise HTTPException(status_code=404, detail="lab not found")
+    study = None
+    if req.study is not None:
+        s = req.study
+        study = await asyncio.to_thread(
+            courses.study_brief,
+            deck=s.deck,
+            card=s.card,
+            quiz_id=s.quiz,
+            question=s.question,
+            lesson=s.lesson,
+            revealed=s.revealed,
+        )
+        # Unknown and private look the same: private course text never reaches the chat model.
+        if study is None:
+            raise HTTPException(status_code=404, detail="study item not found")
 
     def on_usage(usage: TokenUsage) -> None:
         chat_limiter.record_usage(settings, usage, user.id)
@@ -128,6 +157,7 @@ async def chat_stream(req: ChatRequest, user: SignedIn, request: Request) -> Str
             variant=variant,
             release=served_release() or get_release(),
             brief=brief,
+            study=study,
         )
         first_token = True
         async for event in stream:

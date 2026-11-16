@@ -91,6 +91,32 @@ def test_quiz_is_served_without_answers_and_counted_in_the_catalog(client: TestC
     assert client.get("/api/courses/quiz/gen-ai/nope").status_code == 404
 
 
+def test_a_worked_problem_is_counted_apart_and_graded_as_a_number(
+    client: TestClient, tmp_path: Path
+) -> None:
+    worked = "- {id: w1, prompt: 'p(1 - p) at 0.2?', answer: '0.16', explanation: 'Working.', lesson: gen-ai/01-rag/intro}\n"
+    _write(
+        tmp_path / "courses" / "gen-ai" / "01-rag" / "_quiz.md",
+        QUIZ.removesuffix("---\n") + worked + "---\n",
+    )
+    courses._load.cache_clear()
+    kinds = {q["id"]: q["kind"] for q in client.get(f"/api/courses/quiz/{MOD}").json()["questions"]}
+    assert kinds == {"q1": "choice", "q2": "choice", "w1": "worked"}
+    mod = next(m for m in client.get("/api/courses").json()[0]["modules"] if m["id"] == "01-rag")
+    assert (mod["quizCount"], mod["problemCount"]) == (2, 1)
+    intro = next(x for x in mod["lessons"] if x["id"] == f"{MOD}/intro")
+    assert (intro["quizCount"], intro["problemCount"]) == (1, 1)
+    url = "/api/courses/quiz-results"
+    right = client.post(url, json={"quiz": MOD, "question": "w1", "choice": "0.162"}).json()
+    assert right == {"correct": True, "answer": "0.16", "explanation": "Working.", "logged": True}
+    assert not client.post(url, json={"quiz": MOD, "question": "w1", "choice": "0.2"}).json()[
+        "correct"
+    ]
+    assert (
+        client.post(url, json={"quiz": MOD, "question": "w1", "choice": "lots"}).status_code == 422
+    )
+
+
 def test_answers_are_graded_on_the_server_and_stored(client: TestClient, owner: User) -> None:
     url = "/api/courses/quiz-results"
     right = client.post(url, json={"quiz": MOD, "question": "q1", "choice": "b"}).json()

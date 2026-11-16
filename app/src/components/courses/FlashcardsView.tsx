@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Flashcard, FlashcardDeck } from "./types";
 import { StudyFilter } from "./StudyFilter";
 import { studyOrder, type StudyMode } from "./studyQueue";
 import { pageTitle, useDocumentTitle } from "./useDocumentTitle";
 import "./courses.css";
 import { apiFetch } from "../../utils/api";
+import type { StudyChatContext } from "../../hooks/useChatStream";
 
 /** Deck text allows `**bold**` and `code` and nothing else (deck-spec.md), so no Markdown parser. */
 export function InlineMarkup({ text }: { text: string }) {
@@ -33,7 +34,14 @@ function shuffled(n: number): number[] {
 /** Flip through one deck: a module's cards or a single lesson's. A grade only appends to the server's log,
  * which the Leitner schedule (librarian/courses/leitner.py) and coursework review read; a failed write never
  * interrupts studying. A route ending in `?due` opens on the cards to study today. */
-export function FlashcardsView({ deckId: route }: { deckId: string }) {
+export function FlashcardsView({
+  deckId: route,
+  onChatContext,
+}: {
+  deckId: string;
+  /** Registers what the chat is told about the card on screen (its ids; the server builds the brief). */
+  onChatContext?: (get: (() => StudyChatContext | null) | null) => void;
+}) {
   const [deckId, query] = route.split("?");
   const [mode, setMode] = useState<StudyMode>("all");
   const [graded, setGraded] = useState<ReadonlySet<string>>(new Set());
@@ -63,6 +71,16 @@ export function FlashcardsView({ deckId: route }: { deckId: string }) {
       .catch((e: Error) => !cancelled && setError(e.message));
     return () => { cancelled = true; };
   }, [deckId, query]);
+
+  // The chat reads the card on screen through a ref, so registering once is enough.
+  const shownRef = useRef<StudyChatContext | null>(null);
+  const shown = deck?.cards[order[pos]];
+  shownRef.current = deck && shown ? { deck: deck.id, card: shown.id } : null;
+  useEffect(() => {
+    if (!onChatContext) return;
+    onChatContext(() => shownRef.current);
+    return () => onChatContext(null);
+  }, [onChatContext]);
 
   if (error) return <div className="course-centered"><div>{error}</div></div>;
   if (!deck || (!order.length && mode === "all")) return <div className="course-centered"><div>Loading…</div></div>;

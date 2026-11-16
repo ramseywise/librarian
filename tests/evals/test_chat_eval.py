@@ -109,6 +109,42 @@ async def test_grading_math_precision_no_answer_and_unparsed_judge(
 
 
 @pytest.mark.unit
+async def test_study_question_runs_in_tutor_mode_and_is_not_a_no_answer(
+    wiki: Path, fake_anthropic: type, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from librarian.courses import catalog as courses
+
+    asked: list[dict] = []
+
+    def fake_brief(**kwargs: object) -> str | None:
+        asked.append(kwargs)
+        return "Flashcard\nFront: F" if kwargs.get("deck") else None
+
+    monkeypatch.setattr(courses, "study_brief", fake_brief)
+    t = fake_anthropic
+    client = t(turns=[t.text_turn("A smell is a hint.")], replies=['{"scores": [1, 0]}'])
+    qs = [ChatQuestion("t1", "explain?", [], ["l1", "l2"], {"deck": "d", "card": "0"})]
+    report = await run_chat_eval(
+        qs, client=client, model="claude-sonnet-5-5", judge_model="claude-sonnet-5-5"
+    )
+    assert (
+        "<studying>\nFlashcard\nFront: F\n</studying>"
+        in client.stream_calls[0]["system"][1]["text"]
+    )
+    s = report.summary()
+    assert s["n_no_answer"] == 0 and s["n_tutor"] == 1 and s["tutor_rubric"] == 0.5
+    assert s["no_answer_clean"] is None and "Tutor rubric" in str(report)
+    with pytest.raises(ValueError, match="no public study item"):
+        await run_chat_eval(
+            [ChatQuestion("t2", "q?", [], ["l1"], {"quiz": "private/x", "question": "q1"})],
+            client=client,
+            model="claude-sonnet-5-5",
+            judge_model="claude-sonnet-5-5",
+        )
+    assert asked[-1] == {"quiz_id": "private/x", "question": "q1"}
+
+
+@pytest.mark.unit
 def test_dry_run_makes_no_client_and_no_api_calls(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str], tmp_path: Path
 ) -> None:

@@ -1,97 +1,89 @@
-import { useEffect, useState } from "react";
-import type { StudyHomeData } from "./types";
+import { useCourses } from "../../hooks/useCourses";
+import type { CourseModule } from "./types";
 import { pageTitle, useDocumentTitle } from "./useDocumentTitle";
 import "./courses.css";
-import { apiFetch } from "../../utils/api";
 
-/** The study queue, the entry point to practice: cards and questions due, the next drill for the weakest
- * track, and the lecture for the module in hand. Every row links to the existing views (`#/flashcards/<id>?due`,
- * `#/quiz/<id>?due`, `#/slides/<id>`), so each stays reachable on its own. */
+type Counts = Pick<CourseModule, "quizCount" | "flashcardCount" | "problemCount">;
+
+/** The three formats, easiest first; the same order and routes as StudyLevels. */
+const LEVELS = [
+  { name: "Multiple choice", does: "recognise", count: (c: Counts) => c.quizCount, unit: "questions", href: (id: string) => `#/quiz/${id}?choice` },
+  { name: "Flashcards", does: "recall", count: (c: Counts) => c.flashcardCount, unit: "cards", href: (id: string) => `#/flashcards/${id}` },
+  { name: "Worked problems", does: "calculate", count: (c: Counts) => c.problemCount, unit: "problems", href: (id: string) => `#/quiz/${id}?worked` },
+] as const;
+
+const hasStudy = (c: Counts) => LEVELS.some((l) => l.count(c));
+
+function LevelCells({ id, title, counts }: { id: string; title: string; counts: Counts }) {
+  return (
+    <>
+      {LEVELS.map((l) => {
+        const n = l.count(counts);
+        return (
+          <td key={l.name} className="study-cell">
+            {n ? (
+              <a href={l.href(id)} aria-label={`${title}: ${l.name.toLowerCase()}, ${n} ${l.unit}`}>{n} {l.unit}</a>
+            ) : (
+              <span className="study-none" aria-label="none">–</span>
+            )}
+          </td>
+        );
+      })}
+    </>
+  );
+}
+
+/** Everything there is to test yourself on, as one table per course: a row per module (the topic) and a column
+ * per level. Each cell links to that format for the module (`#/quiz/<id>?choice`, `#/flashcards/<id>`,
+ * `#/quiz/<id>?worked`); the topic links to the module's page, which lists its lessons. */
 export function StudyHome() {
-  const [home, setHome] = useState<StudyHomeData | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { data: courses, error } = useCourses();
   useDocumentTitle(pageTitle("Study"));
 
-  useEffect(() => {
-    let cancelled = false;
-    apiFetch("/api/courses/study")
-      .then((r) => (r.ok ? (r.json() as Promise<StudyHomeData>) : Promise.reject(new Error(`HTTP ${r.status}`))))
-      .then((d) => !cancelled && setHome(d))
-      .catch((e: Error) => !cancelled && setError(e.message));
-    return () => { cancelled = true; };
-  }, []);
+  if (error) return <div className="course-centered"><div>Could not load the study topics: {error}</div></div>;
+  if (!courses) return <div className="course-centered"><div>Loading…</div></div>;
 
-  if (error) return <div className="course-centered"><div>Could not load the study queue: {error}</div></div>;
-  if (!home) return <div className="course-centered"><div>Loading…</div></div>;
+  const domains = courses
+    .map((c) => ({ ...c, modules: c.modules.filter(hasStudy) }))
+    .filter((c) => c.modules.length);
 
-  const drill = home.nextDrill;
   return (
     <div className="course-scroll course-page">
       <div className="course-page-inner course-page-inner--practice">
         <h1 className="course-page-title">Study</h1>
         <p className="course-page-lede">
-          {home.due || home.new
-            ? `${home.due} due today, ${home.new} new.`
-            : "Nothing due today."}
+          Each topic at up to three levels: {LEVELS.map((l, i) => `${i ? ", " : ""}${l.name.toLowerCase()} (${l.does})`)}.
         </p>
-
-        <section className="study-block" aria-label="Due today">
-          <h2 className="study-heading">Due today</h2>
-          {home.modules.length === 0 ? (
-            <p className="practice-status">No flashcards or questions are due.</p>
-          ) : (
-            <ul className="study-list">
-              {home.modules.map((m) => (
-                <li key={m.module}>
-                  <span className="study-module">{m.title}</span>
-                  {(m.cards.due > 0 || m.cards.new > 0) && (
-                    <a href={`#/flashcards/${m.module}?due`}>
-                      Flashcards ({m.cards.due} due, {m.cards.new} new)
-                    </a>
-                  )}
-                  {(m.questions.due > 0 || m.questions.new > 0) && (
-                    <a href={`#/quiz/${m.module}?due`}>
-                      Quiz ({m.questions.due} due, {m.questions.new} new)
-                    </a>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-
-        <section className="study-block" aria-label="Next drill">
-          <h2 className="study-heading">Next drill</h2>
-          {drill ? (
-            <p>
-              <a href="#/practice">{drill.title}</a>
-              <span className="study-meta">
-                {" "}
-                {drill.track}
-                {drill.drill?.difficulty ? `, ${drill.drill.difficulty}` : ""}
-                {drill.reason === "weakest track" ? " (your weakest track)" : ""}
-              </span>
-            </p>
-          ) : (
-            <p className="practice-status">No drills yet.</p>
-          )}
-        </section>
-
-        <section className="study-block" aria-label="Lecture">
-          <h2 className="study-heading">Lecture</h2>
-          {home.lecture ? (
-            <>
-              <p className="study-meta">{home.lecture.title}</p>
-              <ul className="study-list">
-                {home.lecture.decks.map((d) => (
-                  <li key={d.id}><a href={`#/slides/${d.id}`}>{d.title}</a></li>
-                ))}
-              </ul>
-            </>
-          ) : (
-            <p className="practice-status">No slides yet.</p>
-          )}
-        </section>
+        {domains.length === 0 ? (
+          <p className="practice-status">No flashcards or questions yet.</p>
+        ) : (
+          domains.map((c) => (
+            <section key={c.id} className="study-block" aria-label={c.title}>
+              <h2 className="study-heading">{c.title}</h2>
+              <table className="study-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Topic</th>
+                    {LEVELS.map((l, i) => (
+                      <th key={l.name} scope="col"><span className="study-level-no">Level {i + 1}</span> {l.name}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {c.modules.map((m) => {
+                    const id = `${c.id}/${m.id}`;
+                    return (
+                      <tr key={id} className="study-topic">
+                        <th scope="row"><a href={`#/courses/${id}`}>{m.title}</a></th>
+                        <LevelCells id={id} title={m.title} counts={m} />
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </section>
+          ))
+        )}
       </div>
     </div>
   );

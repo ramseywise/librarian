@@ -15,7 +15,12 @@ Metrics:
                         cited something
     cited recall        expected pages cited / expected, over answerable questions
     rubric score        mean of the judge's per-line scores, 0 to 1
+    tutor rubric        the rubric score over study questions only
     no-answer clean     share of no-answer questions where the answer cites no page
+
+A question with a `study` object (deck/card, quiz/question or lesson ids, as the chat request's
+`study` field) runs in tutor mode: its brief is built by `courses.study_brief`, as the server does.
+A study question with no expected pages is graded on its rubric, not counted as a no-answer one.
 
 `golden_chat.json` carries `"reviewed": false` until a human has checked the questions.
 """
@@ -62,6 +67,7 @@ class ChatQuestion:
     question: str
     expected_pages: list[str]
     rubric: list[str]
+    study: dict[str, Any] | None = None
 
     @property
     def answerable(self) -> bool:
@@ -72,7 +78,9 @@ def load_chat_golden(path: Path = DEFAULT_DATASET) -> tuple[list[ChatQuestion], 
     """(questions, reviewed). `reviewed` is False unless the file says otherwise."""
     raw = json.loads(path.read_text(encoding="utf-8"))
     questions = [
-        ChatQuestion(q["id"], q["question"], list(q["expected_pages"]), list(q["rubric"]))
+        ChatQuestion(
+            q["id"], q["question"], list(q["expected_pages"]), list(q["rubric"]), q.get("study")
+        )
         for q in raw["questions"]
     ]
     return questions, bool(raw.get("reviewed", False))
@@ -161,6 +169,7 @@ async def judge_answer(
 class ChatResult:
     id: str
     answerable: bool
+    tutor: bool
     cited: list[str]
     pages_read: list[str]
     ungrounded: list[str]
@@ -190,8 +199,15 @@ async def run_question(
 
     tokens: list[str] = []
     grounding: dict[str, Any] = {"pages_read": [], "cited": [], "ungrounded": []}
+    study = None
+    if q.study is not None:
+        from librarian.courses import catalog as courses
+
+        study = courses.study_brief(**_study_kwargs(q.study))
+        if study is None:
+            raise ValueError(f"{q.id}: no public study item for {q.study}")
     async for event in agent.run_agent_stream(
-        q.question, client=client, model=model, source="eval", on_usage=on_usage
+        q.question, client=client, model=model, source="eval", on_usage=on_usage, study=study
     ):
         if event["type"] == "token":
             tokens.append(event["content"])
@@ -222,6 +238,7 @@ async def run_question(
     return ChatResult(
         id=q.id,
         answerable=q.answerable,
+        tutor=q.study is not None,
         cited=run.cited,
         pages_read=run.pages_read,
         ungrounded=run.ungrounded,
@@ -233,6 +250,11 @@ async def run_question(
         agent_cost=_cost(model, usage),
         judge_cost=_cost(judge_model, judgment.usage),
     )
+
+
+def _study_kwargs(study: dict[str, Any]) -> dict[str, Any]:
+    """A question's `study` object (the chat request's field names) as `study_brief` arguments."""
+    return {("quiz_id" if k == "quiz" else k): v for k, v in study.items()}
 
 
 def _cost(model: str, usage: TokenUsage) -> float | None:
@@ -253,7 +275,8 @@ class ChatReport:
     def summary(self) -> dict[str, Any]:
         r = self.results
         answerable = [x for x in r if x.answerable]
-        no_answer = [x for x in r if not x.answerable]
+        no_answer = [x for x in r if not x.answerable and not x.tutor]
+        tutor = [x.rubric_score for x in r if x.tutor and x.rubric_score is not None]
         precision = [x.citation_precision for x in r if x.citation_precision is not None]
         costs = [c for x in r for c in (x.agent_cost, x.judge_cost) if c is not None]
         return {
@@ -268,6 +291,8 @@ class ChatReport:
             ),
             "rubric_score": _mean([x.rubric_score for x in r if x.rubric_score is not None]),
             "n_judged": sum(x.rubric_score is not None for x in r),
+            "tutor_rubric": _mean(tutor),
+            "n_tutor": sum(x.tutor for x in r),
             "no_answer_clean": _mean([float(not x.cited) for x in no_answer]),
             "cost_usd": sum(costs) if costs else None,
         }
@@ -285,6 +310,7 @@ class ChatReport:
                 f"Citation precision: {f(s['citation_precision'])}  (n={s['n_precision']})",
                 f"Cited recall      : {f(s['cited_recall'])}",
                 f"Rubric score      : {f(s['rubric_score'])}  ({s['n_judged']}/{s['n']} judged)",
+                f"Tutor rubric      : {f(s['tutor_rubric'])}  (n={s['n_tutor']})",
                 f"No-answer clean   : {f(s['no_answer_clean'])}",
                 f"Cost (agent+judge): ${f(s['cost_usd'], '{:.4f}')}",
             ]
@@ -328,7 +354,7 @@ def dry_run_text(
         f"  golden set reviewed by a human: {reviewed}",
     ]
     lines += [
-        f"  {q.id}: {q.question[:90]} [{'no answer' if not q.answerable else ', '.join(q.expected_pages)}]"
+        f"  {q.id}: {q.question[:90]} [{', '.join(q.expected_pages) or ('tutor' if q.study else 'no answer')}]"
         for q in questions
     ]
     if est["typical"] is None:

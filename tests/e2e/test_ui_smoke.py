@@ -57,7 +57,6 @@ def page() -> Iterator[Page]:
 def _open_graph(page: Page) -> None:
     """The map opens on the atlas, a canvas ring whose sector labels are real links."""
     page.goto(UI_URL, timeout=15_000)
-    expect(page.get_by_text("● live")).to_be_visible(timeout=20_000)
     page.wait_for_selector(".atlas-label", timeout=20_000)
 
 
@@ -70,7 +69,8 @@ def _largest_domain() -> tuple[str, int]:
 def test_graph_tab(page: Page) -> None:
     _open_graph(page)
     expect(page).to_have_title("Graph · Librarian")
-    expect(page.get_by_role("button", name="Graph", exact=True)).to_have_attribute(
+    sections = page.get_by_role("navigation", name="Sections")
+    expect(sections.get_by_role("link", name="Graph", exact=True)).to_have_attribute(
         "aria-current", "page"
     )
     page.get_by_role("group", name="Browse by").get_by_role("button", name="Course").click()
@@ -175,7 +175,9 @@ def _lesson_with_concepts() -> dict[str, Any]:
 
 def test_courses_tab_and_concept_jump(page: Page) -> None:
     _open_graph(page)
-    page.get_by_role("button", name="Courses", exact=True).click()
+    page.get_by_role("navigation", name="Sections").get_by_role(
+        "link", name="Courses", exact=True
+    ).click()
     expect(page).to_have_title("Courses · Librarian")
 
     lesson = _lesson_with_concepts()
@@ -211,20 +213,20 @@ def test_chat_panel_idle(page: Page) -> None:
 
 
 def test_escape_closes_one_overlay_at_a_time() -> None:
-    """Narrow layout: chat overlay + lessons drawer open; one Escape closes only the drawer."""
+    """Narrow layout: chat overlay + navigation drawer open; one Escape closes only the drawer."""
     with sync_playwright() as p:
         browser = p.chromium.launch()
         pg = browser.new_page(viewport={"width": 1000, "height": 800})
         outline = _get("/api/courses")[0]["modules"][0]["lessons"][0]
         pg.goto(f"{UI_URL}/#/courses/{outline['id']}", timeout=15_000)
-        drawer_btn = pg.get_by_role("button", name="Lessons", exact=True)
+        drawer_btn = pg.get_by_role("button", name="Menu", exact=True)
         expect(drawer_btn).to_be_visible(timeout=15_000)
         pg.get_by_role("button", name="Agent Chat ↗").click()
         drawer_btn.click()
-        expect(pg.locator(".course-drawer.is-open")).to_have_count(1)
+        expect(pg.locator(".app-sidenav.is-open")).to_have_count(1)
 
         pg.keyboard.press("Escape")
-        expect(pg.locator(".course-drawer.is-open")).to_have_count(0)
+        expect(pg.locator(".app-sidenav.is-open")).to_have_count(0)
         expect(pg.locator("#chat-panel")).to_have_count(1)
         expect(drawer_btn).to_be_focused()
         pg.keyboard.press("Escape")
@@ -238,7 +240,7 @@ def test_escape_closes_one_overlay_at_a_time() -> None:
         ("/", ".atlas-label"),
         ("/#/map/wiki/rag", ".react-flow__node"),
         ("/#/courses", ".course-card"),
-        ("lesson", ".lesson-main-body p"),
+        ("lesson", ".lesson-prose p"),
         ("/#/practice", "[aria-label='Drill timer']"),
     ],
 )

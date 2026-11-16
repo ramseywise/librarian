@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-"""Check the multiple-choice quiz files of the modules.
+"""Check the quiz files of the modules: multiple-choice questions and worked problems.
 
     librarian courses check quiz [path ...]      paths are under data/courses/ (default: everything)
 
 Reads every public `<course>/<module>/_quiz.md` (never data/courses/private/). Exit 1 on any problem.
 A question needs a prompt, two or more distinct options, an answer that is one of them, an id made of
 letters, digits, `.`, `_` and `-` (given, or the hash of the prompt) that no other question in the file
-uses, and, when it names a `lesson`, a lesson of the same module. Whether the answer is right is a
-judgement for the drill-reviewer agent, not this script.
+uses, and, when it names a `lesson`, a lesson of the same module. A question with no `options` is a
+worked problem: its answer must be a number, and `tolerance`, when given, a number of 0 or more.
+Whether the answer is right is a judgement for the drill-reviewer agent, not this script.
 """
 
 from __future__ import annotations

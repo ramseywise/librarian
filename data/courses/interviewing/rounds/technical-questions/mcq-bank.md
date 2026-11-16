@@ -1,7 +1,7 @@
 ---
-imported_hash: febcddcbd7c31824
+imported_hash: 0be1ec2e7dc5bbcc
 title: MCQ Bank — Full Topic Parity
-summary: Multiple-choice drill bank covering 14 topics.
+summary: Multiple-choice drill bank covering 19 topics.
 order: 74
 kind: reading
 section: Technical questions
@@ -10,7 +10,7 @@ source: learn-ai-engineering/practice/interviewing/rounds/technical-questions/mc
 
 # MCQ Bank — Full Topic Parity
 
-Multiple-choice drill bank covering 14 topics. Standalone: it re-covers
+Multiple-choice drill bank covering 19 topics. Standalone: it re-covers
 ground the role-specific banks handle so it works on its own.
 
 **How to use**: cover the answer key, take a section, then read the rationale for every
@@ -37,7 +37,12 @@ caching, pass@k vs pass^k, CRAG vs Self-RAG), the bank tests that pair directly.
 | L | Probability and distributions | 16 |
 | M | Statistics and A/B testing | 16 |
 | N | Classical ML models | 15 |
-| **Total** | | **238** |
+| O | Bayesian inference and Markov chains | 7 |
+| P | Unsupervised learning | 6 |
+| Q | Neural networks | 7 |
+| R | Retrieval, ranking and recommenders | 8 |
+| S | Features, tuning, time series and metrics | 8 |
+| **Total** | | **274** |
 
 Answer keys are at the end of each section.
 
@@ -2483,6 +2488,411 @@ N11-C · N12-A · N13-D · N14-C · N15-B
 - **N13**: A lower threshold flags more cases, catching more true positives and admitting more false ones.
 - **N14**: Log loss is the negative log-likelihood of a Bernoulli outcome, so minimising it is maximum likelihood.
 - **N15**: Boosted trees capture non-linear effects and interactions with no scaling or encoding of order, and usually lead on tabular data.
+
+---
+
+## O. Bayesian inference and Markov chains (7 questions)
+
+### O1
+
+You start with a uniform Beta(1, 1) prior on a success rate and observe 3 successes in 3 trials. What is the posterior mean?
+
+A. 1.0
+B. 0.8
+C. 0.75
+D. 0.6
+
+### O2
+
+What does a 95% credible interval state?
+
+A. 95% of intervals built this way over repeated samples would cover the parameter
+B. 95% of the observations fall inside it
+C. The null hypothesis is rejected at the 5% level
+D. Given the data and the prior, the parameter lies in it with probability 0.95
+
+### O3
+
+With a flat prior, the MAP estimate equals which other estimate?
+
+A. The maximum likelihood estimate
+B. The posterior mean
+C. The prior mean
+D. The posterior median
+
+### O4
+
+As the sample grows, what happens to the influence of the prior on the posterior?
+
+A. It grows, because the prior is counted once per observation
+B. It stays the same
+C. It shrinks, because the likelihood dominates
+D. It depends only on whether the prior is conjugate
+
+### O5
+
+What does the Markov property say?
+
+A. Every state is visited equally often in the long run
+B. The chain always returns to its starting state
+C. Transition probabilities change at each step
+D. The next state depends only on the current state, not on the path to it
+
+### O6
+
+In a transition matrix where entry (i, j) is the probability of moving from state i to state j, what must hold?
+
+A. Each column sums to 1
+B. Each row sums to 1
+C. The diagonal sums to 1
+D. The matrix is symmetric
+
+### O7
+
+What is an absorbing state?
+
+A. A state the chain can never reach
+B. The state with the highest long-run probability
+C. A state that, once entered, is never left
+D. A state the chain visits on a fixed cycle
+
+**Answers O**: O1-B · O2-D · O3-A · O4-C · O5-D · O6-B · O7-C
+
+**Rationale notes**
+
+- **O1**: The posterior is Beta(1 + 3, 1 + 0) = Beta(4, 1), with mean 4/5 = 0.8. The maximum likelihood estimate is 1.0, and the prior pulls it back.
+- **O2**: A credible interval is a probability statement about the parameter. The first option is the confidence interval, a statement about the procedure.
+- **O3**: MAP maximises likelihood × prior. A flat prior is a constant, so the maximum is where the likelihood peaks.
+- **O4**: The likelihood multiplies in once per observation and the prior once in total, so with enough data two reasonable priors give nearly the same posterior.
+- **O5**: Given the present, the future is independent of the past. That is what lets one transition matrix describe the whole process.
+- **O6**: From state i the chain must go somewhere, so row i is a probability distribution. Columns need not sum to 1.
+- **O7**: Its row in the transition matrix has a 1 on the diagonal. Churned or converted are typical absorbing states.
+
+---
+
+## P. Unsupervised learning (6 questions)
+
+### P1
+
+Why standardise features before PCA?
+
+A. PCA cannot run on features with different units
+B. A feature measured on a large scale would dominate the components
+C. Standardising makes the components independent of each other
+D. It reduces the number of components needed to one
+
+### P2
+
+Which reading of a t-SNE plot is unsafe?
+
+A. Points that sit close together were similar in the original space
+B. The plot shows whether the data have local grouping
+C. Different perplexity settings can give different pictures
+D. The distance between two clusters shows how different they are
+
+### P3
+
+When is DBSCAN a better choice than k-means?
+
+A. The clusters have irregular shapes and the data contain noise points
+B. The clusters are round and of similar size
+C. You know the number of clusters in advance
+D. The clusters differ widely in density
+
+### P4
+
+What does a Gaussian mixture model give you that k-means does not?
+
+A. A guarantee of finding the global optimum
+B. Clusters without choosing how many
+C. Soft assignments and elliptical clusters
+D. Faster fitting on large data
+
+### P5
+
+In the EM algorithm for a mixture model, what does the E step compute?
+
+A. New means and covariances for each component
+B. The probability that each component produced each point, under the current parameters
+C. The number of components to use
+D. The gradient of the likelihood
+
+### P6
+
+A point has a silhouette score close to 1. What does that mean?
+
+A. It lies on the border between two clusters
+B. It is probably assigned to the wrong cluster
+C. The number of clusters is too high
+D. It is much closer to its own cluster than to the nearest other cluster
+
+**Answers P**: P1-B · P2-D · P3-A · P4-C · P5-B · P6-D
+
+**Rationale notes**
+
+- **P1**: PCA finds directions of greatest variance, and variance depends on units. Income in euros would swamp age in years.
+- **P2**: t-SNE keeps local neighbourhoods and distorts global distances and cluster sizes, so gaps between clusters carry no reliable meaning.
+- **P3**: DBSCAN grows clusters from dense regions, needs no k and labels sparse points as noise. Its weak spot is clusters of very different density.
+- **P4**: A mixture model gives each point a probability for each component and fits a covariance per component. k-means is the special case of hard assignments and equal spherical clusters.
+- **P5**: The E step computes responsibilities. The M step then re-estimates the parameters, weighting each point by them. Each round cannot lower the likelihood.
+- **P6**: The silhouette compares the mean distance to the point's own cluster with that to the nearest other one. Near 0 is a border point, and negative suggests a wrong assignment.
+
+---
+
+## Q. Neural networks (7 questions)
+
+### Q1
+
+Why does a neural network need non-linear activation functions?
+
+A. Without them, any stack of layers collapses to a single linear map
+B. They make every layer's output sum to 1
+C. They prevent overfitting
+D. They make the loss convex
+
+### Q2
+
+What goes wrong if every weight in a layer starts at zero?
+
+A. The gradients explode
+B. The loss starts at infinity
+C. Every unit computes the same output and gets the same update, so they never differ
+D. Nothing: the biases break the tie
+
+### Q3
+
+Why do deep networks with sigmoid activations suffer from vanishing gradients?
+
+A. Sigmoid outputs are not centred on zero
+B. The sigmoid's derivative is at most 0.25, and backpropagation multiplies one per layer
+C. The sigmoid is expensive to compute
+D. Sigmoid units die when their input is negative
+
+### Q4
+
+How does dropout behave at inference time?
+
+A. It drops units at the same rate as in training
+B. It drops units at half the training rate
+C. It drops only the units with the smallest weights
+D. It is switched off, and all units are used
+
+### Q5
+
+What does batch normalisation do to a layer's inputs?
+
+A. Standardises each feature over the mini-batch, then applies a learned scale and shift
+B. Clips each value to between 0 and 1
+C. Removes the features with the lowest variance
+D. Normalises each example to unit length
+
+### Q6
+
+Why do skip connections make very deep networks trainable?
+
+A. They halve the number of parameters
+B. They remove the need for activation functions
+C. The gradient has an identity path back, and each block only learns a residual
+D. They make every layer the same width
+
+### Q7
+
+What does the Adam optimiser combine?
+
+A. Weight decay and dropout
+B. Momentum and a per-parameter step size from a running average of squared gradients
+C. Batch normalisation and gradient clipping
+D. A line search and second derivatives
+
+**Answers Q**: Q1-A · Q2-C · Q3-B · Q4-D · Q5-A · Q6-C · Q7-B
+
+**Rationale notes**
+
+- **Q1**: A product of matrices is a matrix, so depth adds nothing without a non-linearity between layers.
+- **Q2**: This is the symmetry problem. Random initialisation breaks it, scaled by He for ReLU or Glorot for tanh and sigmoid.
+- **Q3**: A product of many factors below 0.25 shrinks towards zero, so early layers barely learn. ReLU has a derivative of 1 on its active side.
+- **Q4**: Dropout is a training-time regulariser. With the usual inverted form, activations are scaled up by 1/(1 − p) during training so that nothing needs to change at inference.
+- **Q5**: Stable input distributions let you use higher learning rates. At inference it uses running averages from training, not the batch's statistics.
+- **Q6**: With y = x + F(x), the gradient flows through the addition unchanged, so it reaches early layers. A block that has nothing to add can learn F = 0.
+- **Q7**: Adam keeps a running mean of gradients (momentum) and of squared gradients (as RMSprop does), with a bias correction for the first steps.
+
+---
+
+## R. Retrieval, ranking and recommenders (8 questions)
+
+### R1
+
+What does an inverted index map?
+
+A. Each document to the terms it contains
+B. Each term to the documents that contain it
+C. Each query to its cached results
+D. Each document to its embedding
+
+### R2
+
+In BM25, what does the parameter b control?
+
+A. How quickly repeated occurrences of a term stop adding score
+B. The weight of rare terms
+C. The number of results returned
+D. How strongly the score is normalised for document length
+
+### R3
+
+When does embedding search beat keyword search?
+
+A. The query and the document express the same meaning in different words
+B. The query is an exact product code
+C. The corpus is small
+D. The query contains a rare name
+
+### R4
+
+What does reciprocal rank fusion need from each result list?
+
+A. Scores on a common scale
+B. A trained weight for each retriever
+C. Only each document's rank
+D. Relevance labels
+
+### R5
+
+How does MRR differ from NDCG?
+
+A. MRR needs graded relevance labels and NDCG does not
+B. MRR looks only at the first relevant result, and NDCG scores the whole ranking
+C. MRR ignores rank and NDCG does not
+D. MRR is only for recommenders
+
+### R6
+
+A new item has just been added to the catalogue. Why does collaborative filtering struggle with it?
+
+A. Its embedding is too large
+B. It makes the interaction matrix dense
+C. It is too similar to existing items
+D. It has no interactions yet, so there is no signal to learn from
+
+### R7
+
+Why are large recommenders built in two stages?
+
+A. A cheap retrieval stage cuts millions of items to hundreds, so a costlier ranker can score those
+B. The first stage trains the second
+C. It removes the need for negative examples
+D. One stage handles new users and the other returning users
+
+### R8
+
+How does implicit feedback differ from explicit ratings?
+
+A. It is rarer
+B. It is always more accurate
+C. It has no true negatives: an item never clicked is not known to be disliked
+D. It cannot be used for matrix factorisation
+
+**Answers R**: R1-B · R2-D · R3-A · R4-C · R5-B · R6-D · R7-A · R8-C
+
+**Rationale notes**
+
+- **R1**: A query looks up the posting list of each of its terms, so the search touches only documents that share a term with it.
+- **R2**: b = 0 ignores length and b = 1 normalises fully. Term-frequency saturation is the job of k1.
+- **R3**: Embeddings match on meaning. Keyword search wins on exact identifiers and rare names, which is why hybrid search runs both.
+- **R4**: RRF sums 1/(k + rank) across lists. Ignoring the scores is what makes it robust when BM25 and cosine scores are on different scales.
+- **R5**: MRR suits tasks with one right answer. NDCG takes graded relevance and discounts every position, so it suits lists the user reads through.
+- **R6**: This is the cold-start problem. The usual fixes are content features, popularity fallbacks and some exploration.
+- **R7**: Scoring every item with a heavy model is too slow. Retrieval is tuned for recall and ranking for precision at the top.
+- **R8**: Clicks and views are plentiful but only positive. Missing entries are treated as weak negatives or sampled, with a confidence weight.
+
+---
+
+## S. Features, tuning, time series and metrics (8 questions)
+
+### S1
+
+What does the kernel trick let a support vector machine do?
+
+A. Train without labels
+B. Use inner products in a high-dimensional feature space without ever computing the features
+C. Skip regularisation
+D. Handle missing values
+
+### S2
+
+What is the main risk of target encoding a categorical feature?
+
+A. It creates too many columns
+B. It cannot handle unseen categories
+C. It removes the order of the categories
+D. It leaks the label into the feature unless computed inside each training fold
+
+### S3
+
+What is the test set for?
+
+A. One final estimate of performance after every modelling choice is made
+B. Choosing hyperparameters
+C. Early stopping
+D. Selecting features
+
+### S4
+
+Why does random search often beat grid search for the same budget?
+
+A. It evaluates each configuration faster
+B. It guarantees the optimum
+C. Usually only a few hyperparameters matter, and random search tries more distinct values of each
+D. It needs no validation set
+
+### S5
+
+How should you cross-validate a forecasting model?
+
+A. Shuffle the rows and use k folds
+B. Train on the past and validate on the block that follows, rolling the origin forward
+C. Validate on the earliest block and train on the rest
+D. Use leave-one-out on random rows
+
+### S6
+
+A forecast has a MASE of 1.2. What does that mean?
+
+A. It is 20% better than the naive forecast
+B. Its errors are 1.2 units on average
+C. It explains 20% more variance than the naive forecast
+D. Its errors are 20% larger than the naive forecast's
+
+### S7
+
+What is a guardrail metric in an experiment?
+
+A. A metric that must not get worse while you try to move the target metric
+B. The metric the experiment is designed to move
+C. A metric that checks the randomisation
+D. The long-term metric the company steers by
+
+### S8
+
+What is Simpson's paradox?
+
+A. A significant result that does not replicate
+B. A correlation produced by a hidden common cause
+C. A trend that holds in every segment and reverses in the combined data
+D. An effect that fades over time
+
+**Answers S**: S1-B · S2-D · S3-A · S4-C · S5-B · S6-D · S7-A · S8-C
+
+**Rationale notes**
+
+- **S1**: The algorithm only needs inner products between examples, and a kernel returns them directly, so a non-linear boundary costs no explicit feature map.
+- **S2**: The encoding is built from the target. Fitted on all rows, each row's own label leaks into its feature, most of all for rare categories.
+- **S3**: Any choice made on the test set biases its estimate upwards. Tuning belongs to the validation set or to cross-validation.
+- **S4**: A grid repeats the same few values of the important hyperparameter across every setting of the unimportant ones.
+- **S5**: Shuffled folds let the model train on the future. A rolling origin keeps every validation block after its training data.
+- **S6**: MASE divides the model's mean absolute error by that of a naive forecast, so anything above 1 loses to the naive baseline.
+- **S7**: Latency, unsubscribes and refunds are typical guardrails. The last option is the north star.
+- **S8**: It arises when the segments differ in size between the groups compared, so the mix drives the aggregate. Compare within segments.
 
 ---
 

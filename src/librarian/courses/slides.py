@@ -112,17 +112,20 @@ def module_decks(module_id: str) -> list[dict[str, str]]:
     if split is None or split[2] is not None:
         return []
     course, module, _ = split
+    return decks_in(_slides_dir(course, module), course, module)
+
+
+def decks_in(slides_dir: Path, course: str, module: str) -> list[dict[str, str]]:
+    """`module_decks` for a given `slides/` folder, so the catalog can list them for the tree it is building."""
     out = []
-    if (_slides_dir(course, module) / "deck.yaml").is_file():
+    if (slides_dir / "deck.yaml").is_file():
+        out.append({"id": f"{course}/{module}", **_deck_names(slides_dir / "deck.yaml")})
+    lectures = slides_dir / "lectures"
+    for spec in sorted(lectures.glob("*.yaml")) if lectures.is_dir() else []:
+        names = _deck_names(spec)
         out.append(
-            {
-                "id": f"{course}/{module}",
-                "title": _deck_title(_slides_dir(course, module) / "deck.yaml"),
-            }
+            {"id": f"{course}/{module}/{spec.stem}", **names, "title": names["title"] or spec.stem}
         )
-    for lecture in lecture_ids(course, module):
-        spec = _slides_dir(course, module) / "lectures" / f"{lecture}.yaml"
-        out.append({"id": f"{course}/{module}/{lecture}", "title": _deck_title(spec) or lecture})
     return out
 
 
@@ -136,8 +139,16 @@ def _load_spec(spec: Path) -> dict[str, Any]:
 
 
 def _deck_title(spec: Path) -> str:
+    return _deck_names(spec)["title"]
+
+
+def _deck_names(spec: Path) -> dict[str, str]:
+    """A deck's title, and its subtitle when it has one (two lectures of a module can share a title)."""
     deck = _load_spec(spec).get("deck")
-    return str(deck.get("title", "")) if isinstance(deck, dict) else ""
+    if not isinstance(deck, dict):
+        return {"title": ""}
+    subtitle = str(deck.get("subtitle") or "")
+    return {"title": str(deck.get("title", "")), **({"subtitle": subtitle} if subtitle else {})}
 
 
 def stamp(spec: Path) -> str:

@@ -29,7 +29,7 @@ from typing import TYPE_CHECKING
 import duckdb
 
 from librarian.log_config import get_logger
-from librarian.retrieval import corpus, embeddings
+from librarian.retrieval import corpus, embeddings, sections
 from librarian.retrieval.graph_expansion import build_link_index, build_typed_edges
 from librarian.wiki.common import (
     ANY_TYPED_LINK_RE,
@@ -46,8 +46,9 @@ log = get_logger(__name__)
 
 # 6→7: adds content_hash for incremental indexing (LIB-124). 7→8: adds course_pages.
 # 8→9: mtime_ns and size per row (the freshness check hashes only on a mismatch), `meta`
-# embedding_model and embedding_dim.
-SCHEMA_VERSION = "9"
+# embedding_model and embedding_dim. 9→10: `sections` and `course_sections` (heading sections
+# of each page and lesson, with their own vectors).
+SCHEMA_VERSION = "10"
 
 # How long a connection waits for another process's lock. A refresh of a few pages takes well
 # under a second and a full rebuild about twenty, so this outlasts both.
@@ -250,6 +251,62 @@ def _embed_pages(raw: list[tuple]) -> dict[str, bytes]:
         return {}
 
 
+# Page table → its section table. A lesson's sections stay apart from the wiki's for the reason
+# lessons have their own page table: corpus-wide statistics must not mix.
+SECTION_TABLES = {"pages": "sections", "course_pages": "course_sections"}
+
+
+def _create_section_tables(con: duckdb.DuckDBPyConnection) -> None:
+    for table in SECTION_TABLES.values():
+        con.execute(f"""
+            CREATE TABLE {table} (
+                path         TEXT,
+                ordinal      INTEGER,
+                heading_path TEXT,
+                text         TEXT,
+                embedding    BLOB,
+                PRIMARY KEY (path, ordinal)
+            )
+        """)
+
+
+def _embed_texts(texts: list[str]) -> list[bytes | None]:
+    """One vector blob per text, or all None when embeddings are unavailable or fail."""
+    if not texts or not embeddings.HAS_EMBEDDINGS:
+        return [None] * len(texts)
+    try:
+        return [embeddings.vec_to_blob(v.tolist()) for v in embeddings.encode(texts)]
+    except Exception as e:
+        log.warning("section_embedding_failed", error=str(e))
+        return [None] * len(texts)
+
+
+def _write_sections(
+    con: duckdb.DuckDBPyConnection, table: str, raw: list[tuple], removed: set[str] | None = None
+) -> int:
+    """Replace the sections of the pages in `raw` (`read_pages` tuples); drop `removed` pages'.
+
+    Returns the number of sections written.
+    """
+    stable = SECTION_TABLES[table]
+    gone = [r[0] for r in raw] + sorted(removed or ())
+    if gone:
+        con.executemany(f"DELETE FROM {stable} WHERE path = ?", [(p,) for p in gone])
+    rows: list[tuple] = []
+    texts: list[str] = []
+    for path, title, _tags, _summary, _updated, content, *_ in raw:
+        for sec in sections.split_sections(content):
+            rows.append((path, sec.ordinal, sec.heading_path, sec.text))
+            texts.append(sections.embed_text(title, sec))
+    if rows:
+        vectors = _embed_texts(texts)
+        con.executemany(
+            f"INSERT INTO {stable} VALUES (?, ?, ?, ?, ?)",
+            [(*row, vectors[i]) for i, row in enumerate(rows)],
+        )
+    return len(rows)
+
+
 def _create_fts_index(con: duckdb.DuckDBPyConnection, table: str) -> bool:
     """(Re)build one table's FTS index. DuckDB FTS has no row-level update API; overwrite=1
     re-reads the indexed columns from the table (fast) but cannot be avoided."""
@@ -278,6 +335,8 @@ def _full_rebuild(con: duckdb.DuckDBPyConnection) -> None:
     con.execute("DROP TABLE IF EXISTS pages")
     con.execute("DROP TABLE IF EXISTS course_pages")
     con.execute("DROP TABLE IF EXISTS edges")
+    for table in SECTION_TABLES.values():
+        con.execute(f"DROP TABLE IF EXISTS {table}")
 
     con.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, val TEXT)")
 
@@ -299,6 +358,7 @@ def _full_rebuild(con: duckdb.DuckDBPyConnection) -> None:
         """)
     con.execute("CREATE INDEX IF NOT EXISTS pages_path ON pages (path)")
     con.execute("CREATE TABLE edges (source_path TEXT, target_path TEXT, relationship TEXT)")
+    _create_section_tables(con)
 
     ensure_fts(con)
 
@@ -346,6 +406,7 @@ def _full_rebuild(con: duckdb.DuckDBPyConnection) -> None:
 
     if HAS_FTS and not _create_fts_index(con, "pages"):
         HAS_FTS = False
+    n_sections = _write_sections(con, "pages", raw_pages)
 
     n_lessons = _upsert_lessons(con, sorted(corpus.course_pages()))
 
@@ -357,6 +418,7 @@ def _full_rebuild(con: duckdb.DuckDBPyConnection) -> None:
         "index_built",
         page_count=len(rows),
         lesson_count=n_lessons,
+        section_count=n_sections,
         with_embeddings=bool(vectors),
         typed_edges=len(typed_edges),
         unrecognized_annotations=n_unrecognized,
@@ -386,6 +448,7 @@ def _upsert_lessons(con: duckdb.DuckDBPyConnection, lessons: list[Path]) -> int:
     if removed:
         con.executemany("DELETE FROM course_pages WHERE path = ?", [(p,) for p in removed])
         log.info("course_index_pruned", removed_count=len(removed))
+    _write_sections(con, "course_pages", raw, removed)
 
     if HAS_FTS:
         _create_fts_index(con, "course_pages")
@@ -468,6 +531,7 @@ def _update_pages(con: duckdb.DuckDBPyConnection, pages: list[Path]) -> None:
         for p in removed:
             con.execute("DELETE FROM edges WHERE source_path = ? OR target_path = ?", [p, p])
         log.info("index_pruned", removed_count=len(removed))
+    _write_sections(con, "pages", raw_pages, removed)
 
     # Rebuild the FTS index (see _create_fts_index). HAS_FTS is per process: a fresh one has
     # not loaded the extension yet, so load it here rather than trust the global.
@@ -531,6 +595,22 @@ def _reembed_missing(con: duckdb.DuckDBPyConnection) -> int:
         for path, blob in vectors.items():
             con.execute(f"UPDATE {table} SET embedding = ? WHERE path = ?", [blob, path])
         done += len(vectors)
+    for page_table, stable in SECTION_TABLES.items():
+        rows = con.execute(
+            f"SELECT s.path, s.ordinal, s.heading_path, s.text, p.title FROM {stable} s "
+            f"JOIN {page_table} p USING (path) WHERE s.embedding IS NULL"
+        ).fetchall()
+        texts = [
+            sections.embed_text(title, sections.Section(ordinal, heading, text))
+            for _, ordinal, heading, text, title in rows
+        ]
+        for (path, ordinal, *_), blob in zip(rows, _embed_texts(texts), strict=True):
+            if blob is not None:
+                con.execute(
+                    f"UPDATE {stable} SET embedding = ? WHERE path = ? AND ordinal = ?",
+                    [blob, path, ordinal],
+                )
+                done += 1
     if done:
         _write_embedding_meta(con)
         log.info("embeddings_filled", count=done)
@@ -550,7 +630,7 @@ def _refresh_embeddings(con: duckdb.DuckDBPyConnection) -> bool:
         _full_rebuild(con)
         return True
     pending = 0
-    for table in ("pages", "course_pages"):
+    for table in ("pages", "course_pages", *SECTION_TABLES.values()):
         row = con.execute(f"SELECT count(*) FROM {table} WHERE embedding IS NULL").fetchone()
         pending += row[0] if row else 0
     if pending:

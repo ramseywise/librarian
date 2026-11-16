@@ -112,6 +112,35 @@ describe("QuizView", () => {
     expect(screen.getByRole("button", { name: "b" })).toBeEnabled();
   });
 
+  it("a level in the route keeps one format: ?choice the options, ?worked a typed number", async () => {
+    const user = userEvent.setup();
+    const worked = { id: "w1", prompt: "p(1 - p) at 0.2?", options: [], kind: "worked" as const, lesson: null, lessonTitle: null, status: "new" as const };
+    const fetchMock = stub({ questions: [...quiz.questions, worked] });
+    const { unmount } = render(<QuizView quizId="c1/m1?choice" />);
+    await screen.findByText("Pick b");
+    expect(screen.getByText("Level 1 · Multiple choice")).toBeInTheDocument();
+    expect(screen.getByText("1 of 3")).toBeInTheDocument();
+    unmount();
+
+    render(<QuizView quizId="c1/m1?worked&due" />);
+    expect(await screen.findByText("p(1 - p) at 0.2?")).toBeInTheDocument();
+    expect(screen.getByText("Level 3 · Worked problems")).toBeInTheDocument();
+    expect(screen.getByText("1 of 1")).toBeInTheDocument();
+    // Not a number: the server refuses it and the learner is told, with the question still open.
+    fetchMock.mockResolvedValueOnce(new Response("{}", { status: 422 }));
+    await user.type(screen.getByRole("textbox", { name: "Your answer, a number" }), "lots");
+    await user.click(screen.getByRole("button", { name: "Check" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Type a number");
+    answers.w1 = { correct: true, answer: "0.16", explanation: "0.2 × 0.8.", logged: true };
+    await user.clear(screen.getByRole("textbox"));
+    await user.type(screen.getByRole("textbox"), "0.16{Enter}");
+    expect(fetchMock).toHaveBeenLastCalledWith("/api/courses/quiz-results", expect.objectContaining({
+      body: JSON.stringify({ quiz: "c1/m1", question: "w1", choice: "0.16" }),
+    }));
+    expect(await screen.findByText("Correct.")).toBeInTheDocument();
+    expect(screen.getByText("0.2 × 0.8.")).toBeInTheDocument();
+  });
+
   it("says so when there is no quiz", async () => {
     stub({}, 404);
     render(<QuizView quizId="c1/nope" />);

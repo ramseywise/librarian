@@ -285,6 +285,19 @@ class Settings(BaseSettings):
     )
     # The daily spend is estimated from the price table in librarian.pricing, keyed by model id.
 
+    # Section split (librarian.retrieval.sections) and how much of the best section search returns.
+    # Settings, not constants, so chunk size is chosen on the evals.
+    section_min_chars: int = Field(
+        default=300, validation_alias=_env("LIBRARIAN_SECTION_MIN_CHARS")
+    )
+    section_max_chars: int = Field(
+        default=2000, validation_alias=_env("LIBRARIAN_SECTION_MAX_CHARS")
+    )
+    # Most characters of a best section a search result carries; 0 turns section output off.
+    section_output_chars: int = Field(
+        default=3000, validation_alias=_env("LIBRARIAN_SECTION_OUTPUT_CHARS")
+    )
+
     # Models and endpoints.
     embedding_model: str = Field(
         default="all-MiniLM-L6-v2", validation_alias=_env("LIBRARIAN_EMBEDDING_MODEL")

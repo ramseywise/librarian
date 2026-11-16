@@ -443,6 +443,65 @@
         "Says the wiki does not cover this",
         "Does not present an invented answer as wiki knowledge"
       ]
+    },
+    {
+      "id": "tutor-01",
+      "question": "I don't get this card. Can you explain it with an example?",
+      "study": {
+        "deck": "programming/software-design",
+        "card": "0"
+      },
+      "expected_pages": [],
+      "rubric": [
+        "Explains that a smell is a prompt to look closer, not proof the code is bad",
+        "Gives a concrete code-smell example (e.g. a long method or duplicated code)",
+        "Says to refactor code you keep having to change, not code that merely smells",
+        "Marks any point not from the lesson or the wiki as general knowledge"
+      ]
+    },
+    {
+      "id": "tutor-02",
+      "question": "Walk me through this with numbers.",
+      "study": {
+        "deck": "data-science/01-classical-ml",
+        "card": "79"
+      },
+      "expected_pages": [],
+      "rubric": [
+        "Says low train and low test scores mean underfitting",
+        "Says a high train score with a much lower test score means overfitting",
+        "Gives a worked example with concrete train and test scores"
+      ]
+    },
+    {
+      "id": "tutor-03",
+      "question": "Give me a hint, don't tell me the answer.",
+      "study": {
+        "quiz": "interviewing/rounds",
+        "question": "b2",
+        "revealed": false
+      },
+      "expected_pages": [],
+      "rubric": [
+        "Does not state which option is the correct answer",
+        "Explains what leakage is (information from outside the training data reaching the model)",
+        "Points the user at asking which option changes what the model sees during training"
+      ]
+    },
+    {
+      "id": "tutor-04",
+      "question": "Why is that the right answer and not the reranker?",
+      "study": {
+        "quiz": "interviewing/rounds",
+        "question": "d20",
+        "revealed": true
+      },
+      "expected_pages": [],
+      "rubric": [
+        "Says recall@k on a golden set is measured first",
+        "Explains that a reranker cannot recover a relevant chunk retrieval never returned",
+        "Gives the order of later checks (corpus/embedding match, chunking, then hybrid and reranking) before touching the LLM"
+      ]
     }
   ]
 }

@@ -36,25 +36,47 @@
   flex-shrink: 0;
 }
 .app-brand { color: var(--text); font-weight: 600; margin-right: var(--space-3); }
-.app-nav { display: flex; gap: var(--space-1); }
-.tab {
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: var(--radius-md);
-  color: var(--text-muted);
-  font-size: var(--fs-md);
-  padding: 3px var(--space-5);
-  cursor: pointer;
-  font-family: inherit;
-}
-.tab[aria-current="page"] {
-  background: var(--surface-tab);
-  border-color: var(--border-strong);
-  color: var(--text);
-}
 .app-header-actions { margin-left: auto; display: flex; gap: var(--space-3); align-items: center; }
 
 .app-body { flex: 1; overflow: hidden; display: flex; position: relative; }
+/* The one navigation, down the left of every page. Nothing in it is opened by hand. */
+.app-sidenav {
+  width: var(--sidebar-w); flex-shrink: 0; overflow-y: auto; padding: var(--space-4) 0 var(--space-8);
+  border-right: 1px solid var(--border); background: var(--surface-sidebar);
+}
+.sidenav-item {
+  display: flex; align-items: center; gap: var(--space-3); padding: 5px var(--space-6); line-height: 1.4;
+  border-left: 2px solid transparent; color: var(--text-soft); font-size: 12.5px; text-decoration: none;
+}
+.sidenav-item:hover { color: var(--text); }
+.sidenav-item--top { color: var(--text); font-size: var(--fs-base); font-weight: 600; padding-top: var(--space-3); padding-bottom: var(--space-3); }
+.sidenav-item--course { padding-left: 28px; }
+.sidenav-item--module { padding-left: 40px; }
+.sidenav-item--lesson { padding-left: 52px; }
+.sidenav-item.is-within { color: var(--text); font-weight: 600; }
+.sidenav-item[aria-current="page"] { background: var(--surface-selected); border-left-color: var(--accent); color: var(--accent-text); }
+.sidenav-section {
+  font-size: var(--fs-xs); color: var(--text-ghost); text-transform: uppercase; letter-spacing: 0.06em;
+  padding: var(--space-3) var(--space-6) 2px 52px;
+}
+.app-menu-btn, .app-sidenav-backdrop { display: none; }
+.app-menu-btn { margin-right: var(--space-4); }
+.check {
+  flex-shrink: 0; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border-emphasis); background: transparent; color: var(--success); line-height: 1;
+}
+.check.is-on { border-color: var(--success); background: color-mix(in srgb, var(--success) 20%, transparent); }
+/* Below 1100px the navigation is a drawer behind the Menu button. */
+@media (max-width: 1099px) {
+  .app-sidenav {
+    position: absolute; top: 0; bottom: 0; left: 0; width: min(var(--sidebar-w), 85%); z-index: var(--z-drawer);
+    transform: translateX(-100%); visibility: hidden; transition: transform 0.2s ease, visibility 0.2s;
+    box-shadow: var(--shadow-overlay);
+  }
+  .app-sidenav.is-open { transform: none; visibility: visible; }
+  .app-sidenav-backdrop { display: block; position: absolute; inset: 0; z-index: calc(var(--z-drawer) - 1); background: rgba(0, 0, 0, 0.5); }
+  .app-menu-btn { display: inline-block; }
+}
 .app-main { flex: 1; overflow: hidden; position: relative; min-width: 0; }
 .app-course-layer { position: absolute; inset: 0; z-index: 1; background: var(--bg); }
 .app-graph-layer { position: absolute; inset: 0; overflow: hidden; }

@@ -31,6 +31,8 @@ from typing import Any, Final
 from pydantic import BaseModel, Field, ValidationError
 
 from librarian import retrieval
+from librarian.config import get_settings
+from librarian.retrieval import corpus
 
 CHAT: Final = "chat"
 MCP: Final = "mcp"
@@ -119,12 +121,49 @@ def chat_search_wiki(query: str) -> str:
     if not rows:
         return warning + "No pages found matching that query."
 
+    # The top results carry the section that answers the query in full, so an explanation
+    # can come from the page's own text without a read_page round trip.
+    # A section output cap of 0 switches this off: every result gets the short excerpt.
+    on = get_settings().section_output_chars > 0
+    top = [r[0] for r in rows[: retrieval.SECTION_RESULTS]] if on else []
+    best = retrieval.best_sections(query, top)
     parts = []
     for path, title, _tags, summary, content, _backlinks, _score in rows:
         page_id = Path(path).stem
-        excerpt = _strip_frontmatter(content)[:200].replace("\n", " ")
-        parts.append(f"**{title}** (id: `{page_id}`)\nSummary: {summary}\nExcerpt: {excerpt}...")
+        head = f"**{title}** (id: `{page_id}`)\nSummary: {summary}"
+        if path in best:
+            parts.append(f"{head}\n{retrieval.best_section_block(page_id, best[path])}")
+        elif not on or len(parts) < retrieval.SECTION_RESULTS:
+            excerpt = _strip_frontmatter(content)[:200].replace("\n", " ")
+            parts.append(f"{head}\nExcerpt: {excerpt}...")
+        else:
+            parts.append(head)
 
+    return warning + "\n\n---\n\n".join(parts)
+
+
+def chat_search_lessons(query: str) -> str:
+    """Course lessons matching the query, with the best section of the top ones in full.
+
+    The index holds only public lessons (nothing under data/courses/private/), so this never
+    reaches a private one. `catalog.search_lessons` is not used: the local catalog includes them.
+    """
+    rows, degraded = retrieval.search_rows(
+        query, domain=corpus.COURSE_DOMAIN, limit=6, tool="agent_search_lessons"
+    )
+    warning = retrieval.degraded_notice(degraded)
+    if not rows:
+        return warning + "No lessons found matching that query."
+    on = get_settings().section_output_chars > 0
+    top = [r[0] for r in rows[: retrieval.SECTION_RESULTS]] if on else []
+    best = retrieval.best_sections(query, top, table="course_pages")
+    parts = []
+    for path, title, _tags, summary, _content, _backlinks, _score in rows:
+        ref = corpus.course_ref(path)
+        head = f"**{title}** (lesson: `{ref}`)\nSummary: {summary}"
+        parts.append(
+            f"{head}\n{retrieval.best_section_block(ref, best[path])}" if path in best else head
+        )
     return warning + "\n\n---\n\n".join(parts)
 
 
@@ -221,10 +260,12 @@ _MCP_SEARCH_DOC = inspect.cleandoc("""
 
     Results are ranked by an equal blend of BM25 relevance and semantic closeness
     (if sentence-transformers is installed). Backlinks are not a ranking signal.
+    The top results include the section that best answers the query, in full.
     """)
 
 _MCP_READ_DOC = inspect.cleandoc("""
     Read a specific wiki page or course lesson by file path or title.
+    Append `#<heading>` to read one section only.
     """)
 
 _MCP_LIST_DOMAIN_DOC = inspect.cleandoc("""
@@ -252,7 +293,8 @@ TOOLS: Final[tuple[Tool, ...]] = (
         name="search_wiki",
         description=(
             "Search wiki pages for content matching the query. "
-            "Returns page IDs, summaries, and excerpts for the top matches."
+            "Returns page IDs and summaries, and for the top matches the section that best "
+            "answers the query, in full."
         ),
         params=_ChatSearch,
         fn=lambda p, _ctx: chat_search_wiki(p.query),
@@ -261,11 +303,25 @@ TOOLS: Final[tuple[Tool, ...]] = (
     ),
     Tool(
         name="read_page",
-        description="Read the full content of a wiki page by its ID (kebab-case filename without .md).",
+        description=(
+            "Read the full content of a wiki page by its ID (kebab-case filename without .md). "
+            "Append `#<heading>` to read one section only."
+        ),
         params=_ChatRead,
         fn=lambda p, _ctx: chat_read_page(p.page_id),
         surfaces=_ONLY_CHAT,
         log_arg="page_id",
+    ),
+    Tool(
+        name="search_lessons",
+        description=(
+            "Search the course's lessons (the material the user studies). Returns lesson refs "
+            "for read_page and, for the top matches, the section that best answers the query."
+        ),
+        params=_ChatSearch,
+        fn=lambda p, _ctx: chat_search_lessons(p.query),
+        surfaces=_ONLY_CHAT,
+        log_arg="query",
     ),
     Tool(
         name="get_domain_briefing",

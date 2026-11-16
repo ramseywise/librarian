@@ -1,14 +1,18 @@
-import { useEffect, useRef, useState } from "react";
-import type { Lesson } from "./types";
+import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
+import type { Lesson, Deck } from "./types";
 import { useGlossary } from "../../hooks/useGlossary";
 import { ReportButton } from "../feedback/ReportButton";
 import { DrillTimer } from "./DrillTimer";
 import { Markdown } from "./Markdown";
-import { splitSolution } from "./markdownUtils";
+import { splitLesson } from "./lessonParts";
+import { CLOBBER_PREFIX, splitSolution } from "./markdownUtils";
+import { StudyLevels } from "./StudyLevels";
 
 interface Props {
   lesson: Lesson;
   courseTitle: string;
+  /** The lecture decks of the lesson's module; the Lecture tab opens with the one for this lesson. */
+  decks?: Deck[];
   done: boolean;
   onMarkDone: () => void;
   onOpen: (path: string) => void;
@@ -19,6 +23,13 @@ interface Props {
 }
 
 export interface TocEntry { id: string; text: string; level: number }
+
+const TABS = [
+  { id: "lecture", label: "Lecture" },
+  { id: "study", label: "Study" },
+  { id: "labs", label: "Labs" },
+] as const;
+type Tab = (typeof TABS)[number]["id"];
 
 /** Drop a leading `# Title` when it just repeats the lesson title shown in the header. */
 function stripDuplicateH1(body: string, title: string): string {
@@ -43,14 +54,33 @@ export function DrillBadges({ drill }: { drill: NonNullable<Lesson["drill"]> }) 
   );
 }
 
-export function LessonView({ lesson, courseTitle, done, onMarkDone, onOpen, onOpenConcept, onAsk, onToc, onActiveHeading }: Props) {
+export function LessonView({ lesson, courseTitle, decks = [], done, onMarkDone, onOpen, onOpenConcept, onAsk, onToc, onActiveHeading }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const proseRef = useRef<HTMLDivElement>(null);
   const body = stripDuplicateH1(lesson.body, lesson.title);
   const parts = lesson.kind === "drill" ? splitSolution(body) : null;
+  // A note is read, then tested, then run: its review table and its code sit on their own tabs. A drill is
+  // one exercise, shown whole.
+  const split = useMemo(() => (lesson.kind === "drill" ? null : splitLesson(body)), [lesson.kind, body]);
+  const hasStudy = !!(split?.review || lesson.quizCount || lesson.flashcardCount || lesson.problemCount);
+  const hasLabs = !!(split?.exercises || split?.code || lesson.labs?.length);
+  // Every note has the three parts, so the tabs are always there; an empty one says so.
+  const tabbed = !!split;
+  const [tab, setTab] = useState<Tab>("lecture");
+  const [anchor, setAnchor] = useState<string | null>(null);
   const [showSolution, setShowSolution] = useState(false);
+  // A lecture is named after its note (`lectures/01-x.yaml` for `notes/01-x.md`); a note without one gets the
+  // module's own deck, whose id is the module.
+  const deck = decks.find((d) => d.id.split("/").pop() === lesson.id.split("/").pop())
+    ?? decks.find((d) => lesson.id.startsWith(`${d.id}/`));
+  const exercises = split?.exercises ? splitSolution(split.exercises) : null;
   const glossary = useGlossary(null, true);
-  useEffect(() => setShowSolution(false), [lesson.id]);
+  useEffect(() => {
+    setShowSolution(false);
+    setTab("lecture");
+    setAnchor(null);
+  }, [lesson.id]);
+  const levels = { id: lesson.id, quizCount: lesson.quizCount, flashcardCount: lesson.flashcardCount, problemCount: lesson.problemCount };
   const md = (text: string) => (
     <Markdown body={text} lessonId={lesson.id} onOpenLesson={onOpen} onOpenConcept={onOpenConcept} terms={glossary?.terms} sourceLinks={lesson.sourceLinks} />
   );
@@ -59,8 +89,21 @@ export function LessonView({ lesson, courseTitle, done, onMarkDone, onOpen, onOp
     scrollRef.current?.scrollTo({ top: 0 });
   }, [lesson.id]);
 
-  // Build the on-page TOC from rendered headings, and track the one in view. Re-run when
-  // the drill solution is shown or hidden, since that adds or removes headings.
+  // A "Code N in Labs" link in the lecture opens the Labs tab at that block.
+  const openCode = (e: MouseEvent) => {
+    const id = (e.target as HTMLElement).closest?.('a[href^="#code-"]')?.getAttribute("href")?.slice(1);
+    if (!id) return;
+    setTab("labs");
+    setAnchor(id);
+  };
+  useEffect(() => {
+    if (tab !== "labs" || !anchor) return;
+    (document.getElementById(CLOBBER_PREFIX + anchor) ?? document.getElementById(anchor))?.scrollIntoView?.();
+    setAnchor(null);
+  }, [tab, anchor]);
+
+  // Build the on-page TOC from rendered headings, and track the one in view. Re-run when the tab
+  // changes or the drill solution is shown or hidden, since that adds or removes headings.
   useEffect(() => {
     const root = proseRef.current;
     if (!root) return;
@@ -77,7 +120,7 @@ export function LessonView({ lesson, courseTitle, done, onMarkDone, onOpen, onOp
     );
     hs.forEach((h) => obs.observe(h));
     return () => obs.disconnect();
-  }, [lesson.id, showSolution, onToc, onActiveHeading]);
+  }, [lesson.id, tab, showSolution, onToc, onActiveHeading]);
 
   const ask = () => onAsk(`I'm studying the lesson "${lesson.title}" (${courseTitle}). Explain its key ideas and how they connect to the rest of the wiki.`);
 
@@ -96,38 +139,84 @@ export function LessonView({ lesson, courseTitle, done, onMarkDone, onOpen, onOp
             </div>
           )}
           {lesson.summary && <p className="lesson-summary">{lesson.summary}</p>}
-          {!!lesson.flashcardCount && (
-            <a href={`#/flashcards/${lesson.id}`} className="flashcard-link">
-              Study {lesson.flashcardCount} flashcards
-            </a>
-          )}
-
-          <div ref={proseRef} className="lesson-prose">
-            {parts ? (
-              <>
-                {md(parts[0])}
-                <button onClick={() => setShowSolution((s) => !s)} aria-expanded={showSolution} className="round-btn lesson-solution-btn">
-                  {showSolution ? "Hide solution" : "Show solution"}
+          {tabbed ? (
+            <div className="lab-tabs lesson-tabs" role="tablist" aria-label="Parts of this lesson">
+              {TABS.map((t) => (
+                <button key={t.id} role="tab" id={`lesson-tab-${t.id}`} aria-selected={tab === t.id} aria-controls="lesson-panel"
+                  onClick={() => setTab(t.id)} className={`lab-tab${tab === t.id ? " is-active" : ""}`}>
+                  {t.label}
                 </button>
-                {showSolution && md(parts[1])}
-                {md(parts[2])}
-              </>
-            ) : (
-              md(body)
-            )}
-          </div>
-
-          {lesson.labs && lesson.labs.length > 0 && (
-            <div className="lesson-labs">
-              <div className="section-label">Labs for this note</div>
-              {lesson.labs.map((lab) => (
-                <a key={lab.id} href={`#/labs/${lab.id}`} className="lesson-lab" title={lab.path}>
-                  <span className="lesson-lab-title">▶ {lab.title}</span>
-                  {lab.purpose && <span className="lesson-lab-purpose">{lab.purpose}</span>}
-                </a>
               ))}
             </div>
+          ) : (
+            <StudyLevels {...levels} />
           )}
+
+          <div ref={proseRef} id="lesson-panel" role={tabbed ? "tabpanel" : undefined}
+            aria-labelledby={tabbed ? `lesson-tab-${tab}` : undefined} className="lesson-panel">
+            {!split || !tabbed ? (
+              <div className="lesson-prose">
+                {parts ? (
+                  <>
+                    {md(parts[0])}
+                    <button onClick={() => setShowSolution((s) => !s)} aria-expanded={showSolution} className="round-btn lesson-solution-btn">
+                      {showSolution ? "Hide solution" : "Show solution"}
+                    </button>
+                    {showSolution && md(parts[1])}
+                    {md(parts[2])}
+                  </>
+                ) : (
+                  md(body)
+                )}
+              </div>
+            ) : tab === "lecture" ? (
+              <>
+                {deck && (
+                  <a href={`#/slides/${deck.id}`} className="lesson-lab lesson-deck">
+                    <span className="lesson-lab-title">▶ Lecture deck: {deck.title}</span>
+                    <span className="lesson-lab-purpose">{deck.subtitle || "The idea and the objectives, as slides. Start here."}</span>
+                  </a>
+                )}
+                <div className="lesson-prose" onClick={openCode}>{md(split.lecture)}</div>
+              </>
+            ) : tab === "study" ? (
+              <>
+                <StudyLevels {...levels} />
+                {split.review && <div className="lesson-prose">{md(split.review)}</div>}
+                {!hasStudy && <p className="lesson-empty">No review questions for this lesson yet.</p>}
+              </>
+            ) : (
+              <>
+                {lesson.labs && lesson.labs.length > 0 && (
+                  <div className="lesson-labs">
+                    <h2 className="section-label">Labs to run</h2>
+                    {lesson.labs.map((lab) => (
+                      <a key={lab.id} href={`#/labs/${lab.id}`} className="lesson-lab" title={lab.path}>
+                        <span className="lesson-lab-title">▶ {lab.title}</span>
+                        {lab.purpose && <span className="lesson-lab-purpose">{lab.purpose}</span>}
+                      </a>
+                    ))}
+                  </div>
+                )}
+                {split.exercises && (
+                  <div className="lesson-prose">
+                    {exercises ? (
+                      <>
+                        {md(exercises[0])}
+                        <button onClick={() => setShowSolution((s) => !s)} aria-expanded={showSolution} className="round-btn lesson-solution-btn">
+                          {showSolution ? "Hide answers" : "Show answers"}
+                        </button>
+                        {showSolution && md(exercises[1])}
+                        {md(exercises[2])}
+                      </>
+                    ) : md(split.exercises)}
+                  </div>
+                )}
+                {split.code && <div className="lesson-prose">{md(split.code)}</div>}
+                {!hasLabs && <p className="lesson-empty">No code or labs for this lesson yet.</p>}
+              </>
+            )}
+          </div>
 
           {lesson.concepts.length > 0 && (
             <div className="lesson-concepts">

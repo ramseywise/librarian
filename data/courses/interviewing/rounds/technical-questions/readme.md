@@ -1,5 +1,5 @@
 ---
-imported_hash: 1fbb0e342c2223ca
+imported_hash: 2ad50b1c25eee84f
 title: Technical Questions — ML/LLM Breadth Round
 summary: 'Rapid-fire conceptual fluency: can you explain core mechanisms in 60 seconds with one level of depth in reserve?'
 order: 73
@@ -35,8 +35,9 @@ AIE/FDE versions skew LLM-era topics; MLE adds classical depth; DS versions fold
 | File | Purpose |
 |------|---------|
 | `questions.md` | 25–30 questions organized by domain, each with 60-second answer + one level deeper + study ref |
-| `mcq-bank.md` | 238 multiple-choice questions across 14 topics (11 guide topics plus probability, statistics and A/B testing, and classical ML models), with answer keys and a 40-item distinction drill |
+| `mcq-bank.md` | 274 multiple-choice questions across 19 topics (11 guide topics plus eight for the maths, statistics and ML screen, sections L to S), with answer keys and a 40-item distinction drill |
 | `stats-ml-bank.md` | 127 short-answer questions and worked problems for a maths, statistics and ML screen (81 core, 46 on Bayesian inference, Markov chains, unsupervised learning, neural networks, retrieval, time series and metrics), each linked to its note and lab |
+| `stats-ml-problems.md` | 38 problems with one numeric answer each and the working, for the same screen: the third level after the multiple-choice sections and the bank |
 | `stats-ml-primer.md` | Nine short lessons that teach the screen topics with worked numbers; read before the bank and the cheat sheet |
 | `stats-ml-cheat-sheet.md` | One page of distributions, probability rules, testing and A/B formulas, and a model pros-and-cons table |
 | `real-tech-question-bank.md` | 23 reported interview questions in 9 themes (provider-agnostic config, evals, observability, …) with researched, sourced answers |

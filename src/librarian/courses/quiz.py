@@ -1,4 +1,4 @@
-"""Multiple-choice questions: the `_quiz.md` file of a module, loaded and checked.
+"""Graded questions: the `_quiz.md` file of a module, loaded and checked.
 
 Same shape as `_flashcards.md`: frontmatter `questions: [{prompt, options, answer, explanation,
 lesson?, id?}, ...]` in `<course>/<module>/_quiz.md`. `answer` is the text of one of `options`
@@ -7,6 +7,12 @@ without it the id is a hash of the prompt, so rewording a prompt makes a new que
 `id` to a question whose prompt you expect to edit; ids are what attempts and the Leitner queue
 are keyed on.
 
+A question with no `options` is a worked problem: `answer` is a number, the learner types one,
+and it is right within `tolerance` (default: half a unit of the answer's last decimal place, so
+`0.16` accepts 0.155 to 0.165 and a whole number must be exact). `explanation` is the working.
+The three formats are the levels of one topic: multiple choice (1, recognise), flashcards
+(2, recall) and worked problems (3, calculate).
+
 The catalog loads leniently (a malformed question is dropped, with a warning, so one typo cannot
 hide a module's quiz); `check` is strict and is what `librarian courses check quiz` reports.
 """
@@ -14,6 +20,7 @@ hide a module's quiz); `check` is strict and is what `librarian courses check qu
 from __future__ import annotations
 
 import hashlib
+import math
 import re
 from dataclasses import dataclass, replace
 from pathlib import Path
@@ -28,6 +35,7 @@ log = get_logger(__name__)
 QUIZ_FILE = "_quiz.md"
 ID_HASH_CHARS = 10
 MIN_OPTIONS = 2
+_FLOAT_SLACK = 1e-9
 _ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
 
 
@@ -39,6 +47,12 @@ class Question:
     answer: str
     explanation: str = ""
     lesson: str | None = None
+    tolerance: float | None = None  # worked problems only
+
+    @property
+    def worked(self) -> bool:
+        """A worked problem: no options, a typed number graded within `tolerance`."""
+        return not self.options
 
 
 def prompt_id(prompt: str) -> str:
@@ -58,6 +72,35 @@ def _text(value: object) -> str:
     return value.strip() if isinstance(value, str) else ""
 
 
+def parse_number(text: str) -> float | None:
+    """A typed number: `0.16`, `1,068`, `16.1%` (the sign is dropped, not applied) or `1/6`."""
+    cleaned = text.strip().replace(",", "").replace(" ", "").removesuffix("%")
+    top, slash, bottom = cleaned.partition("/")
+    try:
+        value = float(top) / float(bottom) if slash else float(top)
+    except (ValueError, ZeroDivisionError):
+        return None
+    return value if math.isfinite(value) else None
+
+
+def default_tolerance(answer: str) -> float:
+    """Half a unit of the last decimal place written in `answer`; 0 for a whole number."""
+    _, point, decimals = answer.strip().removesuffix("%").partition(".")
+    return 0.5 * 10 ** -len(decimals) if point else 0.0
+
+
+def is_correct(q: Question, choice: str) -> bool:
+    """Grade `choice`. Raises ValueError when it is not an option, or not a number for a worked problem."""
+    if not q.worked:
+        if choice not in q.options:
+            raise ValueError("choice is not one of the options")
+        return choice == q.answer
+    typed, key = parse_number(choice), parse_number(q.answer)
+    if typed is None or key is None:
+        raise ValueError("answer is not a number")
+    return abs(typed - key) <= (q.tolerance or 0.0) + _FLOAT_SLACK
+
+
 def parse_question(
     raw: object, lessons: set[str] | None = None
 ) -> tuple[Question | None, list[str]]:
@@ -73,12 +116,23 @@ def parse_question(
         problems.append("no prompt")
     options_raw = raw.get("options")
     options = [_text(o) for o in options_raw] if isinstance(options_raw, list) else []
-    if len(options) < MIN_OPTIONS or not all(options):
+    answer = _text(raw.get("answer"))
+    tolerance: float | None = None
+    if options_raw is None:  # a worked problem
+        if parse_number(answer) is None:
+            problems.append("a question with no options needs a number as its answer")
+        given = raw.get("tolerance")
+        if given is None:
+            tolerance = default_tolerance(answer)
+        elif isinstance(given, int | float) and not isinstance(given, bool) and given >= 0:
+            tolerance = float(given)
+        else:
+            problems.append("tolerance must be a number, 0 or more")
+    elif len(options) < MIN_OPTIONS or not all(options):
         problems.append(f"options must be {MIN_OPTIONS}+ non-empty strings")
     elif len(set(options)) != len(options):
         problems.append("duplicate options")
-    answer = _text(raw.get("answer"))
-    if options and answer not in options:
+    elif answer not in options:
         problems.append("answer is not one of the options")
     qid = _text(raw.get("id")) or (prompt_id(prompt) if prompt else "")
     if qid and not _ID_RE.match(qid):
@@ -88,7 +142,8 @@ def parse_question(
         problems.append(f"lesson {lesson!r} is not in this module")
     if problems:
         return None, problems
-    return Question(qid, prompt, tuple(options), answer, _text(raw.get("explanation")), lesson), []
+    explanation = _text(raw.get("explanation"))
+    return Question(qid, prompt, tuple(options), answer, explanation, lesson, tolerance), []
 
 
 def _raw_questions(path: Path) -> list[object]:
@@ -143,6 +198,7 @@ def public_payload(q: Question, lesson_title: str | None) -> dict[str, Any]:
         "id": q.id,
         "prompt": q.prompt,
         "options": list(q.options),
+        "kind": "worked" if q.worked else "choice",
         "lesson": q.lesson,
         "lessonTitle": lesson_title,
     }

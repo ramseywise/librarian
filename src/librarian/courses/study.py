@@ -1,7 +1,7 @@
 """The study loop over the attempts store: quizzes, drill runs and the study home.
 
 - `quiz_deck(user, id)` and `answer_question(user, id, qid, choice)`: a module's or lesson's
-  multiple-choice quiz. The key stays on the server; a wrong answer is a miss in the Leitner queue
+  quiz (multiple choice and worked problems). The key stays on the server; a wrong answer is a miss in the Leitner queue
   (`leitner.py`), the same queue the flashcards use.
 - `record_drill(user, lesson_id, result)`: a drill run done in the app.
 - `home(user)`: what to do next, from the user's attempts: cards and questions due, the next drill
@@ -60,15 +60,14 @@ def quiz_deck(user: User, quiz_id: str) -> dict[str, Any] | None:
 def answer_question(user: User, quiz_id: str, qid: str, choice: str) -> dict[str, Any] | None:
     """Grade one answer and store it. None for an unknown quiz or question.
 
-    Raises ValueError when `choice` is not one of the question's options.
+    Raises ValueError when `choice` is not one of the question's options, or not a number for a
+    worked problem.
     """
     qz = catalog.catalog().quizzes.get(quiz_id)
     question = next((q for q in qz["questions"] if q.id == qid), None) if qz else None
     if qz is None or question is None:
         return None
-    if choice not in question.options:
-        raise ValueError("choice is not one of the options")
-    correct = choice == question.answer
+    correct = quiz.is_correct(question, choice)
     logged = attempts.record(
         user.id,
         "mcq",

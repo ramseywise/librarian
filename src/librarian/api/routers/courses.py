@@ -143,7 +143,7 @@ def flashcard_result(user: SignedIn, body: CardResult) -> dict[str, bool]:
 
 @router.get("/quiz/{quiz_id:path}")
 def quiz_deck(user: SignedIn, quiz_id: str) -> dict[str, Any]:
-    """A module's or lesson's multiple-choice questions, without the answers."""
+    """A module's or lesson's multiple-choice questions and worked problems, without the answers."""
     found = study.quiz_deck(user, quiz_id)
     if found is None:
         raise HTTPException(status_code=404, detail="no quiz here")

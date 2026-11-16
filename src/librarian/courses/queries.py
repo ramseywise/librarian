@@ -203,6 +203,86 @@ def lab_brief(
     return "\n\n".join(parts)
 
 
+def _public_lesson(cat: Any, lesson_id: str | None) -> LessonRec | None:  # noqa: ANN401 - the Catalog
+    rec = cat.lessons.get(lesson_id) if lesson_id else None
+    return None if rec is None or rec.private else rec
+
+
+def _lesson_part(rec: LessonRec, query: str) -> str:
+    """A lesson's title, summary and the indexed section of it that best fits `query`."""
+    from librarian.retrieval import corpus, ranking
+    from librarian.retrieval.format import cap_section
+
+    ref = f"{corpus.COURSE_DOMAIN}/{rec.id}.md"
+    head = f'Lesson: {rec.title} (read_page("{ref}") for all of it)\nSummary: {rec.summary}'
+    path = str(corpus.COURSES_DIR / f"{rec.id}.md")
+    best = ranking.best_sections(query, [path], table="course_pages").get(path)
+    if best is None:
+        return head
+    heading, text = best
+    return f"{head}\n\nThe part of it this is about ({heading or 'Introduction'}):\n{cap_section(text)}"
+
+
+def study_brief(
+    *,
+    deck: str | None = None,
+    card: str | None = None,
+    quiz_id: str | None = None,
+    question: str | None = None,
+    lesson: str | None = None,
+    revealed: bool = False,
+) -> str | None:
+    """What the chat agent is told about the card, question or lesson the user is studying.
+
+    Built from catalog ids, never from text the client sends. A quiz's answer and explanation
+    go in only once `revealed` (the user has answered), so the tutor cannot give it away. None for
+    an unknown id and for anything private: private course text never reaches the chat model.
+    """
+    cat = _cat().catalog()
+    parts: list[str] = []
+    rec: LessonRec | None = None
+    query = ""
+    if deck is not None or card is not None:
+        item = next(
+            (c for c in cat.decks.get(deck or "", {}).get("cards", []) if c["id"] == card), None
+        )
+        if item is None or (deck or "").startswith("private/"):
+            return None
+        rec = _public_lesson(cat, item["lesson"])
+        if item["lesson"] and rec is None:
+            return None
+        parts.append(f"Flashcard\nFront: {item['front']}\nBack: {item['back']}")
+        query = f"{item['front']} {item['back']}"
+    elif quiz_id is not None or question is not None:
+        qz = cat.quizzes.get(quiz_id or "")
+        q = next((x for x in qz["questions"] if x.id == question), None) if qz else None
+        if q is None or (quiz_id or "").startswith("private/"):
+            return None
+        rec = _public_lesson(cat, q.lesson)
+        if q.lesson and rec is None:
+            return None
+        lines = [f"Quiz question: {q.prompt}"]
+        lines += [f"- {o}" for o in q.options]
+        if revealed:
+            lines.append(f"Answer: {q.answer}")
+            if q.explanation:
+                lines.append(f"Explanation: {q.explanation}")
+        else:
+            lines.append("The user has not answered yet: the answer is withheld.")
+        parts.append("\n".join(lines))
+        query = q.prompt
+    elif lesson is not None:
+        rec = _public_lesson(cat, lesson)
+        if rec is None:
+            return None
+        query = f"{rec.title} {rec.summary}"
+    else:
+        return None
+    if rec is not None:
+        parts.append(_lesson_part(rec, query))
+    return "\n\n".join(parts)
+
+
 _MD_NOISE_RE = re.compile(r"\[\[|\]\]|[#*_`|>]+|-{3,}|\[([^\]]*)\]\([^)]*\)")
 
 

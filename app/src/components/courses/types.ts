@@ -17,6 +17,10 @@ export interface LessonOutline {
   drill?: DrillMeta;
   /** Absent when the lesson has no flashcards. */
   flashcardCount?: number;
+  /** Multiple-choice questions; absent when the lesson has none. */
+  quizCount?: number;
+  /** Worked problems; absent when the lesson has none. */
+  problemCount?: number;
   /** Present (true) only for a lesson under data/courses/private/: local, never published. */
   private?: boolean;
 }
@@ -26,6 +30,9 @@ export interface SourceRef {
   source: string;
   url?: string;
 }
+
+/** A lecture deck as the catalog lists it; `subtitle` tells apart decks that share a title. */
+export interface Deck { id: string; title: string; subtitle?: string }
 
 export interface CourseModule {
   id: string;
@@ -37,10 +44,14 @@ export interface CourseModule {
   readingsCount?: number;
   references: SourceRef[];
   lessons: LessonOutline[];
+  /** Lecture decks (`#/slides/<id>`): the module's own deck first, then its lectures. Absent when it has none. */
+  decks?: Deck[];
   /** Absent when the module has no flashcards. */
   flashcardCount?: number;
-  /** Absent when the module has no quiz. */
+  /** Multiple-choice questions; absent when the module has none. */
   quizCount?: number;
+  /** Worked problems; absent when the module has none. */
+  problemCount?: number;
   /** True when only private lessons make up the module. */
   private?: boolean;
 }
@@ -197,8 +208,10 @@ export interface SlideDeck {
 export interface QuizQuestion {
   id: string;
   prompt: string;
-  /** The answer is never sent; the server grades. */
+  /** The answer is never sent; the server grades. Empty for a worked problem. */
   options: string[];
+  /** `worked`: no options, the learner types a number. Absent means `choice`. */
+  kind?: "choice" | "worked";
   lesson: string | null;
   lessonTitle: string | null;
   box?: number | null;

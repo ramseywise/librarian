@@ -9,7 +9,7 @@ from __future__ import annotations
 import glob
 from pathlib import Path
 
-from librarian.retrieval import corpus, index
+from librarian.retrieval import corpus, index, sections
 from librarian.wiki.common import parse_frontmatter, slugify, text_aliases
 
 # Courses are far bigger than wiki domains: a whole subject is megabytes of context. The
@@ -48,6 +48,31 @@ def _read_lesson(ref: str, not_found: str) -> str:
 
 
 def read_page(path_or_title: str) -> str:
+    """Resolve a page by path, wiki-relative path, slug, or title and return its text.
+
+    `<page>#<heading>` returns only the section holding that heading (a heading's text or a
+    full `H2 › H3` path), under the page title: what search names as a result's best section.
+    """
+    base, sep, heading = path_or_title.partition("#")
+    if not sep or not base.strip() or not heading.strip():
+        return _read_whole(path_or_title)
+    text = _read_whole(base.strip())
+    if text.startswith(_READ_ERRORS):
+        return text
+    section = sections.find_section(text, heading)
+    title = parse_frontmatter(text).get("title", base.strip())
+    if section is None:
+        names = [s.heading_path for s in sections.split_sections(text) if s.heading_path]
+        listing = "\n".join(f"  - {n}" for n in names) or "  (the page has no headed sections)"
+        return f"No section {heading.strip()!r} in {title!r}. Its sections:\n{listing}"
+    return f"# {title}\n\n{section.text}"
+
+
+# What `_read_whole` returns instead of a page; a `#heading` read passes these through.
+_READ_ERRORS = ("Page not found: ", "Multiple pages match ")
+
+
+def _read_whole(path_or_title: str) -> str:
     """Resolve a page by path, wiki-relative path, slug, or title and return its text.
 
     The single page-read core — the read_page MCP tool and the chat agent both

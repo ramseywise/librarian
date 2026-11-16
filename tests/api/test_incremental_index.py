@@ -137,14 +137,15 @@ def test_changed_page_encode_called_once(wiki: Path, monkeypatch: pytest.MonkeyP
     alpha = wiki / "notes" / "alpha.md"
     alpha.write_text(alpha.read_text() + "\nChanged content.")
 
-    index.build_index(con)  # incremental — should call encode once with 1 text
+    index.build_index(con)  # incremental — encodes the page, then its sections
 
-    assert len(encode_inputs) == 1, (
-        f"expected 1 encode call for 1 changed page, got {len(encode_inputs)}"
+    assert len(encode_inputs) == 2, (
+        f"expected 2 encode calls (page, sections) for 1 changed page, got {len(encode_inputs)}"
     )
     assert len(encode_inputs[0]) == 1, (
-        f"expected encode called with 1 text, got {len(encode_inputs[0])}"
+        f"expected the page encode called with 1 text, got {len(encode_inputs[0])}"
     )
+    assert all(t.startswith("Alpha") for t in encode_inputs[1]), "only Alpha's sections re-encode"
     con.close()
 
 

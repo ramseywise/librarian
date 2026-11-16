@@ -1,9 +1,10 @@
 import { useState, useCallback, useEffect, useMemo, useRef, lazy, Suspense } from "react";
 import { WikiGraph } from "./components/WikiGraph";
+import { AppNav } from "./components/AppNav";
 import { ChatPanel } from "./components/ChatPanel";
 import { NodeDetailPanel } from "./components/NodeDetailPanel";
 import { pageTitle, useDocumentTitle } from "./components/courses/useDocumentTitle";
-import { useChatStream, type LabChatContext } from "./hooks/useChatStream";
+import { useChatStream, type ChatContext, type LabChatContext, type StudyChatContext } from "./hooks/useChatStream";
 import { useHashRoute } from "./hooks/useHashRoute";
 import { useSlashSearch } from "./hooks/useSlashSearch";
 import { ThemeToggle } from "./components/ThemeToggle";
@@ -58,6 +59,10 @@ export default function App() {
   // Open beside the graph on wide screens; on narrow ones it would cover the page on load.
   const [chatOpen, setChatOpen] = useState(() => !isNarrow());
   const chatToggleRef = useRef<HTMLButtonElement>(null);
+  // Narrow screens only: the navigation is a drawer behind the Menu button (CSS shows it otherwise).
+  const [navOpen, setNavOpen] = useState(false);
+  const navToggleRef = useRef<HTMLButtonElement>(null);
+  const mainRef = useRef<HTMLElement>(null);
   const [focusPage, setFocusPage] = useState<string | null>(null);
   const lastQueryRef = useRef("");
   const [route, navigate] = useHashRoute();
@@ -106,16 +111,23 @@ export default function App() {
 
   const { messages, streaming, sendQuery, stop, clear } = useChatStream(handleHighlight);
 
-  // An open lab registers what the chat is told about it; every send carries it while it is open.
-  const labContextRef = useRef<(() => LabChatContext) | null>(null);
+  // An open lab, card or quiz question registers what the chat is told about it; every send
+  // carries it while it is open.
+  const chatContextRef = useRef<(() => ChatContext) | null>(null);
   const setLabContext = useCallback((get: (() => LabChatContext) | null) => {
-    labContextRef.current = get;
+    chatContextRef.current = get && (() => ({ lab: get() }));
+  }, []);
+  const setStudyContext = useCallback((get: (() => StudyChatContext | null) | null) => {
+    chatContextRef.current = get && (() => {
+      const study = get();
+      return study ? { study } : {};
+    });
   }, []);
 
   const handleSend = useCallback(
     (query: string) => {
       lastQueryRef.current = query;
-      sendQuery(query, labContextRef.current?.() ?? null);
+      sendQuery(query, chatContextRef.current?.() ?? null);
     },
     [sendQuery]
   );
@@ -159,10 +171,36 @@ export default function App() {
   // - capture phase: focus inside the chat → close the chat and stop the event, so a
   //   popup elsewhere (graph menu) that happens to be open is left alone;
   // - bubble phase on window (after every document listener, whatever their mount
-  //   order): close the chat unless an inner popup (lessons drawer, graph menu) already
+  //   order): close the chat unless an inner popup (navigation drawer, graph menu) already
   //   handled the key with preventDefault().
   // Beside the graph (wide screens) the chat is a persistent column; Escape leaves it.
   const chatPanelRef = useRef<HTMLElement>(null);
+
+  // Picking a page from the navigation drawer closes it.
+  useEffect(() => setNavOpen(false), [route]);
+  useEffect(() => {
+    if (!navOpen) return;
+    document.querySelector<HTMLElement>("#app-sidenav a[href]")?.focus();
+    // The drawer is modal (backdrop): keep Tab and screen readers out of the page behind it. Widening
+    // past the drawer breakpoint turns it back into a sidebar, so close it then.
+    const main = mainRef.current;
+    if (main) main.inert = true;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      e.preventDefault();
+      setNavOpen(false);
+      navToggleRef.current?.focus();
+    };
+    document.addEventListener("keydown", onKey);
+    const wide = window.matchMedia?.("(min-width: 1100px)");
+    const onWide = () => wide?.matches && setNavOpen(false);
+    wide?.addEventListener("change", onWide);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      if (main) main.inert = false;
+      wide?.removeEventListener("change", onWide);
+    };
+  }, [navOpen]);
   useEffect(() => {
     if (!chatOpen) return;
     if (isNarrow()) chatPanelRef.current?.querySelector<HTMLElement>("textarea, input")?.focus();
@@ -192,25 +230,19 @@ export default function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <span className="app-brand">Librarian</span>
-        <nav className="app-nav" aria-label="Sections">
-          <button onClick={() => navigate("/")} className="tab" aria-current={!inCourses ? "page" : undefined}>
-            Graph
-          </button>
+        {!inLogin && (
           <button
-            onClick={() => navigate("/courses")}
-            className="tab"
-            aria-current={inCourses && !inPractice && !inLabs && !inStudy && !inAccount ? "page" : undefined}
+            ref={navToggleRef}
+            type="button"
+            className="pill-btn app-menu-btn"
+            aria-expanded={navOpen}
+            aria-controls="app-sidenav"
+            onClick={() => setNavOpen((o) => !o)}
           >
-            Courses
+            Menu
           </button>
-          <button onClick={() => navigate("/study")} className="tab" aria-current={inStudy ? "page" : undefined}>
-            Study
-          </button>
-          <button onClick={() => navigate("/labs")} className="tab" aria-current={inLabs || inPractice ? "page" : undefined}>
-            Labs
-          </button>
-        </nav>
+        )}
+        <span className="app-brand">Librarian</span>
         <div className="app-header-actions">
           <ThemeToggle />
           <UserMenu me={me} config={authConfig} />
@@ -232,7 +264,9 @@ export default function App() {
       </header>
 
       <div className="app-body">
-        <main className="app-main">
+        {!inLogin && <AppNav id="app-sidenav" route={route} open={navOpen} />}
+        {navOpen && <div className="app-sidenav-backdrop" onClick={() => setNavOpen(false)} />}
+        <main className="app-main" ref={mainRef}>
           {inCourses && (
             <div className="app-course-layer">
               <Suspense fallback={<div className="app-loading">Loading…</div>}>
@@ -247,7 +281,7 @@ export default function App() {
                 ) : inSlides ? (
                   <SlidesView deckId={route.slice("/slides/".length)} />
                 ) : inQuiz ? (
-                  <QuizView quizId={route.slice("/quiz/".length)} />
+                  <QuizView quizId={route.slice("/quiz/".length)} onChatContext={setStudyContext} />
                 ) : labId ? (
                   <LabWorkspace
                     key={labId}
@@ -262,7 +296,7 @@ export default function App() {
                 ) : inPractice ? (
                   <PracticeView onOpenLesson={openLesson} onOpenConcept={openConcept} />
                 ) : inFlashcards ? (
-                  <FlashcardsView deckId={route.slice("/flashcards/".length)} />
+                  <FlashcardsView deckId={route.slice("/flashcards/".length)} onChatContext={setStudyContext} />
                 ) : (
                   <CoursesView route={courseRoute} navigate={navigate} onOpenConcept={openConcept} onAsk={askAbout} />
                 )}
