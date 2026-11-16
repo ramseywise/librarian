@@ -2,7 +2,7 @@
 title: Loop Termination Design
 tags: [llm, agents, infra, pattern]
 summary: "Stop rules are layered and independent — success verifier, iteration cap, budget cap, stall detector, escalation path — and the cap is the backstop, never the primary exit."
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop--loop-engineering.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop--README.md
@@ -116,8 +116,6 @@ producing "needs human re-scope."
 - [[Loop Scorekeeper]] — extends
 - [[Loop State File]] — extends
 - [[Multi-Agent Failure Modes at Scale]] — prerequisite-for
-- [[Map Every State to Its Writer]] — extends (the orphan state that became the exhaustion terminal)
-- [[Reproduce to Tell a Break From a Stuck Agent]] — extends (harness exhaustion masquerading as a break)
 - [[Bounding Agents Rather Than Trusting Them]] — instance-of (the fourth bound)
 - [[Aegean Stability-Horizon Consensus]] — instance-of (quorum plus stability horizon as a stopping rule)
 - [[Strategy Lock-In in Post-Training Agents]] — related

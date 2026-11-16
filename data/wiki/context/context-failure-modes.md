@@ -2,7 +2,7 @@
 title: Context Failure Modes
 tags: [context, llm, agents, concept]
 summary: Five distinct context failures — rot, poisoning, distraction, clash, injection — with separate mechanisms and fixes, routinely misdiagnosed as each other or as "the model isn't smart enough".
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--11-failure-modes.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context--notes--07-context-failure-modes.md
@@ -137,7 +137,6 @@ from a prompt problem.
 - [[Why Context Is Finite]] — prerequisite-for
 - [[Prompt Injection]] — extends
 - [[Context Compaction]] — related (mitigated by)
-- [[Turn-Bounded Citation Walk]] — instance-of (prior-turn citations contaminating the current answer)
 - [[Evaluating Context]] — extends (instrumenting each stage to localise the failure)
 - [[Agent Status Bar]] — extends (the fix for rot as low information density)
 - [[Catastrophic Remembering in Context Files]] — instance-of (instruction files that only grow)

@@ -26,9 +26,7 @@ def tidy(text):
 
 
 def run(code, env):
-    return subprocess.run(
-        [sys.executable, "-c", code], cwd=HERE, env=env, capture_output=True, text=True, timeout=120
-    )
+    return subprocess.run([sys.executable, "-c", code], cwd=HERE, env=env, capture_output=True, text=True, timeout=120)
 
 
 def main():
@@ -36,15 +34,8 @@ def main():
     only = [a for a in sys.argv[1:] if not a.startswith("--")]
     failures = 0
     with serve() as url:
-        env = {
-            **os.environ,
-            "PYTHONPATH": str(HERE),
-            "ANTHROPIC_BASE_URL": url,
-            "ANTHROPIC_API_KEY": "local",
-            "LANGFUSE_BASE_URL": url,
-            "LANGFUSE_PUBLIC_KEY": "pk-lf-local",
-            "LANGFUSE_SECRET_KEY": "sk-lf-local",
-        }
+        env = {**os.environ, "PYTHONPATH": str(HERE), "ANTHROPIC_BASE_URL": url, "ANTHROPIC_API_KEY": "local",
+               "LANGFUSE_BASE_URL": url, "LANGFUSE_PUBLIC_KEY": "pk-lf-local", "LANGFUSE_SECRET_KEY": "sk-lf-local"}
         for path in sorted((HERE.parent / "notes").glob("*.md")):
             if only and not any(o in path.name for o in only):
                 continue
@@ -67,12 +58,8 @@ def main():
                     return f"```python\n{code}```\n"
                 if write:
                     print(f"ok {label}")
-                    return f"```python\n{code}```\n" + (
-                        f"\n```text\n{r.stdout}```\n" if r.stdout else ""
-                    )
-                if tidy(expected or "") != tidy(
-                    r.stdout
-                ):  # editors strip trailing spaces from fences
+                    return f"```python\n{code}```\n" + (f"\n```text\n{r.stdout}```\n" if r.stdout else "")
+                if tidy(expected or "") != tidy(r.stdout):  # editors strip trailing spaces from fences
                     failures += 1
                     print(f"DIFF {label}\n--- expected\n{expected}\n--- got\n{r.stdout}")
                 else:

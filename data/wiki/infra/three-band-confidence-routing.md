@@ -2,7 +2,7 @@
 title: Three-Band Confidence Routing
 tags: [infra, eval, pattern]
 summary: "Turning a model score into one of three actions (auto-allow, human or stronger-model review, auto-act) with two thresholds set per category from the cost of each error type, instead of one global cutoff — the shared decision layer under moderation, document extraction and fraud scoring."
-updated: 2026-11-05
+updated: 2026-11-10
 sources:
   - data/raw/repos/sisyphus/interviewing--rounds--system-design-round--walkthroughs--content-moderation.md
   - data/raw/repos/sisyphus/interviewing--rounds--system-design-round--walkthroughs--document-processing.md
@@ -41,7 +41,7 @@ extractor confidence with OCR confidence, and **any business-rule failure forces
 into the middle band** whatever its score (non-numeric income, an expired ID, a name that
 differs across documents). Unknown document types go to a human first. Bounded retries
 (about three) end in review, not in silent failure. Treat a "confidence" field with
-suspicion before using it as a threshold: see [[Confidence That Is Not a Probability]].
+suspicion before using it as a threshold: see Confidence That Is Not a Probability.
 
 ## Monitoring that keeps it honest
 
@@ -54,11 +54,6 @@ suspicion before using it as a threshold: see [[Confidence That Is Not a Probabi
 - Every human verdict is a **label**, fed back to retrain and recalibrate the first stage.
 
 ## See Also
-- [[AI System Design Walkthroughs]] — instance-of (moderation, extraction and fraud all use it)
-- [[Confidence That Is Not a Probability]] — prerequisite-for (check the score before thresholding it)
-- [[Provenance-Tiered Confidence Gate]] — alternative-to (tiers derived from which source answered, not from a score)
-- [[Security and Safety Interview Study Guide]] — extends
-- [[Borderline-Band Sufficiency Probe]] — instance-of (the same two-threshold band applied to retrieval sufficiency, with a cheap LLM as the middle-band reviewer)
 - [[Selective Risk Guarantees: SGR and Conformal Sets]] — alternative-to
 - [[Review Route Thresholds From Priced Costs]] — extends
 - [[Cheap-First Gating and Model Cascades]] — extends (the pipeline view: bands as the gate of a cascade)

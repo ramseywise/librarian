@@ -1,7 +1,7 @@
 ---
-imported_hash: 33cefe33f61be128
+imported_hash: 93c47dee3cdc1634
 title: Rounds
 summary: ''
-order: 103
+order: 102
 source: learn-ai-engineering/practice/interviewing/rounds
 ---

@@ -2,7 +2,7 @@
 title: Production Retrieval Evaluation
 tags: [rag, eval, comparison]
 summary: Benchmarking results comparing Assistant A, Assistant B (Bedrock), and local RAG baselines across 935 Danish support questions — Assistant A outperforms Assistant B on all dimensions (MRR 0.286 vs 0.248), but 47% corpus ceiling means data-ops fixes dominate model-level improvements.
-updated: 2026-11-02
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/chat-agent/docs/kb-analysis/intercom_kb_analysis.md
   - data/raw/notion/2026-06-26-va-hca-retrieval-executive-summary.md
@@ -148,4 +148,3 @@ This evaluation uses n=754 URL-cited questions as ground truth. A separate, cura
 - [[Agentic RAG — Advanced Patterns]]
 - [[[client] Knowledge Agent]]
 - [[CRAG Retry Logic]]
-- [[Consequence-Flagged KB Audit]] — extends (how to find the corpus-ceiling defects before tuning retrieval)

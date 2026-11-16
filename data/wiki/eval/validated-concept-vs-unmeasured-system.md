@@ -2,7 +2,7 @@
 title: Validated Concept vs Unmeasured System
 tags: [eval, pattern]
 summary: A user-test number everyone quotes (77.8% Top-5 hit rate) was a validation of the concept — human-curated sets, N=6, a pre-specified answer key — not of the automated system, which had never been measured against it; the same confusion shows up as roadmap rows marked BUILT on the strength of specifications and as launch gates "asserted in every document and tested in none", and the cure is to label every number with what produced it.
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/playground/docs/open-questions.md
   - data/raw/claude-docs/akira/docs/onboarding-comments.md
@@ -99,10 +99,4 @@ build task.
 
 ## See Also
 - [[Human Agreement Ceiling Protocol]] — related (the same scrutiny applied to agreement figures)
-- [[Ship Logging Before Features]] — prerequisite-for (the unmeasured system cannot be measured retroactively)
-- [[Workflow Pipeline Telemetry Audit]] — related (the BUILT-row-outran-evidence instance)
-- [[Evidence Classification Model]] — related (observed vs inferred vs claimed, applied to product metrics)
-- [[Plan-Doc Status Enum]] — related
-- [[Four-Stage Design Pipeline with Backflow]] — extends (tree-first audit as the first design stage)
-- [[Path-Verified Build State Markers]] — prerequisite-for (verify BUILT against a file path)
 - [[Best-of-k Headline Inflation]] — instance-of (a best run quoted as what the system does)

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import json
 import math
-from collections.abc import Callable
 from dataclasses import dataclass, field
+from typing import Callable
 
 from model import Complete
 
@@ -33,18 +33,12 @@ def _valid_json(output: str, case: dict) -> str | None:
 
 def _known_label(output: str, case: dict) -> str | None:
     label = parse_label(output)
-    return (
-        None if label in LABELS else f"label outside the set: {'null' if label is None else label}"
-    )
+    return None if label in LABELS else f"label outside the set: {'null' if label is None else label}"
 
 
 def _correct_label(output: str, case: dict) -> str | None:
     label = parse_label(output)
-    return (
-        None
-        if label == case["label"]
-        else f"wanted {case['label']}, got {'null' if label is None else label}"
-    )
+    return None if label == case["label"] else f"wanted {case['label']}, got {'null' if label is None else label}"
 
 
 # A grader returns None on pass, or the reason for failing.
@@ -89,9 +83,7 @@ def run_variant(v: Variant, cases: list[dict], complete: Complete) -> VariantRes
         results.append(CaseResult(case["id"], failures, res.text))
     passed = sum(not r.failures for r in results)
     by_grader = {g: sum(g not in r.failures for r in results) / len(results) for g in GRADERS}
-    return VariantResult(
-        v.name, results, passed / len(results), wilson(passed, len(results)), by_grader, tokens
-    )
+    return VariantResult(v.name, results, passed / len(results), wilson(passed, len(results)), by_grader, tokens)
 
 
 def flips(a: VariantResult, b: VariantResult) -> tuple[list[str], list[str]]:

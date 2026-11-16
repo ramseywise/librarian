@@ -2,7 +2,7 @@
 title: Tool Design as Harness Surface
 tags: [llm, agents, mcp, concept]
 summary: "Tools are designed for a reader with no docs and no follow-up question — capability form and granularity, the five-section contract whose negative sections do the work, parameter fidelity, output discipline, and the four gating questions that decide confirmation, retry, and serialization."
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--03-tool-design.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--03-tool-design.md
@@ -38,7 +38,7 @@ description, and a parameter schema.
 > When a tool is used wrongly, **check the tool description before questioning the model's
 > capability.**
 
-See [[ACI (Agent-Computer Interface)]].
+See ACI (Agent-Computer Interface).
 
 ## The Clarity Test
 
@@ -283,7 +283,6 @@ Limits of this section:
 - [[Iterative Harness Simplification]] <!-- auto-linked -->
 - [[Harness Engineering]] — related (part of)
 - [[Harness Anatomy]] — related (part of)
-- [[ACI (Agent-Computer Interface)]] — extends
 - [[Tool Design as Context Engineering]] — related
 - [[Execution Boundaries and Guardrails]] — prerequisite-for
 - [[Dynamic Tool Discovery]] — extends (tool loading at scale)

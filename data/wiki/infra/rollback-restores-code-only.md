@@ -2,7 +2,7 @@
 title: Rollback Restores Code Only
 tags: [infra, pattern]
 summary: "A host rollback restores code, never migrations, rows or schedules. So the promotion runbook states that scope before anyone needs it, sits on deploy invariants (a deploy never migrates, never runs the pipeline, never enables a schedule; promotion needs CI green on the exact SHA), invents no auto-promote threshold, and is authored before the host exists so its first read is not mid-incident."
-updated: 2026-11-04
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-29-dis268-deploy-promotion-path.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-29-dis268-deploy-promotion-path.md
@@ -35,7 +35,7 @@ The runbook says this before any rollback is ever run. The risk the plan could n
 design away was that the one real rehearsal is a real production operation. The only
 mitigation was making sure whoever runs it is not learning the migration-vs-code
 distinction for the first time under pressure. This is the deploy-side form of
-[[Reversibility Cliff]]: code is cheap to reverse, schema and data are not.
+Reversibility Cliff: code is cheap to reverse, schema and data are not.
 
 ## Invariants that make code-only rollback safe
 
@@ -88,20 +88,17 @@ The production smoke check follows the same honesty rules:
   origin.
 - **Unrunnable checks say why.** They report `SKIPPED — no target` or `NOT IMPLEMENTED —
   in-memory store` (for the shared rate limiter), never a false pass. See
-  [[A Check Must Say Why It Could Not Check]].
+  A Check Must Say Why It Could Not Check.
 - **Reuse, don't re-specify.** The RLS check reuses the restore drill's existing
   anon-key visibility queries rather than writing a second copy.
 - **Re-verify the premise.** One planned check assumed raw DB error text could reach a
   response body. Re-verification at triage showed every site already returned a stable
   code, so the check became a regression guard expected to pass. An earlier version of the
-  plan had reached READY and never been executed. See [[Path-Verified Build State Markers]].
+  plan had reached READY and never been executed. See Path-Verified Build State Markers.
 
 ## See Also
 - [[Migration Done Means Pushed and Probed]] — prerequisite-for (the invariant that keeps a rollback code-only-safe)
-- [[Reversibility Cliff]] — instance-of (code reverses, schema and rows do not)
 - [[Gate vs Ship Make Targets]] — related (the gate that must be green on the promoted SHA)
-- [[A Check Must Say Why It Could Not Check]] — related (SKIPPED / NOT IMPLEMENTED in the smoke script)
-- [[Audit-Don't-Assert Release Checklist]] — related (every checklist item names an artifact and a verifier)
 - [[Paid Tiers Start at the Beta, Not the Alpha]] — related (the host decision the rehearsal waits on)
 - [[Blue-Green View Swap for Data Deploys]] — related (data deploy with a real rollback)
 - [[Model Rollout: Shadow, Canary and A/B]] — related (rolling a model out rather than back)

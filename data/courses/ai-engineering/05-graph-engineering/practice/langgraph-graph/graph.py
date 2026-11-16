@@ -1,6 +1,5 @@
 """A support-triage graph. Every LangGraph primitive the pillar teaches appears once:
 reducers, conditional routing, a cycle, Send fan-out, a checkpointer, interrupt and resume."""
-
 from __future__ import annotations
 
 import json
@@ -11,6 +10,7 @@ from typing import Annotated, TypedDict
 
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import Send, interrupt
+
 from model import Complete
 
 KB = json.loads((Path(__file__).parent / "kb.json").read_text())
@@ -39,22 +39,14 @@ def build_graph(complete: Complete, checkpointer, outbox: list[str]):
             system="CLASSIFY the ticket. Reply with exactly one word: billing, bug or how_to.",
             max_tokens=2000,
         )
-        return {
-            "label": res.text.strip(),
-            "trail": ["classify"],
-            "tokens": res.input_tokens + res.output_tokens,
-        }
+        return {"label": res.text.strip(), "trail": ["classify"], "tokens": res.input_tokens + res.output_tokens}
 
     def fan_out(s: State) -> list[Send]:
         # Send starts one parallel `search` per source, each with its own input.
         return [Send("search", {"ticket": s["ticket"], "source": source}) for source in SOURCES]
 
     def search(s: dict) -> dict:
-        hits = [
-            d
-            for d in KB
-            if d["source"] == s["source"] and any(k in s["ticket"].lower() for k in d["keywords"])
-        ]
+        hits = [d for d in KB if d["source"] == s["source"] and any(k in s["ticket"].lower() for k in d["keywords"])]
         return {"evidence": hits, "trail": [f"search:{s['source']}"]}
 
     def gather(s: State) -> dict:
@@ -64,25 +56,14 @@ def build_graph(complete: Complete, checkpointer, outbox: list[str]):
         return "draft" if s.get("evidence") else "escalate"
 
     def draft(s: State) -> dict:
-        docs = "\n".join(
-            f"[{d['id']}] {d['text']}" for d in sorted(s["evidence"], key=lambda d: d["id"])
-        )
-        retry = (
-            "\n\nYour last draft cited nothing. Cite a document id in square brackets."
-            if s.get("drafts")
-            else ""
-        )
+        docs = "\n".join(f"[{d['id']}] {d['text']}" for d in sorted(s["evidence"], key=lambda d: d["id"]))
+        retry = "\n\nYour last draft cited nothing. Cite a document id in square brackets." if s.get("drafts") else ""
         res = complete(
             f"<ticket>\n{s['ticket']}\n</ticket>\n\n<documents>\n{docs}\n</documents>{retry}",
             system="DRAFT a one-sentence reply from the documents only.",
             max_tokens=2000,
         )
-        return {
-            "reply": res.text.strip(),
-            "drafts": s.get("drafts", 0) + 1,
-            "trail": ["draft"],
-            "tokens": res.input_tokens + res.output_tokens,
-        }
+        return {"reply": res.text.strip(), "drafts": s.get("drafts", 0) + 1, "trail": ["draft"], "tokens": res.input_tokens + res.output_tokens}
 
     def check(s: State) -> dict:
         return {"trail": ["check"]}
@@ -112,16 +93,7 @@ def build_graph(complete: Complete, checkpointer, outbox: list[str]):
         return {"status": "escalated", "trail": ["escalate"]}
 
     g = StateGraph(State)
-    for name, fn in [
-        ("classify", classify),
-        ("search", search),
-        ("gather", gather),
-        ("draft", draft),
-        ("check", check),
-        ("approve", approve),
-        ("send", send),
-        ("escalate", escalate),
-    ]:
+    for name, fn in [("classify", classify), ("search", search), ("gather", gather), ("draft", draft), ("check", check), ("approve", approve), ("send", send), ("escalate", escalate)]:
         g.add_node(name, fn)
     g.add_edge(START, "classify")
     g.add_conditional_edges("classify", fan_out, ["search"])

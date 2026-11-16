@@ -11,9 +11,7 @@ def run_scripted(server: Server, plan: list[dict], log=print) -> list[dict]:
     for step in plan:
         r = server.call(step["name"], step["input"])
         text = r["content"][0]["text"]
-        log(
-            f"{'BLOCKED' if r.get('isError') else 'ok':<8} {step['why']:<38} {re.sub(r'\s+', ' ', text)[:70]}"
-        )
+        log(f"{'BLOCKED' if r.get('isError') else 'ok':<8} {step['why']:<38} {re.sub(r'\s+', ' ', text)[:70]}")
         results.append({**step, "is_error": bool(r.get("isError")), "text": text})
     return results
 
@@ -23,10 +21,7 @@ def run_claude(server: Server, model: str, task: str, max_turns: int = 8) -> str
     import anthropic
 
     client = anthropic.Anthropic()
-    tools = [
-        {"name": t.name, "description": t.description, "input_schema": t.input_schema}
-        for t in server.tools
-    ]
+    tools = [{"name": t.name, "description": t.description, "input_schema": t.input_schema} for t in server.tools]
     messages: list[dict] = [{"role": "user", "content": task}]
     for _ in range(max_turns):
         res = client.messages.create(model=model, max_tokens=16000, tools=tools, messages=messages)
@@ -41,13 +36,6 @@ def run_claude(server: Server, model: str, task: str, max_turns: int = 8) -> str
                 continue
             out = server.call(block.name, block.input)
             print(f"{'BLOCKED' if out.get('isError') else 'ok'} {block.name} {block.input}")
-            results.append(
-                {
-                    "type": "tool_result",
-                    "tool_use_id": block.id,
-                    "content": out["content"][0]["text"],
-                    "is_error": bool(out.get("isError")),
-                }
-            )
+            results.append({"type": "tool_result", "tool_use_id": block.id, "content": out["content"][0]["text"], "is_error": bool(out.get("isError"))})
         messages.append({"role": "user", "content": results})  # all results in one message
     return f"stopped: hit the limit of {max_turns} turns"

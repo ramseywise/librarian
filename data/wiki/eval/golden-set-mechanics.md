@@ -2,7 +2,7 @@
 title: Golden Set Mechanics
 tags: [eval, llm, reference]
 summary: The shape of a golden case (input/expected/metadata), sizing by purpose (20–50 at spec time, 100–1000 for CI), sourcing priority, and the anti-staleness practices that keep a set measuring.
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/guacamayo/docs/research/2026-08-02_eval-driven-development.md
   - data/raw/claude-docs/guacamayo/skills/workflow-plan/references/golden-set-authoring.md
@@ -141,7 +141,6 @@ The chapter has no experiments or measured results, and the chapter concedes tha
 - [[Anthropic Three-Tier Eval Taxonomy]] — extends
 - [[Synthetic Dataset Generation for RAG Eval]] — alternative-to
 - [[HITL Annotation Pipeline]]
-- [[Scope-POC Design Interview]] — prerequisite-for (design-time metric targets become evals/targets.yaml)
 - [[Skill Pipeline Dryrun Testing]] — alternative-to (fixed unambiguous cases for a skill chain rather than a model)
 - [[Eval Ladder]] — related (part of; rung 2 of the maturity progression)
 - [[Manual Review as Eval Bootstrap]] — prerequisite-for (failure patterns become the first golden cases)

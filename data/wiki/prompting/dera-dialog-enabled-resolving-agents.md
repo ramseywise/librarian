@@ -2,7 +2,7 @@
 title: DERA Dialog-Enabled Resolving Agents
 tags: [prompting, agents, multi-agent, concept]
 summary: "DERA has two GPT-4 prompts, a Researcher that points out problems and a Decider with final authority, converse over a draft and write accepted fixes to a shared scratchpad; on clinical summaries and care plans physicians preferred the result, while multiple-choice and open-ended medical QA showed little or no gain (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-08-nair-2023-dera.md
 ---
@@ -31,5 +31,4 @@ All self-reported; all agents are GPT-4.
 - [[Self-Refine]] — alternative-to (single-agent refinement loop)
 - [[Reflexion]] — related
 - [[REFINER Critic Feedback on Reasoning Steps]] — related
-- [[Multi-Agent Role Specialization]] — related
 - [[Prompt Chaining]] — alternative-to

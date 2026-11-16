@@ -1,7 +1,7 @@
 ---
-imported_hash: add410a57fbdbf80
+imported_hash: febcddcbd7c31824
 title: MCQ Bank — Full Topic Parity
-summary: Multiple-choice drill bank covering 11 topics.
+summary: Multiple-choice drill bank covering 14 topics.
 order: 74
 kind: reading
 section: Technical questions
@@ -10,7 +10,7 @@ source: learn-ai-engineering/practice/interviewing/rounds/technical-questions/mc
 
 # MCQ Bank — Full Topic Parity
 
-Multiple-choice drill bank covering 11 topics. Standalone: it re-covers
+Multiple-choice drill bank covering 14 topics. Standalone: it re-covers
 ground the role-specific banks handle so it works on its own.
 
 **How to use**: cover the answer key, take a section, then read the rationale for every
@@ -34,7 +34,10 @@ caching, pass@k vs pass^k, CRAG vs Self-RAG), the bank tests that pair directly.
 | I | Data engineering & MLOps | 14 |
 | J | System design | 15 |
 | K | Product & delivery | 12 |
-| **Total** | | **191** |
+| L | Probability and distributions | 16 |
+| M | Statistics and A/B testing | 16 |
+| N | Classical ML models | 15 |
+| **Total** | | **238** |
 
 Answer keys are at the end of each section.
 
@@ -1973,6 +1976,516 @@ K11-B · K12-D
 
 ---
 
+## L. Probability and distributions (16 questions)
+
+### L1
+
+What is the variance of a Bernoulli variable with p = 0.2?
+
+A. 0.20
+B. 0.16
+C. 0.04
+D. 0.80
+
+### L2
+
+X is Binomial with n = 100 and p = 0.1. What are its mean and standard deviation?
+
+A. 10 and 9
+B. 10 and 3
+C. 10 and 0.9
+D. 1 and 3
+
+### L3
+
+Card payments are declined at a steady average rate, independently of one another. Which
+distribution models the number declined in a given minute?
+
+A. Binomial
+B. Normal
+C. Poisson
+D. Geometric
+
+### L4
+
+A Poisson variable has mean 4. What is its variance?
+
+A. 4
+B. 2
+C. 16
+D. It depends on the sample size
+
+### L5
+
+What does the Central Limit Theorem state?
+
+A. Any large dataset is approximately Normally distributed
+B. The sample mean equals the population mean once n exceeds 30
+C. The variance of the data shrinks as n grows
+D. The mean of a large sample is approximately Normal even when the data are not
+
+### L6
+
+A and B are independent with P(A) = 0.5 and P(B) = 0.4. What is P(A or B)?
+
+A. 0.9
+B. 0.2
+C. 0.7
+D. 0.8
+
+### L7
+
+A condition has 1% prevalence. A test has 90% sensitivity and a 10% false positive rate.
+Roughly what is the probability of the condition given a positive test?
+
+A. About 8%
+B. About 50%
+C. About 90%
+D. About 1%
+
+### L8
+
+X and Y are independent with variances 4 and 9. What is the standard deviation of X + Y?
+
+A. 5
+B. 13
+C. About 3.6
+D. 6.5
+
+### L9
+
+Var(X) = 2. What is Var(3X)?
+
+A. 6
+B. 9
+C. 12
+D. 18
+
+### L10
+
+E[X + Y] = E[X] + E[Y] holds when:
+
+A. X and Y are independent
+B. X and Y have the same distribution
+C. Always, as long as both expectations exist
+D. X and Y are both Normal
+
+### L11
+
+A sample of n = 100 has a standard error of the mean of 1. What sample size halves it?
+
+A. 200
+B. 400
+C. 141
+D. 1,000
+
+### L12
+
+How many rolls of a fair die do you expect to need to see the first six?
+
+A. 6
+B. 3
+C. 3.5
+D. 36
+
+### L13
+
+Which statement is true of two random variables?
+
+A. Zero correlation implies independence
+B. Independence implies zero correlation
+C. Each implies the other
+D. Neither implies the other
+
+### L14
+
+X is Normal. Roughly what is P(X > μ + 2σ)?
+
+A. 5%
+B. 2.5%
+C. 16%
+D. 0.3%
+
+### L15
+
+Which is the best approximation to a Binomial with n = 1,000 and p = 0.002?
+
+A. Normal with mean 500
+B. Poisson with mean 0.002
+C. Geometric with p = 0.002
+D. Poisson with mean 2
+
+### L16
+
+Can the value of a probability density function be greater than 1?
+
+A. Yes: only the area under the density must equal 1
+B. No: probabilities cannot exceed 1
+C. Only for discrete variables
+D. Only at the mean
+
+**Answers L**: L1-B · L2-B · L3-C · L4-A · L5-D · L6-C · L7-A · L8-C · L9-D · L10-C ·
+L11-B · L12-A · L13-B · L14-B · L15-D · L16-A
+
+**Rationale notes**
+
+- **L1**: Variance is p(1 − p) = 0.2 × 0.8 = 0.16.
+- **L2**: Mean np = 10. Variance np(1 − p) = 9, so the standard deviation is 3. Answer A gives the variance.
+- **L3**: A count of independent events in a fixed interval at a constant rate is Poisson. Binomial needs a fixed number of trials.
+- **L4**: For a Poisson the mean and the variance are both λ.
+- **L5**: The theorem is about the distribution of the sample mean, not of the data. The raw data keep their shape.
+- **L6**: P(A or B) = P(A) + P(B) − P(A and B) = 0.5 + 0.4 − 0.5 × 0.4 = 0.7.
+- **L7**: Bayes: 0.01 × 0.9 / (0.01 × 0.9 + 0.99 × 0.1) = 0.009 / 0.108, about 8%. False positives from the large healthy group dominate.
+- **L8**: Variances add for independent variables: 4 + 9 = 13, and √13 is about 3.6. Standard deviations do not add.
+- **L9**: Var(aX) = a²Var(X) = 9 × 2 = 18.
+- **L10**: Linearity of expectation needs no independence. It is variances that need zero correlation to add.
+- **L11**: The standard error is σ/√n, so halving it takes four times the sample.
+- **L12**: The wait for the first success is Geometric with mean 1/p = 6.
+- **L13**: Independence implies zero correlation. The reverse fails: with X standard Normal and Y = X², the correlation is 0 but Y is a function of X.
+- **L14**: About 95% lies within 2σ, leaving 5% in the two tails and 2.5% in each.
+- **L15**: Large n with small p goes to Poisson with λ = np = 2. A Normal fits badly because np is far below 10.
+- **L16**: A density is not a probability. Uniform(0, 0.5) has density 2 everywhere on its interval.
+
+---
+
+## M. Statistics and A/B testing (16 questions)
+
+### M1
+
+A test returns p = 0.03. What does that mean?
+
+A. There is a 3% chance the null hypothesis is true
+B. There is a 97% chance the effect is real
+C. If the null were true, data this extreme or more would occur 3% of the time
+D. The effect size is 3%
+
+### M2
+
+What is a Type II error?
+
+A. Rejecting a null hypothesis that is true
+B. Failing to reject a null hypothesis that is false
+C. Using a one-sided test on two-sided data
+D. Running a test without a power calculation
+
+### M3
+
+The 95% confidence interval for a lift is 0.2 to 1.8 points. Which statement is correct?
+
+A. There is a 95% probability the true lift is between 0.2 and 1.8
+B. 95% of users saw a lift between 0.2 and 1.8
+C. The result is not significant because the interval is wide
+D. Intervals built this way cover the true lift 95% of the time, and this one excludes zero
+
+### M4
+
+The sample variance computed with divisor n is:
+
+A. Unbiased
+B. Biased high
+C. Biased low
+D. Unbiased but inconsistent
+
+### M5
+
+The mean squared error of an estimator equals:
+
+A. Bias² + variance
+B. Bias + variance
+C. Variance − bias²
+D. Bias × variance
+
+### M6
+
+You halve the minimum detectable effect of an A/B test. The required sample size:
+
+A. Doubles
+B. Quadruples
+C. Rises by a factor of √2
+D. Rises by a factor of 8
+
+### M7
+
+You test 20 independent metrics at α = 0.05 and the change has no real effect on any of
+them. How many do you expect to come out significant?
+
+A. 0.05
+B. 5
+C. 20
+D. 1
+
+### M8
+
+A team checks its A/B test daily and stops the first time p < 0.05. The main consequence is:
+
+A. Lower power and nothing else
+B. A false positive rate well above 5%
+C. An effect estimate biased towards zero
+D. None, provided the sample is large
+
+### M9
+
+A 50/50 test logs 50,000 users in control and 52,000 in treatment, and a chi-square test on
+the split gives p < 0.001. What should you do?
+
+A. Reweight the arms and read the results
+B. Extend the test until the split evens out
+C. Investigate assignment and logging; do not trust the metrics
+D. Switch to a one-sided test
+
+### M10
+
+Which change raises the power of a test?
+
+A. Lowering α from 0.05 to 0.01
+B. Reducing the variance of the metric
+C. Using a smaller sample
+D. Targeting a smaller effect
+
+### M11
+
+A test on 5 million users finds a lift of 0.02 points with p = 0.001. The right reading is:
+
+A. Ship: the result is highly significant
+B. Rerun: results this significant are suspicious
+C. Statistically significant, but check whether a lift that small is worth acting on
+D. Not significant, because the lift is small
+
+### M12
+
+A satisfaction survey is emailed to users active in the last week. Will a larger response
+count remove the bias in the average score?
+
+A. No: more data shrinks variance and leaves selection bias unchanged
+B. Yes, by the Law of Large Numbers
+C. Yes, once n exceeds 30
+D. Only if the scores are Normally distributed
+
+### M13
+
+Which test compares conversion rates between two independent groups of 50,000 users each?
+
+A. Paired t-test
+B. Two-proportion z-test
+C. Mann-Whitney U
+D. One-way ANOVA
+
+### M14
+
+A test is not significant, and its confidence interval is wide enough to include the
+minimum effect you care about. What do you conclude?
+
+A. The change has no effect
+B. The change has a negative effect
+C. The test should be rerun one-sided
+D. The test is inconclusive: it was underpowered for that effect
+
+### M15
+
+A consistent estimator is one that:
+
+A. Converges to the true value as the sample grows
+B. Equals the true value on average at every sample size
+C. Has the smallest variance of any estimator
+D. Gives the same value on every sample
+
+### M16
+
+Users are randomised, but the analysis treats every page view as an independent
+observation. What is the effect?
+
+A. Standard errors are too large, so real effects are missed
+B. The point estimate is biased towards zero
+C. Standard errors are too small, so false positives rise
+D. None, if users were randomised correctly
+
+**Answers M**: M1-C · M2-B · M3-D · M4-C · M5-A · M6-B · M7-D · M8-B · M9-C · M10-B ·
+M11-C · M12-A · M13-B · M14-D · M15-A · M16-C
+
+**Rationale notes**
+
+- **M1**: A p-value is computed assuming the null is true. It is not the probability that the null is true, and it carries no information about effect size.
+- **M2**: Type II is a missed effect, with rate β. Answer A is a Type I error.
+- **M3**: The 95% describes the procedure over repeated experiments. Because the interval excludes zero, the result is significant at 5%.
+- **M4**: Deviations are taken from the sample mean, which is closer to the data than the true mean, so the divisor n underestimates by the factor (n − 1)/n.
+- **M5**: MSE = bias² + variance, which is why a biased estimator with low variance can beat an unbiased one.
+- **M6**: Sample size is proportional to 1/δ², so half the effect needs four times the users.
+- **M7**: Each test has a 5% false positive chance, so 20 × 0.05 = 1 expected. The chance of at least one is 1 − 0.95²⁰, about 64%.
+- **M8**: Every look is another chance to cross the threshold. With 20 looks the false positive rate is roughly 25%.
+- **M9**: A sample ratio mismatch means the arms differ in some way other than the treatment. No reweighting repairs that.
+- **M10**: Power rises with sample size, effect size and α, and falls with variance. Lowering α reduces power.
+- **M11**: With millions of users almost any difference is statistically significant. Compare the effect and its interval with the smallest lift worth the cost.
+- **M12**: Bias comes from who is in the sample. A larger sample of the same kind gives a tighter interval around the wrong number.
+- **M13**: Two independent proportions with large samples call for the two-proportion z-test. A chi-square test on the 2×2 table is equivalent.
+- **M14**: Absence of evidence is not evidence of absence. Only an interval that excludes the minimum effect supports "no meaningful effect".
+- **M15**: Consistency is about the limit as n grows. Answer B defines unbiasedness.
+- **M16**: Page views from one user are correlated, so the effective sample is smaller than the row count. Analyse by user or correct the variance.
+
+---
+
+## N. Classical ML models (15 questions)
+
+### N1
+
+Bagging, as in a random forest, mainly reduces:
+
+A. Bias
+B. Variance
+C. Irreducible noise
+D. Training time
+
+### N2
+
+How does gradient boosting build its trees?
+
+A. Independently, on bootstrap samples, then averages them
+B. One deep tree, then prunes it
+C. In sequence, each fitted to the errors of the ensemble so far
+D. In parallel, each on a different subset of features
+
+### N3
+
+Which of these models needs its features scaled?
+
+A. Random forest
+B. Gradient-boosted trees
+C. k-nearest neighbours
+D. A single decision tree
+
+### N4
+
+Which penalty can set coefficients exactly to zero?
+
+A. L1 (lasso)
+B. L2 (ridge)
+C. Both
+D. Neither
+
+### N5
+
+A model scores 99% on training data and 72% on validation data. Which response fits?
+
+A. Add more features
+B. Train for longer
+C. Use a more flexible model
+D. Regularise, simplify the model or get more data
+
+### N6
+
+A fraud model reaches 99.8% accuracy on data where 0.2% of transactions are fraud. What
+does that tell you?
+
+A. The model is excellent
+B. Very little: predicting "not fraud" every time scores the same
+C. The model is overfitting
+D. The threshold is too low
+
+### N7
+
+In a logistic regression, a binary feature has a coefficient of 0.69. Having the feature:
+
+A. Raises the probability by 69 percentage points
+B. Raises the probability by 0.69%
+C. Roughly doubles the odds
+D. Roughly doubles the probability
+
+### N8
+
+A classifier has a ROC-AUC of 0.5. This means:
+
+A. Its ranking of positives over negatives is no better than random
+B. It classifies half the cases correctly
+C. Its precision is 50%
+D. It is well calibrated
+
+### N9
+
+Compared with k = 50, a k-nearest-neighbours model with k = 1 has:
+
+A. Higher bias and higher variance
+B. Higher bias and lower variance
+C. Lower bias and lower variance
+D. Lower bias and higher variance
+
+### N10
+
+You are predicting next month's defaults from several years of loan data. How should you
+validate?
+
+A. Shuffled k-fold cross-validation
+B. Train on earlier periods and test on later ones
+C. Leave-one-out cross-validation
+D. A random 80/20 split stratified by outcome
+
+### N11
+
+Which is a real weakness of a single decision tree?
+
+A. It needs scaled features
+B. It cannot model interactions
+C. Small changes in the data can produce a very different tree
+D. It cannot use categorical features
+
+### N12
+
+What does Naive Bayes assume?
+
+A. Features are independent of each other given the class
+B. Features are Normally distributed
+C. Classes are balanced
+D. The decision boundary is linear
+
+### N13
+
+You lower the decision threshold of a classifier. What typically happens?
+
+A. Precision and recall both rise
+B. Precision rises and recall falls
+C. Neither changes; only accuracy moves
+D. Recall rises and precision falls
+
+### N14
+
+Which loss does logistic regression minimise?
+
+A. Mean squared error
+B. Hinge loss
+C. Log loss (cross-entropy)
+D. Gini impurity
+
+### N15
+
+For a medium-sized tabular dataset with mixed feature types and non-linear effects, which
+model is usually the strongest default?
+
+A. k-nearest neighbours
+B. Gradient-boosted trees
+C. Naive Bayes
+D. A linear support vector machine
+
+**Answers N**: N1-B · N2-C · N3-C · N4-A · N5-D · N6-B · N7-C · N8-A · N9-D · N10-B ·
+N11-C · N12-A · N13-D · N14-C · N15-B
+
+**Rationale notes**
+
+- **N1**: Averaging many high-variance trees trained on different bootstrap samples cancels their individual errors. Bias stays about the same.
+- **N2**: Boosting is sequential and each tree corrects the current ensemble, which lowers bias. Answer A describes bagging.
+- **N3**: Nearest neighbours uses distances, so a feature on a larger scale dominates. Tree splits depend only on the order of values.
+- **N4**: The L1 penalty has a corner at zero, so the optimum often sits exactly there. L2 shrinks coefficients without zeroing them.
+- **N5**: A large gap between training and validation scores is overfitting, a variance problem. The other options add capacity and widen the gap.
+- **N6**: With 0.2% positives, a model that never flags fraud is 99.8% accurate. Use precision, recall and PR-AUC.
+- **N7**: The coefficient is a change in log-odds, and e^0.69 is about 2. The change in probability depends on the starting point.
+- **N8**: ROC-AUC is the probability that a random positive is scored above a random negative. 0.5 is a coin flip.
+- **N9**: With k = 1 the model follows every training point: flexible, so low bias, and unstable, so high variance.
+- **N10**: Shuffled splits let the model train on the future and overstate performance. Validate forward in time.
+- **N11**: Trees are high-variance learners, which is the reason forests average them. They handle interactions and need no scaling.
+- **N12**: The "naive" part is conditional independence of features given the class. Gaussian Naive Bayes adds a Normal assumption, but that is one variant.
+- **N13**: A lower threshold flags more cases, catching more true positives and admitting more false ones.
+- **N14**: Log loss is the negative log-likelihood of a Bernoulli outcome, so minimising it is maximum likelihood.
+- **N15**: Boosted trees capture non-linear effects and interactions with no scaling or encoding of order, and usually lead on tabular data.
+
+---
+
 ## Rapid-fire distinction drill
 
 Say each distinction in one sentence, out loud, in under ten seconds. These are the
@@ -2038,6 +2551,10 @@ Each section was written against a topic guide that has since folded into the pi
 | I | [data engineering](../../../data-engineering/00-start-here/readme.md) |
 | J | [system-design round](../system-design-round/study-guide.md) |
 | K | [scoping an AI product](../../../generative-ai/07-agentic-applications/notes/07-scoping-an-ai-product.md) |
+| L | [probability and statistics](../../../data-analytics/02-probability-and-statistics/readme.md) |
+| M | [probability and statistics](../../../data-analytics/02-probability-and-statistics/readme.md), [experimentation](../../../data-analytics/03-experimentation-and-causality/readme.md) |
+| N | [classical ML](../../../data-science/01-classical-ml/readme.md) |
 
 Open-ended companions to this bank live in [questions.md](questions.md); the
-study plan is in [study-guide.md](study-guide.md).
+study plan is in [study-guide.md](study-guide.md). Sections L, M and N pair with the short-answer
+and worked problems in [stats-ml-bank.md](stats-ml-bank.md) and the [cheat sheet](stats-ml-cheat-sheet.md).

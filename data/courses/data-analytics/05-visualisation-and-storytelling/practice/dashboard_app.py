@@ -3,10 +3,11 @@
 # dependencies = ["numpy", "pandas", "streamlit", "altair"]
 # ///
 """Fernhill weekly dashboard. Run: uv run --with numpy --with pandas --with streamlit streamlit run dashboard_app.py"""
-
 import altair as alt
-import fernhill
+import pandas as pd
 import streamlit as st
+
+import fernhill
 
 
 @st.cache_data
@@ -34,38 +35,22 @@ def rate(frame):
 
 
 tiles = st.columns(3)
-tiles[0].metric(
-    "Revenue",
-    f"£{view.revenue.sum() / 1e6:.2f}m",
-    f"{view.revenue.sum() / max(previous.revenue.sum(), 1) - 1:+.1%} on last year"
-    if len(previous)
-    else None,
-)
-tiles[1].metric(
-    "90-day repeat rate",
-    f"{rate(view):.1%}",
-    f"{(rate(view) - rate(previous)) * 100:+.1f} pts" if len(previous) else None,
-)
+tiles[0].metric("Revenue", f"£{view.revenue.sum() / 1e6:.2f}m",
+                f"{view.revenue.sum() / max(previous.revenue.sum(), 1) - 1:+.1%} on last year"
+                if len(previous) else None)
+tiles[1].metric("90-day repeat rate", f"{rate(view):.1%}",
+                f"{(rate(view) - rate(previous)) * 100:+.1f} pts" if len(previous) else None)
 tiles[2].metric("Marketing spend", f"£{view.spend.sum() / 1000:,.0f}k")
 
 palette = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100"]
-colour = alt.Color(
-    "channel:N",
-    title=None,
-    legend=alt.Legend(orient="top"),
-    scale=alt.Scale(domain=names, range=palette),
-)
-chart = (
-    alt.Chart(view.assign(rate=view.repeat_90d / view.new_customers * 100))
-    .mark_line(strokeWidth=2, point=alt.OverlayMarkDef(size=30))
-    .encode(
-        x=alt.X("month:T", title=None, axis=alt.Axis(format="%b", tickCount="month")),
-        y=alt.Y("rate:Q", title="90-day repeat rate (%)", scale=alt.Scale(domain=[0, 60])),
-        color=colour,
-        tooltip=["channel", "month:T", alt.Tooltip("rate:Q", format=".1f")],
-    )
-    .properties(height=300)
-)
+colour = alt.Color("channel:N", title=None, legend=alt.Legend(orient="top"),
+                   scale=alt.Scale(domain=names, range=palette))
+chart = (alt.Chart(view.assign(rate=view.repeat_90d / view.new_customers * 100))
+         .mark_line(strokeWidth=2, point=alt.OverlayMarkDef(size=30))
+         .encode(x=alt.X("month:T", title=None, axis=alt.Axis(format="%b", tickCount="month")),
+                 y=alt.Y("rate:Q", title="90-day repeat rate (%)", scale=alt.Scale(domain=[0, 60])),
+                 color=colour, tooltip=["channel", "month:T", alt.Tooltip("rate:Q", format=".1f")])
+         .properties(height=300))
 st.altair_chart(chart, width="stretch")
 
 with st.expander("Table view"):

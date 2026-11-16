@@ -1,5 +1,4 @@
 """Checks each limit against the scripted scenarios: python -m unittest test_agent"""
-
 import sys
 import unittest
 
@@ -35,16 +34,8 @@ class Scenarios(unittest.TestCase):
         self.assertEqual(result.status, "finished")
         refused = [entry["output"] for entry in result.log if entry["is_error"]]
         self.assertEqual(len(refused), 9)
-        for fragment in [
-            "outside the workspace",
-            "no tool called shell",
-            "Read tipkit/stats.py",
-            "read-only",
-            "matches 2 places",
-            "would not parse",
-            "Not finished",
-            "changed since you read it",
-        ]:
+        for fragment in ["outside the workspace", "no tool called shell", "Read tipkit/stats.py", "read-only",
+                         "matches 2 places", "would not parse", "Not finished", "changed since you read it"]:
             self.assertTrue(any(fragment in text for text in refused), fragment)
         self.assertTrue(workspace.score_heldout()[0])
         workspace.close()

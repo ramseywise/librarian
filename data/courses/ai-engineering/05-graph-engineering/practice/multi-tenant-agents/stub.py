@@ -9,7 +9,6 @@ Three misbehaviours are planted on purpose:
 - a ticket naming a record id makes it look that record up, whoever owns it
 - alias support-model@v2 cites more often but often drops a caveat that mentions a clinician
 """
-
 from __future__ import annotations
 
 import asyncio
@@ -36,36 +35,25 @@ def _rng(*parts) -> random.Random:
 async def stub_model(req: ModelRequest) -> Completion:
     rng = _rng(req.run_id, req.alias, req.turn)
     for _ in range(rng.randint(1, 6)):
-        await asyncio.sleep(
-            0
-        )  # the await where another run gets to go, as it would during a network call
+        await asyncio.sleep(0)  # the await where another run gets to go, as it would during a network call
     ticket = re.search(r"<ticket>\n([\s\S]*?)\n</ticket>", req.prompt).group(1)
     if "provider-outage" in ticket:
         raise ModelError("stub outage")
     in_tokens = count_tokens(req.system + req.prompt)
 
-    if (
-        req.turn == 0
-    ):  # the tool step comes first, and nothing here looks at which tools were offered
+    if req.turn == 0:  # the tool step comes first, and nothing here looks at which tools were offered
         if m := TOOL_ASK.search(ticket):
             args = {"record_id": rid.group(0)} if (rid := RECORD_ID.search(ticket)) else {}
-            return Completion(
-                tool_call=(m.group(1), args), input_tokens=in_tokens, output_tokens=20
-            )
+            return Completion(tool_call=(m.group(1), args), input_tokens=in_tokens, output_tokens=20)
         if m := RECORD_ID.search(ticket):
-            return Completion(
-                tool_call=("lookup_record", {"record_id": m.group(0)}),
-                input_tokens=in_tokens,
-                output_tokens=20,
-            )
+            return Completion(tool_call=("lookup_record", {"record_id": m.group(0)}),
+                              input_tokens=in_tokens, output_tokens=20)
 
     doc = re.search(r"^\[([\w-]+)\] (.+)$", req.prompt, re.M)
     parts = [doc.group(2)]
     if rng.random() < P_CITE[req.alias]:
         parts.append(f"[{doc.group(1)}]")
-    if (result := re.search(r"<tool_result>(.*)</tool_result>", req.prompt)) and result.group(
-        1
-    ).startswith("ok:"):
+    if (result := re.search(r"<tool_result>(.*)</tool_result>", req.prompt)) and result.group(1).startswith("ok:"):
         parts.append(result.group(1))
     # The tenant's prompt drives the output: take the instructed closing line out of the config and it disappears.
     if closing := re.search(r'Always end with: "(.+?)"', req.system):
@@ -79,52 +67,19 @@ async def stub_model(req: ModelRequest) -> Completion:
 
 
 # Generated data below. Tenant sizes are deliberately lopsided: that is what makes post-filtering starve.
-DOC_COUNTS = {
-    "pinwheel-retail": 400,
-    "ferrous-freight": 120,
-    "tallow-legal": 40,
-    "larkspur-clinic": 12,
-}
-CODES = {
-    "pinwheel-retail": "PW",
-    "ferrous-freight": "FF",
-    "tallow-legal": "TL",
-    "larkspur-clinic": "LK",
-}
+DOC_COUNTS = {"pinwheel-retail": 400, "ferrous-freight": 120, "tallow-legal": 40, "larkspur-clinic": 12}
+CODES = {"pinwheel-retail": "PW", "ferrous-freight": "FF", "tallow-legal": "TL", "larkspur-clinic": "LK"}
 TOPICS = ["refund", "cancellation", "invoice", "retention", "complaint", "access"]
-FILLER = [
-    "schedule",
-    "notice",
-    "customer",
-    "account",
-    "review",
-    "desk",
-    "branch",
-    "region",
-    "partner",
-    "contract",
-    "clause",
-    "staff",
-    "team",
-    "window",
-    "process",
-    "request",
-    "form",
-    "portal",
-    "record",
-    "office",
-    "manager",
-]
-MISSING_METADATA_EVERY = (
-    8  # every eighth Tallow Legal document lost its scope in a generated ingest bug
-)
+FILLER = ("schedule notice customer account review desk branch region partner contract clause staff "
+          "team window process request form portal record office manager").split()
+MISSING_METADATA_EVERY = 8  # every eighth Tallow Legal document lost its scope in a generated ingest bug
 
 
 @dataclass(frozen=True)
 class Doc:
     id: str
     scope: str | None  # what retrieval sees; None means the ingest lost it
-    owner: str  # the ground truth, used only for measuring leaks
+    owner: str         # the ground truth, used only for measuring leaks
     topic: str
     text: str
 
@@ -140,33 +95,15 @@ def make_corpus() -> list[Doc]:
             topic = TOPICS[i % len(TOPICS)]
             scope = f"{tenant}/{'internal' if i % 5 == 4 else 'policies'}"
             lost = tenant == "tallow-legal" and i % MISSING_METADATA_EVERY == 0
-            words = (
-                0 if lost else rng.randint(2, most_filler)
-            )  # a lost one is a short stub page, so it ranks well
+            words = 0 if lost else rng.randint(2, most_filler)  # a lost one is a short stub page, so it ranks well
             filler = "".join(rng.choice(FILLER) + " " for _ in range(words))
             text = f"{topic} policy {filler}{code}-CONFIDENTIAL"
-            docs.append(
-                Doc(f"{code.lower()}-{i:03d}", None if lost else scope, tenant, topic, text)
-            )
+            docs.append(Doc(f"{code.lower()}-{i:03d}", None if lost else scope, tenant, topic, text))
     for i, topic in enumerate(TOPICS):
-        docs.append(
-            Doc(
-                f"prod-{i}",
-                "shared/product",
-                "shared",
-                topic,
-                f"{topic} settings in the product admin page",
-            )
-        )
+        docs.append(Doc(f"prod-{i}", "shared/product", "shared", topic, f"{topic} settings in the product admin page"))
     return docs
 
 
 def make_records() -> dict[str, dict]:
-    return {
-        f"{code}-{n}": {
-            "owner": tenant,
-            "text": f"{code}-{n} belongs to {tenant}, {code}-CONFIDENTIAL balance",
-        }
-        for tenant, code in CODES.items()
-        for n in (1001, 1002, 1003)
-    }
+    return {f"{code}-{n}": {"owner": tenant, "text": f"{code}-{n} belongs to {tenant}, {code}-CONFIDENTIAL balance"}
+            for tenant, code in CODES.items() for n in (1001, 1002, 1003)}

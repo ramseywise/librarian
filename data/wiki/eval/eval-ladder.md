@@ -2,7 +2,7 @@
 title: Eval Ladder
 tags: [eval, llm, planning]
 summary: A four-rung progression — manual review, golden-set grading, LLM-judge, user feedback — sequenced so each rung's failures supply the next rung's test cases, with an explicit "most POCs reach rung 2–3 and that's sufficient" stopping point.
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/eval-approaches.md
 ---
@@ -68,8 +68,6 @@ replace any rung.
 - [[LLM-as-Judge Evaluation]] — related (part of)
 - [[User Feedback Loops]] — related (part of)
 - [[Heuristic Pipeline Metrics]] — related
-- [[Complexity Floor]] — related (eval maturity tracks project tier)
-- [[Six-Pillar Agent Engineering Assessment]] — extends (the eval pillar is one of six scored the same way)
 - [[Verification Loops]] — related (evals as the harness gate the agent cannot skip)
 - [[Harness Maturity and Failure Modes]] — prerequisite-for (no binary eval is failure mode 5)
 - [[Iterative Harness Simplification]] — prerequisite-for (subtraction is unmeasurable without a binary eval)

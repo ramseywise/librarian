@@ -4,7 +4,6 @@
 # ///
 """Isolation properties. Each paired check must pass on the real control and must FAIL on the naive one: a test that
 also passes on the naive version proves nothing, so that counts as a failure of this file. Generated data throughout."""
-
 import asyncio
 import random
 import re
@@ -13,60 +12,17 @@ from functools import partial
 from pathlib import Path
 
 from agent import run_agent, serve
-from enforce import (
-    AmbientTraces,
-    BudgetBusy,
-    BudgetExceeded,
-    CheckThenSpend,
-    FairQueue,
-    FifoQueue,
-    PostFilterRetriever,
-    PromptOnlyTools,
-    Request,
-    ReservationLedger,
-    Retrieved,
-    RunScopedBudget,
-    ScopedRetriever,
-    TenantTraces,
-    TokenBucket,
-    ToolLayer,
-    canary_decision,
-    fleet_mean_alert,
-    hammer_from_processes,
-    per_tenant_alert,
-    simulate_load,
-    tenant_status,
-)
+from enforce import (AmbientTraces, BudgetBusy, BudgetExceeded, CheckThenSpend, FairQueue, FifoQueue,
+                     PostFilterRetriever, PromptOnlyTools, Request, ReservationLedger, Retrieved, RunScopedBudget,
+                     ScopedRetriever, TenantTraces, TokenBucket, ToolLayer, canary_decision, fleet_mean_alert,
+                     hammer_from_processes, per_tenant_alert, simulate_load, tenant_status)
 from model import ModelError
-from scenarios import (
-    BUDGET_TENANT,
-    INDEX,
-    bad_configs,
-    budget_scenario,
-    canary_run,
-    fleet_scenario,
-    load_scenario,
-    make_controls,
-    quality_scenario,
-    retrieval_scenario,
-    reworded_tallow,
-    shortened_larkspur,
-    tool_scenario,
-    trace_scenario,
-)
+from scenarios import (BUDGET_TENANT, INDEX, bad_configs, budget_scenario, canary_run, fleet_scenario, load_scenario,
+                       make_controls, quality_scenario, retrieval_scenario, reworded_tallow, shortened_larkspur,
+                       tool_scenario, trace_scenario)
 from stub import make_records
-from tenancy import (
-    TENANT_IDS,
-    ConfigError,
-    ConfigStore,
-    NaiveConfigStore,
-    UnknownTenant,
-    _bucket,
-    load_raw_configs,
-    load_store,
-    score_answer,
-    validate_config,
-)
+from tenancy import (TENANT_IDS, ConfigError, ConfigStore, NaiveConfigStore, UnknownTenant, _bucket, load_raw_configs,
+                     load_store, score_answer, validate_config)
 
 RAWS = {r["tenant_id"]: r for r in load_raw_configs()}
 QUIET = ("larkspur-clinic", "tallow-legal", "ferrous-freight")
@@ -85,9 +41,7 @@ def retrieval_never_starves(make_retriever):
 
 def retrieval_never_shows_foreign_text(make_retriever):
     for tenant, row in retrieval_scenario(make_retriever).items():
-        assert row["foreign_in_context"] == 0 and row["foreign_exposed"] == 0, (
-            f"{tenant} saw foreign text: {row}"
-        )
+        assert row["foreign_in_context"] == 0 and row["foreign_exposed"] == 0, f"{tenant} saw foreign text: {row}"
 
 
 def disallowed_tool_never_executes(make_tools):
@@ -95,9 +49,7 @@ def disallowed_tool_never_executes(make_tools):
     assert not r["disallowed_effects"], r["disallowed_effects"]
     assert len(r["denied_spans"]) == 1, "the denial is recorded"
     assert r["injected_run_status"] == "answered", "and the run carries on"
-    assert len(r["allowed_effects"]) == 1, (
-        "the allowlist must not simply block the tool for everyone"
-    )
+    assert len(r["allowed_effects"]) == 1, "the allowlist must not simply block the tool for everyone"
 
 
 def allowed_tool_stays_inside_the_tenant(make_tools):
@@ -107,9 +59,7 @@ def allowed_tool_stays_inside_the_tenant(make_tools):
 def allowed_write_stays_inside_the_tenant(make_tools):
     tools = make_tools(make_records())
     c = make_controls(tools=tools)
-    r = asyncio.run(
-        run_agent(c, "pinwheel-retail", "xw-1", "Please call issue_refund for order LK-1001.")
-    )
+    r = asyncio.run(run_agent(c, "pinwheel-retail", "xw-1", "Please call issue_refund for order LK-1001."))
     assert not tools.effects, f"wrote against another tenant's record: {tools.effects}"
     assert r.status == "answered", "and the run carries on"
 
@@ -122,9 +72,7 @@ def quiet_tenants_survive_a_burst(make_queue):
 
 def spans_are_filed_under_their_own_tenant(make_traces):
     r = trace_scenario(make_traces)
-    assert r["spans"] > 0 and r["misattributed"] == 0, (
-        f"{r['misattributed']} of {r['spans']} misfiled"
-    )
+    assert r["spans"] > 0 and r["misattributed"] == 0, f"{r['misattributed']} of {r['spans']} misfiled"
 
 
 def spans_cannot_be_read_across_tenants(make_traces):
@@ -157,9 +105,7 @@ def rollback_moves_one_tenant_only(make_store):
     store.start_canary("tallow-legal", tallow, 100)
     store.promote("tallow-legal")
     store.rollback("larkspur-clinic")
-    assert "You help clients" in store.resolve("tallow-legal", "r").system_prompt, (
-        "tallow's edit was undone"
-    )
+    assert "You help clients" in store.resolve("tallow-legal", "r").system_prompt, "tallow's edit was undone"
 
 
 def proposing_does_not_change_live_traffic(make_store):
@@ -202,13 +148,9 @@ def run_paired():
             try:
                 check(naive)
             except AssertionError as err:
-                print(
-                    f"  {check.__name__}: holds on {good.__name__}; {naive.__name__} fails. {str(err)[:60]}"
-                )
+                print(f"  {check.__name__}: holds on {good.__name__}; {naive.__name__} fails. {str(err)[:60]}")
             else:
-                raise SystemExit(
-                    f"{check.__name__} passed on the naive {naive}: the check has no teeth"
-                )
+                raise SystemExit(f"{check.__name__} passed on the naive {naive}: the check has no teeth")
 
 
 # %% The ledger, beyond the headline
@@ -257,9 +199,7 @@ def test_ledger_expires_a_dead_workers_hold():
     ledger.before_call("a", "next", 900)  # the budget is usable again
     ledger.after_call(dead, 300)  # the provider billed the dead call after all
     assert ledger.spent("a") == 300, "a late settle still counts"
-    assert ledger.held("a") == 900, (
-        "and releases nothing: its hold was already released, the live one stays"
-    )
+    assert ledger.held("a") == 900, "and releases nothing: its hold was already released, the live one stays"
 
 
 def test_unknown_tenant_has_no_budget():
@@ -283,11 +223,7 @@ def test_failed_call_releases_and_cancelled_call_is_charged():
         c = make_controls(budget=ledger)
         c.model = outage
         r = await run_agent(c, BUDGET_TENANT, "o", "what is the refund policy")
-        assert (
-            r.status == "model_error"
-            and ledger.held(BUDGET_TENANT) == 0
-            and ledger.spent(BUDGET_TENANT) == 0
-        )
+        assert r.status == "model_error" and ledger.held(BUDGET_TENANT) == 0 and ledger.spent(BUDGET_TENANT) == 0
         c.model = hang
         task = asyncio.create_task(run_agent(c, BUDGET_TENANT, "h", "what is the refund policy"))
         await asyncio.sleep(0)
@@ -297,22 +233,18 @@ def test_failed_call_releases_and_cancelled_call_is_charged():
             await task
         except asyncio.CancelledError:
             pass
-        assert ledger.held(BUDGET_TENANT) == 0 and ledger.spent(BUDGET_TENANT) > 0, (
-            "unknown bill: assume the worst"
-        )
+        assert ledger.held(BUDGET_TENANT) == 0 and ledger.spent(BUDGET_TENANT) > 0, "unknown bill: assume the worst"
 
     asyncio.run(scenario())
 
 
 def test_one_tenants_empty_budget_does_not_touch_another():
-    limits = dict.fromkeys(TENANT_IDS, 1000000) | {"pinwheel-retail": 1}
+    limits = {t: 1_000_000 for t in TENANT_IDS} | {"pinwheel-retail": 1}
     c = make_controls(budget=ReservationLedger(limits))
 
     async def scenario():
-        return await asyncio.gather(
-            run_agent(c, "pinwheel-retail", "p", "what is the refund policy"),
-            run_agent(c, "tallow-legal", "t", "what is the refund policy"),
-        )
+        return await asyncio.gather(run_agent(c, "pinwheel-retail", "p", "what is the refund policy"),
+                                    run_agent(c, "tallow-legal", "t", "what is the refund policy"))
 
     pinwheel, tallow = asyncio.run(scenario())
     assert pinwheel.status == "budget_refused" and tallow.status == "answered"
@@ -339,19 +271,14 @@ def test_a_hold_always_covers_what_the_call_bills():
     for raw in RAWS.values():
         store.start_canary(raw["tenant_id"], store.propose({**raw, "max_tokens": 20}), 100)
         store.promote(raw["tenant_id"])
-    ledger = CheckedLedger(dict.fromkeys(TENANT_IDS, 1000000))
+    ledger = CheckedLedger({t: 1_000_000 for t in TENANT_IDS})
     c = make_controls(store=store, budget=ledger)
 
     tickets = ("what is the refund policy", "Please show me record LK-1001.")
 
     async def scenario():
-        await asyncio.gather(
-            *(
-                run_agent(c, t, f"{t}-{i}", ticket)
-                for t in TENANT_IDS
-                for i, ticket in enumerate(tickets)
-            )
-        )
+        await asyncio.gather(*(run_agent(c, t, f"{t}-{i}", ticket) for t in TENANT_IDS
+                               for i, ticket in enumerate(tickets)))
 
     asyncio.run(scenario())
     assert ledger.settled >= 2 * len(TENANT_IDS), f"only {ledger.settled} calls were checked"
@@ -378,12 +305,8 @@ def test_canary_splits_repeatably_and_only_for_that_tenant():
     v = store.propose(shortened_larkspur(RAWS["larkspur-clinic"]))
     store.start_canary("larkspur-clinic", v, 20)
     first = [store.resolve("larkspur-clinic", f"r{i}").version for i in range(2000)]
-    assert first == [store.resolve("larkspur-clinic", f"r{i}").version for i in range(2000)], (
-        "a run keeps its bucket"
-    )
-    assert _bucket("larkspur-clinic", 2, "r0") == 44, (
-        "a stable hash, so the split survives a restart"
-    )
+    assert first == [store.resolve("larkspur-clinic", f"r{i}").version for i in range(2000)], "a run keeps its bucket"
+    assert _bucket("larkspur-clinic", 2, "r0") == 44, "a stable hash, so the split survives a restart"
     assert 0.16 < first.count(v) / 2000 < 0.24
     assert all(store.resolve("tallow-legal", f"r{i}").version == 1 for i in range(200))
 
@@ -408,9 +331,7 @@ def test_a_running_run_keeps_its_config_through_a_rollback():
         store.start_canary("larkspur-clinic", v, 100)
         traces = TenantTraces()
         c = make_controls(store=store, traces=traces)
-        task = asyncio.create_task(
-            run_agent(c, "larkspur-clinic", "pinned", "Please show me record LK-1001.")
-        )
+        task = asyncio.create_task(run_agent(c, "larkspur-clinic", "pinned", "Please show me record LK-1001."))
         await asyncio.sleep(0)
         store.rollback("larkspur-clinic")
         result = await task
@@ -419,9 +340,7 @@ def test_a_running_run_keeps_its_config_through_a_rollback():
         assert store.resolve("larkspur-clinic", "next").version == 1
         prompts = c.model.prompts["larkspur-clinic"]
         assert len(prompts) == 2, "two model calls, so the second comes after the rollback"
-        assert not any("Always end with" in p for p in prompts), (
-            "the second call went out on the rolled-back prompt"
-        )
+        assert not any("Always end with" in p for p in prompts), "the second call went out on the rolled-back prompt"
 
     asyncio.run(scenario())
 
@@ -436,39 +355,26 @@ def test_canary_gate_catches_the_bad_edit_and_passes_the_good_one():
     tallow = canary_run(store, "tallow-legal", 300, "t")
     assert canary_decision(lark[1], lark[bad]) == "rollback"
     assert canary_decision(tallow[1], tallow[good]) == "promote"
-    assert canary_decision((90, 100), (1, 5)) == "wait", (
-        "five runs are not evidence, in either direction"
-    )
+    assert canary_decision((90, 100), (1, 5)) == "wait", "five runs are not evidence, in either direction"
 
 
 def test_one_core_really_is_driven_by_config():
     source = (Path(__file__).parent / "agent.py").read_text()
     assert not re.search("|".join(TENANT_IDS), source), "the core must not name a tenant"
-    closings = {
-        "larkspur-clinic": "clinician",
-        "tallow-legal": "legal advice",
-        "pinwheel-retail": "Anything else",
-        "ferrous-freight": "shipment reference",
-    }
+    closings = {"larkspur-clinic": "clinician", "tallow-legal": "legal advice", "pinwheel-retail": "Anything else",
+                "ferrous-freight": "shipment reference"}
     c = make_controls()
 
     async def scenario():
-        return await asyncio.gather(
-            *(
-                run_agent(c, t, f"cfg-{t}-{i}", "what is the refund policy")
-                for t in TENANT_IDS
-                for i in range(10)
-            )
-        )
+        return await asyncio.gather(*(run_agent(c, t, f"cfg-{t}-{i}", "what is the refund policy")
+                                      for t in TENANT_IDS for i in range(10)))
 
     results = asyncio.run(scenario())
     for tenant, phrase in closings.items():
         answers = [r.answer for r in results if r.tenant_id == tenant]
         assert any(phrase in a for a in answers), f"{tenant}'s prompt didn't drive its answers"
         others = [p for t, p in closings.items() if t != tenant]
-        assert not any(p in a for a in answers for p in others), (
-            f"{tenant} got another tenant's wording"
-        )
+        assert not any(p in a for a in answers for p in others), f"{tenant} got another tenant's wording"
 
 
 def test_rubrics_differ_per_tenant():
@@ -476,9 +382,7 @@ def test_rubrics_differ_per_tenant():
     answer = "Text [lk-000]"
     assert score_answer(store.get("larkspur-clinic"), answer, ["lk-000"]) == 50
     assert score_answer(store.get("pinwheel-retail"), answer, ["lk-000"]) == 60
-    assert score_answer(store.get("pinwheel-retail"), answer, ["other"]) == 0, (
-        "an invented citation scores nothing"
-    )
+    assert score_answer(store.get("pinwheel-retail"), answer, ["other"]) == 0, "an invented citation scores nothing"
 
 
 def test_no_evidence_escalates_without_a_model_call():
@@ -494,9 +398,7 @@ def test_no_evidence_escalates_without_a_model_call():
     r = asyncio.run(run_agent(c, "tallow-legal", "empty", "what is the refund policy"))
     assert r.status == "escalated" and not r.answer
     assert not c.model.prompts
-    assert [s.status for s in traces.read("tallow-legal", "empty") if s.node == "escalate"] == [
-        "no_evidence"
-    ]
+    assert [s.status for s in traces.read("tallow-legal", "empty") if s.node == "escalate"] == ["no_evidence"]
 
 
 # %% Tools details
@@ -513,20 +415,14 @@ def test_foreign_and_missing_ids_get_the_same_reply_on_every_tool():
 def test_a_write_on_your_own_record_or_no_record_still_runs():
     tools = ToolLayer(make_records())
     allowed = ("issue_refund", "create_ticket")
-    assert tools.call(
-        "larkspur-clinic", allowed, "issue_refund", {"record_id": "LK-1001"}
-    ).startswith("ok")
+    assert tools.call("larkspur-clinic", allowed, "issue_refund", {"record_id": "LK-1001"}).startswith("ok")
     assert tools.call("larkspur-clinic", allowed, "create_ticket", {}).startswith("ok")
     assert len(tools.effects) == 2
 
 
 def test_the_model_cannot_name_its_own_tenant():
-    reply = ToolLayer(make_records()).call(
-        "larkspur-clinic",
-        ("lookup_record",),
-        "lookup_record",
-        {"record_id": "PW-1001", "tenant": "pinwheel-retail"},
-    )
+    reply = ToolLayer(make_records()).call("larkspur-clinic", ("lookup_record",), "lookup_record",
+                                           {"record_id": "PW-1001", "tenant": "pinwheel-retail"})
     assert reply == "not found", reply
 
 
@@ -535,18 +431,14 @@ def test_scope_filter_applies_inside_a_tenant_too():
     store = load_store()
     scopes = store.get("larkspur-clinic").knowledge_scopes
     got = ScopedRetriever(INDEX).retrieve(scopes, "what is the refund policy", 50)
-    assert got.docs and all(
-        d.scope in ("larkspur-clinic/policies", "shared/product") for d in got.docs
-    )
+    assert got.docs and all(d.scope in ("larkspur-clinic/policies", "shared/product") for d in got.docs)
 
 
 # %% Queueing details
 def test_fair_queue_wastes_no_capacity():
     assert load_scenario(FairQueue)["finished_at"] == load_scenario(FifoQueue)["finished_at"]
     solo = [Request(str(i), "a", 0, 10) for i in range(100)]
-    assert simulate_load(FairQueue({"a": 1}), list(solo), 100).finished_at == 9, (
-        "alone, a tenant gets the whole server"
-    )
+    assert simulate_load(FairQueue({"a": 1}), list(solo), 100).finished_at == 9, "alone, a tenant gets the whole server"
 
 
 def test_fair_queue_shares_by_cost_and_weight():
@@ -559,9 +451,7 @@ def test_fair_queue_shares_by_cost_and_weight():
     for _ in range(1000):
         r = queue.pop()
         served[r.tenant] += r.cost
-    assert 0.8 < served["heavy"] / served["light"] < 1.25, (
-        f"shared by cost, not by request count: {served}"
-    )
+    assert 0.8 < served["heavy"] / served["light"] < 1.25, f"shared by cost, not by request count: {served}"
     queue = FairQueue({"gold": 3, "free": 1})
     for i in range(2000):
         queue.push(Request(str(i), "gold" if i % 2 else "free", 0, 10))
@@ -583,18 +473,12 @@ def test_rate_limit_rejects_the_burst_and_refills():
     assert sum(bucket.allow(0) for _ in range(20)) == 5
     assert sum(bucket.allow(1) for _ in range(20)) == 2
     b = TokenBucket(2.0, 5)
-    assert sum(b.allow(1000) for _ in range(20)) == 5, (
-        "a long idle spell refills to the burst and no further"
-    )
+    assert sum(b.allow(1000) for _ in range(20)) == 5, "a long idle spell refills to the burst and no further"
     limited = load_scenario(FairQueue, with_limits=True)
     assert limited["pinwheel-retail"]["rejected"] > 0
-    assert all(limited[t]["rejected"] == 0 for t in QUIET), (
-        "a neighbour's burst costs the quiet tenants nothing"
-    )
+    assert all(limited[t]["rejected"] == 0 for t in QUIET), "a neighbour's burst costs the quiet tenants nothing"
     unlimited = load_scenario(FairQueue)
-    assert limited["pinwheel-retail"]["p95"] < unlimited["pinwheel-retail"]["p95"], (
-        "a fast 429 beats a slow line"
-    )
+    assert limited["pinwheel-retail"]["p95"] < unlimited["pinwheel-retail"]["p95"], "a fast 429 beats a slow line"
 
 
 # %% Quality details
@@ -616,9 +500,7 @@ def test_too_few_runs_is_not_a_pass():
 
 def test_quality_regression_is_what_the_fleet_hides():
     q = quality_scenario()
-    assert per_tenant_alert(q["before"], q["after"]) == {"larkspur-clinic"}, (
-        "no tenant blamed by mistake"
-    )
+    assert per_tenant_alert(q["before"], q["after"]) == {"larkspur-clinic"}, "no tenant blamed by mistake"
     assert not fleet_mean_alert(q["before"], q["after"])
 
 
@@ -633,26 +515,18 @@ def test_whole_path_holds_every_property_at_once():
     assert refused == {"pinwheel-retail"}, f"only the capped tenant is refused, got {refused}"
     assert all(s.tenant == f["owner"][s.run_id] for s in f["traces"].all_spans())
     assert all(f["ledger"].held(t) == 0 for t in f["limits"]), "no reservation left behind"
-    assert not any(
-        "PW-CONFIDENTIAL" in r.answer for r in f["results"] if r.tenant_id != "pinwheel-retail"
-    )
-    assert {r.tenant for r in f["rejected"]} == {"pinwheel-retail"}, (
-        "only the bursting tenant is rate limited"
-    )
+    assert not any("PW-CONFIDENTIAL" in r.answer for r in f["results"] if r.tenant_id != "pinwheel-retail")
+    assert {r.tenant for r in f["rejected"]} == {"pinwheel-retail"}, "only the bursting tenant is rate limited"
 
 
 def test_serve_pops_fairly_not_in_arrival_order():
     ticket = "what is the refund policy"
     requests = [Request(f"a{i}", "pinwheel-retail", 0, 100, ticket) for i in range(15)]
-    requests.append(
-        Request("z", "larkspur-clinic", 0, 100, ticket)
-    )  # sorted last, so FIFO would serve it last
+    requests.append(Request("z", "larkspur-clinic", 0, 100, ticket))  # sorted last, so FIFO would serve it last
     # One worker, so the order of the results is the order the queue gave them out.
     results, rejected = asyncio.run(serve(make_controls(), requests, workers=1))
     assert not rejected
-    assert [r.tenant_id for r in results].index("larkspur-clinic") == 1, (
-        "a quiet tenant takes the next turn"
-    )
+    assert [r.tenant_id for r in results].index("larkspur-clinic") == 1, "a quiet tenant takes the next turn"
 
 
 if __name__ == "__main__":

@@ -10,11 +10,10 @@ Run from this folder:
 NumPy backprop from the note: make_moons(600, noise=0.2, random_state=0), the first 400 points train,
 init seed 0, 3000 steps at rate 0.5. Writes dl-moons-boundary.png.
 """
-
 # %%
+import numpy as np
 import chartstyle as cs
 import matplotlib.pyplot as plt
-import numpy as np
 from matplotlib.colors import ListedColormap
 from sklearn.datasets import make_moons
 
@@ -31,8 +30,7 @@ def layer_backward(dA, cache, activation):
     if activation == "relu":
         dZ = dA * (Z > 0)
     else:
-        s = 1 / (1 + np.exp(-Z))
-        dZ = dA * s * (1 - s)
+        s = 1 / (1 + np.exp(-Z)); dZ = dA * s * (1 - s)
     return W.T @ dZ, dZ @ A_prev.T / m, dZ.sum(axis=1, keepdims=True) / m
 
 
@@ -40,7 +38,7 @@ def init(sizes, seed=0):
     rng = np.random.default_rng(seed)
     p = {}
     for l in range(1, len(sizes)):
-        p[f"W{l}"] = rng.standard_normal((sizes[l], sizes[l - 1])) * np.sqrt(2 / sizes[l - 1])
+        p[f"W{l}"] = rng.standard_normal((sizes[l], sizes[l-1])) * np.sqrt(2 / sizes[l-1])
         p[f"b{l}"] = np.zeros((sizes[l], 1))
     return p
 
@@ -58,9 +56,7 @@ def backward(A, Y, caches):
     A = np.clip(A, 1e-9, 1 - 1e-9)
     dA = (A - Y) / (A * (1 - A))
     for l in range(L, 0, -1):
-        dA, grads[f"dW{l}"], grads[f"db{l}"] = layer_backward(
-            dA, caches[l - 1], "sigmoid" if l == L else "relu"
-        )
+        dA, grads[f"dW{l}"], grads[f"db{l}"] = layer_backward(dA, caches[l-1], "sigmoid" if l == L else "relu")
     return grads
 
 
@@ -69,7 +65,7 @@ X, Y = Xm[:400].T, ym[:400].reshape(1, -1)
 X_te, Y_te = Xm[400:].T, ym[400:].reshape(1, -1)
 
 
-def fit(sizes, steps=3000, lr=0.5):
+def fit(sizes, steps=3000, lr=.5):
     p = init(sizes)
     for _ in range(steps):
         A, caches = forward(X, p)
@@ -85,38 +81,21 @@ cs.apply()
 fig, axes = plt.subplots(1, 2, sharex=True, sharey=True)
 gx, gy = np.meshgrid(np.linspace(-2, 3, 300), np.linspace(-1.5, 2, 220))
 grid = np.c_[gx.ravel(), gy.ravel()].T
-for ax, sizes, name in [
-    (axes[0], [2, 1], "No hidden layer"),
-    (axes[1], [2, 8, 1], "One hidden layer of 8"),
-]:
+for ax, sizes, name in [(axes[0], [2, 1], "No hidden layer"), (axes[1], [2, 8, 1], "One hidden layer of 8")]:
     p = fit(sizes)
-    acc = ((forward(X_te, p)[0] > 0.5) == Y_te).mean()
+    acc = ((forward(X_te, p)[0] > .5) == Y_te).mean()
     print(sizes, "test accuracy", round(float(acc), 3))
-    z = (forward(grid, p)[0] > 0.5).reshape(gx.shape)
-    ax.contourf(gx, gy, z, levels=[-0.5, 0.5, 1.5], cmap=ListedColormap(["#fbe3da", "#d9e8fa"]))
-    ax.contour(gx, gy, z, levels=[0.5], colors=cs.SECONDARY, linewidths=1)
+    z = (forward(grid, p)[0] > .5).reshape(gx.shape)
+    ax.contourf(gx, gy, z, levels=[-.5, .5, 1.5], cmap=ListedColormap(["#fbe3da", "#d9e8fa"]))
+    ax.contour(gx, gy, z, levels=[.5], colors=cs.SECONDARY, linewidths=1)
     for k, colour in [(0, cs.ORANGE), (1, cs.BLUE)]:
         s = Y_te[0] == k
-        ax.scatter(
-            X_te[0][s],
-            X_te[1][s],
-            s=16,
-            color=colour,
-            edgecolor=cs.SURFACE,
-            lw=0.5,
-            label=f"Class {k}",
-        )
+        ax.scatter(X_te[0][s], X_te[1][s], s=16, color=colour, edgecolor=cs.SURFACE, lw=.5, label=f"Class {k}")
     ax.set_title(f"{name}: test accuracy {acc:.3f}", fontsize=11)
     ax.grid(False)
     ax.set(xticks=[], yticks=[])
     for sp in ax.spines.values():
         sp.set_visible(False)
 axes[1].legend(loc="lower right", ncol=2, frameon=True, facecolor=cs.SURFACE, edgecolor="none")
-fig.suptitle(
-    "A straight boundary is the ceiling; a hidden layer removes it. 200 held-out points",
-    x=0.01,
-    ha="left",
-    fontweight="bold",
-    fontsize=12,
-)
+fig.suptitle("A straight boundary is the ceiling; a hidden layer removes it. 200 held-out points", x=.01, ha="left", fontweight="bold", fontsize=12)
 cs.save(fig, "dl-moons-boundary.png")

@@ -2,7 +2,7 @@
 title: Execution Boundaries and Guardrails
 tags: [llm, agents, infra, concept]
 summary: "Sandboxes (the isolation ladder and identity sandbox), hooks, and permission gates with declared timeouts — the controls that cannot be argued with, governed by one rule: encode constraints rather than documenting them, and constrain the process as well as the outcome."
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--04-execution-boundaries.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--04-execution-boundaries.md
@@ -243,8 +243,6 @@ discipline — see [[Canary Testing for Permission Boundaries]].
 - [[Canary Testing for Permission Boundaries]] — extends
 - [[Tool Design as Harness Surface]] — prerequisite-for
 - [[Safeguards Architecture — Five Protection Layers]] — related
-- [[Read-Only by Default with Explicit Authorization]] — related
-- [[Reversibility Cliff]] — extends (locating the unattended-action boundary at notification, with evidence)
 - [[Proposer-Reviewer and Sidecar Gating]] — extends (who approves when a human shouldn't)
 - [[Lethal Triad]] — related (which capability combinations need the boundary)
 - [[Belief Parameters with a Ground-Truth Gate]] — instance-of (trust boundary inside the tool)
@@ -260,3 +258,4 @@ discipline — see [[Canary Testing for Permission Boundaries]].
 - [[AIOS]] — related (an access manager at the kernel layer)
 - [[Llama Guard]] — instance-of (a safeguard classifier)
 - [[NIST Adversarial ML Taxonomy]] — related
+- [[ChemCrow Chemistry Tool Agent]] — related (a tool agent whose safety tools halt execution)

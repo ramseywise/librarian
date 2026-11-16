@@ -7,7 +7,6 @@ create() returns the SDK's response object, whose stop_reason and content blocks
 run_agent() reads, so no other file changes. Opus 5.5 can decline a request, so this opts in
 to the API's server-side fallback, which reruns a declined request on another model.
 """
-
 import sys
 
 import anthropic
@@ -40,9 +39,7 @@ class ClaudeModel:
 
 if __name__ == "__main__":
     workspace = Workspace(Limits())
-    result = run_agent(
-        ClaudeModel(), workspace, "tests/test_stats.py fails on tipkit.stats.median. Fix it."
-    )
+    result = run_agent(ClaudeModel(), workspace, "tests/test_stats.py fails on tipkit.stats.median. Fix it.")
     print(result.status, result.steps)
     if result.status == "finished":
         print("held-out:", workspace.score_heldout())

@@ -2,7 +2,7 @@
 title: "Two AI Cost Economies: Durable Once, Contextual On Demand"
 tags: [infra, llm, concept]
 summary: Separate inference into durable intelligence computed once per catalogue item and contextual intelligence computed only when a request gives a reason — then route each to the cheapest model that clears its quality gate; the biggest lever is usually re-computation churn, not model price.
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/akira/docs/research/2026-09-03-scaling-infra-strategy.md
   - data/raw/claude-docs/kiez-archive/docs/research/2026-09-03-scaling-infra-strategy.md
@@ -48,7 +48,7 @@ is code, not configuration — a contained branch in the gateway, but a branch.
 - **Churn beat every model swap.** Catalogue items were re-enriched 3.17× on average
   because a side path wrote a null content hash that the skip-gate treated as "always
   re-enrich". Fixing that cut modelled spend from ~$61 to ~$19/month at 5k items — more
-  than any price-tier change on the table. See [[Cached Derivation Without a Recompute Path]].
+  than any price-tier change on the table. See Cached Derivation Without a Recompute Path.
 - **Batch is the second lever, and it is provider-neutral in shape.** Both the first-party
   batch API and the cloud marketplace's batch job are submit-a-file, poll, collect — neither
   fits a synchronous gateway call. Build the async orchestration once and the provider
@@ -67,7 +67,7 @@ is code, not configuration — a contained branch in the gateway, but a branch.
 ## See Also
 - [[LLM Inference Economics]] — extends (prefill/decode at the token level; this page is the workload level above it)
 - [[Scaling Axes and Customer-Triggered Cost Cliffs]] — related (the non-inference lines of the same bill)
-- [[Cached Derivation Without a Recompute Path]] — instance-of (the null hash that caused the churn)
 - [[Prefix Caching]] — related
 - [[Offline Annotation over Online Inference]] — instance-of (enrichment as the durable-once economy)
 - [[A Trace Is Not a Number of Record]] — extends (per-purpose call ledger for the spend numbers)
+- [[Completion Trigger Gate]] — related (not calling the model is the cheapest inference; the keystroke-triggered case)

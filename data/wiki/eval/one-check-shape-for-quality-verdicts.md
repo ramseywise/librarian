@@ -2,7 +2,7 @@
 title: One Check Shape for Quality Verdicts
 tags: [eval, infra, pattern]
 summary: Nine quality flag vocabularies across a pipeline, none of which joined, were replaced by one Check shape — component, kind, rule, rubric, runner, grader — writing to one `quality_verdicts` store keyed by `trace_id`; evals never score production rows (fixtures are exported from human overturns), each component's judged dimensions stay UNGATED until a human-agreement ceiling exists, and the trace tool is where you debug a call while the verdict store is where you read the rate.
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-29-quality-verdicts-refactor.md
   - data/raw/claude-docs/diskoe/docs/plans/2026-09-29-quality-verdicts-refactor.md
@@ -56,7 +56,7 @@ store, which is what makes overturn rates a query rather than a reconciliation p
 
 The dashboard question "what fraction of enrichment rows this week had a defect, by
 stage?" was unanswerable across nine vocabularies and is one `GROUP BY component` with
-one. It also makes the [[Taste vs Defect Verdict Split]] general: the defect list on a
+one. It also makes the Taste vs Defect Verdict Split general: the defect list on a
 human verdict is a Check result like any other.
 
 ## Precursor: two judges built twice, split by kind (akira QC eval-loop plan, 2026-09)
@@ -86,7 +86,6 @@ where QC accepted but a judge said implausible, or where precheck and model disa
 Human time goes where the models disagree.
 
 ## See Also
-- [[Taste vs Defect Verdict Split]] — extends (the human-verdict row this generalises)
 - [[Human Agreement Ceiling Protocol]] — prerequisite-for (what un-UNGATEs a judged component)
 - [[Eval Suite Maintenance]] — extends (add-from-overturn as the regression-fixture path)
 - [[Langfuse Platform]] — related (trace is evidence; the verdict row is the record)

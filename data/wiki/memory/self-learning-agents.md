@@ -2,7 +2,7 @@
 title: Self-Learning Agents
 tags: [langgraph, adk, memory, eval, concept]
 summary: Four-level improvement stack for production agents — inference-time (ReAct, CoT, self-critique), session-time (reflection, procedural memory), operational (learning loop, HITL), and training-time (DPO). Most agents need the first three; DPO is a late-stage investment.
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/playground/docs/research/evaluation-and-learning/self-learning-agents.md
 ---
@@ -15,7 +15,7 @@ From fastest/cheapest to slowest/most powerful:
 
 | Level | Technique | When it helps | Cost |
 |-------|-----------|--------------|------|
-| **Inference-time** | [[ReAct Pattern]], [[Chain of Thought]], self-critique | Single turn quality | Token cost only |
+| **Inference-time** | ReAct Pattern, Chain of Thought, self-critique | Single turn quality | Token cost only |
 | **Session-time** | Reflection, procedural memory update | Improves within session | Latency + tokens |
 | **Operational** | [[Copilot Learning Loop]], HITL annotation | Improves across deployments | Human time |
 | **Training-time** | [[Direct Preference Optimization]], RLHF | Bakes in preferences permanently | GPU + data cost |
@@ -103,20 +103,17 @@ See [[Copilot Learning Loop]] for the full operational process.
 
 | Stage | What to implement |
 |-------|------------------|
-| **MVP** | [[ReAct Pattern]] loop, [[Chain of Thought]] in system prompt |
+| **MVP** | ReAct Pattern loop, Chain of Thought in system prompt |
 | **Beta** | Self-critique on high-stakes outputs, corrective RAG subgraph |
 | **Production** | Reflection + procedural memory, operational learning loop, [[Eval Harness]] with regression gate |
 | **Scaled** | [[Direct Preference Optimization]] fine-tuning (if fine-tunable model), advanced episodic few-shot injection |
 
 ## See Also
-- [[ReAct Pattern]]
-- [[Chain of Thought]]
 - [[Direct Preference Optimization]]
 - [[Agent Memory Types]]
 - [[LangGraph CRAG Pipeline]]
 - [[Copilot Learning Loop]]
 - [[Eval Harness]]
-- [[Atlas Project]] — instance-of
 - [[Agent Plasticity]] — related (a metric for how efficiently such agents improve)
 - [[Memory Intelligence Agent]] — instance-of (a trained memory manager)
 - [[MemCollab Contrastive Cross-Model Memory]] — instance-of

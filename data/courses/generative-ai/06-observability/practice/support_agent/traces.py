@@ -16,16 +16,16 @@ import json
 import math
 import random
 from dataclasses import asdict, dataclass, field
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from .kb import ANSWERS, BASE, BY_ROUTE, DISTORTED, DOCS, QUESTIONS
 from .pricing import llm_cost
 from .scorers import online_scores
 
-START = datetime(2026, 10, 5, tzinfo=UTC)
-V2_0 = datetime(2026, 10, 14, tzinfo=UTC)
-V2_1 = datetime(2026, 10, 17, tzinfo=UTC)
-VENDOR_STALL = datetime(2026, 10, 11, tzinfo=UTC)
+START = datetime(2026, 10, 5, tzinfo=timezone.utc)
+V2_0 = datetime(2026, 10, 14, tzinfo=timezone.utc)
+V2_1 = datetime(2026, 10, 17, tzinfo=timezone.utc)
+VENDOR_STALL = datetime(2026, 10, 11, tzinfo=timezone.utc)
 
 ROUTES = {"billing": 0.35, "account": 0.25, "technical": 0.25, "refund": 0.15}
 ROUTER_MODEL = "claude-haiku-5-5"
@@ -56,13 +56,8 @@ class Span:
     def cost_usd(self):
         if self.model is None:
             return 0.0
-        return llm_cost(
-            self.model,
-            self.input_tokens,
-            self.output_tokens,
-            self.cache_read_tokens,
-            self.cache_write_tokens,
-        )
+        return llm_cost(self.model, self.input_tokens, self.output_tokens,
+                        self.cache_read_tokens, self.cache_write_tokens)
 
 
 @dataclass
@@ -134,15 +129,7 @@ class _Builder:
         return f"s{self.trace_no:04d}-{self.n:02d}"
 
     def add(self, name, kind, latency_ms, **kw):
-        span = Span(
-            self._new_id(),
-            self.root_id,
-            name,
-            kind,
-            round(self.clock, 1),
-            round(latency_ms, 1),
-            **kw,
-        )
+        span = Span(self._new_id(), self.root_id, name, kind, round(self.clock, 1), round(latency_ms, 1), **kw)
         self.spans.append(span)
         self.clock += latency_ms
         return span
@@ -159,16 +146,8 @@ def _answer_generation(b, rng, cache_broken, context_tokens, output_tokens):
     # Time to first token rises when the prefix has to be processed instead of read.
     ttft = _lognormal(rng, 1500 if cache_broken else 700, 0.25)
     latency = ttft + output_tokens / _lognormal(rng, 55, 0.15) * 1000
-    return b.add(
-        "answer",
-        "generation",
-        latency,
-        model=ANSWER_MODEL,
-        input_tokens=context_tokens,
-        output_tokens=output_tokens,
-        cache_read_tokens=reads,
-        cache_write_tokens=writes,
-    )
+    return b.add("answer", "generation", latency, model=ANSWER_MODEL, input_tokens=context_tokens,
+                 output_tokens=output_tokens, cache_read_tokens=reads, cache_write_tokens=writes)
 
 
 def make_turn(rng, trace_no, ts):
@@ -191,41 +170,23 @@ def make_turn(rng, trace_no, ts):
         if failure == "missed_escalation":
             amount = rng.choice([650, 800, 1200, 2400])
         elif failure in ("hallucinated_citation", "distorted_claim"):
-            amount = rng.choice(
-                [120, 180, 240, 300, 450]
-            )  # an escalation would replace the bad answer
+            amount = rng.choice([120, 180, 240, 300, 450])  # an escalation would replace the bad answer
         question = question.format(amount=amount)
 
     b = _Builder(rng, trace_no)
     cache_broken = release == "v2.0"
 
     b.add("input_guardrail", "guardrail", _lognormal(rng, 6, 0.3), tool_result={"blocked": False})
-    b.add(
-        "route",
-        "generation",
-        _lognormal(rng, 380, 0.25),
-        model=ROUTER_MODEL,
-        input_tokens=rng.randint(40, 90),
-        output_tokens=rng.randint(6, 14),
-        cache_read_tokens=ROUTER_PROMPT_TOKENS,
-        tool_result={"route": route},
-    )
+    b.add("route", "generation", _lognormal(rng, 380, 0.25), model=ROUTER_MODEL,
+          input_tokens=rng.randint(40, 90), output_tokens=rng.randint(6, 14),
+          cache_read_tokens=ROUTER_PROMPT_TOKENS, tool_result={"route": route})
 
     # Retrieval. A retry loop is a failing search the model keeps calling.
     if failure == "retry_loop":
         for attempt in range(rng.randint(3, 6)):
-            b.add(
-                "kb_search",
-                "retriever",
-                _lognormal(rng, 900, 0.4),
-                level="ERROR",
-                error="TimeoutError: index shard 2",
-                tool_args={"query": question, "attempt": attempt + 1},
-                tool_result={"passage_count": 0, "top_score": 0.0, "urls": []},
-            )
-            _answer_generation(
-                b, rng, cache_broken, rng.randint(300, 700) + attempt * 180, rng.randint(40, 90)
-            )
+            b.add("kb_search", "retriever", _lognormal(rng, 900, 0.4), level="ERROR", error="TimeoutError: index shard 2",
+                  tool_args={"query": question, "attempt": attempt + 1}, tool_result={"passage_count": 0, "top_score": 0.0, "urls": []})
+            _answer_generation(b, rng, cache_broken, rng.randint(300, 700) + attempt * 180, rng.randint(40, 90))
 
     if failure in ("retrieval_miss", "wrong_route"):
         retrieved = rng.sample([d for d in DOCS if d["route"] != true_route], 2)
@@ -235,34 +196,18 @@ def make_turn(rng, trace_no, ts):
         retrieved = [doc] + rng.sample(others, min(1, len(others)))
         top_score = round(rng.uniform(0.71, 0.94), 2)
     urls = [d["url"] for d in retrieved]
-    b.add(
-        "kb_search",
-        "retriever",
-        _lognormal(rng, 160, 0.35),
-        tool_args={"query": question},
-        tool_result={"passage_count": len(retrieved), "top_score": top_score, "urls": urls},
-    )
+    b.add("kb_search", "retriever", _lognormal(rng, 160, 0.35), tool_args={"query": question},
+          tool_result={"passage_count": len(retrieved), "top_score": top_score, "urls": urls})
 
     # Account lookups, and the tool whose vendor starts stalling.
     if true_route in ("billing", "refund"):
         stalled = failure == "slow_tool"
         latency = _lognormal(rng, 14000, 0.45) if stalled else _lognormal(rng, 140, 0.3)
-        b.add(
-            "get_invoice",
-            "tool",
-            latency,
-            level="WARNING" if stalled else "DEFAULT",
-            tool_args={"customer": f"c{rng.randint(1000, 9999)}"},
-            tool_result={"found": True},
-        )
+        b.add("get_invoice", "tool", latency, level="WARNING" if stalled else "DEFAULT",
+              tool_args={"customer": f"c{rng.randint(1000, 9999)}"}, tool_result={"found": True})
     elif true_route == "account":
-        b.add(
-            "get_account",
-            "tool",
-            _lognormal(rng, 90, 0.3),
-            tool_args={"customer": f"c{rng.randint(1000, 9999)}"},
-            tool_result={"plan": "Standard"},
-        )
+        b.add("get_account", "tool", _lognormal(rng, 90, 0.3), tool_args={"customer": f"c{rng.randint(1000, 9999)}"},
+              tool_result={"plan": "Standard"})
 
     # The answer text, with its citations.
     answer_i = 0 if failure == "language_mismatch" else lang_i
@@ -282,90 +227,39 @@ def make_turn(rng, trace_no, ts):
     needs_human = amount is not None and amount > 500
     escalated = needs_human and failure != "missed_escalation"
     if escalated:
-        answer = (
-            "This refund is above what I can approve, so I have passed it to a colleague."
-            if answer_i == 0
-            else "Deze terugbetaling is hoger dan ik kan goedkeuren, dus ik heb hem nu doorgegeven aan een collega."
-        )
+        answer = ("This refund is above what I can approve, so I have passed it to a colleague."
+                  if answer_i == 0 else "Deze terugbetaling is hoger dan ik kan goedkeuren, dus ik heb hem nu doorgegeven aan een collega.")
         citations = [f"{BASE}/refund/policy"]
-        b.add(
-            "create_ticket",
-            "tool",
-            _lognormal(rng, 210, 0.3),
-            tool_args={"queue": "refunds", "amount_eur": amount},
-            tool_result={"ticket": f"T-{rng.randint(10000, 99999)}"},
-        )
+        b.add("create_ticket", "tool", _lognormal(rng, 210, 0.3), tool_args={"queue": "refunds", "amount_eur": amount},
+              tool_result={"ticket": f"T-{rng.randint(10000, 99999)}"})
     elif failure == "missed_escalation":
-        answer = (
-            (
-                "I have approved your refund."
-                if answer_i == 0
-                else "Ik heb je terugbetaling goedgekeurd."
-            )
-            + " "
-            + answer
-        )
+        answer = ("I have approved your refund." if answer_i == 0 else "Ik heb je terugbetaling goedgekeurd.") + " " + answer
 
     _answer_generation(b, rng, cache_broken, rng.randint(380, 1100), rng.randint(110, 420))
     b.add("grounding_check", "guardrail", _lognormal(rng, 12, 0.3))
 
     # Outcome. Failures make a resolution less likely, and a stall makes people leave.
-    p_resolved = {
-        "hallucinated_citation": 0.55,
-        "distorted_claim": 0.70,
-        "retrieval_miss": 0.25,
-        "retry_loop": 0.30,
-        "wrong_route": 0.30,
-        "missed_escalation": 0.80,
-        "language_mismatch": 0.60,
-        "slow_tool": 0.45,
-    }.get(failure, 0.86)
+    p_resolved = {"hallucinated_citation": 0.55, "distorted_claim": 0.70, "retrieval_miss": 0.25, "retry_loop": 0.30,
+                  "wrong_route": 0.30, "missed_escalation": 0.80, "language_mismatch": 0.60, "slow_tool": 0.45}.get(failure, 0.86)
     if escalated:
         outcome = "escalated"
     elif failure == "retry_loop" and rng.random() < 0.35:
         outcome = "error"
     else:
-        outcome = (
-            "resolved"
-            if rng.random() < p_resolved
-            else rng.choice(["abandoned", "abandoned", "escalated"])
-        )
+        outcome = "resolved" if rng.random() < p_resolved else rng.choice(["abandoned", "abandoned", "escalated"])
     escalated = escalated or outcome == "escalated"
 
     total = b.clock
-    root = Span(
-        b.root_id,
-        None,
-        "agent_turn",
-        "agent",
-        0.0,
-        round(total, 1),
-        tool_args={"message": question},
-        tool_result={"message": answer, "escalated": escalated},
-        level="ERROR" if outcome == "error" else "DEFAULT",
-    )
+    root = Span(b.root_id, None, "agent_turn", "agent", 0.0, round(total, 1),
+                tool_args={"message": question}, tool_result={"message": answer, "escalated": escalated},
+                level="ERROR" if outcome == "error" else "DEFAULT")
     trace = Trace(
-        trace_id=f"t{trace_no:05d}",
-        session_id=f"sess-{rng.randint(1, 900):04d}",
-        ts=ts.isoformat(),
-        agent="support_agent",
-        release=release,
-        prompt_version=prompt_version,
-        git_commit=commit,
-        route=route,
-        true_route=true_route,
-        language=language,
-        question=question,
-        answer=answer,
-        citations=citations,
-        retrieved_urls=urls,
-        documents=[{"url": d["url"], "text": d["text"]} for d in retrieved],
-        amount_eur=amount,
-        escalated=escalated,
-        outcome=outcome,
-        latency_ms=round(total, 1),
-        spans=[root] + b.spans,
-        seeded_failure=failure,
+        trace_id=f"t{trace_no:05d}", session_id=f"sess-{rng.randint(1, 900):04d}", ts=ts.isoformat(),
+        agent="support_agent", release=release, prompt_version=prompt_version, git_commit=commit,
+        route=route, true_route=true_route, language=language, question=question, answer=answer,
+        citations=citations, retrieved_urls=urls, documents=[{"url": d["url"], "text": d["text"]} for d in retrieved],
+        amount_eur=amount, escalated=escalated, outcome=outcome, latency_ms=round(total, 1),
+        spans=[root] + b.spans, seeded_failure=failure,
     )
     # Feedback arrives on about one turn in eight, as explicit feedback does.
     if rng.random() < 0.12:
@@ -405,10 +299,8 @@ def load_jsonl(path):
 
 def print_tree(trace):
     """Print a trace the way a tracing UI lays it out."""
-    print(
-        f"{trace.trace_id}  {trace.route}/{trace.language}  {trace.release}  outcome={trace.outcome}  "
-        f"{trace.latency_ms / 1000:.1f}s  ${trace.cost_usd:.4f}"
-    )
+    print(f"{trace.trace_id}  {trace.route}/{trace.language}  {trace.release}  outcome={trace.outcome}  "
+          f"{trace.latency_ms / 1000:.1f}s  ${trace.cost_usd:.4f}")
     for s in trace.spans[1:]:
         usage = ""
         if s.model:

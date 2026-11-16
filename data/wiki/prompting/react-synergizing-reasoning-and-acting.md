@@ -2,14 +2,14 @@
 title: ReAct Synergizing Reasoning and Acting
 tags: [prompting, concept]
 summary: The ReAct paper's few-shot results on PaLM-540B, interleaving thought, action and observation steps; it trails CoT on HotpotQA alone (27.4 against 29.4 EM) but a ReAct/CoT-SC hybrid reaches 35.1, and it beats action-only prompting on ALFWorld and WebShop (self-reported).
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-07-yao-2022-react.md
 ---
 
 # ReAct Synergizing Reasoning and Acting
 
-ReAct (ICLR 2023) gives a frozen PaLM-540B between 1 and 6 hand-written few-shot trajectories, each made of thought, action and observation steps. On HotpotQA and Fever the agent uses a three-action Wikipedia API (search, lookup, finish); on ALFWorld and WebShop thoughts are sparse. Baselines come from stripping the same trajectories down: Standard, CoT, CoT-SC and Act (actions without thoughts). The paper also reports a small finetuning study, bootstrapped from ReAct trajectories, on PaLM-8B and 62B. This page records the paper's numbers; the general loop is covered by [[ReAct Pattern]].
+ReAct (ICLR 2023) gives a frozen PaLM-540B between 1 and 6 hand-written few-shot trajectories, each made of thought, action and observation steps. On HotpotQA and Fever the agent uses a three-action Wikipedia API (search, lookup, finish); on ALFWorld and WebShop thoughts are sparse. Baselines come from stripping the same trajectories down: Standard, CoT, CoT-SC and Act (actions without thoughts). The paper also reports a small finetuning study, bootstrapped from ReAct trajectories, on PaLM-8B and 62B. This page records the paper's numbers; the general loop is covered by ReAct Pattern.
 
 ## Results (self-reported)
 
@@ -29,7 +29,5 @@ ReAct (ICLR 2023) gives a frozen PaLM-540B between 1 and 6 hand-written few-shot
 - There are no seeds, variance or significance tests; HotpotQA labels can be out of date, and the Wikipedia API is deliberately weak (exact page names).
 
 ## See Also
-- [[ReAct Pattern]] — prerequisite-for
-- [[Chain of Thought]] — prerequisite-for
 - [[Self-Consistency]] — prerequisite-for
 - [[Reflexion]] — related

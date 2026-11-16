@@ -2,7 +2,7 @@
 title: Compiled-Prose KB vs Graph-Native Store
 tags: [rag, memory, comparison]
 summary: "librarian compared itself with two reference architectures: a graph-native, LLM-free knowledge store and an agent-memory service. They sit at different layers, and that difference explains the gaps in both directions. Compiled prose wins on synthesis, operational weight and eval discipline. It loses on per-claim provenance, automated conflict detection, temporal modelling and visible degradation."
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/repos/librarian/.claude--docs--research--2026-08-22_semantica-parity.md
   - data/raw/repos/librarian/.claude--docs--research--2026-08-20_retrieval-parity_tencentdb.md
@@ -49,7 +49,7 @@ one fails.
 3. **No temporal model.** A per-page `updated:` date plus a staleness lint cannot answer
    "what did we believe in June, and what changed?" The graph-native store keeps
    bitemporal facts. *Cheap version:* claim-delta tombstones in
-   [[Evidence-Driven Wiki Compaction]].
+   Evidence-Driven Wiki Compaction.
 4. **Dedup is monthly and manual.** This is an accepted cost, not a defect. Concept drift
    builds up between compaction passes.
 5. **Degradation is silent.** When FTS is unavailable, search falls back to per-term LIKE
@@ -57,7 +57,7 @@ one fails.
    repo's own baselines show the size of the drop: MRR 0.905 with FTS, 0.295 without.
    Cheapest fix: return `degraded` and index staleness in the result.
 6. **The rerank blend is arbitrary, but fixing it alone does nothing.** See
-   [[Embeddings That Only Rerank Cannot Recall]].
+   Embeddings That Only Rerank Cannot Recall.
 
 Two more walls from the memory-service review: **any single-page edit triggers a full
 corpus rebuild** (DROP, recreate, re-embed; fine at 284 pages, a wall later). And **the one
@@ -102,7 +102,4 @@ solve it twice.
 
 ## See Also
 - [[Knowledge Graph Retrieval]] — alternative-to (graph-native retrieval)
-- [[Karpathy LLM Wiki Pattern]] — extends (the compiled-prose bet, stress-tested)
-- [[Embeddings That Only Rerank Cannot Recall]] — extends
-- [[Evidence-Driven Wiki Compaction]] — extends (manual dedup as a deliberate trade)
 - [[Typed-Graph Retrieval Ablation]] — extends (the eval discipline cited as the main lead)

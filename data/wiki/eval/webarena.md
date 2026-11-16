@@ -2,7 +2,7 @@
 title: WebArena
 tags: [eval, reference]
 summary: Benchmark of 812 natural-language web tasks (241 templates) on Docker-hosted sites; the best GPT-4 baseline reaches 14.41% end-to-end success against 78.24% for humans (self-reported).
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-08-zhou-2023-autonomous-tester-agent-benchmark.md
 ---
@@ -32,5 +32,4 @@ Setup: the agent sees the accessibility tree and a 2-shot prompt, with temperatu
 ## See Also
 - [[Web Agent Benchmarks (WebShop and Mind2Web)]] — alternative-to
 - [[AgentBench]] — alternative-to
-- [[ReAct Pattern]] — related
 - [[Tool Design as Harness Surface]] — related

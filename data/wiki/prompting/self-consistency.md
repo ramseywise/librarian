@@ -2,7 +2,7 @@
 title: Self-Consistency
 tags: [prompting, llm, concept]
 summary: Sample several chain-of-thought completions at non-zero temperature and take the majority answer — reasoning paths that converge are more trustworthy than any single greedy path, at N× cost and only when there is a single extractable answer to vote on.
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--03-core-techniques.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--06-chaining-and-workflows.md
@@ -32,9 +32,9 @@ isn't affordable.
 - **Best-of-n** — N samples, keep the best by a *score* rather than a vote
   ([[Sampling Parameters]]).
 - **Voting parallelization** in Anthropic's workflow taxonomy is the same pattern at the
-  workflow level ([[Agentic Workflow Patterns]]).
+  workflow level (Agentic Workflow Patterns).
 - In ReAct experiments, the best knowledge-task results came from **ReAct ↔ CoT-SC**,
-  falling back from one to the other when stuck or unsure ([[ReAct Pattern]]).
+  falling back from one to the other when stuck or unsure (ReAct Pattern).
 - [[Tree of Thoughts]] generalizes from independent samples to a searched tree.
 
 ## Sample more or reflect (small-model study)
@@ -57,10 +57,8 @@ Small question sets, three small models, and several internal count inconsistenc
 
 ## See Also
 - [[Chain-of-Verification]] — related (the model checks its own draft with isolated questions)
-- [[Chain of Thought]] — extends
 - [[Prompting Technique Selection]] — instance-of
 - [[Tree of Thoughts]] — prerequisite-for
-- [[Agentic Workflow Patterns]] — instance-of (voting parallelization)
 - [[Prompting Reasoning Models]] — alternative-to
 - [[SelfCheckGPT]] — related (uses agreement across samples to flag hallucinated sentences)
 - [[Branch-Solve-Merge]] — extends (samples different sub-problems instead of the same one k times)

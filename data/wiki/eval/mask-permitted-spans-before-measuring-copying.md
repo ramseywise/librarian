@@ -2,7 +2,7 @@
 title: Mask Permitted Spans Before Measuring Copying
 tags: [eval, pattern]
 summary: "A verbatim-overlap grader (\"no run of more than N words shared with the source\") cannot be tuned to tolerate legitimately kept names, because permitted names — work titles especially — run longer than any candidate threshold; raising N buys silence, not headroom. Mask the spans the prompt allows the model to keep, in both texts, then set N to the prompt's actual contract — and decide the threshold debate from a corpus measurement that needs no model output."
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-16-dis277-generated-description-verbatim-threshold.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-16-dis277-generated-description-verbatim-threshold.md
@@ -82,5 +82,4 @@ for real output" ([[UNGATED Metric Convention]]).
 ## See Also
 - [[UNGATED Metric Convention]] — extends (what the metric reports until the bounded run lands)
 - [[Grounding Claim Methodology]] — related (verbatim quotes as evidence; here verbatim runs are the defect)
-- [[Write-Only Fields and the Reader Map]] — related (the generated-description field that had no column)
 - [[Synthesize the Cheap Half]] — related (measure the side you can verify against reality first)

@@ -2,7 +2,7 @@
 title: Offline Annotation over Online Inference
 tags: [rag, infra, llm, decision]
 summary: Decision to spend all model work at ingest time — enrich each catalogue row once into a fixed taxonomy — and serve with a plain WHERE clause plus in-memory scoring over ≤1,000 rows, with no embeddings, pgvector or GPU; the serving path becomes deterministic, cheap and replayable, and the dominant cost lever moves to caching the static taxonomy prefix of the enrichment prompt rather than gating re-runs.
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/diskoe/docs/research/2026-08-27-schema-audit.md
   - data/raw/claude-docs/playground/docs/research/2026-08-27-schema-audit.md
@@ -41,7 +41,7 @@ neighbours, rerank.
   recovering at serve time. Similarity search would be solving a problem the form
   removed.
 - A deterministic serving path can be **replayed exactly** from a logged request and
-  pool, which is what every later eval depends on (see [[Replayable Slate Ranker]]) and
+  pool, which is what every later eval depends on (see Replayable Slate Ranker) and
   what makes a position-randomisation slice cheap to ship.
 - The catalogue is small enough that per-request scoring is microseconds; the cost of an
   online model call would dominate every request for no measurable gain.
@@ -53,7 +53,7 @@ Once the model is only in the enrichment stage, the cost shape changes:
 - Input tokens were ~97% of enrichment cost, and most of that input is the **static
   taxonomy and instructions**, identical across every call. Caching that prefix
   (see [[Prefix Caching]]) is a larger lever than the content-hash re-run gate
-  (see [[Spend Gate Before the Model Call]]), which only saves calls on unchanged rows.
+  (see Spend Gate Before the Model Call), which only saves calls on unchanged rows.
 - Earlier dollar projections for the stage were **retracted** — they were derived from a
   baseline that a later measurement contradicted — and the audit kept only the ratios.
 - Self-hosting a model was ruled out below millions of calls per month; the fixed cost
@@ -83,8 +83,6 @@ relational tables hold the neighbourhood used as enrichment evidence; a graph DB
 - [[RAG Retrieval Strategies]] — alternative-to (metadata filtering plus rubric scoring instead of similarity retrieval)
 - [[Specificity-Adaptive Ranking and Slate Composition]] — prerequisite-for
 - [[Prefix Caching]] — extends (why the taxonomy prefix is the dominant cost lever)
-- [[Spend Gate Before the Model Call]] — related (the per-row gate this decision reframes as the smaller lever)
 - [[Two AI Cost Economies: Durable Once, Contextual On Demand]] — instance-of (enrichment is the durable-once economy)
 - [[Graded-Uncertainty Enrichment Contract]] — related (what the offline annotation produces)
 - [[Embedding Side Table, Not Column]] — related (catalogue embeddings computed offline, versioned in their own table)
-- [[Relevance Is the Score, Enrichability Is the Gate]] — related (choosing which rows get the offline annotation)

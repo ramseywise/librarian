@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 from dataclasses import dataclass, field
+from typing import Callable
 
 from model import Complete
 from scorekeeper import HELD_OUT, VISIBLE, Score, fingerprint, score
@@ -44,25 +44,19 @@ def prompt_for(last: Iteration | None) -> str:
     return f"{TASK}\n\nYour last attempt:\n{last.code}\n\nThe scorekeeper reports {last.visible.passed}/{last.visible.total} visible checks passing:\n{failures}"
 
 
-def run_loop(
-    complete: Complete, limits: Limits, tamper: Callable[[int], None] | None = None
-) -> Result:
+def run_loop(complete: Complete, limits: Limits, tamper: Callable[[int], None] | None = None) -> Result:
     """The maker proposes and the scorekeeper disposes. Four things to notice:
-    - the verdict comes from code, not from the maker saying it is done
-    - the maker gets the visible failures and never the held-out checks
-    - every stop reason is explicit and returned, so "why did it stop?" has an answer
-    - passing visible checks while failing held-out ones is its own outcome: the maker fit the test
+     - the verdict comes from code, not from the maker saying it is done
+     - the maker gets the visible failures and never the held-out checks
+     - every stop reason is explicit and returned, so "why did it stop?" has an answer
+     - passing visible checks while failing held-out ones is its own outcome: the maker fit the test
     """
     before = fingerprint()
     iterations: list[Iteration] = []
     tokens, best_visible, stale = 0, -1, 0
 
     def finish(stop: str) -> Result:
-        clean = [
-            i
-            for i in iterations
-            if i.visible.passed == i.visible.total and i.held_out.passed == i.held_out.total
-        ]
+        clean = [i for i in iterations if i.visible.passed == i.visible.total and i.held_out.passed == i.held_out.total]
         return Result(stop, iterations, tokens, clean[-1].code if clean else None)
 
     for n in range(1, limits.max_iterations + 1):

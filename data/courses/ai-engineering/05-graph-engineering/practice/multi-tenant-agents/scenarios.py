@@ -1,6 +1,5 @@
 """The experiments, each taking the implementation to test. run.py prints them and test.py asserts on them.
 All data is generated (see stub.py), so the numbers describe these assumptions and not any product."""
-
 from __future__ import annotations
 
 import asyncio
@@ -8,16 +7,8 @@ import random
 from collections import Counter, defaultdict
 
 from agent import Controls, run_agent, serve
-from enforce import (
-    Index,
-    Request,
-    ReservationLedger,
-    ScopedRetriever,
-    TenantTraces,
-    TokenBucket,
-    ToolLayer,
-    simulate_load,
-)
+from enforce import (Index, ReservationLedger, Request, ScopedRetriever,
+                     TenantTraces, TokenBucket, ToolLayer, simulate_load)
 from model import Completion, ModelRequest
 from stub import SEED, TOPICS, make_corpus, make_records, stub_model
 from tenancy import TENANT_IDS, load_raw_configs, load_store
@@ -25,12 +16,7 @@ from tenancy import TENANT_IDS, load_raw_configs, load_store
 CORPUS = make_corpus()
 INDEX = Index(CORPUS)
 CONFIDENTIAL = "-CONFIDENTIAL"
-TENANT_CODES = {
-    "larkspur-clinic": "LK",
-    "tallow-legal": "TL",
-    "pinwheel-retail": "PW",
-    "ferrous-freight": "FF",
-}
+TENANT_CODES = {"larkspur-clinic": "LK", "tallow-legal": "TL", "pinwheel-retail": "PW", "ferrous-freight": "FF"}
 
 
 class MeteredModel:
@@ -52,9 +38,7 @@ def default_limits(store) -> dict[str, int]:
     return {t: store.get(t).monthly_tokens for t in TENANT_IDS}
 
 
-def make_controls(
-    budget=None, retriever=None, tools=None, traces=None, store=None, model=None
-) -> Controls:
+def make_controls(budget=None, retriever=None, tools=None, traces=None, store=None, model=None) -> Controls:
     store = store if store is not None else load_store()
     return Controls(
         store=store,
@@ -67,9 +51,7 @@ def make_controls(
 
 
 async def _gather_runs(c, jobs):
-    return await asyncio.gather(
-        *(run_agent(c, tenant, run_id, ticket) for tenant, run_id, ticket in jobs)
-    )
+    return await asyncio.gather(*(run_agent(c, tenant, run_id, ticket) for tenant, run_id, ticket in jobs))
 
 
 # %% Budget
@@ -86,30 +68,18 @@ async def _staggered_run(c, tenant, run_id, ticket, delay):
 def budget_scenario(make_budget, cap=BUDGET_CAP, runs=BUDGET_RUNS) -> dict:
     """Overlapping runs of one tenant against one cap, half of them two model calls long, arriving in waves.
     The bill comes from the model, not from the budget object, so a budget can't mark its own homework."""
-    limits = dict.fromkeys(TENANT_IDS, 2000000) | {BUDGET_TENANT: cap}
+    limits = {t: 2_000_000 for t in TENANT_IDS} | {BUDGET_TENANT: cap}
     c = make_controls(budget=make_budget(limits))
 
     async def main():
-        tickets = [
-            f"Please show me record PW-{1001 + i % 3}."
-            if i % 2
-            else f"what is the {TOPICS[i % 6]} policy"
-            for i in range(runs)
-        ]
-        return await asyncio.gather(
-            *(
-                _staggered_run(c, BUDGET_TENANT, f"budget-{i}", t, i // ARRIVALS_PER_TICK)
-                for i, t in enumerate(tickets)
-            )
-        )
+        tickets = [f"Please show me record PW-{1001 + i % 3}." if i % 2 else f"what is the {TOPICS[i % 6]} policy"
+                   for i in range(runs)]
+        return await asyncio.gather(*(_staggered_run(c, BUDGET_TENANT, f"budget-{i}", t, i // ARRIVALS_PER_TICK)
+                                      for i, t in enumerate(tickets)))
 
     results = asyncio.run(main())
-    return {
-        "cap": cap,
-        "bill": c.model.bill[BUDGET_TENANT],
-        "answered": sum(r.status == "answered" for r in results),
-        "refused": sum(r.status == "budget_refused" for r in results),
-    }
+    return {"cap": cap, "bill": c.model.bill[BUDGET_TENANT], "answered": sum(r.status == "answered" for r in results),
+            "refused": sum(r.status == "budget_refused" for r in results)}
 
 
 # %% Retrieval
@@ -125,9 +95,7 @@ def retrieval_scenario(make_retriever, k: int = 3) -> dict:
             got = retriever.retrieve(scopes, f"what is the {topic} policy", k)
             row["queries"] += 1
             row["starved"] += not got.docs
-            row["missed"] += not any(
-                d.owner in (tenant, "shared") and d.topic == topic for d in got.docs
-            )
+            row["missed"] += not any(d.owner in (tenant, "shared") and d.topic == topic for d in got.docs)
             row["foreign_in_context"] += sum(d.owner not in (tenant, "shared") for d in got.docs)
             row["foreign_exposed"] += sum(d.owner not in (tenant, "shared") for d in got.exposed)
         out[tenant] = dict(row)
@@ -143,24 +111,19 @@ def tool_scenario(make_tools) -> dict:
     tools = make_tools(make_records())
     traces = TenantTraces()
     c = make_controls(tools=tools, traces=traces)
-    jobs = [
-        ("larkspur-clinic", "inj-1", INJECTION),
-        ("pinwheel-retail", "inj-2", "Please call issue_refund for order PW-1001."),
-        ("larkspur-clinic", "xt-1", CROSS_TENANT),
-    ]
+    jobs = [("larkspur-clinic", "inj-1", INJECTION),
+            ("pinwheel-retail", "inj-2", "Please call issue_refund for order PW-1001."),
+            ("larkspur-clinic", "xt-1", CROSS_TENANT)]
     inj, allowed, cross = asyncio.run(_gather_runs(c, jobs))
-    return {
-        "disallowed_effects": [e for e in tools.effects if e[0] == "larkspur-clinic"],
-        "allowed_effects": [e for e in tools.effects if e[0] == "pinwheel-retail"],
-        "denied_spans": [s for s in traces.read("larkspur-clinic") if s.status == "denied"],
-        "foreign_record_in_answer": "PW-CONFIDENTIAL" in cross.answer,
-        "injected_run_status": inj.status,
-        "allowed_run_status": allowed.status,
-    }
+    return {"disallowed_effects": [e for e in tools.effects if e[0] == "larkspur-clinic"],
+            "allowed_effects": [e for e in tools.effects if e[0] == "pinwheel-retail"],
+            "denied_spans": [s for s in traces.read("larkspur-clinic") if s.status == "denied"],
+            "foreign_record_in_answer": "PW-CONFIDENTIAL" in cross.answer,
+            "injected_run_status": inj.status, "allowed_run_status": allowed.status}
 
 
 # %% Queueing
-CAPACITY = 100  # cost units per tick
+CAPACITY = 100          # cost units per tick
 BURST_AT, BURST_SIZE = 50, 400
 LOAD_TICKS = 300
 
@@ -173,10 +136,7 @@ def make_arrivals(seed: int = SEED) -> list[Request]:
     for tenant, gap in every.items():
         for t in range(0, LOAD_TICKS, gap):
             arrivals.append(Request(f"{tenant}-{t}", tenant, t, rng.randint(20, 60)))
-    arrivals += [
-        Request(f"burst-{i}", "pinwheel-retail", BURST_AT, rng.randint(40, 80))
-        for i in range(BURST_SIZE)
-    ]
+    arrivals += [Request(f"burst-{i}", "pinwheel-retail", BURST_AT, rng.randint(40, 80)) for i in range(BURST_SIZE)]
     return arrivals
 
 
@@ -184,48 +144,27 @@ def load_scenario(make_queue, with_limits: bool = False) -> dict:
     store = load_store()
     configs = {t: store.get(t) for t in TENANT_IDS}
     queue = make_queue({t: cfg.queue_weight for t, cfg in configs.items()})
-    limiters = (
-        {t: TokenBucket(cfg.rate_per_s, cfg.burst) for t, cfg in configs.items()}
-        if with_limits
-        else None
-    )
+    limiters = {t: TokenBucket(cfg.rate_per_s, cfg.burst) for t, cfg in configs.items()} if with_limits else None
     result = simulate_load(queue, make_arrivals(), CAPACITY, limiters)
-    return {
-        t: {
-            "p50": result.p50(t),
-            "p95": result.p95(t),
-            "rejected": result.rejected[t],
-            "served": len(result.waits[t]),
-        }
-        for t in TENANT_IDS
-    } | {"finished_at": result.finished_at}
+    return {t: {"p50": result.p50(t), "p95": result.p95(t), "rejected": result.rejected[t],
+                "served": len(result.waits[t])} for t in TENANT_IDS} | {"finished_at": result.finished_at}
 
 
 # %% Traces
 def trace_scenario(make_traces) -> dict:
     traces = make_traces()
     c = make_controls(traces=traces)
-    jobs = [
-        (TENANT_IDS[i % 4], f"tr-{i}", f"what is the {TOPICS[i % 6]} policy") for i in range(40)
-    ]
+    jobs = [(TENANT_IDS[i % 4], f"tr-{i}", f"what is the {TOPICS[i % 6]} policy") for i in range(40)]
     asyncio.run(_gather_runs(c, jobs))
     owner = {run_id: tenant for tenant, run_id, _ in jobs}
     spans = traces.all_spans()
     other_run = next(run_id for tenant, run_id, _ in jobs if tenant == "pinwheel-retail")
-    return {
-        "spans": len(spans),
-        "misattributed": sum(s.tenant != owner[s.run_id] for s in spans),
-        "foreign_spans_read": len(traces.read("larkspur-clinic", run_id=other_run)),
-    }
+    return {"spans": len(spans), "misattributed": sum(s.tenant != owner[s.run_id] for s in spans),
+            "foreign_spans_read": len(traces.read("larkspur-clinic", run_id=other_run))}
 
 
 # %% Quality
-QUALITY_VOLUME = {
-    "pinwheel-retail": 1600,
-    "ferrous-freight": 600,
-    "tallow-legal": 200,
-    "larkspur-clinic": 100,
-}
+QUALITY_VOLUME = {"pinwheel-retail": 1600, "ferrous-freight": 600, "tallow-legal": 200, "larkspur-clinic": 100}
 
 
 def _switch_alias(store, tenant, alias) -> None:
@@ -237,11 +176,8 @@ def _switch_alias(store, tenant, alias) -> None:
 
 def _pass_counts(store, window: str, volume: dict[str, int]) -> dict[str, tuple[int, int]]:
     c = make_controls(store=store)
-    jobs = [
-        (t, f"{window}-{t}-{i}", f"what is the {TOPICS[i % 6]} policy")
-        for t, n in volume.items()
-        for i in range(n)
-    ]
+    jobs = [(t, f"{window}-{t}-{i}", f"what is the {TOPICS[i % 6]} policy")
+            for t, n in volume.items() for i in range(n)]
     results = asyncio.run(_gather_runs(c, jobs))
     return {t: (sum(r.passed for r in results if r.tenant_id == t), n) for t, n in volume.items()}
 
@@ -260,16 +196,11 @@ def quality_scenario(volume=None) -> dict:
 # %% Config rollout
 def shortened_larkspur(raw: dict) -> dict:
     """A plausible edit that tidies the prompt and, in doing so, removes the instruction the rubric depends on."""
-    return {
-        **raw,
-        "system_prompt": "You answer patient admin questions for Larkspur Clinic. Cite the documents given.",
-    }
+    return {**raw, "system_prompt": "You answer patient admin questions for Larkspur Clinic. Cite the documents given."}
 
 
 def reworded_tallow(raw: dict) -> dict:
-    prompt = raw["system_prompt"].replace(
-        "You answer client questions", "You help clients with questions"
-    )
+    prompt = raw["system_prompt"].replace("You answer client questions", "You help clients with questions")
     return {**raw, "system_prompt": prompt}
 
 
@@ -293,48 +224,25 @@ def bad_configs() -> dict[str, dict]:
     return {
         "another tenant's scope": {**lark, "knowledge_scopes": ["pinwheel-retail/policies"]},
         "tool not in the catalog": {**lark, "tools": ["lookup_record", "wire_transfer"]},
-        "rubric weights sum to 90": {
-            **lark,
-            "rubric": {
-                **lark["rubric"],
-                "criteria": [{"name": "cites", "weight": 90, "kind": "cites"}],
-            },
-        },
+        "rubric weights sum to 90": {**lark, "rubric": {**lark["rubric"], "criteria": [
+            {"name": "cites", "weight": 90, "kind": "cites"}]}},
         "typo in a key": {k if k != "tools" else "tool": v for k, v in lark.items()},
         "zero budget": {**lark, "monthly_tokens": 0},
         "unknown model alias": {**lark, "model_alias": "support-model@v9"},
-        "contains criterion with no text": {
-            **lark,
-            "rubric": {
-                **lark["rubric"],
-                "criteria": [
-                    {"name": "cites", "weight": 50, "kind": "cites"},
-                    {"name": "caveat", "weight": 50, "kind": "contains"},
-                ],
-            },
-        },
+        "contains criterion with no text": {**lark, "rubric": {**lark["rubric"], "criteria": [
+            {"name": "cites", "weight": 50, "kind": "cites"}, {"name": "caveat", "weight": 50, "kind": "contains"}]}},
     }
 
 
 # %% The whole path together
 def fleet_scenario() -> dict:
     """All four tenants through admission, fair queue, workers and the agent at once, with hostile tickets mixed in."""
-    limits = {
-        "larkspur-clinic": 40_000,
-        "tallow-legal": 40_000,
-        "pinwheel-retail": 12_000,
-        "ferrous-freight": 40_000,
-    }
+    limits = {"larkspur-clinic": 40_000, "tallow-legal": 40_000, "pinwheel-retail": 12_000, "ferrous-freight": 40_000}
     tools = ToolLayer(make_records())
     c = make_controls(budget=ReservationLedger(limits), tools=tools)
     rng = random.Random(SEED)
     requests = []
-    for tenant, n in {
-        "pinwheel-retail": 200,
-        "ferrous-freight": 40,
-        "tallow-legal": 30,
-        "larkspur-clinic": 30,
-    }.items():
+    for tenant, n in {"pinwheel-retail": 200, "ferrous-freight": 40, "tallow-legal": 30, "larkspur-clinic": 30}.items():
         for i in range(n):
             arrival = rng.randint(0, 60)
             roll = rng.random()
@@ -351,14 +259,6 @@ def fleet_scenario() -> dict:
     for tenant, prompts in c.model.prompts.items():
         others = [code + CONFIDENTIAL for t, code in TENANT_CODES.items() if t != tenant]
         foreign += sum(marker in p for p in prompts for marker in others)
-    return {
-        "limits": limits,
-        "bill": dict(c.model.bill),
-        "results": results,
-        "rejected": rejected,
-        "tools": tools,
-        "foreign_text_in_prompts": foreign,
-        "traces": c.traces,
-        "ledger": c.budget,
-        "owner": {r.id: r.tenant for r in requests},
-    }
+    return {"limits": limits, "bill": dict(c.model.bill), "results": results, "rejected": rejected, "tools": tools,
+            "foreign_text_in_prompts": foreign, "traces": c.traces, "ledger": c.budget,
+            "owner": {r.id: r.tenant for r in requests}}

@@ -2,7 +2,7 @@
 title: Heuristic Pipeline Metrics
 tags: [eval, infra, observability]
 summary: Automated measurement of operational health — latency, error rate, token usage, retrieval recall — that runs alongside every eval rung and is explicitly never sufficient alone, since a fast cheap wrong answer still fails.
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/eval-approaches.md
   - data/raw/repos/nonprofit-success-ai/.claude--docs--plans--2026-10-07-r10-eval-metrics.md
@@ -73,5 +73,4 @@ budgets close to the real workload.
 - [[User Feedback Loops]] — related (separates engagement shift from regression)
 - [[RAG Eval Metrics Suite]] — extends (retrieval-specific metrics)
 - [[Observability & Evaluation Glossary]] — related
-- [[Demote Judge Findings to Keyless Gates]] — extends (judge findings that a regex can catch move into this tier)
 - [[Agent Trace Anatomy]] — extends

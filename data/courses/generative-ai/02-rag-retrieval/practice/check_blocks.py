@@ -9,7 +9,6 @@ A block whose first lines contain "# illustrative" is skipped: it needs paid API
 infrastructure and says which. A ```text fence directly after a block is treated as
 that block's output. --write replaces those fences with what the block printed.
 """
-
 import pathlib
 import re
 import subprocess
@@ -24,19 +23,10 @@ FENCE = re.compile(r"```python\n(.*?)```(\n\s*```text\n(.*?)```)?", re.S)
 def run(code: str) -> tuple[int, str, str]:
     with tempfile.NamedTemporaryFile("w", suffix=".py", delete=False) as f:
         f.write(code)
-    p = subprocess.run(
-        [sys.executable, f.name],
-        cwd=HERE,
-        capture_output=True,
-        text=True,
-        timeout=280,
-        env={
-            "PYTHONPATH": str(HERE),
-            "PATH": "/usr/bin:/bin",
-            "HOME": str(pathlib.Path.home()),
-            "HF_HUB_DISABLE_PROGRESS_BARS": "1",
-        },
-    )
+    p = subprocess.run([sys.executable, f.name], cwd=HERE, capture_output=True, text=True,
+                       timeout=280, env={"PYTHONPATH": str(HERE), "PATH": "/usr/bin:/bin",
+                                         "HOME": str(pathlib.Path.home()),
+                                         "HF_HUB_DISABLE_PROGRESS_BARS": "1"})
     return p.returncode, p.stdout, p.stderr
 
 
@@ -61,9 +51,7 @@ def main() -> int:
             rc, out, err = run(code)
             if rc:
                 failures += 1
-                print(
-                    f"FAIL {path.name} block {ran}: {err.strip().splitlines()[-1] if err.strip() else rc}"
-                )
+                print(f"FAIL {path.name} block {ran}: {err.strip().splitlines()[-1] if err.strip() else rc}")
                 return m.group(0)
             if tail is None:
                 return m.group(0)

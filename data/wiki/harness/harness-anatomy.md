@@ -2,7 +2,7 @@
 title: Harness Anatomy
 tags: [llm, agents, infra, concept]
 summary: "The nine harness components and the five subsystems they serve, why the filesystem is the foundational primitive (including state for sessionless agents), code as a meta-capability, the layered mental model, and the causal build order."
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--02-harness-anatomy.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--02-harness-anatomy.md
@@ -231,7 +231,6 @@ Six items. Everything else here is elaboration on those.
 - [[Long-Horizon Execution]] — prerequisite-for
 - [[Harness Subsystem Attribution]] — extends (the five-subsystem diagnostic cut)
 - [[Coding-Agent Search and Edit Schemes]] — extends (the minimal coding kit's search and edit tools)
-- [[Realtime Is UI Sync, Not the Event Bus]] — related (a realtime channel is not the event bus)
 - [[DeepCode Information-Flow Management]] — related
 - [[Natural-Language Agent Harnesses]] — extends
 - [[Harness Effect on Token Economics]] — related

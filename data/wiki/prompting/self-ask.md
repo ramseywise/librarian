@@ -2,7 +2,7 @@
 title: Self-Ask Prompting
 tags: [prompting, pattern]
 summary: "A few-shot prompt in which the model writes each follow-up question and its intermediate answer before the final answer, optionally answering the follow-ups with a search engine; on the 125-question Bamboogle set with davinci-002 it scored 57.6% against 46.4% for chain of thought, and 60.0% with search (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-08-press-2023-measuring-narrowing-compositionality-gap-language.md
 ---
@@ -46,7 +46,6 @@ changing the prompt.
   deployments have since been retired.
 
 ## See Also
-- [[Chain of Thought]] — prerequisite-for (the method it is compared against and builds on)
 - [[Tree of Thoughts]] — alternative-to (another structured reasoning scaffold)
 - [[FreshQA]] — related (uses a Self-Ask baseline in its comparison)
 - [[IRCoT Interleaved Retrieval and Chain-of-Thought]] — related (interleaves retrieval with reasoning steps)

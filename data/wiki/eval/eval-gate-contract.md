@@ -2,7 +2,7 @@
 title: RAG Eval Gate Contract
 tags: [eval, rag, pattern]
 summary: Eight-gate ownership contract for RAG evaluation pipelines — each gate answers a distinct question about corpus quality, retrieval, generation, and grader calibration, with strict handoff contracts between gates.
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/playground/docs/evals/gate-contract.md
   - data/raw/claude-docs/project-g/docs/evals/gate-contract.md
@@ -148,9 +148,7 @@ Track: liked vs disliked score separation, Cohen's d, precision/recall/F1 agains
 - [[Reciprocal Rank Fusion (RRF)]]
 - [[CRAG Retry Logic]]
 - [[RL for Retrieval Policies]] — related (component gates as the eval-side answer to sub-task/end-task reward divergence)
-- [[AI Engineering Curriculum Structure]] — related (observability-as-infrastructure vs eval-as-discipline, the split these gates operationalise)
 - [[Frozen Version Stamps on Logged Results]] — related (per-component version constants on every served row)
-- [[Write-Only Fields and the Reader Map]] — related (audit of which produced fields anything reads)
 - [[UNGATED Metric Convention]] — extends (metrics in the registry that deliberately have no gate yet)
 - [[Run-Then-Assert Eval CI]] — extends
 - [[Eval Failure Taxonomy]] — extends

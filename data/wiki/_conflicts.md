@@ -2,7 +2,7 @@
 title: Conflicts
 tags: [index, conflict]
 summary: Flagged contradictions between sources. Each entry needs human review before resolution.
-updated: 2026-07-14
+updated: 2026-11-10
 ---
 
 # Conflicts
@@ -48,14 +48,14 @@ Note: Claims B and C may refer to a different grader (chunk-level relevance scor
 
 ## Conflict: SANYI Violation-Code Meanings and Severities — 2026-07-14
 
-**Claim A** (from [[SANYI Change-Contract System]], sourced from `raw/claude-docs/project-g/skills/SANYI/SKILL.md` and `README.md`, ingested 2026-07-05):
+**Claim A** (from SANYI Change-Contract System, sourced from `raw/claude-docs/project-g/skills/SANYI/SKILL.md` and `README.md`, ingested 2026-07-05):
 > BY-1 = "Tunable hardcoded in source" (Medium severity); BY-2 = "Prompt embedded in code" (Medium); BY-3 = "Feature flag not exposed as env var" (Low); BY-4 = "Dead config entry" (Low); JY-1 = "Schema entropy growth" (Medium); JY-2 = "Graph topology change without contract update" (High); JY-3 = "Tool signature drift" (High); BN-1 = "Invariant moved to prompt/config" (Critical).
 
 **Claim B** (from `raw/claude-docs/project-g/skills/SANYI/references/violations.md`, which states of itself: "Codes and severities here are authoritative; SKILL.md and README.md mirror them"):
 > BY-1 = "Direct modification of Buyi-guarded code" (blocker); BY-2 = "Semantic downgrade: Buyi invariant made bypassable via flag/config/env" (blocker); BY-3 = "Buyi evidence test deleted or weakened" (blocker); BY-4 = "Declared Buyi invariant has prompt-only implementation" (blocker); JY-1 = "Jianyi budget exceeded" (warning); JY-2 = "Anomalous single-PR growth" (warning); JY-3 = "Unbounded escape hatch" (warning); BN-1 = "Bianyi value hardcoded outside declared layer" (info).
 
 **Status:** Resolved — 2026-07-17
-**Resolution:** Claim B is correct. The live SANYI skill copies (librarian, playground, ai-project-template — verified functionally identical, whitespace-only diffs) all carry Claim B's taxonomy in their current `SKILL.md` (BY-1 = "Buyi path edited directly"), confirming the 2026-07-05 ingest captured a pre-reconciliation draft that was later corrected upstream. Updated [[SANYI Change-Contract System]] to Claim B's table; Claim A stays on record here as the historical ingest snapshot.
+**Resolution:** Claim B is correct. The live SANYI skill copies (librarian, playground, ai-project-template — verified functionally identical, whitespace-only diffs) all carry Claim B's taxonomy in their current `SKILL.md` (BY-1 = "Buyi path edited directly"), confirming the 2026-07-05 ingest captured a pre-reconciliation draft that was later corrected upstream. Updated SANYI Change-Contract System to Claim B's table; Claim A stays on record here as the historical ingest snapshot.
 **Impact (historical):** The two sources assigned **different meanings to the same codes** — e.g. Claim A's BY-1 ("hardcoded tunable") is Claim B's BN-1, while Claim B's BY-1 ("direct modification of Buyi-guarded code") had no equivalent in Claim A.
 
 **Related sub-conflict — SANYI.md file structure:** Resolved the same way, 2026-07-17. `contract-spec.md`'s six exact-match sections (`## 不易 Buyi`, `## 简易 Jianyi`, `## 变易 Bianyi`, `## Migrations`, `## Pending`, `## Debt`, with per-entry fields `paths`/`contract`/`evidence`/`budget`/`current`) are what the live skill parses; the wiki page's "SANYI.md Format" section already reflected them and is now marked authoritative. Claim A's section names (`## Components`, `## Buyi Enforcement`, …) were the same pre-reconciliation draft.
@@ -64,17 +64,17 @@ Note: Claims B and C may refer to a different grader (chunk-level relevance scor
 
 ## Conflict: Test Coverage in a Code-Test Submission — 2026-08-03
 
-**Claim A** (from [[AIE Code-Test Flaw Taxonomy]], sourced from `data/raw/claude-docs/learn-ai-engineering/docs/research/2026-08-01_code-test_format-and-flaws.md`):
+**Claim A** (from AIE Code-Test Flaw Taxonomy, sourced from `data/raw/claude-docs/learn-ai-engineering/docs/research/2026-08-01_code-test_format-and-flaws.md`):
 > What strong candidates actually do in the last 20 min … **NOT:** implement multi-turn conversation, add a web UI, tune the prompt template, **write a test suite**, implement a custom embedding model, add caching.
 
 **Claim B** (from new source `data/raw/claude-docs/learn-ai-engineering/docs/research/2026-08-01_code-test_openai-work-trial.md`):
 > Even in a 1-hour timed test, include 2–3 tests: happy path, boundary, failure/error path — runnable with one command. Missing tests is (per this source) the single most cited rejection reason.
 
 **Status:** Resolved — 2026-08-04
-**Resolution:** Both hold, scoped by window, with A's evidence weighted higher where they overlap. A's "don't spend the last 20 minutes writing tests" is correct for the **1-hour timed** round: it is multi-source (Grigorev dataset, published Meta/Google rubrics), and those rubrics weight correctness > code quality > communication with no testing band at all. B's dial is correct for **1–6h async** submissions graded as pull requests, where the deliverable is reviewed like a PR and test presence is legible. Where B overlaps A — its claim that tests are needed *"even in a 1-hour timed test"* — B is recorded with attribution rather than asserted: it is vendor-published, single-source, and functions as content marketing for mock-interview services, and its "single most cited rejection reason" superlative is uncorroborated. [[Timebox-Scaled Deliverable Bar]] already carries that confidence note inline; no page edit was required beyond dropping the `conflict` tags.
+**Resolution:** Both hold, scoped by window, with A's evidence weighted higher where they overlap. A's "don't spend the last 20 minutes writing tests" is correct for the **1-hour timed** round: it is multi-source (Grigorev dataset, published Meta/Google rubrics), and those rubrics weight correctness > code quality > communication with no testing band at all. B's dial is correct for **1–6h async** submissions graded as pull requests, where the deliverable is reviewed like a PR and test presence is legible. Where B overlaps A — its claim that tests are needed *"even in a 1-hour timed test"* — B is recorded with attribution rather than asserted: it is vendor-published, single-source, and functions as content marketing for mock-interview services, and its "single most cited rejection reason" superlative is uncorroborated. Timebox-Scaled Deliverable Bar already carries that confidence note inline; no page edit was required beyond dropping the `conflict` tags.
 **Impact:** Which behaviour the code-test prep material tells a candidate to spend the final 20 minutes on. The two files are sibling research docs in the same LAE folder, and B is explicitly framed as a correction to A.
 
-**Note on the resolution:** [[Timebox-Scaled Deliverable Bar]] proposes that both are right at different windows — A's advice was derived from a 1-hour timed budget where the ~23-minute hardening pass already consumes the tail, while B addresses 1–6h async submissions graded as pull requests. But B asserts its floor *"even in a 1-hour timed test,"* which is a direct overlap, so the disagreement is real at that window and not fully dissolved by the dial. Confidence also differs: A is multi-source (Grigorev dataset, published Meta/Google rubrics); B is vendor-published single-source content marketing whose "most cited rejection reason" claim is uncorroborated. A secondary tension: B treats testing as a named grading band, while the Meta and Google rubrics quoted in A weight correctness > code quality > communication and name no testing band at all.
+**Note on the resolution:** Timebox-Scaled Deliverable Bar proposes that both are right at different windows — A's advice was derived from a 1-hour timed budget where the ~23-minute hardening pass already consumes the tail, while B addresses 1–6h async submissions graded as pull requests. But B asserts its floor *"even in a 1-hour timed test,"* which is a direct overlap, so the disagreement is real at that window and not fully dissolved by the dial. Confidence also differs: A is multi-source (Grigorev dataset, published Meta/Google rubrics); B is vendor-published single-source content marketing whose "most cited rejection reason" claim is uncorroborated. A secondary tension: B treats testing as a named grading band, while the Meta and Google rubrics quoted in A weight correctness > code quality > communication and name no testing band at all.
 
 ---
 
@@ -96,14 +96,14 @@ Note: Claims B and C may refer to a different grader (chunk-level relevance scor
 
 ## Conflict: Who writes SUPERSEDED on a plan doc — 2026-10-16
 
-**Claim A** (from `[[Plan-Doc Status Enum]]`, sourced from the GUA-73 status-enum spec):
+**Claim A** (from `Plan-Doc Status Enum`, sourced from the GUA-73 status-enum spec):
 > The transition table lists `SUPERSEDED` ("replaced by another doc; off-path") with writer "manual".
 
 **Claim B** (from new sources `data/raw/claude-docs/galactus/skills/proto-plan/SKILL.md` and `data/raw/claude-docs/galactus/skills/proto-refine/SKILL.md`):
 > `/proto-plan` writes `Status: SUPERSEDED` + `Superseded-by:` on the third arrival of the `EXECUTED → PLANNED` loop-back (bound 2); `/proto-refine` writes it on a NEEDS-SPLIT verdict, naming the split docs.
 
 **Status:** Resolved — 2026-10-30
-**Resolution:** Both are current: the later galactus skills added two automatic writers (`/proto-plan` on loop-back exhaustion, `/proto-refine` on NEEDS-SPLIT) on top of the original manual writer. Updated [[Plan-Doc Status Enum]].
+**Resolution:** Both are current: the later galactus skills added two automatic writers (`/proto-plan` on loop-back exhaustion, `/proto-refine` on NEEDS-SPLIT) on top of the original manual writer. Updated Plan-Doc Status Enum.
 **Impact:** Plan-doc status hook and Capability vs Phase Skills (which skills may advance Status:); likely a later galactus evolution of the guacamayo spec rather than an error.
 
 ---
@@ -124,14 +124,14 @@ Note: Claims B and C may refer to a different grader (chunk-level relevance scor
 
 ## Conflict: arXiv API rate limit — 2026-10-17
 
-**Claim A** (from `[[Automated Paper Discovery Pipeline]]`, sourced from `data/raw/claude-docs/learn-ai-engineering/docs/research/2026-07-22_paper_discovery.md`):
+**Claim A** (from `Automated Paper Discovery Pipeline`, sourced from `data/raw/claude-docs/learn-ai-engineering/docs/research/2026-07-22_paper_discovery.md`):
 > arXiv API: "~30 req/s soft limit with backoff".
 
 **Claim B** (from new source `data/raw/claude-docs/learn-ai-engineering/docs/plans/2026-07-25-LAE-30-34-learning-depth.md`):
 > "the API allows 1 request per 3 seconds for automated access" — plan adds `time.sleep(3)` between category requests and recommends bulk export pagination.
 
 **Status:** Resolved — 2026-10-30
-**Resolution:** Claim B is correct: automated access is paced at 1 request per 3 s, with bulk export pagination for large pulls. Updated [[Automated Paper Discovery Pipeline]].
+**Resolution:** Claim B is correct: automated access is paced at 1 request per 3 s, with bulk export pagination for large pulls. Updated Automated Paper Discovery Pipeline.
 **Impact:** Automated Paper Discovery Pipeline fetch design; how a multi-category weekly fetch must be paced.
 
 ---
@@ -152,14 +152,14 @@ Note: Claims B and C may refer to a different grader (chunk-level relevance scor
 
 ## Conflict: learn-ai-engineering wave ordering — 2026-10-17
 
-**Claim A** (from `[[AI Engineering Curriculum Structure]]`, sourced from `data/raw/claude-docs/learn-ai-engineering/docs/research/2026-07-21_curriculum-architecture_meta.md` and the generative-ai READMEs):
+**Claim A** (from `AI Engineering Curriculum Structure`, sourced from `data/raw/claude-docs/learn-ai-engineering/docs/research/2026-07-21_curriculum-architecture_meta.md` and the generative-ai READMEs):
 > The discipline wave presumes the application wave, so "the corpus tells you to learn the gen-AI pillars first and layer engineering practice on top".
 
 **Claim B** (from new source `data/raw/repos/learn-ai-engineering/CURRICULUM.md`):
 > Path A orders LLM fundamentals (gen-AI pillar 01) → ai-engineering pillars 01–06 → gen-AI pillars 02–07, because "after the ai-engineering discipline, the code patterns will make sense structurally".
 
 **Status:** Resolved — 2026-10-30
-**Resolution:** Claim B is correct: CURRICULUM.md Path A (gen-AI 01, then ai-engineering 01–06, then gen-AI 02–07) is the current ordering and supersedes the earlier architecture note. Updated [[AI Engineering Curriculum Structure]].
+**Resolution:** Claim B is correct: CURRICULUM.md Path A (gen-AI 01, then ai-engineering 01–06, then gen-AI 02–07) is the current ordering and supersedes the earlier architecture note. Updated AI Engineering Curriculum Structure.
 **Impact:** AI Engineering Curriculum Structure ordering claim and its "how do I do X / why does X break" retrieval heuristic.
 
 ---
@@ -180,15 +180,15 @@ Note: Claims B and C may refer to a different grader (chunk-level relevance scor
 
 ## Conflict: Drop vs harden an unread database view — 2026-10-17
 
-**Claim A** (from `[[Artifact Is Not Evidence: Push and Probe]]`, sourced from `data/raw/claude-docs/akira/docs/research/2026-09-03-rls-closure.md`):
+**Claim A** (from `Artifact Is Not Evidence: Push and Probe`, sourced from `data/raw/claude-docs/akira/docs/research/2026-09-03-rls-closure.md`):
 > "Drop an unread surface rather than secure it" — a view no code read should be removed; removing it is the smaller, more honest change.
 
 **Claim B** (from new source `data/raw/claude-docs/akira/docs/plans/2026-09-03-dis118-rls-closure.md`, Open Question 2, resolved by the project owner):
 > Keep the view and set `security_invoker = true`; do not drop it. "No reader in this codebase" cannot rule out dashboard queries, saved SQL, BI cards or partner integrations, and a DROP is unrecoverable for them while the flag closes the same exposure reversibly.
 
 **Status:** Resolved — 2026-10-30
-**Resolution:** Claim B for this instance, with a revised general rule: drop an unread surface only when its consumers are enumerable; otherwise harden it reversibly (e.g. `security_invoker = true`). Updated [[Artifact Is Not Evidence: Push and Probe]].
-**Impact:** RLS-closure guidance in [[Artifact Is Not Evidence: Push and Probe]] and [[Written-but-Inert RLS Policies]].
+**Resolution:** Claim B for this instance, with a revised general rule: drop an unread surface only when its consumers are enumerable; otherwise harden it reversibly (e.g. `security_invoker = true`). Updated Artifact Is Not Evidence: Push and Probe.
+**Impact:** RLS-closure guidance in Artifact Is Not Evidence: Push and Probe and [[Written-but-Inert RLS Policies]].
 
 ---
 
@@ -209,40 +209,40 @@ Note: Claims B and C may refer to a different grader (chunk-level relevance scor
 
 ## Conflict: Was Dependabot auto-merge ungated, and do CI callers pin @v1? — 2026-10-17
 
-**Claim A** (from `[[AI Project Template Scaffold]]`, sourced from `raw/sessions/claude-2026-07-19-none-of-my-cicd-pipelines-run-we-need-to-d7cdbb90.md` / the 2026-07-19 CI/CD standardization plan):
+**Claim A** (from `AI Project Template Scaffold`, sourced from `raw/sessions/claude-2026-07-19-none-of-my-cicd-pipelines-run-we-need-to-d7cdbb90.md` / the 2026-07-19 CI/CD standardization plan):
 > "Dependabot auto-merge was ungated: it merged without waiting on required checks." … "Callers pin `@v1`, not `@main`."
 
 **Claim B** (from new source `data/raw/claude-docs/ai-project-template/docs/plans/AIT-22-research.md`, verified live via `gh api` 2026-07-28):
 > Branch protection already requires the CI check on all 4 production repos, and `gh pr merge --auto` honors it regardless of `needs:` — "auto-merge is not actually ungated for Dependabot PRs on the 3 repos that have `ci.yml`." The downstream callers reference the reusable workflow as `python-ci.yml@main`.
 
 **Status:** Resolved — 2026-10-30
-**Resolution:** Claim B is correct on both counts: auto-merge was gated by branch protection (verified live 2026-07-28), and callers used `@main`. `@v1` stays as the convention to migrate to. Updated [[AI Project Template Scaffold]].
-**Impact:** The CI/CD standardization section of [[AI Project Template Scaffold]]; [[Gate Dependabot Auto-Merge on Branch Protection]].
+**Resolution:** Claim B is correct on both counts: auto-merge was gated by branch protection (verified live 2026-07-28), and callers used `@main`. `@v1` stays as the convention to migrate to. Updated AI Project Template Scaffold.
+**Impact:** The CI/CD standardization section of AI Project Template Scaffold; [[Gate Dependabot Auto-Merge on Branch Protection]].
 
 ## Conflict: Resident-leaning filter — default-deny vs fail-open — 2026-10-17
 
-**Claim A** (from `[[Every Column Names Its Reader]]` § "A Graded Vocabulary With No Cutover Has No Reader", sourced from `data/raw/claude-docs/akira/docs/research/2026-09-21-dis340-audience-attribute.md`):
+**Claim A** (from `Every Column Names Its Reader` § "A Graded Vocabulary With No Cutover Has No Reader", sourced from `data/raw/claude-docs/akira/docs/research/2026-09-21-dis340-audience-attribute.md`):
 > The audience attribute is a default-deny, off-by-default hard-filter flag: unknown never passes the filter.
 
 **Claim B** (from new source `data/raw/claude-docs/akira/docs/plans/2026-09-21-dis340-audience-attribute.md`, operator decision in refine pass 2):
 > The filter fails OPEN until the backfill runs: only an explicit `'true'` excludes; `null`/`undefined`/`'unknown'` are all served, so the unconditional B2B flag is a no-op on merge day instead of emptying the candidate pool.
 
 **Status:** Resolved — 2026-10-30
-**Resolution:** Sequencing, not contradiction. Fail-open (Claim B) applies until the backfill runs; default-deny (Claim A) is the end state after it. Updated [[Every Column Names Its Reader]].
-**Impact:** [[Every Column Names Its Reader]] audience-attribute sections; any future exclusion-style hard filter added over an unpopulated column.
+**Resolution:** Sequencing, not contradiction. Fail-open (Claim B) applies until the backfill runs; default-deny (Claim A) is the end state after it. Updated Every Column Names Its Reader.
+**Impact:** Every Column Names Its Reader audience-attribute sections; any future exclusion-style hard filter added over an unpopulated column.
 
 ## Conflict: Natural-key merge refresh vs re-crawl never overwrites — 2026-10-17
 
-**Claim A** (from `[[Re-Crawl Adds, Never Overwrites]]`, sourced from `data/raw/claude-docs/akira/docs/plans/2026-09-14-dis264-enrichment-input-shaping.md`):
+**Claim A** (from `Re-Crawl Adds, Never Overwrites`, sourced from `data/raw/claude-docs/akira/docs/plans/2026-09-14-dis264-enrichment-input-shaping.md`):
 > Once a content row exists, nothing in the importer issues a content UPDATE. A natural-key sibling with a different description is counted and withheld, not written.
 
-**Claim B** (from new source `data/raw/claude-docs/akira/docs/plans/2026-09-16-dis295-event-edition-identity.md`, see `[[Coalesce Against a Never-Null Source]]`):
+**Claim B** (from new source `data/raw/claude-docs/akira/docs/plans/2026-09-16-dis295-event-edition-identity.md`, see `Coalesce Against a Never-Null Source`):
 > On a natural-key match, the merge refreshes the parent's descriptive fields (coalesced, rank-ruled for provenance) while `review_status` is still `draft` or `needs_review`.
 
 The dis264 plan itself lists this decision against the never-overwrite rule as an open tension. The two may only overlap for rows still in review.
 
 **Status:** Resolved — 2026-10-30
-**Resolution:** Both hold with a scoped exception. Descriptive fields may refresh on a natural-key match only while `review_status` is `draft` or `needs_review`; a reviewed row is never overwritten. Updated [[Re-Crawl Adds, Never Overwrites]] and retyped its link to [[Coalesce Against a Never-Null Source]] from `contradicts` to `extends`.
+**Resolution:** Both hold with a scoped exception. Descriptive fields may refresh on a natural-key match only while `review_status` is `draft` or `needs_review`; a reviewed row is never overwritten. Updated Re-Crawl Adds, Never Overwrites and retyped its link to Coalesce Against a Never-Null Source from `contradicts` to `extends`.
 **Impact:** Importer write path for existing rows; content_hash baselines and re-enrichment skip gates.
 
 ## Conflict: Does RRF protect a rank-1 exact-name lexical hit? — 2026-10-17
@@ -299,7 +299,7 @@ Possibly both partly right: the integration packages (models, tools) are a depen
 
 ## Conflict: Cross-sweep finding fingerprint formula, design vs as built — 2026-10-17
 
-**Claim A** (from `[[Cross-Sweep Finding Fingerprint]]`, sourced from `data/raw/claude-docs/guacamayo/docs/research/2026-07-27-cross-repo-intelligence.md`):
+**Claim A** (from `Cross-Sweep Finding Fingerprint`, sourced from `data/raw/claude-docs/guacamayo/docs/research/2026-07-27-cross-repo-intelligence.md`):
 > `FindingFingerprint = sha256(file + symbol_scope + category + normalized_title)[:12]`. `symbol_scope` pins a location that survives line-number churn.
 
 **Claim B** (from new source `data/raw/repos/nonprofit-success-ai/.claude--docs--research--2026-08-18_dssg-second-brain_codemap-review.md`, a code review of guacamayo `review/fingerprint.py`):
@@ -308,19 +308,19 @@ Possibly both partly right: the integration packages (models, tools) are a depen
 The as-built key uses `start_line` (line churn changes the fingerprint) and adds `reporter`. Either the design was never implemented as written, or the implementation drifted.
 
 **Status:** Resolved — 2026-10-30
-**Resolution:** Claim B is as built: the digest keys on `start_line` + `reporter`, so fingerprints do not survive line churn until the digest follows the design. Claim A stays as design intent. Updated [[Cross-Sweep Finding Fingerprint]].
+**Resolution:** Claim B is as built: the digest keys on `start_line` + `reporter`, so fingerprints do not survive line churn until the digest follows the design. Claim A stays as design intent. Updated Cross-Sweep Finding Fingerprint.
 **Impact:** Whether the trend states (persistent/recurring/resolved) survive line-number shifts. The page's claim that fingerprints survive line churn may not hold for the shipped code.
 
 ## Conflict: Is DeepEval part of listen-wiseer's eval harness? — 2026-10-17
 
-**Claim A** (from `[[Listen-Wiseer Project]]`, Tech Decisions table and eval harness layout, sourced from earlier playground/plan docs):
+**Claim A** (from `Listen-Wiseer Project`, Tech Decisions table and eval harness layout, sourced from earlier playground/plan docs):
 > Eval framework is LangFuse + RAGAS + DeepEval; DeepEval's `ToolCorrectnessMetric` fills the agent eval gap, and Tier 3 graders are "RAGAS + DeepEval".
 
 **Claim B** (from new source `data/raw/repos/listen-wiseer/CLAUDE.md`, high-confidence repo doc):
 > `deepeval` removed (2026-07-19). It was never imported anywhere in `src/`, `evals/` or `tests/`, but its pytest plugin autoloaded and broke collection. `ragas` + `langfuse` (both actually used) carry the eval harness.
 
 **Status:** Resolved — 2026-10-30
-**Resolution:** Claim B is correct: DeepEval was planned but never imported, and was removed 2026-07-19; RAGAS + LangFuse carry the harness. Updated [[Listen-Wiseer Project]].
+**Resolution:** Claim B is correct: DeepEval was planned but never imported, and was removed 2026-07-19; RAGAS + LangFuse carry the harness. Updated Listen-Wiseer Project.
 **Impact:** The Listen-Wiseer Project page's eval stack description and any recommendation citing DeepEval's ToolCorrectnessMetric as used in practice.
 
 ## Conflict: Judge calibration sample size and whether a calibrated judge may gate a release — 2026-10-30
@@ -339,7 +339,7 @@ The two may partly reflect different contexts (a discovery-stage rubric smoke te
 
 ## Conflict: Graph UI rendering library (React Flow vs Cytoscape.js) — 2026-10-30
 
-**Claim A** (from `[[Librarian Graph Explorer]]` and `[[Librarian KB — Build Plan]]`, sourced from `data/raw/claude-docs/playground/react-flow-ui.md`, `data/raw/repos/librarian/.claude--docs--plans--2026-10-30-frontend-audit-fixes.md`):
+**Claim A** (from `Librarian Graph Explorer` and `Librarian KB — Build Plan`, sourced from `data/raw/claude-docs/playground/react-flow-ui.md`, `data/raw/repos/librarian/.claude--docs--plans--2026-10-30-frontend-audit-fixes.md`):
 > The graph is rendered with React Flow (`@xyflow/react`); the 2026-10-30 audit plan lists "Replacing React Flow or the layout algorithms" as out of scope. The KB plan's decision table records "React Flow (not Cytoscape, not sigma.js)".
 
 **Claim B** (from new source `data/raw/repos/librarian/README.md`):
@@ -348,7 +348,7 @@ The two may partly reflect different contexts (a discovery-stage rubric smoke te
 Likely a stale README line (the frontend's package manifest lists `@xyflow/react`), but the wiki does not resolve it silently.
 
 **Status:** Resolved — 2026-10-30
-**Resolution:** Claim A is correct — the frontend depends on `@xyflow/react`; the README was stale and now says React Flow. Removed the conflict note from [[Librarian Graph Explorer]].
+**Resolution:** Claim A is correct — the frontend depends on `@xyflow/react`; the README was stale and now says React Flow. Removed the conflict note from Librarian Graph Explorer.
 **Impact:** README accuracy for the graph UI; any page describing the frontend stack.
 
 ## Conflict: Does few-shot CoT outperform zero-shot CoT? — 2026-10-30
@@ -363,7 +363,7 @@ The two may refer to different task types (genuinely multi-step reasoning vs sin
 
 **Status:** Resolved — 2026-10-30
 **Resolution:** Both hold for different task types: few-shot CoT helps on genuinely multi-step reasoning, and anchors the model on single-label classification. Updated [[Few-Shot Prompting]] to scope the claim and default to zero-shot CoT until an eval shows examples help.
-**Impact:** Default technique choice when adding reasoning to a prompt; [[Prompting Technique Selection]], [[Evaluating Prompts]], [[Chain of Thought]].
+**Impact:** Default technique choice when adding reasoning to a prompt; [[Prompting Technique Selection]], [[Evaluating Prompts]], Chain of Thought.
 
 ## Conflict: Cascaded voice latency budget — 2026-10-30
 

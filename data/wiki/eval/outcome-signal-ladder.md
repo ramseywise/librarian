@@ -2,7 +2,7 @@
 title: Outcome Signal Ladder
 tags: [eval, pattern]
 summary: Interaction events (open, save, click, share) are proxies for interest, not evidence that a recommendation helped; rank the candidate outcome signals by cost and strength, ship the cheapest one that can be logged from the first serve, and name in the decision record that the first round is measured on a proxy.
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/diskoe/docs/research/2026-09-29-beta-outcome-signal.md
   - data/raw/claude-docs/akira/docs/research/2026-09-29-beta-outcome-signal.md
@@ -90,7 +90,7 @@ usable, and what review caught:
   the signed token through and re-resolves positions server-side.
 - **Served position as rank carries position bias.** Using `final_rank = served_position`
   needs the caveat written into the corpus documentation (see
-  [[Explore Slice for Position Bias]]).
+  Explore Slice for Position Bias).
 - **One pseudonym scheme, extracted to a neutral module.** Poll participants reuse the
   versioned salted-HMAC pseudonym registry that saves use. It was moved out of the saves
   feature, so polls do not import a sibling feature.
@@ -123,7 +123,7 @@ Planning against the research above changed the size of the work:
   click at any non-zero position is dropped as `202 {recorded: 0}`. That is not a 400, and
   nobody sees it. The best-effort contract (a malformed optional field is dropped, never
   rejected) was deliberately kept for the new field too. See
-  [[Silence Reads as Clean]].
+  Silence Reads as Clean.
 - **Log before the definition is decided.** The plan shipped decision-agnostic logging
   first, so that whichever outcome definition the product owner chooses, the data that
   would support it is already accumulating.
@@ -131,6 +131,3 @@ Planning against the research above changed the size of the work:
 ## See Also
 - [[Trajectory Over Outcome]] — related (process signals vs the terminal outcome)
 - [[User Feedback Loops]] — extends (which feedback event counts as the outcome)
-- [[Explore Slice for Position Bias]] — related (outcome rates need a counterfactual for position)
-- [[Kiez Project]] — instance-of
-- [[Write-Time Deterministic Holdout]] — related (the pseudonym and holdout key poll judgments reuse)

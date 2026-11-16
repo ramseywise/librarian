@@ -2,7 +2,7 @@
 title: "Rate-Limit Keying: Identity Over IP"
 tags: [infra, pattern]
 summary: Rate-limit on the best per-person key each route already has (a signed visitor cookie), fall back to IP only where no key exists, and decide fail-open vs fail-closed per route — a blanket per-IP limit locks out the shared-NAT deployment it was meant to protect.
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/playground/docs/research/2026-09-06-pii-gdpr-audit.md
   - data/raw/claude-docs/akira/docs/research/2026-09-03-dis43-anonymous-rate-limiting.md
@@ -124,7 +124,7 @@ Review-round defect classes:
   awkward in tests), and so was sweeping on every call (it turns an O(1) hot path into O(n)).
 - **Fail-open tests that could not fail.** `expect(status).not.toBe(429)` after injecting a
   throwing store. They now assert the real success status. See
-  [[Red-Then-Green Proof for Fix-Stage Tests]].
+  Red-Then-Green Proof for Fix-Stage Tests.
 - **Docs that overclaimed.** The specs read as if the limiter were abuse control. It keys on
   an unverified header: a header-less request is unlimited, and a rotated header gets a fresh
   bucket. So it stops accidental load, not deliberate bypass. The verified-cookie key on the
@@ -178,7 +178,7 @@ added these build decisions:
   participants. The rate limit still shipped as an independent volume bound.
 - **A free-form route needs a payload cap, not just a rate limit.** A client-error
   reporting route writes attacker-controlled text into production logs, which is a bigger
-  exposure than uuid-and-enum bodies. See [[Client-Error Reporting Seam Is an Anonymous Log Sink]].
+  exposure than uuid-and-enum bodies. See Client-Error Reporting Seam Is an Anonymous Log Sink.
 
 ## The shared-store plan (2026-09-29)
 
@@ -215,8 +215,4 @@ raw headers and fails open) changed the order of the work:
 ## See Also
 - [[Closed-Beta Access Mechanisms]] — related (deployment protection in front of the alpha outranks per-route limits)
 - [[Production Hardening Patterns]] — extends (the anonymous-route slice of hardening)
-- [[Named-Trigger Deferral]] — instance-of (parked with a measurable trigger once the shape was understood)
-- [[Data Clusters by Writer and Trust]] — related (why forgeable telemetry rows matter)
 - [[Input Guardrails Pipeline]] — related
-- [[Client-Error Reporting Seam Is an Anonymous Log Sink]] — related (the free-text sink that needs a payload cap)
-- [[Scan-Floor Guard Against Silent No-Op Checks]] — related (a shared fallback bucket is the limiter version of a check that silently keys nothing)

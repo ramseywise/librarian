@@ -4,6 +4,7 @@ Inspired by Shunyu Yao's insights on reasoning and generalization in AI.
 """
 
 import random
+from typing import Dict, List, Tuple, Optional, Set
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -21,16 +22,16 @@ class Item:
     name: str
     item_type: ItemType
     description: str
-    properties: dict[str, any] = field(default_factory=dict)
+    properties: Dict[str, any] = field(default_factory=dict)
 
 
 @dataclass
 class Room:
     name: str
     description: str
-    items: list[Item] = field(default_factory=list)
-    exits: dict[str, str] = field(default_factory=dict)  # direction -> room_name
-    locked_exits: dict[str, str] = field(default_factory=dict)  # direction -> required_key
+    items: List[Item] = field(default_factory=list)
+    exits: Dict[str, str] = field(default_factory=dict)  # direction -> room_name
+    locked_exits: Dict[str, str] = field(default_factory=dict)  # direction -> required_key
     has_guard: bool = False
     guard_defeated: bool = False
 
@@ -75,15 +76,17 @@ class TreasureHuntGame:
         self.color_key_mapping = {
             "red key": "red door",
             "blue key": "blue door",
-            "golden key": "golden door",
+            "golden key": "golden door"
         }
 
         self.weapon_effectiveness = {
             "rusty sword": ["weak guard"],
-            "silver sword": ["weak guard", "strong guard", "dragon"],
+            "silver sword": ["weak guard", "strong guard", "dragon"]
         }
 
-        self.crafting_recipes = {frozenset(["rusty sword", "magic crystal"]): "silver sword"}
+        self.crafting_recipes = {
+            frozenset(["rusty sword", "magic crystal"]): "silver sword"
+        }
 
         self._initialize_world()
 
@@ -94,8 +97,10 @@ class TreasureHuntGame:
         self.rooms["entrance"] = Room(
             name="entrance",
             description="You stand in a dimly lit entrance hall. Stone walls echo your footsteps.",
-            items=[Item("rusty sword", ItemType.WEAPON, "An old sword with rust spots")],
-            exits={"north": "hallway", "east": "storage"},
+            items=[
+                Item("rusty sword", ItemType.WEAPON, "An old sword with rust spots")
+            ],
+            exits={"north": "hallway", "east": "storage"}
         )
 
         self.rooms["storage"] = Room(
@@ -103,16 +108,16 @@ class TreasureHuntGame:
             description="A dusty storage room filled with old crates and barrels.",
             items=[
                 Item("red key", ItemType.KEY, "A small red metal key"),
-                Item("magic crystal", ItemType.TOOL, "A glowing crystal that hums with energy"),
+                Item("magic crystal", ItemType.TOOL, "A glowing crystal that hums with energy")
             ],
-            exits={"west": "entrance"},
+            exits={"west": "entrance"}
         )
 
         self.rooms["hallway"] = Room(
             name="hallway",
             description="A long hallway with a locked door to the north.",
             exits={"south": "entrance", "north": "guard_room"},
-            locked_exits={"north": "red key"},
+            locked_exits={"north": "red key"}
         )
 
         self.rooms["guard_room"] = Room(
@@ -120,21 +125,17 @@ class TreasureHuntGame:
             description="A large room with weapon racks. A guard blocks the treasure!",
             has_guard=True,
             items=[],
-            exits={"south": "hallway", "east": "treasure_room"},
+            exits={"south": "hallway", "east": "treasure_room"}
         )
 
         self.rooms["treasure_room"] = Room(
             name="treasure_room",
             description="The treasure room! Gold coins and jewels sparkle in the light.",
             items=[
-                Item(
-                    "dragon's treasure",
-                    ItemType.TREASURE,
-                    "A massive hoard of gold and gems",
-                    {"value": 1000},
-                )
+                Item("dragon's treasure", ItemType.TREASURE, "A massive hoard of gold and gems",
+                     {"value": 1000})
             ],
-            exits={"west": "guard_room"},
+            exits={"west": "guard_room"}
         )
 
         self.current_room = self.rooms["entrance"]
@@ -168,7 +169,7 @@ class TreasureHuntGame:
 
         return "\n".join(desc)
 
-    def get_available_actions(self) -> list[str]:
+    def get_available_actions(self) -> List[str]:
         """Get list of available actions in current state."""
         actions = []
 
@@ -200,7 +201,7 @@ class TreasureHuntGame:
 
         return actions
 
-    def execute_action(self, action: str) -> tuple[str, float, bool]:
+    def execute_action(self, action: str) -> Tuple[str, float, bool]:
         """
         Execute an action and return (feedback, reward, done).
         """
@@ -223,11 +224,8 @@ class TreasureHuntGame:
             if self.random_state.random() < 0.03:  # 3% chance
                 if out_of_moves:
                     self.game_over = True
-                    return (
-                        "You fumble — and you've run out of moves! Game over.",
-                        reward - 10,
-                        True,
-                    )
+                    return ("You fumble — and you've run out of moves! Game over.",
+                            reward - 10, True)
                 return "You fumble and need to try again.", reward - 0.2, False
         else:
             reward = -0.5  # Negative reward for each move to encourage efficiency
@@ -262,9 +260,8 @@ class TreasureHuntGame:
 
         elif action == "check inventory":
             if self.inventory:
-                result = "Inventory: " + ", ".join(
-                    [f"{item.name} ({item.item_type.value})" for item in self.inventory]
-                )
+                result = "Inventory: " + ", ".join([f"{item.name} ({item.item_type.value})"
+                                                    for item in self.inventory])
             else:
                 result = "Your inventory is empty."
 
@@ -292,7 +289,7 @@ class TreasureHuntGame:
 
         return result, reward, self.game_over
 
-    def _move(self, direction: str) -> tuple[str, float]:
+    def _move(self, direction: str) -> Tuple[str, float]:
         """Move to another room."""
         if direction not in self.current_room.exits:
             return f"You can't go {direction} from here.", -1
@@ -318,7 +315,7 @@ class TreasureHuntGame:
         self.current_room = self.rooms[room_name]
         return f"You move {direction} to the {self.current_room.name}.", 1
 
-    def _take_item(self, item_name: str) -> tuple[str, float]:
+    def _take_item(self, item_name: str) -> Tuple[str, float]:
         """Pick up an item."""
         for item in self.current_room.items:
             if item.name.lower() == item_name.lower():
@@ -357,7 +354,7 @@ class TreasureHuntGame:
 
         return f"You don't have a {item_name}."
 
-    def _use_item(self, item_name: str) -> tuple[str, float]:
+    def _use_item(self, item_name: str) -> Tuple[str, float]:
         """Use an item."""
         for item in self.inventory:
             if item.name.lower() == item_name.lower():
@@ -378,7 +375,7 @@ class TreasureHuntGame:
 
         return f"You don't have a {item_name}.", -0.5
 
-    def _attack(self, weapon_name: str) -> tuple[str, float]:
+    def _attack(self, weapon_name: str) -> Tuple[str, float]:
         """Attack with a weapon."""
         if not self.current_room.has_guard or self.current_room.guard_defeated:
             return "There's nothing to attack here.", -1
@@ -406,10 +403,7 @@ class TreasureHuntGame:
                     roll = self.random_state.random()
                     if roll < 0.1:  # 10% critical hit
                         self.current_room.guard_defeated = True
-                        return (
-                            f"Critical hit! You defeat the {guard_type} with your {weapon.name}!",
-                            30,
-                        )
+                        return f"Critical hit! You defeat the {guard_type} with your {weapon.name}!", 30
                     elif roll < 0.95:  # 85% normal success
                         self.current_room.guard_defeated = True
                         return f"You defeat the {guard_type} with your {weapon.name}!", 20
@@ -426,7 +420,7 @@ class TreasureHuntGame:
 
         return f"Your {weapon.name} doesn't seem to work.", -1
 
-    def _try_crafting(self) -> tuple[str, float]:
+    def _try_crafting(self) -> Tuple[str, float]:
         """Try to craft items (hidden mechanic)."""
         if len(self.inventory) < 2:
             return "You need at least two items to craft.", -0.5
@@ -463,10 +457,7 @@ class TreasureHuntGame:
 
                     new_item = self._create_item(result)
                     self.inventory.append(new_item)
-                    return (
-                        f"You successfully craft a {result}!",
-                        10,
-                    )  # Good reward for discovering crafting
+                    return f"You successfully craft a {result}!", 10  # Good reward for discovering crafting
 
         penalty = -0.5
         if self.stochastic:

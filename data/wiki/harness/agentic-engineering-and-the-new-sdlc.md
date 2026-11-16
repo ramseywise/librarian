@@ -2,7 +2,7 @@
 title: Agentic Engineering and the New SDLC
 tags: [llm, agents, infra, concept]
 summary: "The vibe-coding-to-agentic-engineering stakes spectrum, how each SDLC phase shifts when agents do the implementation, the conductor/orchestrator role split, the 80% problem, and the TCO argument for investing in the harness."
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--03-agentic-foundations--agents-google-adk.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--agents-google-adk.md
@@ -34,7 +34,7 @@ Both are needed, and confusing them is a common failure — see
 [[Eval vs Test Distinction]]. What is specific to the SDLC framing is that
 **testing becomes the primary way to communicate intent to an agent**: a well-defined eval
 suite specifies the target more precisely than a natural-language prompt can, which is the
-same argument [[Specification by Example]] makes for human collaborators.
+same argument Specification by Example makes for human collaborators.
 
 That splits evaluation in two: **output evaluation** (is the final code correct?) and
 **trajectory evaluation** (were the reasoning steps sound?). A run can pass the first and
@@ -155,11 +155,9 @@ a methodology preference, is the right frame for the decision.
 
 ## See Also
 - [[Task Decomposition Patterns]] <!-- auto-linked -->
-- [[Multi-Agent Role Specialization]] <!-- auto-linked -->
 - [[Harness Engineering]] — prerequisite-for (the machinery this SDLC presumes)
 - [[Context Engineering]] — prerequisite-for (the six context types, as a discipline)
 - [[Eval vs Test Distinction]] — prerequisite-for (tests vs evals, stated precisely)
-- [[Specification by Example]] — related (specs as the contract, for humans and agents alike)
 - [[Harness Orchestration]] — extends (the orchestrator mode, mechanically)
 - [[SKILL.md Pattern]] — instance-of (dynamic context loaded on demand)
 - [[Git Branch Triage]] — related (branch hygiene when agents leave in-flight work behind)

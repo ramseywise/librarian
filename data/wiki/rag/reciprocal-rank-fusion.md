@@ -2,7 +2,7 @@
 title: Reciprocal Rank Fusion (RRF)
 tags: [rag, concept]
 summary: Score-free fusion algorithm that combines multiple ranked lists by position — the standard method for merging BM25 and dense vector retrieval results, and for amplifying cross-query agreement in multi-query retrieval.
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-08-huyen-ai-engineering-ch06-rag-agents.md
   - data/raw/papers/2026-11-07-building-ai-agents-llms-rag-kgs-ch06-advanced-rag-techniques-information-retriev.md
@@ -159,6 +159,4 @@ A chapter on advanced RAG describes hybrid search as a weighted blend with an al
 - [[Vector Database Comparison]]
 - [[RAG Architecture Selection]] — instance-of (Fusion RAG needs a scale-invariant merge across heterogeneous retrievers)
 - [[Embedding Side Table, Not Column]] — extends (storage and rollout for the semantic arm RRF fuses)
-- [[Pure Derivation Is a Generated Column]] — extends (the lexical arm's storage)
-- [[Embeddings That Only Rerank Cannot Recall]] — extends (RRF over a lexical-only pool does not lift recall)
 - [[ACL-Aware Retrieval and Tenant Isolation]] — extends (filtered candidate pools and hard-query routing in a shared index)

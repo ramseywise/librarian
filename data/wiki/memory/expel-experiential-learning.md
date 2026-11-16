@@ -2,7 +2,7 @@
 title: ExpeL Experiential Learning
 tags: [memory, concept]
 summary: Training-free agent that gathers trajectories, has gpt-4-0613 distil a list of natural-language insights from them, and at test time prompts with all insights plus the most similar successful trajectories; reported gains over ReAct on ALFWorld and HotpotQA (self-reported).
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-08-zhao-2024-expel.md
 ---
@@ -30,6 +30,5 @@ Setup: the actor is gpt-3.5-turbo-0613 and the insight extractor gpt-4-0613, wit
 
 ## See Also
 - [[Reflexion]] — prerequisite-for
-- [[ReAct Pattern]] — prerequisite-for
 - [[Agent Memory Types]] — prerequisite-for
 - [[Self-Controlled Memory Framework]] — related

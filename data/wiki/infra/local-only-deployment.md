@@ -2,7 +2,7 @@
 title: Local-Only Deployment
 tags: [infra, pattern]
 summary: The zero-infrastructure rung — the AI runs on a developer's machine with no hosting and no external access, chosen when the only user is the developer and iteration speed matters more than availability.
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/deployment-topology.md
 ---
@@ -30,7 +30,7 @@ when done."*
 
 **Weekend sprint** — `make lg-up` or `make adk-up` and you're running. This is the only
 rung with no infrastructure setup at all, which is what makes it viable inside a
-[[Complexity Floor]] weekend budget.
+Complexity Floor weekend budget.
 
 ## Example Scenario
 
@@ -65,5 +65,3 @@ no CORS, no secret rotation. Every rung above pays for its audience in security 
 - [[Serverless Deployment]] <!-- auto-linked -->
 - [[Deployment Topology Ladder]] — related (part of)
 - [[Single Service Deployment]] — extends
-- [[Complexity Floor]] — related (the weekend tier's only viable topology)
-- [[Single Prompt Baseline]] — related (the orchestration analogue of local-only)

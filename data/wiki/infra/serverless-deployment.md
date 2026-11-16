@@ -2,7 +2,7 @@
 title: Serverless Deployment
 tags: [infra, pattern]
 summary: Functions that spin up on demand and shut down after execution — an off-ladder alternative chosen on traffic shape (bursty, stateless, sub-30s) rather than audience size, paying cold starts and timeout limits for zero idle cost.
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/deployment-topology.md
   - data/raw/claude-docs/playground/docs/archived/terraform-restructure-research.md
@@ -101,7 +101,7 @@ assumptions by reading current docs and the installed package before writing any
 
 The handler was kept framework-agnostic — a plain `(req: Request) => Response` mounted
 into Express through one adapter route — so it drops unchanged into a Next.js route
-handler later. Evaluating that agent surfaced [[In-Band Stream Errors Read as Bad Answers]].
+handler later. Evaluating that agent surfaced In-Band Stream Errors Read as Bad Answers.
 
 ## See Also
 - [[Single Service Deployment]] <!-- auto-linked -->

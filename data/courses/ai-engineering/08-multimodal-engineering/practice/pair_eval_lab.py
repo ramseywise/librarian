@@ -12,7 +12,6 @@ behaviour, so we know the right verdict before scoring: one reads the invoice wi
 shortcut. Scorers, pairing, rotation and the bootstrap are real code you can point at real predictions. The numbers
 describe these made-up models, not any real one.
 """
-
 # %%
 import random
 
@@ -25,15 +24,8 @@ def make_pairs(rng, n):
     pairs = []
     for i in range(n):
         common, rare = rng.sample(CURRENCIES, 2)
-        pairs.append(
-            {
-                "id": i,
-                "question": "Which currency is the total in?",
-                "a": common,
-                "b": rare,
-                "prior": "EUR" if "EUR" in (common, rare) else common,
-            }
-        )
+        pairs.append({"id": i, "question": "Which currency is the total in?", "a": common, "b": rare,
+                      "prior": "EUR" if "EUR" in (common, rare) else common})
     return pairs
 
 
@@ -66,12 +58,8 @@ def careful_yes_model(rng, present, plausible):
     return rng.random() < (0.88 if present else 0.05)
 
 
-MODELS = {
-    "reads at 88%": (reader, careful_yes_model),
-    "always the prior": (prior_guesser, yes_model),
-    "always option A": (first_option, yes_model),
-    "half reads, half prior": (half_reader, yes_model),
-}
+MODELS = {"reads at 88%": (reader, careful_yes_model), "always the prior": (prior_guesser, yes_model),
+          "always option A": (first_option, yes_model), "half reads, half prior": (half_reader, yes_model)}
 
 
 # %% Test designs, each returning one 0 or 1 per unit, so the same bootstrap serves them all
@@ -132,17 +120,11 @@ def fmt(stat):
 # %% Report
 rng = random.Random(SEED)
 pairs = make_pairs(rng, N_PAIRS)
-print(
-    f"{N_PAIRS} generated invoice pairs, 95% bootstrap intervals over {N_BOOT} resamples, seed {SEED}\n"
-)
-print(
-    f"{'model':24}{'per image':>20}{'paired':>20}{'circular':>20}{'absent field':>20}{'yes-ratio':>11}"
-)
+print(f"{N_PAIRS} generated invoice pairs, 95% bootstrap intervals over {N_BOOT} resamples, seed {SEED}\n")
+print(f"{'model':24}{'per image':>20}{'paired':>20}{'circular':>20}{'absent field':>20}{'yes-ratio':>11}")
 for name, (fn, yes_fn) in MODELS.items():
     plain = bootstrap(rng, per_image(rng, fn, pairs))
     pair = bootstrap(rng, paired(rng, fn, pairs))
     circ = bootstrap(rng, circular(rng, fn, pairs))
     absent, yes = absent_field(rng, yes_fn, 2 * N_PAIRS)
-    print(
-        f"{name:24}{fmt(plain):>20}{fmt(pair):>20}{fmt(circ):>20}{fmt(bootstrap(rng, absent)):>20}{yes:11.2f}"
-    )
+    print(f"{name:24}{fmt(plain):>20}{fmt(pair):>20}{fmt(circ):>20}{fmt(bootstrap(rng, absent)):>20}{yes:11.2f}")

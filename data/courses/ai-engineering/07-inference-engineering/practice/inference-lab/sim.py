@@ -1,6 +1,5 @@
 """Discrete simulations of the mechanisms in notes 06 and 07. Timing comes from params.json, whose
 numbers are assumptions and not measurements. Only the shape of each comparison means anything."""
-
 from __future__ import annotations
 
 import json
@@ -66,22 +65,11 @@ class Metrics:
     peak_kv: int = 0
 
 
-def _metrics(
-    reqs: list[Req], end: float, steps: int, occupied: int, preempts=0, recomputed=0, peak=0
-) -> Metrics:
+def _metrics(reqs: list[Req], end: float, steps: int, occupied: int, preempts=0, recomputed=0, peak=0) -> Metrics:
     ttft = [r.first - r.arrive for r in reqs]
     e2e = [r.done - r.arrive for r in reqs]
-    return Metrics(
-        percentile(ttft, 0.5),
-        percentile(ttft, 0.95),
-        percentile(e2e, 0.5),
-        percentile(e2e, 0.95),
-        sum(r.output for r in reqs) / (end / 1000),
-        occupied / steps,
-        preempts,
-        recomputed,
-        peak,
-    )
+    return Metrics(percentile(ttft, 0.5), percentile(ttft, 0.95), percentile(e2e, 0.5), percentile(e2e, 0.95),
+                   sum(r.output for r in reqs) / (end / 1000), occupied / steps, preempts, recomputed, peak)
 
 
 def run_batched(reqs: list[Req], p: dict, window: float) -> Metrics:
@@ -127,18 +115,12 @@ def run_continuous(reqs: list[Req], p: dict, kv_capacity: float = math.inf) -> M
         while i < len(reqs) and reqs[i].arrive <= now:
             queue.append(reqs[i])
             i += 1
-        while (
-            queue
-            and len(active) < p["slots"]
-            and kv() + queue[0].prompt + queue[0].made <= kv_capacity
-        ):
+        while queue and len(active) < p["slots"] and kv() + queue[0].prompt + queue[0].made <= kv_capacity:
             r = queue.pop(0)
             prefill = r.prompt + r.made
             if r.preempted:
                 recomputed += prefill
-            now += (
-                prefill * p["prefill_ms_per_token"]
-            )  # on one GPU, prefill stalls every decode in the batch
+            now += prefill * p["prefill_ms_per_token"]  # on one GPU, prefill stalls every decode in the batch
             active.append(r)
         if not active:
             now = reqs[i].arrive

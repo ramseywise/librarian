@@ -2,7 +2,7 @@
 title: RAISE Conversational Agent Memory
 tags: [memory, concept]
 summary: ReAct loop extended with a dialogue-level scratchpad and turn-level retrieved examples, fine-tuned on 848 real-estate scenes; the paper's gain over ReAct plus examples is within noise under GPT-4 prompting (self-reported).
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-08-liu-2024-llm-conversational-agent.md
 ---
@@ -29,7 +29,6 @@ Setup: an in-house real-estate instant-messaging dialogue set, 100 held-out scen
 - The authors concede potential hallucination and difficulty with complex logic; speed claims are asserted in prose only.
 
 ## See Also
-- [[ReAct Pattern]] — prerequisite-for
 - [[Scratchpads and Self-Notes]] — prerequisite-for
 - [[Agent Memory Types]] — prerequisite-for
 - [[Self-Controlled Memory Framework]] — alternative-to

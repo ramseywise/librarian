@@ -2,7 +2,7 @@
 title: Eval Suite Maintenance
 tags: [eval, llm, agents, pattern]
 summary: "Fix the evaluation system before changing the agent — a dropped score is a claim about the eval as much as about the agent, and a suite everyone passes is saturated rather than solved."
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/akira/docs/product-feasibility.md
   - data/raw/claude-docs/kiez-archive/docs/product-feasibility.md
@@ -153,7 +153,6 @@ prune dead rows, re-calibrate judges, retire metrics nobody acts on.
 - [[Golden Set Mechanics]] — related (curation rules for the rows themselves)
 - [[Online Eval Sampling]] — extends (where new discovery rows come from in production)
 - [[Eval-Driven Development (EDD)]] — related
-- [[Ship Logging Before Features]] — related (the regression/capability split applied to a recommender)
 - [[One Check Shape for Quality Verdicts]] — extends (fixtures exported from human overturns as the regression path)
 - [[Eval Falsifiability]] — prerequisite-for
 - [[Parameterised Benchmark Instances]] — extends (leakage-proof suites by construction)

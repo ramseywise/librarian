@@ -2,7 +2,7 @@
 title: Prompt Chaining
 tags: [prompting, llm, agents, concept]
 summary: Decomposing a complex task into simpler prompts with fixed I/O contracts — trading a general/weak prompt for strong single-job steps wired as a pipeline or (by default) a DAG; the boundary case between prompting and harness engineering.
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt--prompt-engineering.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--06-chaining-and-workflows.md
@@ -75,7 +75,7 @@ sub-agents (assistant plus user-proxy) last, and human-in-the-loop for irreversi
 Batch for known item sets, streaming for open-ended arrivals. Brainstorm steps need
 explicit diversity pressure (a run produced many near-identical ideas) and a feasibility
 check. For routing, parallelization, orchestrator–workers and evaluator–optimizer see
-[[Agentic Workflow Patterns]]; parallel voting is [[Self-Consistency]]. **Start with a
+Agentic Workflow Patterns; parallel voting is [[Self-Consistency]]. **Start with a
 workflow**; move to agentic routing only when fixed topologies can't express the problem.
 
 ## Operating a Workflow
@@ -118,7 +118,6 @@ Wu et al. (CHI '22 extended abstract) built a node-and-edge editor with three no
 - [[XML Prompt Structuring]] <!-- auto-linked -->
 - [[Prompt Engineering]] — related (part of)
 - [[Context Engineering]] — extends
-- [[Agentic Workflow Patterns]] — extends
 - [[DSPy]] — prerequisite-for
 - [[Stateful Objects of Discourse]] — extends
 - [[Prompting Reasoning Models]] — alternative-to

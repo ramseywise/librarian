@@ -2,7 +2,7 @@
 title: Eval Harness
 tags: [eval, langgraph, adk, concept, pattern]
 summary: "Agent evaluation harness for assistant agents — four eval suites (routing, quality, behavioral, error handling), JSON evalset schema, tool_trajectory_avg_score metric, LLM-as-judge, Makefile flow, and CI regression gate. Production golden dataset: ~100 questions from 700-question Intercom set, Langfuse pipeline live, CS agent validated."
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/playground/skills/eval-creation/va-eval/SKILL.md
   - data/raw/claude-docs/playground/docs/evals/eval-harness-patterns.md
@@ -162,7 +162,7 @@ Group failures by expected intent. The typical clusters were support misrouted
 elsewhere (needs a stronger support fallback), insights vs accounting (boundary
 definitions), and banking vs expense (ambiguous phrasing, add examples).
 
-The fixtures come from real tickets scrubbed under [[Deterministic Scrub Before LLM Review]].
+The fixtures come from real tickets scrubbed under Deterministic Scrub Before LLM Review.
 
 ## Production Golden Dataset (2026-07)
 
@@ -274,6 +274,4 @@ From a cleanup session (2026-04-18) that consolidated a sprawling `evals/` root,
 - [[Production Hardening Patterns]]
 - [[ADK Eval Guide]]
 - [[ADK User Simulation Eval]]
-- [[Deterministic Scrub Before LLM Review]] — prerequisite-for (how real tickets become PII-free fixtures)
-- [[Stub Backend Is Permanent Dev Infrastructure]] — related (the runtimes and stub backend under test)
 - [[Benchmark Prompt Format Sensitivity]] — related (the prompt and scoring choices a harness must fix and log)

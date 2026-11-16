@@ -2,7 +2,7 @@
 title: Sleep Learning
 tags: [loop, memory, pattern]
 summary: "The offline half of a dual loop: the online loop only appends immutable evidence, and a scheduled consolidation pass (trigger, orient, consolidate, validate, prune and re-index) turns it into long-term knowledge — so one lucky success or injected page can't immediately rewrite behaviour."
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop-engineering--notes--08-self-improving-loops.md
 ---
@@ -26,7 +26,7 @@ storage used, or error rate.
 Separating collection from consolidation means one lucky success or one injected web page can't
 immediately rewrite long-term behaviour, and consolidation can run in larger batches on cheaper
 models. The same capture-then-consolidate shape appears in this wiki's own build findings as
-[[Single Writer, Offline Consolidation]]. Shipping examples: Claude Code's auto memory (a bounded
+Single Writer, Offline Consolidation. Shipping examples: Claude Code's auto memory (a bounded
 `MEMORY.md` index plus on-demand topic files) and Hermes (bounded memory files, FTS session
 search over raw messages, background Skill review, a Curator that prunes after a snapshot).
 
@@ -49,6 +49,5 @@ milestones than baselines. Remove any one of the three and the loop stops compou
 ## See Also
 - [[Evolve Loop]] — extends
 - [[Four Media for Agent Lessons]] — extends
-- [[Single Writer, Offline Consolidation]] — alternative-to
 - [[Memory Lifecycle]] — extends
 - [[Self-Modification as a Release Process]] — extends

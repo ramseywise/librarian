@@ -2,7 +2,7 @@
 title: Provider-Agnostic Model Adapter
 tags: [infra, llm, pattern]
 summary: "Make model calls provider-portable by separating a canonical request/response contract from per-provider adapters, routing through a registry of logical model names with capability flags, and handling provider-specific parameters at the adapter boundary — drop only cosmetic params, never correctness-critical ones, and log every drop."
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/repos/sisyphus/interviewing--rounds--technical-questions--real-tech-question-bank.md
 ---
@@ -56,4 +56,3 @@ adapter/registry layer — the class of change where provider quirks surface.
 - [[Tool Design as Harness Surface]] — extends (same contract/implementation separation)
 - [[Production Reliability Primitives]] — extends (cross-provider fallback needs a uniform interface)
 - [[Frozen Version Stamps on Logged Results]] — prerequisite-for (pinning what a logical name resolves to)
-- [[Agent Engineering Question Chains]] — instance-of (the interview question this answers)

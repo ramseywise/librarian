@@ -1,6 +1,5 @@
 """Per-tenant configuration: validated on the way in, versioned per tenant, rolled out and rolled back per tenant.
 NaiveConfigStore beside it is the failure to compare with: no validation, live on save, one fleet-wide undo."""
-
 from __future__ import annotations
 
 import hashlib
@@ -12,24 +11,10 @@ from types import SimpleNamespace
 
 TOOL_CATALOG = {"lookup_record", "create_ticket", "issue_refund", "book_collection"}
 TENANT_IDS = ("larkspur-clinic", "tallow-legal", "pinwheel-retail", "ferrous-freight")
-KNOWN_SCOPES = {"shared/product"} | {
-    f"{t}/{s}" for t in TENANT_IDS for s in ("policies", "internal")
-}
+KNOWN_SCOPES = {"shared/product"} | {f"{t}/{s}" for t in TENANT_IDS for s in ("policies", "internal")}
 MODEL_ALIASES = {"support-model@v1", "support-model@v2"}
-REQUIRED = {
-    "tenant_id",
-    "vertical",
-    "system_prompt",
-    "rubric",
-    "tools",
-    "knowledge_scopes",
-    "model_alias",
-    "monthly_tokens",
-    "max_tokens",
-    "rate_per_s",
-    "burst",
-    "queue_weight",
-}
+REQUIRED = {"tenant_id", "vertical", "system_prompt", "rubric", "tools", "knowledge_scopes", "model_alias",
+            "monthly_tokens", "max_tokens", "rate_per_s", "burst", "queue_weight"}
 
 
 class ConfigError(ValueError):
@@ -63,9 +48,7 @@ def validate_config(raw: dict) -> TenantConfig:
     """Report key problems first, then every value problem at once, and never fill a gap with a default."""
     tenant = str(raw.get("tenant_id", "?"))
     errors = [f"missing {k}" for k in sorted(REQUIRED - raw.keys())]
-    errors += [
-        f"unknown key {k}" for k in sorted(raw.keys() - REQUIRED)
-    ]  # a typo must not silently mean "unset"
+    errors += [f"unknown key {k}" for k in sorted(raw.keys() - REQUIRED)]  # a typo must not silently mean "unset"
     if errors:
         raise ConfigError(tenant, errors)
     if tenant not in TENANT_IDS:
@@ -94,15 +77,11 @@ def validate_config(raw: dict) -> TenantConfig:
     if not 0 < rubric.get("min_score", 0) <= 100:
         errors.append("rubric min_score must be in 1..100")
     for c in criteria:
-        if c.get("kind") not in ("cites", "contains") or (
-            c.get("kind") == "contains" and not c.get("text")
-        ):
+        if c.get("kind") not in ("cites", "contains") or (c.get("kind") == "contains" and not c.get("text")):
             errors.append(f"bad rubric criterion {c.get('name', '?')}")
     if errors:
         raise ConfigError(tenant, errors)
-    return TenantConfig(
-        **{**raw, "tools": tuple(raw["tools"]), "knowledge_scopes": tuple(raw["knowledge_scopes"])}
-    )
+    return TenantConfig(**{**raw, "tools": tuple(raw["tools"]), "knowledge_scopes": tuple(raw["knowledge_scopes"])})
 
 
 def score_answer(cfg, answer: str, retrieved_ids: list[str]) -> int:
@@ -195,9 +174,7 @@ class NaiveConfigStore:
         return len(self._snapshots)
 
     def resolve(self, tenant: str, run_id: str):
-        raw = self._live.get(tenant) or next(
-            iter(self._live.values())
-        )  # falls back to whichever tenant came first
+        raw = self._live.get(tenant) or next(iter(self._live.values()))  # falls back to whichever tenant came first
         return SimpleNamespace(**raw, version=len(self._snapshots))
 
     def stable_version(self, tenant: str) -> int:

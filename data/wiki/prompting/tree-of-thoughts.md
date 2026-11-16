@@ -2,7 +2,7 @@
 title: Tree of Thoughts
 tags: [prompting, llm, concept]
 summary: Generalizes chain-of-thought into search — a propose prompt generates candidate intermediate steps, a value prompt rates each (sure/maybe/impossible), and a code controller runs BFS/DFS with backtracking; GPT-4 went from 4% (CoT) to 74% on Game of 24.
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--03-core-techniques.md
   - data/raw/papers/2026-11-07-yao-2023-tree-thoughts.md
@@ -10,7 +10,7 @@ sources:
 
 # Tree of Thoughts
 
-Yao et al. (2023); Long (2023). Where [[Chain of Thought]] commits to one path and
+Yao et al. (2023); Long (2023). Where Chain of Thought commits to one path and
 [[Self-Consistency]] samples independent paths, ToT **searches**:
 
 1. **Propose** — a prompt generates several candidate "thoughts" (next intermediate steps).
@@ -49,10 +49,8 @@ Setup for each: GPT-4 chat, single run, unless stated (NeurIPS 2023 paper).
 - The extraction notes that the tasks were built to be hard for GPT-4 as it stood in May 2023, and that reasoning models released since carry out much of this search internally; only BFS and DFS were explored.
 
 ## See Also
-- [[Chain of Thought]] — extends
 - [[Self-Consistency]] — extends
 - [[Prompting Technique Selection]] — instance-of
-- [[LLM Fundamentals Interview Study Guide]] — prerequisite-for
 - [[Self-Ask Prompting]] — alternative-to (another structured reasoning scaffold)
 - [[Adaptive Branching MCTS]] — extends (chooses wider or deeper by Thompson sampling)
 - [[CoAT Associative-Memory MCTS]] — extends (MCTS with a per-node memory)

@@ -9,7 +9,6 @@ synthetic. The module needs only numpy and runs with no API key and no download.
 shared concept and blurs identifiers, which is what a trained embedder tends to
 do. It shows the mechanics. Its scores are not evidence about real embedders.
 """
-
 from __future__ import annotations
 
 import hashlib
@@ -36,167 +35,94 @@ class Doc:
 
 
 DOCS = [
-    Doc(
-        "kb-01",
-        "API authentication errors",
+    Doc("kb-01", "API authentication errors",
         "A request that returns HTTP-403 reached the server with a key that lacks the required "
         "scope. Open Settings, then API keys, and check that the key has the invoices:write scope. "
         "A request that returns HTTP-401 has no valid key at all, usually because it expired.",
-        "api",
-        "2026-09-14",
-    ),
-    Doc(
-        "kb-02",
-        "Rotating API keys",
+        "api", "2026-09-14"),
+    Doc("kb-02", "Rotating API keys",
         "Create the new key first, deploy it, then revoke the old key. Keys expire after 12 months "
         "unless you set another lifetime. Tallybook emails the workspace owner 14 days before a key "
         "lapses. Revoking a key takes effect within 60 seconds.",
-        "api",
-        "2026-06-02",
-    ),
-    Doc(
-        "kb-03",
-        "API rate limits",
+        "api", "2026-06-02"),
+    Doc("kb-03", "API rate limits",
         "The API allows 120 calls per minute for each workspace. Above that it returns HTTP-429 with "
         "a Retry-After header in seconds. Back off for that long and try again. The Scale plan raises "
         "the limit to 600 calls per minute.",
-        "api",
-        "2026-08-21",
-    ),
-    Doc(
-        "kb-04",
-        "Refund policy",
+        "api", "2026-08-21"),
+    Doc("kb-04", "Refund policy",
         "Annual plans can be refunded in full within 30 days of payment. After 30 days we refund the "
         "unused months minus a 10 percent fee. Monthly plans are not refunded, but they stop at the end "
         "of the paid month. Refunds reach the original card in 5 to 10 working days.",
-        "billing",
-        "2026-10-01",
-    ),
-    Doc(
-        "kb-05",
-        "Refund policy (2024 archive)",
+        "billing", "2026-10-01"),
+    Doc("kb-05", "Refund policy (2024 archive)",
         "Annual plans can be refunded within 14 days of payment. No refunds are available after 14 days. "
         "This page is kept for customers who signed up before January 2025.",
-        "billing",
-        "2024-11-15",
-    ),
-    Doc(
-        "kb-06",
-        "Cancelling your subscription",
+        "billing", "2024-11-15"),
+    Doc("kb-06", "Cancelling your subscription",
         "The workspace owner can cancel under Settings, then Plan. Your data stays readable for 90 days "
         "after the paid period ends. After that it is deleted. Cancelling does not issue a refund by "
         "itself; request one from the billing team.",
-        "billing",
-        "2026-07-30",
-    ),
-    Doc(
-        "kb-07",
-        "Changing plans",
+        "billing", "2026-07-30"),
+    Doc("kb-07", "Changing plans",
         "Upgrades apply at once and charge the prorated difference. Downgrades apply at the next "
         "renewal. Moving from Scale to Starter removes extra seats and API access, so export anything "
         "you need before the renewal date.",
-        "billing",
-        "2026-05-11",
-    ),
-    Doc(
-        "kb-08",
-        "Invoice numbering",
+        "billing", "2026-05-11"),
+    Doc("kb-08", "Invoice numbering",
         "Invoice numbers must run in an unbroken sequence in most EU countries. Tallybook assigns the "
         "next number when you send an invoice, not when you draft it. You can set the starting number "
         "once, before the first invoice is sent. Deleting a sent invoice is not possible.",
-        "invoicing",
-        "2026-03-19",
-    ),
-    Doc(
-        "kb-09",
-        "Credit notes",
+        "invoicing", "2026-03-19"),
+    Doc("kb-09", "Credit notes",
         "To correct or reverse a sent invoice, issue a credit note against it. The credit note gets its "
         "own number and links to the original. A partial credit note reverses selected lines. The "
         "customer balance updates at once.",
-        "invoicing",
-        "2026-03-19",
-    ),
-    Doc(
-        "kb-10",
-        "VAT on EU sales",
+        "invoicing", "2026-03-19"),
+    Doc("kb-10", "VAT on EU sales",
         "For a business customer in another EU country, enter their VAT number and Tallybook applies the "
         "reverse charge, showing 0 percent VAT with the required wording. For a private customer, charge "
         "the VAT rate of the customer's country once you pass the 10,000 euro OSS threshold.",
-        "invoicing",
-        "2026-02-27",
-    ),
-    Doc(
-        "kb-11",
-        "Payment reminders",
+        "invoicing", "2026-02-27"),
+    Doc("kb-11", "Payment reminders",
         "Turn on automatic reminders under Settings, then Invoicing. Tallybook sends the first reminder "
         "3 days after the due date and the second after 14 days. You can add a late fee to the second "
         "reminder where local law allows it.",
-        "invoicing",
-        "2026-04-08",
-    ),
-    Doc(
-        "kb-12",
-        "Invoice email delivery",
+        "invoicing", "2026-04-08"),
+    Doc("kb-12", "Invoice email delivery",
         "If a customer never received an invoice, check the delivery log on the invoice page. A status of "
         "BOUNCE-550 means the address does not exist. Correct the address and resend. Messages come from "
         "invoices@tallybook.example, so ask the customer to allow that sender.",
-        "invoicing",
-        "2026-06-17",
-    ),
-    Doc(
-        "kb-13",
-        "Bank connection errors",
+        "invoicing", "2026-06-17"),
+    Doc("kb-13", "Bank connection errors",
         "Bank feeds sync every 6 hours. Error BANK-112 means the bank requires you to approve access "
         "again, which EU rules demand every 180 days. Open Banking, choose the account and select "
         "Reconnect. Transactions missed during the gap are fetched automatically.",
-        "banking",
-        "2026-09-02",
-    ),
-    Doc(
-        "kb-14",
-        "Exporting your data",
+        "banking", "2026-09-02"),
+    Doc("kb-14", "Exporting your data",
         "Owners can export invoices, customers and transactions as CSV under Settings, then Export. "
         "Exports of more than 50,000 rows run in the background and arrive by email. The link in the "
         "email stays valid for 7 days.",
-        "account",
-        "2026-01-23",
-    ),
-    Doc(
-        "kb-15",
-        "Password reset and two-factor login",
+        "account", "2026-01-23"),
+    Doc("kb-15", "Password reset and two-factor login",
         "Use Forgot password on the sign-in page to get a reset link, valid for 1 hour. If you lost your "
         "authenticator app, enter a recovery code. Without a recovery code, the workspace owner must "
         "remove two-factor login from your account.",
-        "account",
-        "2026-08-05",
-    ),
-    Doc(
-        "kb-16",
-        "Team members and roles",
+        "account", "2026-08-05"),
+    Doc("kb-16", "Team members and roles",
         "Owners and admins can invite people under Settings, then Team. Accountants can read and write "
         "invoices but cannot change the plan. Viewers can only read. Starter includes 2 seats and Scale "
         "includes 25.",
-        "account",
-        "2026-04-29",
-    ),
-    Doc(
-        "kb-17",
-        "Webhooks",
+        "account", "2026-04-29"),
+    Doc("kb-17", "Webhooks",
         "Tallybook posts an event when an invoice is sent or paid. Verify the signature in the "
         "X-Tally-Signature header. If your endpoint does not return a 2xx status, we retry 5 times over "
         "24 hours and then disable the webhook.",
-        "api",
-        "2026-07-12",
-    ),
-    Doc(
-        "kb-18",
-        "Runbook: manual refund override",
+        "api", "2026-07-12"),
+    Doc("kb-18", "Runbook: manual refund override",
         "Support engineers may override the refund window with approval from a team lead. Use the admin "
         "console, open the payment and choose Force refund. Never share this procedure with customers.",
-        "billing",
-        "2026-09-20",
-        audience="internal",
-    ),
+        "billing", "2026-09-20", audience="internal"),
 ]
 DOC_BY_ID = {d.id: d for d in DOCS}
 
@@ -239,55 +165,16 @@ The workspace owner can cancel under Settings, then Plan. Data stays readable fo
 If a customer disputes a charge with their bank, the workspace is frozen until the dispute closes. Disputes usually take 30 to 60 days. Contact the billing team before you open a dispute, because a refund is faster than a chargeback.
 """
 
-STOP = {
-    "the",
-    "is",
-    "a",
-    "an",
-    "of",
-    "to",
-    "in",
-    "and",
-    "for",
-    "on",
-    "how",
-    "what",
-    "do",
-    "i",
-    "my",
-    "it",
-    "that",
-    "this",
-    "with",
-    "when",
-    "be",
-    "at",
-    "can",
-    "you",
-    "your",
-    "we",
-    "or",
-    "by",
-    "as",
-    "are",
-    "does",
-    "not",
-    "who",
-    "have",
-    "has",
-    "even",
-    "though",
-    "from",
-    "get",
-}
+STOP = {"the", "is", "a", "an", "of", "to", "in", "and", "for", "on", "how", "what", "do", "i",
+        "my", "it", "that", "this", "with", "when", "be", "at", "can", "you", "your", "we", "or",
+        "by", "as", "are", "does", "not", "who", "have", "has", "even", "though", "from", "get"}
 
 
 def tokenize(text: str) -> list[str]:
     """Keep codes like HTTP-403 whole, lowercase ordinary words, drop stop words."""
     tokens = re.findall(r"[A-Za-z0-9]+(?:[-_:][A-Za-z0-9]+)*", text)
-    return [
-        t if any(c.isdigit() for c in t) else t.lower() for t in tokens if t.lower() not in STOP
-    ]
+    return [t if any(c.isdigit() for c in t) else t.lower()
+            for t in tokens if t.lower() not in STOP]
 
 
 class BM25:
@@ -438,11 +325,8 @@ def evaluate(search, queries=QUERIES, k: int = 3) -> dict[str, float]:
 
 if __name__ == "__main__":
     retriever = Retriever()
-    for name, search in [
-        ("bm25", retriever.sparse),
-        ("dense", retriever.dense),
-        ("hybrid", retriever.hybrid),
-    ]:
+    for name, search in [("bm25", retriever.sparse), ("dense", retriever.dense),
+                         ("hybrid", retriever.hybrid)]:
         print(f"{name:7}", {m: round(v, 3) for m, v in evaluate(search).items()})
         for kind in ["code", "keyword", "paraphrase"]:
             subset = [q for q in QUERIES if q[2] == kind]

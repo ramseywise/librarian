@@ -2,7 +2,7 @@
 title: Deployment Topology Ladder
 tags: [infra, pattern]
 summary: Five deployment topologies (local → single service → cloud service → split service → serverless) ordered by who can access the system, with cost and ops-complexity as the selection axes rather than technical capability.
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/deployment-topology.md
 ---
@@ -14,7 +14,7 @@ source frames it as determining four things at once: **cost, complexity, who can
 it, and how you operate it after the POC.** The fourth is the one that gets skipped in
 scoping conversations and then dominates the six months after demo day.
 
-The ladder mirrors [[Complexity Floor]]: each rung has a minimum team-hours cost that no
+The ladder mirrors Complexity Floor: each rung has a minimum team-hours cost that no
 amount of scope reduction can shrink below.
 
 ## The Five Topologies
@@ -68,7 +68,7 @@ The source repeats a cost-restraint theme at three separate rungs:
 
 > *"Good fit for low-traffic tools (< 100 requests/day) that don't need streaming."*
 
-The governing bias matches [[Agent Orchestration Patterns]]: start at the lowest rung
+The governing bias matches Agent Orchestration Patterns: start at the lowest rung
 that serves the actual audience, and treat each upgrade as a decision requiring evidence
 rather than a default.
 
@@ -87,7 +87,7 @@ audience size.
 ## Copier Parameter Surface
 
 Topology choice writes to five scaffold parameters — see
-[[Asked vs Derived Scaffold Variables]] for which are asked vs derived:
+Asked vs Derived Scaffold Variables for which are asked vs derived:
 
 | Parameter | Range |
 |---|---|
@@ -104,10 +104,6 @@ Topology choice writes to five scaffold parameters — see
 - [[Cloud Service Deployment]] — instance-of
 - [[Split Service Deployment]] — instance-of
 - [[Serverless Deployment]] — instance-of
-- [[Complexity Floor]] — related (constrains; team-hours bound the reachable rung)
-- [[Agent Orchestration Patterns]] — related (orchestration ladder on the same start-low bias)
-- [[Asked vs Derived Scaffold Variables]] — related (how topology answers reach copier)
-- [[AI Project Archetypes]] — related (archetype and topology are chosen together)
 - [[ADK Deployment Patterns]] — extends (GCP-specific target selection)
 - [[Runtime Topology and Checkpointer Alignment]] — related (constrains; topology dictates checkpointer backend)
 - [[Context Graph Is Not an Execution Graph]] — related (separate deployment before separate repository)

@@ -2,7 +2,7 @@
 title: Graph of Thoughts
 tags: [prompting, concept]
 summary: Prompting framework where a user-written Graph of Operations (Generate, Aggregate, Score, KeepBest, Repeat) lets thoughts merge and loop; the paper reports lower sorting error than Tree of Thoughts at lower cost on GPT-3.5 (self-reported).
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-07-besta-2023-graph-thoughts.md
 ---
@@ -33,6 +33,5 @@ Everything runs on GPT-3.5 with matched thought counts, compared with the IO, Co
 
 ## See Also
 - [[Tree of Thoughts]] — prerequisite-for
-- [[Chain of Thought]] — prerequisite-for
 - [[Self-Consistency]] — related
 - [[ThoughtSculpt]] — alternative-to (search that revises intermediate nodes instead of merging them)

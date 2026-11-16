@@ -6,7 +6,6 @@
 create() returns the SDK's response, whose stop_reason and content blocks are all run_agent() reads.
 Opus 5.5 can decline a request, so this opts in to the API's server-side fallback model.
 """
-
 import sys
 
 import anthropic

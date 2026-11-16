@@ -5,7 +5,6 @@ It is a plain loop rather than a LangGraph graph. Budgets, scoped retrieval and 
 calls converge, under whatever orchestrates the run, so a graph here would add nodes without changing one result.
 To use them from a graph, call complete_call, retriever.retrieve and tools.call inside your nodes.
 """
-
 from __future__ import annotations
 
 import asyncio
@@ -17,9 +16,7 @@ from tenancy import TenantConfig, score_answer
 
 TOP_K = 3
 MAX_TURNS = 3
-MAX_BUDGET_WAIT = (
-    5_000  # event-loop yields a call will wait for other runs' holds to settle before giving up
-)
+MAX_BUDGET_WAIT = 5_000  # event-loop yields a call will wait for other runs' holds to settle before giving up
 
 
 @dataclass(frozen=True)
@@ -55,10 +52,8 @@ def build_prompt(cfg, ticket: str, docs: list, tool_results: list[str]) -> str:
     lines = "\n".join(f"[{d.id}] {d.text}" for d in docs)
     results = "".join(f"\n<tool_result>{r}</tool_result>" for r in tool_results)
     # This sentence is advice to the model, not a control. The control is in ToolLayer.
-    return (
-        f"Tools you may use: {', '.join(cfg.tools)}. Do not use any other tool.\n"
-        f"<ticket>\n{ticket}\n</ticket>\n<docs>\n{lines}\n</docs>{results}"
-    )
+    return (f"Tools you may use: {', '.join(cfg.tools)}. Do not use any other tool.\n"
+            f"<ticket>\n{ticket}\n</ticket>\n<docs>\n{lines}\n</docs>{results}")
 
 
 async def complete_call(c: Controls, ctx: RunContext, prompt: str, turn: int) -> Completion:
@@ -73,18 +68,14 @@ async def complete_call(c: Controls, ctx: RunContext, prompt: str, turn: int) ->
             await asyncio.sleep(0)
     else:
         raise BudgetExceeded(f"{ctx.tenant_id}: gave up waiting for holds")
-    request = ModelRequest(
-        ctx.tenant_id, ctx.run_id, cfg.model_alias, cfg.system_prompt, prompt, cfg.max_tokens, turn
-    )
+    request = ModelRequest(ctx.tenant_id, ctx.run_id, cfg.model_alias, cfg.system_prompt, prompt, cfg.max_tokens, turn)
     try:
         result = await c.model(request)
     except ModelError:
         c.budget.after_call(hold, 0)  # a clean failure was not billed, so release it
         raise
     except BaseException:
-        c.budget.after_call(
-            hold, hold.tokens
-        )  # cancelled mid-call: the bill is unknown, assume all
+        c.budget.after_call(hold, hold.tokens)  # cancelled mid-call: the bill is unknown, assume all
         raise
     c.budget.after_call(hold, result.total)
     return result
@@ -99,9 +90,7 @@ async def run_agent(c: Controls, tenant_id: str, run_id: str, ticket: str) -> Ru
     c.traces.record(ctx, "retrieve", detail=",".join(doc_ids))
     result = RunResult(run_id, tenant_id, cfg.version, "escalated", doc_ids=doc_ids)
     if not got.docs:
-        c.traces.record(
-            ctx, "escalate", status="no_evidence"
-        )  # nothing to answer from, so nothing is invented
+        c.traces.record(ctx, "escalate", status="no_evidence")  # nothing to answer from, so nothing is invented
         return result
 
     tool_results: list[str] = []

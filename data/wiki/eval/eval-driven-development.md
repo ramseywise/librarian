@@ -2,7 +2,7 @@
 title: Eval-Driven Development (EDD)
 tags: [eval, llm, pattern]
 summary: Writing the eval suite before the agent exists — ATDD reconstructed for non-deterministic systems, where first-ness buys honesty rather than design pressure.
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/guacamayo/docs/research/2026-08-02_eval-driven-development.md
   - data/raw/claude-docs/ai-project-template/docs/plans/AIT-89-plan.md
@@ -11,7 +11,7 @@ sources:
 
 # Eval-Driven Development (EDD)
 
-EDD is [[Specification by Example]] reconstructed for systems whose output is
+EDD is Specification by Example reconstructed for systems whose output is
 probabilistic. The practice: author the behavioral case set *before* the agent
 can satisfy it, then build to green.
 
@@ -34,7 +34,7 @@ static test suites are structurally inadequate for agents because agents are
 |---|---|---|---|
 | Classical (1999–2010) | TDD | function | dev |
 | Classical | ATDD | feature/story | dev + PM + QA |
-| Classical | [[Specification by Example]] | requirement | three amigos |
+| Classical | Specification by Example | requirement | three amigos |
 | AI-native (2023–2026) | **EDD** | agent behavior | whoever owns the product |
 
 The load-bearing claim of the classical lineage is *not* "tests catch bugs" — it
@@ -124,16 +124,13 @@ forced several concrete choices:
 
 The same implementation tripped over the template's skill sync (a hard fail on a clean
 tree, and wholesale vendoring that swept ten unrelated drifted skills into the diff) — see
-[[Name-Only Sync Guards Miss Content Drift]].
+Name-Only Sync Guards Miss Content Drift.
 
 ## See Also
 - [[Eval Harness Anatomy]] <!-- auto-linked -->
 - [[Eval Ladder]] <!-- auto-linked -->
 - [[Eval vs Test Distinction]] — prerequisite-for
-- [[Specification by Example]] — extends
 - [[Golden Set Mechanics]] — extends
 - [[Anthropic Three-Tier Eval Taxonomy]]
-- [[TDD as Coding-Agent Harness]] — alternative-to
 - [[Skill Pipeline Dryrun Testing]] — instance-of (a regression harness over a conversational pipeline)
-- [[Name-Only Sync Guards Miss Content Drift]] — related (the sync failure hit while templating EDD)
 - [[Evaluation-Driven Model Selection]] — extends (applies the define-criteria-first rule to choosing a model)

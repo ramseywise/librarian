@@ -2,7 +2,7 @@
 title: Librarian RAG Architecture
 tags: [rag, langgraph, pattern]
 summary: The five-agent Librarian pipeline — Plan, Retrieval, Reranker, Generation, and Eval agents wired by a LangGraph StateGraph with CRAG retry loop.
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
   - data/raw/claude-docs/playground/docs/archived/librarian-architecture-decisions.md
@@ -213,6 +213,5 @@ See [[Bedrock KB vs LangGraph Decision]] for the build vs buy trade-off analysis
 - [[RAG Evaluation]]
 - [[Production Hardening Patterns]]
 - [[ADK vs LangGraph Comparison]]
-- [[Librarian Project]]
 - [[Orchestration Architecture Decision]]
 - [[Retrieval Service Returns Documents, Not Answers]] — related (the same retrieval-only contract for a shared support-RAG service)

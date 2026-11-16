@@ -2,7 +2,7 @@
 title: Conversational Test Fixture Design
 tags: [eval, pattern]
 summary: How to author a fixture for a pipeline whose input is dialogue — the volunteer's verbatim words as the input unit, the full expected artifact as the oracle, and a short "key validation points" list naming the specific wrong answers the scenario exists to catch.
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/ai-project-template/skills/design-dryrun/reference/scenarios.md
 ---
@@ -44,7 +44,7 @@ fields.
 Committing the full artifact means every section is implicitly asserted, including the ones
 nobody thought to write a check for. It also makes the fixture double as documentation of
 what good output looks like — the same dual role that makes an executable specification more
-durable than a prose one ([[Specification by Example]]).
+durable than a prose one (Specification by Example).
 
 ## Expected values carry their reasoning
 
@@ -71,7 +71,7 @@ catch, usually as a contrast:
 The three scenarios are chosen so that each one's most plausible wrong answer is a
 *different* one of the others' right answers. That is the fixture set's actual design: not
 three samples of the space, but three mutually-confusable cases pinned against each other,
-which is what makes them a discriminating test of [[AI Project Archetypes]] rather than
+which is what makes them a discriminating test of AI Project Archetypes rather than
 three independent smoke tests.
 
 The bullets also record the strength of each claim. `MUST` marks an assertion a failure
@@ -99,7 +99,7 @@ produces the weekend-sprint tier, which produces `deployment_target: local`, whi
 validation points extend into an infrastructure-wide consequence: *"the weekend complexity
 budget should steer away from heavy infrastructure (no Docker, no eval suite, no CI)."*
 
-That is [[Complexity Floor]] reasoning appearing as a test assertion — the fixture asserts
+That is Complexity Floor reasoning appearing as a test assertion — the fixture asserts
 not just the parameter but the downstream restraint it implies. Stage 3 of the harness
 checks the same property syntactically, rejecting contradictory pairs like
 `project_type=prototype` with `deployment_target=cloud`.
@@ -108,14 +108,9 @@ Data classification runs the same way: scenario A's transcripts *"may contain st
 names/situations → `restricted`"*, and scenario B's memos *"may reference specific cases"*
 despite the statutes themselves being public. In both, the sensitivity comes from a fact the
 volunteer mentioned only in passing, and getting it right is what makes the observability
-question non-optional downstream ([[Scope-POC Design Interview]]).
+question non-optional downstream (Scope-POC Design Interview).
 
 ## See Also
 - [[Skill Pipeline Dryrun Testing]] — related (part of; the harness these fixtures feed)
-- [[AI Project Archetypes]] — extends (the discrimination the fixture set is designed around)
-- [[Specification by Example]] — instance-of (the artifact is the spec)
 - [[Golden Set Mechanics]] — alternative-to (curated cases for a model rather than a pipeline)
-- [[Project Discovery Conversation]] — prerequisite-for (the stage being fixtured)
-- [[Complexity Floor]] — related (constrains; capacity implies infrastructure restraint, asserted)
-- [[Asked vs Derived Scaffold Variables]] — extends (the hints table under test)
 - [[Human-Participant Skill Test Protocol]] — related (live participants rather than authored fixtures)

@@ -2,7 +2,7 @@
 title: Tool-Augmented Factuality Checking
 tags: [eval, pattern]
 summary: "Check a generated answer by splitting it into short claims, generating a search or code query per claim, running the tool and asking a model whether the evidence agrees; with GPT-4 as verifier on ChatGPT responses, FacTool beat a 3-shot self-check on response-level F1 in all four domains it tested (scientific citations 94.7 vs 21.5, self-reported)."
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-05-chern-2023-factool.md
   - data/raw/papers/2026-11-05-wang-2023-survey-factuality-large-language-models.md
@@ -84,4 +84,3 @@ Cossio (arXiv 2508.01781, 2025), a single-author survey, runs no experiments. It
 - [[FActScore]] — alternative-to (atomic facts scored against Wikipedia instead of tools)
 - [[SelfCheckGPT]] — alternative-to (the model's own samples as the evidence, no tool)
 - [[Summary Factual Consistency Metrics]] — alternative-to (source-grounded checkers for summaries)
-- [[ReAct Pattern]] — related (the search-agent loop used for claim checking)

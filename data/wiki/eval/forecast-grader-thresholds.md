@@ -2,7 +2,7 @@
 title: Forecast Grader Thresholds
 tags: [eval, reference]
 summary: The pass/fail contract for time-series forecast evaluation — MASE against a naïve baseline, SMAPE, directional accuracy, and prediction-interval coverage — with the diagnostic each failure points to and the drift ratio that triggers retraining.
-updated: 2026-08-03
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/atlas/skills/ml-experiment/SKILL.md
   - data/raw/claude-docs/atlas/skills/eval-report/SKILL.md
@@ -64,6 +64,5 @@ This converts a binary gate into a leading indicator: a MASE of 0.95 passes but 
 week from failing, and surfacing that before it breaks is the point.
 
 ## See Also
-- [[Atlas Project]] — instance-of
 - [[Eval vs Test Distinction]] — prerequisite-for
 - [[Golden Set Mechanics]] — alternative-to

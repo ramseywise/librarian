@@ -2,7 +2,7 @@
 title: Generation-Under-Contract Eval Harness
 tags: [eval, pattern]
 summary: "A third kind of eval, separate from retrieval and interaction grading: the harness itself drives a producer through generate → validate → repair → fallback and measures process facts (first-pass validity, repair convergence, fallback rate). Two things make it work: a producer contract that returns those facts, and a scripted dry-run provider whose results vary across cases."
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/galactus/docs/plans/2026-08-11-gal-4-phase3-ai-evals-extraction.md
   - data/raw/repos/galactus/.claude--docs--plans--2026-08-11-gal-4-phase3-ai-evals-extraction.md
@@ -43,7 +43,7 @@ original harness read these facts from a mutated pipeline-state object. So the e
 producer contract has to return the process facts along with the artifact:
 `(output, first_pass_valid, repair_attempts, used_fallback)`. If you type the producer as
 a plain `case -> output` callable, two of the four metrics silently disappear. This is the
-harness-level version of [[Write-Only Fields and the Reader Map]]: decide what the reader
+harness-level version of Write-Only Fields and the Reader Map: decide what the reader
 needs before you define the interface.
 
 Only three parts of the original runner were case-specific: turning a case into a
@@ -95,9 +95,6 @@ not-applicable sentinel instead.
 
 ## See Also
 - [[Eval Falsifiability]] — extends (scripted providers must vary with their inputs)
-- [[Build the Checker Before the Generator]] — extends (the validator that the repair loop runs against)
 - [[Eval vs Test Distinction]] — extends (a third eval kind beside grading suites)
 - [[Experiment Tracking Schemas]] — extends (the registry the harness projects into)
-- [[Write-Only Fields and the Reader Map]] — instance-of (a producer type that drops the facts the metrics read)
-- [[Gate Pass Rate Measures Effort, Not Readiness]] — related (first-pass vs final-pass measurement)
 - [[Eval Ladder]] — instance-of

@@ -1,5 +1,5 @@
 ---
-imported_hash: 17570ef5083e046a
+imported_hash: 1b8c87eedd8ded1b
 title: References
 summary: ★ = changed a claim in the notes. ⚑ = preprint only.
 order: 41
@@ -125,6 +125,7 @@ source: learn-ai-engineering/data-science/01-classical-ml/references.md
 | Yu and Chiu, [*An Explainable Unsupervised-to-Supervised Machine Learning Framework for Dietary Pattern Discovery*](https://arxiv.org/abs/2605.08242) (accepted at FICTA 2026) | ⚑ Classifier accuracy read as reproducibility, not validity | Link only | 05b |
 | Hardt, Price and Srebro, [*Equality of Opportunity in Supervised Learning*](https://arxiv.org/abs/1610.02413) (NeurIPS 2016) | Equal opportunity and equalized odds, group thresholds, and the warning that the target's measurement may itself be biased | Link only | 15 |
 | Chouldechova, [*Fair Prediction with Disparate Impact*](https://arxiv.org/abs/1703.00056) ([Big Data 5(2), 2017](https://doi.org/10.1089/big.2016.0047)) | The FPR, PPV, FNR identity: with unequal prevalence, the criteria can't all hold | Link only | 15 |
+| Chouldechova, [*Fair Prediction with Disparate Impact*, first version](https://arxiv.org/abs/1610.07524) (FATML 2016 workshop, Oct 2016) | The six-page first version, read in full. On ProPublica's Broward County COMPAS data: prevalence 51% against 39%, FPR 45% against 23%, FNR 28% against 48% for Black and White defendants, and a penalty gap of (t_H - t_L) times the error-rate gap. The FPR gap persists within prior-count bins for misdemeanour defendants (Fig. 2, decile above 4), so balance overall "does not guarantee balance at finer levels of granularity". No sample size, PPV or cutoff for those rates. The parity and "cannot all be simultaneously satisfied" quotes in note 15 come from the longer version above and are not in this text, which also says calibration implies equal PPV at a cutoff where the longer version says it need not | [1610.07524](../sources/chouldechova-2016-fair-prediction-disparate-impact.pdf) | [15](notes/15-fairness-in-automated-scoring.md#the-impossibility-in-numbers) |
 | Kleinberg, Mullainathan and Raghavan, [*Inherent Trade-Offs in the Fair Determination of Risk Scores*](https://arxiv.org/abs/1609.05807) ([ITCS 2017](https://doi.org/10.4230/LIPIcs.ITCS.2017.43)) | Calibration and balance for both classes need perfect prediction or equal base rates | Link only | 15 |
 | Lipton, Chouldechova and McAuley, [*Does mitigating ML's impact disparity require treatment disparity?*](https://arxiv.org/abs/1711.07076) (NeurIPS 2018) | Dropping the attribute lets correlated features reorder people within groups | Link only | 15 |
 | Chen, Kallus, Mao, Svacha and Udell, [*Fairness Under Unawareness*](https://arxiv.org/abs/1811.11154) (FAT* 2019) | Where inferred-group estimates of disparity go wrong, for thresholded and weighted estimators | Link only | 15 |

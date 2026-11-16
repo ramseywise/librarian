@@ -2,7 +2,7 @@
 title: Append-Only Human Labels
 tags: [eval, pattern]
 summary: Persist rater judgments as append-only rows keyed to the exact enrichment row they judged, with an instrument column and a fixed rater picklist — never update, never collapse to consensus, because agreement statistics need every rating that was ever made.
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/akira/docs/research/2026-09-15-dis275-human-label-persistence.md
   - data/raw/claude-docs/kiez-archive/docs/research/2026-09-15-dis275-human-label-persistence.md
@@ -39,7 +39,7 @@ browser-downloaded JSONL — every session one export away from loss.
 
 | Question | Choice | Why |
 |---|---|---|
-| Table cluster | interaction / measurement; admin or service-role write only | A label is evidence, not product state; see [[Data Clusters by Writer and Trust]] |
+| Table cluster | interaction / measurement; admin or service-role write only | A label is evidence, not product state; see Data Clusters by Writer and Trust |
 | Label key | the specific enrichment row, not the content item | A later re-enrichment must not silently reinterpret an old judgment |
 | Multi-vertical key | `(content_kind, enrichment_id)` + validation trigger | Three enrichment tables; a single FK rejects two of them |
 | Re-rating | **append, never update; latest-wins at read time** via `is_current` | Agreement scripts must consume *all* rows — intra-rater consistency is only measurable if every rating survives; a composite PK + `updated_at` destroys the history the measurement needs |
@@ -77,7 +77,6 @@ review on an ongoing basis. See [[LLM-as-Judge Evaluation]].
 ## See Also
 - [[HITL Annotation Pipeline]] — extends (the storage layer under the annotation queue)
 - [[LLM-as-Judge Evaluation]] — prerequisite-for (human labels set the judge's ceiling)
-- [[Data Clusters by Writer and Trust]] — instance-of
 - [[Frozen Version Stamps on Logged Results]] — related (which versions a label must be joined to)
 - [[Frozen Ranking Baseline from a Pure Ranker]] — prerequisite-for (the judgment rows feed the baseline; agree the field contract first)
 - [[One-Sided Label Control]] — extends (a labelling UI that can only write one verdict makes precision unmeasurable)

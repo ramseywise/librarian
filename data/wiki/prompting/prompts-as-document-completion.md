@@ -2,7 +2,7 @@
 title: Prompts as Document Completion
 tags: [prompting, llm, concept]
 summary: An LLM is a document-completion engine, so a prompt is the opening of a document whose most plausible continuation is the answer — five properties (tokens, autoregression, left-to-right attention, truth bias, chat-as-transcript) explain nearly every prompting rule.
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--01-how-models-read-prompts.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--README.md
@@ -36,7 +36,7 @@ elicit by changing the input.
 | # | Property | Consequence | Rule |
 |---|---|---|---|
 | 1 | **Tokens, not characters** (~4 chars/token) | Letter counting, reversal, ROT13 are hard; `ghost` is 1 token, `gohst` 3; SHOUTING, emoji and random IDs cost more tokens | Do sub-token work in code; measure with a real tokenizer |
-| 2 | **Autoregressive** — one pass per token, no lookahead, no takebacks | Fixed compute per token; early errors compound; repetition traps | Buy compute with more tokens ([[Chain of Thought]]); put error detection in the surrounding system |
+| 2 | **Autoregressive** — one pass per token, no lookahead, no takebacks | Fixed compute per token; early errors compound; repetition traps | Buy compute with more tokens (Chain of Thought); put error detection in the surrounding system |
 | 3 | **Left-to-right attention** | Later text can't change how earlier text was read | State the task *before* content when it changes how content must be read |
 | 4 | **Truth bias** | Hallucination is the same behaviour as fluency; a false premise is run with, not questioned | Ask for checkable output; ground and quote; never feed it nonsense |
 | 5 | **Chat = completion of a transcript** | Roles are document structure, not a security boundary (except reserved role tokens) | Never paste untrusted text into `system` ([[Prompt Injection]]) |
@@ -115,7 +115,6 @@ never sees. Synthetic `assistant` turns are treated as things the model said.
 ## See Also
 - [[Prompt Engineering]] — prerequisite-for
 - [[Four Prompt Criteria]] — prerequisite-for
-- [[Chain of Thought]] — prerequisite-for (CoT works because tokens are the only feedback channel)
 - [[Long-Context Prompting]] — prerequisite-for
 - [[Prompt Injection]] — prerequisite-for (roles are structure, not a boundary)
 - [[RLHF Pipeline]] — extends

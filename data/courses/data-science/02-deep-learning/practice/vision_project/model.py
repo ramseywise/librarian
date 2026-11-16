@@ -1,5 +1,4 @@
 """The two model families the chapter compares: a small CNN trained from scratch, and a pretrained ResNet-18."""
-
 import torch.nn as nn
 from torchvision.models import ResNet18_Weights, resnet18
 
@@ -12,21 +11,12 @@ class SmallCNN(nn.Module):
 
         def block(c_in, c_out):
             return nn.Sequential(
-                nn.Conv2d(c_in, c_out, 3, padding=1),
-                nn.BatchNorm2d(c_out),
-                nn.ReLU(),
-                nn.Conv2d(c_out, c_out, 3, padding=1),
-                nn.BatchNorm2d(c_out),
-                nn.ReLU(),
-                nn.MaxPool2d(2),
-            )
+                nn.Conv2d(c_in, c_out, 3, padding=1), nn.BatchNorm2d(c_out), nn.ReLU(),
+                nn.Conv2d(c_out, c_out, 3, padding=1), nn.BatchNorm2d(c_out), nn.ReLU(),
+                nn.MaxPool2d(2))
 
-        self.features = nn.Sequential(
-            block(3, width), block(width, 2 * width), block(2 * width, 4 * width)
-        )
-        self.head = nn.Sequential(
-            nn.AdaptiveAvgPool2d(1), nn.Flatten(), nn.Linear(4 * width, n_classes)
-        )
+        self.features = nn.Sequential(block(3, width), block(width, 2 * width), block(2 * width, 4 * width))
+        self.head = nn.Sequential(nn.AdaptiveAvgPool2d(1), nn.Flatten(), nn.Linear(4 * width, n_classes))
 
     def forward(self, x):
         return self.head(self.features(x))

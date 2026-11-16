@@ -2,7 +2,7 @@
 title: Free Text With Deterministic Repair Over SDK-Enforced Schema
 tags: [prompting, llm, decision]
 summary: "Decision (akira, 2026-09): keep enrichment on plain text generation plus a deterministic sanitize/validate chain instead of SDK-enforced structured output, and amend the requirement that claimed API-layer enforcement. None of the three deciding criteria was measured, measuring token cost would mean half-building the alternative, and the rewording itself had to name each path's real mechanism, because every uniform claim (including the corrections) turned out false."
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-03-dis126-ratify-dc2.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-03-dis126-ratify-dc2.md
@@ -78,7 +78,7 @@ uniform claim with another, and each one was wrong:
    vertical's scalars pass through to storage and are only flagged.
 3. Second refine: "written, but kept off the public surface by the review flag". A later
    trace found the publish script never read that flag. See
-   [[Sanitize Never Fails, Validate Never Mutates]].
+   Sanitize Never Fails, Validate Never Mutates.
 4. Review round 1 blocker: the new wording said "a parse failure reaches the review gate as
    `validation_failed`". In fact unparseable output returns before the gate, with no gate
    row. Out-of-vocabulary *values* inside parseable output do reach the gate. The two failure
@@ -93,7 +93,5 @@ went unchecked.
 
 ## See Also
 - [[Structured Output]] — alternative-to (the API-layer enforcement this decision declined)
-- [[Sanitize Never Fails, Validate Never Mutates]] — extends (the repair chain and the escape the trace found)
 - [[Length Limits Are a Fit Layer, Not a Prompt]] — related (the same "let the model write, enforce in code" stance)
 - [[Evidence-Labelled Generation with Deterministic QC]] — related
-- [[Stage-Scoped Scout Agents]] — related (the fix stage that refused a relayed blocker approval on this plan)

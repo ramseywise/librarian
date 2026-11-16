@@ -2,7 +2,7 @@
 title: Delete an Unfinished RAG Retrofit, Don't Archive It
 tags: [rag, decision]
 summary: "A RAG stack forked from another domain's support bot, half-adapted, then suspended behind a web-search stopgap was finally deleted rather than archived — the domain (genre/artist lookup) never justified a vector store, the missing asset was a curated corpus not code, and suspended code kept leaking dead lineage into evals and masking the one live module inside it."
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/listen-wiseer/docs/plans/phase8-rag-rightsize-agentic-search.md
   - data/raw/repos/listen-wiseer/.claude--docs--plans--phase8-rag-rightsize-agentic-search.md
@@ -41,7 +41,7 @@ the current architecture, not a resurrection of this code.
 ## Why
 
 - **The domain did not justify a vector store.** Genre and artist lookup is answered better
-  by live web search plus a confidence gate ([[Provenance-Tiered Confidence Gate]]) than by
+  by live web search plus a confidence gate (Provenance-Tiered Confidence Gate) than by
   a small, stale, self-ingested corpus.
 - **The gap was the corpus, not the code.** A justified doc-RAG elsewhere (curated ~50
   articles, cross-encoder rerank, citation guardrails, dedicated graders) shows what the
@@ -57,7 +57,7 @@ the current architecture, not a resurrection of this code.
 - **Suspension hid the live part.** The only module anyone used sat inside a package
   everyone believed was dead, and its richer outputs (query decomposition, complexity
   score, retrieval-mode) were computed and discarded until this phase wired them into
-  search fan-out ([[Write-Only Fields and the Reader Map]]).
+  search fan-out (Write-Only Fields and the Reader Map).
 
 ## Tradeoffs accepted
 
@@ -78,6 +78,3 @@ around it.
 
 ## See Also
 - [[RAG Architecture Selection]] — extends (the null option: no RAG for a lookup domain)
-- [[Provenance-Tiered Confidence Gate]] — supersedes (what replaced the retrieval path)
-- [[Write-Only Fields and the Reader Map]] — related (the computed-and-discarded query features)
-- [[Listen-Wiseer Project]] — instance-of

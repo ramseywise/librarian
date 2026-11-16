@@ -10,7 +10,6 @@ so run.py and test.py can swap them and watch the property hold or break.
 | traces | TenantTraces | AmbientTraces |
 | quality | tenant_quality | fleet_mean_alert |
 """
-
 from __future__ import annotations
 
 import math
@@ -88,9 +87,7 @@ class ReservationLedger:
     fail the day a second worker starts. Postgres or a Redis script gives the same statement in production.
     """
 
-    def __init__(
-        self, limits: dict[str, int], path: str = ":memory:", wait: bool = True, clock=lambda: 0
-    ):
+    def __init__(self, limits: dict[str, int], path: str = ":memory:", wait: bool = True, clock=lambda: 0):
         self.db = sqlite3.connect(path, timeout=30, isolation_level=None)
         self.wait, self.clock = wait, clock
         self.db.executescript("""
@@ -100,26 +97,18 @@ class ReservationLedger:
                                               state TEXT DEFAULT 'open', created INT);
         """)
         for tenant, cap in limits.items():
-            self.db.execute(
-                "INSERT OR IGNORE INTO ledger (tenant, cap) VALUES (?, ?)", (tenant, cap)
-            )
+            self.db.execute("INSERT OR IGNORE INTO ledger (tenant, cap) VALUES (?, ?)", (tenant, cap))
 
     def before_call(self, tenant, run_id, need) -> Hold:
         self.db.execute("BEGIN IMMEDIATE")
-        cur = self.db.execute(
-            "UPDATE ledger SET held = held + ? WHERE tenant = ? AND spent + held + ? <= cap",
-            (need, tenant, need),
-        )
+        cur = self.db.execute("UPDATE ledger SET held = held + ? WHERE tenant = ? AND spent + held + ? <= cap",
+                              (need, tenant, need))
         if cur.rowcount == 1:
-            cur = self.db.execute(
-                "INSERT INTO holds (tenant, run_id, tokens, created) VALUES (?, ?, ?, ?)",
-                (tenant, run_id, need, self.clock()),
-            )
+            cur = self.db.execute("INSERT INTO holds (tenant, run_id, tokens, created) VALUES (?, ?, ?, ?)",
+                                  (tenant, run_id, need, self.clock()))
             self.db.execute("COMMIT")
             return Hold(cur.lastrowid, tenant, run_id, need)
-        row = self.db.execute(
-            "SELECT spent, cap FROM ledger WHERE tenant = ?", (tenant,)
-        ).fetchone()
+        row = self.db.execute("SELECT spent, cap FROM ledger WHERE tenant = ?", (tenant,)).fetchone()
         self.db.execute("ROLLBACK")
         if row is None:
             raise BudgetExceeded(f"no ledger row for {tenant}")  # fail closed
@@ -135,19 +124,15 @@ class ReservationLedger:
         if state != "settled":
             released = hold.tokens if state == "open" else 0
             self.db.execute("UPDATE holds SET state = 'settled' WHERE id = ?", (hold.id,))
-            self.db.execute(
-                "UPDATE ledger SET held = held - ?, spent = spent + ? WHERE tenant = ?",
-                (released, actual, hold.tenant),
-            )
+            self.db.execute("UPDATE ledger SET held = held - ?, spent = spent + ? WHERE tenant = ?",
+                            (released, actual, hold.tenant))
         self.db.execute("COMMIT")
 
     def expire(self, older_than: int) -> int:
         """A worker that dies mid-call never settles. Without this its hold shrinks the tenant's budget for good."""
         self.db.execute("BEGIN IMMEDIATE")
-        stale = self.db.execute(
-            "SELECT id, tenant, tokens FROM holds WHERE state = 'open' AND created < ?",
-            (older_than,),
-        ).fetchall()
+        stale = self.db.execute("SELECT id, tenant, tokens FROM holds WHERE state = 'open' AND created < ?",
+                                (older_than,)).fetchall()
         for hold_id, tenant, tokens in stale:
             self.db.execute("UPDATE holds SET state = 'expired' WHERE id = ?", (hold_id,))
             self.db.execute("UPDATE ledger SET held = held - ? WHERE tenant = ?", (tokens, tenant))
@@ -174,21 +159,14 @@ def _hammer(path: str, tenant: str, calls: int, need: int, actual: int) -> int:
     return granted
 
 
-def hammer_from_processes(
-    path: str, tenant: str, cap: int, workers: int, calls: int, need: int, actual: int
-) -> dict:
+def hammer_from_processes(path: str, tenant: str, cap: int, workers: int, calls: int, need: int, actual: int) -> dict:
     """Several real OS processes spending against one ledger file."""
     ReservationLedger({tenant: cap}, path=path).db.close()
     with ProcessPoolExecutor(workers) as pool:
         futures = [pool.submit(_hammer, path, tenant, calls, need, actual) for _ in range(workers)]
         granted = sum(f.result() for f in futures)
     ledger = ReservationLedger({}, path=path)
-    return {
-        "granted": granted,
-        "spent": ledger.spent(tenant),
-        "held": ledger.held(tenant),
-        "cap": cap,
-    }
+    return {"granted": granted, "spent": ledger.spent(tenant), "held": ledger.held(tenant), "cap": cap}
 
 
 # %% Retrieval
@@ -198,9 +176,7 @@ def _vector(text: str) -> Counter:
 
 def _cosine(a: Counter, b: Counter) -> float:
     dot = sum(n * b[w] for w, n in a.items() if w in b)
-    return dot / (
-        math.sqrt(sum(n * n for n in a.values())) * math.sqrt(sum(n * n for n in b.values())) or 1
-    )
+    return dot / (math.sqrt(sum(n * n for n in a.values())) * math.sqrt(sum(n * n for n in b.values())) or 1)
 
 
 class Index:
@@ -211,17 +187,15 @@ class Index:
 
     def top_k(self, query: str, k: int, where=None) -> list:
         q = _vector(query)
-        candidates = [
-            (d, v) for d, v in self.docs if where is None or where(d)
-        ]  # filter first, then rank
+        candidates = [(d, v) for d, v in self.docs if where is None or where(d)]  # filter first, then rank
         candidates.sort(key=lambda item: (-_cosine(q, item[1]), item[0].id))
         return [d for d, _ in candidates[:k]]
 
 
 @dataclass
 class Retrieved:
-    docs: list  # what reaches the agent's context
-    exposed: list  # everything any component saw on the way, such as a reranker prompt
+    docs: list            # what reaches the agent's context
+    exposed: list         # everything any component saw on the way, such as a reranker prompt
 
 
 class ScopedRetriever:
@@ -249,9 +223,7 @@ class PostFilterRetriever:
         allowed = set(scopes)
         candidates = self.index.top_k(query, k)
         reranker_prompt = list(candidates)  # sent to a cross-encoder or a model, and usually logged
-        return Retrieved(
-            [d for d in candidates if d.scope is None or d.scope in allowed], reranker_prompt
-        )
+        return Retrieved([d for d in candidates if d.scope is None or d.scope in allowed], reranker_prompt)
 
 
 # %% Tools
@@ -262,9 +234,7 @@ class ToolDenied(Exception):
 class _ToolBackend:
     def __init__(self, records: dict[str, dict]):
         self.records = records
-        self.effects: list[
-            tuple[str, str, dict]
-        ] = []  # side effects that really happened, as (tenant, tool, args)
+        self.effects: list[tuple[str, str, dict]] = []  # side effects that really happened, as (tenant, tool, args)
 
     def _write(self, tenant, name, args) -> str:
         self.effects.append((tenant, name, args))
@@ -365,9 +335,7 @@ class FairQueue:
             if line[0].cost <= self.deficit[tenant]:
                 r = line.popleft()
                 self.deficit[tenant] -= r.cost
-                if (
-                    not line
-                ):  # an empty line banks nothing, or a tenant could save up a burst while idle
+                if not line:  # an empty line banks nothing, or a tenant could save up a burst while idle
                     self.deficit[tenant] = 0
                     self.active.popleft()
                     self._credited = False
@@ -463,9 +431,7 @@ class AmbientTraces:
         self.current_tenant = ctx.tenant_id
 
     def record(self, ctx, node, status="ok", detail="", tokens=0) -> None:
-        self._spans.append(
-            Span(self.current_tenant, ctx.run_id, ctx.config.version, node, status, detail, tokens)
-        )
+        self._spans.append(Span(self.current_tenant, ctx.run_id, ctx.config.version, node, status, detail, tokens))
 
     def read(self, caller: str, run_id: str | None = None) -> list[Span]:
         if run_id is not None:
@@ -477,7 +443,7 @@ class AmbientTraces:
 
 
 # %% Quality
-Z_ALERT = 2.33  # one-sided, about 1% per test if the normal approximation holds
+Z_ALERT = 2.33   # one-sided, about 1% per test if the normal approximation holds
 MIN_RUNS = 30
 FLEET_DROP_ALERT = 0.02
 
@@ -518,6 +484,4 @@ def per_tenant_alert(before: dict, after: dict) -> set[str]:
 
 
 def canary_decision(stable: tuple[int, int], canary: tuple[int, int]) -> str:
-    return {"too_few_runs": "wait", "regressed": "rollback", "ok": "promote"}[
-        tenant_status(stable, canary)
-    ]
+    return {"too_few_runs": "wait", "regressed": "rollback", "ok": "promote"}[tenant_status(stable, canary)]

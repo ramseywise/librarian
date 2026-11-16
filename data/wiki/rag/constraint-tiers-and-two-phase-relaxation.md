@@ -2,7 +2,7 @@
 title: Constraint Tiers and Two-Phase Relaxation
 tags: [rag, llm, pattern]
 summary: Classify every search input as a hard constraint, a semi-hard constraint, a strong preference or a decision signal; when results run thin, soften internal scoring first and only then suggest user-facing filter changes, never auto-relax hard constraints (date, accessibility), and say so whenever close alternatives are shown.
-updated: 2026-10-16
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/diskoe/docs/research/2026-10-09-notion-search-and-recommendation-specs.md
   - data/raw/claude-docs/kiez-archive/docs/research/2026-10-09-notion-search-and-recommendation-specs.md
@@ -71,4 +71,3 @@ a small explanation still appear above the results.
 ## See Also
 - [[Specificity-Adaptive Ranking and Slate Composition]] — extends (the scorer and five-slot composer that consume these tiers)
 - [[Anchor-and-Guardrail Similar Items]] — related (the detail-page layer that reuses the search context as a guardrail)
-- [[Hide-Unknown Display Contract]] — related (the same "unknown is not a yes" posture on the display side)

@@ -7,7 +7,6 @@ The working directory becomes the note's folder, so relative data paths in the n
 Blocks whose first line contains `# illustrative` are skipped. Block N's output is printed
 under a `--- block N (line L)` header. Exits 1 on the first failure unless --keep-going is set.
 """
-
 import argparse
 import os
 import re

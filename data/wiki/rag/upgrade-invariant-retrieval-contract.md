@@ -2,7 +2,7 @@
 title: Upgrade-Invariant Retrieval Contract
 tags: [rag, decision]
 summary: Ship Postgres full-text search first and pgvector second, behind one search endpoint whose response shape never changes. Consumers code against the contract once. The vector upgrade is gated on a graded before/after eval, and re-embedding skips unchanged docs by content hash.
-updated: 2026-10-16
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/dssg/docs/overview/design.md
   - data/raw/claude-docs/dssg/docs/milestones/kb-platform-api.md
@@ -48,5 +48,4 @@ search now and semantic retrieval soon. Three consumers were waiting to code aga
 ## See Also
 - [[PGVector Migration Pattern]] — related (the same "preserve the public API" move, from in-memory to pgvector)
 - [[RAG Retrieval Strategies]] — extends (lexical-then-semantic as a staged rollout)
-- [[Named-Trigger Deferral]] — related (the vector phase is gated on an eval win, not on a date)
 - [[Vector Database Comparison]] — extends

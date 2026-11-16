@@ -2,7 +2,7 @@
 title: Retrieval Service Returns Documents, Not Answers
 tags: [rag, decision]
 summary: When several agents share one RAG service, expose a retrieval-only endpoint (plan, retrieve, rerank, gate, then return documents) and let each calling agent own context injection and answer synthesis; latency profiling showed the answer LLM call dominates anyway.
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/playground/docs/plans/support-rag-orchestration.md
   - data/raw/repos/playground/.claude--docs--plans--support-rag-orchestration.md
@@ -67,11 +67,9 @@ signature, with no gates and no multi-node graph. Track 2 was the full agentic R
 kept as an experiment for calibrating thresholds and testing whether reranking and the
 post-answer evaluator earn their latency. Complexity moves from Track 2 into Track 1 only
 when eval data supports it. The review also found the agent's HITL gates useless in
-autonomous mode: see [[HITL Gate Without a Resumer]].
+autonomous mode: see HITL Gate Without a Resumer.
 
 ## See Also
 - [[Librarian RAG Architecture]] — related (same retrieval-as-tool contract on the librarian side)
 - [[ADK vs LangGraph Comparison]] — related (two orchestrators sharing one retrieval backend)
 - [[RAG Retrieval Strategies]] — extends
-- [[Borderline-Band Sufficiency Probe]] — related (the quality gates the retrieval service keeps)
-- [[HITL Gate Without a Resumer]] — related (why the retrieval service dropped its interrupt gates for autonomous callers)

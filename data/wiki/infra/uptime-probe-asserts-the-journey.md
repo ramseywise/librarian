@@ -2,7 +2,7 @@
 title: Uptime Probe Asserts the Journey
 tags: [infra, pattern]
 summary: "An external uptime check against a liveness endpoint that always returns healthy proves only that the process answers, so the probe must exercise the user journey (a real recommendation request returning a non-empty result); it is done when a test alert has actually arrived at each recipient on a real channel, and it gates the unattended beta, not a supervised alpha."
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-29-dis143-uptime-alerting.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-29-dis143-uptime-alerting.md
@@ -23,7 +23,7 @@ without querying the database or checking the connection pool. Pointing an uptim
 service at it would report "up" while the result pool was empty or the database project
 was dead. The check the beta needs asserts the product's core journey from outside:
 request recommendations and require a non-empty result. A probe that cannot fail
-carries no signal. See [[Always-Red Check Carries No Signal]] for the mirror case.
+carries no signal. See Always-Red Check Carries No Signal for the mirror case.
 
 ## Four things that are not each other
 
@@ -49,7 +49,7 @@ dated, at each recipient. Each recipient needs a real, reachable channel (email,
 push, never a `noreply@` address), and the response expectation is written into the
 runbook (for example: acknowledge within 4 working hours; for an outage or data exposure,
 hit the stop button first). A configured but unverified alert path is the paging version
-of [[Silence Reads as Clean]].
+of Silence Reads as Clean.
 
 ## It gates the beta, not the alpha
 
@@ -65,7 +65,5 @@ signup rather than commit spend on an old in-repo claim.
 
 ## See Also
 - [[Log Drain Over Error Tracker at Pre-Scale]] — related (the after-the-fact layer the prober does not replace)
-- [[Silence Reads as Clean]] — instance-of (an unproven alert path reads as "no outages")
-- [[Always-Red Check Carries No Signal]] — related (a check that cannot fail is the inverse of one that always fails)
 - [[Paid Tiers Start at the Beta, Not the Alpha]] — related (the same alpha/beta phase split)
 - [[Production Hardening Patterns]] — extends

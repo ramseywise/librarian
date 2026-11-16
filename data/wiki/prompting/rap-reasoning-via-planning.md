@@ -2,7 +2,7 @@
 title: RAP Reasoning via Planning
 tags: [prompting, concept]
 summary: A framework that prompts one frozen LLM as both reasoning agent and world model and searches reasoning traces with Monte Carlo Tree Search; the paper reports large gains on Blocksworld planning and small ones on GSM8K (self-reported).
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-07-hao-2023-reasoning-language-model-planning-world.md
 ---
@@ -32,7 +32,6 @@ Rewards are task dependent: action likelihood, state confidence, self-evaluation
 ## See Also
 - [[Tree of Thoughts]] — alternative-to (search over thoughts without a world-model state predictor)
 - [[ThoughtSculpt]] — alternative-to (MCTS whose actions include revising earlier output)
-- [[Chain of Thought]] — prerequisite-for
 - [[Self-Consistency]] — prerequisite-for
 - [[Task Decomposition Patterns]] — related
 - [[Discriminator Bottleneck in LLM Planning]] — related

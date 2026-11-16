@@ -2,7 +2,7 @@
 title: Prove Discovery Before Evaluating Enrichment
 tags: [eval, decision]
 summary: "Before any enrichment-quality evaluation, prove that the pipeline found the right things and represents them faithfully: discovery precision, negative controls, entity boundaries, cross-source identity, recurrence, venue identity, field provenance and minimum evidence. One labelled sample per discovery route, reported with a Wilson CI, covers three of those proofs. Notebooks call pipeline rules and never re-derive them."
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-15-pre-enrichment-proof.md
   - data/raw/claude-docs/diskoe/docs/plans/2026-09-15-pre-enrichment-proof.md
@@ -22,7 +22,7 @@ any enrichment evaluation is:
 
 Grading enrichment output on top of a corpus that double-counts events, admits listing
 pages as records, or lacks the evidence to enrich measures the wrong layer (see
-[[Input-Starved Enrichment]], [[Listing Pages Masquerading as Records]]). The note was
+Input-Starved Enrichment, Listing Pages Masquerading as Records). The note was
 also explicit that the notebooks would *not* become an enrichment evaluation suite.
 
 ## The proof ladder
@@ -80,8 +80,6 @@ from notebook computation. That needs run records the pipeline did not yet write
 enrichment cost per run, probe and corpus runs.
 
 ## See Also
-- [[Input-Starved Enrichment]] — prerequisite-for (the evidence floor this ladder checks)
-- [[Listing Pages Masquerading as Records]] — related (the not-an-object class)
 - [[Append-Only Human Labels]] — related (where the labelled sample should live)
 - [[Eval Falsifiability]] — extends (negative controls make discovery precision falsifiable)
 - [[Golden Set Mechanics]] — related (the per-field golden pages)

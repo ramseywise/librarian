@@ -1831,6 +1831,519 @@ questions:
   explanation: The opposite is true — beneficiary PII (immigration status, health, benefits) is higher-stakes,
     and consent/minimization is about trust with vulnerable populations, not a compliance checkbox.
   lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: l1
+  prompt: What is the variance of a Bernoulli variable with p = 0.2?
+  options:
+  - '0.20'
+  - '0.16'
+  - '0.04'
+  - '0.80'
+  answer: '0.16'
+  explanation: Variance is p(1 − p) = 0.2 × 0.8 = 0.16.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: l2
+  prompt: X is Binomial with n = 100 and p = 0.1. What are its mean and standard deviation?
+  options:
+  - 10 and 9
+  - 10 and 3
+  - 10 and 0.9
+  - 1 and 3
+  answer: 10 and 3
+  explanation: Mean np = 10. Variance np(1 − p) = 9, so the standard deviation is 3. Answer A gives the variance.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: l3
+  prompt: Card payments are declined at a steady average rate, independently of one another. Which distribution
+    models the number declined in a given minute?
+  options:
+  - Binomial
+  - Normal
+  - Poisson
+  - Geometric
+  answer: Poisson
+  explanation: A count of independent events in a fixed interval at a constant rate is Poisson. Binomial needs
+    a fixed number of trials.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: l4
+  prompt: A Poisson variable has mean 4. What is its variance?
+  options:
+  - '4'
+  - '2'
+  - '16'
+  - It depends on the sample size
+  answer: '4'
+  explanation: For a Poisson the mean and the variance are both λ.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: l5
+  prompt: What does the Central Limit Theorem state?
+  options:
+  - Any large dataset is approximately Normally distributed
+  - The sample mean equals the population mean once n exceeds 30
+  - The variance of the data shrinks as n grows
+  - The mean of a large sample is approximately Normal even when the data are not
+  answer: The mean of a large sample is approximately Normal even when the data are not
+  explanation: The theorem is about the distribution of the sample mean, not of the data. The raw data keep
+    their shape.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: l6
+  prompt: A and B are independent with P(A) = 0.5 and P(B) = 0.4. What is P(A or B)?
+  options:
+  - '0.9'
+  - '0.2'
+  - '0.7'
+  - '0.8'
+  answer: '0.7'
+  explanation: P(A or B) = P(A) + P(B) − P(A and B) = 0.5 + 0.4 − 0.5 × 0.4 = 0.7.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: l7
+  prompt: A condition has 1% prevalence. A test has 90% sensitivity and a 10% false positive rate. Roughly
+    what is the probability of the condition given a positive test?
+  options:
+  - About 8%
+  - About 50%
+  - About 90%
+  - About 1%
+  answer: About 8%
+  explanation: 'Bayes: 0.01 × 0.9 / (0.01 × 0.9 + 0.99 × 0.1) = 0.009 / 0.108, about 8%. False positives from
+    the large healthy group dominate.'
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: l8
+  prompt: X and Y are independent with variances 4 and 9. What is the standard deviation of X + Y?
+  options:
+  - '5'
+  - '13'
+  - About 3.6
+  - '6.5'
+  answer: About 3.6
+  explanation: 'Variances add for independent variables: 4 + 9 = 13, and √13 is about 3.6. Standard deviations
+    do not add.'
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: l9
+  prompt: Var(X) = 2. What is Var(3X)?
+  options:
+  - '6'
+  - '9'
+  - '12'
+  - '18'
+  answer: '18'
+  explanation: Var(aX) = a²Var(X) = 9 × 2 = 18.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: l10
+  prompt: 'E[X + Y] = E[X] + E[Y] holds when:'
+  options:
+  - X and Y are independent
+  - X and Y have the same distribution
+  - Always, as long as both expectations exist
+  - X and Y are both Normal
+  answer: Always, as long as both expectations exist
+  explanation: Linearity of expectation needs no independence. It is variances that need zero correlation to
+    add.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: l11
+  prompt: A sample of n = 100 has a standard error of the mean of 1. What sample size halves it?
+  options:
+  - '200'
+  - '400'
+  - '141'
+  - 1,000
+  answer: '400'
+  explanation: The standard error is σ/√n, so halving it takes four times the sample.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: l12
+  prompt: How many rolls of a fair die do you expect to need to see the first six?
+  options:
+  - '6'
+  - '3'
+  - '3.5'
+  - '36'
+  answer: '6'
+  explanation: The wait for the first success is Geometric with mean 1/p = 6.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: l13
+  prompt: Which statement is true of two random variables?
+  options:
+  - Zero correlation implies independence
+  - Independence implies zero correlation
+  - Each implies the other
+  - Neither implies the other
+  answer: Independence implies zero correlation
+  explanation: 'Independence implies zero correlation. The reverse fails: with X standard Normal and Y = X²,
+    the correlation is 0 but Y is a function of X.'
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: l14
+  prompt: X is Normal. Roughly what is P(X > μ + 2σ)?
+  options:
+  - 5%
+  - 2.5%
+  - 16%
+  - 0.3%
+  answer: 2.5%
+  explanation: About 95% lies within 2σ, leaving 5% in the two tails and 2.5% in each.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: l15
+  prompt: Which is the best approximation to a Binomial with n = 1,000 and p = 0.002?
+  options:
+  - Normal with mean 500
+  - Poisson with mean 0.002
+  - Geometric with p = 0.002
+  - Poisson with mean 2
+  answer: Poisson with mean 2
+  explanation: Large n with small p goes to Poisson with λ = np = 2. A Normal fits badly because np is far
+    below 10.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: l16
+  prompt: Can the value of a probability density function be greater than 1?
+  options:
+  - 'Yes: only the area under the density must equal 1'
+  - 'No: probabilities cannot exceed 1'
+  - Only for discrete variables
+  - Only at the mean
+  answer: 'Yes: only the area under the density must equal 1'
+  explanation: A density is not a probability. Uniform(0, 0.5) has density 2 everywhere on its interval.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: m1
+  prompt: A test returns p = 0.03. What does that mean?
+  options:
+  - There is a 3% chance the null hypothesis is true
+  - There is a 97% chance the effect is real
+  - If the null were true, data this extreme or more would occur 3% of the time
+  - The effect size is 3%
+  answer: If the null were true, data this extreme or more would occur 3% of the time
+  explanation: A p-value is computed assuming the null is true. It is not the probability that the null is
+    true, and it carries no information about effect size.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: m2
+  prompt: What is a Type II error?
+  options:
+  - Rejecting a null hypothesis that is true
+  - Failing to reject a null hypothesis that is false
+  - Using a one-sided test on two-sided data
+  - Running a test without a power calculation
+  answer: Failing to reject a null hypothesis that is false
+  explanation: Type II is a missed effect, with rate β. Answer A is a Type I error.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: m3
+  prompt: The 95% confidence interval for a lift is 0.2 to 1.8 points. Which statement is correct?
+  options:
+  - There is a 95% probability the true lift is between 0.2 and 1.8
+  - 95% of users saw a lift between 0.2 and 1.8
+  - The result is not significant because the interval is wide
+  - Intervals built this way cover the true lift 95% of the time, and this one excludes zero
+  answer: Intervals built this way cover the true lift 95% of the time, and this one excludes zero
+  explanation: The 95% describes the procedure over repeated experiments. Because the interval excludes zero,
+    the result is significant at 5%.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: m4
+  prompt: 'The sample variance computed with divisor n is:'
+  options:
+  - Unbiased
+  - Biased high
+  - Biased low
+  - Unbiased but inconsistent
+  answer: Biased low
+  explanation: Deviations are taken from the sample mean, which is closer to the data than the true mean, so
+    the divisor n underestimates by the factor (n − 1)/n.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: m5
+  prompt: 'The mean squared error of an estimator equals:'
+  options:
+  - Bias² + variance
+  - Bias + variance
+  - Variance − bias²
+  - Bias × variance
+  answer: Bias² + variance
+  explanation: MSE = bias² + variance, which is why a biased estimator with low variance can beat an unbiased
+    one.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: m6
+  prompt: 'You halve the minimum detectable effect of an A/B test. The required sample size:'
+  options:
+  - Doubles
+  - Quadruples
+  - Rises by a factor of √2
+  - Rises by a factor of 8
+  answer: Quadruples
+  explanation: Sample size is proportional to 1/δ², so half the effect needs four times the users.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: m7
+  prompt: You test 20 independent metrics at α = 0.05 and the change has no real effect on any of them. How
+    many do you expect to come out significant?
+  options:
+  - '0.05'
+  - '5'
+  - '20'
+  - '1'
+  answer: '1'
+  explanation: Each test has a 5% false positive chance, so 20 × 0.05 = 1 expected. The chance of at least
+    one is 1 − 0.95²⁰, about 64%.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: m8
+  prompt: 'A team checks its A/B test daily and stops the first time p < 0.05. The main consequence is:'
+  options:
+  - Lower power and nothing else
+  - A false positive rate well above 5%
+  - An effect estimate biased towards zero
+  - None, provided the sample is large
+  answer: A false positive rate well above 5%
+  explanation: Every look is another chance to cross the threshold. With 20 looks the false positive rate is
+    roughly 25%.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: m9
+  prompt: A 50/50 test logs 50,000 users in control and 52,000 in treatment, and a chi-square test on the split
+    gives p < 0.001. What should you do?
+  options:
+  - Reweight the arms and read the results
+  - Extend the test until the split evens out
+  - Investigate assignment and logging; do not trust the metrics
+  - Switch to a one-sided test
+  answer: Investigate assignment and logging; do not trust the metrics
+  explanation: A sample ratio mismatch means the arms differ in some way other than the treatment. No reweighting
+    repairs that.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: m10
+  prompt: Which change raises the power of a test?
+  options:
+  - Lowering α from 0.05 to 0.01
+  - Reducing the variance of the metric
+  - Using a smaller sample
+  - Targeting a smaller effect
+  answer: Reducing the variance of the metric
+  explanation: Power rises with sample size, effect size and α, and falls with variance. Lowering α reduces
+    power.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: m11
+  prompt: 'A test on 5 million users finds a lift of 0.02 points with p = 0.001. The right reading is:'
+  options:
+  - 'Ship: the result is highly significant'
+  - 'Rerun: results this significant are suspicious'
+  - Statistically significant, but check whether a lift that small is worth acting on
+  - Not significant, because the lift is small
+  answer: Statistically significant, but check whether a lift that small is worth acting on
+  explanation: With millions of users almost any difference is statistically significant. Compare the effect
+    and its interval with the smallest lift worth the cost.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: m12
+  prompt: A satisfaction survey is emailed to users active in the last week. Will a larger response count remove
+    the bias in the average score?
+  options:
+  - 'No: more data shrinks variance and leaves selection bias unchanged'
+  - Yes, by the Law of Large Numbers
+  - Yes, once n exceeds 30
+  - Only if the scores are Normally distributed
+  answer: 'No: more data shrinks variance and leaves selection bias unchanged'
+  explanation: Bias comes from who is in the sample. A larger sample of the same kind gives a tighter interval
+    around the wrong number.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: m13
+  prompt: Which test compares conversion rates between two independent groups of 50,000 users each?
+  options:
+  - Paired t-test
+  - Two-proportion z-test
+  - Mann-Whitney U
+  - One-way ANOVA
+  answer: Two-proportion z-test
+  explanation: Two independent proportions with large samples call for the two-proportion z-test. A chi-square
+    test on the 2×2 table is equivalent.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: m14
+  prompt: A test is not significant, and its confidence interval is wide enough to include the minimum effect
+    you care about. What do you conclude?
+  options:
+  - The change has no effect
+  - The change has a negative effect
+  - The test should be rerun one-sided
+  - 'The test is inconclusive: it was underpowered for that effect'
+  answer: 'The test is inconclusive: it was underpowered for that effect'
+  explanation: Absence of evidence is not evidence of absence. Only an interval that excludes the minimum effect
+    supports "no meaningful effect".
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: m15
+  prompt: 'A consistent estimator is one that:'
+  options:
+  - Converges to the true value as the sample grows
+  - Equals the true value on average at every sample size
+  - Has the smallest variance of any estimator
+  - Gives the same value on every sample
+  answer: Converges to the true value as the sample grows
+  explanation: Consistency is about the limit as n grows. Answer B defines unbiasedness.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: m16
+  prompt: Users are randomised, but the analysis treats every page view as an independent observation. What
+    is the effect?
+  options:
+  - Standard errors are too large, so real effects are missed
+  - The point estimate is biased towards zero
+  - Standard errors are too small, so false positives rise
+  - None, if users were randomised correctly
+  answer: Standard errors are too small, so false positives rise
+  explanation: Page views from one user are correlated, so the effective sample is smaller than the row count.
+    Analyse by user or correct the variance.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: n1
+  prompt: 'Bagging, as in a random forest, mainly reduces:'
+  options:
+  - Bias
+  - Variance
+  - Irreducible noise
+  - Training time
+  answer: Variance
+  explanation: Averaging many high-variance trees trained on different bootstrap samples cancels their individual
+    errors. Bias stays about the same.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: n2
+  prompt: How does gradient boosting build its trees?
+  options:
+  - Independently, on bootstrap samples, then averages them
+  - One deep tree, then prunes it
+  - In sequence, each fitted to the errors of the ensemble so far
+  - In parallel, each on a different subset of features
+  answer: In sequence, each fitted to the errors of the ensemble so far
+  explanation: Boosting is sequential and each tree corrects the current ensemble, which lowers bias. Answer
+    A describes bagging.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: n3
+  prompt: Which of these models needs its features scaled?
+  options:
+  - Random forest
+  - Gradient-boosted trees
+  - k-nearest neighbours
+  - A single decision tree
+  answer: k-nearest neighbours
+  explanation: Nearest neighbours uses distances, so a feature on a larger scale dominates. Tree splits depend
+    only on the order of values.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: n4
+  prompt: Which penalty can set coefficients exactly to zero?
+  options:
+  - L1 (lasso)
+  - L2 (ridge)
+  - Both
+  - Neither
+  answer: L1 (lasso)
+  explanation: The L1 penalty has a corner at zero, so the optimum often sits exactly there. L2 shrinks coefficients
+    without zeroing them.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: n5
+  prompt: A model scores 99% on training data and 72% on validation data. Which response fits?
+  options:
+  - Add more features
+  - Train for longer
+  - Use a more flexible model
+  - Regularise, simplify the model or get more data
+  answer: Regularise, simplify the model or get more data
+  explanation: A large gap between training and validation scores is overfitting, a variance problem. The other
+    options add capacity and widen the gap.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: n6
+  prompt: A fraud model reaches 99.8% accuracy on data where 0.2% of transactions are fraud. What does that
+    tell you?
+  options:
+  - The model is excellent
+  - 'Very little: predicting "not fraud" every time scores the same'
+  - The model is overfitting
+  - The threshold is too low
+  answer: 'Very little: predicting "not fraud" every time scores the same'
+  explanation: With 0.2% positives, a model that never flags fraud is 99.8% accurate. Use precision, recall
+    and PR-AUC.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: n7
+  prompt: 'In a logistic regression, a binary feature has a coefficient of 0.69. Having the feature:'
+  options:
+  - Raises the probability by 69 percentage points
+  - Raises the probability by 0.69%
+  - Roughly doubles the odds
+  - Roughly doubles the probability
+  answer: Roughly doubles the odds
+  explanation: The coefficient is a change in log-odds, and e^0.69 is about 2. The change in probability depends
+    on the starting point.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: n8
+  prompt: 'A classifier has a ROC-AUC of 0.5. This means:'
+  options:
+  - Its ranking of positives over negatives is no better than random
+  - It classifies half the cases correctly
+  - Its precision is 50%
+  - It is well calibrated
+  answer: Its ranking of positives over negatives is no better than random
+  explanation: ROC-AUC is the probability that a random positive is scored above a random negative. 0.5 is
+    a coin flip.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: n9
+  prompt: 'Compared with k = 50, a k-nearest-neighbours model with k = 1 has:'
+  options:
+  - Higher bias and higher variance
+  - Higher bias and lower variance
+  - Lower bias and lower variance
+  - Lower bias and higher variance
+  answer: Lower bias and higher variance
+  explanation: 'With k = 1 the model follows every training point: flexible, so low bias, and unstable, so
+    high variance.'
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: n10
+  prompt: You are predicting next month's defaults from several years of loan data. How should you validate?
+  options:
+  - Shuffled k-fold cross-validation
+  - Train on earlier periods and test on later ones
+  - Leave-one-out cross-validation
+  - A random 80/20 split stratified by outcome
+  answer: Train on earlier periods and test on later ones
+  explanation: Shuffled splits let the model train on the future and overstate performance. Validate forward
+    in time.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: n11
+  prompt: Which is a real weakness of a single decision tree?
+  options:
+  - It needs scaled features
+  - It cannot model interactions
+  - Small changes in the data can produce a very different tree
+  - It cannot use categorical features
+  answer: Small changes in the data can produce a very different tree
+  explanation: Trees are high-variance learners, which is the reason forests average them. They handle interactions
+    and need no scaling.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: n12
+  prompt: What does Naive Bayes assume?
+  options:
+  - Features are independent of each other given the class
+  - Features are Normally distributed
+  - Classes are balanced
+  - The decision boundary is linear
+  answer: Features are independent of each other given the class
+  explanation: The "naive" part is conditional independence of features given the class. Gaussian Naive Bayes
+    adds a Normal assumption, but that is one variant.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: n13
+  prompt: You lower the decision threshold of a classifier. What typically happens?
+  options:
+  - Precision and recall both rise
+  - Precision rises and recall falls
+  - Neither changes; only accuracy moves
+  - Recall rises and precision falls
+  answer: Recall rises and precision falls
+  explanation: A lower threshold flags more cases, catching more true positives and admitting more false ones.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: n14
+  prompt: Which loss does logistic regression minimise?
+  options:
+  - Mean squared error
+  - Hinge loss
+  - Log loss (cross-entropy)
+  - Gini impurity
+  answer: Log loss (cross-entropy)
+  explanation: Log loss is the negative log-likelihood of a Bernoulli outcome, so minimising it is maximum
+    likelihood.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
+- id: n15
+  prompt: For a medium-sized tabular dataset with mixed feature types and non-linear effects, which model is
+    usually the strongest default?
+  options:
+  - k-nearest neighbours
+  - Gradient-boosted trees
+  - Naive Bayes
+  - A linear support vector machine
+  answer: Gradient-boosted trees
+  explanation: Boosted trees capture non-linear effects and interactions with no scaling or encoding of order,
+    and usually lead on tabular data.
+  lesson: interviewing/rounds/technical-questions/mcq-bank
 ---
 
 Seeded once from `technical-questions/mcq-bank.md`; edit this file directly. Studied at `#/quiz/interviewing/rounds`.

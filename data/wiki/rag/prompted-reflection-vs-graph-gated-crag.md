@@ -2,7 +2,7 @@
 title: Prompted Reflection vs Graph-Gated CRAG
 tags: [rag, langgraph, comparison]
 summary: "Two ways to build corrective RAG — a single agent that runs grade/rewrite/re-search through tools under a system prompt, or explicit graph nodes with numeric confidence gates — trade adaptivity for inspectability; neither catches synthesis-step hallucination, and ablation shows the loop adds little when first-pass hybrid retrieval is already strong."
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/project-g/docs/stakeholders/agent-comparison-findings.md
   - data/raw/claude-docs/project-g/docs/research/VIR-179-ablation.md
@@ -74,5 +74,4 @@ the bug existed on one side of the comparison only; parity audits should check t
 - [[CRAG Retry Logic]] — extends
 - [[Agentic RAG — Advanced Patterns]] — extends
 - [[ADK vs LangGraph Comparison]] — instance-of
-- [[Multi-Step Graph Orchestration]] — extends
 - [[project-g Eval Architecture]] — extends (the VIR-179 ablation numbers)

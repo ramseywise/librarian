@@ -10,12 +10,12 @@ Run from this folder:
 All customer tables are generated and seeded, so none of this measures real-world performance. The one real
 table is Palmer penguins (CC0). Timings depend on the machine. Writes classical-mixed-benchmark.png to sources/images.
 """
-
 # %%
 import time
 import warnings
 
 import matplotlib.pyplot as plt
+
 import numpy as np
 import pandas as pd
 from kmedoids import fasterpam
@@ -64,7 +64,7 @@ def make_customers(world="both", n=1200, seed=0, spread=1.0, concentration=0.6):
         scale = rng.normal(0, 1, n)
         for c in ("log_invoices", "log_revenue", "logins"):
             df[c] += 1.5 * scale
-        df["size"] = np.where(scale < -0.5, "size_0", np.where(scale < 0.5, "size_1", "size_2"))
+        df["size"] = np.where(scale < -.5, "size_0", np.where(scale < .5, "size_1", "size_2"))
     if world == "control":
         for c in df:
             df[c] = rng.permutation(df[c].to_numpy())
@@ -72,21 +72,15 @@ def make_customers(world="both", n=1200, seed=0, spread=1.0, concentration=0.6):
 
 
 def split(df):
-    return [c for c in df if df[c].dtype.kind in "fi"], [
-        c for c in df if df[c].dtype.kind not in "fi"
-    ]
+    return [c for c in df if df[c].dtype.kind in "fi"], [c for c in df if df[c].dtype.kind not in "fi"]
 
 
 # %% representations
 def onehot_matrix(df):
     """The default people reach for: z-scored numbers beside raw dummy columns."""
     num, cat = split(df)
-    return np.hstack(
-        [
-            StandardScaler().fit_transform(df[num]),
-            OneHotEncoder(sparse_output=False).fit_transform(df[cat]),
-        ]
-    )
+    return np.hstack([StandardScaler().fit_transform(df[num]),
+                      OneHotEncoder(sparse_output=False).fit_transform(df[cat])])
 
 
 def famd_matrix(df):
@@ -101,7 +95,7 @@ def famd(df, n_components=8):
     """Row coordinates, eigenvalues and the share of each column block in those axes."""
     Z = famd_matrix(df)
     U, S, Vt = np.linalg.svd(Z, full_matrices=False)
-    return (U * S)[:, :n_components], S**2 / len(df)
+    return (U * S)[:, :n_components], S ** 2 / len(df)
 
 
 def gower(df, numeric_weight=1.0):
@@ -138,7 +132,7 @@ def mca_eigenvalues(df_cat):
     r, c = P.sum(1), P.sum(0)
     S = (P - np.outer(r, c)) / np.sqrt(np.outer(r, c))
     U, s, Vt = np.linalg.svd(S, full_matrices=False)
-    return s**2, U, s, Vt, c
+    return s ** 2, U, s, Vt, c
 
 
 def benzecri(eig, J):
@@ -163,16 +157,13 @@ def kproto(df, k=K, seed=0):
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         model = KPrototypes(n_clusters=k, init="Cao", n_init=3, random_state=seed)
-        return model.fit_predict(
-            X.to_numpy(), categorical=list(range(len(num), X.shape[1]))
-        ), model.gamma
+        return model.fit_predict(X.to_numpy(), categorical=list(range(len(num), X.shape[1]))), model.gamma
 
 
 def lca(df, k=K, seed=0):
     """Latent classes: Gaussian columns and categorical columns, independent within a class."""
     from stepmix.stepmix import StepMix
     from stepmix.utils import get_mixed_descriptor
-
     num, cat = split(df)
     codes = df.copy()
     for c in cat:
@@ -180,15 +171,7 @@ def lca(df, k=K, seed=0):
     if num:
         codes[num] = StandardScaler().fit_transform(df[num])
     data, descriptor = get_mixed_descriptor(codes, continuous=num, categorical=cat)
-    model = StepMix(
-        n_components=k,
-        measurement=descriptor,
-        n_init=3,
-        max_iter=200,
-        random_state=seed,
-        verbose=0,
-        progress_bar=0,
-    )
+    model = StepMix(n_components=k, measurement=descriptor, n_init=3, max_iter=200, random_state=seed, verbose=0, progress_bar=0)
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         model.fit(data)
@@ -203,9 +186,7 @@ def all_methods(df, seed=0):
         "one-hot, PCA 8, k-means": km(PCA(8, random_state=0).fit_transform(X), seed=seed),
         "FAMD 8, k-means": km(famd(df)[0], seed=seed),
         "Gower, PAM": pam(D, seed=seed),
-        "Gower, average link": AgglomerativeClustering(
-            K, metric="precomputed", linkage="average"
-        ).fit_predict(D),
+        "Gower, average link": AgglomerativeClustering(K, metric="precomputed", linkage="average").fit_predict(D),
         "k-prototypes": kproto(df, seed=seed)[0],
         "latent class": lca(df, seed=seed)[1],
     }
@@ -219,10 +200,7 @@ def benchmark(seeds=SEEDS, spreads=(1.0,)):
         for seed in seeds:
             df, y = make_customers(world, seed=seed)
             labels, _ = all_methods(df, seed)
-            rows += [
-                {"world": world, "seed": seed, "method": m, "ari": ari(y, l)}
-                for m, l in labels.items()
-            ]
+            rows += [{"world": world, "seed": seed, "method": m, "ari": ari(y, l)} for m, l in labels.items()]
     return pd.DataFrame(rows)
 
 
@@ -235,16 +213,9 @@ def internal_indices(k_range=range(2, 8), seed=0):
         for k in k_range:
             labels = km(Z, k, seed)
             medoid = pam(D, k, seed)
-            rows.append(
-                {
-                    "world": world,
-                    "k": k,
-                    "sil_famd": silhouette_score(Z, labels),
-                    "ch_famd": calinski_harabasz_score(Z, labels),
-                    "db_famd": davies_bouldin_score(Z, labels),
-                    "sil_gower": silhouette_score(D, medoid, metric="precomputed"),
-                }
-            )
+            rows.append({"world": world, "k": k, "sil_famd": silhouette_score(Z, labels),
+                         "ch_famd": calinski_harabasz_score(Z, labels), "db_famd": davies_bouldin_score(Z, labels),
+                         "sil_gower": silhouette_score(D, medoid, metric="precomputed")})
     return pd.DataFrame(rows)
 
 
@@ -268,10 +239,10 @@ def tandem_world(n=1200, seed=0, separation=5.0):
     """Three groups in two quiet columns, beside three loud columns that share one factor and hold no groups."""
     rng = np.random.default_rng(seed)
     y = rng.integers(0, 3, n)
-    corners = np.array([[0, 0], [separation, 0], [separation / 2, separation * 0.87]])
+    corners = np.array([[0, 0], [separation, 0], [separation / 2, separation * .87]])
     quiet = corners[y] + rng.normal(0, 1, (n, 2))
     factor = rng.normal(0, 1, (n, 1))
-    loud = np.sqrt(0.9) * factor + np.sqrt(0.1) * rng.normal(0, 1, (n, 3))
+    loud = np.sqrt(.9) * factor + np.sqrt(.1) * rng.normal(0, 1, (n, 3))
     return StandardScaler().fit_transform(np.column_stack([quiet, loud])), y
 
 
@@ -279,16 +250,8 @@ def tandem_table(seeds=SEEDS):
     rows = []
     for seed in seeds:
         X, y = tandem_world(seed=seed)
-        rows.append(
-            {
-                "all 5 columns": ari(y, km(X, 3, seed)),
-                "the 2 quiet columns": ari(y, km(X[:, :2], 3, seed)),
-                **{
-                    f"PCA {q}": ari(y, km(PCA(q, random_state=0).fit_transform(X), 3, seed))
-                    for q in (1, 2, 4)
-                },
-            }
-        )
+        rows.append({"all 5 columns": ari(y, km(X, 3, seed)), "the 2 quiet columns": ari(y, km(X[:, :2], 3, seed)),
+                     **{f"PCA {q}": ari(y, km(PCA(q, random_state=0).fit_transform(X), 3, seed)) for q in (1, 2, 4)}})
     return pd.DataFrame(rows).mean().round(3), PCA().fit(X).explained_variance_ratio_.round(3)
 
 
@@ -302,7 +265,7 @@ def high_cardinality_world(n=1500, levels=200, columns=3, seed=0):
         home = np.random.default_rng(2000 + j).integers(0, 4, levels)
         pool = [np.flatnonzero(home == g) for g in range(4)]
         picked = np.array([rng.choice(pool[g]) for g in y])
-        noise = rng.random(n) < 0.2
+        noise = rng.random(n) < .2
         picked[noise] = rng.integers(0, levels, noise.sum())
         frame[f"c{j}"] = picked
     return pd.DataFrame(frame), y
@@ -333,7 +296,6 @@ def encoders(df, dim=32):
 def surrogate(world="both", seed=0):
     """Predict cluster labels with CatBoost, and report accuracy and the mean absolute SHAP per column."""
     from catboost import CatBoostClassifier, Pool
-
     df, _ = make_customers(world, seed=seed)
     labels = km(famd(df)[0], K, seed)
     _, cat = split(df)
@@ -341,9 +303,7 @@ def surrogate(world="both", seed=0):
     fold = np.random.default_rng(seed).integers(0, 3, len(df))
     hits = []
     for f in range(3):
-        fit = CatBoostClassifier(**params).fit(
-            Pool(df[fold != f], labels[fold != f], cat_features=cat)
-        )
+        fit = CatBoostClassifier(**params).fit(Pool(df[fold != f], labels[fold != f], cat_features=cat))
         hits.append(fit.predict(Pool(df[fold == f], cat_features=cat)).ravel() == labels[fold == f])
     accuracy = np.concatenate(hits).mean()
     fitted = CatBoostClassifier(**params).fit(Pool(df, labels, cat_features=cat))
@@ -355,22 +315,17 @@ def surrogate(world="both", seed=0):
 # %% real data
 def penguins():
     from palmerpenguins import load_penguins
-
     df = load_penguins().dropna().reset_index(drop=True)
     y = pd.factorize(df.species)[0]
-    return df[
-        ["bill_length_mm", "bill_depth_mm", "flipper_length_mm", "body_mass_g", "island", "sex"]
-    ], y
+    return df[["bill_length_mm", "bill_depth_mm", "flipper_length_mm", "body_mass_g", "island", "sex"]], y
 
 
 # %% checks and stress tests
 def block_variance(df):
     num, cat = split(df)
     n_dummies = OneHotEncoder(sparse_output=False).fit_transform(df[cat]).shape[1]
-    return {
-        name: (X[:, : len(num)].var(0).sum(), X[:, len(num) :].var(0).sum())
-        for name, X in [("one-hot", onehot_matrix(df)), ("FAMD", famd_matrix(df))]
-    }, n_dummies
+    return {name: (X[:, :len(num)].var(0).sum(), X[:, len(num):].var(0).sum()) for name, X in
+            [("one-hot", onehot_matrix(df)), ("FAMD", famd_matrix(df))]}, n_dummies
 
 
 def famd_criterion(z, df):
@@ -402,44 +357,23 @@ def scaling(sizes=(1000, 2000, 4000, 8000)):
         t2 = time.perf_counter()
         km(famd(df)[0])
         t3 = time.perf_counter()
-        rows.append(
-            {
-                "n": n,
-                "gower_s": t1 - t0,
-                "pam_s": t2 - t1,
-                "famd_kmeans_s": t3 - t2,
-                "matrix_gb": D.nbytes / 1e9,
-            }
-        )
+        rows.append({"n": n, "gower_s": t1 - t0, "pam_s": t2 - t1, "famd_kmeans_s": t3 - t2, "matrix_gb": D.nbytes / 1e9})
     return pd.DataFrame(rows).round(3)
 
 
 def figure(bench):
     import chartstyle as cs
-
     cs.apply()
     means = bench.pivot_table(index="method", columns="world", values="ari", aggfunc="mean")
     order = means.mean(axis=1).sort_values().index
-    worlds = [
-        ("both", "Both kinds of column differ", cs.BLUE),
-        ("categorical", "Only categories differ", cs.ORANGE),
-        ("numeric", "Only numbers differ", cs.AQUA),
-    ]
+    worlds = [("both", "Both kinds of column differ", cs.BLUE), ("categorical", "Only categories differ", cs.ORANGE),
+              ("numeric", "Only numbers differ", cs.AQUA)]
     fig, ax = plt.subplots(figsize=(9, 4.2))
-    for offset, (world, label, colour) in zip((0.22, 0, -0.22), worlds):
-        ax.barh(
-            np.arange(len(order)) + offset,
-            means.loc[order, world],
-            height=0.2,
-            color=colour,
-            label=label,
-        )
+    for offset, (world, label, colour) in zip((.22, 0, -.22), worlds):
+        ax.barh(np.arange(len(order)) + offset, means.loc[order, world], height=.2, color=colour, label=label)
     ax.set_yticks(range(len(order)), order)
-    ax.set(
-        xlabel="Adjusted Rand index against the groups that generated the data (1,200 customers, mean of 5 seeds)",
-        title="No method wins every world, and latent class had the generator on its side",
-        xlim=(0, 1),
-    )
+    ax.set(xlabel="Adjusted Rand index against the groups that generated the data (1,200 customers, mean of 5 seeds)",
+           title="No method wins every world, and latent class had the generator on its side", xlim=(0, 1))
     ax.legend(loc="lower right")
     ax.grid(False, axis="y")
     cs.save(fig, "classical-mixed-benchmark.png")
@@ -448,20 +382,11 @@ def figure(bench):
 if __name__ == "__main__":
     import prince
     from kmodes.kmodes import KModes
-
     pd.set_option("display.width", 200)
     print("== benchmark: ARI, mean and sd over 5 seeds")
     bench = benchmark()
-    print(
-        bench.pivot_table(index="method", columns="world", values="ari", aggfunc="mean")
-        .round(3)
-        .to_string()
-    )
-    print(
-        bench.pivot_table(index="method", columns="world", values="ari", aggfunc="std")
-        .round(3)
-        .to_string()
-    )
+    print(bench.pivot_table(index="method", columns="world", values="ari", aggfunc="mean").round(3).to_string())
+    print(bench.pivot_table(index="method", columns="world", values="ari", aggfunc="std").round(3).to_string())
     rows = []
     for seed in SEEDS:
         df, y = make_customers("correlated", seed=seed)
@@ -473,12 +398,7 @@ if __name__ == "__main__":
     df, y = make_customers("both", seed=0)
     num, cat = split(df)
     blocks, n_dummies = block_variance(df)
-    print(
-        "total variance (numeric, categorical):",
-        {k: tuple(round(x, 2) for x in v) for k, v in blocks.items()},
-        "dummies",
-        n_dummies,
-    )
+    print("total variance (numeric, categorical):", {k: tuple(round(x, 2) for x in v) for k, v in blocks.items()}, "dummies", n_dummies)
     print("Gower term spread per column:", column_spread(df).round(3).to_dict())
 
     print("\n== Gower variants, ARI over 5 seeds, world both")
@@ -486,57 +406,25 @@ if __name__ == "__main__":
     for seed in SEEDS:
         d, t = make_customers("both", seed=seed)
         n_, c_ = split(d)
-        rows.append(
-            {
-                "all": ari(t, pam(gower(d), K, seed)),
-                "numeric only": ari(t, pam(gower(d[n_]), K, seed)),
-                "categorical only": ari(t, pam(gower(d[c_]), K, seed)),
-                "ranked numbers": ari(
-                    t, pam(gower(d.assign(**{c: d[c].rank() for c in n_})), K, seed)
-                ),
-                **{
-                    f"numbers x{w}": ari(t, pam(gower(d, numeric_weight=w), K, seed))
-                    for w in (2, 3, 5)
-                },
-            }
-        )
+        rows.append({"all": ari(t, pam(gower(d), K, seed)), "numeric only": ari(t, pam(gower(d[n_]), K, seed)),
+                     "categorical only": ari(t, pam(gower(d[c_]), K, seed)),
+                     "ranked numbers": ari(t, pam(gower(d.assign(**{c: d[c].rank() for c in n_})), K, seed)),
+                     **{f"numbers x{w}": ari(t, pam(gower(d, numeric_weight=w), K, seed)) for w in (2, 3, 5)}})
     print(pd.DataFrame(rows).mean().round(3).to_dict())
     print("restarts at seed 0:", [round(ari(y, pam(gower(df), K, s)), 3) for s in SEEDS])
     for world in ("categorical", "numeric"):
         d, t = make_customers(world, seed=0)
-        print(
-            world,
-            {w: round(ari(t, pam(gower(d, numeric_weight=w), K, 0)), 3) for w in (1, 2, 3, 5)},
-        )
+        print(world, {w: round(ari(t, pam(gower(d, numeric_weight=w), K, 0)), 3) for w in (1, 2, 3, 5)})
 
     print("\n== FAMD: this lab against the criterion and against prince", prince.__version__)
     Z, eig = famd(df)
-    print(
-        "eigenvalues",
-        eig[:3].round(3),
-        "criterion",
-        [round(famd_criterion(Z[:, i], df), 3) for i in range(3)],
-    )
+    print("eigenvalues", eig[:3].round(3), "criterion", [round(famd_criterion(Z[:, i], df), 3) for i in range(3)])
     model = prince.FAMD(n_components=8, random_state=0, categorical_columns=cat).fit(df)
     R = model.row_coordinates(df).to_numpy()
-    print(
-        "prince eigenvalues",
-        np.round(model.eigenvalues_[:3], 3),
-        "criterion",
-        [round(famd_criterion(R[:, i], df), 3) for i in range(3)],
-    )
-    print(
-        "axis correlation",
-        [round(abs(np.corrcoef(R[:, i], Z[:, i])[0, 1]), 3) for i in range(3)],
-        "ARI",
-        round(ari(y, km(R)), 3),
-        "lab ARI",
-        round(ari(y, km(Z)), 3),
-    )
+    print("prince eigenvalues", np.round(model.eigenvalues_[:3], 3), "criterion", [round(famd_criterion(R[:, i], df), 3) for i in range(3)])
+    print("axis correlation", [round(abs(np.corrcoef(R[:, i], Z[:, i])[0, 1]), 3) for i in range(3)], "ARI", round(ari(y, km(R)), 3), "lab ARI", round(ari(y, km(Z)), 3))
     five = model.row_coordinates(df.iloc[:5]).to_numpy()
-    print(
-        "row 2 scored in the table", R[2, :2].round(3), "and in a batch of 5", five[2, :2].round(3)
-    )
+    print("row 2 scored in the table", R[2, :2].round(3), "and in a batch of 5", five[2, :2].round(3))
 
     print("\n== categorical columns only (world both, seed 0)")
     c = df[cat]
@@ -544,55 +432,20 @@ if __name__ == "__main__":
     J = c.shape[1]
     corrected = benzecri(eig_c, J)
     mca = prince.MCA(n_components=6, random_state=0).fit(c)
-    print(
-        "MCA eigenvalues",
-        eig_c[:4].round(3),
-        "prince",
-        np.round(mca.eigenvalues_[:4], 3),
-        "1/J",
-        round(1 / J, 3),
-    )
-    print(
-        "raw %",
-        (100 * eig_c / eig_c.sum())[:4].round(1),
-        "Benzecri %",
-        (100 * corrected / corrected.sum())[:4].round(1),
-    )
-    print(
-        {
-            "one-hot, k-means": round(
-                ari(y, km(OneHotEncoder(sparse_output=False).fit_transform(c))), 3
-            ),
-            "MCA 6, k-means": round(ari(y, km(mca.row_coordinates(c).to_numpy())), 3),
-            "k-modes": round(
-                ari(y, KModes(K, init="Cao", n_init=3, random_state=0).fit_predict(c)), 3
-            ),
-            "latent class": round(ari(y, lca(c)[1]), 3),
-            "Gower, PAM": round(ari(y, pam(gower(c))), 3),
-        }
-    )
+    print("MCA eigenvalues", eig_c[:4].round(3), "prince", np.round(mca.eigenvalues_[:4], 3), "1/J", round(1 / J, 3))
+    print("raw %", (100 * eig_c / eig_c.sum())[:4].round(1), "Benzecri %", (100 * corrected / corrected.sum())[:4].round(1))
+    print({"one-hot, k-means": round(ari(y, km(OneHotEncoder(sparse_output=False).fit_transform(c))), 3),
+           "MCA 6, k-means": round(ari(y, km(mca.row_coordinates(c).to_numpy())), 3),
+           "k-modes": round(ari(y, KModes(K, init="Cao", n_init=3, random_state=0).fit_predict(c)), 3),
+           "latent class": round(ari(y, lca(c)[1]), 3), "Gower, PAM": round(ari(y, pam(gower(c))), 3)})
     rare = c.copy()
     idx = np.random.default_rng(0).choice(len(c), 8, replace=False)
     rare.loc[idx, "channel"] = "channel_rare"
     rare.loc[idx, "plan"] = "plan_rare"
     mca_rare = prince.MCA(n_components=6, random_state=0).fit(rare)
-    print(
-        "8 rare customers: eigenvalues",
-        np.round(mca_rare.eigenvalues_[:3], 3),
-        "top axis 1 contributions",
-        mca_rare.column_contributions_.iloc[:, 0]
-        .sort_values(ascending=False)
-        .head(2)
-        .round(3)
-        .to_dict(),
-    )
+    print("8 rare customers: eigenvalues", np.round(mca_rare.eigenvalues_[:3], 3), "top axis 1 contributions", mca_rare.column_contributions_.iloc[:, 0].sort_values(ascending=False).head(2).round(3).to_dict())
     Rr = mca_rare.row_coordinates(rare).to_numpy()
-    print(
-        "axis 1 correlation with clean axis 1",
-        round(abs(np.corrcoef(Rr[:, 0], mca.row_coordinates(c).to_numpy()[:, 0])[0, 1]), 3),
-        "ARI",
-        round(ari(y, km(Rr)), 3),
-    )
+    print("axis 1 correlation with clean axis 1", round(abs(np.corrcoef(Rr[:, 0], mca.row_coordinates(c).to_numpy()[:, 0])[0, 1]), 3), "ARI", round(ari(y, km(Rr)), 3))
 
     print("\n== latent class BIC by k")
     for world in ("both", "control", "correlated"):
@@ -609,25 +462,15 @@ if __name__ == "__main__":
         n_, c_ = split(d)
         X = d[n_ + c_].copy()
         X[n_] = StandardScaler().fit_transform(X[n_])
-        row = {
-            "default": round(ari(t, kproto(d)[0]), 3),
-            "default gamma": round(float(kproto(d)[1]), 3),
-        }
+        row = {"default": round(ari(t, kproto(d)[0]), 3), "default gamma": round(float(kproto(d)[1]), 3)}
         for g in (1, 2, 4, 8):
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 m = KPrototypes(n_clusters=K, init="Cao", n_init=3, gamma=g, random_state=0)
-                row[g] = round(
-                    ari(
-                        t, m.fit_predict(X.to_numpy(), categorical=list(range(len(n_), X.shape[1])))
-                    ),
-                    3,
-                )
+                row[g] = round(ari(t, m.fit_predict(X.to_numpy(), categorical=list(range(len(n_), X.shape[1])))), 3)
         print(world, row)
 
-    print(
-        "\n== tandem: three groups in 2 quiet columns, 3 loud correlated columns, ARI over 5 seeds"
-    )
+    print("\n== tandem: three groups in 2 quiet columns, 3 loud correlated columns, ARI over 5 seeds")
     table, ratios = tandem_table()
     print(table.to_dict(), "variance ratios", ratios)
 
@@ -645,13 +488,8 @@ if __name__ == "__main__":
 
     print("\n== 80% subsample stability")
     for world in ("both", "control"):
-        print(
-            world,
-            "FAMD k-means",
-            round(subsample_stability(world, lambda d: km(famd(d)[0])), 3),
-            "Gower PAM",
-            round(subsample_stability(world, lambda d: pam(gower(d))), 3),
-        )
+        print(world, "FAMD k-means", round(subsample_stability(world, lambda d: km(famd(d)[0])), 3),
+              "Gower PAM", round(subsample_stability(world, lambda d: pam(gower(d))), 3))
 
     print("\n== CatBoost predicting FAMD k-means labels")
     for world in ("both", "control"):
@@ -662,26 +500,11 @@ if __name__ == "__main__":
     P, t = penguins()
     n_, _c = split(P)
     D = gower(P)
-    print(
-        P.shape,
-        {
-            "numbers only": round(ari(t, km(StandardScaler().fit_transform(P[n_]), 3)), 3),
-            "one-hot": round(ari(t, km(onehot_matrix(P), 3)), 3),
-            "FAMD 4": round(ari(t, km(famd(P, 4)[0], 3)), 3),
-            "Gower, PAM": round(ari(t, pam(D, 3)), 3),
-            "Gower, average": round(
-                ari(
-                    t,
-                    AgglomerativeClustering(3, metric="precomputed", linkage="average").fit_predict(
-                        D
-                    ),
-                ),
-                3,
-            ),
-            "k-prototypes": round(ari(t, kproto(P, 3)[0]), 3),
-            "latent class": round(ari(t, lca(P, 3)[1]), 3),
-        },
-    )
+    print(P.shape, {"numbers only": round(ari(t, km(StandardScaler().fit_transform(P[n_]), 3)), 3),
+                    "one-hot": round(ari(t, km(onehot_matrix(P), 3)), 3), "FAMD 4": round(ari(t, km(famd(P, 4)[0], 3)), 3),
+                    "Gower, PAM": round(ari(t, pam(D, 3)), 3),
+                    "Gower, average": round(ari(t, AgglomerativeClustering(3, metric="precomputed", linkage="average").fit_predict(D)), 3),
+                    "k-prototypes": round(ari(t, kproto(P, 3)[0]), 3), "latent class": round(ari(t, lca(P, 3)[1]), 3)})
 
     print("\n== scaling, this machine")
     print(scaling().to_string(index=False))
@@ -690,19 +513,7 @@ if __name__ == "__main__":
     dirty = add_outliers(df)
     clipped = dirty.copy()
     for c_name in num:
-        clipped[c_name] = clipped[c_name].clip(*df[c_name].quantile([0.01, 0.99]))
-    print(
-        {
-            "FAMD clean": round(ari(y, km(famd(df)[0])), 3),
-            "FAMD dirty": round(ari(y, km(famd(dirty)[0])), 3),
-            "FAMD clipped": round(ari(y, km(famd(clipped)[0])), 3),
-            "Gower clean": round(ari(y, pam(gower(df))), 3),
-            "Gower dirty": round(ari(y, pam(gower(dirty))), 3),
-        }
-    )
-    print(
-        "Gower numeric spread clean",
-        column_spread(df)[num].round(3).to_dict(),
-        "dirty",
-        column_spread(dirty)[num].round(3).to_dict(),
-    )
+        clipped[c_name] = clipped[c_name].clip(*df[c_name].quantile([.01, .99]))
+    print({"FAMD clean": round(ari(y, km(famd(df)[0])), 3), "FAMD dirty": round(ari(y, km(famd(dirty)[0])), 3), "FAMD clipped": round(ari(y, km(famd(clipped)[0])), 3),
+           "Gower clean": round(ari(y, pam(gower(df))), 3), "Gower dirty": round(ari(y, pam(gower(dirty))), 3)})
+    print("Gower numeric spread clean", column_spread(df)[num].round(3).to_dict(), "dirty", column_spread(dirty)[num].round(3).to_dict())

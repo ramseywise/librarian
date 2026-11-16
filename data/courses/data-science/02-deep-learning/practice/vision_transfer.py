@@ -15,17 +15,17 @@ steps (it is still at chance after 500 on the full set), the ResNet-18 arms 500,
 Two extra rows at 10% isolate one choice each: BatchNorm left in train mode inside a frozen backbone,
 and rotation/flip augmentation for the scratch model. Writes dl-vision-transfer.png.
 """
-
 # %%
 import argparse
 import statistics
 import time
 from pathlib import Path
 
-import chartstyle as cs
-import matplotlib.pyplot as plt
 import torch
 from torchvision.transforms import v2
+
+import chartstyle as cs
+import matplotlib.pyplot as plt
 from vision_project.data import ShapesDataset, fraction, loaders, make_shapes
 from vision_project.engine import device, fit
 from vision_project.model import SmallCNN, count_trainable, pretrained_resnet18
@@ -36,24 +36,11 @@ IMAGENET = dict(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 plain = v2.Compose([v2.ToImage(), v2.ToDtype(torch.float32, scale=True)])
 # The weights' own preset (ResNet18_Weights.IMAGENET1K_V1.transforms()) resizes to 256 and crops 224.
 # We resize 64 -> 112 instead: same normalisation, a quarter of the pixels, so the grid runs in minutes.
-pretrained = v2.Compose(
-    [
-        v2.ToImage(),
-        v2.Resize(112, antialias=True),
-        v2.ToDtype(torch.float32, scale=True),
-        v2.Normalize(**IMAGENET),
-    ]
-)
+pretrained = v2.Compose([v2.ToImage(), v2.Resize(112, antialias=True),
+                         v2.ToDtype(torch.float32, scale=True), v2.Normalize(**IMAGENET)])
 # Shapes keep their label under any rotation or flip, so these are safe augmentations here.
-augmented = v2.Compose(
-    [
-        v2.ToImage(),
-        v2.RandomHorizontalFlip(),
-        v2.RandomVerticalFlip(),
-        v2.RandomRotation(180),
-        v2.ToDtype(torch.float32, scale=True),
-    ]
-)
+augmented = v2.Compose([v2.ToImage(), v2.RandomHorizontalFlip(), v2.RandomVerticalFlip(),
+                        v2.RandomRotation(180), v2.ToDtype(torch.float32, scale=True)])
 
 ARMS = {  # name: (build model, train transform, test transform, learning rate, optimiser steps)
     "scratch": (lambda: SmallCNN(6), plain, plain, 1e-3, 2000),
@@ -61,13 +48,8 @@ ARMS = {  # name: (build model, train transform, test transform, learning rate, 
     "fine-tune": (lambda: pretrained_resnet18(6, freeze=False), pretrained, pretrained, 3e-4, 500),
 }
 EXTRAS = {  # run at 10% only
-    "frozen, BN in train mode": (
-        lambda: pretrained_resnet18(6, freeze=True, bn_eval=False),
-        pretrained,
-        pretrained,
-        1e-3,
-        500,
-    ),
+    "frozen, BN in train mode": (lambda: pretrained_resnet18(6, freeze=True, bn_eval=False), pretrained, pretrained,
+                                 1e-3, 500),
     "scratch + augmentation": (lambda: SmallCNN(6), augmented, plain, 1e-3, 2000),
 }
 
@@ -78,11 +60,7 @@ def run(arm, share, seed, root, dev):
     model = build()
     train_set = fraction(ShapesDataset(root, "train", train_tf), share, seed)
     train_loader, test_loader = loaders(train_set, ShapesDataset(root, "test", test_tf), seed=seed)
-    return (
-        fit(model, train_loader, test_loader, steps, lr, dev),
-        len(train_set),
-        count_trainable(model),
-    )
+    return fit(model, train_loader, test_loader, steps, lr, dev), len(train_set), count_trainable(model)
 
 
 # %%
@@ -103,30 +81,19 @@ if __name__ == "__main__":
         accs = [acc for acc, _, _ in runs]
         results[name, share] = accs
         _, n_train, n_trainable = runs[0]
-        print(
-            f"{name:26s} {share:>5.0%} steps={arm[4]} n={n_train:5d} trainable={n_trainable:>10,d} "
-            f"acc mean {statistics.mean(accs):.3f} min {min(accs):.3f} max {max(accs):.3f} "
-            f"({time.time() - start:.0f} s)",
-            flush=True,
-        )
+        print(f"{name:26s} {share:>5.0%} steps={arm[4]} n={n_train:5d} trainable={n_trainable:>10,d} "
+              f"acc mean {statistics.mean(accs):.3f} min {min(accs):.3f} max {max(accs):.3f} "
+              f"({time.time() - start:.0f} s)", flush=True)
 
     cs.apply()
     fig, ax = plt.subplots()
-    for name, colour in zip(ARMS, cs.CATEGORICAL):
+    for (name, colour) in zip(ARMS, cs.CATEGORICAL):
         accs = [results[name, s] for s in FRACTIONS]
         means = [statistics.mean(a) for a in accs]
         low = [m - min(a) for m, a in zip(means, accs)]
         high = [max(a) - m for m, a in zip(means, accs)]
-        ax.errorbar(
-            [s * 100 for s in FRACTIONS],
-            means,
-            yerr=[low, high],
-            color=colour,
-            marker="o",
-            ms=6,
-            capsize=3,
-            label=name,
-        )
+        ax.errorbar([s * 100 for s in FRACTIONS], means, yerr=[low, high], color=colour, marker="o", ms=6,
+                    capsize=3, label=name)
     ax.axhline(1 / 6, color="grey", ls=":", lw=1)
     ax.text(1.6, 1 / 6 + 0.03, "chance (1 in 6)", color="grey", fontsize=9)
     ax.set_xscale("log")

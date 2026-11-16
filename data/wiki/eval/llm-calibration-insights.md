@@ -2,7 +2,7 @@
 title: LLM Grader Calibration Insights
 tags: [eval, concept]
 summary: Calibration evidence for LLM-as-judge graders in the project-g eval pipeline — custom v3 grader outperforms DeepEval defaults (+0.214 score delta vs +0.086), domain-shift is the main failure pattern, passage context is required for grounding accuracy. Grounding cross-check vs DeepEval shows near-zero agreement until article text is wired in.
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/playground/docs/evals/llm-calibration-insights.md
   - data/raw/notion/2026-06-26-va-hca-retrieval-executive-summary.md
@@ -139,7 +139,7 @@ then calibrate** — fixing grader bugs on top of unverified GT compounds noise.
 pipeline defects were found before any calibration was trusted: empty-passage rows falling
 back to URL title strings as RAGAS context, old/new KB domain mismatch in URL overlap, and
 cached article text that existed but was never wired in (see
-[[Measurement Fix Mistaken for Model Gain]]). A fourth was cheap leverage: an already-rated
+Measurement Fix Mistaken for Model Gain). A fourth was cheap leverage: an already-rated
 pool with zero grader scores — grading it tripled the calibration n without new data.
 
 The disagreement study then sorted every grader-vs-human disagreement into a four-way
@@ -168,6 +168,4 @@ the last two are treated as grader or agent defects.
 - [[Grounding Claim Methodology]]
 - [[LLM-as-Judge Evaluation]] — prerequisite-for (calibration is the setup cost of a usable judge)
 - [[Human Agreement Ceiling Protocol]] — extends
-- [[Measurement Fix Mistaken for Model Gain]] — extends (scorer artifacts that read as model quality)
-- [[Warranted vs Executed Escalation]] — extends (a grader that doubles as its own calibration harness)
 - [[Platt Scaling for SVM Probabilistic Outputs]] — related (a classic calibration map)

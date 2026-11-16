@@ -2,7 +2,7 @@
 title: Confidence-Gated Escalation
 tags: [infra, pattern]
 summary: "A gate that escalates when a cheap model's confidence is low needs its threshold set on one labelled sample and checked on another, because thresholds can overrun their error budget on held-out data and a score measured on one task may not hold on the next."
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/web/2026-11-05-jev-independent-evaluations.md
   - data/raw/web/2026-11-05-jev-typesafe-vendor-sources.md
@@ -56,7 +56,7 @@ data, as in [[Probability Calibration and Reliability Curves]]. The wider litera
 way: Guo et al. (ICML 2017) found modern neural networks poorly calibrated, with temperature scaling
 effective on matching data, and Ovadia et al. (NeurIPS 2019) found post-hoc calibration falling short under
 dataset shift. Those are classifiers, not LLM gates, and that calibration page records a later study
-with no general trend for newer networks. See also [[Confidence That Is Not a Probability]].
+with no general trend for newer networks. See also Confidence That Is Not a Probability.
 
 Check what the score is made of as well. TypeSafe's docs derive `confidence` from the probability
 distribution (self-reported), and Vals found it adds no signal beyond those probabilities, so
@@ -94,8 +94,6 @@ confidence of 0.96, so the score did not flag the failure. One-line descriptions
 - [[Probability Calibration and Reliability Curves]] — prerequisite-for (how to measure the score)
 - [[Selective Risk Guarantees: SGR and Conformal Sets]] — alternative-to (a statistical bound instead of an empirical check)
 - [[Jev Decision Model]] — related (the model most of these measurements are about)
-- [[Confidence That Is Not a Probability]] — related (a score that was never a probability)
-- [[Hedging Belongs in the Gate, Not the Answer]] — related (where low confidence should surface)
 - [[CRAG Retry Logic]] — related (a graded retrieval step that also branches on a threshold)
 - [[Drift Seen and Unseen in an Automated Router]] — related (why a fixed threshold decays after it is set)
 - [[JEV-as-a-Judge Cascade]] — extends (the gate applied to an LLM judge, with a lower-bound threshold rule)

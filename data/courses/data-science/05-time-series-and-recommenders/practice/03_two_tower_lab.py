@@ -4,7 +4,6 @@
 Run from the pillar folder:
     uv run --with numpy --with pandas --with scipy --with torch python practice/03_two_tower_lab.py
 """
-
 import sys
 from pathlib import Path
 
@@ -12,8 +11,8 @@ sys.path.insert(0, str(Path(__file__).parent))
 import numpy as np
 import pandas as pd
 import torch
-from movielens import GENRES, chrono_split, evaluate, fit_ease, load, positives, to_matrix
 from torch import nn
+from movielens import GENRES, chrono_split, evaluate, fit_ease, load, positives, to_matrix
 
 ratings, items, users = load()
 n_users, n_items = ratings.user.max() + 1, ratings.item.max() + 1
@@ -48,9 +47,7 @@ class TwoTower(nn.Module):
         return nn.functional.normalize(self.user_mlp(x), dim=1)
 
     def item(self, i):
-        return nn.functional.normalize(
-            self.item_mlp(torch.cat([self.iid(i), self.itf[i]], 1)), dim=1
-        )
+        return nn.functional.normalize(self.item_mlp(torch.cat([self.iid(i), self.itf[i]], 1)), dim=1)
 
 
 def train_tower(bs=512, tau=0.2, epochs=30, lr=2e-3, seed=0):
@@ -58,10 +55,7 @@ def train_tower(bs=512, tau=0.2, epochs=30, lr=2e-3, seed=0):
     m = TwoTower()
     opt = torch.optim.Adam(m.parameters(), lr=lr, weight_decay=1e-5)
     u, i = torch.tensor(pos.user.to_numpy()), torch.tensor(pos.item.to_numpy())
-    logp = torch.tensor(
-        np.log(np.maximum(np.bincount(pos.item, minlength=n_items) / len(pos), 1e-9)),
-        dtype=torch.float32,
-    )
+    logp = torch.tensor(np.log(np.maximum(np.bincount(pos.item, minlength=n_items) / len(pos), 1e-9)), dtype=torch.float32)
     for _ in range(epochs):
         for b in torch.randperm(len(u)).split(bs):
             logits = m.user(u[b]) @ m.item(i[b]).T / tau - logp[i[b]]
@@ -77,11 +71,9 @@ def train_tower(bs=512, tau=0.2, epochs=30, lr=2e-3, seed=0):
 def scores(m):
     with torch.no_grad():
         V = m.item(torch.arange(n_items))
-
     def f(us):
         with torch.no_grad():
             return (m.user(torch.tensor(us)) @ V.T).numpy()
-
     return f
 
 
@@ -110,10 +102,8 @@ def simulate(explore, n_events=200_000, n_actions=20, seed=0):
     click = rng.random(n_events) < ctr[seg, act]
     target = ctr.argmax(1)
     w = (act == target[seg]) / logging[act]
-    print(
-        f"explore {explore:.2f}: truth {ctr[np.arange(5), target].mean():.4f}  IPS {(w * click).mean():.4f}  "
-        f"SNIPS {(w * click).sum() / w.sum():.4f}  max weight {w.max():.0f}  ESS {w.sum() ** 2 / (w**2).sum():.0f}"
-    )
+    print(f"explore {explore:.2f}: truth {ctr[np.arange(5), target].mean():.4f}  IPS {(w * click).mean():.4f}  "
+          f"SNIPS {(w * click).sum() / w.sum():.4f}  max weight {w.max():.0f}  ESS {w.sum() ** 2 / (w ** 2).sum():.0f}")
 
 
 print("-- exercise 1: batch size (validation NDCG@10)")

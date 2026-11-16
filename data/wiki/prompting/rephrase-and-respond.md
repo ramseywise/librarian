@@ -2,7 +2,7 @@
 title: Rephrase and Respond
 tags: [prompting, pattern]
 summary: "Ask the model to rewrite and expand the question and then answer it, in one prompt (RaR) or two calls (Two-step RaR); in the paper's GPT-4 setup the gains were largest on tasks where the original question was ambiguous."
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-06-deng-2023-rephrase-respond.md
 ---
@@ -36,7 +36,6 @@ Rephrase and Respond (RaR; Deng et al., UCLA, arXiv 2311.04205, preprint) has th
 
 ## See Also
 - [[Prompt Engineering]] — prerequisite-for
-- [[Chain of Thought]] — alternative-to (zero-shot CoT compared on two tasks only)
 - [[Few-Shot Prompting]] — related (RaR repaired corrupted exemplars)
 - [[Prompt Optimization]] — related (APE-style iterative rewriting contrasted in prose)
 - [[Prompting Technique Selection]] — prerequisite-for

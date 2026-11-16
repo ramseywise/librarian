@@ -2,7 +2,7 @@
 title: Multi-Agent Failure Modes at Scale
 tags: [graph, agents, eval, reference]
 summary: "A single loop fails by not converging; a graph fails mechanically (cycles, deadlocks, races, unbounded fan-out, mis-routing) and through control failures between loops — and swarm-scale faults like correlated errors and Byzantine workers are caught only by independent checks and anchors."
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--07-failure-modes-at-scale.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--02-graph-primitives.md
@@ -90,7 +90,7 @@ escalate rather than override), **frozen nodes** (some measurements deliberately
 > held-out test sets, physical counts, banked revenue, safety specs. Without them a graph
 > becomes perfectly self-consistent while drifting arbitrarily far from reality. An anchor
 > made tunable will eventually be tuned. This is the immutable layer of the
-> [[SANYI Change-Contract System]].
+> SANYI Change-Contract System.
 
 ## Pre-flight check before running a graph unattended
 
@@ -110,7 +110,6 @@ escalate rather than override), **frozen nodes** (some measurements deliberately
 - [[Loop Termination Design]] — extends
 - [[Loop Detection and the Two-Retry Rule]] — extends
 - [[Verification Loops]] — extends
-- [[SANYI Change-Contract System]] — extends
 - [[Delegation Ceiling and Posterior Distortion]] — extends
 - [[Diversity Collapse in Multi-Agent Ideation]] — extends
 - [[Coordination Network Measurement in Multi-Agent Coding]] — extends

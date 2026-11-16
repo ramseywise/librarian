@@ -1,9 +1,8 @@
 """Run the coding agent offline against the toy repo. No API key, no network.
 
-uv run python run.py            # every scenario
-uv run python run.py fix        # one scenario
+    uv run python run.py            # every scenario
+    uv run python run.py fix        # one scenario
 """
-
 import sys
 
 sys.dont_write_bytecode = True
@@ -27,9 +26,7 @@ def main(names: list[str]) -> None:
             print(f"held-out tests: {'pass' if passed else 'FAIL'} ({line})")
         escaped = workspace.outside / "escaped.txt"
         if escaped.exists():
-            print(
-                f"file written outside the repo by code under test: {escaped.name} = {escaped.read_text()!r}"
-            )
+            print(f"file written outside the repo by code under test: {escaped.name} = {escaped.read_text()!r}")
         workspace.close()
 
 

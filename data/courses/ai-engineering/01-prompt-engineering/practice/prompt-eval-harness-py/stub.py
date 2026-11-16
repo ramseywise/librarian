@@ -4,7 +4,6 @@ for a visible reason. It reads the same prompt a real model would:
  - format but no rule: first keyword wins, so topic words mislead it, and it obeys the ticket
  - rule present: symptoms outrank topics, and instructions in the ticket are ignored
 """
-
 import json
 import math
 import re
@@ -29,10 +28,6 @@ def stub(prompt: str, system: str = "", max_tokens: int = 16000) -> Completion:
         label = "bug"
     else:
         label = "how_to"
-    text = (
-        json.dumps({"label": label}, separators=(",", ":"))
-        if "JSON" in system
-        else f"This looks like a {label} ticket."
-    )
+    text = json.dumps({"label": label}, separators=(",", ":")) if "JSON" in system else f"This looks like a {label} ticket."
     words = lambda s: math.ceil(len(s) / 4)
     return Completion(text, words(system) + words(prompt), words(text))

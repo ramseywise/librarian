@@ -2,7 +2,7 @@
 title: Item Lifecycle Ledger as a New Table
 tags: [infra, observability, decision]
 summary: "To answer 'where did item X stop, and how many stopped there' across ingestion, identity, enrichment, QC, publish and serve, build a new per-item ledger rather than widening an existing ingestion-outcomes table whose best-effort writes and 60-day retention are load-bearing for its own 7-day alarm — keep writes best-effort but logged at error, collapse high-volume serve stages to the served items, bridge early stages from one existing flush site, and document that a zero at a stage with no writer means 'no writer', not 'no items'."
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-25-lifecycle-operating-contract.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-25-lifecycle-operating-contract.md
@@ -66,7 +66,7 @@ Two stage writers (enrichment and QC) were deliberately held for a separate sess
 avoid branch collisions. Until they land, **a funnel query returning zero at those
 stages means no writer exists, not that no item reached them.** Every doc updated in
 that change says so. A stage count is only evidence once its writer is confirmed live
-(see [[Silence Reads as Clean]]).
+(see Silence Reads as Clean).
 
 ## Smaller findings
 
@@ -83,7 +83,3 @@ that change says so. A stage count is only evidence once its writer is confirmed
 
 ## See Also
 - [[A Trace Is Not a Number of Record]] — extends (an append-only ledger per seam, written best-effort)
-- [[Silence Reads as Clean]] — related (zero at a writer-less stage)
-- [[Every Column Names Its Reader]] — related (retention and durability follow the reader)
-- [[Indistinguishable Rejection on Best-Effort Sinks]] — related (best-effort writes need a visible failure)
-- [[Kiez Project]] — instance-of

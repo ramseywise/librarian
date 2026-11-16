@@ -2,7 +2,7 @@
 title: Index-Time Distillation
 tags: [context, rag, pattern]
 summary: "Naive chunk-and-retrieve fails on aggregation and rule-induction questions however good the retriever, because attention is soft retrieval, not a summariser — spend compute at index time to turn cases into statistics, rules and hierarchy (RAPTOR, GraphRAG, L0/L1/L2 filesystem tiers, factor discovery)."
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--04-retrieval.md
 ---
@@ -40,7 +40,7 @@ the corpus must be pre-digested.
 enough ([[Context Retrieval Strategies]]). If they need cross-document synthesis or
 multi-level navigation, structured indexing is worth its large up-front LLM cost.
 
-The filesystem-tiers row is the shape of the [[Karpathy LLM Wiki Pattern]] — and its
+The filesystem-tiers row is the shape of the Karpathy LLM Wiki Pattern — and its
 orphan-file failure is why this wiki's ingest protocol blocks on missing backlinks.
 
 ## See Also

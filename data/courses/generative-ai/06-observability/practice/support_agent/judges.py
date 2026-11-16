@@ -20,32 +20,16 @@ STRONG_TOKENS = {"input_tokens": 1800, "output_tokens": 500}
 def raw_export(trace):
     """A trace as an export gives it: payloads are strings, and v2 changed the shape."""
     if trace.release == "v1":
-        output = {
-            "lastMessage": trace.answer,
-            "sources": trace.citations,
-            "need_expert": trace.escalated,
-        }
+        output = {"lastMessage": trace.answer, "sources": trace.citations, "need_expert": trace.escalated}
         inp = {"user_question": trace.question}
     else:
-        output = {
-            "structured_response": {"answer": trace.answer, "sources": trace.citations},
-            "need_expert": trace.escalated,
-        }
+        output = {"structured_response": {"answer": trace.answer, "sources": trace.citations}, "need_expert": trace.escalated}
         inp = {"structured_response": {"advisor_query": trace.question}}
     search = [s for s in trace.spans if s.name == "kb_search"][-1]
-    return {
-        "id": trace.trace_id,
-        "input": json.dumps(inp, ensure_ascii=False),
-        "output": json.dumps(output, ensure_ascii=False),
-        "documents": trace.documents,
-        "language": trace.language,
-        "metadata": {
-            "route": trace.route,
-            "top_score": search.tool_result["top_score"],
-            "amount_eur": trace.amount_eur,
-            "release": trace.release,
-        },
-    }
+    return {"id": trace.trace_id, "input": json.dumps(inp, ensure_ascii=False), "output": json.dumps(output, ensure_ascii=False),
+            "documents": trace.documents, "language": trace.language,
+            "metadata": {"route": trace.route, "top_score": search.tool_result["top_score"],
+                         "amount_eur": trace.amount_eur, "release": trace.release}}
 
 
 def safe_json_parse(value):
@@ -86,8 +70,7 @@ def to_conversation(row):
         question=first_path(inp, [("user_question",), ("structured_response", "advisor_query")]),
         answer=first_path(out, [("lastMessage",), ("structured_response", "answer")]),
         sources=first_path(out, [("sources",), ("structured_response", "sources")]) or [],
-        documents=row["documents"],
-        escalated=bool(first_path(out, [("need_expert",)])),
+        documents=row["documents"], escalated=bool(first_path(out, [("need_expert",)])),
         metadata={**row["metadata"], "language": row["language"]},
     )
 
@@ -123,21 +106,15 @@ def fast_hallucination(conv, stance="strict"):
     which is what a Dutch answer over English documents always has.
     """
     retrieved = {d["url"] for d in conv.documents}
-    doc_numbers = (
-        set().union(*(_numbers(d["text"]) for d in conv.documents)) if conv.documents else set()
-    )
+    doc_numbers = set().union(*(_numbers(d["text"]) for d in conv.documents)) if conv.documents else set()
     evidence = []
     for url in conv.sources:
         if url not in retrieved:
-            evidence.append(
-                {"claim": url, "status": "hallucination", "document_support": "NOT FOUND"}
-            )
+            evidence.append({"claim": url, "status": "hallucination", "document_support": "NOT FOUND"})
     for n in sorted(_numbers(conv.answer) - doc_numbers):
         evidence.append({"claim": n, "status": "hallucination", "document_support": "NOT FOUND"})
     if stance == "lenient" and _overlap(conv.answer, conv.documents) < 0.5:
-        evidence.append(
-            {"claim": "low overlap", "status": "hallucination", "document_support": "NOT FOUND"}
-        )
+        evidence.append({"claim": "low overlap", "status": "hallucination", "document_support": "NOT FOUND"})
     return {"hallucination_detected": bool(evidence), "evidence": evidence}
 
 
@@ -154,12 +131,8 @@ def verify_hallucination(conv):
 
 def run_pipeline(conv, stance="strict"):
     """All judges for one turn, with verification gated on the first pass."""
-    result = {
-        "trace_id": conv.trace_id,
-        "relevance": relevance_judge(conv),
-        "escalation": escalation_judge(conv),
-        "hallucination": fast_hallucination(conv, stance),
-    }
+    result = {"trace_id": conv.trace_id, "relevance": relevance_judge(conv), "escalation": escalation_judge(conv),
+              "hallucination": fast_hallucination(conv, stance)}
     if result["hallucination"]["hallucination_detected"]:
         result["verification"] = verify_hallucination(conv)
     return result
@@ -182,10 +155,4 @@ def precision_recall(flags, truth):
     tp = sum(f and t for f, t in zip(flags, truth))
     fp = sum(f and not t for f, t in zip(flags, truth))
     fn = sum(t and not f for f, t in zip(flags, truth))
-    return {
-        "tp": tp,
-        "fp": fp,
-        "fn": fn,
-        "precision": tp / (tp + fp) if tp + fp else 0.0,
-        "recall": tp / (tp + fn) if tp + fn else 0.0,
-    }
+    return {"tp": tp, "fp": fp, "fn": fn, "precision": tp / (tp + fp) if tp + fp else 0.0, "recall": tp / (tp + fn) if tp + fn else 0.0}

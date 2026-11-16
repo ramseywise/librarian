@@ -56,14 +56,7 @@ def score(code: str, checks: list[dict], timeout_s: float = 2.0) -> Score:
     total = len(checks)
     spec = json.dumps({"code": code, "inputs": [c["input"] for c in checks]})
     try:
-        done = subprocess.run(
-            [sys.executable, "-I", "-c", _RUNNER],
-            input=spec,
-            capture_output=True,
-            text=True,
-            timeout=timeout_s,
-            encoding="utf8",
-        )
+        done = subprocess.run([sys.executable, "-I", "-c", _RUNNER], input=spec, capture_output=True, text=True, timeout=timeout_s, encoding="utf8")
     except subprocess.TimeoutExpired:
         return Score(0, total, [f"timed out after {timeout_s} s"])
     try:
@@ -80,9 +73,7 @@ def score(code: str, checks: list[dict], timeout_s: float = 2.0) -> Score:
         elif r["got"] == c["want"]:
             passed += 1
         else:
-            failures.append(
-                f"slugify({shown}) gave {json.dumps(r['got'], ensure_ascii=False)}, wanted {json.dumps(c['want'])}"
-            )
+            failures.append(f"slugify({shown}) gave {json.dumps(r['got'], ensure_ascii=False)}, wanted {json.dumps(c['want'])}")
     return Score(passed, total, failures)
 
 

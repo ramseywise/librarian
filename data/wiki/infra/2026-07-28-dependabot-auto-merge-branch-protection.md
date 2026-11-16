@@ -2,7 +2,7 @@
 title: Gate Dependabot Auto-Merge on Branch Protection
 tags: [infra, decision]
 summary: "`gh pr merge --auto` already honors branch protection, so a `wait-for-ci` job inside the auto-merge workflow is either a placeholder that gates nothing or a second copy of CI that runs twice per PR — delete it and let the required status check be the gate, accepting that the gate is invisible in the workflow YAML."
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/ai-project-template/docs/plans/AIT-22-research.md
   - data/raw/repos/ai-project-template/.claude--docs--plans--AIT-22-research.md
@@ -60,11 +60,8 @@ what the diff looks like.
   protection still unset across all 4 repos" while the live API showed it set everywhere.
   A status note in a plan is a claim to re-verify, not a fact.
 - **Placeholder jobs read as gates.** `needs:` on an `echo` job looks like protection in
-  review. See [[Always-Red Check Carries No Signal]] for the inverse failure.
+  review. See Always-Red Check Carries No Signal for the inverse failure.
 
 ## See Also
-- [[AI Project Template Scaffold]] — instance-of (its CI/CD standardization section)
 - [[Silent Failure Catalogue]] — related (the `workflow_call` actor-gate trap in the same workflow)
-- [[Verify CI Steps by Extraction, Not Retyping]] — related
-- [[CI Tests the Merge Ref, Not the Branch Tip]] — related
 - [[Exposure-Tiered Dependency Triage]] — related (the three-tier routing rule from the earlier audit)

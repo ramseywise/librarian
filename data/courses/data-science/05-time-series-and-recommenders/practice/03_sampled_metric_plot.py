@@ -10,18 +10,17 @@ Run from this folder (a few minutes):
 Two-tower with logQ correction, tau 0.2, seed 0, as in the note and 03_two_tower_lab.py.
 Writes recsys-sampled-metric.png.
 """
-
 # %%
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-import chartstyle as cs
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
+import chartstyle as cs
+import matplotlib.pyplot as plt
 from movielens import GENRES, chrono_split, fit_ease, load, positives, to_matrix
 
 ratings, items, users = load()
@@ -57,29 +56,22 @@ class TwoTower(nn.Module):
         return nn.functional.normalize(self.user_mlp(x), dim=1)
 
     def item(self, i):
-        return nn.functional.normalize(
-            self.item_mlp(torch.cat([self.iid(i), self.itf[i]], 1)), dim=1
-        )
+        return nn.functional.normalize(self.item_mlp(torch.cat([self.iid(i), self.itf[i]], 1)), dim=1)
 
 
-def train_tower(bs=512, tau=0.2, epochs=30, lr=2e-3, seed=0):
+def train_tower(bs=512, tau=.2, epochs=30, lr=2e-3, seed=0):
     torch.manual_seed(seed)
     m = TwoTower()
     opt = torch.optim.Adam(m.parameters(), lr=lr, weight_decay=1e-5)
     u, i = torch.tensor(pos.user.to_numpy()), torch.tensor(pos.item.to_numpy())
-    logp = torch.tensor(
-        np.log(np.maximum(np.bincount(pos.item, minlength=n_items) / len(pos), 1e-9)),
-        dtype=torch.float32,
-    )
+    logp = torch.tensor(np.log(np.maximum(np.bincount(pos.item, minlength=n_items) / len(pos), 1e-9)), dtype=torch.float32)
     for _ in range(epochs):
         for b in torch.randperm(len(u)).split(bs):
             logits = m.user(u[b]) @ m.item(i[b]).T / tau - logp[i[b]]
             same = i[b][:, None] == i[b][None, :]
             same.fill_diagonal_(False)
             loss = nn.functional.cross_entropy(logits.masked_fill(same, -1e9), torch.arange(len(b)))
-            opt.zero_grad()
-            loss.backward()
-            opt.step()
+            opt.zero_grad(); loss.backward(); opt.step()
     return m.eval()
 
 
@@ -90,7 +82,6 @@ def scores(m):
     def f(us):
         with torch.no_grad():
             return (m.user(torch.tensor(us)) @ V.T).numpy()
-
     return f
 
 
@@ -116,13 +107,7 @@ res = {}
 for name, f in [("EASE", lambda us: R[us] @ B), ("Two-tower with logQ", tower)]:
     vals = [hit_rates(f, n) for n in negs]
     res[name] = ([v[1] for v in vals], vals[0][0])
-    print(
-        name,
-        "full",
-        round(vals[0][0], 4),
-        {n: round(v[1], 4) for n, v in zip(negs, vals)},
-        flush=True,
-    )
+    print(name, "full", round(vals[0][0], 4), {n: round(v[1], 4) for n, v in zip(negs, vals)}, flush=True)
 
 # %%
 cs.apply()
@@ -132,18 +117,11 @@ labels = [str(n) for n in negs] + ["Full catalogue"]
 for (name, (sampled, full)), colour in zip(res.items(), [cs.BLUE, cs.ORANGE]):
     ax.plot(x, sampled + [full], color=colour, marker="o", ms=6, label=name)
 ax.set_xticks(x, labels)
-ax.set(xlabel="Negatives each test item is ranked against", ylabel="HR@10", ylim=(0, 0.9))
+ax.set(xlabel="Negatives each test item is ranked against", ylabel="HR@10", ylim=(0, .9))
 ax.grid(False, axis="x")
 a, b = res["EASE"], res["Two-tower with logQ"]
-ax.annotate(
-    f"99 negatives: EASE {a[0][1]:.3f}, tower {b[0][1]:.3f}",
-    (1, max(a[0][1], b[0][1])),
-    xytext=(14, 18),
-    textcoords="offset points",
-)
-ax.annotate(f"Full: EASE {a[1]:.3f}, tower {b[1]:.3f}", (len(negs), 0.30), ha="right")
+ax.annotate(f"99 negatives: EASE {a[0][1]:.3f}, tower {b[0][1]:.3f}", (1, max(a[0][1], b[0][1])), xytext=(14, 18), textcoords="offset points")
+ax.annotate(f"Full: EASE {a[1]:.3f}, tower {b[1]:.3f}", (len(negs), .30), ha="right")
 ax.legend(loc="upper right")
-ax.set_title(
-    "Sampled hit rates run high, and the tower leads until 999 negatives. Full catalogue: EASE"
-)
+ax.set_title("Sampled hit rates run high, and the tower leads until 999 negatives. Full catalogue: EASE")
 cs.save(fig, "recsys-sampled-metric.png")

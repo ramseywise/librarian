@@ -3,7 +3,6 @@
 # dependencies = []
 # ///
 """Same cases, variants and report as the TypeScript lab in ../prompt-eval-harness."""
-
 import json
 from pathlib import Path
 
@@ -32,9 +31,7 @@ for r in results:
     )
 for a, b in zip(results, results[1:]):
     fixed, broken = flips(a, b)
-    print(
-        f"\n{a.name} -> {b.name}\n  fixed:  {', '.join(fixed) or 'none'}\n  broken: {', '.join(broken) or 'none'}"
-    )
+    print(f"\n{a.name} -> {b.name}\n  fixed:  {', '.join(fixed) or 'none'}\n  broken: {', '.join(broken) or 'none'}")
 last = results[-1]
 failing = [r for r in last.results if r.failures]
 print(f"\nstill failing in {last.name}: {len(failing)}")

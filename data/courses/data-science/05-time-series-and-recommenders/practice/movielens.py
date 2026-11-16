@@ -3,9 +3,7 @@
 The data is downloaded from GroupLens on first use and cached outside the repo, because its
 licence forbids redistribution. Please read the README inside the zip before using it.
 """
-
-import urllib.request
-import zipfile
+import urllib.request, zipfile
 from pathlib import Path
 
 import numpy as np
@@ -23,22 +21,11 @@ def load():
     if not path.exists():
         path.write_bytes(urllib.request.urlopen(URL, timeout=60).read())
     with zipfile.ZipFile(path) as z:
-        ratings = pd.read_csv(
-            z.open("ml-100k/u.data"), sep="\t", names=["user", "item", "rating", "ts"]
-        )
-        items = pd.read_csv(
-            z.open("ml-100k/u.item"),
-            sep="|",
-            encoding="latin-1",
-            header=None,
-            names=["item", "title", "date", "video", "url"] + GENRES,
-        )
-        users = pd.read_csv(
-            z.open("ml-100k/u.user"),
-            sep="|",
-            header=None,
-            names=["user", "age", "gender", "occupation", "zip"],
-        )
+        ratings = pd.read_csv(z.open("ml-100k/u.data"), sep="\t", names=["user", "item", "rating", "ts"])
+        items = pd.read_csv(z.open("ml-100k/u.item"), sep="|", encoding="latin-1", header=None,
+                            names=["item", "title", "date", "video", "url"] + GENRES)
+        users = pd.read_csv(z.open("ml-100k/u.user"), sep="|", header=None,
+                            names=["user", "age", "gender", "occupation", "zip"])
     return ratings, items, users
 
 
@@ -73,11 +60,7 @@ def evaluate(score_fn, truth, seen, k=10):
         rec.append(hits.sum() / m)
         ndcg.append((hits * disc).sum() / disc[:m].sum())
         shown.update(row.tolist())
-    return dict(
-        recall=float(np.mean(rec)),
-        ndcg=float(np.mean(ndcg)),
-        coverage=len(shown) / (S.shape[1] - 1),
-    )
+    return dict(recall=float(np.mean(rec)), ndcg=float(np.mean(ndcg)), coverage=len(shown) / (S.shape[1] - 1))
 
 
 def fit_ease(R, lam=100.0):

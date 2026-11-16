@@ -2,7 +2,7 @@
 title: "Identity Memory: Revision vs Accretion"
 tags: [memory, concept]
 summary: "What production agent frameworks actually offer for a self-model that changes — fixed identity is the default; Letta's self-editable persona block, Mem0's ADD/MERGE/UPDATE/DELETE consolidation, and Zep's bi-temporal edge invalidation are the only revision paths — and what a prose-file identity system (guacamayo) learned about auditing its own rewrites: record dispositions not deliberation, gate pre-commit not post-hoc, enforce by hook not instruction."
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/guacamayo/docs/research/2026-07-20_consciousness_agent-framework-identity.md
   - data/raw/claude-docs/guacamayo/docs/research/2026-07-20_consciousness_guacamayo-current-model.md
@@ -127,9 +127,9 @@ pass tests, review, change contracts and a human commit. Process changes pass Do
 plan-fidelity review and a human commit. **Identity files were changed by one
 consolidation skill with no gate at all.** That asymmetry, more than any philosophical
 gap, is what the plan set out to close. The mechanism is in
-[[Conservation Gate on Accumulator Clear]]. The upstream fix, collapsing several
+Conservation Gate on Accumulator Clear. The upstream fix, collapsing several
 in-session writers into one offline consolidator, is in
-[[Single Writer, Offline Consolidation]].
+Single Writer, Offline Consolidation.
 
 The same audit found that **token reduction and identity fidelity conflict only at
 the identity layer.** Compressing a task result is fine. Compressing a self-model drops
@@ -137,10 +137,5 @@ the hedges and the reasons first, so a token-economy rule should not be applied 
 
 ## See Also
 - [[Memory Lifecycle]] — extends (the update/forget stage, applied to a self-model)
-- [[Puffin Consciousness Development Skills]] — instance-of (the system audited here)
-- [[Append-Only Log Writer Invariants]] — alternative-to (the append-only regime for the episodic layer)
 - [[Compression Strips the Epistemic Frame]] — extends (why the seed rewrite loses hedging first)
 - [[Memory Forms Taxonomy]] — extends (self-model as a memory form most surveys omit)
-- [[Due-vs-Acked Trigger Counters]] — extends (how the consolidation step's retro trigger survives session boundaries)
-- [[Conservation Gate on Accumulator Clear]] — extends (the hook-level enforcement this page recommends)
-- [[Single Writer, Offline Consolidation]] — extends (the architectural fix for accretion)

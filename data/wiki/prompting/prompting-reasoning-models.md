@@ -2,7 +2,7 @@
 title: Prompting Reasoning Models
 tags: [prompting, llm, pattern]
 summary: Reasoning models do chain-of-thought natively, so prompts shift from how to think to what to achieve — state goals and constraints, drop manual CoT (it can degrade instruction-following), escalate effort gradually against an eval, and never treat the visible thinking as a faithful audit trail.
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--07-prompting-reasoning-models.md
   - data/raw/papers/2026-11-06-wu-2024-comparative-study-reasoning-patterns-openai.md
@@ -21,7 +21,7 @@ sources:
 Reasoning models spend **test-time compute** on hidden or summarized thinking tokens
 before answering. More thinking usually means better answers on hard tasks, at more
 latency and cost — controlled by an **effort or budget** setting, not by prompt wording.
-The [[Chain of Thought]] scaffolding written for standard models is redundant at best:
+The Chain of Thought scaffolding written for standard models is redundant at best:
 explicit step-by-step prompting has been shown to *degrade instruction-following* in
 reasoning models (*The Pitfalls of Reasoning for Instruction Following*, 2025). Model
 behaviour here moves fast; treat specifics as dated.
@@ -113,7 +113,6 @@ Koenigstein (ch. 4) advises turning thinking on for planning, decomposition, too
 - No evidence behind the 1000-token threshold; the two budget values in the chapter disagree.
 
 ## See Also
-- [[Chain of Thought]] — supersedes (for reasoning-model endpoints, manual CoT is replaced by effort settings)
 - [[Sampling Parameters]] — extends
 - [[Evaluating Prompts]] — prerequisite-for
 - [[Prompts as Document Completion]] — extends

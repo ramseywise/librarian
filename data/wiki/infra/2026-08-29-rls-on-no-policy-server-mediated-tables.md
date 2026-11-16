@@ -2,7 +2,7 @@
 title: RLS On, No Policy for Server-Mediated Tables
 tags: [infra, decision]
 summary: "A table whose rows are each harmless can still be a customer list in aggregate, and RLS gates rows, not query shape. When every reader is server-side code using the admin client, enable RLS and write no anon policy: a policy names its reader, and this table has none on the anon key. Then prove the CHECK constraint fires with a rejected INSERT."
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-08-29-b41-partner-table.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-08-29-b41-partner-table.md
@@ -71,7 +71,4 @@ alongside it. See [[Written-but-Inert RLS Policies]] for that instance.
 
 ## See Also
 - [[Written-but-Inert RLS Policies]] — extends (the deliberate counterpart: RLS on with no policy, on purpose and documented)
-- [[Data Clusters by Writer and Trust]] — related (classify the table by its writer and readers before choosing a posture)
-- [[Capability Token in a Serialized Row]] — related (the other way a server-mediated table leaks: the server ships the row to the client)
 - [[Migration Done Means Pushed and Probed]] — related (the constraint is verified by a rejected write)
-- [[Every Column Names Its Reader]] — extends (the same rule applied to policies)

@@ -2,7 +2,7 @@
 title: MCP Server Security Patterns
 tags: [mcp, infra, pattern]
 summary: Security patterns for MCP servers — read-only invariant, sandbox isolation, secrets handling, and what to never expose over MCP.
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/sessions/2026-04-24T1048.md
   - data/raw/sessions/claude-2026-04-24-qq-do-i-need-to-push-playground-infrastr-108c3f61.md
@@ -21,7 +21,7 @@ A knowledge-serving MCP server (e.g. a wiki, KB, or documentation server) **must
 - No write, append, or delete tool is exposed
 - The invariant is enforced at the tool-definition layer, not by a prompt instruction — a prompt instruction is soft (BY-4 in SANYI terms)
 
-This is a [[SANYI Change-Contract System]] Buyi invariant: violating it has trust/security consequences and must never be made bypassable via config or env var.
+This is a SANYI Change-Contract System Buyi invariant: violating it has trust/security consequences and must never be made bypassable via config or env var.
 
 ## Sandbox vs Local Exposure
 
@@ -95,10 +95,7 @@ exclusion rule fails open, and it fails silently.
 
 ## See Also
 - [[MCP Protocol]]
-- [[SANYI Change-Contract System]]
 - [[Input Guardrails Pipeline]]
-- [[Agent Quality Review Checklist]] — alternative-to (review-time vs runtime enforcement)
-- [[Webhook Handler Idempotency]] — alternative-to (inbound HTTP surface with the same authenticate-the-caller obligation)
 - [[Curl-Bridge Context Injection]] — alternative-to (proxy-side allowlist + identity overwrite instead of tools)
 - [[Lethal Triad]] — related (MCP supply-chain risks and the structural defence)
 - [[Tool Poisoning and Protocol-Level Attacks on Agents]] — instance-of (tool-description poisoning and chained calls)

@@ -2,7 +2,7 @@
 title: MCP Protocol
 tags: [mcp, concept]
 summary: Model Context Protocol — how it separates tool definitions from agents, enabling independent deployment and runtime tool discovery; includes AWS Bedrock AgentCore deployment pattern from the Hypernova PoC.
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/playground/docs/archived/agentic-rag-copilot-research.md
   - data/raw/claude-docs/playground/docs/archived/adk-samples-patterns-analysis.md
@@ -205,11 +205,8 @@ Chapters 1 to 4 of an early-release book, AI Agents with MCP, cover the client s
 - The extraction also notes that code in the chapters is simplified and lacks the human approval the text says is required.
 
 ## See Also
-- [[Karpathy LLM Wiki Pattern]]
 - [[ADK Context Engineering]]
 - [[Librarian RAG Architecture]]
-- [[Agentic Workflow Patterns]]
-- [[Integration Pattern Selection]] — alternative-to (MCP against Composio, direct clients, webhooks, and n8n)
 - [[Tool Design as Context Engineering]] — extends (tool definitions and results as context surfaces)
 - [[Agent Interoperability Protocol Stack]] — related (part of; MCP's place alongside A2A, A2UI, AP2, and UCP)
 - [[REST-First, MCP as Adapter]] — extends (MCP servers as thin adapters over versioned REST)

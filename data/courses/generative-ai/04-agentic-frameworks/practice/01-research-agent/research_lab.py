@@ -6,7 +6,6 @@ the same behaviour runs through a hand-written loop, LangGraph and Google ADK
 without an API key. Each framework file only adapts its own message format to
 `decide()`.
 """
-
 import json
 import re
 from dataclasses import dataclass
@@ -69,35 +68,7 @@ CORPUS = {
     },
 }
 
-STOPWORDS = set(
-    [
-        "a",
-        "an",
-        "and",
-        "are",
-        "at",
-        "by",
-        "do",
-        "does",
-        "for",
-        "from",
-        "how",
-        "in",
-        "is",
-        "it",
-        "of",
-        "on",
-        "or",
-        "that",
-        "the",
-        "to",
-        "what",
-        "when",
-        "which",
-        "why",
-        "with",
-    ]
-)
+STOPWORDS = set("a an and are at by do does for from how in is it of on or that the to what when which why with".split())
 PUBLISHED: list[dict] = []
 QUESTION = "Why do framework agents get stuck in loops, and what stops them?"
 
@@ -150,7 +121,6 @@ TOOLS = {"search": search, "read_source": read_source, "publish_report": publish
 @dataclass
 class Observation:
     """One tool result the model has seen."""
-
     tool: str
     args: dict
     result: str
@@ -159,7 +129,6 @@ class Observation:
 @dataclass
 class ToolStep:
     """The model asks for a tool."""
-
     name: str
     args: dict
     thought: str
@@ -168,7 +137,6 @@ class ToolStep:
 @dataclass
 class Final:
     """The model answers."""
-
     text: str
 
 
@@ -185,12 +153,8 @@ def parse_known(system_text: str) -> dict[str, str]:
     return dict(re.findall(r"^KNOWN ([\w-]+): (.+)$", system_text, flags=re.M))
 
 
-def decide(
-    question: str,
-    observations: list[Observation],
-    behavior: str = "normal",
-    known: dict[str, str] | None = None,
-) -> ToolStep | Final:
+def decide(question: str, observations: list[Observation], behavior: str = "normal",
+           known: dict[str, str] | None = None) -> ToolStep | Final:
     """The scripted model. A real model would make these choices from the same inputs.
 
     behavior="stubborn" never stops searching, the loop-control failure in Wang et al.
@@ -199,11 +163,8 @@ def decide(
     searches = [o for o in observations if o.tool == "search"]
     reads = [o for o in observations if o.tool == "read_source"]
     if behavior == "stubborn":
-        return ToolStep(
-            "search",
-            {"query": f"{question} attempt {len(searches) + 1}"},
-            "The results might improve if I search once more.",
-        )
+        return ToolStep("search", {"query": f"{question} attempt {len(searches) + 1}"},
+                        "The results might improve if I search once more.")
     good = {o.args["source_id"]: o.result for o in reads if not o.result.startswith("ERROR")}
     findings = {**known, **{sid: _first_sentence(text) for sid, text in good.items()}}
     if len(findings) < 2:
@@ -216,11 +177,8 @@ def decide(
     answer = " ".join(f"{sentence.rstrip('.')} [{sid}]." for sid, sentence in findings.items())
     answer = answer or "I found no sources that answer this."
     if "publish" in question.lower() and not any(o.tool == "publish_report" for o in observations):
-        return ToolStep(
-            "publish_report",
-            {"title": "Why agents loop", "body": answer},
-            "The report is ready to publish.",
-        )
+        return ToolStep("publish_report", {"title": "Why agents loop", "body": answer},
+                        "The report is ready to publish.")
     return Final(answer)
 
 

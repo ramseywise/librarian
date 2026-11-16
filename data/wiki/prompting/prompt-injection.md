@@ -2,7 +2,7 @@
 title: Prompt Injection
 tags: [prompting, llm, agents, concept]
 summary: Manipulating model behaviour via adversarial input, exploiting the fact that LLMs process instructions and data in the same channel — mitigated by separation, least privilege, and HITL, never fully solved.
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--notes--prompt-injection.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--7-security-safety--prompt-injection.md
@@ -242,10 +242,8 @@ Limits of this section:
 - [[XML Prompt Structuring]] — related (mitigated by)
 - [[Prompt Templates and Variables]] — related (mitigated by)
 - [[Agentic RAG — Advanced Patterns]] — related (attack surface)
-- [[Security and Safety Interview Study Guide]] — prerequisite-for (the interview-shaped containment answer)
 - [[Prompt Leaking]] — extends
 - [[Prompts as Document Completion]] — prerequisite-for
-- [[Keyless Injection Regression Suite]] — extends (adversarial twins, schema-omission and delimiter-placement tests)
 - [[Lethal Triad]] — extends (the capability combination that turns injection into exfiltration)
 - [[GCG Adversarial Suffix Attack]] — instance-of (gradient-found suffix)
 - [[PAIR Black-Box Jailbreak Refinement]] — instance-of (black-box refinement)

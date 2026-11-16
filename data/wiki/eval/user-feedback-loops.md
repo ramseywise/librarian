@@ -2,7 +2,7 @@
 title: User Feedback Loops
 tags: [eval, llm, infra]
 summary: Explicit ratings or implicit usage signals from deployed users — the only eval source that catches "technically correct but unhelpful", slow and sparse and biased, whose real payoff is converting thumbs-down cases into permanent golden-set entries.
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/eval-approaches.md
   - data/raw/claude-docs/akira/docs/research/2026-09-20-dis345-favourite-holdout-judgments.md
@@ -140,7 +140,5 @@ Their composable-workflow chapter treats agent mode as copilot mode where the us
 - [[Copilot Learning Loop]] — related (usage signal as training feedback)
 - [[Heuristic Pipeline Metrics]] — related
 - [[Online Eval Sampling]] — extends (negative feedback as one of four production sampling rules)
-- [[Explore Slice for Position Bias]] — extends (a feedback loop that cannot learn from its own ranking)
 - [[Outcome Signal Ladder]] — extends (which proxy counts as the outcome before attendance is loggable)
-- [[Write-Time Deterministic Holdout]] — extends (the hash-split column that made favourites holdable before any consumer existed)
 - [[Observability and Runtime Patterns]] — related (the monitoring side that feeds the same evaluation set)

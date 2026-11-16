@@ -1,5 +1,4 @@
 """Tests the agent never sees. They are copied in only after it has finished."""
-
 import unittest
 
 from tipkit.stats import median

@@ -2,7 +2,7 @@
 title: Eval Harness Anatomy
 tags: [eval, llm, agents, reference]
 summary: "Task, trial, grader, trajectory, outcome — and the separation that makes the whole thing work: the evaluation harness treats the agent harness as the system under test."
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--eval-harness.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--README.md
@@ -153,7 +153,6 @@ Graders are typed by trust level ([[Grader States (Heuristic, Calibrated, Experi
 hard-fail items ([[Veto Rubric Items]]).
 
 ## See Also
-- [[Evals and Observability Interview Study Guide]] <!-- auto-linked -->
 - [[Harness Engineering]] <!-- auto-linked -->
 - [[Anthropic Three-Tier Eval Taxonomy]] — related (tiers of eval scope; this page is the anatomy within a tier)
 - [[Eval Non-Determinism]] — extends (why one trial is not a measurement)

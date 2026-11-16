@@ -2,7 +2,7 @@
 title: Single-Call LLM Gate Weakness Audit
 tags: [eval, pattern]
 summary: "Seven recurring defect classes in a one-LLM-call publish gate: silent sanitizer repairs, self-reported approval, anchoring on the prior verdict, one verdict answering two questions, computable checks asked in prose, unbounded undelimited input, and decorative confidence. Fix order: baseline against human labels first, deterministic fixes next, and spend-backed experiments last, where a measured 'keep it as is' counts as a finished outcome."
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-21-dis357-qc-baseline-fixes.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-21-dis357-qc-baseline-fixes.md
@@ -38,7 +38,7 @@ nothing could say whether the false-accept rate was 1% or 20%.
 | W4 | **One verdict, two questions.** A 4-way status answers both "is this a single event?" and "is the enrichment plausible?" | Two stored booleans in the existing jsonb, so no migration. The 4-way status stays the only gate input for now. An offline benchmark already asked them separately, which confirmed the shape. |
 | W5 | **Computable checks asked in prose.** The model is asked whether the URL is event-specific, the date plausible, the city right. | A deterministic precheck skips the model call on a clear reject and writes its own sentinel model id. |
 | W6 | **Unbounded, undelimited raw input.** | Bound and delimit `raw_data` in the prompt. |
-| W7 | **Decorative confidence.** Stored and shown, but it gates nothing. | Build a calibration table from already-collected values. If it is informative, gate on it. If it is flat, drop it from the prompt. Drop is the default. See [[Confidence That Is Not a Probability]]. |
+| W7 | **Decorative confidence.** Stored and shown, but it gates nothing. | Build a calibration table from already-collected values. If it is informative, gate on it. If it is flat, drop it from the prompt. Drop is the default. See Confidence That Is Not a Probability. |
 
 ## Fix order
 
@@ -73,14 +73,9 @@ signal derivation set `hasDate: true` unconditionally, because bars have no date
 with nothing at all scored `medium`, and the `high`-vs-`low` overclaim check could never
 fire for that whole vertical, with no error. The fix: a not-applicable signal is `null`,
 excluded from both numerator and denominator, never `true`. This is the mirror image of
-[[Always-Red Check Carries No Signal]]: a check that cannot go red for a whole slice is
+Always-Red Check Carries No Signal: a check that cannot go red for a whole slice is
 just as uninformative. Add a test that the empty payload for each vertical can trip the
 check.
 
 ## See Also
 - [[Small-N Reporting Floor]] — prerequisite-for (the baseline step)
-- [[Sanitize Never Fails, Validate Never Mutates]] — extends (W1: a repair must still be visible)
-- [[Confidence That Is Not a Probability]] — related (W7)
-- [[Always-Red Check Carries No Signal]] — related (inverse: never-red for a slice)
-- [[Hedging Belongs in the Gate, Not the Answer]] — related
-- [[Spend Gate Before the Model Call]] — related (W5 precheck short-circuits spend)

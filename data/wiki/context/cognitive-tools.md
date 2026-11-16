@@ -2,7 +2,7 @@
 title: Cognitive Tools
 tags: [context, llm, agents, pattern]
 summary: "Reasoning steps packaged as callable prompts (understand, recall, examine, backtrack), each run in its own isolated context — prompting alone lifted a non-reasoning model on a maths benchmark from 26.7% to 43.3%, best when the model chooses which tool to call; gains shrink on reasoning models, and a deterministic check beats a model verifier wherever one exists."
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--08-cognitive-tools.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--13-putting-it-together.md
@@ -50,7 +50,7 @@ the way.
 Two template details carry the value:
 
 - An understanding template must **end with "Then stop. Do not answer yet."** A template
-  that analyses and answers in one pass collapses back into ordinary [[Chain of Thought]].
+  that analyses and answers in one pass collapses back into ordinary Chain of Thought.
 - A verification template must **end with a machine-readable verdict**
   (`Verdict: CORRECT | ERRORS_FOUND`) — that line is what lets code drive a loop.
 
@@ -91,7 +91,6 @@ The no-code rendering of the same idea is [[Protocol Shells]].
   deterministic check can replace a model judgment.
 
 ## See Also
-- [[Chain of Thought]] — extends
 - [[Multi-Agent Context]] — instance-of (isolation applied to reasoning steps)
 - [[Loop Termination Design]] — prerequisite-for (bounding the verify loop)
 - [[Protocol Shells]] — alternative-to (the same structure without code)

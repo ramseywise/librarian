@@ -2,7 +2,7 @@
 title: Production Hardening Patterns
 tags: [infra, rag, langgraph, pattern]
 summary: Checklist of production hardening fixes for the Librarian service — P0/P1/P2 issues, async I/O safety, SQL injection prevention, CORS, and Docker packaging.
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/playground/docs/archived/librarian-prod-hardening/plan.md
   - data/raw/claude-docs/playground/docs/archived/retrieval-pipeline-prod/plan.md
@@ -283,7 +283,6 @@ Use `checkpointer=False` when the subgraph needs neither; `None` for interrupt s
 - [[Uptime Probe Asserts the Journey]] — related
 - [[Librarian RAG Architecture]]
 - [[LangGraph CRAG Pipeline]]
-- [[Librarian Project]]
 - [[Observability — LangFuse vs LangSmith Decision]]
 - [[LangGraph State Reducers]]
 - [[Orchestration Architecture Decision]]
@@ -295,15 +294,11 @@ Use `checkpointer=False` when the subgraph needs neither; `None` for interrupt s
 - [[Agent Retry Taxonomy]] — extends (which failures are retryable, and at which level)
 - [[Agent Management Layer]] — related (part of; the generic six-system frame this checklist instantiates)
 - [[Execution Boundaries and Guardrails]] — related (sandboxes, hooks, and cost ceilings)
-- [[Atlas Project]] — instance-of
 - [[Production Readiness Backlog]] — alternative-to
 - [[Cloud Service Deployment]] — prerequisite-for (24/7 availability is what hardening pays for)
 - [[Rate-Limit Keying: Identity Over IP]] — extends (what to key anonymous rate limits on)
-- [[Project Deep-Dive Interview Study Guide]] — instance-of (embedding-version incident told as a five-part story)
-- [[Every Column Names Its Reader]] — extends (schema conventions earned from a live audit)
 - [[Migration Done Means Pushed and Probed]] — extends
 - [[Written-but-Inert RLS Policies]] — extends
 - [[Silent Failure Catalogue]] — extends
 - [[Service Surface Defect Checklist]] — extends (ten concrete surface defects)
-- [[Prototype Hardening Pass]] — extends (the pre-demo checklist)
 - [[SQL from Python]] — prerequisite-for (parameters cover values only; identifiers need an allow-list)

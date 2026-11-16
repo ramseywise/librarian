@@ -2,7 +2,7 @@
 title: ATF Analysis-to-Filtration Prompting
 tags: [prompting, pattern]
 summary: "ATF has the model list the irrelevant clauses in a problem, rewrite the question without them, then reason on the filtered text; on GSMIR (GSM8K plus one irrelevant sentence) it lifted chain-of-thought accuracy on GPT-3.5-Turbo from 50.2 to 74.9 (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-08-jiang-2024-enhancing-robustness-large-language-models.md
 ---
@@ -37,6 +37,5 @@ All on GPT-3.5-Turbo (the 16k variant for the error analysis) over 500 problems.
 
 ## See Also
 - [[Context Failure Modes]] — prerequisite-for (distraction from irrelevant context)
-- [[Chain of Thought]] — related (the baseline ATF wraps)
 - [[Prompt Chaining]] — related (analysis, filter, then answer is a three-step chain)
 - [[Prompt Injection]] — related (both are failures to disregard text in the input)

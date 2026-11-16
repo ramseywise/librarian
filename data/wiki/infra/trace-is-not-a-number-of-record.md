@@ -2,7 +2,7 @@
 title: A Trace Is Not a Number of Record
 tags: [infra, observability, decision]
 summary: An LLM tracing tool hooked into the AI SDK is debugging evidence, not a ledger — it misses every model-call seam that bypasses the SDK (batch, raw provider APIs), is off wherever keys aren't set (often all of production), and has no first-class error class or retention you control — so per-purpose spend and error numbers need a separate append-only call ledger written best-effort at every seam.
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/diskoe/docs/research/2026-09-29-dis397-model-call-ledger.md
   - data/raw/claude-docs/akira/docs/research/2026-09-29-dis397-model-call-ledger.md
@@ -54,7 +54,7 @@ dashboard must come from a retained, queryable store you own.
 ## The ledger shape
 
 - **Cluster:** interaction. Deleting a row changes nothing a user sees; it is append-only
-  measurement of a decision already made ([[Data Clusters by Writer and Trust]]).
+  measurement of a decision already made (Data Clusters by Writer and Trust).
 - **Write at every seam, not one function.** Here that was four: `generate()`,
   `generateStructured()`, the Converse client, and the batch submit/collect lifecycle
   (batch latency and tokens are only known at collect time). Writing only in the main
@@ -62,7 +62,6 @@ dashboard must come from a retained, queryable store you own.
 - **Best-effort writes.** The gateway's contract was "does not catch errors"; a ledger
   write must not add a new failure path to a call that propagates cleanly. Swallow and log.
 - **One writer module** (a shared insert helper) so the data-contract entry names one file.
-- **Readers named before columns** ([[Every Column Names Its Reader]]): an offline report
   feeding the admin dashboard's enrichment tab — never a live query from the route.
 - Columns reuse the gateway's existing vocabulary (purpose, provider, model, prompt
   version, tokens, latency, ok, error class). Open question: a per-item correlation column
@@ -129,7 +128,6 @@ was a byte-identical eval summary and gate exit code before and after the move.
   tokens yet), so a batch that is never collected still leaves a trace. Collect writes one
   row per result item, with null latency because the batch API reports none. Both carry the
   provider batch id so a report can join them.
-- **No per-item correlation column.** Nothing reads it yet ([[Every Column Names Its Reader]]).
   Add it later with the reader that needs it.
 - **Tokens, not dollars.** No pricing table existed anywhere in the tree, so the report shows
   tokens, call counts, error-class mix and p50/p95 latency per purpose per day.
@@ -139,7 +137,7 @@ was a byte-identical eval summary and gate exit code before and after the move.
 - **The never-throws writer is itself the risk.** A ledger that fails forever (wrong table,
   RLS) would never surface, so tests assert that a warning fires on every failure path.
 - The caller-default defect found in the research was filed as its own issue (#435) rather
-  than folded into the plan. Its fix is written up in [[Caller Default Shadows the Resolver]].
+  than folded into the plan. Its fix is written up in Caller Default Shadows the Resolver.
 
 ## Operator checklists aren't plans
 
@@ -148,13 +146,8 @@ alarm) contained no code. It belonged as a release-checklist line and two env-in
 rows, not a plan doc.
 
 ## See Also
-- [[Caller Default Shadows the Resolver]] — extends (the caller-side fix for the defect above)
 - [[Langfuse Platform]] — alternative-to
 - [[Two AI Cost Economies: Durable Once, Contextual On Demand]] — extends
-- [[Spend Gate Before the Model Call]] — extends
-- [[Every Column Names Its Reader]] — prerequisite-for
-- [[Silence Reads as Clean]] — extends
 - [[One Check Shape for Quality Verdicts]] — extends (trace for debugging, store for the rate)
 - [[Observability and Runtime Patterns]] — extends
-- [[Kiez Project]] — instance-of
 - [[Item Lifecycle Ledger as a New Table]] — extends (a per-item ledger with loud best-effort writes)

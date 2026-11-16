@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import math
-from collections.abc import Callable
 from dataclasses import dataclass, field, replace
+from typing import Callable
 
 
 def estimate(s: str) -> int:
@@ -17,9 +17,7 @@ class Item:
     text: str
     priority: int  # higher survives longer; pinned items are never touched
     pinned: bool = False
-    truncatable: bool = (
-        False  # retrieved and tool text can be cut; instructions and the task cannot
-    )
+    truncatable: bool = False  # retrieved and tool text can be cut; instructions and the task cannot
     turn: int = 0  # history turn index: older turns go first among equals
 
 
@@ -99,11 +97,7 @@ def pack(items: list[Item], budget: Budget) -> Packed:
             working.remove(v)
             d.action, d.after = "dropped", 0
 
-    ordered = [
-        i
-        for layer in ORDER
-        for i in sorted((x for x in working if x.layer == layer), key=lambda x: x.turn)
-    ]
+    ordered = [i for layer in ORDER for i in sorted((x for x in working if x.layer == layer), key=lambda x: x.turn)]
     by_layer: dict[str, int] = {}
     for i in ordered:
         by_layer[i.layer] = by_layer.get(i.layer, 0) + count(i.text)

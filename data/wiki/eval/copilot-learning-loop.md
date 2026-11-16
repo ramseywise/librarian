@@ -2,7 +2,7 @@
 title: Copilot Learning Loop
 tags: [eval, memory, infra, pattern]
 summary: "The operational process for improving agent systems over time — signal capture from real usage, knowledge refinement workflows, and controlled autonomy expansion. Not automatic: requires deliberate instrumentation and tooling."
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/notion/2026-04-09-copilot-why-what-how.md
   - data/raw/notion/2026-04-07-support-knowledge-agent.md
@@ -128,4 +128,3 @@ The learning loop is what makes the 60% target a floor, not a ceiling.
 - [[HITL Annotation Pipeline]]
 - [[Production Hardening Patterns]]
 - [[User Feedback Loops]] — related (deployed-usage signal as the eval source)
-- [[Hedging Belongs in the Gate, Not the Answer]] — related (why correct suggestions were ignored)

@@ -1,5 +1,4 @@
 """Note 01: the research agent with no framework. A text protocol, a regex and a loop."""
-
 import re
 
 from research_lab import Final, Observation, decide, read_source, search
@@ -26,21 +25,12 @@ def text_model(messages: list[dict], behavior: str = "normal") -> str:
     question = next(m["content"] for m in messages if m["role"] == "user")
     observations, pending = [], None
     for m in messages:
-        match = (
-            ACTION_RE.search(m["content"].split("\nPAUSE")[0].split("\n")[-1])
-            if m["role"] == "assistant"
-            else None
-        )
+        match = ACTION_RE.search(m["content"].split("\nPAUSE")[0].split("\n")[-1]) if m["role"] == "assistant" else None
         if match:
             pending = match.groups()
         if m["role"] == "user" and m["content"].startswith("Observation: ") and pending:
-            observations.append(
-                Observation(
-                    pending[0],
-                    {ARG_NAME[pending[0]]: pending[1]},
-                    m["content"].removeprefix("Observation: "),
-                )
-            )
+            observations.append(Observation(pending[0], {ARG_NAME[pending[0]]: pending[1]},
+                                            m["content"].removeprefix("Observation: ")))
     step = decide(question, observations, behavior)
     if isinstance(step, Final):
         return f"Answer: {step.text}"
@@ -71,5 +61,4 @@ def query(question: str, max_turns: int = 6, model=text_model, verbose: bool = T
 
 if __name__ == "__main__":
     from research_lab import QUESTION
-
     query(QUESTION)

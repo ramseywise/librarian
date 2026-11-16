@@ -2,7 +2,7 @@
 title: Human Verdicts as Judge Fixtures
 tags: [eval, pattern]
 summary: "Close the eval loop by exporting human right/wrong verdicts into judge fixtures where the judged value becomes `expected`, the human decision rides in `metadata` the judge never sees, and a `wrong` verdict is as valid a case as a `right` one; score judge-vs-human agreement on a hash-split holdout beside the human retest ceiling, and feed judge/gate disagreements back to humans as a separately tagged sample stream."
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-21-dis358-eval-loop.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-21-dis358-eval-loop.md
@@ -50,7 +50,7 @@ fixture holds `input` (the evidence) and `expected` (the output to grade). The m
 The agreement report scores `judge.isCorrect` against `metadata.human_decision` on a
 **holdout chosen by hashing the content id** (`hash("eval_holdout:" + kind + ":" + id) <
 rate`). This reuses the repo's existing deterministic-split helper; see
-[[Write-Time Deterministic Holdout]]. The report prints its number *beside* the human retest κ, never
+Write-Time Deterministic Holdout. The report prints its number *beside* the human retest κ, never
 re-deriving it. A judge cannot be held to more agreement than two humans reach with each
 other. When the number is big enough to gate on is left as an explicit human call once real
 N exists.
@@ -76,10 +76,8 @@ around the wait. The blocked slices shipped later, once the move landed.
 ## See Also
 - [[Positive-Only Judge Fixtures Measure Recall]] — extends (human `wrong` verdicts supply the negatives)
 - [[Blind Labels Judge No Prompt]] — prerequisite-for (the blind label rows this exports)
-- [[Write-Time Deterministic Holdout]] — instance-of (hash-of-identity split reused for the holdout)
 - [[One Check Shape for Quality Verdicts]] — extends (later refactor: fixtures exported from human overturns)
 - [[UNGATED Metric Convention]] — related (judges stay ungated until agreement is measured)
 - [[HITL Annotation Pipeline]] — instance-of
-- [[Snapshot the Judged Value on the Verdict Row]] — extends (the verdict table these fixtures are exported from)
 - [[Own-Oracle Fixtures and the Blind Relabel Path]] — alternative-to (the same loop for deterministic functions)
 - [[LLM Judge Biases]] — related

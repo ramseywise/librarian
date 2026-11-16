@@ -2,7 +2,7 @@
 title: Prompting Technique Selection
 tags: [prompting, llm, reference]
 summary: Which named prompting technique to reach for by problem shape — zero-shot first, few-shot for non-obvious format, CoT and self-consistency for reasoning, ToT for search, PAL for exact computation, ReAct for fresh information, Reflexion when a checker exists, chaining for separable stages.
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--03-core-techniques.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--README.md
@@ -18,12 +18,12 @@ document the model completes ([[Prompts as Document Completion]]).
 |---|---|---|
 | Task is clear and common | Zero-shot | — |
 | Format, style or labels non-obvious | [[Few-Shot Prompting]] | Longer prompt, anchoring |
-| Multi-step arithmetic, logic, planning | [[Chain of Thought]] | More output tokens |
+| Multi-step arithmetic, logic, planning | Chain of Thought | More output tokens |
 | Answers vary run to run on reasoning tasks | [[Self-Consistency]] | N× calls |
 | Model lacks background facts | Generated knowledge, or retrieval | Extra call |
 | Search with dead ends (puzzles, planning) | [[Tree of Thoughts]] | Many calls + controller |
 | Exact computation | [[Program-Aided Language Models (PAL)]] | Sandbox |
-| Fresh or private information | [[ReAct Pattern]] / tool use | Loop + tools |
+| Fresh or private information | ReAct Pattern / tool use | Loop + tools |
 | Can verify and retry | [[Reflexion]] | Retry budget |
 | Long task with separable stages | [[Prompt Chaining]] | Orchestration code |
 
@@ -66,12 +66,10 @@ zero-shot fails in a way you can name.
 
 ## See Also
 - [[Prompt Engineering]] — related (the discipline this selection guide sits in)
-- [[Chain of Thought]] — extends
 - [[Self-Consistency]] — extends
 - [[Tree of Thoughts]] — extends
 - [[Program-Aided Language Models (PAL)]] — extends
 - [[Reflexion]] — extends
-- [[ReAct Pattern]] — extends
 - [[Four Prompt Criteria]] — prerequisite-for
 - [[Rephrase and Respond]] — related
 - [[Principled Instructions (26 Prompt Principles)]] — related

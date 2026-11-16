@@ -3,12 +3,11 @@
 Default: the stub passed in by the caller, so the lab runs offline with no key.
 Set MODEL=claude-opus-5-5 and run with `uv run --with anthropic` to use a real model.
 """
-
 from __future__ import annotations
 
 import os
-from collections.abc import Callable
 from dataclasses import dataclass
+from typing import Callable
 
 
 @dataclass

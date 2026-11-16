@@ -2,7 +2,7 @@
 title: Stop Sequences and Completion Anatomy
 tags: [prompting, llm, pattern]
 summary: A completion runs preamble → solution → recognizable end → fluffy postscript; push structural boilerplate into the prompt, let reasoning preamble run, kill fluff, and decide up front which recognizable end a server-side stop sequence will cut on.
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--04-controlling-output.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--02-prompt-anatomy.md
@@ -21,7 +21,7 @@ end matters if you stop there. So: **shape the preamble, make the end detectable
 | Preamble type | What to do |
 |---|---|
 | Structural boilerplate (an opening `{`, a heading) | Put it in the **prompt** — cheaper and guarantees the format |
-| Reasoning | Let it run — it is [[Chain of Thought]] and buys correctness |
+| Reasoning | Let it run — it is Chain of Thought and buys correctness |
 | Fluff ("Great question!", disclaimers) | Examples that skip the intro, or "answer directly"; failing that a slot layout `1. [answer] 2. [caveats] 3. [background]` and parse slot 1 — defensively |
 
 The **inception** trick writes the first words of the answer yourself (`The three main

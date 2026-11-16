@@ -2,7 +2,7 @@
 title: Logger Redact Guardrail
 tags: [infra, pattern]
 summary: "A logger-level redact list (pino's `redact.paths`) is a guardrail against a future careless log call, not a fix for a current leak; it has no arbitrary-depth wildcard, so you enumerate the shapes call sites actually use. Test it against the destination that really runs (the dev formatter), spy where the bytes actually go (sonic-boom bypasses process.stdout), and drive the test from every configured path, because a typo in an untested path silently stops redacting."
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-15-dis226-telemetry-auth-hardening.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-15-dis226-telemetry-auth-hardening.md
@@ -51,10 +51,8 @@ framed as a guardrail for future call sites, not a repair, and the plan names it
    Fix: a table-driven test over every configured path.
 
 All three are the same class of failure: the check passes because it isn't looking where
-the bytes go. See [[Scan-Floor Guard Against Silent No-Op Checks]].
+the bytes go. See Scan-Floor Guard Against Silent No-Op Checks.
 
 ## See Also
 - [[PII Masking Approaches]] — instance-of (the cheapest layer: redact at the log sink)
 - [[Log Drain Over Error Tracker at Pre-Scale]] — related (where these logs end up)
-- [[Indistinguishable Rejection on Best-Effort Sinks]] — related (the other half of the same plan)
-- [[Scan-Floor Guard Against Silent No-Op Checks]] — related (tests that cannot see the output pass anyway)

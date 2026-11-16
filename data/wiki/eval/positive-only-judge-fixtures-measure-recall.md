@@ -2,7 +2,7 @@
 title: Positive-Only Judge Fixtures Measure Recall
 tags: [eval, pattern]
 summary: "When a judge harness feeds each fixture's expected text to the model as the candidate and has no ground-truth label, a set of all-good fixtures measures only recall (does the judge accept honest output), never precision. Allow one calibration pass that edits only the prompt, never the fixtures. Watch for a null-on-error contract that hides a provider schema rejection as nJudge 0."
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-03-dis71-resultrationale-judge.md
   - data/raw/claude-docs/akira/docs/plans/2026-09-15-dis274-enrichment-judges.md
@@ -126,7 +126,7 @@ energy, sociality). It applied the lessons above.
   another issue deprecated `social_intensity` in enrichment output, so 0 of 22 sampled
   outputs carried it. The executor noticed while re-verifying vocabulary claims. It stopped
   rather than fixture a judge against a field the model no longer emits, and the judge was
-  dropped. See [[Readiness Is Pinned to a Tree State]].
+  dropped. See Readiness Is Pinned to a Tree State.
 
 ## Smaller decisions
 

@@ -2,7 +2,7 @@
 title: RLS Gates Rows, Not Columns
 tags: [infra, pattern]
 summary: "Row-level security decides which rows a role can read, never which columns, so adding audit columns (who set a flag, their free-text reason) to a table with a public read policy publishes them to anonymous clients — keep the value the reader needs on the public row and move the audit trail to an admin-only side table, written in the same request with a loud failure if the audit write fails."
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-25-dis392-s4-reputation-flag.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-25-dis392-s4-reputation-flag.md
@@ -62,8 +62,4 @@ is a deliberate, documented partial-failure contract, not an oversight.
 ## See Also
 - [[Written-but-Inert RLS Policies]] — related (another way RLS looks right on paper and isn't)
 - [[RLS On, No Policy for Server-Mediated Tables]] — instance-of (the posture the audit table uses)
-- [[Capability Token in a Serialized Row]] — related (correct RLS, leaked fields anyway)
-- [[Every Column Names Its Reader]] — extends (the reader decides which table a column belongs on)
-- [[Kiez Project]] — instance-of
-- [[Tighten a Visibility Gate by Backfilling the Visible State]] — related (tightening a `using (true)` policy without a blackout)
 - [[ACL-Aware Retrieval and Tenant Isolation]] — extends (RLS used for tenant isolation in a shared vector index)

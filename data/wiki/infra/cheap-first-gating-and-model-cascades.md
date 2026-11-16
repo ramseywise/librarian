@@ -2,7 +2,7 @@
 title: Cheap-First Gating and Model Cascades
 tags: [infra, pattern]
 summary: "Send each request to a cheap model and let a gate decide whether it escalates; published savings run from modest to large by task and date, simple baselines often match learned routers, and routers fail on unfamiliar or adversarial queries."
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/web/2026-11-05-model-cascades-routers-and-calibration.md
   - data/raw/web/2026-11-05-jev-independent-evaluations.md
@@ -38,7 +38,7 @@ analogy.
 
 Fixed per-step tiering, as in [[Loop Engineering]], is the same idea with no gate: the step
 decides the model, not the request. Anthropic's agent guidance describes routing as a workflow
-pattern ([[Agentic Workflow Patterns]], December 2024) but gives no measured savings.
+pattern (Agentic Workflow Patterns, December 2024) but gives no measured savings.
 
 ## What the savings look like
 
@@ -102,8 +102,6 @@ Limits: no measurements; tool gateways are left out because the chapter calls th
 - [[Three-Band Confidence Routing]] — prerequisite-for (the score-and-threshold decision layer)
 - [[Drift Seen and Unseen in an Automated Router]] — related (what a frozen router's monitors can see)
 - [[Verification Loops]] — alternative-to (cheap execution with the expensive model at the verification gate)
-- [[Agentic Workflow Patterns]] — related (routing as a workflow shape)
-- [[Context Engineering and Cost Interview Study Guide]] — related (model routing among the cost levers)
 - [[LLM Inference Economics]] — prerequisite-for (where the price gap between models comes from)
 - [[JEV-as-a-Judge Cascade]] — instance-of (a cheap-first cascade for judging preference pairs)
 - [[AutoMix Self-Verification Routing]] — instance-of (self-verified escalation with a learned router)

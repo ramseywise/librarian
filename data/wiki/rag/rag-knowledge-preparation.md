@@ -2,7 +2,7 @@
 title: RAG Knowledge Preparation
 tags: [rag, infra, concept]
 summary: The process of transforming human-readable documentation into machine-retrievable knowledge units — chunking, metadata tagging, rewriting for self-containment, and enforcing consistency.
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-08-huyen-ai-engineering-ch06-rag-agents.md
   - data/raw/papers/2026-11-07-building-ai-agents-llms-rag-kgs-ch06-advanced-rag-techniques-information-retriev.md
@@ -175,7 +175,5 @@ Limits of this section:
 - [[[client] Knowledge Agent]]
 - [[LangGraph CRAG Pipeline]]
 - [[PII Masking Approaches]]
-- [[Data Pipeline Pattern Selection]] — extends (batch ingest as one of four data-arrival patterns)
 - [[Canonical Document IR for Ingest]] — extends (source-blind typed Document schema with provenance threaded from ingest)
-- [[Consequence-Flagged KB Audit]] — extends (per-article four-field audit with financial-consequence flag and corpus defect taxonomy)
 - [[Lucene HNSW and Pyserini Dense Retrieval]] — related

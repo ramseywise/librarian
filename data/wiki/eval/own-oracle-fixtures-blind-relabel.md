@@ -2,7 +2,7 @@
 title: Own-Oracle Fixtures and the Blind Relabel Path
 tags: [eval, pattern]
 summary: "Fixtures whose expected values came from running the function under test can never justify a threshold. The way out is a separate export of real rows with `expected` set to null and the function's actual output in a separate `observed` field, labelled by a human from the written rule, appended to the same fixture file with provenance, measured, and only then gated at the observed rate."
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-22-dis319-gate-enrichment-input-shaping.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-22-dis319-gate-enrichment-input-shaping.md
@@ -72,5 +72,3 @@ shape:
 - [[UNGATED Metric Convention]] — extends (how an UNGATED metric earns its threshold)
 - [[Q0–Q5 Quality Ladder]] — related (prevention: cases authored before the function)
 - [[Human Verdicts as Judge Fixtures]] — alternative-to (the same loop for LLM judges, where the human decision rides in metadata)
-- [[Natural Key Without a Discriminator Collapses Rows]] — instance-of (the edition-collision fixture slice)
-- [[Design Decisions Migrate Into Plans]] — related (the behavioural-cases row that names the own-oracle trap)

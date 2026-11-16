@@ -2,7 +2,7 @@
 title: Polite Crawler Robots Compliance
 tags: [infra, pattern]
 summary: "Making an ingestion crawler honour robots.txt: hand-roll a deliberately minimal parser with its unimplemented boundary written in the docstring, fail open when robots.txt can't be fetched, raise a distinct error that the run log classifies as 'blocked' (we chose not to fetch), not 'failed', and only let Crawl-delay lengthen a source's configured rate limit, never shorten it."
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-06-dis197a-beta-blockers.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-06-dis197a-beta-blockers.md
@@ -71,6 +71,3 @@ mechanism.
 
 ## See Also
 - [[Change the Channel, Not the Count]] — extends (robots is not the constraint; terms are; this is the fetcher-side mechanics)
-- [[Layered Ingestion Failure Posture]] — related (another fail-open choice at a specific grain)
-- [[Unfinished Work Must Fail Closed]] — related (the greppable `[[NEEDS:` token for facts nobody in the repo can supply)
-- [[A Check Must Say Why It Could Not Check]] — related (blocked vs failed is the same "name the reason" move)

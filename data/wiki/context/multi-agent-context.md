@@ -2,7 +2,7 @@
 title: Multi-Agent Context
 tags: [context, context-management, llm, agents, concept]
 summary: Sub-agent isolation is the highest-cost context lever — a sub-agent burns 100k tokens and returns 2k, and the discarding of its window is the feature, not a side effect.
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--10-tools-and-multi-agent.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context--notes--06-multi-agent-context.md
@@ -137,7 +137,7 @@ mostly shows up as agents duplicating work, echoing each other or drifting off-t
 Every hand-off is a prompt someone else will read. Give messages a schema (task,
 constraints, evidence, return shape), keep them self-contained, and log them. Agents that
 share no context make conflicting decisions — **pass the decisions, not just the task**
-([[Shared Context Brief]]).
+(Shared Context Brief).
 
 ## A worked context engine from a 2025 book
 
@@ -163,7 +163,6 @@ Limits: one small Python set, no repeats or variance; the extraction notes that 
 
 ## See Also
 - [[Memory as Context]] <!-- auto-linked -->
-- [[Shared Context Brief]] <!-- auto-linked -->
 - [[Why Context Is Finite]] <!-- auto-linked -->
 - [[Context Engineering]] — related (part of)
 - [[Tool Design as Context Engineering]] — related

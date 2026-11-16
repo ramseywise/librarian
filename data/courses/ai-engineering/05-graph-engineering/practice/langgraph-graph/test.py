@@ -2,9 +2,10 @@
 # requires-python = ">=3.10"
 # dependencies = ["langgraph>=1.0,<2"]
 # ///
-from graph import build_graph
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.types import Command
+
+from graph import build_graph
 from model import Completion
 from stub import stub
 
@@ -23,9 +24,7 @@ g, c, _, out = run("I was charged twice, please refund it.", "a")
 s = g.get_state(c)
 assert {"search:docs", "search:tickets"} <= set(s.values["trail"])
 assert s.values["trail"].count("gather") == 1, "the join runs once"
-assert {d["id"] for d in s.values["evidence"]} == {"doc-refunds", "tkt-double-charge"}, (
-    "the reducer kept both"
-)
+assert {d["id"] for d in s.values["evidence"]} == {"doc-refunds", "tkt-double-charge"}, "the reducer kept both"
 
 # Interrupt: paused before any side effect
 assert s.next == ("approve",) and out == [], "nothing sent while waiting for a human"
@@ -48,9 +47,7 @@ v = g4.get_state(c4).values
 assert v["trail"].count("draft") == 2 and v["status"] == "sent"
 
 # The cycle is bounded: a maker that never cites stops at MAX_DRAFTS
-never = lambda p, system="", max_tokens=0: Completion(
-    "how_to" if system.startswith("CLASSIFY") else "No citation.", 1, 1
-)
+never = lambda p, system="", max_tokens=0: Completion("how_to" if system.startswith("CLASSIFY") else "No citation.", 1, 1)
 g5, c5, _, _ = run("How do I add a seat?", "e", never)
 v = g5.get_state(c5).values
 assert v["trail"].count("draft") == 2 and v["status"] == "escalated"

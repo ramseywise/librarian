@@ -2,7 +2,7 @@
 title: RAG Evaluation
 tags: [rag, eval, concept]
 summary: Three-tier evaluation architecture for RAG pipelines — golden datasets, LLM-as-judge, failure clustering, ragas vs deepeval, and retrieval lift measurement.
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
   - data/raw/claude-docs/playground/docs/archived/rag-agent-template-research.md
@@ -276,7 +276,6 @@ This is especially important for edge cases — judge prompts optimized on avera
 - [[RAG Reranking]]
 - [[LangGraph CRAG Pipeline]]
 - [[Librarian RAG Architecture]]
-- [[Listen-Wiseer Project]]
 - [[HITL Annotation Pipeline]]
 - [[RAG Architecture Selection]] — prerequisite-for (component gates diagnose which failure an architecture change should target)
 - [[Evaluating Context]] — extends (metrics per context lever, ablation and length/position sweeps beyond retrieval)

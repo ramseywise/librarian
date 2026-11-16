@@ -2,7 +2,7 @@
 title: Eval Contamination Defenses
 tags: [eval, llm, pattern]
 summary: "If eval rows reach a model's training data, prompts or index, the score measures memory — public benchmarks fight it with unique multi-source answers, parameterized task templates refilled every run, temporal freshness and canary GUIDs, and each tactic transfers to a private suite."
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--03-eval-datasets.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--12-failure-modes.md
@@ -104,7 +104,6 @@ verbatim; scores drop on paraphrased versions.
 - [[Min-K% Prob Pretraining-Data Detection]] — related (membership test from token probabilities)
 - [[FreshQA]] — related (temporal freshness in a question set)
 - [[NatureBench]] — related (public task data, exact-score feedback and a post-hoc shortcut judge)
-- [[Hashed Fingerprint Contamination Gate]] — instance-of (a mechanical leak check)
 - [[Golden Set Mechanics]] — extends (curation and versioning of the rows themselves)
 - [[Eval Suite Maintenance]] — related (overfitting and saturation)
 - [[Simulated User Evaluation]] — related (τ²-bench fresh parameters)

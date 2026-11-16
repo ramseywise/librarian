@@ -11,7 +11,6 @@ It takes about two and a half minutes on an M4 Pro with nothing else running, an
 Everything runs in one process on one laptop, with no server and no network. Read the ratios, not the absolute numbers:
 a datacentre GPU changes them, and the point of the lab is that you can take the same measurements on your own hardware.
 """
-
 # %%
 import io
 import random
@@ -30,17 +29,7 @@ from sentence_transformers import SentenceTransformer
 from transformers import AutoModel, AutoTokenizer
 
 sys.path.insert(0, str(Path(__file__).parents[2] / "08-multimodal-engineering" / "practice"))
-from vlm_finetune import (
-    DEVICE,
-    TEXT_ONLY,
-    add_lora,
-    chat,
-    clear,
-    driver_gb,
-    load_model,
-    load_processor,
-)
-from vlm_finetune import MODEL as VLM
+from vlm_finetune import DEVICE, MODEL as VLM, PROMPT, TEXT_ONLY, add_lora, chat, clear, driver_gb, load_model, load_processor
 from vlm_invoices import LAYOUTS, make
 
 ENCODER = "sentence-transformers/all-MiniLM-L6-v2"
@@ -69,47 +58,21 @@ def timed(fn, repeats=3):
 
 # %% Encoder: generated catalogue text, most of it short and a few long, like real product data
 r = random.Random(0)
-WORDS = [
-    "bolt",
-    "flange",
-    "steel",
-    "zinc",
-    "bearing",
-    "seal",
-    "housing",
-    "valve",
-    "stainless",
-    "thread",
-    "metric",
-    "hex",
-    "nut",
-    "gasket",
-    "washer",
-    "bore",
-    "pump",
-    "shaft",
-]
+WORDS = "bolt flange steel zinc bearing seal housing valve stainless thread metric hex nut gasket washer bore pump shaft".split()
 
 
 def text():
-    return " ".join(
-        r.choice(WORDS) for _ in range(min(250, max(3, int(r.lognormvariate(2.5, 1.0)))))
-    )
+    return " ".join(r.choice(WORDS) for _ in range(min(250, max(3, int(r.lognormvariate(2.5, 1.0))))))
 
 
 corpus = [text() for _ in range(3000)]
-tok, encoder = (
-    AutoTokenizer.from_pretrained(ENCODER),
-    AutoModel.from_pretrained(ENCODER).to(DEVICE).eval(),
-)
+tok, encoder = AutoTokenizer.from_pretrained(ENCODER), AutoModel.from_pretrained(ENCODER).to(DEVICE).eval()
 lengths = np.array([len(tok(t, truncation=True, max_length=256).input_ids) for t in corpus])
-print(
-    f"\n{len(corpus)} texts, tokens: median {np.median(lengths):.0f}, p90 {np.percentile(lengths, 90):.0f}, max {lengths.max()}"
-)
+print(f"\n{len(corpus)} texts, tokens: median {np.median(lengths):.0f}, p90 {np.percentile(lengths, 90):.0f}, max {lengths.max()}")
 
 
 def by_count(order, size):
-    return [order[i : i + size] for i in range(0, len(order), size)]
+    return [order[i:i + size] for i in range(0, len(order), size)]
 
 
 def by_budget(order, budget):
@@ -131,13 +94,7 @@ def embed(batches, model=encoder, dtype=None):
     vectors, padded = np.zeros((len(corpus), 384), dtype=np.float32), 0
     tick = time.perf_counter()
     for batch in batches:
-        b = tok(
-            [corpus[i] for i in batch],
-            padding=True,
-            truncation=True,
-            max_length=256,
-            return_tensors="pt",
-        ).to(DEVICE)
+        b = tok([corpus[i] for i in batch], padding=True, truncation=True, max_length=256, return_tensors="pt").to(DEVICE)
         padded += b["input_ids"].numel()
         with torch.autocast(DEVICE, dtype=dtype, enabled=dtype is not None):
             out = model(**b).last_hidden_state
@@ -151,14 +108,7 @@ def embed(batches, model=encoder, dtype=None):
 def top10_overlap(a, b, queries=300):
     """How much of fp32's top ten a cheaper encoder keeps, on the same corpus."""
     at, bt = a[:queries] @ a.T, b[:queries] @ b.T
-    return float(
-        np.mean(
-            [
-                len(set(np.argsort(-x)[1:11]) & set(np.argsort(-y)[1:11])) / 10
-                for x, y in zip(at, bt)
-            ]
-        )
-    )
+    return float(np.mean([len(set(np.argsort(-x)[1:11]) & set(np.argsort(-y)[1:11])) / 10 for x, y in zip(at, bt)]))
 
 
 def best(batches, passes=3, **kw):
@@ -171,41 +121,21 @@ arrival = list(range(len(corpus)))
 longest_first = [int(i) for i in np.argsort(-lengths)]
 embed(by_count(arrival, 32))  # warm-up, not reported
 rows, reference = [], None
-for name, batches in (
-    ("32 per batch, arrival order", by_count(arrival, 32)),
-    ("32 per batch, sorted by length", by_count(longest_first, 32)),
-    ("token budget 2048, arrival order", by_budget(arrival, 2048)),
-    ("token budget 2048, sorted by length", by_budget(longest_first, 2048)),
-):
+for name, batches in (("32 per batch, arrival order", by_count(arrival, 32)),
+                      ("32 per batch, sorted by length", by_count(longest_first, 32)),
+                      ("token budget 2048, arrival order", by_budget(arrival, 2048)),
+                      ("token budget 2048, sorted by length", by_budget(longest_first, 2048))):
     vectors, seconds, padded = best(batches)
     reference = vectors if reference is None else reference
-    rows.append(
-        dict(
-            batching=name,
-            batches=len(batches),
-            texts_per_s=len(corpus) / seconds,
-            padded_tokens=padded,
-            padding_share=1 - lengths.sum() / padded,
-        )
-    )
+    rows.append(dict(batching=name, batches=len(batches), texts_per_s=len(corpus) / seconds, padded_tokens=padded, padding_share=1 - lengths.sum() / padded))
 print("\n--- batching, same encoder and texts, on the GPU")
 print(pd.DataFrame(rows).round(3).to_string(index=False))
 
 rows = []
 sorted_batches = by_count(longest_first, 32)
-for name, dtype in (
-    ("fp32", None),
-    ("bf16 autocast", torch.bfloat16),
-    ("fp16 autocast", torch.float16),
-):
+for name, dtype in (("fp32", None), ("bf16 autocast", torch.bfloat16), ("fp16 autocast", torch.float16)):
     vectors, seconds, _ = best(sorted_batches, dtype=dtype)
-    rows.append(
-        dict(
-            precision=name,
-            texts_per_s=len(corpus) / seconds,
-            top10_kept_of_fp32=top10_overlap(reference, vectors),
-        )
-    )
+    rows.append(dict(precision=name, texts_per_s=len(corpus) / seconds, top10_kept_of_fp32=top10_overlap(reference, vectors)))
 print("\n--- precision on the GPU, sorted batches of 32")
 print(pd.DataFrame(rows).round(3).to_string(index=False))
 del encoder
@@ -217,9 +147,7 @@ base = None
 
 
 def onnx_encoder(file_name):
-    session = ort.InferenceSession(
-        hf_hub_download(ENCODER, file_name), providers=["CPUExecutionProvider"]
-    )
+    session = ort.InferenceSession(hf_hub_download(ENCODER, file_name), providers=["CPUExecutionProvider"])
     needed = {i.name for i in session.get_inputs()}
 
     def run(texts):
@@ -228,49 +156,30 @@ def onnx_encoder(file_name):
         mask = batch["attention_mask"][..., None]
         pooled = (hidden * mask).sum(1) / mask.sum(1)
         return pooled / np.linalg.norm(pooled, axis=1, keepdims=True)
-
     return run
 
 
 st = SentenceTransformer(ENCODER, device="cpu")
-for name, run in (
-    (
-        "PyTorch fp32",
-        lambda texts: st.encode(
-            texts, batch_size=len(texts), normalize_embeddings=True, show_progress_bar=False
-        ),
-    ),
-    ("ONNX fp32", onnx_encoder("onnx/model.onnx")),
-    ("ONNX int8", onnx_encoder("onnx/model_qint8_arm64.onnx")),
-):
+for name, run in (("PyTorch fp32", lambda texts: st.encode(texts, batch_size=len(texts), normalize_embeddings=True, show_progress_bar=False)),
+                  ("ONNX fp32", onnx_encoder("onnx/model.onnx")),
+                  ("ONNX int8", onnx_encoder("onnx/model_qint8_arm64.onnx"))):
     run(sample[:32])
     seconds, v = [], None
     for _ in range(3):
         tick = time.perf_counter()
-        v = np.concatenate([run(sample[i : i + 32]) for i in range(0, len(sample), 32)])
+        v = np.concatenate([run(sample[i:i + 32]) for i in range(0, len(sample), 32)])
         seconds.append(time.perf_counter() - tick)
     seconds = min(seconds)
     base = v if base is None else base
-    rows.append(
-        dict(
-            backend=name,
-            texts_per_s=len(sample) / seconds,
-            top10_kept_of_fp32=top10_overlap(base, v, 100),
-        )
-    )
+    rows.append(dict(backend=name, texts_per_s=len(sample) / seconds, top10_kept_of_fp32=top10_overlap(base, v, 100)))
 del st
 print("\n--- on the CPU, 600 texts")
 print(pd.DataFrame(rows).round(3).to_string(index=False))
 
 # %% Dynamic batching: how long to wait for a batch. Service times are measured here; only the queue is simulated.
 encoder = AutoModel.from_pretrained(ENCODER).to(DEVICE).eval()
-one = {
-    n: timed(lambda n=n: embed([list(range(n))], encoder), repeats=5) for n in (1, 4, 16, 32, 64)
-}
-print(
-    "\n--- measured seconds for one batch of the first n texts: "
-    + ", ".join(f"{n}: {s * 1000:.0f} ms" for n, s in one.items())
-)
+one = {n: timed(lambda n=n: embed([list(range(n))], encoder), repeats=5) for n in (1, 4, 16, 32, 64)}
+print("\n--- measured seconds for one batch of the first n texts: " + ", ".join(f"{n}: {s * 1000:.0f} ms" for n, s in one.items()))
 del encoder
 clear()
 sizes = np.array(list(one))
@@ -290,30 +199,17 @@ def queue(rate, wait, cap=64, n=20_000, seed=0):
         done[i:j] = finish
         free, i = finish, j
     late = done - arrive
-    return (
-        float(np.percentile(late, 50) * 1000),
-        float(np.percentile(late, 99) * 1000),
-        n / (done[-1] - arrive[0]),
-    )
+    return float(np.percentile(late, 50) * 1000), float(np.percentile(late, 99) * 1000), n / (done[-1] - arrive[0])
 
 
 capacity = 64 / service(64)
 rows = []
-for share in (0.1, 0.5, 0.9):
-    for wait in (0, 0.002, 0.010, 0.050):
+for share in (.1, .5, .9):
+    for wait in (0, .002, .010, .050):
         p50, p99, _ = queue(capacity * share, wait)
-        rows.append(
-            dict(load=f"{share:.0%} of capacity", wait_ms=wait * 1000, p50_ms=p50, p99_ms=p99)
-        )
-print(
-    f"\n--- a simulated queue over those service times; capacity {capacity:.0f} requests/s at batch 64"
-)
-print(
-    pd.DataFrame(rows)
-    .pivot(index="load", columns="wait_ms", values=["p50_ms", "p99_ms"])
-    .round(1)
-    .to_string()
-)
+        rows.append(dict(load=f"{share:.0%} of capacity", wait_ms=wait * 1000, p50_ms=p50, p99_ms=p99))
+print(f"\n--- a simulated queue over those service times; capacity {capacity:.0f} requests/s at batch 64")
+print(pd.DataFrame(rows).pivot(index="load", columns="wait_ms", values=["p50_ms", "p99_ms"]).round(1).to_string())
 
 # %% VLM: where one page's time goes
 pages = make(16, 0, LAYOUTS[:3])
@@ -322,9 +218,7 @@ for image, _ in pages:
     buffer = io.BytesIO()
     image.save(buffer, format="PNG")
     png.append(buffer.getvalue())
-print(
-    f"\nPNG pages {np.mean([len(b) for b in png]) / 1e6:.2f} MB on average, {pages[0][0].size[0]}x{pages[0][0].size[1]} px"
-)
+print(f"\nPNG pages {np.mean([len(b) for b in png]) / 1e6:.2f} MB on average, {pages[0][0].size[0]}x{pages[0][0].size[1]} px")
 model = load_model().eval()
 rows = []
 for edge in (512, 1024, 2048):
@@ -334,34 +228,12 @@ for edge in (512, 1024, 2048):
     decode = timed(lambda: Image.open(io.BytesIO(png[0])).convert("RGB").load(), 5)
     prepare = timed(lambda: proc(text=prompt, images=[[image]], return_tensors="pt"), 5)
     b = proc(text=prompt, images=[[image]], return_tensors="pt")
-    b = {
-        k: v.to(DEVICE, dtype=torch.bfloat16) if k == "pixel_values" else v.to(DEVICE)
-        for k, v in b.items()
-    }
+    b = {k: v.to(DEVICE, dtype=torch.bfloat16) if k == "pixel_values" else v.to(DEVICE) for k, v in b.items()}
     with torch.inference_mode():
-        encode = timed(
-            lambda: model.model.get_image_features(
-                pixel_values=b["pixel_values"], pixel_attention_mask=b.get("pixel_attention_mask")
-            ),
-            5,
-        )
-        whole = timed(
-            lambda: model.generate(**b, min_new_tokens=50, max_new_tokens=50, do_sample=False), 3
-        )
-    rows.append(
-        dict(
-            edge=edge,
-            tiles=b["pixel_values"].shape[1],
-            prompt_tokens=b["input_ids"].shape[1],
-            decode_ms=decode * 1000,
-            prepare_ms=prepare * 1000,
-            encode_ms=encode * 1000,
-            generate_rest_ms=(whole - encode) * 1000,
-            whole_ms=(whole + decode + prepare) * 1000,
-            cpu_share=(decode + prepare) / (whole + decode + prepare),
-            driver_gb=driver_gb(),
-        )
-    )
+        encode = timed(lambda: model.model.get_image_features(pixel_values=b["pixel_values"], pixel_attention_mask=b.get("pixel_attention_mask")), 5)
+        whole = timed(lambda: model.generate(**b, min_new_tokens=50, max_new_tokens=50, do_sample=False), 3)
+    rows.append(dict(edge=edge, tiles=b["pixel_values"].shape[1], prompt_tokens=b["input_ids"].shape[1], decode_ms=decode * 1000, prepare_ms=prepare * 1000, encode_ms=encode * 1000,
+                     generate_rest_ms=(whole - encode) * 1000, whole_ms=(whole + decode + prepare) * 1000, cpu_share=(decode + prepare) / (whole + decode + prepare), driver_gb=driver_gb()))
 print("\n--- one page, 50 tokens out, GPU encoder and decoder, CPU decode and prepare")
 print(pd.DataFrame(rows).round(3).to_string(index=False))
 
@@ -372,15 +244,9 @@ for edge in (512, 1024, 2048):
     proc = load_processor(edge)
     prompt = proc.apply_chat_template(chat(), add_generation_prompt=True, tokenize=False)
     for threads in (1, 2, 4, 8):
-        work = png * 3
-
+        work = (png * 3)
         def prepare_one(b):
-            return proc(
-                text=prompt,
-                images=[[Image.open(io.BytesIO(b)).convert("RGB")]],
-                return_tensors="pt",
-            )
-
+            return proc(text=prompt, images=[[Image.open(io.BytesIO(b)).convert("RGB")]], return_tensors="pt")
         seconds = []
         for _ in range(3):
             tick = time.perf_counter()
@@ -389,12 +255,7 @@ for edge in (512, 1024, 2048):
             seconds.append(time.perf_counter() - tick)
         rows.append(dict(edge=edge, threads=threads, pages_per_s=len(work) / min(seconds)))
 print("\n--- CPU decode and prepare, pages per second by thread count")
-print(
-    pd.DataFrame(rows)
-    .pivot(index="edge", columns="threads", values="pages_per_s")
-    .round(1)
-    .to_string()
-)
+print(pd.DataFrame(rows).pivot(index="edge", columns="threads", values="pages_per_s").round(1).to_string())
 
 # %% Batching a VLM, and asking a second question of the same page
 proc = load_processor(512)
@@ -402,107 +263,45 @@ proc.tokenizer.padding_side = "left"
 prompt = proc.apply_chat_template(chat(), add_generation_prompt=True, tokenize=False)
 rows = []
 for size in (1, 2, 4, 8):
-    b = proc(
-        text=[prompt] * size,
-        images=[[images[i]] for i in range(size)],
-        return_tensors="pt",
-        padding=True,
-    )
-    b = {
-        k: v.to(DEVICE, dtype=torch.bfloat16) if k == "pixel_values" else v.to(DEVICE)
-        for k, v in b.items()
-    }
+    b = proc(text=[prompt] * size, images=[[images[i]] for i in range(size)], return_tensors="pt", padding=True)
+    b = {k: v.to(DEVICE, dtype=torch.bfloat16) if k == "pixel_values" else v.to(DEVICE) for k, v in b.items()}
     with torch.inference_mode():
-        seconds = timed(
-            lambda: model.generate(**b, min_new_tokens=50, max_new_tokens=50, do_sample=False), 3
-        )
-    rows.append(
-        dict(
-            pages_in_batch=size, seconds=seconds, pages_per_s=size / seconds, driver_gb=driver_gb()
-        )
-    )
+        seconds = timed(lambda: model.generate(**b, min_new_tokens=50, max_new_tokens=50, do_sample=False), 3)
+    rows.append(dict(pages_in_batch=size, seconds=seconds, pages_per_s=size / seconds, driver_gb=driver_gb()))
 print("\n--- batched generation, one 512 px tile, 50 tokens out")
 print(pd.DataFrame(rows).round(3).to_string(index=False))
 
 b = proc(text=prompt, images=[[images[0]]], return_tensors="pt")
-b = {
-    k: v.to(DEVICE, dtype=torch.bfloat16) if k == "pixel_values" else v.to(DEVICE)
-    for k, v in b.items()
-}
+b = {k: v.to(DEVICE, dtype=torch.bfloat16) if k == "pixel_values" else v.to(DEVICE) for k, v in b.items()}
 with torch.inference_mode():
-    features = dict(
-        image=model.model.get_image_features(
-            pixel_values=b["pixel_values"], pixel_attention_mask=b.get("pixel_attention_mask")
-        )
-    )  # a bare list here is ignored, with no error, and the model reads no image
+    features = dict(image=model.model.get_image_features(pixel_values=b["pixel_values"], pixel_attention_mask=b.get("pixel_attention_mask")))  # a bare list here is ignored, with no error, and the model reads no image
     rest = {k: v for k, v in b.items() if k not in ("pixel_values", "pixel_attention_mask")}
     vision_calls, text_lengths = [], []
-    hooks = [
-        model.model.vision_model.register_forward_pre_hook(lambda *_: vision_calls.append(1)),
-        model.model.text_model.register_forward_pre_hook(
-            lambda _, __, kw: text_lengths.append(kw["inputs_embeds"].shape[1]), with_kwargs=True
-        ),
-    ]
+    hooks = [model.model.vision_model.register_forward_pre_hook(lambda *_: vision_calls.append(1)),
+             model.model.text_model.register_forward_pre_hook(lambda _, __, kw: text_lengths.append(kw["inputs_embeds"].shape[1]), with_kwargs=True)]
     model.generate(**b, min_new_tokens=50, max_new_tokens=50, do_sample=False)
     [hook.remove() for hook in hooks]
-    print(
-        f"\n--- one reply of 50 tokens: the vision tower ran {len(vision_calls)} time, the language model {len(text_lengths)} times, on {text_lengths[:4]}... tokens"
-    )
-    fresh = timed(
-        lambda: model.generate(**b, min_new_tokens=50, max_new_tokens=50, do_sample=False), 5
-    )
-    cached = timed(
-        lambda: model.generate(
-            **rest,
-            mm_encoder_outputs=features,
-            min_new_tokens=50,
-            max_new_tokens=50,
-            do_sample=False,
-        ),
-        5,
-    )
-    same = (
-        model.generate(**b, max_new_tokens=50, do_sample=False).tolist()
-        == model.generate(
-            **rest, mm_encoder_outputs=features, max_new_tokens=50, do_sample=False
-        ).tolist()
-    )
-print(
-    f"\n--- the same page again: {fresh * 1000:.0f} ms encoding it fresh, {cached * 1000:.0f} ms from cached image features, same reply: {same}"
-)
+    print(f"\n--- one reply of 50 tokens: the vision tower ran {len(vision_calls)} time, the language model {len(text_lengths)} times, on {text_lengths[:4]}... tokens")
+    fresh = timed(lambda: model.generate(**b, min_new_tokens=50, max_new_tokens=50, do_sample=False), 5)
+    cached = timed(lambda: model.generate(**rest, mm_encoder_outputs=features, min_new_tokens=50, max_new_tokens=50, do_sample=False), 5)
+    same = model.generate(**b, max_new_tokens=50, do_sample=False).tolist() == model.generate(**rest, mm_encoder_outputs=features, max_new_tokens=50, do_sample=False).tolist()
+print(f"\n--- the same page again: {fresh * 1000:.0f} ms encoding it fresh, {cached * 1000:.0f} ms from cached image features, same reply: {same}")
 del model
 clear()
 
 # %% An adapter at serving time. Untrained weights: this measures speed only, and an r=8 adapter costs the same trained or not
 base = load_model().eval()
 b = proc(text=prompt, images=[[images[0]]], return_tensors="pt")
-b = {
-    k: v.to(DEVICE, dtype=torch.bfloat16) if k == "pixel_values" else v.to(DEVICE)
-    for k, v in b.items()
-}
+b = {k: v.to(DEVICE, dtype=torch.bfloat16) if k == "pixel_values" else v.to(DEVICE) for k, v in b.items()}
 with torch.inference_mode():
-    plain = timed(
-        lambda: base.generate(**b, min_new_tokens=50, max_new_tokens=50, do_sample=False), 5
-    )
+    plain = timed(lambda: base.generate(**b, min_new_tokens=50, max_new_tokens=50, do_sample=False), 5)
 wrapped = add_lora(base, TEXT_ONLY).eval()
 wrapped.config.use_cache = True
 wrapped.base_model.model.config.use_cache = True
 with torch.inference_mode():
-    attached = timed(
-        lambda: wrapped.generate(
-            **b, min_new_tokens=50, max_new_tokens=50, do_sample=False, use_cache=True
-        ),
-        5,
-    )
+    attached = timed(lambda: wrapped.generate(**b, min_new_tokens=50, max_new_tokens=50, do_sample=False, use_cache=True), 5)
 merged = wrapped.merge_and_unload().eval()
 with torch.inference_mode():
-    folded = timed(
-        lambda: merged.generate(
-            **b, min_new_tokens=50, max_new_tokens=50, do_sample=False, use_cache=True
-        ),
-        5,
-    )
-print(
-    f"\n--- one page, 50 tokens: base {plain * 1000:.0f} ms, adapter attached {attached * 1000:.0f} ms, adapter merged {folded * 1000:.0f} ms"
-)
+    folded = timed(lambda: merged.generate(**b, min_new_tokens=50, max_new_tokens=50, do_sample=False, use_cache=True), 5)
+print(f"\n--- one page, 50 tokens: base {plain * 1000:.0f} ms, adapter attached {attached * 1000:.0f} ms, adapter merged {folded * 1000:.0f} ms")
 print(f"\nall done, {time.time() - started:.0f}s")

@@ -2,7 +2,7 @@
 title: Typed-Graph Retrieval Ablation
 tags: [rag, eval, decision]
 summary: Pre-registered three-arm ablation of one-hop typed-graph expansion — null result at 284 pages; semantic retrieval is already at recall ceiling, so expansion stays off by default.
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - evals/golden_multihop.json
   - evals/baselines/live-lex-2026-08-06T07-47-22Z.json
@@ -100,7 +100,7 @@ ran:
   untyped graph. In fact 735 canonical typed edges already existed across 202 pages, and
   one-hop expansion was already wired. The question changed from "should edges be typed?"
   to "does the existing typed layer measurably help?" See
-  [[Verify the Issue's Premise Before Planning]].
+  Verify the Issue's Premise Before Planning.
 - **Expansion was invisible to the eval (F3).** `search_wiki(expand=True)` appended the
   expanded pages as markdown prose after the ranked results. They never entered the
   ranked rows, and the eval's live mode called the row function directly. Under any flag
@@ -115,7 +115,7 @@ ran:
   Test traffic was diverted before any measurement.
 
 Two side findings: 481 annotations with invented types were silently dropped by the
-parser ([[Closed-Vocabulary Parser Silently Drops Invented Types]]). And on storage (F6),
+parser (Closed-Vocabulary Parser Silently Drops Invented Types). And on storage (F6),
 inline `## See Also` annotations remain the authoring source of truth. The index should
 build an `edges(source, target, type)` table from them at build time, not move types into
 frontmatter. The literature put the burden of proof on the graph (F8: BEIR, Rosa et al.,
@@ -124,9 +124,6 @@ KG extraction, and costs far more to build). That is why a null result was the e
 outcome rather than a disappointment.
 
 ## See Also
-- [[Wiki Graph Engineering — Edge Quality Over Edge Count]] — extends
 - [[RAG Evaluation]] — instance-of
 - [[Eval-Driven Development (EDD)]] — instance-of
-- [[Embeddings That Only Rerank Cannot Recall]] — extends (why the lexical arm sets the ceiling)
-- [[Closed-Vocabulary Parser Silently Drops Invented Types]] — extends (the 481 dropped annotations found in the census)
 - [[Compiled-Prose KB vs Graph-Native Store]] — extends

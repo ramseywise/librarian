@@ -2,7 +2,7 @@
 title: ChemCrow Chemistry Tool Agent
 tags: [harness, agents, tools, concept]
 summary: "ChemCrow wraps GPT-4 in a ReAct loop with 18 chemistry, search, safety and reaction tools; the authors report four robot-executed syntheses and expert preference over tool-less GPT-4 on 14 tasks, while a GPT-4 judge ranked the two the other way round (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-07-bran-2023-chemcrow.md
 ---
@@ -29,7 +29,6 @@ All results are self-reported by the authors.
 - Numeric expert scores and the 95% intervals are in figures, not text.
 
 ## See Also
-- [[ReAct Pattern]] — prerequisite-for
 - [[Tool Definitions as Prompts]] — related
 - [[LLM-as-Judge Evaluation]] — related (judge and experts disagreed here)
 - [[Execution Boundaries and Guardrails]] — related (safety tools that halt execution)

@@ -10,29 +10,20 @@ Run from this folder:
 Uses the credit lab's data and helpers (internet needed once, if credit-default-lab/data is empty).
 Writes one figure to ../../sources/images/. Every seed is stated where it is used.
 """
-
 # %% Setup
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent / "credit-default-lab"))
-import credit_default_lab as lab
 import numpy as np
 import pandas as pd
+import credit_default_lab as lab
 from sklearn.dummy import DummyClassifier
 from sklearn.linear_model import PoissonRegressor
 from sklearn.metrics import (
-    accuracy_score,
-    average_precision_score,
-    balanced_accuracy_score,
-    brier_score_loss,
-    d2_tweedie_score,
-    matthews_corrcoef,
-    mean_absolute_error,
-    mean_pinball_loss,
-    mean_poisson_deviance,
-    ndcg_score,
-    roc_auc_score,
+    accuracy_score, average_precision_score, balanced_accuracy_score, brier_score_loss,
+    d2_tweedie_score, matthews_corrcoef, mean_absolute_error, mean_pinball_loss,
+    mean_poisson_deviance, ndcg_score, roc_auc_score,
 )
 from sklearn.model_selection import train_test_split
 
@@ -67,9 +58,7 @@ def losses_table(seed=0, n=100_000):
 print("--- one target, four forecasts (lognormal, n=100,000, seed 0) ---")
 print(losses_table().round(3))
 _y = np.random.default_rng(0).lognormal(mean=0.0, sigma=1.0, size=100_000)
-print(
-    f"share of outcomes above the MAPE forecast: {(_y > losses_table().loc['best for MAPE', 'forecast']).mean():.3f}"
-)
+print(f"share of outcomes above the MAPE forecast: {(_y > losses_table().loc['best for MAPE', 'forecast']).mean():.3f}")
 
 
 # %% 2. Several models on the same rare-class data
@@ -98,10 +87,7 @@ def scored(raw, seed=0):
         elif name == "logistic":
             m = lab.make_pipeline(None, "logistic", {"C": 1.0}, False, seed=seed)
         m.fit(xtr, ytr)
-        out[name] = (
-            m.predict_proba(lab.features(va))[:, 1],
-            m.predict_proba(lab.features(te))[:, 1],
-        )
+        out[name] = (m.predict_proba(lab.features(va))[:, 1], m.predict_proba(lab.features(te))[:, 1])
     return out, va[lab.TARGET].to_numpy(), te[lab.TARGET].to_numpy()
 
 
@@ -146,20 +132,9 @@ def sweep(y, p, grid):
     out = []
     for t in grid:
         d = (p >= t).astype(int)
-        out.append(
-            (
-                t,
-                accuracy_score(y, d),
-                balanced_accuracy_score(y, d),
-                matthews_corrcoef(y, d),
-                lab.expected_cost(y, p, t),
-                lab.expected_cost(y, p, t, fn=20),
-                d.mean(),
-            )
-        )
-    return pd.DataFrame(
-        out, columns=["t", "accuracy", "balanced", "MCC", "cost 5:1", "cost 20:1", "declined"]
-    )
+        out.append((t, accuracy_score(y, d), balanced_accuracy_score(y, d), matthews_corrcoef(y, d),
+                    lab.expected_cost(y, p, t), lab.expected_cost(y, p, t, fn=20), d.mean()))
+    return pd.DataFrame(out, columns=["t", "accuracy", "balanced", "MCC", "cost 5:1", "cost 20:1", "declined"])
 
 
 pva, pte = models["boosted"]
@@ -172,17 +147,11 @@ picks = {
     "cost 5:1, tuned": sv["cost 5:1"].idxmin(),
     "cost 20:1, tuned": sv["cost 20:1"].idxmin(),
 }
-table = pd.DataFrame(
-    {k: st.loc[i, ["t", "declined", "cost 5:1", "cost 20:1"]] for k, i in picks.items()}
-).T
-print(
-    "\n--- boosted model: threshold chosen on validation by each metric, scored on test (seed 0) ---"
-)
+table = pd.DataFrame({k: st.loc[i, ["t", "declined", "cost 5:1", "cost 20:1"]] for k, i in picks.items()}).T
+print("\n--- boosted model: threshold chosen on validation by each metric, scored on test (seed 0) ---")
 print(table.round(3))
-print(
-    f"approve everyone costs {lab.expected_cost(yte, np.zeros(len(yte)), 0.5):.1f} at 5:1, "
-    f"{lab.expected_cost(yte, np.zeros(len(yte)), 0.5, fn=20):.1f} at 20:1"
-)
+print(f"approve everyone costs {lab.expected_cost(yte, np.zeros(len(yte)), 0.5):.1f} at 5:1, "
+      f"{lab.expected_cost(yte, np.zeros(len(yte)), 0.5, fn=20):.1f} at 20:1")
 print(f"N/P on this test set is {(yte == 0).sum() / yte.sum():.1f}")
 
 # %% 4. MCC is not a cost, and it does not need recall to be high (Chicco and Jurman's example, then ours)
@@ -193,26 +162,20 @@ for name, (tp, fn, tn, fp) in {
 }.items():
     y = np.r_[np.ones(tp + fn), np.zeros(tn + fp)]
     d = np.r_[np.ones(tp), np.zeros(fn), np.zeros(tn), np.ones(fp)]
-    print(
-        f"{name:30s} accuracy {accuracy_score(y, d):.3f}  recall {tp / (tp + fn):.3f}  "
-        f"balanced {balanced_accuracy_score(y, d):.3f}  MCC {matthews_corrcoef(y, d):.3f}"
-    )
+    print(f"{name:30s} accuracy {accuracy_score(y, d):.3f}  recall {tp / (tp + fn):.3f}  "
+          f"balanced {balanced_accuracy_score(y, d):.3f}  MCC {matthews_corrcoef(y, d):.3f}")
 
 # %% 5. Same model, two base rates: ROC holds still and PR moves
 tr, va, te = lab.split(raw, seed=0)
 m = lab.make_pipeline(None, "boosted", BOOSTED, False, seed=0).fit(lab.features(tr), tr[lab.TARGET])
 rare_te, _ = lab.make_rare(te, seed=0)
-print(
-    "\n--- one model, trained at 22.1%, scored on the natural test set and on a 3% subset of it ---"
-)
+print("\n--- one model, trained at 22.1%, scored on the natural test set and on a 3% subset of it ---")
 for name, part in {"natural": te, "3% subset": rare_te}.items():
     y, p = part[lab.TARGET].to_numpy(), m.predict_proba(lab.features(part))[:, 1]
     d = (p >= lab.BAYES).astype(int)
-    print(
-        f"{name:10s} rows {len(y):5d}  rate {y.mean():.3f}  ROC-AUC {roc_auc_score(y, p):.3f}  "
-        f"PR-AUC {average_precision_score(y, p):.3f}  balanced {balanced_accuracy_score(y, d):.3f}  "
-        f"MCC {matthews_corrcoef(y, d):.3f}  accuracy {accuracy_score(y, d):.3f}"
-    )
+    print(f"{name:10s} rows {len(y):5d}  rate {y.mean():.3f}  ROC-AUC {roc_auc_score(y, p):.3f}  "
+          f"PR-AUC {average_precision_score(y, p):.3f}  balanced {balanced_accuracy_score(y, d):.3f}  "
+          f"MCC {matthews_corrcoef(y, d):.3f}  accuracy {accuracy_score(y, d):.3f}")
 
 
 # %% 6. Counts: deviance against a constant rate (simulated gamma-Poisson, seed 0)
@@ -226,17 +189,12 @@ def counts(seed=0, n=20_000):
 
 xa, xb, ya, yb = counts()
 pois = PoissonRegressor(alpha=0.0).fit(xa, ya)
-for name, f in {
-    "constant rate": np.full(len(yb), ya.mean()),
-    "Poisson model": pois.predict(xb),
-}.items():
+for name, f in {"constant rate": np.full(len(yb), ya.mean()), "Poisson model": pois.predict(xb)}.items():
     print_head = "--- counts, 10,000 test rows, seed 0 ---\n" if name == "constant rate" else ""
     disp = np.sum((yb - f) ** 2 / f) / (len(yb) - (3 if name == "Poisson model" else 1))
-    print(
-        f"{print_head}{name:14s} deviance {mean_poisson_deviance(yb, f):.3f}  "
-        f"D2 {d2_tweedie_score(yb, f, power=1):+.3f}  MAE {mean_absolute_error(yb, f):.3f}  "
-        f"dispersion {disp:.2f}"
-    )
+    print(f"{print_head}{name:14s} deviance {mean_poisson_deviance(yb, f):.3f}  "
+          f"D2 {d2_tweedie_score(yb, f, power=1):+.3f}  MAE {mean_absolute_error(yb, f):.3f}  "
+          f"dispersion {disp:.2f}")
 
 
 # %% 7. Ranking: MRR and NDCG can disagree (simulated queries)
@@ -268,15 +226,8 @@ res = []
 for s in range(5):
     rel, rankers = simulate_rankers(seed=s)
     for name, score in rankers.items():
-        res.append(
-            {
-                "seed": s,
-                "ranker": name,
-                "MRR": mrr(rel, score),
-                "NDCG@10": ndcg_score(rel, score, k=10),
-                "recall@10": recall_at(rel, score, 10),
-            }
-        )
+        res.append({"seed": s, "ranker": name, "MRR": mrr(rel, score), "NDCG@10": ndcg_score(rel, score, k=10),
+                    "recall@10": recall_at(rel, score, 10)})
 res = pd.DataFrame(res)
 print(res[res.seed == 0].drop(columns="seed").set_index("ranker").round(3))
 print("mean over seeds 0-4")
@@ -289,18 +240,8 @@ sw = []
 for k in (1, 3, 5, 10, 20, 100):
     tp = rel[0][row[:k]].sum()
     fp, fn, tn = k - tp, rel[0].sum() - tp, 100 - k - (rel[0].sum() - tp)
-    sw.append(
-        {
-            "k": k,
-            "TP": tp,
-            "FP": fp,
-            "FN": fn,
-            "TN": tn,
-            "precision": tp / k,
-            "recall": tp / rel[0].sum(),
-            "accuracy": (tp + tn) / 100,
-        }
-    )
+    sw.append({"k": k, "TP": tp, "FP": fp, "FN": fn, "TN": tn, "precision": tp / k, "recall": tp / rel[0].sum(),
+               "accuracy": (tp + tn) / 100})
 print(pd.DataFrame(sw).set_index("k").round(2))
 pos = np.flatnonzero(rel[0][row]) + 1
 print(f"relevant documents at positions {pos.tolist()}")
@@ -312,10 +253,8 @@ rel, rankers = simulate_rankers(seed=0)
 for lift in (1.0, 2.0, 3.0, 4.0):
     score = np.random.default_rng(0).normal(size=rel.shape)
     score[:, 0] += lift
-    print(
-        f"lift {lift:.0f}  finder MRR {mrr(rel, score):.3f}  NDCG@10 {ndcg_score(rel, score, k=10):.3f}"
-        f"  broad MRR {mrr(rel, rankers['broad']):.3f}  NDCG@10 {ndcg_score(rel, rankers['broad'], k=10):.3f}"
-    )
+    print(f"lift {lift:.0f}  finder MRR {mrr(rel, score):.3f}  NDCG@10 {ndcg_score(rel, score, k=10):.3f}"
+          f"  broad MRR {mrr(rel, rankers['broad']):.3f}  NDCG@10 {ndcg_score(rel, rankers['broad'], k=10):.3f}")
 
 
 # %% 8. Figure: what each threshold-based metric prefers
@@ -324,11 +263,8 @@ import matplotlib.pyplot as plt
 
 cs.apply()
 fig, (a, b) = plt.subplots(2, 1, sharex=True, height_ratios=[3, 2])
-for col, colour, label in [
-    ("accuracy", cs.BLUE, "Accuracy"),
-    ("balanced", cs.ORANGE, "Balanced accuracy"),
-    ("MCC", cs.AQUA, "Matthews correlation"),
-]:
+for col, colour, label in [("accuracy", cs.BLUE, "Accuracy"), ("balanced", cs.ORANGE, "Balanced accuracy"),
+                           ("MCC", cs.AQUA, "Matthews correlation")]:
     a.plot(st.t, st[col], color=colour, lw=2, label=label)
     i = st[col].idxmax()
     a.plot(st.t[i], st[col][i], "o", color=colour, ms=8, mec=cs.SURFACE, mew=2)
@@ -338,31 +274,16 @@ a.legend(loc="center right", bbox_to_anchor=(1, 0.36))
 b.plot(st.t, st["cost 5:1"], color=cs.SECONDARY, lw=2, label="Cost per 1,000 at 5:1")
 i = st["cost 5:1"].idxmin()
 b.plot(st.t[i], st["cost 5:1"][i], "o", color=cs.SECONDARY, ms=8, mec=cs.SURFACE, mew=2)
-b.annotate(
-    f"Lowest {st['cost 5:1'][i]:.1f}",
-    (st.t[i], st["cost 5:1"][i]),
-    xytext=(-4, 9),
-    textcoords="offset points",
-    ha="right",
-)
+b.annotate(f"Lowest {st['cost 5:1'][i]:.1f}", (st.t[i], st["cost 5:1"][i]), xytext=(-4, 9), textcoords="offset points", ha="right")
 i = picks["balanced accuracy"]
 b.plot(st.t[i], st["cost 5:1"][i], "o", color=cs.ORANGE, ms=8, mec=cs.SURFACE, mew=2)
-b.annotate(
-    f"Balanced accuracy's pick: {st['cost 5:1'][i]:.0f}",
-    (st.t[i], st["cost 5:1"][i]),
-    xytext=(9, 9),
-    textcoords="offset points",
-)
+b.annotate(f"Balanced accuracy's pick: {st['cost 5:1'][i]:.0f}", (st.t[i], st["cost 5:1"][i]), xytext=(9, 9),
+           textcoords="offset points")
 b.axvline(lab.BAYES, color=cs.MUTED, lw=1, ls="--")
-b.annotate(
-    "1/6, from the 5:1 cost ratio",
-    (lab.BAYES, st["cost 5:1"].max() * 0.9),
-    xytext=(6, 0),
-    textcoords="offset points",
-    color=cs.SECONDARY,
-)
+b.annotate("1/6, from the 5:1 cost ratio", (lab.BAYES, st["cost 5:1"].max() * 0.9), xytext=(6, 0),
+           textcoords="offset points", color=cs.SECONDARY)
 b.set_xscale("log")
 b.set_xlabel("Threshold on predicted default probability (log scale; dots mark each line's best)")
 b.set_ylabel("Cost per 1,000")
-b.legend(loc="upper right", bbox_to_anchor=(1, 0.75))
+b.legend(loc="upper right", bbox_to_anchor=(1, .75))
 cs.save(fig, "metric-map-threshold.png")

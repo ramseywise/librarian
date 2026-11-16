@@ -2,7 +2,7 @@
 title: Contrastive Chain of Thought
 tags: [prompting, pattern]
 summary: Contrastive Chain of Thought adds an invalid rationale to each few-shot demonstration, built by shuffling the objects in the valid one, and reports gains over plain CoT on three reasoning sets with one model; a toy theory paper offers partial support.
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-08-chia-2023-contrastive-chain-thought-prompting.md
   - data/raw/papers/2026-11-08-cui-2024-theoretical-understanding-chain-thought.md
@@ -10,7 +10,7 @@ sources:
 
 # Contrastive Chain of Thought
 
-Every few-shot example is paired with a second, invalid rationale beside the valid one. The wrong rationale is generated automatically: objects such as numbers and entities are extracted with spaCy and shuffled, giving an incoherent chain. The model sees both what to do and what to avoid. See [[Few-Shot Prompting]] for the base technique and [[Chain of Thought]] for the reasoning format.
+Every few-shot example is paired with a second, invalid rationale beside the valid one. The wrong rationale is generated automatically: objects such as numbers and entities are extracted with spaCy and shuffled, giving an incoherent chain. The model sees both what to do and what to avoid. See [[Few-Shot Prompting]] for the base technique and Chain of Thought for the reasoning format.
 
 ## Reported results
 
@@ -30,6 +30,5 @@ A separate paper analyses a one-layer linear-attention model. It finds coherent 
 - No variance reported in either.
 
 ## See Also
-- [[Chain of Thought]] — prerequisite-for
 - [[Few-Shot Prompting]] — prerequisite-for
 - [[Self-Consistency]] — related (used in combination)

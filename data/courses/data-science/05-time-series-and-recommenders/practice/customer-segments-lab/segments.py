@@ -1,5 +1,4 @@
 """Behavioural features, RFM rules, clustering, atlas's fallback rule, and the tests of a clustering."""
-
 from __future__ import annotations
 
 import numpy as np
@@ -8,16 +7,7 @@ from sklearn.cluster import HDBSCAN, KMeans
 from sklearn.metrics import adjusted_rand_score, silhouette_score
 from sklearn.preprocessing import StandardScaler
 
-FEATURES = [
-    "log_inflow",
-    "log_invoices",
-    "amount_spread",
-    "growth",
-    "q4_share",
-    "log_burn",
-    "top_share",
-    "recency",
-]
+FEATURES = ["log_inflow", "log_invoices", "amount_spread", "growth", "q4_share", "log_burn", "top_share", "recency"]
 
 
 def behaviour(tx, asof, n_customers=None, window_weeks=52):
@@ -26,9 +16,7 @@ def behaviour(tx, asof, n_customers=None, window_weeks=52):
     recent = tx[(tx.date < asof) & (tx.date >= asof - pd.Timedelta(weeks=window_weeks))]
     money_in = recent[recent.amount > 0]
     invoices = money_in[money_in.kind == "invoice"]
-    out = pd.DataFrame(
-        index=pd.Index(range(n_customers or tx.customer_id.max() + 1), name="customer_id")
-    )
+    out = pd.DataFrame(index=pd.Index(range(n_customers or tx.customer_id.max() + 1), name="customer_id"))
     inflow = money_in.groupby("customer_id").amount.sum()
     outflow = -recent[recent.amount < 0].groupby("customer_id").amount.sum()
     out["log_inflow"] = np.log1p(inflow / (window_weeks / 4.345))
@@ -45,9 +33,7 @@ def behaviour(tx, asof, n_customers=None, window_weeks=52):
     out["top_share"] = top / inflow
     last = invoices.groupby("customer_id").date.max()
     out["recency"] = np.log1p((asof - last).dt.days)
-    return (
-        out[FEATURES].astype(float).fillna(0.0)
-    )  # no invoice in the window is a real, zero-filled state
+    return out[FEATURES].astype(float).fillna(0.0)          # no invoice in the window is a real, zero-filled state
 
 
 def scale(features):
@@ -58,9 +44,7 @@ def rfm_segments(tx, asof, seed=42):
     """The rules from the chapter: R and F quintiles, ties broken at random, then named regions."""
     asof = pd.Timestamp(asof)
     inv = tx[(tx.date < asof) & (tx.kind == "invoice") & (tx.date >= asof - pd.Timedelta(weeks=52))]
-    rfm = inv.groupby("customer_id").agg(
-        last=("date", "max"), frequency=("amount", "size"), monetary=("amount", "mean")
-    )
+    rfm = inv.groupby("customer_id").agg(last=("date", "max"), frequency=("amount", "size"), monetary=("amount", "mean"))
     rfm["recency"] = (asof - rfm.pop("last")).dt.days
 
     def quintile(s, ascending=True):
@@ -70,9 +54,7 @@ def rfm_segments(tx, asof, seed=42):
     r, f = quintile(rfm.recency, ascending=False), quintile(rfm.frequency)
     rfm["segment"] = np.select(
         [(r >= 4) & (f >= 4), (r <= 2) & (f >= 4), (r >= 4) & (f <= 2), (r <= 2) & (f <= 2)],
-        ["Champions", "At risk", "New", "Hibernating"],
-        default="Middle",
-    )
+        ["Champions", "At risk", "New", "Hibernating"], default="Middle")
     return rfm
 
 

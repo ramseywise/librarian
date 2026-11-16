@@ -2,7 +2,7 @@
 title: Prefix Caching
 tags: [llm, context-management, infra, concept]
 summary: Claude's automatic KV cache reuse for repeated prompt prefixes — cuts latency and cost by 90% for static system prompts and long tool schemas.
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/playground/docs/support-agents/invocation-flow.md
   - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
@@ -98,19 +98,17 @@ tokens, so nothing was ever cached.
   it and dropped it at the call site. That needed a follow-up plan. A cache-hit metric that
   nothing reads proves no more than having no metric.
 - The regression gate named for the reorder was a fixture eval that never calls the model.
-  See [[Fixture Eval Blind to the Swapped Component]].
+  See Fixture Eval Blind to the Swapped Component.
 
 ## See Also
 - [[ADK Context Engineering]]
 - [[Multi-Agent Orchestration Patterns]]
 - [[Production Hardening Patterns]]
 - [[LangGraph CRAG Pipeline]]
-- [[LLM Fundamentals Interview Study Guide]] — prerequisite-for
 - [[Self-Attention Mechanism]] — prerequisite-for
 - [[Context Compaction]] — extends (compaction invalidates the cached prefix from the compaction point forward)
 - [[Context Anatomy]] — extends (stable-before-dynamic ordering as the prefix-match precondition)
 - [[Offline Annotation over Online Inference]] — instance-of (a static taxonomy prefix as ~97% of enrichment input tokens)
-- [[Fixture Eval Blind to the Swapped Component]] — related (the gate that could not detect a regression from the prompt reorder)
 - [[Measuring Fixed Context Overhead]] — extends (first-turn cache write as a fixed-overhead proxy)
 - [[Cache-Stable Context Layout]] — extends (cache breakers and boundary ordering at the context-assembly layer)
 - [[LazyLLM Dynamic Token Pruning]] — related (changes which tokens are kept per layer, a different lever from cache reuse)

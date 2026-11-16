@@ -2,7 +2,7 @@
 title: Paired Input-Perturbation Eval
 tags: [eval, pattern]
 summary: "To decide whether a skip gate may ignore a field, perturb only that field on real rows with everything else held fixed, run the production prompt on both copies, and diff the outputs: report material vs immaterial changes separately for a shift that stays inside an output bucket and one that crosses it, state the real N, and name the missing same-input noise control as a limitation."
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-22-dis281-stage2b-schedule-sensitivity-eval.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-22-dis281-stage2b-schedule-sensitivity-eval.md
@@ -15,7 +15,7 @@ sources:
 
 An enrichment pipeline skipped the paid model call when a row's content hash was
 unchanged. Recurring events changed dates on every re-crawl, so the open question was
-whether dates could be dropped from the hash. [[Shadow Signal Before Gate Change]] counts
+whether dates could be dropped from the hash. Shadow Signal Before Gate Change counts
 *how often* a re-enrichment is date-only. That leaves a second question: **does the model's
 output actually depend on the date?** If it does, dropping dates from the hash would
 freeze stale tags. The akira plan (#281 Stage 2B) answered it with a paired perturbation
@@ -68,8 +68,6 @@ alone. Combining them into one "just try excluding dates" change would ship a ga
 effect on output quality nobody measured.
 
 ## See Also
-- [[Shadow Signal Before Gate Change]] — extends (the frequency half; this is the sensitivity half)
-- [[Spend Gate Before the Model Call]] — prerequisite-for (the gate whose key is in question)
 - [[Offline Prompt Experiment Runner]] — extends (same harness; pairs are input variants, not prompt variants)
 - [[Eval Non-Determinism]] — related (the missing same-input control)
 - [[Ranker Weight Sensitivity Sweep]] — alternative-to (perturbing parameters of a pure function instead of inputs to a model)

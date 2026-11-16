@@ -2,7 +2,7 @@
 title: Embedding Side Table, Not Column
 tags: [rag, decision]
 summary: Store embeddings in a side table keyed by (content_kind, content_id, embedding_model, input_recipe_version) rather than as a vector column on the enrichment row — it keeps "did the content change" and "did we try a new embedding recipe" as separate version axes, lets several recipes coexist for comparison, and keeps unrelated writebacks from churning the HNSW index.
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/akira/docs/research/2026-09-24-dis386-semantic-retrieval.md
   - data/raw/claude-docs/diskoe/docs/research/2026-09-24-dis386-semantic-retrieval.md
@@ -46,7 +46,7 @@ existing `*_ai_enrichments` rows.
 
 Every column named its reader before it was proposed: `embedding` is read by the
 semantic query stage, and the model and recipe columns by the comparison tooling (see
-[[Every Column Names Its Reader]]).
+Every Column Names Its Reader).
 
 ## How the arm plugs in
 
@@ -81,7 +81,7 @@ Two side findings:
 The semantic arm needed a side table because an embedding is model-versioned and
 async. The lexical arm built next to it is a pure derivation of the row (`tsvector`
 over name and tags), so it went into generated columns on the row instead (see
-[[Pure Derivation Is a Generated Column]]). The same build-dark guard applied: a
+Pure Derivation Is a Generated Column). The same build-dark guard applied: a
 grep-test proves the hybrid module is not imported by any serving path.
 
 ## See Also
@@ -89,6 +89,3 @@ grep-test proves the hybrid module is not imported by any serving path.
 - [[Offline Annotation over Online Inference]] — related (where model work belongs)
 - [[Frozen Version Stamps on Logged Results]] — instance-of (version axes as explicit columns)
 - [[Vector Database Comparison]] — related
-- [[Kiez Project]] — instance-of
-- [[Pure Derivation Is a Generated Column]] — alternative-to (generated columns for the pure lexical derivation)
-- [[Per-Row Content Hash Misses Cross-Row State]] — related (a content hash without a model key lets embeddings drift)

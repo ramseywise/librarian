@@ -2,7 +2,7 @@
 title: System Design — Shared Code-Index Service
 tags: [infra, rag, mcp, reference]
 summary: Interview-format system design writeup of a volunteer org's shared team indexer — centralized indexer + query API with MCP as a thin read-only client, DuckDB single-writer risk, and the pgvector escape hatch.
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/repos/librarian/CLAUDE.md
   - data/raw/claude-docs/guacamayo/docs/state/research_agentic_kb_for_code.md
@@ -46,7 +46,4 @@ Interview-format writeup of a system actually designed (librarian → a voluntee
 3. Where the shared index physically lives (shared volume / S3-synced / hosted API) is a deployment decision deliberately deferred — it does not block the architecture.
 
 ## See Also
-- [[Librarian KB — Build Plan]] — extends
-- [[Librarian Project]]
-- [[Karpathy LLM Wiki Pattern]] — prerequisite-for
 - [[Code Retrieval: Structural Index and Agentic Search]] — prerequisite-for (the field survey behind the two-path split)

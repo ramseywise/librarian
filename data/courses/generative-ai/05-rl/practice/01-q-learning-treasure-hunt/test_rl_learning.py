@@ -3,10 +3,9 @@
 Quick test to verify Q-learning agent can learn the simplified game.
 """
 
-import argparse
 import sys
+import argparse
 from pathlib import Path
-
 import numpy as np
 
 # Add parent directory to path for imports
@@ -25,7 +24,7 @@ def test_rl_learning(stochastic=False, episodes=None):
     """
     env_type = "STOCHASTIC" if stochastic else "DETERMINISTIC"
     print(f"Testing Q-Learning on simplified game ({env_type} environment)...")
-    print("=" * 50)
+    print("="*50)
 
     # Show game rules
     game = TreasureHuntGame(stochastic=stochastic)
@@ -36,7 +35,7 @@ def test_rl_learning(stochastic=False, episodes=None):
         print("  - 3% chance of action failure")
         print("  - 10% critical hit / 5% miss chance in combat")
         print("  - 10% crafting failure chance")
-    print("\n" + "=" * 50)
+    print("\n" + "="*50)
 
     # Initialize agent
     agent = QLearningAgent(
@@ -44,7 +43,7 @@ def test_rl_learning(stochastic=False, episodes=None):
         discount_factor=0.99,
         epsilon=1.0,
         epsilon_decay=0.9997,  # Slower decay for exploration
-        epsilon_min=0.1,
+        epsilon_min=0.1
     )
 
     # Train for different episode counts
@@ -62,7 +61,7 @@ def test_rl_learning(stochastic=False, episodes=None):
             discount_factor=0.99,
             epsilon=1.0,
             epsilon_decay=0.9997,
-            epsilon_min=0.1,
+            epsilon_min=0.1
         )
 
         # Train
@@ -83,7 +82,8 @@ def test_rl_learning(stochastic=False, episodes=None):
                 next_actions = game.get_available_actions() if not done else []
 
                 agent.update_q_value(
-                    state_hash, action, reward, next_state_hash, next_actions, done
+                    state_hash, action, reward,
+                    next_state_hash, next_actions, done
                 )
 
                 total_reward += reward
@@ -100,10 +100,8 @@ def test_rl_learning(stochastic=False, episodes=None):
             if (episode + 1) % progress_every == 0:
                 recent_wins = sum(1 for r in recent_rewards[-100:] if r > 50)
                 avg_reward = np.mean(recent_rewards[-100:]) if recent_rewards else 0
-                print(
-                    f"  Episode {episode + 1}: Recent wins={recent_wins}/100, "
-                    f"Avg reward={avg_reward:.1f}, Epsilon={agent.epsilon:.3f}"
-                )
+                print(f"  Episode {episode+1}: Recent wins={recent_wins}/100, "
+                      f"Avg reward={avg_reward:.1f}, Epsilon={agent.epsilon:.3f}")
 
         # Evaluate
         print(f"\nEvaluating after {num_episodes} episodes...")
@@ -142,7 +140,7 @@ def test_rl_learning(stochastic=False, episodes=None):
 
             while not game.game_over:
                 action = agent.choose_action(game, training=False)
-                steps.append(f"    {len(steps) + 1}. {action}")
+                steps.append(f"    {len(steps)+1}. {action}")
                 feedback, reward, done = game.execute_action(action)
                 if game.victory:
                     steps.append(f"    → Victory! Total moves: {game.moves}")
@@ -155,18 +153,20 @@ def test_rl_learning(stochastic=False, episodes=None):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Test Q-learning agent on the treasure hunt game")
     parser.add_argument(
-        "--stochastic",
-        action="store_true",
-        help="Use stochastic environment (adds randomness to rewards and actions)",
+        '--stochastic',
+        action='store_true',
+        help='Use stochastic environment (adds randomness to rewards and actions)'
     )
     parser.add_argument(
-        "--deterministic", action="store_true", help="Use deterministic environment (default)"
+        '--deterministic',
+        action='store_true',
+        help='Use deterministic environment (default)'
     )
     parser.add_argument(
-        "--episodes",
+        '--episodes',
         type=int,
-        nargs="+",
-        help="Episode counts to test (e.g., --episodes 1000 5000 10000)",
+        nargs='+',
+        help='Episode counts to test (e.g., --episodes 1000 5000 10000)'
     )
 
     args = parser.parse_args()

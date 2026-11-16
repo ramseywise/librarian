@@ -7,7 +7,6 @@ The world has three levels. A record is one line in one plant's system. A part i
 records can describe it. A spec is what a part must meet: family, dimensions and critical attributes. Two parts with the
 same spec are interchangeable. Two parts that differ only in a critical attribute look alike and are not.
 """
-
 from __future__ import annotations
 
 import re
@@ -24,48 +23,28 @@ FAMILIES = {
         "names": ["hex bolt", "hexagon screw", "hex cap screw", "bolt hex"],
         "dims": {"d": [5, 6, 8, 10, 12, 14, 16], "l": [16, 20, 25, 30, 40, 50, 60, 70, 80]},
         "render": lambda v: f"M{v['d']}x{v['l']}",
-        "critical": {
-            "grade": {
-                "8.8": ["8.8", "cl 8.8"],
-                "10.9": ["10.9", "cl 10.9"],
-                "a2": ["a2-70", "stainless a2", "1.4301"],
-                "a4": ["a4-80", "stainless a4", "1.4401"],
-            }
-        },
+        "critical": {"grade": {"8.8": ["8.8", "cl 8.8"], "10.9": ["10.9", "cl 10.9"],
+                               "a2": ["a2-70", "stainless a2", "1.4301"], "a4": ["a4-80", "stainless a4", "1.4401"]}},
     },
     "bearing": {
         "names": ["ball bearing", "deep groove bearing", "bearing dgbb", "radial ball brg"],
         "dims": {"d": [15, 20, 25, 30, 35, 40], "l": [203, 204, 205, 206, 207, 208]},
         "render": lambda v: f"{v['l']} bore {v['d']}",
-        "critical": {
-            "seal": {
-                "open": ["open", "unsealed"],
-                "2rs": ["2rs", "rubber sealed"],
-                "zz": ["zz", "metal shield"],
-            },
-            "clear": {"c3": ["c3", "clearance c3"], "cn": ["cn", "normal clearance"]},
-        },
+        "critical": {"seal": {"open": ["open", "unsealed"], "2rs": ["2rs", "rubber sealed"], "zz": ["zz", "metal shield"]},
+                     "clear": {"c3": ["c3", "clearance c3"], "cn": ["cn", "normal clearance"]}},
     },
     "oring": {
         "names": ["o-ring", "o ring", "oring seal", "toric seal"],
         "dims": {"d": [10, 12, 16, 20, 25, 32, 40, 63], "l": [1, 2, 3, 4, 5]},
         "render": lambda v: f"{v['d']}x{v['l']}",
-        "critical": {
-            "mat": {
-                "nbr": ["nbr", "nitrile"],
-                "fkm": ["fkm", "viton"],
-                "epdm": ["epdm", "ethylene propylene"],
-            }
-        },
+        "critical": {"mat": {"nbr": ["nbr", "nitrile"], "fkm": ["fkm", "viton"], "epdm": ["epdm", "ethylene propylene"]}},
     },
     "valve": {
         "names": ["gate valve", "valve gate", "wedge gate valve", "isolation valve"],
         "dims": {"d": [25, 32, 50, 65, 80, 100], "l": [130, 150, 180, 200, 250]},
         "render": lambda v: f"DN{v['d']} L{v['l']}",
-        "critical": {
-            "pn": {"pn16": ["pn16", "pn 16"], "pn40": ["pn40", "pn 40"]},
-            "body": {"gg25": ["gg25", "cast iron"], "1.4408": ["1.4408", "stainless body"]},
-        },
+        "critical": {"pn": {"pn16": ["pn16", "pn 16"], "pn40": ["pn40", "pn 40"]},
+                     "body": {"gg25": ["gg25", "cast iron"], "1.4408": ["1.4408", "stainless body"]}},
     },
 }
 VENDORS = ["Arvol", "Benta", "Corsk", "Dovra", "Elmig", "Fenro", "Garst", "Holvik"]
@@ -73,17 +52,12 @@ PLANTS = ["north", "south", "east", "west"]
 NOISE = ["pack 10", "pack 100", "new", "spare", "stock", "maint", "urgent", "alt", "ref only"]
 # Spellings an extractor knows. Some in FAMILIES are left out on purpose, so extraction misses them.
 UNKNOWN_TO_EXTRACTOR = {"1.4301", "1.4401", "metal shield", "ethylene propylene", "stainless body"}
-SHAPE = {
-    "bolt": r"\bm\d+x\d+\b",
-    "bearing": r"\b\d{3} bore \d+\b",
-    "oring": r"(?<![\w.])\d+x\d+\b",
-    "valve": r"\bdn\d+ l\d+\b",
-}
+SHAPE = {"bolt": r"\bm\d+x\d+\b", "bearing": r"\b\d{3} bore \d+\b", "oring": r"(?<![\w.])\d+x\d+\b", "valve": r"\bdn\d+ l\d+\b"}
 CODE = re.compile(r"\b\d{2}[a-z]\d{4}\b")
 VENDOR = re.compile("|".join(v.lower() for v in VENDORS))
 
 
-def make_catalogue(seed=0, n_specs=800, missing=0.15, typo=0.05, wrong=0.02):
+def make_catalogue(seed=0, n_specs=800, missing=.15, typo=.05, wrong=.02):
     """Return records and parts. Each record's `part` and `spec` are the ground truth."""
     rng = np.random.default_rng(seed)
     specs, seen = [], set()
@@ -95,7 +69,7 @@ def make_catalogue(seed=0, n_specs=800, missing=0.15, typo=0.05, wrong=0.02):
         base.update({k: str(rng.choice(list(v))) for k, v in fam["critical"].items()})
         specs.append(base)
         # A sibling: same family and dimensions, one critical attribute different. Most specs have one.
-        if rng.random() < 0.7:
+        if rng.random() < .7:
             attr = str(rng.choice(list(fam["critical"])))
             other = [x for x in fam["critical"][attr] if x != base[attr]]
             specs.append({**base, attr: str(rng.choice(other))})
@@ -107,30 +81,15 @@ def make_catalogue(seed=0, n_specs=800, missing=0.15, typo=0.05, wrong=0.02):
             unique.append(s)
     parts = []
     for spec_id, s in enumerate(unique):
-        for _ in range(1 + rng.poisson(0.7)):  # one spec, one or more makers: equivalents
-            parts.append(
-                {
-                    **s,
-                    "spec": spec_id,
-                    "part": len(parts),
-                    "vendor": str(rng.choice(VENDORS)),
-                    "code": f"{rng.integers(10, 99)}{chr(65 + rng.integers(26))}{rng.integers(1000, 9999)}",
-                }
-            )
+        for _ in range(1 + rng.poisson(.7)):  # one spec, one or more makers: equivalents
+            parts.append({**s, "spec": spec_id, "part": len(parts), "vendor": str(rng.choice(VENDORS)),
+                          "code": f"{rng.integers(10, 99)}{chr(65 + rng.integers(26))}{rng.integers(1000, 9999)}"})
     parts = pd.DataFrame(parts)
     records = []
     for p in parts.to_dict("records"):
         for _ in range(1 + rng.poisson(1.2)):  # one part, several plants' records: duplicates
-            records.append(
-                {
-                    "record": len(records),
-                    "part": p["part"],
-                    "spec": p["spec"],
-                    "family": p["family"],
-                    "plant": str(rng.choice(PLANTS)),
-                    "text": _render(p, rng, missing, typo, wrong),
-                }
-            )
+            records.append({"record": len(records), "part": p["part"], "spec": p["spec"], "family": p["family"],
+                            "plant": str(rng.choice(PLANTS)), "text": _render(p, rng, missing, typo, wrong)})
     return pd.DataFrame(records), parts
 
 
@@ -140,25 +99,21 @@ def _render(p, rng, missing, typo, wrong):
     for attr, values in fam["critical"].items():
         if rng.random() > missing:
             # A few records state the attribute wrongly, as a mistyped master record does. No rule can see this.
-            value = (
-                str(rng.choice([v for v in values if v != p[attr]]))
-                if rng.random() < wrong
-                else p[attr]
-            )
+            value = str(rng.choice([v for v in values if v != p[attr]])) if rng.random() < wrong else p[attr]
             bits.append(str(rng.choice(values[value])))
-    if rng.random() < 0.7:
+    if rng.random() < .7:
         bits.append(p["vendor"])
-    if rng.random() < 0.6:
+    if rng.random() < .6:
         bits.append(p["code"])
-    if rng.random() < 0.3:
+    if rng.random() < .3:
         bits.append(str(rng.choice(NOISE)))
     order = [bits[0], *rng.permutation(bits[1:]).tolist()]
     text = " ".join(order)
-    if rng.random() < 0.5:
+    if rng.random() < .5:
         text = text.upper()
     if rng.random() < typo and len(text) > 6:
         i = rng.integers(1, len(text) - 2)
-        text = text[:i] + text[i + 1] + text[i] + text[i + 2 :]
+        text = text[:i] + text[i + 1] + text[i] + text[i + 2:]
     return text
 
 
@@ -168,13 +123,8 @@ def extract(text, family):
     found = re.search(SHAPE[family], low)
     out = {"shape": re.sub(r"\s+", " ", found.group(0)) if found else None}
     for attr, values in FAMILIES[family]["critical"].items():
-        hits = {
-            canon
-            for canon, spellings in values.items()
-            for s in spellings
-            if s not in UNKNOWN_TO_EXTRACTOR
-            and re.search(rf"(?<![\w.-]){re.escape(s)}(?![\w-])", low)
-        }
+        hits = {canon for canon, spellings in values.items()
+                for s in spellings if s not in UNKNOWN_TO_EXTRACTOR and re.search(rf"(?<![\w.-]){re.escape(s)}(?![\w-])", low)}
         out[attr] = hits.pop() if len(hits) == 1 else None
     return out
 
@@ -187,7 +137,7 @@ def candidates(records, k=10):
     pairs = set()
     for i in range(X.shape[0]):
         row = sim.getrow(i)
-        top = row.indices[np.argsort(-row.data)[: k + 1]]
+        top = row.indices[np.argsort(-row.data)[:k + 1]]
         pairs.update((min(i, int(j)), max(i, int(j))) for j in top if j != i)
     return np.array(sorted(pairs))
 
@@ -197,29 +147,12 @@ def label_pairs(records, parts, pairs):
     info = parts.drop_duplicates("spec").set_index("spec")
     lf, rf = records.iloc[pairs[:, 0]], records.iloc[pairs[:, 1]]
     a, b = info.loc[lf.spec.values], info.loc[rf.spec.values]
-    same_shape = (
-        (a.family.values == b.family.values)
-        & (a.d.values == b.d.values)
-        & (a.l.values == b.l.values)
-    )
-    rel = np.where(
-        lf.part.values == rf.part.values,
-        "same_part",
-        np.where(
-            lf.spec.values == rf.spec.values,
-            "equivalent",
-            np.where(same_shape, "similar", "different"),
-        ),
-    )
-    return pd.DataFrame(
-        {
-            "left": pairs[:, 0],
-            "right": pairs[:, 1],
-            "relation": rel,
-            "left_part": lf.part.values,
-            "right_part": rf.part.values,
-        }
-    )
+    same_shape = (a.family.values == b.family.values) & (a.d.values == b.d.values) & (a.l.values == b.l.values)
+    rel = np.where(lf.part.values == rf.part.values, "same_part",
+                   np.where(lf.spec.values == rf.spec.values, "equivalent",
+                            np.where(same_shape, "similar", "different")))
+    return pd.DataFrame({"left": pairs[:, 0], "right": pairs[:, 1], "relation": rel,
+                         "left_part": lf.part.values, "right_part": rf.part.values})
 
 
 def components(n, left, right):

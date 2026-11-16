@@ -2,7 +2,7 @@
 title: Curl-Bridge Context Injection
 tags: [mcp, infra, pattern]
 summary: A reverse proxy can give any shell-capable agent access to a memory service without MCP, plugins or hooks — inject text telling the model to curl allowlisted read-only bridge endpoints with its existing Bash tool, and overwrite identity fields server-side so the model cannot forge them.
-updated: 2026-10-16
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/guacamayo/docs/research/2026-08-20_tencentdb-memory_parity.md
 ---
@@ -48,5 +48,4 @@ and tool-permission allowlists also need checking once the server resolves.
 
 ## See Also
 - [[MCP Server Security Patterns]] — alternative-to (tool-registration surface with its own auth controls)
-- [[Silence Reads as Clean]] — extends (documented-but-unconfigured MCP that degrades silently)
 - [[Tool Design as Context Engineering]] — extends

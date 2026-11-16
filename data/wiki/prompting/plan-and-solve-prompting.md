@@ -2,7 +2,7 @@
 title: Plan-and-Solve Prompting
 tags: [prompting, concept]
 summary: Zero-shot prompt (PS and PS+) that asks the model to devise a plan, extract variables and compute intermediate results before answering; reported on text-davinci-003 to beat Zero-shot-CoT on math sets with triggers tuned per dataset (self-reported).
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-08-wang-2023-plan-solve-prompting.md
 ---
@@ -31,6 +31,5 @@ All numbers use text-davinci-003 with greedy decoding at temperature 0, zero-sho
 
 ## See Also
 - [[Zero-Shot Chain-of-Thought]] — prerequisite-for
-- [[Chain of Thought]] — prerequisite-for
 - [[Least-to-Most Prompting]] — alternative-to
 - [[Task Decomposition Patterns]] — related

@@ -2,7 +2,7 @@
 title: Skeleton-of-Thought
 tags: [prompting, pattern]
 summary: "A prompt-only way to cut answer latency: the model first drafts a short numbered skeleton, then each point is expanded in a parallel request; the paper reports up to 2.39x speed-up for its best model and up to 2.33x for its best question category, on Vicuna-80 (self-reported), with poor fit for step-by-step math."
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-06-ning-2023-skeleton-thought.md
 ---
@@ -34,7 +34,6 @@ Every point goes out as its own request carrying the question and skeleton again
 - Weak models that ignore the prompt format gain nothing.
 
 ## See Also
-- [[Chain of Thought]] — prerequisite-for
 - [[Prompt Chaining]] — related (a fixed two-call chain, here for speed)
 - [[Branch-Solve-Merge]] — related (another fan-out and merge program; cites SoT)
 - [[Prefix Caching]] — related (the repeated-prefill cost it incurs)

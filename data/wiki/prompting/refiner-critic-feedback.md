@@ -2,7 +2,7 @@
 title: REFINER Critic Feedback on Reasoning Steps
 tags: [prompting, concept]
 summary: A generator-critic framework in which a trained critic gives structured, typed feedback on a model's intermediate reasoning, reported to beat scalar PPO reward and LLM-written self-feedback on small math, logic and norm tasks (self-reported).
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-08-paul-2024-refiner.md
 ---
@@ -33,5 +33,4 @@ REFINER (EACL 2024) asks whether a trained critic that gives fine-grained, struc
 ## See Also
 - [[Self-Refine]] — alternative-to (LLM-written feedback with no trained critic)
 - [[Reflexion]] — alternative-to
-- [[Chain of Thought]] — prerequisite-for
 - [[Verification Loops]] — related

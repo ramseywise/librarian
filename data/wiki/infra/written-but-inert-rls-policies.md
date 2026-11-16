@@ -2,7 +2,7 @@
 title: Written-but-Inert RLS Policies
 tags: [infra, pattern]
 summary: A row-level-security policy in the migration chain does nothing until `enable row level security` runs on its table — five policies were written and inert, four tables had RLS enabled out-of-band with no migration saying so, an admin review queue read 95 rows through the anon client and silently showed zero, and two policies gated on a status value their tables had never written; the diagnostic is one probe, anon vs service-role row counts on the same filter.
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/playground/skills/design-system/SKILL.md
   - data/raw/claude-docs/playground/docs/research/2026-08-28-data-stack-map.md
@@ -99,7 +99,7 @@ role (admin, bypasses RLS) — with no other layer.
    on `review_status = 'published'`; the live distribution was `needs_review` and
    `approved`. The policy would admit nothing forever, and nobody would notice until a
    consumer surface appeared — the security-layer version of
-   [[Every Column Names Its Reader]].
+   Every Column Names Its Reader.
 
 ## The silent production bug
 
@@ -171,12 +171,12 @@ one session. The reasoning worth reusing:
   exposure reversibly. The view then inherits the base table's RLS, so both the view and
   its table must be probed — an invoker-rights view over an RLS table looks fixed while a
   mistake in either half leaves it open. (This revised the general rule: drop an unread surface
-  only when its consumers are enumerable; see [[Artifact Is Not Evidence: Push and Probe]].)
+  only when its consumers are enumerable; see Artifact Is Not Evidence: Push and Probe.)
 - **`SECURITY DEFINER` + public `EXECUTE` + mutable `search_path` is the escalation path.**
   All flagged functions were pinned to `search_path = ''`; `EXECUTE` was revoked from anon
   and authenticated only on the one directly callable definer function (the others were
   triggers). Three hand-created function bodies had to be read from `pg_proc` before any
-  `CREATE OR REPLACE` — see [[Unfinished Work Must Fail Closed]].
+  `CREATE OR REPLACE` — see Unfinished Work Must Fail Closed.
 - **Don't fold a product decision into a security migration.** The vocabulary-mismatch
   predicate on two verticals was documented, not fixed: changing what makes a row public
   is a product call, and a reviewer would be approving it under a security label.
@@ -224,23 +224,10 @@ and treat any grant that no migration states explicitly as a finding.
 
 ## See Also
 - [[Migration Done Means Pushed and Probed]] — extends (the policy-layer instance of file-exists-is-not-evidence)
-- [[Every Column Names Its Reader]] — related (a policy predicate nobody writes is the same plausible trap)
 - [[Split Service Deployment]] — extends (the three-client trust model it assumes)
 - [[Production Hardening Patterns]] — extends
 - [[Agent Security Risk Taxonomy]] — related (mitigation belongs in the component that owns the risk — here the table, not the app)
-- [[Principal Write-Surface Matrix]] — extends (per-principal enumeration finds authority gaps per-table review misses)
-- [[Budget Without a Meter Is a Preference]] — related (permission-denied rendered as no data)
-- [[Paired Allow Test for Deny Rules]] — related (the allow-side test that catches a predicate admitting nothing)
-- [[Capability Token in a Serialized Row]] — related (RLS can be correct and the server still leaks the row to the client)
 - [[RLS On, No Policy for Server-Mediated Tables]] — related (the deliberate no-policy posture, documented as a decision)
-- [[Audit the Class, Not the Instance]] — extends (the review-queue fix, audited across the whole admin boundary)
-- [[Unfinished Work Must Fail Closed]] — related (the function-hardening migration from the same closure)
-- [[Make Each RLS Policy Individually Falsifiable]] — extends (behaviour tests for what each in-force policy admits, per principal)
 - [[Restore Drill: Rebuild-from-Migrations Visibility Probe]] — extends (periodic rebuild-and-probe that catches this class before a real repair)
-- [[Production Write Guard: Explicit Override, Never Ambient]] — extends (the operator-script target print and override in full)
 - [[RLS Gates Rows, Not Columns]] — related (row policy that leaked columns)
-- [[Tighten a Visibility Gate by Backfilling the Visible State]] — related (the inverse risk: tightening a policy that a live route depends on)
-- [[Signal Without a Consumer]] — instance-of (a defined control nothing activates)
 - [[ACL-Aware Retrieval and Tenant Isolation]] — extends (RLS as the tenancy layer for a shared retrieval index, with its pooling and ownership footguns)
-- [[Pin Client-Executable Functions With an Allow-List]] — extends (the function-EXECUTE analogue: PUBLIC-default grants pinned by an exact allow-list)
-- [[Single-Writer Transition Command]] — extends (definer function + caller JWT as the only writer)

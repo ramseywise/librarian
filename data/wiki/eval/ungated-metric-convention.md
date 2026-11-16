@@ -2,7 +2,7 @@
 title: UNGATED Metric Convention
 tags: [eval, pattern]
 summary: Every eval metric exists from day one, but a threshold is written only from a *measured* pass rate — until then the metric runs and reports UNGATED rather than being silently skipped, and the CI gate degrades to heuristic-only when judge credentials are absent instead of failing.
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-04-dis60-lighthouse-ci.md
   - data/raw/claude-docs/diskoe/docs/plans/2026-09-04-dis60-lighthouse-ci.md
@@ -120,7 +120,7 @@ Three parts, each doing a separate job:
    without a threshold is not skipped, hidden, or counted as passing — it prints a
    distinct state in the report so the gap is visible on every run. It is the eval
    analogue of recording a skipped reporter with its reason
-   ([[Scope-Gated Reporter Dispatch]]).
+   (Scope-Gated Reporter Dispatch).
 
 The convention is a code pattern in the grading pipeline rather than a file, which is
 why the template research recommended carrying it in the eval README rather than as
@@ -204,7 +204,7 @@ score, so an `error` budget on them would have been an aspirational number dress
 Operational choices from the same plan: the job runs on push-to-`main` plus manual dispatch
 only (on every PR it would roughly triple CI-minute overage), and it stays out of the local
 `make gate` behind its own target. The first four green runs produced no readable reports at
-all — see the artifact-upload instance in [[Silence Reads as Clean]].
+all — see the artifact-upload instance in Silence Reads as Clean.
 
 ## Zero activated targets: warn in CD, fail at readiness
 
@@ -295,7 +295,7 @@ compared recomputed booleans to an `expected` that the same arithmetic had produ
 export time. It read 1.000 on every row, forever. Computing pass/fail from the input alone
 gave 0.475, which moves with the data. If `expected` and the grader share an arithmetic,
 `expected` can only be a fixture-integrity cross-check, never the pass condition. See
-[[Dead Modifier Trace]] for the trace that ran alongside it.
+Dead Modifier Trace for the trace that ran alongside it.
 
 
 ## Grade Against the Weaker Real Truth (akira, 2026-09-24)
@@ -349,25 +349,13 @@ Item 3 is the non-obvious one. Without a baseline from the fallback, a model sco
 says nothing about whether the LLM adds value over the rule it would replace.
 
 ## See Also
-- [[Observe-Mode Gate With a Named Enforce Trigger]] — related (the same plan's gate-side decision)
 - [[Eval Maturity Ladder]] — extends (how a level-2 deterministic gate is kept honest while judges are still uncalibrated)
 - [[RAG Eval Gate Contract]] — related (gate ownership; this page is about what an un-thresholded gate reports)
 - [[Experiment Tracking Schemas]] — related (log-only-then-promote is the same idea for grader tiers)
 - [[Golden Set Mechanics]] — related (fixtures authored from spec text)
 - [[Gate vs Ship Make Targets]] — related (where the eval gate sits in the local loop)
-- [[Kiez Project]] — instance-of
-- [[Prototype Pipeline Handoff Signals]] — extends (naming GATED/UNGATED at execute time)
 - [[Frozen Ranking Baseline from a Pure Ranker]] — instance-of (ranking and slate metrics registered on fixtures, thresholds deferred to an observed rate)
-- [[Confidence That Is Not a Probability]] — instance-of (self-report vs self-report proxy registered ungated)
-- [[Relevance Is the Score, Enrichability Is the Gate]] — instance-of (calibration against labels the score was built from)
 - [[Eval Non-Determinism]] — extends
-- [[Execute Every Toggle Configuration]] — related (the same template's other false greens)
-- [[Silence Reads as Clean]] — instance-of (a skipped target reads as a passed target)
-- [[Scan-Floor Guard Against Silent No-Op Checks]] — related (an empty gate passing vacuously, answered with a warning plus a later hard stop)
 - [[Positive-Only Judge Fixtures Measure Recall]] — extends (the first judge metric: what all-positive fixtures measure)
 - [[Mask Permitted Spans Before Measuring Copying]] — instance-of (the verbatim grader shipped ungated)
-- [[Dead Modifier Trace]] — related (the same slice's diagnosis-only trace and its grader tautology)
 - [[Own-Oracle Fixtures and the Blind Relabel Path]] — extends (how an own-oracle metric earns its threshold)
-- [[Fixed-Rule Clusters With a Degeneracy Gate]] — extends (a hand-fixtured shape check that may gate)
-- [[Closed Judge Vocabulary, Tolerant Parse]] — related (the closed defect vocabulary the venue-probe metrics import)
-- [[Demote Judge Findings to Keyless Gates]] — extends (judge findings become keyless lints gated at 1.0; judge keys stay commented until the calibration floor)

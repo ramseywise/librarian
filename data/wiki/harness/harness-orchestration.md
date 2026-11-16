@@ -2,7 +2,7 @@
 title: Harness Orchestration
 tags: [llm, agents, infra, concept]
 summary: "Subagents are a context management technique before they are an architecture — isolate as a firewall, define the task graph before parallelizing, and treat the four multi-agent failure modes as harness bugs; label sources and synthesize before delegating."
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--07-orchestration.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--07-orchestration.md
@@ -227,10 +227,8 @@ These are book chapters with no experiments; each point is the author's claim.
 - **Interaction design (Albada ch. 3):** expose autonomy as adjustable levels (manual, ask, agent) with stated risks, decide up front which experiences are synchronous and which asynchronous, and on failure explain, preserve progress and escalate to a human. The chapter reports no user study, and its only figures are uncited speech and reading rates.
 
 ## See Also
-- [[Agent Orchestration Patterns]] <!-- auto-linked -->
 - [[Loop Detection and the Two-Retry Rule]] <!-- auto-linked -->
 - [[Multi-Agent Context]] <!-- auto-linked -->
-- [[Multi-Agent Role Specialization]] <!-- auto-linked -->
 - [[Harness Engineering]] — related (part of)
 - [[Harness Anatomy]] — related (part of)
 - [[Long-Horizon Execution]] — related
@@ -240,7 +238,6 @@ These are book chapters with no experiments; each point is the author's claim.
 - [[Asynchronous Agent Event Loop]] — extends (async workers and interrupts)
 - [[Deep Agent Pillars]] — instance-of (subagent delegation as one pillar)
 - [[Harness Subsystem Attribution]] — extends
-- [[File-Disjoint Agent Waves in One Working Tree]] — instance-of
 - [[AIOS]] — related (resource scheduling beneath agent frameworks)
 - [[Aegean Stability-Horizon Consensus]] — instance-of (quorum plus stability horizon for stopping)
 - [[AsyncThink Fork-Join Organizer]] — instance-of (learned fork and join inside one model)

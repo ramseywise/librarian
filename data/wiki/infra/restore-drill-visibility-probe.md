@@ -2,7 +2,7 @@
 title: "Restore Drill: Rebuild-from-Migrations Visibility Probe"
 tags: [infra, pattern]
 summary: A restore drill rebuilds the database from the migration chain alone, seeds a published and an unpublished row per gated table, and diffs anon vs service-role visibility against production — it catches what a boolean RLS-state check cannot (a vacuous policy predicate, security state applied outside the migrations), provided the local rebuild uses production's grant model.
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-03-dis46-restore-drill.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-03-dis46-restore-drill.md
@@ -67,8 +67,8 @@ the pre-commit gate: it needs Docker and a full migration replay.
 The check fails rather than skips when credentials are missing, and names the variable. It
 has an explicit, separately named escape hatch. Review rounds then found three further
 places where it could pass without checking anything. See
-[[A Check Must Say Why It Could Not Check]] and
-[[Scan-Floor Guard Against Silent No-Op Checks]].
+A Check Must Say Why It Could Not Check and
+Scan-Floor Guard Against Silent No-Op Checks.
 
 ## Known limit
 
@@ -79,7 +79,4 @@ It was flagged, not solved.
 
 ## See Also
 - [[Written-but-Inert RLS Policies]] — extends (the defect class the drill generalizes)
-- [[Artifact Is Not Evidence: Push and Probe]] — instance-of (the migration chain is the artifact; the rebuilt database is the evidence)
 - [[Migration Done Means Pushed and Probed]] — related (the drift gate whose RLS layer the drill reuses)
-- [[A Check Must Say Why It Could Not Check]] — related (PITR check fix from the same review)
-- [[Scan-Floor Guard Against Silent No-Op Checks]] — related (zero-tables-probed fix from the same review)

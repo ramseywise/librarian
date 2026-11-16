@@ -2,7 +2,7 @@
 title: Completion Trigger Gate
 tags: [infra, llm, pattern]
 summary: "For keystroke-triggered inline completion, the main cost and latency lever is deciding whether to call the model at all: client debounce, parser-based suppression at low-value cursor positions, and a cheap acceptance-probability classifier that skips the LLM below a threshold — plus cancelling stale in-flight requests."
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/repos/sisyphus/interviewing--rounds--system-design-round--walkthroughs--coding-copilot.md
 ---
@@ -32,12 +32,7 @@ Only requests that pass all three reach the model, and only 1–3 candidates are
 
 ## Why it generalizes
 
-It is the same move as [[Spend Gate Before the Model Call]] in a batch pipeline: a
+It is the same move as Spend Gate Before the Model Call in a batch pipeline: a
 deterministic or very cheap check decides whether a token is worth spending, and every
 skip is counted. The copilot version adds a learned acceptance predictor, because the
 "is it worth it?" signal there is user behaviour, not input hashes.
-
-## See Also
-- [[Spend Gate Before the Model Call]] — alternative-to (the batch-pipeline version of the same gate)
-- [[AI System Design Walkthroughs]] — instance-of (the coding copilot problem)
-- [[Context Engineering and Cost Interview Study Guide]] — extends

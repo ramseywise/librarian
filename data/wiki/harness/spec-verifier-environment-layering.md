@@ -2,7 +2,7 @@
 title: Spec, Verifier, Environment Layering
 tags: [harness, llm, concept]
 summary: "A practitioner framing of working with coding agents as three layers that all transmit your understanding — a spec (the goal, not the task, in small agile slices), a verifier (criteria before work, a second model as critic, an external ground-truth signal), and an environment (operating contract, knowledge base, skills, and hooks for what must never happen)."
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--karpathy-method.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--karpathy-method.md
@@ -31,7 +31,7 @@ can act on.
 - **Uncover the goal, not the task.** "Make an end-of-month report" is a task. The goal is the
   decision the report drives, and that is the one thing a model cannot infer. Extract it
   deliberately (e.g. "interview me to identify the goal"). This is the same move as
-  [[Scope-POC Design Interview]].
+  Scope-POC Design Interview.
 - **Agile specs, not waterfall.** People hand an agent everything at once because delegating
   feels efficient. Use small, compartmentalised specs with a checkpoint after each one.
   Plan mode is not wrong. It is too high-level.
@@ -62,7 +62,7 @@ environment is the workshop itself. Most people rebuild it every session. It has
 1. **Operating contract** (`CLAUDE.md`): layout, skill routing, where to look for what,
    standing rules. "It's your world and AI is living in it."
 2. **Personal knowledge base.** Your own curated material, structured so the model knows
-   where things live ([[Karpathy LLM Wiki Pattern]]).
+   where things live (Karpathy LLM Wiki Pattern).
 3. **Skills for anything repeated.** Use exposes where a skill leaks ("run water through the
    hose"), so the system compounds.
 4. **Rules vs requests.** A `CLAUDE.md` line is a request the model can ignore. A pre-tool-use
@@ -90,6 +90,4 @@ SMART, a Google performance-modeling library for TPUs, keeps almost no code on i
 - [[Harness Engineering]] — extends (the same harness described from the operator's chair)
 - [[Verification Loops]] — prerequisite-for (depth on the verifier layer)
 - [[Execution Boundaries and Guardrails]] — extends (never-do as hook-enforced rules)
-- [[Scope-POC Design Interview]] — instance-of (goal extraction by interview)
-- [[Karpathy LLM Wiki Pattern]] — instance-of (the knowledge-base component of the environment)
 - [[Paper-Replication Completion Gate]] — related (checks outside the agent decide done)

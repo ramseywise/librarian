@@ -2,7 +2,7 @@
 title: Prompt Engineering
 tags: [prompting, llm, concept]
 summary: The innermost layer of the agent stack — the instructions and examples themselves, grounded in the document-completion mental model; ends where decisions about what to include in the window begin.
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt--prompt-engineering.md
   - data/raw/papers/2026-11-07-huyen-ai-engineering-ch05-prompt-engineering.md
@@ -69,7 +69,6 @@ use markdown", because the negative form leaves the target underspecified.
   before any user message. One focused sentence often beats extensive inline instruction.
   Authority hierarchy: developer role > user role > instructions parameter.
 - **[[Few-Shot Prompting]]** — 3–5 worked examples; the most reliable way to steer format.
-- **[[Chain of Thought]]** — reason step-by-step before answering. Note that reasoning
   models do this internally, making explicit CoT prompts redundant though still valid.
 - **[[XML Prompt Structuring]]** — wrap distinct prompt sections in tags to prevent
   misinterpretation.
@@ -126,11 +125,9 @@ is the primary security concern for any system with external inputs. See
 [[Prompt Injection]].
 
 ## See Also
-- [[Scope-POC Design Interview]] <!-- auto-linked -->
 - [[Context Engineering]] — extends
 - [[Few-Shot Prompting]] — instance-of
 - [[Prompt Injection]] — alternative-to
-- [[Chain of Thought]] — instance-of
 - [[Prompts as Document Completion]] — prerequisite-for
 - [[Four Prompt Criteria]] — instance-of
 - [[Prompting Technique Selection]] — instance-of

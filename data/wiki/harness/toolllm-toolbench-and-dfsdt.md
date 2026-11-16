@@ -2,7 +2,7 @@
 title: ToolLLM ToolBench and DFSDT
 tags: [harness, concept]
 summary: Pipeline that builds ToolBench from 16,464 RapidAPI APIs with ChatGPT, annotates solution paths with a depth-first decision-tree search (DFSDT), fine-tunes LLaMA-2 7B and judges with ChatGPT-based ToolEval (self-reported).
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-07-qin-2023-toolllm.md
 ---
@@ -28,6 +28,5 @@ ToolLLM (preprint, 2023) is a data-and-evaluation recipe for general tool use. C
 
 ## See Also
 - [[Gorilla and APIBench]] — related
-- [[ReAct Pattern]] — prerequisite-for
 - [[AnyTool]] — related
 - [[Tool Design as Harness Surface]] — related

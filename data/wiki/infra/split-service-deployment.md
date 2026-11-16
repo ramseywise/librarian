@@ -2,7 +2,7 @@
 title: Split Service Deployment
 tags: [infra, pattern]
 summary: Separately deployed frontend and backend sharing identity through a common auth provider — the only rung that supports external users and multi-tenancy, at roughly double the operational burden.
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/deployment-topology.md
 ---
@@ -37,7 +37,7 @@ The team-composition constraints are as binding as the technical ones. Two of th
 
 **Semester** — needs two deployments, shared auth (Supabase), CORS configuration,
 environment management for both services, JWT validation, and frontend routing +
-middleware. Per [[Complexity Floor]], this rung is simply unreachable on a weekend or
+middleware. Per Complexity Floor, this rung is simply unreachable on a weekend or
 multi-sprint budget; there is no reduced version of it.
 
 ## Example Scenario
@@ -87,7 +87,6 @@ conversation rather than in a later infrastructure decision.
 - [[Deployment Topology Ladder]] — related (part of)
 - [[Single Service Deployment]] — prerequisite-for
 - [[Cloud Service Deployment]] — prerequisite-for
-- [[Complexity Floor]] — related (constrains; semester-tier only; no reduced version exists)
 - [[System Design — Serverless Agent Backends]] — instance-of (Vercel-hosted split stack in practice)
 - [[PGVector Migration Pattern]] — related (Supabase Postgres as shared vector + app store)
 - [[Written-but-Inert RLS Policies]] — extends (the three-client trust model and how its policies fail silently)

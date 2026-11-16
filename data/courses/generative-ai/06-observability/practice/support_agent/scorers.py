@@ -1,44 +1,7 @@
 """Free online scores: heuristics that need no model and run on every trace."""
 
-DUTCH_MARKERS = {
-    "ik",
-    "je",
-    "en",
-    "is",
-    "op",
-    "van",
-    "te",
-    "de",
-    "het",
-    "een",
-    "als",
-    "met",
-    "voor",
-    "of",
-    "kan",
-    "heeft",
-    "binnen",
-    "naar",
-    "mijn",
-}
-ENGLISH_MARKERS = {
-    "the",
-    "you",
-    "is",
-    "of",
-    "to",
-    "and",
-    "can",
-    "for",
-    "with",
-    "a",
-    "it",
-    "before",
-    "are",
-    "up",
-    "what",
-    "how",
-}
+DUTCH_MARKERS = {"ik", "je", "en", "is", "op", "van", "te", "de", "het", "een", "als", "met", "voor", "of", "kan", "heeft", "binnen", "naar", "mijn"}
+ENGLISH_MARKERS = {"the", "you", "is", "of", "to", "and", "can", "for", "with", "a", "it", "before", "are", "up", "what", "how"}
 
 
 def language_of(text):
@@ -64,9 +27,7 @@ def language_consistency(trace):
 
 def retrieval_quality(trace):
     """The best retrieval score of any search in the turn."""
-    tops = [
-        s.tool_result["top_score"] for s in trace.spans if s.name == "kb_search" and s.tool_result
-    ]
+    tops = [s.tool_result["top_score"] for s in trace.spans if s.name == "kb_search" and s.tool_result]
     return max(tops) if tops else 0.0
 
 

@@ -2,7 +2,7 @@
 title: Graded-Uncertainty Enrichment Contract
 tags: [prompting, llm, eval, pattern]
 summary: An LLM annotation schema that separates three levels of not-knowing — non-blocking `uncertainty_flags`, a usable-but-incomplete `enrichment_status=partial`, and a blocking `needs_review` with a reason — so sparse input lowers certainty rather than quality scores, enums carry `unknown` while multi-selects use empty arrays, and the downstream gate routes `partial_but_usable` items to production instead of a review backlog.
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/diskoe/docs/notion/ai-enrichment.md
   - data/raw/claude-docs/playground/docs/notion/ai-enrichment.md
@@ -111,8 +111,4 @@ with** yield, so a drop in tag count could not pass as a quality loss, or a rise
 - [[Specificity-Adaptive Ranking and Slate Composition]] — prerequisite-for
 - [[LLM Grader Calibration Insights]] — related (verbosity bias as the failure this rule guards against)
 - [[Human Agreement Ceiling Protocol]] — related (the subjective fields here are the ones whose accuracy is a category error)
-- [[Confidence That Is Not a Probability]] — extends (why a numeric confidence can't be calibrated or escalated on yet)
-- [[One Facet Per Fact]] — extends (one facet per kind of fact, time derived not emitted)
-- [[Hide-Unknown Display Contract]] — related (abstention upstream, hidden field downstream)
 - [[Capped Tiered Tag Assignment]] — related (how many tag values an item gets)
-- [[Fixed-Rule Clusters With a Degeneracy Gate]] — related (`unknown` treated as a value when grouping)

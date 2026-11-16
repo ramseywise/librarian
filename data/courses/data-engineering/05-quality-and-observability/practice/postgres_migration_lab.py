@@ -23,19 +23,8 @@ Exercises:
   4. Write your_migration() and run --exercise. Your target: zero errors, zero wrong rows,
      every goal met, worst stall under 250 ms on an otherwise quiet machine.
 """
-
-import collections
-import os
-import random
-import shutil
-import subprocess
-import sys
-import tempfile
-import threading
-import time
-
-import pgserver
-import psycopg
+import collections, os, random, shutil, subprocess, sys, tempfile, threading, time
+import pgserver, psycopg
 
 BIN = os.path.dirname(pgserver.__file__) + "/pginstall/bin"
 ROOT = tempfile.mkdtemp(dir="/tmp", prefix="lab")
@@ -44,36 +33,25 @@ STALL_LIMIT_MS = 250
 
 
 def tool(name, *args):
-    return subprocess.run(
-        [f"{BIN}/{name}", *args], check=True, capture_output=True, text=True
-    ).stdout
+    return subprocess.run([f"{BIN}/{name}", *args], check=True, capture_output=True, text=True).stdout
 
 
 def connect():
-    return psycopg.connect(
-        f"host={ROOT} port={PORT} user=postgres dbname=postgres", autocommit=True
-    )
+    return psycopg.connect(f"host={ROOT} port={PORT} user=postgres dbname=postgres", autocommit=True)
 
 
 class App:
     """Reads and writes in a loop. `version` is what is deployed: old, mixed (mid-rollout) or new."""
-
-    OLD = {
-        "read": "SELECT cust_email, amount FROM accounts WHERE id = %s",
-        "write": "UPDATE accounts SET amount = amount + 1 WHERE id = %s",
-    }
-    NEW = {
-        "read": "SELECT email, amount_cents FROM accounts WHERE id = %s",
-        "write": "UPDATE accounts SET amount_cents = amount_cents + 100 WHERE id = %s",
-    }
+    OLD = {"read": "SELECT cust_email, amount FROM accounts WHERE id = %s",
+           "write": "UPDATE accounts SET amount = amount + 1 WHERE id = %s"}
+    NEW = {"read": "SELECT email, amount_cents FROM accounts WHERE id = %s",
+           "write": "UPDATE accounts SET amount_cents = amount_cents + 100 WHERE id = %s"}
 
     def __init__(self):
         self.version, self.halt = "old", threading.Event()
         self.errors, self.worst, self.queries = collections.Counter(), 0.0, 0
-        self.applied = collections.Counter()  # successful writes per id: the truth
-        self.threads = [
-            threading.Thread(target=self.loop, args=(kind,)) for kind in ("read", "write")
-        ]
+        self.applied = collections.Counter()                  # successful writes per id: the truth
+        self.threads = [threading.Thread(target=self.loop, args=(kind,)) for kind in ("read", "write")]
 
     def code(self):
         version = random.choice(["old", "new"]) if self.version == "mixed" else self.version
@@ -117,10 +95,8 @@ def reset(db):
 
 def unmet_goals(db):
     """What in the goal state is not true of the table now."""
-    columns = dict(
-        db.execute("""SELECT column_name, is_nullable FROM information_schema.columns
-                                 WHERE table_name = 'accounts'""").fetchall()
-    )
+    columns = dict(db.execute("""SELECT column_name, is_nullable FROM information_schema.columns
+                                 WHERE table_name = 'accounts'""").fetchall())
     missing = []
     if columns.get("email") != "NO":
         missing.append("email missing or nullable")
@@ -128,15 +104,11 @@ def unmet_goals(db):
         missing.append("amount_cents missing")
     if {"cust_email", "amount"} & set(columns):
         missing.append("old columns still there")
-    if db.execute(
-        "SELECT count(*) FROM pg_trigger WHERE tgrelid = 'accounts'::regclass AND NOT tgisinternal"
-    ).fetchone()[0]:
+    if db.execute("SELECT count(*) FROM pg_trigger WHERE tgrelid = 'accounts'::regclass AND NOT tgisinternal").fetchone()[0]:
         missing.append("trigger left behind")
     valid = db.execute("""SELECT count(*) FROM pg_index i JOIN pg_attribute a
                           ON a.attrelid = i.indrelid AND a.attnum = i.indkey[0]
-                          WHERE i.indrelid = 'accounts'::regclass AND a.attname = 'email' AND i.indisvalid""").fetchone()[
-        0
-    ]
+                          WHERE i.indrelid = 'accounts'::regclass AND a.attname = 'email' AND i.indisvalid""").fetchone()[0]
     if not valid:
         missing.append("no valid index on email")
     return missing
@@ -144,11 +116,8 @@ def unmet_goals(db):
 
 def wrong_rows(db, app):
     """Compare every row against the start value plus the writes the application saw succeed."""
-    columns = {
-        r[0]
-        for r in db.execute("""SELECT column_name FROM information_schema.columns
-                                           WHERE table_name = 'accounts'""").fetchall()
-    }
+    columns = {r[0] for r in db.execute("""SELECT column_name FROM information_schema.columns
+                                           WHERE table_name = 'accounts'""").fetchall()}
     if "amount_cents" not in columns:
         return ROWS
     rows = db.execute("SELECT id, amount_cents FROM accounts").fetchall()
@@ -197,27 +166,19 @@ def safe_migration(app, db, trigger=True, batch=5_000):
                     RETURN NEW;
                   END $$""")
     if trigger:
-        ddl_with_retry(
-            db,
-            """CREATE TRIGGER sync_accounts BEFORE INSERT OR UPDATE ON accounts
-                              FOR EACH ROW EXECUTE FUNCTION sync_accounts()""",
-        )
+        ddl_with_retry(db, """CREATE TRIGGER sync_accounts BEFORE INSERT OR UPDATE ON accounts
+                              FOR EACH ROW EXECUTE FUNCTION sync_accounts()""")
     # backfill: short keyed transactions, restartable because it only touches unfilled rows
     for low in range(0, ROWS, batch):
-        db.execute(
-            """UPDATE accounts SET email = cust_email, amount_cents = amount * 100
-                      WHERE id > %s AND id <= %s AND (email IS NULL OR amount_cents IS NULL)""",
-            (low, low + batch),
-        )
+        db.execute("""UPDATE accounts SET email = cust_email, amount_cents = amount * 100
+                      WHERE id > %s AND id <= %s AND (email IS NULL OR amount_cents IS NULL)""", (low, low + batch))
     # verify before anything reads the new columns
     if trigger:
         differ = db.execute("""SELECT count(*) FROM accounts WHERE email IS DISTINCT FROM cust_email
                                OR amount_cents IS DISTINCT FROM amount * 100""").fetchone()[0]
         assert differ == 0, f"{differ} rows differ; do not deploy"
     # constraints and indexes that do not block the application
-    ddl_with_retry(
-        db, "ALTER TABLE accounts ADD CONSTRAINT email_nn CHECK (email IS NOT NULL) NOT VALID"
-    )
+    ddl_with_retry(db, "ALTER TABLE accounts ADD CONSTRAINT email_nn CHECK (email IS NOT NULL) NOT VALID")
     db.execute("ALTER TABLE accounts VALIDATE CONSTRAINT email_nn")
     ddl_with_retry(db, "ALTER TABLE accounts ALTER COLUMN email SET NOT NULL")
     ddl_with_retry(db, "ALTER TABLE accounts DROP CONSTRAINT email_nn")
@@ -226,7 +187,7 @@ def safe_migration(app, db, trigger=True, batch=5_000):
     app.version = "mixed"
     time.sleep(DEPLOY_SECONDS)
     app.version = "new"
-    time.sleep(0.2)  # the last old instance has drained
+    time.sleep(0.2)                                            # the last old instance has drained
     # contract
     ddl_with_retry(db, "DROP TRIGGER IF EXISTS sync_accounts ON accounts")
     ddl_with_retry(db, "ALTER TABLE accounts DROP COLUMN cust_email, DROP COLUMN amount")
@@ -250,10 +211,8 @@ def run(name, migration):
     wrong, goals = wrong_rows(db, app), unmet_goals(db)
     errors = sum(app.errors.values())
     passed = not errors and not wrong and not goals and app.worst * 1000 < STALL_LIMIT_MS
-    print(
-        f"{name:18s} {took:5.1f} s | {app.queries:6,d} queries | {errors:5,d} errors | "
-        f"worst stall {app.worst * 1000:6.0f} ms | {wrong:5,d} wrong rows | {'PASS' if passed else 'FAIL'}"
-    )
+    print(f"{name:18s} {took:5.1f} s | {app.queries:6,d} queries | {errors:5,d} errors | "
+          f"worst stall {app.worst * 1000:6.0f} ms | {wrong:5,d} wrong rows | {'PASS' if passed else 'FAIL'}")
     for kind, n in sorted(app.errors.items()):
         print(f"{'':18s} {n:5,d} {kind}")
     for goal in goals:
@@ -265,9 +224,7 @@ def run(name, migration):
 def main():
     tool("initdb", "-D", f"{ROOT}/d", "-U", "postgres", "--auth=trust", "-E", "UTF8")
     with open(f"{ROOT}/d/postgresql.conf", "a") as f:
-        f.write(
-            f"listen_addresses=''\nunix_socket_directories='{ROOT}'\nport={PORT}\nmax_wal_size=4GB\n"
-        )
+        f.write(f"listen_addresses=''\nunix_socket_directories='{ROOT}'\nport={PORT}\nmax_wal_size=4GB\n")
     tool("pg_ctl", "-w", "-D", f"{ROOT}/d", "-l", f"{ROOT}/log", "start")
     try:
         if "--exercise" in sys.argv:
@@ -279,18 +236,11 @@ def main():
         else:
             n_errors, _, n_goals, _ = run("naive", naive_migration)
             s_errors, s_wrong, s_goals, _ = run("expand-contract", safe_migration)
-            assert n_errors > 0 and not n_goals, (
-                "naive should reach the goal but hurt the application"
-            )
+            assert n_errors > 0 and not n_goals, "naive should reach the goal but hurt the application"
             assert s_errors == 0 and s_wrong == 0 and not s_goals, "safe migration must be clean"
-            print(
-                "checks passed: naive reached the goal and broke the application; expand-contract did neither"
-            )
+            print("checks passed: naive reached the goal and broke the application; expand-contract did neither")
     finally:
-        subprocess.run(
-            [f"{BIN}/pg_ctl", "-w", "-D", f"{ROOT}/d", "-m", "immediate", "stop"],
-            capture_output=True,
-        )
+        subprocess.run([f"{BIN}/pg_ctl", "-w", "-D", f"{ROOT}/d", "-m", "immediate", "stop"], capture_output=True)
         shutil.rmtree(ROOT, ignore_errors=True)
 
 

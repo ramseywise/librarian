@@ -2,7 +2,7 @@
 title: Exposure-Tiered Dependency Triage
 tags: [infra, pattern]
 summary: "Route dependency updates by CI result and semver bump type, not by repo. Non-major bumps that pass CI auto-merge. Major bumps, CI failures and PRs stuck more than 7 days go to a weekly read-only triage report. Vulnerability alerts are a separate stream, decided by exposure (is this code path actually deployed?) rather than severity alone."
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/guacamayo/docs/plans/2026-07-22-dependabot-vuln-workflow.md
   - data/raw/repos/guacamayo/.claude--docs--plans--2026-07-22-dependabot-vuln-workflow.md
@@ -94,5 +94,3 @@ Two alerts had no upstream fix to bump to, and each was handled differently:
 ## See Also
 - [[Gate Dependabot Auto-Merge on Branch Protection]] — extends (where the Tier 1 gate eventually moved)
 - [[Silent Failure Catalogue]] — related (silently diverged workflow copies)
-- [[Agile Workflow Definitions]] — related (the weekly cadence slot and the DoD gap)
-- [[AI Project Template Scaffold]] — related (the reusable CI workflow Tier 1 waits on)

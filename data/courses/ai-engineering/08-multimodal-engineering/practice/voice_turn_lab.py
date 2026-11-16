@@ -11,7 +11,6 @@ Nothing here touches audio or a speech model. Stage latencies are random draws a
 with a spread we assumed. The transcripts are generated from a seed with two made-up error profiles. The state machine,
 the scoring and the arithmetic are real, and the numbers describe these assumptions, not any product.
 """
-
 # %%
 import math
 import random
@@ -21,14 +20,8 @@ import statistics
 SEED, TURNS, TARGET_MS = 7, 20_000, 800
 SPREAD = 0.45  # sigma of each stage's log latency, an assumption; each stage's p95 stays at the note's placeholder
 
-STREAMING_P95 = {
-    "network in": 40,
-    "VAD end of speech": 300,
-    "ASR partial": 60,
-    "LLM to first token": 400,
-    "TTS first audio": 100,
-    "network out": 40,
-}
+STREAMING_P95 = {"network in": 40, "VAD end of speech": 300, "ASR partial": 60, "LLM to first token": 400,
+                 "TTS first audio": 100, "network out": 40}
 
 
 # %% 1. Stage p95s don't add up to the p95 of the turn
@@ -45,9 +38,7 @@ def latency_section():
     rng = random.Random(SEED)
     turns = [sum(draw(rng, p) for p in STREAMING_P95.values()) for _ in range(TURNS)]
     summed = sum(STREAMING_P95.values())
-    print(
-        f"1. Streaming cascade, {TURNS:,} simulated turns, sigma {SPREAD} per stage, independent stages"
-    )
+    print(f"1. Streaming cascade, {TURNS:,} simulated turns, sigma {SPREAD} per stage, independent stages")
     print(f"   sum of stage p95s  {summed:6.0f} ms   (the note's budget table)")
     print(f"   p95 of whole turn  {percentile(turns, 0.95):6.0f} ms")
     print(f"   p50 of whole turn  {percentile(turns, 0.50):6.0f} ms")
@@ -99,16 +90,14 @@ class Turn:
             self.state = "listening"  # nothing was spoken, but the tool is still running
 
     def _commit(self, interrupted):
-        self.history.append(
-            {"role": "assistant", "text": " ".join(self.spoken), "interrupted": interrupted}
-        )
+        self.history.append({"role": "assistant", "text": " ".join(self.spoken), "interrupted": interrupted})
         self.spoken, self.state = [], "listening"
 
 
 def replay(keep):
     t = Turn(keep_tool_outcome=keep)
     t.call_tool("issue_refund")
-    t.barge_in()  # the caller talks over the silence
+    t.barge_in()                                  # the caller talks over the silence
     t.tool_done("refund of 40 EUR issued", ["Your refund has gone through."])
     return t
 
@@ -118,41 +107,21 @@ def barge_in_section():
     for keep, label in [(False, "naive, drops the result"), (True, "keeps the outcome    ")]:
         t = replay(keep)
         knows = any(h.get("name") == "issue_refund" for h in t.history)
-        print(
-            f"   {label}  state={t.state}  next turn knows about the refund: {knows}  history={t.history}"
-        )
+        print(f"   {label}  state={t.state}  next turn knows about the refund: {knows}  history={t.history}")
     print()
 
 
 # %% 3. WER and critical terms on a generated corpus
-TEMPLATES = [
-    "you charged me {amt} euros on the {day} of april",
-    "my order number is {num}",
-    "please cancel the {day} payment",
-    "i was told it would be {amt} euros and now the bill says something else entirely which is really not what we agreed on the phone last week",
-    "can you check the invoice from the {day}",
-    "the refund of {amt} euros has not arrived",
-    "yes",
-    "no thanks",
-]
-WORD_SWAPS = {
-    "charged": "charge",
-    "payment": "payments",
-    "invoice": "invoices",
-    "agreed": "agree",
-    "really": "very",
-    "told": "sold",
-}
+TEMPLATES = ["you charged me {amt} euros on the {day} of april", "my order number is {num}", "please cancel the {day} payment",
+             "i was told it would be {amt} euros and now the bill says something else entirely which is really not what we agreed on the phone last week",
+             "can you check the invoice from the {day}", "the refund of {amt} euros has not arrived", "yes", "no thanks"]
+WORD_SWAPS = {"charged": "charge", "payment": "payments", "invoice": "invoices", "agreed": "agree", "really": "very", "told": "sold"}
 
 
 def make_corpus(rng, n=400):
     out = []
     for _ in range(n):
-        amt, num, day = (
-            str(rng.randint(11, 99)),
-            str(rng.randint(1000, 9999)),
-            f"{rng.randint(1, 28)}th",
-        )
+        amt, num, day = str(rng.randint(11, 99)), str(rng.randint(1000, 9999)), f"{rng.randint(1, 28)}th"
         text = rng.choice(TEMPLATES).format(amt=amt, num=num, day=day)
         critical = [w for w in text.split() if any(c.isdigit() for c in w)]
         out.append((text, critical))
@@ -197,13 +166,8 @@ def score(corpus, hyps):
 def wer_section():
     rng = random.Random(SEED)
     corpus = make_corpus(rng)
-    engines = {
-        "engine A, good on words, weak on numbers": (0.02, 0.20),
-        "engine B, weak on words, good on numbers": (0.06, 0.02),
-    }
-    print(
-        f"3. {len(corpus)} generated caller sentences, two made-up error profiles (word error, number error)"
-    )
+    engines = {"engine A, good on words, weak on numbers": (0.02, 0.20), "engine B, weak on words, good on numbers": (0.06, 0.02)}
+    print(f"3. {len(corpus)} generated caller sentences, two made-up error profiles (word error, number error)")
     print(f"   {'':44}{'corpus WER':>11}{'mean per-sentence':>19}{'critical recall':>17}")
     for name, (we, ne) in engines.items():
         hyps = [transcribe(rng, text, we, ne) for text, _ in corpus]

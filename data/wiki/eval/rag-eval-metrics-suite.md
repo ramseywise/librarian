@@ -2,7 +2,7 @@
 title: RAG Eval Metrics Suite
 tags: [eval, rag, pattern]
 summary: Eight-metric RAG evaluation framework covering stakeholder quality (faithfulness, naturalness, completeness, relevance), retrieval quality (contextual relevance, recall, document precision), and system calibration — split between runtime-compatible and offline-only metrics.
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/chat-agent/docs/eval/eval_metrics.md
   - data/raw/claude-docs/project-g/docs/stakeholders/agent-comparison-findings.md
@@ -187,7 +187,7 @@ and compute mean grounding ratio per bucket. Healthy when tiers rank-order with 
 broken when HIGH and LOW buckets score the same — the self-assessment adds no information.
 Build it as a **run-level aggregator**, not a per-item grader; it needs no new LLM calls.
 Exclude semantic-cache hits — they bypass the pipeline and never produce a confidence score.
-See [[Confidence That Is Not a Probability]] for checking the score is a probability at all.
+See Confidence That Is Not a Probability for checking the score is a probability at all.
 
 **Four evaluation planes.** Passage relevance (context precision), claim support
 (faithfulness / grounding), intent alignment and coverage (relevancy, completeness), and

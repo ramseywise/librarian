@@ -2,7 +2,7 @@
 title: Skill Eval Pipeline (Blind Comparison + Grading)
 tags: [eval, pattern]
 summary: Three-agent pipeline for A/B testing Claude Code skills — a blind comparator scores two outputs on a rubric without knowing which skill produced them, a grader checks explicit expectations pass/fail with cited evidence, and a post-hoc analyzer unblinds the result to explain why the winner won and suggest concrete improvements to the loser.
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/project-g/skills/skill-eval/comparator/SKILL.md
   - data/raw/claude-docs/project-g/skills/skill-eval/grader/SKILL.md
@@ -17,7 +17,7 @@ sources:
 
 # Skill Eval Pipeline (Blind Comparison + Grading)
 
-A generic (framework-agnostic, not company-specific) three-agent pipeline for evaluating Claude Code skills against each other or against a defined set of expectations — the mechanism behind "run with-skill vs. without-skill (or old-vs-new) side by side" in [[Claude Workflow System]]'s `/skill-creator` testing loop.
+A generic (framework-agnostic, not company-specific) three-agent pipeline for evaluating Claude Code skills against each other or against a defined set of expectations — the mechanism behind "run with-skill vs. without-skill (or old-vs-new) side by side" in Claude Workflow System's `/skill-creator` testing loop.
 
 ## Why Three Separate Agents
 
@@ -58,7 +58,6 @@ The vendored `skill-creator` skill wraps the same comparison in an iteration loo
   ALWAYS/NEVER is a yellow flag; explain the *why* instead.
 - Artifacts follow fixed JSON schemas (`evals.json`, `grading.json`, `benchmark.json`,
   `comparison.json`, …), so iterations can be compared.
-- Trigger accuracy is tuned separately (see [[Skill Discovery Failure Modes]]).
 
 ## Two-tier eval default
 
@@ -76,7 +75,7 @@ A cross-repo skill audit made this the default in skill-creator, replacing an op
 
 The norm went into skill-creator, which loads when a skill is being written. It was not
 put in always-on rules. Before it was rolled out, the copies were de-duplicated (see
-[[De-Dupe Before You Normalize]]).
+De-Dupe Before You Normalize).
 
 ## Ground truth as code (Tamhane et al.)
 
@@ -90,11 +89,7 @@ Limits: the same model plays skill and judge; the method takes the reference cod
 - [[Eval Harness Anatomy]] <!-- auto-linked -->
 - [[System Design — Unified Eval Harness]] <!-- auto-linked -->
 - [[project-g Eval Architecture]] <!-- auto-linked -->
-- [[Claude Workflow System]]
 - [[Anthropic Three-Tier Eval Taxonomy]]
 - [[LLM Grader Calibration Insights]]
 - [[Grounding Claim Methodology]]
-- [[Skill Discovery Failure Modes]] — extends (trigger evals for the description, beside output-quality evals)
 - [[Skill Lift Evaluation]] — related (published studies of the with/without-skill comparison)
-- [[Verification Thins Where Blast Radius Widens]] — extends (what happens when only the trigger evals run)
-- [[De-Dupe Before You Normalize]] — related (classify skill copies before rolling the eval norm out)

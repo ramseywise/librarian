@@ -2,7 +2,7 @@
 title: Transactional Email Sender Setup
 tags: [infra, pattern]
 summary: Setting up auth-flow email (provider choice, sending subdomain, SPF/DKIM/DMARC, templates, rate limits) — most failure modes are silent spam-folder routing, so verify on a real delivered message's Authentication-Results header.
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-05-dis148-sending-domain.md
   - data/raw/claude-docs/diskoe/docs/plans/2026-09-05-dis148-sending-domain.md
@@ -26,7 +26,7 @@ From the akira sending-domain and auth-SMTP plans: wiring an auth provider's con
 magic-link mail through a dedicated email provider. Almost every misconfiguration here fails
 *silently* — mail is accepted, then lands in spam or is throttled — so the plan is built around
 explicit verification. The sequencing argument (domain → DNS → warm-up as the long pole) is in
-[[The Free Decision Is the Long-Lead Item]].
+The Free Decision Is the Long-Lead Item.
 
 ## Provider choice: what you can actually reach
 
@@ -68,5 +68,4 @@ through the new sender before warm-up has begun. (Warm-up length estimates in th
 from hours to ~3 weeks without a cited basis — treat it as unknown and start early.)
 
 ## See Also
-- [[The Free Decision Is the Long-Lead Item]] — extends (the operational checklist behind the chain)
 - [[Silent Failure Catalogue]] — instance-of (spam-folder routing and silent throttling)

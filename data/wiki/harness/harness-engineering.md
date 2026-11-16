@@ -2,7 +2,7 @@
 title: Harness Engineering
 tags: [llm, agents, infra, concept]
 summary: "Agent = Model + Harness — the discipline of building everything between request and output except the weights (context, tools, constrain, verify, correct), why reliability compounding makes the harness dominate the model, and why coding agents matured first."
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--README.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--README.md
@@ -298,11 +298,9 @@ Atomic pages: [[Harness Subsystem Attribution]] · [[Dynamic Tool Discovery]] ·
 - [[Procedural Graphs]] — instance-of
 - [[Deep Research Agent Systems]] — instance-of (search agents as a harness class)
 - [[Spec, Verifier, Environment Layering]] — extends (a practitioner framing of the same harness as spec + verifier + workshop)
-- [[Agent Scaffolding Skill Layers]] <!-- auto-linked -->
 - [[Prompt Engineering]] <!-- auto-linked -->
 - [[Context Engineering]] — prerequisite-for
 - [[Harness Anatomy]] — related (part of)
-- [[ACI (Agent-Computer Interface)]] — instance-of
 - [[Loop Engineering]] — extends (the layer above: the harness supplies tools, the loop decides when to stop using them)
 - [[Agentic Engineering and the New SDLC]] — related (the same "skill issue" reframe reached from the process side, plus the TCO argument)
 - [[Agent Interoperability Protocol Stack]] — related (what governs the boundary when the other side is not under your control)

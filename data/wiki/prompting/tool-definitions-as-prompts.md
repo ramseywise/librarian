@@ -2,7 +2,7 @@
 title: Tool Definitions as Prompts
 tags: [prompting, mcp, pattern]
 summary: Function calling is still document completion — schemas are rendered into the system message (TypeScript-style in one vendor's format, with some JSON-schema constraints silently dropped), so every name, description and enum is prompt text steering a chain of hierarchical classifiers; validate constraints and gate side effects in code.
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--05-tools-and-function-calling.md
 ---
@@ -14,7 +14,7 @@ appends the result as a `tool` message. Arguments arrive as a JSON *string*; one
 carry several parallel calls, each answered by `tool_call_id` before the next model call.
 `tool_choice` can be `auto`, `none`, or a forced tool — forcing is how a tool becomes a
 structured-output mechanism ([[Structured Output]]). The observation becomes context for
-the next step: [[ReAct Pattern]] with the bookkeeping done by the API.
+the next step: ReAct Pattern with the bookkeeping done by the API.
 
 ## Under the hood
 
@@ -83,7 +83,6 @@ regenerating from that point — a derailed conversation becomes a quick correct
 ## See Also
 - [[Tool Design as Harness Surface]] — extends (agent-level tool surface)
 - [[Structured Output]] — extends
-- [[ReAct Pattern]] — instance-of
 - [[Prompts as Document Completion]] — prerequisite-for
 - [[TypeScript for AI Apps]] — instance-of (the tool loop and zod tool schemas in TS)
 - [[Runtime Validation with Zod]] — related (one schema gives the type, the validation and the tool definition)

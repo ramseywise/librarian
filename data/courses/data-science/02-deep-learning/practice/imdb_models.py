@@ -9,19 +9,18 @@ Run from this folder (about three minutes on a CPU):
 
 Reads ../../03-nlp/practice/intro-to-nlp/data/IMDB Dataset.csv, the file the note uses. Writes dl-imdb-models.png.
 """
-
 # %%
 import re
 from collections import Counter
 from pathlib import Path
 
-import chartstyle as cs
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import chartstyle as cs
+import matplotlib.pyplot as plt
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 
@@ -83,9 +82,7 @@ class BiLSTM(nn.Module):
 
     def forward(self, x):
         n = (x != 0).sum(1).clamp(min=1).cpu()
-        packed = nn.utils.rnn.pack_padded_sequence(
-            self.emb(x), n, batch_first=True, enforce_sorted=False
-        )
+        packed = nn.utils.rnn.pack_padded_sequence(self.emb(x), n, batch_first=True, enforce_sorted=False)
         _, (h, _) = self.rnn(packed)
         return self.out(torch.cat([h[0], h[1]], dim=1))
 
@@ -93,14 +90,7 @@ class BiLSTM(nn.Module):
 def accuracy(m, X, y, bs=500):
     m.eval()
     with torch.no_grad():
-        return float(
-            np.mean(
-                [
-                    (m(X[i : i + bs]).argmax(1) == y[i : i + bs]).float().mean().item()
-                    for i in range(0, len(X), bs)
-                ]
-            )
-        )
+        return float(np.mean([(m(X[i:i+bs]).argmax(1) == y[i:i+bs]).float().mean().item() for i in range(0, len(X), bs)]))
 
 
 def fit(m, epochs, lr):
@@ -109,20 +99,14 @@ def fit(m, epochs, lr):
         m.train()
         perm = torch.randperm(len(X_tr))
         for i in range(0, len(perm), 32):
-            b = perm[i : i + 32]
+            b = perm[i:i+32]
             loss = F.cross_entropy(m(X_tr[b]), y_tr[b])
-            opt.zero_grad()
-            loss.backward()
-            opt.step()
+            opt.zero_grad(); loss.backward(); opt.step()
     return m
 
 
 rows = []
-for name, build, epochs, lr in [
-    ("Average of embeddings", Average, 8, 3e-3),
-    ("Text CNN", TextCNN, 5, 3e-3),
-    ("BiLSTM", BiLSTM, 4, 3e-3),
-]:
+for name, build, epochs, lr in [("Average of embeddings", Average, 8, 3e-3), ("Text CNN", TextCNN, 5, 3e-3), ("BiLSTM", BiLSTM, 4, 3e-3)]:
     torch.manual_seed(0)
     m = fit(build(), epochs, lr)
     rows.append((name, accuracy(m, X_tr, y_tr), accuracy(m, X_te, y_te)))
@@ -139,37 +123,13 @@ fig, ax = plt.subplots()
 rows = sorted(rows, key=lambda r: r[2])
 for i, (name, tr, te) in enumerate(rows):
     ax.plot([te, tr], [i, i], color=cs.BASELINE, lw=2, zorder=1)
-    ax.scatter(
-        te,
-        i,
-        s=70,
-        color=cs.ORANGE,
-        edgecolor=cs.SURFACE,
-        lw=1.2,
-        zorder=3,
-        label="Test" if i == 0 else None,
-    )
-    ax.scatter(
-        tr,
-        i,
-        s=70,
-        color=cs.BLUE,
-        edgecolor=cs.SURFACE,
-        lw=1.2,
-        zorder=3,
-        label="Train" if i == 0 else None,
-    )
-    ax.annotate(
-        f"{te:.3f}", (te, i), xytext=(-10, 0), textcoords="offset points", ha="right", va="center"
-    )
-    ax.annotate(
-        f"{tr:.3f}", (tr, i), xytext=(10, 0), textcoords="offset points", ha="left", va="center"
-    )
+    ax.scatter(te, i, s=70, color=cs.ORANGE, edgecolor=cs.SURFACE, lw=1.2, zorder=3, label="Test" if i == 0 else None)
+    ax.scatter(tr, i, s=70, color=cs.BLUE, edgecolor=cs.SURFACE, lw=1.2, zorder=3, label="Train" if i == 0 else None)
+    ax.annotate(f"{te:.3f}", (te, i), xytext=(-10, 0), textcoords="offset points", ha="right", va="center")
+    ax.annotate(f"{tr:.3f}", (tr, i), xytext=(10, 0), textcoords="offset points", ha="left", va="center")
 ax.set_yticks(range(len(rows)), [r[0] for r in rows])
-ax.set(xlabel="Accuracy", xlim=(0.65, 1.05))
-ax.grid(False, axis="y")
-ax.grid(True, axis="x")
-ax.tick_params(axis="y", length=0)
+ax.set(xlabel="Accuracy", xlim=(.65, 1.05))
+ax.grid(False, axis="y"); ax.grid(True, axis="x"); ax.tick_params(axis="y", length=0)
 ax.legend(loc="lower right", ncol=2)
 ax.set_title("On 5,000 reviews, the gap is the story: the linear baseline wins on test")
 cs.save(fig, "dl-imdb-models.png")

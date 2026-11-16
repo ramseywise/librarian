@@ -29,88 +29,38 @@ class FakeLangfuse:
     def __call__(self, method, path, body):
         self.requests.append((method, path, body))
         if path.endswith("/api/public/projects"):
-            return 200, {
-                "data": [
-                    {
-                        "id": "local",
-                        "name": "local",
-                        "metadata": {},
-                        "organization": {"id": "o", "name": "o"},
-                    }
-                ]
-            }
+            return 200, {"data": [{"id": "local", "name": "local", "metadata": {}, "organization": {"id": "o", "name": "o"}}]}
         if "/api/public/v2/prompts" in path:
             return 404, {"message": "Prompt not found"}
         if path.endswith("/api/public/scores") and method == "POST":
             self.scores.extend(body if isinstance(body, list) else [body])
             return 200, {"id": str(uuid.uuid4())}
         if path.endswith("/api/public/v2/datasets") and method == "POST":
-            d = {
-                "id": body["name"],
-                "name": body["name"],
-                "description": body.get("description"),
-                "metadata": body.get("metadata"),
-                "projectId": "local",
-                "createdAt": NOW,
-                "updatedAt": NOW,
-            }
+            d = {"id": body["name"], "name": body["name"], "description": body.get("description"), "metadata": body.get("metadata"),
+                 "projectId": "local", "createdAt": NOW, "updatedAt": NOW}
             self.datasets[body["name"]] = d
             return 200, d
         if "/api/public/v2/datasets/" in path and method == "GET":
             name = path.rsplit("/", 1)[-1]
-            return (
-                (200, self.datasets[name])
-                if name in self.datasets
-                else (404, {"message": "no dataset"})
-            )
+            return (200, self.datasets[name]) if name in self.datasets else (404, {"message": "no dataset"})
         if path.endswith("/api/public/dataset-items") and method == "POST":
-            i = {
-                "id": body.get("id") or str(uuid.uuid4()),
-                "status": "ACTIVE",
-                "input": body.get("input"),
-                "expectedOutput": body.get("expectedOutput"),
-                "metadata": body.get("metadata"),
-                "sourceTraceId": body.get("sourceTraceId"),
-                "sourceObservationId": None,
-                "mediaReferences": [],
-                "datasetId": body["datasetName"],
-                "datasetName": body["datasetName"],
-                "createdAt": NOW,
-                "updatedAt": NOW,
-            }
+            i = {"id": body.get("id") or str(uuid.uuid4()), "status": "ACTIVE", "input": body.get("input"),
+                 "expectedOutput": body.get("expectedOutput"), "metadata": body.get("metadata"),
+                 "sourceTraceId": body.get("sourceTraceId"), "sourceObservationId": None, "mediaReferences": [], "datasetId": body["datasetName"],
+                 "datasetName": body["datasetName"], "createdAt": NOW, "updatedAt": NOW}
             self.items.setdefault(body["datasetName"], []).append(i)
             return 200, i
         if path.endswith("/api/public/dataset-items") and method == "GET":
             rows = [i for v in self.items.values() for i in v]
-            return 200, {
-                "data": rows,
-                "meta": {"page": 1, "limit": 50, "totalItems": len(rows), "totalPages": 1},
-            }
+            return 200, {"data": rows, "meta": {"page": 1, "limit": 50, "totalItems": len(rows), "totalPages": 1}}
         if path.endswith("/api/public/annotation-queues") and method == "POST":
-            q = {
-                "id": str(uuid.uuid4()),
-                "name": body["name"],
-                "description": body.get("description"),
-                "scoreConfigIds": body.get("scoreConfigIds", []),
-                "createdAt": NOW,
-                "updatedAt": NOW,
-            }
+            q = {"id": str(uuid.uuid4()), "name": body["name"], "description": body.get("description"),
+                 "scoreConfigIds": body.get("scoreConfigIds", []), "createdAt": NOW, "updatedAt": NOW}
             self.queues[q["id"]] = q
             return 200, q
-        if (
-            "/api/public/annotation-queues/" in path
-            and path.endswith("/items")
-            and method == "POST"
-        ):
-            return 200, {
-                "id": str(uuid.uuid4()),
-                "queueId": path.split("/")[-2],
-                "objectId": body["objectId"],
-                "objectType": body["objectType"],
-                "status": "PENDING",
-                "createdAt": NOW,
-                "updatedAt": NOW,
-            }
+        if "/api/public/annotation-queues/" in path and path.endswith("/items") and method == "POST":
+            return 200, {"id": str(uuid.uuid4()), "queueId": path.split("/")[-2], "objectId": body["objectId"],
+                         "objectType": body["objectType"], "status": "PENDING", "createdAt": NOW, "updatedAt": NOW}
         if path.endswith("/api/public/v2/metrics"):
             return 200, {"data": []}
         return 200, {}
@@ -140,13 +90,8 @@ def offline_langfuse():
         status, payload = api(request.method, request.url.path, body)
         return httpx.Response(status, json=payload)
 
-    lf = Langfuse(
-        public_key="pk-lf-local",
-        secret_key="sk-lf-local",
-        base_url="http://langfuse.invalid",
-        span_exporter=exporter,
-        httpx_client=httpx.Client(transport=httpx.MockTransport(handler)),
-    )
+    lf = Langfuse(public_key="pk-lf-local", secret_key="sk-lf-local", base_url="http://langfuse.invalid",
+                  span_exporter=exporter, httpx_client=httpx.Client(transport=httpx.MockTransport(handler)))
     return lf, Capture(exporter, api)
 
 
@@ -173,18 +118,11 @@ def _tool_args(schema, text):
 
 def fake_messages(body):
     """The rule checks and a scripted reply. Returns (status, payload)."""
-
     def bad(message):
-        return 400, {
-            "type": "error",
-            "error": {"type": "invalid_request_error", "message": message},
-        }
+        return 400, {"type": "error", "error": {"type": "invalid_request_error", "message": message}}
 
     if body.get("model") not in MODELS:
-        return 404, {
-            "type": "error",
-            "error": {"type": "not_found_error", "message": f"model: {body.get('model')}"},
-        }
+        return 404, {"type": "error", "error": {"type": "not_found_error", "message": f"model: {body.get('model')}"}}
     for param in ("temperature", "top_p", "top_k"):
         if param in body:
             return bad(f"{param} is not supported on this model")
@@ -198,33 +136,14 @@ def fake_messages(body):
         return bad("max_tokens: required")
 
     text = json.dumps(body["messages"], ensure_ascii=False)
-    usage = {
-        "input_tokens": 120,
-        "output_tokens": 40,
-        "cache_creation_input_tokens": 0,
-        "cache_read_input_tokens": 2400,
-    }
-    reply = {
-        "id": "msg_fake",
-        "type": "message",
-        "role": "assistant",
-        "model": body["model"],
-        "stop_sequence": None,
-        "usage": usage,
-    }
+    usage = {"input_tokens": 120, "output_tokens": 40, "cache_creation_input_tokens": 0, "cache_read_input_tokens": 2400}
+    reply = {"id": "msg_fake", "type": "message", "role": "assistant", "model": body["model"], "stop_sequence": None, "usage": usage}
     last = body["messages"][-1]["content"]
     answered_tool = isinstance(last, list) and any(b.get("type") == "tool_result" for b in last)
     tools = body.get("tools") or []
     if tools and not answered_tool:
         tool = tools[0]
-        reply["content"] = [
-            {
-                "type": "tool_use",
-                "id": "toolu_fake",
-                "name": tool["name"],
-                "input": _tool_args(tool["input_schema"], text),
-            }
-        ]
+        reply["content"] = [{"type": "tool_use", "id": "toolu_fake", "name": tool["name"], "input": _tool_args(tool["input_schema"], text)}]
         reply["stop_reason"] = "tool_use"
         return 200, reply
     schema = body.get("output_config", {}).get("format", {}).get("schema")

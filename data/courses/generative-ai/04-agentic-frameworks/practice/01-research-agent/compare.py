@@ -3,7 +3,6 @@
 The model is a stub, so these numbers measure framework overhead only: no network,
 no inference. Run it with `--isolated` dependencies if you want clean package counts.
 """
-
 import asyncio
 import statistics
 import subprocess
@@ -59,16 +58,10 @@ def main() -> None:
         "langgraph": lambda: graph.invoke({"messages": [("user", QUESTION)]}),
         "google-adk": lambda: asyncio.run(agent_adk.ask(adk, QUESTION)),
     }
-    files = {
-        "no framework": "agent_scratch.py",
-        "langgraph": "agent_langgraph.py",
-        "google-adk": "agent_adk.py",
-    }
+    files = {"no framework": "agent_scratch.py", "langgraph": "agent_langgraph.py", "google-adk": "agent_adk.py"}
     print(f"{'':14}{'cold s':>10}{'ms/run':>10}{'lines':>8}")
     for name, call in calls.items():
-        print(
-            f"{name:14}{cold_start_seconds(COLD_START[name]):>10.2f}{per_run_ms(call):>10.2f}{code_lines(files[name]):>8}"
-        )
+        print(f"{name:14}{cold_start_seconds(COLD_START[name]):>10.2f}{per_run_ms(call):>10.2f}{code_lines(files[name]):>8}")
 
 
 if __name__ == "__main__":

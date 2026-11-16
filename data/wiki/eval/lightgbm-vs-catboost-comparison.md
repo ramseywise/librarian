@@ -2,7 +2,7 @@
 title: LightGBM vs CatBoost Comparison
 tags: [eval, comparison]
 summary: Methodology for comparing calibrated GBM rerankers head-to-head — fixing train/inference feature-distribution mismatch before comparing, native categorical handling, and Brier score/log-loss as the metrics that matter for calibrated probability scores.
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/listen-wiseer/docs/plans/phase3c_add_catboost.md
 ---
@@ -11,7 +11,7 @@ sources:
 
 A reusable methodology for evaluating a second gradient-boosted-tree estimator as a
 drop-in alternative to an existing calibrated reranker, surfaced while adding CatBoost
-as an alternative to a LightGBM per-playlist reranker in [[Listen-Wiseer Project]].
+as an alternative to a LightGBM per-playlist reranker in Listen-Wiseer Project.
 
 ## Fix the train/inference mismatch first
 
@@ -59,7 +59,5 @@ than a throwaway notebook cell — the actual EDA notebook (`06_model_comparison
 consumes the same per-playlist metrics JSONL files the CLI produces.
 
 ## See Also
-- [[Listen-Wiseer Project]]
-- [[Track2Vec Playlist Co-Occurrence Embeddings]]
 - [[Anthropic Three-Tier Eval Taxonomy]]
 - [[Data Science Curriculum Layers]] — related (part of; the Layer 5 ensemble-methods gap this fills)

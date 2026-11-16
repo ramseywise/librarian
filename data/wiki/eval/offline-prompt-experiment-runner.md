@@ -2,7 +2,7 @@
 title: Offline Prompt Experiment Runner
 tags: [eval, prompting, pattern]
 summary: "Try a prompt change on a frozen, stratified sample of real rows before shipping it: keep a typed variant registry of same-shaped template functions with production auto-registered as control, call the model gateway and the pure pipeline directly with the write-back half removed, prove it is read-only with a client Proxy that throws on any write, and resume from append-only JSONL that tolerates (and self-heals) a truncated final line."
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-15-dis272-enrichment-prompt-experiments.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-15-dis272-enrichment-prompt-experiments.md
@@ -68,7 +68,7 @@ second one.
   production template, `(summary, payload) => string`. It is reviewable as a code diff and
   hashes through the same path, with no new config format or DSL. `production` is
   registered automatically from the real templates, so every run includes the live prompt
-  as its control arm. This is the registry [[Build the Knobs, Not the Choice]] later mirrored
+  as its control arm. This is the registry Build the Knobs, Not the Choice later mirrored
   for scoring.
 - **Bypass the production call, keep the pure chain.** The production enrich call is
   hardcoded to the production template, so the runner calls the model gateway directly. It
@@ -110,7 +110,7 @@ mid-append (crash or full disk) left a truncated last line, and from then on *ev
 A companion pinning test showed that a model error mid-run rejects the promise, leaves
 exactly the completed pairs on disk, and resumes with no duplicates. It was proved non-vacuous
 by temporarily patching the runner to swallow per-pair errors. See
-[[Append-Only Log Writer Invariants]].
+Append-Only Log Writer Invariants.
 
 ### The heal itself nearly destroyed the ledger (review rounds 2–3)
 
@@ -138,9 +138,5 @@ analysis axis, or cross-check `prompt_version` against it.
 
 ## See Also
 - [[Frozen Version Stamps on Logged Results]] — extends (prompt identity is one of the stamps)
-- [[Build the Knobs, Not the Choice]] — related (the same variant-registry shape for scoring)
 - [[Frozen Ranking Baseline from a Pure Ranker]] — related (copies this runner's manifest → run → JSONL → report skeleton)
-- [[Batch Path Through the Synchronous Chain]] — related (the production paths that inherit the identity stamp)
-- [[Append-Only Log Writer Invariants]] — related (truncated-tail handling)
-- [[Write-Only Fields and the Reader Map]] — prerequisite-for (the prompt/schema slices wait for this runner)
 - [[Paired Input-Perturbation Eval]] — extends (same harness, pairs are input perturbations)

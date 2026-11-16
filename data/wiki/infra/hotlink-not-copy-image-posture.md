@@ -2,7 +2,7 @@
 title: Hotlink-Not-Copy Image Posture
 tags: [infra, decision]
 summary: A conservative MVP policy for showing third-party images in a discovery product — the browser loads the image from its original host and nothing is copied, proxied or cached; images come only from first-party sources with stored provenance and attribution, technical blocks are never circumvented, image hosts are vetted as a privacy risk, and a no-deploy kill switch backs a hide-first takedown route.
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/akira/docs/research/2026-10-09-notion-image-hotlinking-policy.md
   - data/raw/claude-docs/kiez-archive/docs/research/2026-10-09-notion-image-hotlinking-policy.md
@@ -133,12 +133,12 @@ default-deny `review_needed` value**, so it did not wait for the review:
   and one of them (a poll summary page) was missed by the first grep. The plan's rule was
   to re-grep every `image_url` read across the app before calling the step done, since
   the same miss had already happened once. See
-  [[Audit the Class, Not the Instance]].
+  Audit the Class, Not the Instance.
 - **The CI check runs in observe mode** with a countable flip condition. See
-  [[Observe-Mode Gate With a Named Enforce Trigger]].
+  Observe-Mode Gate With a Named Enforce Trigger.
 - **Text follows the same rule.** Raw source prose stopped rendering. The model-rewritten
   description is shown instead, and nothing is shown where it doesn't exist yet. See
-  [[Write-Only Fields and the Reader Map]] for why the rewritten field was missing.
+  Write-Only Fields and the Reader Map for why the rewritten field was missing.
 
 ## Where hotlinking stops working: derivatives
 
@@ -188,16 +188,9 @@ Two more decisions from the same plan:
   problem above.
 
 The same slices found a host-drift check that the hotlink decision had silently inverted.
-See [[Vacuous Check Turns Backwards on Policy Change]].
+See Vacuous Check Turns Backwards on Policy Change.
 
 ## See Also
 - [[Change the Channel, Not the Count]] — extends (`image_posture` as one of three default-deny rights axes)
 - [[PII Masking Approaches]] — related (image hosts as a request-metadata privacy leak)
-- [[Hide-Unknown Display Contract]] — related (a missing or blocked image never blocks publishing)
-- [[Kiez Project]] — instance-of
-- [[A Sourcing Gap Is Not an Effect Problem]] — related (what the licence rules left available, measured)
-- [[Degrade the Render, Surface the Failure]] — related (the issue that narrowed `remotePatterns` from a wildcard)
-- [[Observe-Mode Gate With a Named Enforce Trigger]] — related (the image-hosts check ran observing until every source had a posture)
 - [[Per-Render Image Optimizer Opt-Out]] — extends (how rule 1 was enforced against the framework image optimizer)
-- [[Review Stamp Moves Only When the Verdict Does]] — related (the admin UI that records per-axis posture verdicts and evidence)
-- [[Vacuous Check Turns Backwards on Policy Change]] — related (the drift check this policy inverted)

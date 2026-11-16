@@ -9,57 +9,34 @@ Run from this folder:
 
 Adult, 80/20 stratified split with random_state=0, as in the note. Writes classical-trees-vs-rounds.png.
 """
-
 # %%
 from pathlib import Path
 
-import chartstyle as cs
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import chartstyle as cs
+import matplotlib.pyplot as plt
 from lightgbm import LGBMClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import train_test_split
 
-cols = [
-    "age",
-    "workclass",
-    "fnlwgt",
-    "education",
-    "education_num",
-    "marital",
-    "occupation",
-    "relationship",
-    "race",
-    "sex",
-    "capital_gain",
-    "capital_loss",
-    "hours",
-    "country",
-    "income",
-]
-adult = pd.read_csv(
-    Path(__file__).parent / "intro-to-ml-in-python/data/adult.data",
-    header=None,
-    names=cols,
-    skipinitialspace=True,
-    na_values="?",
-)
+cols = ["age", "workclass", "fnlwgt", "education", "education_num", "marital", "occupation", "relationship", "race",
+        "sex", "capital_gain", "capital_loss", "hours", "country", "income"]
+adult = pd.read_csv(Path(__file__).parent / "intro-to-ml-in-python/data/adult.data", header=None, names=cols,
+                    skipinitialspace=True, na_values="?")
 y = (adult.income == ">50K").astype(int)
 X = adult.drop(columns=["income", "fnlwgt", "education"])
 for c in X.select_dtypes(exclude="number"):
     X[c] = X[c].astype("category")
-Xtr, Xte, ytr, yte = train_test_split(X, y, test_size=0.2, stratify=y, random_state=0)
+Xtr, Xte, ytr, yte = train_test_split(X, y, test_size=.2, stratify=y, random_state=0)
 # Forests in scikit-learn need numbers: ordinal-coded categories, -1 for missing.
 Xtr_n, Xte_n = Xtr.copy(), Xte.copy()
 for c in Xtr.select_dtypes("category"):
     Xtr_n[c], Xte_n[c] = Xtr[c].cat.codes, Xte[c].cat.codes
 
 rounds = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000]
-gb = LGBMClassifier(
-    n_estimators=max(rounds), learning_rate=0.05, verbose=-1, n_jobs=4, random_state=0
-).fit(Xtr, ytr)
+gb = LGBMClassifier(n_estimators=max(rounds), learning_rate=.05, verbose=-1, n_jobs=4, random_state=0).fit(Xtr, ytr)
 gb_auc = [roc_auc_score(yte, gb.predict_proba(Xte, num_iteration=n)[:, 1]) for n in rounds]
 trees = [n for n in rounds if n <= 500]
 rf_auc = []
@@ -80,35 +57,11 @@ fig, ax = plt.subplots()
 ax.plot(rounds, gb_auc, color=cs.BLUE, marker="o", ms=5, label="Boosting (LightGBM, rate 0.05)")
 ax.plot(trees, rf_auc, color=cs.ORANGE, marker="o", ms=5, label="Random forest")
 ax.set_xscale("log")
-ax.set(
-    xlabel="Trees (log scale)",
-    ylabel="Test AUC",
-    xticks=rounds,
-    xticklabels=rounds,
-    ylim=(0.70, 0.96),
-)
+ax.set(xlabel="Trees (log scale)", ylabel="Test AUC", xticks=rounds, xticklabels=rounds, ylim=(.70, .96))
 ax.minorticks_off()
-ax.annotate(
-    f"Boosting peaks at {gb_auc[best]:.3f} with {rounds[best]} trees",
-    (rounds[best], gb_auc[best]),
-    xytext=(0, 10),
-    textcoords="offset points",
-    ha="center",
-)
-ax.annotate(
-    f"Boosting at 2000: {gb_auc[-1]:.3f}",
-    (rounds[-1], gb_auc[-1]),
-    xytext=(0, -16),
-    textcoords="offset points",
-    ha="right",
-)
-ax.annotate(
-    f"Forest at 500: {rf_auc[-1]:.3f}",
-    (trees[-1], rf_auc[-1]),
-    xytext=(0, -16),
-    textcoords="offset points",
-    ha="center",
-)
+ax.annotate(f"Boosting peaks at {gb_auc[best]:.3f} with {rounds[best]} trees", (rounds[best], gb_auc[best]), xytext=(0, 10), textcoords="offset points", ha="center")
+ax.annotate(f"Boosting at 2000: {gb_auc[-1]:.3f}", (rounds[-1], gb_auc[-1]), xytext=(0, -16), textcoords="offset points", ha="right")
+ax.annotate(f"Forest at 500: {rf_auc[-1]:.3f}", (trees[-1], rf_auc[-1]), xytext=(0, -16), textcoords="offset points", ha="center")
 ax.legend(loc="lower right")
 ax.set_title("A forest averages to a plateau; boosting climbs, then slips. Census income")
 cs.save(fig, "classical-trees-vs-rounds.png")

@@ -2,7 +2,7 @@
 title: Compression Strips the Epistemic Frame
 tags: [context, memory, concept]
 summary: Summarising or structuring agent state preserves headline facts and systematically drops how-sure, how-known, and how-this-changed — the markers natural language grammaticalises and schemas must pre-enumerate — so over repeated compaction cycles a self-model flattens toward binary commitment unless prose stays canonical and compression boundaries are marked.
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/guacamayo/docs/research/2026-07-20_consciousness_language-agent-protocol.md
   - data/raw/claude-docs/guacamayo/docs/research/2026-07-20_consciousness_llm-metacognition.md
@@ -72,4 +72,3 @@ and drops how tentatively.
 - [[Identity Memory: Revision vs Accretion]] — extends (the long-horizon case)
 - [[Context Failure Modes]] — instance-of (a failure mode of the compaction mitigation itself)
 - [[Memory Lifecycle]] — extends (consolidation as lossy compression)
-- [[Conservation Gate on Accumulator Clear]] — related (token reduction conflicts with identity fidelity at the self-model layer)

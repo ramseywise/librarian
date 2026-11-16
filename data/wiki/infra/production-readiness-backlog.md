@@ -2,7 +2,7 @@
 title: Production Readiness Backlog
 tags: [infra, rag, reference]
 summary: The pre-launch gap checklist for a RAG service going to managed cloud hosting — auth, CORS, structured logging, tests, CI gate, staging separation, probes, retries, migrations — each stated as current-state vs required.
-updated: 2026-08-03
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/chat-agent/docs/backlog.md
 ---
@@ -74,11 +74,10 @@ The source backlog explicitly notes which items are and are not tracked as
 issues. That distinction is the useful part: a known gap that exists only in a
 markdown file has no owner and no cadence, and is functionally invisible during
 planning. Promoting checklist items into tracked issues is the step that makes
-the backlog real — see [[Agile Workflow Definitions]] for the DoR gate that
+the backlog real — see Agile Workflow Definitions for the DoR gate that
 tracked items pass through.
 
 ## See Also
 - [[Production Hardening Patterns]] — alternative-to
 - [[Cloud Run + Cloud SQL Pattern]] — prerequisite-for
 - [[PGVector Migration Pattern]]
-- [[Agile Workflow Definitions]]

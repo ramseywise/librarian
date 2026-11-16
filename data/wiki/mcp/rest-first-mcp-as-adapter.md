@@ -2,7 +2,7 @@
 title: REST-First, MCP as Adapter
 tags: [mcp, infra, decision]
 summary: "Decision for a project scaffold: versioned REST is the standard service boundary, MCP servers are thin adapters over it containing no business logic and scaffolded only when an MCP host is an actual consumer, and a sidecar is a deploy-time transport detail — never the default."
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/ai-project-template/docs/plans/2026-07-17-template-core-redesign.md
   - data/raw/repos/ai-project-template/.claude--docs--plans--2026-07-17-template-core-redesign.md
@@ -37,7 +37,7 @@ sidecar is a deployment detail.
 
 In the scaffold's DESIGN.md this ships as a pre-seeded Key Decision row, `Service
 surface — Deferred(first external consumer identified)`, with the REST default recorded
-(see [[Deferred Decision Status]]).
+(see Deferred Decision Status).
 
 ## Tradeoffs and supporting evidence
 
@@ -69,7 +69,3 @@ surface — Deferred(first external consumer identified)`, with the REST default
 - [[MCP Protocol]] — prerequisite-for
 - [[Tool Design as Context Engineering]] — related
 - [[MCP Server Security Patterns]] — extends (one adapter surface to secure)
-- [[Callable-By Integration Contract]] — related (the same "plain HTTP endpoint is the unit" stance for external services)
-- [[Circular Core Justification]] — extends (why MCP stopped defaulting on)
-- [[Deferred Decision Status]] — instance-of (shipped as a deferred decision row)
-- [[Proxy Schema Overfits the Guess]] — related (schema failure in the same core-plus-facades prototype)

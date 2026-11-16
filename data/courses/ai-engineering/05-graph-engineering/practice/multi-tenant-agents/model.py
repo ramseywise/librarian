@@ -1,6 +1,5 @@
 """The shape of a model call. The stub implements it, and a real provider adapter would too.
 Every request carries tenant_id and run_id, because the budget key has to be something every call carries."""
-
 from __future__ import annotations
 
 import math
@@ -13,9 +12,7 @@ class ModelError(Exception):
 
 
 def count_tokens(text: str) -> int:
-    return math.ceil(
-        len(text) / 4
-    )  # a rough estimate; a real adapter would use the provider's counter
+    return math.ceil(len(text) / 4)  # a rough estimate; a real adapter would use the provider's counter
 
 
 @dataclass(frozen=True)

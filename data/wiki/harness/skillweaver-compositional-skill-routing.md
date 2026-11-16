@@ -2,7 +2,7 @@
 title: SkillWeaver Compositional Skill Routing
 tags: [harness, pattern]
 summary: "SkillWeaver routes a multi-skill query by decomposing it, retrieving skills per sub-task and composing them; its SAD step re-decomposes with retrieved skill names as hints, lifting exact step-count accuracy from 51.0% to 67.7% on the authors' CompSkillBench (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-06-gao-2026-compositional-skill-routing-llm-agents.md
 ---
@@ -35,7 +35,6 @@ The benchmark has 300 synthetic template queries over 2,209 real skills (entries
 
 ## See Also
 - [[Dynamic Tool Discovery]] — prerequisite-for
-- [[Skill Discovery Failure Modes]] — related
 - [[Skill Authoring Discipline]] — related (descriptions drive retrieval)
 - [[AnyTool]] — alternative-to (hierarchical retrieval over a large API pool)
 - [[Learned Skill and Action Libraries]] — related

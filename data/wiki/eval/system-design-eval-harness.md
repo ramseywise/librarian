@@ -2,7 +2,7 @@
 title: System Design — Unified Eval Harness
 tags: [eval, reference]
 summary: Interview-format system design writeup of playground's eval harness — golden set → heuristic graders → LLM judges → gate, shared across three agent implementations, with HTML reporting and threshold governance.
-updated: 2026-07-17
+updated: 2026-11-10
 sources:
   - data/raw/repos/playground/CLAUDE.md
   - data/raw/repos/playground/SANYI.md
@@ -28,7 +28,6 @@ Interview-format writeup of a system actually built (playground's `evals/`, shar
 - **Golden set** (50 QA pairs, committed) is the unit of truth. Runtime outputs land outside version control.
 - **Two-tier grading:** deterministic heuristic graders first (citation hallucination / missing citation / citation recall — string-matchable, free, run always), LLM-as-judge second (routing, friction, safety, schema, message quality — probabilistic, costed, run deliberately).
 - **Harnesses split regression vs. capability:** regression = "did anything get worse", capability = "can it do the new thing yet". Different questions, different cadences.
-- **Gate:** targets live in one config (`targets.yaml`-style); the gate command fails when a metric drops below target. Threshold *values* are tunable config (变易 Bianyi); *"the gate must run"* is the invariant (不易 Buyi) — see [[SANYI Change-Contract System]].
 - **Reports:** HTML stats + suite verdicts rendered from the same run artifacts, so humans and CI read one source.
 
 ## Tradeoffs
@@ -53,6 +52,3 @@ Interview-format writeup of a system actually built (playground's `evals/`, shar
 - [[Anthropic Three-Tier Eval Taxonomy]] <!-- auto-linked -->
 - [[RAG Eval Gate Contract]] — instance-of
 - [[RAG Eval Metrics Suite]]
-- [[Change-Contracts Rollout]] — extends
-- [[Evals and Observability Interview Study Guide]] — prerequisite-for
-- [[System Design Interview Study Guide]] — prerequisite-for

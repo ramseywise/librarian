@@ -2,7 +2,7 @@
 title: Chain of Draft
 tags: [prompting, pattern]
 summary: A prompt that asks for a terse draft of each reasoning step, about five words, instead of full chain-of-thought prose; on four easy tasks it kept most of the accuracy at a fraction of the tokens, but the limit is not enforced and zero-shot use degraded.
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-06-xu-2025-chain-draft.md
   - data/raw/papers/2026-11-07-sui-2025-stop-overthinking.md
@@ -10,7 +10,7 @@ sources:
 
 # Chain of Draft
 
-Chain of Draft (CoD) is a prompting change to [[Chain of Thought]]: the prompt tells the model to keep each reasoning step to a short draft, with a budget of roughly five words per step, and then give the answer. The budget is only stated in the prompt. The extraction notes that nothing enforces it.
+Chain of Draft (CoD) is a prompting change to Chain of Thought: the prompt tells the model to keep each reasoning step to a short draft, with a budget of roughly five words per step, and then give the answer. The budget is only stated in the prompt. The extraction notes that nothing enforces it.
 
 ## Reported results
 
@@ -32,7 +32,6 @@ The survey on efficient reasoning in the same reading set lists the CoD prompt a
 - The accuracy cost on GSM8K is small but real, and the zero-shot results show the gain depends on having examples.
 
 ## See Also
-- [[Chain of Thought]] — prerequisite-for
 - [[Overthinking and Concise Reasoning]] — related (other token-saving approaches)
 - [[Prompting Reasoning Models]] — related
 - [[Few-Shot Prompting]] — prerequisite-for

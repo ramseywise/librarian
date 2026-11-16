@@ -3,20 +3,11 @@
 Run from any folder (it writes only to a temporary directory):
     uv run --with duckdb --with pyarrow --with numpy python 03_data_vault_and_obt.py
 """
-
-import os
-import tempfile
-
+import os, tempfile
 os.chdir(tempfile.mkdtemp())
 
 # --- setup ---
-import os
-import time
-
-import duckdb
-import numpy as np
-import pyarrow as pa
-
+import os, time, duckdb, numpy as np, pyarrow as pa
 
 def make_ops(n=1_000_000, seed=7):
     """The operational source: one row per trip, plus a zone lookup with a borough."""
@@ -24,37 +15,23 @@ def make_ops(n=1_000_000, seed=7):
     zones = rng.zipf(1.3, n * 2)
     zones = zones[zones <= 260][:n]
     miles = np.round(rng.gamma(2.0, 1.6, n) + 0.1, 2)
-    trips = pa.table(
-        {
-            "trip_id": np.arange(1, n + 1),
-            "pickup_at": pa.array(
-                (
-                    np.datetime64("2026-01-01")
-                    + rng.integers(0, 31 * 86400, n) * np.timedelta64(1, "s")
-                ).astype("datetime64[s]")
-            ),
-            "zone_id": zones.astype("int32"),
-            "payment_code": rng.choice(
-                np.array(["CRD", "CSH", "APP", "XXX"]), n, p=[0.7, 0.2, 0.0995, 0.0005]
-            ),
-            "trip_miles": miles,
-            "fare_usd": np.round(3 + miles * 2.5 + rng.normal(0, 1, n).clip(-2, 8), 2),
-        }
-    )
+    trips = pa.table({
+        "trip_id": np.arange(1, n + 1),
+        "pickup_at": pa.array((np.datetime64("2026-01-01") + rng.integers(0, 31 * 86400, n) * np.timedelta64(1, "s")).astype("datetime64[s]")),
+        "zone_id": zones.astype("int32"),
+        "payment_code": rng.choice(np.array(["CRD", "CSH", "APP", "XXX"]), n, p=[.7, .2, .0995, .0005]),
+        "trip_miles": miles,
+        "fare_usd": np.round(3 + miles * 2.5 + rng.normal(0, 1, n).clip(-2, 8), 2),
+    })
     return trips
-
 
 con = duckdb.connect()
 src_trips = make_ops()
 boroughs = ["Manhattan", "Queens", "Brooklyn", "Bronx", "Staten Island"]
-con.execute(
-    "CREATE TABLE src_zones AS SELECT z AS zone_id, 'Zone ' || z AS zone_name, "
-    "['Manhattan','Queens','Brooklyn','Bronx','Staten Island'][1 + z % 5] AS borough FROM range(1, 251) t(z)"
-)
+con.execute("CREATE TABLE src_zones AS SELECT z AS zone_id, 'Zone ' || z AS zone_name, "
+            "['Manhattan','Queens','Brooklyn','Bronx','Staten Island'][1 + z % 5] AS borough FROM range(1, 251) t(z)")
 
-con.execute(
-    """CREATE TABLE dim_zone AS SELECT zone_id AS zone_key, zone_id, zone_name, borough FROM src_zones"""
-)
+con.execute("""CREATE TABLE dim_zone AS SELECT zone_id AS zone_key, zone_id, zone_name, borough FROM src_zones""")
 con.execute("INSERT INTO dim_zone VALUES (-1, -1, 'Unknown', 'Unknown')")
 con.execute("""CREATE TABLE dim_date AS SELECT CAST(strftime(d, '%Y%m%d') AS INT) AS date_key, d::DATE AS full_date,
     dayname(d) AS day_name, isodow(d) >= 6 AS is_weekend, month(d) AS month
@@ -77,7 +54,6 @@ CREATE TABLE sat_trip (trip_hk UBIGINT, load_ts TIMESTAMP, hash_diff UBIGINT, pi
 """)
 print("--- vault_tables done")
 
-
 # --- vault_load ---
 def load_vault(zones_sql, load_ts, source="ops"):
     """Insert-only. Hubs and links add unseen keys; satellites add a row when attributes change."""
@@ -90,31 +66,17 @@ def load_vault(zones_sql, load_ts, source="ops"):
         FROM ({zones_sql}) s LEFT JOIN latest l ON l.zone_hk = hash(s.zone_id)
         WHERE l.hash_diff IS NULL OR l.hash_diff <> hash(s.zone_name, s.borough)""")
 
-
 load_vault("SELECT * FROM src_zones", "2026-01-01 00:00:00")
-con.execute(
-    """INSERT INTO hub_trip SELECT hash(trip_id), trip_id, TIMESTAMP '2026-02-01', 'ops' FROM src_trips"""
-)
-con.execute(
-    """INSERT INTO link_trip_zone SELECT hash(trip_id, zone_id), hash(trip_id), hash(zone_id), TIMESTAMP '2026-02-01', 'ops' FROM src_trips"""
-)
-con.execute("""INSERT INTO sat_trip SELECT hash(trip_id), TIMESTAMP '2026-02-01', hash(fare_usd, trip_miles), pickup_at, payment_code,
+con.execute(f"""INSERT INTO hub_trip SELECT hash(trip_id), trip_id, TIMESTAMP '2026-02-01', 'ops' FROM src_trips""")
+con.execute(f"""INSERT INTO link_trip_zone SELECT hash(trip_id, zone_id), hash(trip_id), hash(zone_id), TIMESTAMP '2026-02-01', 'ops' FROM src_trips""")
+con.execute(f"""INSERT INTO sat_trip SELECT hash(trip_id), TIMESTAMP '2026-02-01', hash(fare_usd, trip_miles), pickup_at, payment_code,
     trip_miles, fare_usd, 'ops' FROM src_trips""")
 
 changed = "SELECT zone_id, zone_name, CASE WHEN zone_id = 6 THEN 'Brooklyn' ELSE borough END AS borough FROM src_zones"
 load_vault(changed, "2026-01-15 00:00:00")
-load_vault(changed, "2026-01-15 00:00:00")  # a retry adds nothing
-print(
-    con.sql(
-        "SELECT h.zone_id, s.borough, s.load_ts FROM hub_zone h JOIN sat_zone s USING (zone_hk) WHERE h.zone_id = 6 ORDER BY 3"
-    )
-)
-print(
-    "hub, satellite rows:",
-    con.execute(
-        "SELECT (SELECT count(*) FROM hub_zone), (SELECT count(*) FROM sat_zone)"
-    ).fetchall()[0],
-)
+load_vault(changed, "2026-01-15 00:00:00")   # a retry adds nothing
+print(con.sql("SELECT h.zone_id, s.borough, s.load_ts FROM hub_zone h JOIN sat_zone s USING (zone_hk) WHERE h.zone_id = 6 ORDER BY 3"))
+print("hub, satellite rows:", con.execute("SELECT (SELECT count(*) FROM hub_zone), (SELECT count(*) FROM sat_zone)").fetchall()[0])
 print("--- vault_load done")
 
 # --- vault_query ---
@@ -131,22 +93,14 @@ SELECT CASE WHEN z.zone_id = 6 THEN 'Brooklyn' ELSE z.borough END AS borough, co
 FROM fact_trips f JOIN dim_zone z USING (zone_key)
 WHERE z.zone_key > 0
 GROUP BY 1 ORDER BY fares DESC LIMIT 3"""
-
-
 def best_ms(sql, n=5):
     out = []
     for _ in range(n):
-        t0 = time.perf_counter()
-        con.execute(sql).fetchall()
-        out.append((time.perf_counter() - t0) * 1000)
+        t0 = time.perf_counter(); con.execute(sql).fetchall(); out.append((time.perf_counter() - t0) * 1000)
     return min(out)
-
-
 print(con.sql(vault_sql))
 print(con.sql(star_sql))
-print(
-    f"vault {best_ms(vault_sql):.0f} ms over 3 joins, star {best_ms(star_sql):.0f} ms over 1 join"
-)
+print(f"vault {best_ms(vault_sql):.0f} ms over 3 joins, star {best_ms(star_sql):.0f} ms over 1 join")
 print("--- vault_query done")
 
 # --- obt_build ---
@@ -159,9 +113,7 @@ con.execute("COPY fact_trips TO 'fact.parquet' (FORMAT parquet, COMPRESSION zstd
 con.execute("COPY dim_date TO 'dim_date.parquet' (FORMAT parquet, COMPRESSION zstd)")
 con.execute("COPY dim_zone TO 'dim_zone.parquet' (FORMAT parquet, COMPRESSION zstd)")
 con.execute("COPY obt_trips TO 'obt.parquet' (FORMAT parquet, COMPRESSION zstd)")
-star_mb = (
-    sum(os.path.getsize(f) for f in ["fact.parquet", "dim_date.parquet", "dim_zone.parquet"]) / 1e6
-)
+star_mb = sum(os.path.getsize(f) for f in ["fact.parquet", "dim_date.parquet", "dim_zone.parquet"]) / 1e6
 print(f"star {star_mb:.1f} MB, one big table {os.path.getsize('obt.parquet') / 1e6:.1f} MB")
 print("--- obt_build done")
 
@@ -171,9 +123,7 @@ q_star = """SELECT z.borough, d.is_weekend, round(sum(f.fare_usd)) FROM 'fact.pa
     WHERE d.month = 1 AND f.payment_code = 'CRD' GROUP BY ALL"""
 q_obt = """SELECT borough, is_weekend, round(sum(fare_usd)) FROM 'obt.parquet'
     WHERE month = 1 AND payment_code = 'CRD' GROUP BY ALL"""
-print(
-    "same answer:", sorted(con.execute(q_star).fetchall()) == sorted(con.execute(q_obt).fetchall())
-)
+print("same answer:", sorted(con.execute(q_star).fetchall()) == sorted(con.execute(q_obt).fetchall()))
 print(f"star {best_ms(q_star):.1f} ms, one big table {best_ms(q_obt):.1f} ms")
 print("--- obt_query done")
 

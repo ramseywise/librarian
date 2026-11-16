@@ -3,12 +3,11 @@
 Each scenario is a fixed list of tool calls. Nothing here is intelligent, which is the
 point: the harness's behaviour is what is under test, and it runs offline every time.
 """
-
 from __future__ import annotations
 
-from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Callable
 
 
 @dataclass
@@ -47,10 +46,7 @@ class ScriptedModel:
         self.calls += 1
         if call.before:
             call.before()
-        return Response(
-            "tool_use",
-            [Block(type="tool_use", id=f"toolu_{self.calls}", name=call.name, input=call.input)],
-        )
+        return Response("tool_use", [Block(type="tool_use", id=f"toolu_{self.calls}", name=call.name, input=call.input)])
 
 
 STATS = "tipkit/stats.py"
@@ -70,10 +66,7 @@ def fix(root: Path) -> list[Call]:
         Call("read_file", {"path": STATS}),
         Call("edit_file", {"path": STATS, "old": BUGGY, "new": FIXED}),
         Call("run_tests", {}),
-        Call(
-            "finish",
-            {"summary": "median() now averages the two middle values for even-length input."},
-        ),
+        Call("finish", {"summary": "median() now averages the two middle values for even-length input."}),
     ]
 
 
@@ -91,9 +84,7 @@ def overfit(root: Path) -> list[Call]:
 def guards(root: Path) -> list[Call]:
     """Every call the file tools should refuse, then a clean recovery."""
     (root / "tipkit" / "link.py").symlink_to("/etc/hosts")
-    tamper = lambda: (root / STATS).write_text(
-        (root / STATS).read_text() + "\n# someone else's edit\n"
-    )
+    tamper = lambda: (root / STATS).write_text((root / STATS).read_text() + "\n# someone else's edit\n")
     return [
         Call("read_file", {"path": "../../secrets.txt"}),
         Call("read_file", {"path": "tipkit/link.py"}),
@@ -102,14 +93,7 @@ def guards(root: Path) -> list[Call]:
         Call("read_file", {"path": "tests/test_stats.py"}),
         Call("edit_file", {"path": "tests/test_stats.py", "old": "2.5", "new": "3"}),
         Call("read_file", {"path": STATS}),
-        Call(
-            "edit_file",
-            {
-                "path": STATS,
-                "old": "    ordered = sorted(values)\n",
-                "new": "    ordered = list(values)\n",
-            },
-        ),
+        Call("edit_file", {"path": STATS, "old": "    ordered = sorted(values)\n", "new": "    ordered = list(values)\n"}),
         Call("edit_file", {"path": STATS, "old": BUGGY, "new": "    return (ordered[mid]\n"}),
         Call("finish", {"summary": "Trust me."}),
         Call("edit_file", {"path": STATS, "old": BUGGY, "new": FIXED}, before=tamper),
@@ -161,13 +145,5 @@ def escape(root: Path) -> list[Call]:
     ]
 
 
-SCENARIOS = {
-    "fix": fix,
-    "overfit": overfit,
-    "guards": guards,
-    "timeout": timeout,
-    "loop": loop,
-    "budget": budget,
-    "giveup": giveup,
-    "escape": escape,
-}
+SCENARIOS = {"fix": fix, "overfit": overfit, "guards": guards, "timeout": timeout,
+             "loop": loop, "budget": budget, "giveup": giveup, "escape": escape}

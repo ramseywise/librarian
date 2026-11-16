@@ -2,7 +2,7 @@
 title: Logic-of-Thought
 tags: [prompting, pattern]
 summary: "A zero-shot augmentation that extracts propositions from the context, expands them with logic laws in Python, translates the result to English and appends it to the original context; improved the baseline in 37 of 40 comparisons in the paper (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-06-liu-2024-logic-thought.md
 ---
@@ -26,7 +26,6 @@ Logic-of-Thought (LoT; Liu et al.) adds derived facts to a prompt instead of rep
 - Only three connectives and three laws; the Figure 3 SatLM values were unreadable in the extraction.
 
 ## See Also
-- [[Chain of Thought]] — prerequisite-for
 - [[Program-Aided Language Models (PAL)]] — related (code does the exact step, here logic expansion)
 - [[Self-Consistency]] — related (combined with LoT in the paper)
 - [[Chain of Code]] — related

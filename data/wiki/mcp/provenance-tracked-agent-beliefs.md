@@ -2,7 +2,7 @@
 title: Provenance-Tracked Agent Beliefs
 tags: [mcp, memory, pattern]
 summary: "A design proposal for agent-to-agent knowledge exchange — every belief carries its source and contradictions, each agent keeps a PeerModel of what others know, and a compressed AttentionBrief is the default message so full provenance stays in an external store until a reasoning step needs it."
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/playground-docs/2026-07-13-puffin-multiagent-knowledge-schema.md
   - data/raw/playground-docs/2026-07-13-puffin-agentic-protocols-general-vs-specific.md
@@ -77,5 +77,4 @@ Repo-specific protocols specialise the general layer without changing transport:
 - [[Protocol-Driven Multi-Agent Collaboration]] — extends (adds belief provenance to the protocol's message layer)
 - [[A2A Agent Protocol]] — related (transport and task lifecycle this sits above)
 - [[Knowledge Graph as Shared Agent Memory]] — alternative-to (shared store instead of per-agent belief state)
-- [[Karpathy LLM Wiki Pattern]] — instance-of (flag-not-overwrite contradiction policy applied to agents)
 - [[Multi-Agent Context]] — related (scoped context slices on handoff)

@@ -2,7 +2,7 @@
 title: Experiment Tracking Schemas
 tags: [eval, infra, rag, pattern]
 summary: "The metadata contract that makes an eval run reproducible and diffable — base trace fields every agent emits, plus ExperimentRun/RagConfig/BedrockConfig/ChunkRecord dataclasses that pin the exact configuration a result came from."
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--06-observability--support-agent-observability.md
   - data/raw/claude-docs/ai-project-template/docs/plans/2026-08-11-ait-run-registry.md
@@ -261,7 +261,4 @@ This is the same shape as the `experimental` → gating grader progression in
 - [[RAG Retrieval Strategies]] — instance-of (hierarchical parent/leaf, as a recorded schema)
 - [[Langfuse Platform]] — related (where these fields land as trace metadata)
 - [[Online Eval Sampling]] — related (identity for the runs; sampling decides which get scored)
-- [[Signal Registry with Resolution States]] — extends (metric identity for workflow experiments)
-- [[Falsifiable Hypothesis Gate]] — extends (entry gate that keeps experiment rows scorable)
 - [[ML Frame Sourcing — License, Horizon, Prevalence]] — extends (frame provenance the run record must carry)
-- [[Hash the Frame as Fitted, Not the Source File]] — extends (data identity must fingerprint the post-derivation frame)

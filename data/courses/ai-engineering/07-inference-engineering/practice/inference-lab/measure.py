@@ -4,7 +4,7 @@
 # ///
 """Measures what the simulation assumes: TTFT, TPOT and cached tokens on a real streaming call.
 With no MODEL it times a fake stream, so you can read the code path offline."""
-
+import math
 import os
 import time
 
@@ -13,19 +13,15 @@ PROMPT = "In two sentences, why does a stable prompt prefix matter?"
 
 
 def fake_stream():
-    for word in (
-        "A stable prefix lets the server reuse its cached work on every request. " * 3
-    ).split():
+    for word in ("A stable prefix lets the server reuse its cached work on every request. " * 3).split():
         time.sleep(0.005)
         yield word + " "
 
 
 def report(label, start, first, end, chunks, output_tokens, cached):
     tpot = (end - first) / max(output_tokens - 1, 1)
-    print(
-        f"{label}: TTFT {1000 * (first - start):.0f} ms, total {1000 * (end - start):.0f} ms, "
-        f"{output_tokens} output tokens, {1000 * tpot:.1f} ms per token after the first, {chunks} chunks, {cached} tokens read from cache"
-    )
+    print(f"{label}: TTFT {1000 * (first - start):.0f} ms, total {1000 * (end - start):.0f} ms, "
+          f"{output_tokens} output tokens, {1000 * tpot:.1f} ms per token after the first, {chunks} chunks, {cached} tokens read from cache")
 
 
 model = os.environ.get("MODEL")
@@ -56,12 +52,4 @@ else:
         end = time.perf_counter()
         if final.stop_reason == "refusal":
             raise SystemExit("model refused")
-        report(
-            label,
-            start,
-            first or end,
-            end,
-            chunks,
-            final.usage.output_tokens,
-            final.usage.cache_read_input_tokens or 0,
-        )
+        report(label, start, first or end, end, chunks, final.usage.output_tokens, final.usage.cache_read_input_tokens or 0)

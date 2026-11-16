@@ -4,7 +4,6 @@ The tools are small on purpose. The agent sees schema and profiles first, querie
 connection that cannot write, and can only end the task through submit_answer, which checks the
 answer against an independent pandas computation before accepting it.
 """
-
 from __future__ import annotations
 
 import re
@@ -15,9 +14,9 @@ from pathlib import Path
 import matplotlib
 
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
+import matplotlib.pyplot as plt  # noqa: E402
+import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
 MAX_ROWS = 25
@@ -45,9 +44,7 @@ def measure(frame: pd.DataFrame, column: str, per: str | None = None) -> pd.Seri
     return frame[column] / frame[per] if per else frame[column]
 
 
-def bootstrap_difference(
-    a: pd.Series, b: pd.Series, draws: int = 2000, seed: int = 7
-) -> tuple[float, float, float]:
+def bootstrap_difference(a: pd.Series, b: pd.Series, draws: int = 2000, seed: int = 7) -> tuple[float, float, float]:
     """Difference of means with a 95% percentile bootstrap interval."""
     rng = np.random.default_rng(seed)
     a_values, b_values = a.to_numpy(), b.to_numpy()
@@ -99,24 +96,15 @@ class Analyst:
             columns = [description[0] for description in cursor.description or []]
             return pd.DataFrame(cursor.fetchmany(MAX_ROWS + 1), columns=columns)
         except (sqlite3.Error, sqlite3.Warning) as err:
-            raise ToolError(
-                f"SQL refused: {err}. Only single SELECT statements over {sorted(self.frames)} run here."
-            )
+            raise ToolError(f"SQL refused: {err}. Only single SELECT statements over {sorted(self.frames)} run here.")
 
     # Tools --------------------------------------------------------------------------------
 
     def list_tables(self) -> str:
-        tables = [
-            f"{name}: {len(frame)} rows, columns {list(frame.columns)}"
-            for name, frame in self.frames.items()
-        ]
-        metrics = [
-            f"{m.name} = {m.column}{'/' + m.per if m.per else ''} on {m.table}: {m.description}"
-            for m in self.metrics.values()
-        ]
-        return self._note(
-            "Tables:\n  " + "\n  ".join(tables) + "\nMetrics:\n  " + "\n  ".join(metrics)
-        )
+        tables = [f"{name}: {len(frame)} rows, columns {list(frame.columns)}" for name, frame in self.frames.items()]
+        metrics = [f"{m.name} = {m.column}{'/' + m.per if m.per else ''} on {m.table}: {m.description}"
+                   for m in self.metrics.values()]
+        return self._note("Tables:\n  " + "\n  ".join(tables) + "\nMetrics:\n  " + "\n  ".join(metrics))
 
     def describe_table(self, table: str) -> str:
         if table not in self.frames:
@@ -125,14 +113,9 @@ class Analyst:
         lines = [f"{table}: {len(frame)} rows"]
         for name in frame.columns:
             column = frame[name]
-            span = (
-                f"min {column.min():g}, max {column.max():g}"
-                if pd.api.types.is_numeric_dtype(column)
-                else f"e.g. {list(column.dropna().unique()[:4])}"
-            )
-            lines.append(
-                f"  {name} ({column.dtype}): {column.isna().sum()} null, {column.nunique()} distinct, {span}"
-            )
+            span = (f"min {column.min():g}, max {column.max():g}" if pd.api.types.is_numeric_dtype(column)
+                    else f"e.g. {list(column.dropna().unique()[:4])}")
+            lines.append(f"  {name} ({column.dtype}): {column.isna().sum()} null, {column.nunique()} distinct, {span}")
         return self._note("\n".join(lines))
 
     def run_sql(self, query: str) -> str:
@@ -144,29 +127,21 @@ class Analyst:
         spec = self._metric(metric)
         frame = self.frames[spec.table].dropna(subset=[spec.column])
         values = measure(frame, spec.column, spec.per)
-        diff, low, high = bootstrap_difference(
-            values[frame[group_by] == a], values[frame[group_by] == b]
-        )
-        return self._note(
-            f"{a} minus {b} on {metric}: {diff:.4f}, 95% bootstrap interval [{low:.4f}, {high:.4f}]"
-        )
+        diff, low, high = bootstrap_difference(values[frame[group_by] == a], values[frame[group_by] == b])
+        return self._note(f"{a} minus {b} on {metric}: {diff:.4f}, 95% bootstrap interval [{low:.4f}, {high:.4f}]")
 
     def make_chart(self, query: str, title: str, highlight: str) -> str:
         rows = self._query(query)
         if rows.shape[1] != 2 or not pd.api.types.is_numeric_dtype(rows.iloc[:, 1]):
             raise ToolError("A chart query must return two columns: a label and a number.")
         if len(rows) > MAX_CHART_BARS:
-            raise ToolError(
-                f"More than {MAX_CHART_BARS} bars is not readable. Aggregate the query first."
-            )
+            raise ToolError(f"More than {MAX_CHART_BARS} bars is not readable. Aggregate the query first.")
         rows = rows.sort_values(rows.columns[1])
         labels, values = rows.iloc[:, 0].astype(str), rows.iloc[:, 1]
         colors = ["#1E3A5F" if label == highlight else "#CBD5E1" for label in labels]
         fig, ax = plt.subplots(figsize=(6.4, 0.5 * len(rows) + 1.3), dpi=150)
         bars = ax.barh(labels, values, color=colors, height=0.62)
-        ax.bar_label(
-            bars, labels=[f"{v:.3g}" for v in values], padding=4, color="#334155", fontsize=9
-        )
+        ax.bar_label(bars, labels=[f"{v:.3g}" for v in values], padding=4, color="#334155", fontsize=9)
         ax.set_xlim(0, values.max() * 1.15)  # bars start at zero, or their lengths would lie
         ax.set_title(title, loc="left", fontsize=10.5, color="#0F172A")
         ax.spines[["top", "right", "bottom"]].set_visible(False)
@@ -181,15 +156,8 @@ class Analyst:
         self._note(rows.round(4).to_csv(index=False))
         return f"Saved {path.name}, {len(rows)} bars."
 
-    def submit_answer(
-        self,
-        text: str,
-        metric: str,
-        group_by: str,
-        group: str,
-        value: float,
-        is_largest: bool = False,
-    ) -> str:
+    def submit_answer(self, text: str, metric: str, group_by: str, group: str, value: float,
+                      is_largest: bool = False) -> str:
         problems = validate(self, text, metric, group_by, group, value, is_largest)
         if problems:
             raise ToolError("Answer rejected:\n- " + "\n- ".join(problems))
@@ -202,9 +170,7 @@ class Analyst:
         return self.metrics[name]
 
 
-CAUSAL = re.compile(
-    r"\b(because|caused?|causes|due to|leads? to|makes? (people|customers))\b", re.I
-)
+CAUSAL = re.compile(r"\b(because|caused?|causes|due to|leads? to|makes? (people|customers))\b", re.I)
 HEDGE = re.compile(r"\b(not distinguishable|cannot tell|too close|inconclusive)\b", re.I)
 
 
@@ -212,22 +178,13 @@ def traced(number: str, percent: bool, evidence: set[float]) -> bool:
     """True if the number, at the precision written, rounds from something a tool returned."""
     decimals = len(number.split(".")[1]) if "." in number else 0
     value = float(number)
-    tolerance = 0.5 * 10**-decimals + 1e-9
-    return any(
-        abs(seen - value) <= tolerance or (percent and abs(seen * 100 - value) <= tolerance)
-        for seen in evidence
-    )
+    tolerance = 0.5 * 10 ** -decimals + 1e-9
+    return any(abs(seen - value) <= tolerance or (percent and abs(seen * 100 - value) <= tolerance)
+               for seen in evidence)
 
 
-def validate(
-    session: Analyst,
-    text: str,
-    metric: str,
-    group_by: str,
-    group: str,
-    value: float,
-    is_largest: bool,
-) -> list[str]:
+def validate(session: Analyst, text: str, metric: str, group_by: str, group: str, value: float,
+             is_largest: bool) -> list[str]:
     """Recompute the claim in pandas, on the source data, without touching the agent's SQL."""
     spec = session.metrics.get(metric)
     if spec is None:
@@ -237,12 +194,8 @@ def validate(
         return [f"{group_by}={group!r} does not exist in {spec.table}."]
 
     usable = frame.dropna(subset=[spec.column])
-    keyed = usable.assign(
-        _value=measure(usable, spec.column, spec.per), _group=usable[group_by].astype(str)
-    )
-    table = (
-        keyed.groupby("_group")["_value"].agg(["mean", "size"]).sort_values("mean", ascending=False)
-    )
+    keyed = usable.assign(_value=measure(usable, spec.column, spec.per), _group=usable[group_by].astype(str))
+    table = keyed.groupby("_group")["_value"].agg(["mean", "size"]).sort_values("mean", ascending=False)
     session.evidence.update(float(x) for x in table["mean"])
     session.evidence.update(float(x) for x in table["size"])
     session.evidence.update([float(len(frame)), float(len(usable))])
@@ -250,35 +203,25 @@ def validate(
     problems = []
     actual = table.loc[group, "mean"]
     if abs(actual - value) > max(0.005 * abs(actual), 5e-4):
-        problems.append(
-            f"Recomputed {metric} for {group} is {actual:.4f}, you claimed {value:.4f}."
-        )
+        problems.append(f"Recomputed {metric} for {group} is {actual:.4f}, you claimed {value:.4f}.")
     if is_largest and table.index[0] != group:
-        problems.append(
-            f"{group} is not the largest: {table.index[0]} is ({table['mean'].iloc[0]:.4f})."
-        )
+        problems.append(f"{group} is not the largest: {table.index[0]} is ({table['mean'].iloc[0]:.4f}).")
 
     n = int(table.loc[group, "size"])
     if n < SMALL_GROUP and not re.search(rf"\b{n}\b", text):
         problems.append(f"{group} has only {n} rows. State that sample size in the answer.")
 
     if usable.shape[0] < frame.shape[0] and str(len(usable)) not in text:
-        problems.append(
-            f"{spec.column} is null in {len(frame) - len(usable)} of {len(frame)} rows. "
-            f"Say the answer covers {len(usable)} of {len(frame)}."
-        )
+        problems.append(f"{spec.column} is null in {len(frame) - len(usable)} of {len(frame)} rows. "
+                        f"Say the answer covers {len(usable)} of {len(frame)}.")
 
     if is_largest and len(table) > 1:
         runner_up = table.index[1]
-        _, low, high = bootstrap_difference(
-            keyed.loc[keyed._group == group, "_value"],
-            keyed.loc[keyed._group == runner_up, "_value"],
-        )
+        _, low, high = bootstrap_difference(keyed.loc[keyed._group == group, "_value"],
+                                            keyed.loc[keyed._group == runner_up, "_value"])
         if low <= 0 <= high and not HEDGE.search(text):
-            problems.append(
-                f"The gap to {runner_up} has a 95% interval of [{low:.4f}, {high:.4f}], which includes 0. "
-                "Say the two are not distinguishable."
-            )
+            problems.append(f"The gap to {runner_up} has a 95% interval of [{low:.4f}, {high:.4f}], which includes 0. "
+                            "Say the two are not distinguishable.")
 
     for number, percent in re.findall(r"(?<![\w.])(\d+(?:\.\d+)?)(%?)", text):
         if not traced(number, bool(percent), session.evidence):
@@ -290,77 +233,28 @@ def validate(
 
 
 TOOLS = [
-    {
-        "name": "list_tables",
-        "description": "List tables, their columns, and the agreed metric definitions.",
-        "input_schema": {"type": "object", "additionalProperties": False, "properties": {}},
-    },
-    {
-        "name": "describe_table",
-        "description": "Profile a table: type, nulls, distinct values and range per column.",
-        "input_schema": {
-            "type": "object",
-            "additionalProperties": False,
-            "required": ["table"],
-            "properties": {"table": {"type": "string"}},
-        },
-    },
-    {
-        "name": "run_sql",
-        "description": f"Run one read-only SQLite SELECT. Returns at most {MAX_ROWS} rows as CSV.",
-        "input_schema": {
-            "type": "object",
-            "additionalProperties": False,
-            "required": ["query"],
-            "properties": {"query": {"type": "string"}},
-        },
-    },
-    {
-        "name": "compare_groups",
-        "description": "Difference between two groups on a metric, with a 95% bootstrap interval.",
-        "input_schema": {
-            "type": "object",
-            "additionalProperties": False,
-            "required": ["metric", "group_by", "a", "b"],
-            "properties": {
-                "metric": {"type": "string"},
-                "group_by": {"type": "string"},
-                "a": {"type": "string"},
-                "b": {"type": "string"},
-            },
-        },
-    },
-    {
-        "name": "make_chart",
-        "description": "Bar chart from a SELECT returning label and number. Highlights one label.",
-        "input_schema": {
-            "type": "object",
-            "additionalProperties": False,
-            "required": ["query", "title", "highlight"],
-            "properties": {
-                "query": {"type": "string"},
-                "title": {"type": "string"},
-                "highlight": {"type": "string"},
-            },
-        },
-    },
-    {
-        "name": "submit_answer",
-        "description": "End the task. The claim is recomputed; a mismatch is rejected with reasons.",
-        "input_schema": {
-            "type": "object",
-            "additionalProperties": False,
-            "required": ["text", "metric", "group_by", "group", "value"],
-            "properties": {
-                "text": {"type": "string"},
-                "metric": {"type": "string"},
-                "group_by": {"type": "string"},
-                "group": {"type": "string"},
-                "value": {"type": "number"},
-                "is_largest": {"type": "boolean"},
-            },
-        },
-    },
+    {"name": "list_tables", "description": "List tables, their columns, and the agreed metric definitions.",
+     "input_schema": {"type": "object", "additionalProperties": False, "properties": {}}},
+    {"name": "describe_table", "description": "Profile a table: type, nulls, distinct values and range per column.",
+     "input_schema": {"type": "object", "additionalProperties": False, "required": ["table"],
+                      "properties": {"table": {"type": "string"}}}},
+    {"name": "run_sql", "description": f"Run one read-only SQLite SELECT. Returns at most {MAX_ROWS} rows as CSV.",
+     "input_schema": {"type": "object", "additionalProperties": False, "required": ["query"],
+                      "properties": {"query": {"type": "string"}}}},
+    {"name": "compare_groups", "description": "Difference between two groups on a metric, with a 95% bootstrap interval.",
+     "input_schema": {"type": "object", "additionalProperties": False, "required": ["metric", "group_by", "a", "b"],
+                      "properties": {"metric": {"type": "string"}, "group_by": {"type": "string"},
+                                     "a": {"type": "string"}, "b": {"type": "string"}}}},
+    {"name": "make_chart", "description": "Bar chart from a SELECT returning label and number. Highlights one label.",
+     "input_schema": {"type": "object", "additionalProperties": False, "required": ["query", "title", "highlight"],
+                      "properties": {"query": {"type": "string"}, "title": {"type": "string"},
+                                     "highlight": {"type": "string"}}}},
+    {"name": "submit_answer", "description": "End the task. The claim is recomputed; a mismatch is rejected with reasons.",
+     "input_schema": {"type": "object", "additionalProperties": False,
+                      "required": ["text", "metric", "group_by", "group", "value"],
+                      "properties": {"text": {"type": "string"}, "metric": {"type": "string"},
+                                     "group_by": {"type": "string"}, "group": {"type": "string"},
+                                     "value": {"type": "number"}, "is_largest": {"type": "boolean"}}}},
 ]
 TOOL_NAMES = {tool["name"] for tool in TOOLS}
 
@@ -394,21 +288,10 @@ def run_agent(model, session: Analyst, question: str, max_steps: int = 14, trace
             except (ToolError, TypeError) as err:
                 output, is_error = str(err), True
                 result.rejected += 1
-            trace(
-                f"{step:>2}  {block.name}  {'REFUSED' if is_error else 'ok'}\n"
-                + "\n".join(f"      {line[:104]}" for line in output.splitlines()[:9])
-            )
-            result.log.append(
-                {"tool": block.name, "input": block.input, "is_error": is_error, "output": output}
-            )
-            tool_results.append(
-                {
-                    "type": "tool_result",
-                    "tool_use_id": block.id,
-                    "content": output,
-                    "is_error": is_error,
-                }
-            )
+            trace(f"{step:>2}  {block.name}  {'REFUSED' if is_error else 'ok'}\n" +
+                  "\n".join(f"      {line[:104]}" for line in output.splitlines()[:9]))
+            result.log.append({"tool": block.name, "input": block.input, "is_error": is_error, "output": output})
+            tool_results.append({"type": "tool_result", "tool_use_id": block.id, "content": output, "is_error": is_error})
         messages.append({"role": "user", "content": tool_results})
         if session.answer is not None:
             result.status = "answered"

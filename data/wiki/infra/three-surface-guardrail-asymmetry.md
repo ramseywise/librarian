@@ -2,7 +2,7 @@
 title: Three-Surface Guardrail Asymmetry
 tags: [infra, pattern]
 summary: "Guardrails on an agent's three text surfaces should react differently — block the untrusted user turn, neutralize a poisoned span in retrieved/tool content, scrub leaked values from model output before both caller and tracer — with a deliberate fail-open-when-disabled / fail-closed-when-crashing asymmetry and a result whose text field is safe by construction."
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/ai-project-template/docs/plans/2026-07-18-template-full-mirror-redesign.md
   - data/raw/repos/ai-project-template/.claude--docs--plans--2026-07-18-template-full-mirror-redesign.md
@@ -52,4 +52,3 @@ complementary, not redundant: `redact()` matches **field names** in span attribu
 - [[Streaming Output Scrubbing]] — related (the output surface under streaming)
 - [[Presidio PII Redaction for Langfuse]] — related (field-level redaction at the tracer)
 - [[Prompt Injection]] — prerequisite-for
-- [[AI Project Template Scaffold]] — instance-of

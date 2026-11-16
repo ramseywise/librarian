@@ -2,7 +2,7 @@
 title: API Design Fundamentals
 tags: [infra, reference]
 summary: "The API layer at system-design grain — entities become plural-noun REST resources, path/query/body by role, REST outside and gRPC inside, GraphQL only when clients need different shapes (and its N+1 trap), cursor over offset pagination for live feeds, identity from the auth token never the body, plus idempotency keys, versioning, and rate limits."
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--guides--9-system-design--02-api-design.md
   - data/raw/repos/sisyphus/interviewing--guides--9-system-design--02-api-design.md
@@ -57,5 +57,4 @@ stateless and self-contained; a session token needs a lookup but is easier to re
 
 ## See Also
 - [[Backend Scaling Fundamentals]] — related (the substrate behind the endpoints)
-- [[System Design Interview Study Guide]] — prerequisite-for (step 3 of the round)
 - [[RAG API Design Patterns]] — extends (the same layer for a retrieval service)

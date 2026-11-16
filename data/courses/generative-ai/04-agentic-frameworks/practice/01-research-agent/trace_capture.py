@@ -1,5 +1,4 @@
 """Note 05: a real langsmith Client that keeps runs in memory instead of posting them."""
-
 from langsmith import Client
 
 
@@ -15,9 +14,7 @@ class CaptureClient(Client):
         self.captured[run_id] = {"name": name, "run_type": run_type, "inputs": inputs, **kwargs}
 
     def update_run(self, run_id, **kwargs):
-        self.captured.setdefault(str(run_id), {}).update(
-            {k: v for k, v in kwargs.items() if v is not None}
-        )
+        self.captured.setdefault(str(run_id), {}).update({k: v for k, v in kwargs.items() if v is not None})
 
 
 def print_tree(client: CaptureClient) -> None:

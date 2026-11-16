@@ -2,7 +2,7 @@
 title: Frozen Version Stamps on Logged Results
 tags: [eval, infra, pattern]
 summary: Every served result row carries a named version constant for each component that shaped it — prompt hash, enrichment, weights, ranker, composer, schema — and a classifier whose output is logged but whose rule-table is unversioned is a hole; instrumentation ships in the same commit as the feature because logs cannot be backfilled.
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/akira/docs/research/2026-09-16-dis289-relevance-benchmark-corpus.md
   - data/raw/claude-docs/kiez-archive/docs/research/2026-09-16-dis289-relevance-benchmark-corpus.md
@@ -126,7 +126,7 @@ lived beside the ranker's internal types with no version field. The change:
 
 A threshold baked in at write time (a viewport dwell cut-off) is the same problem in
 miniature: free to change before the first production row, a version-stamp event after
-([[Landed Is Not Complete]]).
+(Landed Is Not Complete).
 
 ## Freezing an instrument before a comparison round (akira, 2026-09-16)
 
@@ -154,7 +154,7 @@ decision is reusable for any instrument that a comparison round depends on:
   named event: the acceptance round closing.
 
 The acceptance run that depended on the freeze then hit blockers of its own. See
-[[Ship Logging Before Features]] (the outcome signal has to be decided before the first
+Ship Logging Before Features (the outcome signal has to be decided before the first
 serve).
 
 ## Replay corpora
@@ -177,12 +177,7 @@ computed once, at the entry point both the sync and batch paths call. Details ar
 
 ## See Also
 - [[Append-Only Human Labels]] — related (the judgments that join to these stamps)
-- [[Landed Is Not Complete]] — related (a stamped row can still be incomplete or unjoinable)
-- [[Write-Only Fields and the Reader Map]] — extends (keeping the breakdown is what makes stamping it possible)
 - [[RAG Eval Gate Contract]] — related (config snapshot and run id as the gate input contract)
-- [[Data Clusters by Writer and Trust]] — related (replay corpus as an interaction-cluster table)
 - [[Frozen Ranking Baseline from a Pure Ranker]] — related (the snapshot that carries these stamps so judgments can be joined)
-- [[Ship Logging Before Features]] — extends
-- [[Intake Option Separability via Reach Vectors]] — related (measuring whether intake options are distinct requests at all)
 - [[Offline Prompt Experiment Runner]] — related (where the prompt-identity stamp was built and is consumed)
 - [[Model Version Drift]] — related (why a model alias needs a dated stamp)

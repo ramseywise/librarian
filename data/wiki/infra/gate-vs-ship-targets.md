@@ -2,7 +2,7 @@
 title: Gate vs Ship Make Targets
 tags: [infra, pattern]
 summary: Two compound make targets with different autofix policies — `gate` is the dev loop where `--fix` is allowed, `ship` runs the same checks strictly so the committed diff is the reviewed diff — plus the companion rule that any check needing external credentials skips without them and fails loudly when they are present.
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/ai-project-template/docs/research/2026-08-29_diskoe-parity_template-conventions.md
   - data/raw/claude-docs/kiez/docs/env.md
@@ -41,7 +41,4 @@ when it is not.
 
 ## See Also
 - [[Rollback Restores Code Only]] — related (promotion requires the gate green on the exact SHA)
-- [[Claude Workflow System]] — extends (the local loop these targets belong to)
 - [[UNGATED Metric Convention]] — related (the eval gate that runs inside `gate`/CI)
-- [[Claude Code Hook Architecture]] — alternative-to (hooks enforce the same gates per tool call rather than per target)
-- [[Kiez Project]] — instance-of (env-table enforcement)

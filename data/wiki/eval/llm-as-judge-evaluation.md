@@ -2,7 +2,7 @@
 title: LLM-as-Judge Evaluation
 tags: [eval, llm, pattern]
 summary: A separate LLM scoring outputs against a rubric — the approach for subjective quality where exact matching fails, requiring calibration against human grades and recommended as a complement to golden-set grading rather than a replacement.
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-05-luong-2025-towards-robust-mathematical-reasoning.md
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/eval-approaches.md
@@ -166,13 +166,9 @@ Judges that score by token probability instead of a generated verdict are [[GPTS
 - [[IMO-Bench]] — related (autograders for answers and proofs checked against expert grades)
 - [[Human Agreement Ceiling Protocol]] — prerequisite-for (κ_judge ≥ 0.8 × κ_HH, not an absolute target)
 - [[Synthesize the Cheap Half]] — related (gold-set calibration, closed-loop and stratum-bias rules for synthesized labels)
-- [[Confidence That Is Not a Probability]] — related (another score that needs independent labels before it can gate)
 - [[Specialist Verdict Panel]] — extends (one judge split into single-dimension specialists with structured verdicts)
 - [[Answer Criteria with Named Wrong Answers]] — extends (per-topic fail-if lists as the rubric)
 - [[Positive-Only Judge Fixtures Measure Recall]] — extends (recall vs precision of a judge fixture set; one calibration pass)
-- [[Closed Judge Vocabulary, Tolerant Parse]] — related (closing a judge's free-text issue list without brittle enum parsing)
-- [[Demote Judge Findings to Keyless Gates]] — extends (regex-catchable findings leave the judge for a keyless 1.0 gate; missing-verdict re-ask; calibration floor)
-- [[Judge Sees the Drafter's Facts]] — extends (reference facts so restating a given score is not scored ungrounded)
 - [[Grader States (Heuristic, Calibrated, Experimental)]] — extends
 - [[SOMA Judge Rubric]] — extends (specific, ordinal, multi-aspect rubric; never reveal self-grading)
 - [[Verification Loops]] — instance-of

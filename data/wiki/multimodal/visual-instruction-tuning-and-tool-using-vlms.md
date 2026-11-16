@@ -2,7 +2,7 @@
 title: Visual Instruction Tuning and Tool-Using VLMs
 tags: [multimodal, comparison]
 summary: "Four ways to give an LLM vision compared by what is trained: LLaVA and Emu train a connector or the whole model, SPAE trains only a tokenizer into a frozen LLM's words, and ViperGPT and Visual ChatGPT train nothing and call tools; benchmarks and a medical and a planning variant round out the family."
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-07-liu-2023-visual-instruction-tuning.md
   - data/raw/papers/2026-11-07-liu-2024-improved-baselines-visual-instruction-tuning.md
@@ -46,7 +46,7 @@ SPAE keeps the LLM untouched and moves the work to a tokenizer that writes an im
 
 Both systems compose existing models rather than training a new one, but the composition differs. ViperGPT asks a code model for a whole program per query and runs it once. Visual ChatGPT drives ChatGPT (text-davinci-003) through LangChain in a multi-step loop: a Prompt Manager assembles the prompt from system principles, per-tool descriptions (name, usage, inputs and outputs, and optionally an example), together with filenames for unique and chained images and a closing suffix that makes the model first ask itself whether a tool is needed. It exposes 22 visual foundation models, including Stable Diffusion, InstructPix2Pix, ControlNet and BLIP, and needs four V100 GPUs to host them all. Its only evidence is one qualitative dialogue of 16 rounds plus case studies that ablate the prompt; no benchmark, baseline or metric appears. The authors list heavy prompt engineering, slow chains of models, a token limit on how many tools fit, security and privacy concerns for remote plug-in models, and unsatisfying outputs from tool failure and prompt instability as limits.
 
-ViperGPT does report numbers: on GQA test-dev it leads the zero-shot field by 3.4 points over BLIP-2, yet on GQA its 48.1 sits far under the 72.1 of the supervised CRF model (self-reported). The tool-calling idea itself is covered in [[Toolformer Self-Supervised Tool Use]] and [[ReAct Pattern]].
+ViperGPT does report numbers: on GQA test-dev it leads the zero-shot field by 3.4 points over BLIP-2, yet on GQA its 48.1 sits far under the 72.1 of the supervised CRF model (self-reported). The tool-calling idea itself is covered in [[Toolformer Self-Supervised Tool Use]] and ReAct Pattern.
 
 ## Variants of the recipe
 

@@ -2,7 +2,7 @@
 title: Paid Tiers Start at the Beta, Not the Alpha
 tags: [infra, decision]
 summary: "For a pre-launch product, each paid tier was bought for a specific property and only when that property mattered: the database upgrade buys posture (backups, PITR, no idle pause), not capacity, so a supervised alpha runs on Free behind a hand-taken dump; the load test waits until traffic is within range of the estimate; the CI spend cap is sized from measured per-job billing; and the host is paid because no free option offers the needed set without new engineering."
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-29-dis215-supabase-pro-timing.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-29-dis215-supabase-pro-timing.md
@@ -91,7 +91,7 @@ The spend cap was sized from measured numbers, not guessed:
 seconds**. In the Actions tab that looks exactly like a workflow skipped by its own flag.
 Retention, the restore drill and a scheduled retire job had not run on schedule for **three
 weeks**, and the internal pipeline watchdog depended on the same scheduler. See
-[[Always-Red Check Carries No Signal]] and [[A Capped Run Is Not a Clean Run]].
+Always-Red Check Carries No Signal and A Capped Run Is Not a Clean Run.
 
 ## Host: pay because no free option has the needed set
 
@@ -120,8 +120,5 @@ Mark every price that was not read off a live billing page as unverified.
 
 ## See Also
 - [[Scaling Axes and Customer-Triggered Cost Cliffs]] — instance-of (CI minutes broke first; the database ceiling was never the trigger)
-- [[The Free Decision Is the Long-Lead Item]] — related (a zero-cost cap decision gated three weeks of scheduled jobs)
 - [[Deployment Topology Ladder]] — related (host choice by who can reach the system)
-- [[Always-Red Check Carries No Signal]] — related (0-step billing failures read as skipped-by-flag)
-- [[Budget Without a Meter Is a Preference]] — related (a cap set from an unverified per-minute rate)
 - [[Uptime Probe Asserts the Journey]] — related (the same alpha/beta phase split for paging)

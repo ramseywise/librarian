@@ -2,7 +2,7 @@
 title: Skill Pipeline Dryrun Testing
 tags: [eval, pattern]
 summary: Regression-testing a chain of conversational skills by simulating a user through fixed scenarios with unambiguous expected outcomes — asserting not only what the pipeline produces but which questions it correctly skips and which it must still ask.
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/ai-project-template/skills/design-dryrun/SKILL.md
   - data/raw/claude-docs/ai-project-template/skills/design-dryrun/reference/scenarios.md
@@ -13,7 +13,7 @@ sources:
 A conversational skill pipeline has no test suite in the ordinary sense — its output is a
 document produced through dialogue, and its correctness includes *what it chose not to ask*.
 `/design-dryrun` is the regression harness for one such pipeline
-([[Project Discovery Conversation]] → [[Scope-POC Design Interview]] → `/project-genesis`):
+(Project Discovery Conversation → Scope-POC Design Interview → `/project-genesis`):
 simulate a volunteer walking the whole chain with sample scenarios, and assert at each
 handoff.
 
@@ -115,11 +115,7 @@ that wasn't there before."*
 
 ## See Also
 - [[Skill Eval Pipeline (Blind Comparison + Grading)]] <!-- auto-linked -->
-- [[Project Discovery Conversation]] — prerequisite-for (stage 1 under test)
-- [[Scope-POC Design Interview]] — prerequisite-for (stage 2 under test)
-- [[AI Project Archetypes]] — extends (the assertion target for stage 1)
 - [[Golden Set Mechanics]] — alternative-to (fixed cases for a deterministic pipeline rather than a model)
 - [[Eval-Driven Development (EDD)]] — instance-of (a regression harness gating skill edits)
-- [[Asked vs Derived Scaffold Variables]] — extends (stage 3 validates the hint→parameter mapping)
 - [[Conversational Test Fixture Design]] — related (part of; how the three scenarios are authored)
 - [[Human-Participant Skill Test Protocol]] — alternative-to (real users rather than a simulated one)

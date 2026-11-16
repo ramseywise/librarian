@@ -2,7 +2,6 @@
 
 The folder layout is the one most real image sets use: root/split/class/image.png.
 """
-
 import math
 import random
 from pathlib import Path
@@ -31,11 +30,8 @@ def draw(label, rng):
     img = Image.new("RGB", (SIZE, SIZE), background)
     d = ImageDraw.Draw(img)
     for _ in range(rng.randint(2, 6)):  # clutter: lines that are not the shape
-        d.line(
-            [tuple(rng.uniform(0, SIZE) for _ in range(2)) for _ in range(2)],
-            fill=tuple(rng.randint(0, 255) for _ in range(3)),
-            width=rng.randint(1, 3),
-        )
+        d.line([tuple(rng.uniform(0, SIZE) for _ in range(2)) for _ in range(2)],
+               fill=tuple(rng.randint(0, 255) for _ in range(3)), width=rng.randint(1, 3))
     colour = tuple(rng.randint(0, 255) for _ in range(3))
     r = rng.uniform(10, 22)
     cx, cy = rng.uniform(r, SIZE - r), rng.uniform(r, SIZE - r)
@@ -55,15 +51,8 @@ def draw(label, rng):
         for a in (turn, turn + math.pi / 2):
             dx, dy = math.cos(a), math.sin(a)
             px, py = -dy * w, dx * w
-            d.polygon(
-                [
-                    (cx - dx * r + px, cy - dy * r + py),
-                    (cx + dx * r + px, cy + dy * r + py),
-                    (cx + dx * r - px, cy + dy * r - py),
-                    (cx - dx * r - px, cy - dy * r - py),
-                ],
-                fill=colour,
-            )
+            d.polygon([(cx - dx * r + px, cy - dy * r + py), (cx + dx * r + px, cy + dy * r + py),
+                       (cx + dx * r - px, cy + dy * r - py), (cx - dx * r - px, cy - dy * r - py)], fill=colour)
     return img.filter(ImageFilter.GaussianBlur(rng.uniform(0, 1.0)))
 
 
@@ -116,7 +105,5 @@ def fraction(dataset, share, seed):
 
 def loaders(train_set, test_set, batch_size=32, seed=0):
     g = torch.Generator().manual_seed(seed)
-    return (
-        DataLoader(train_set, batch_size=batch_size, shuffle=True, generator=g),
-        DataLoader(test_set, batch_size=256),
-    )
+    return (DataLoader(train_set, batch_size=batch_size, shuffle=True, generator=g),
+            DataLoader(test_set, batch_size=256))

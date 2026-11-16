@@ -2,7 +2,7 @@
 title: "Code Retrieval: Structural Index and Agentic Search"
 tags: [rag, infra, concept]
 summary: Live code wants a different retrieval stack than prose knowledge — AST/symbol-level chunking (tree-sitter, cAST), a lightweight symbol reference graph (Aider-style PageRank) instead of a graph database, grep-first agentic search with embeddings as fuzzy fallback, and Merkle/content-hash incremental re-indexing.
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/guacamayo/docs/state/research_agentic_kb_for_code.md
   - data/raw/claude-docs/guacamayo/docs/research/2026-08-20_tencentdb-memory_parity.md
@@ -95,6 +95,5 @@ content-hash manifest skips for incremental reindexing. Decisions worth reusing:
 - [[RAG Retrieval Strategies]] — extends
 - [[CRAG Retry Logic]] — alternative-to (trained evaluator vs tool-loop self-correction)
 - [[Librarian RAG Architecture]] — alternative-to (prose compile path)
-- [[Embeddings That Only Rerank Cannot Recall]] — extends (librarian's rerank-only gap, in depth)
 - [[Agentic RAG — Advanced Patterns]] — extends
 - [[RepoCoder Iterative Retrieval-Generation]] — related

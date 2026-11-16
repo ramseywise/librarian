@@ -2,7 +2,7 @@
 title: HITL Annotation Pipeline
 tags: [eval, concept]
 summary: Human-in-the-loop annotation workflow for conversation data — two-queue structure (random + edge case), inter-annotator agreement as quality gate, and feedback routing to eval dataset vs failure taxonomy.
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-05-veselovsky-2023-artificial-artificial-artificial-intelligence.md
   - data/raw/linear/2026-04-24-evaluation-and-improvement.md
@@ -112,10 +112,7 @@ Limits: the gold standard is the trained annotators, and accuracy counts only te
 - [[Manual Review as Eval Bootstrap]] — related (ad-hoc precursor to systematized annotation)
 - [[Append-Only Human Labels]] — extends (how rater judgments are persisted so agreement stays measurable)
 - [[Human Agreement Ceiling Protocol]] — extends (κ_HH as the ceiling the judge is scored against, with statistics per scale type)
-- [[Taste vs Defect Verdict Split]] — extends (what the annotation row should carry)
 - [[Graded-Uncertainty Enrichment Contract]] — related (the three uncertainty levels that decide what reaches the annotators)
-- [[Recency-Seeded Label Queue Samples the Thin End]] — extends (seed only judgeable rows, stratify kind × field, rank by rater basis)
-- [[Snapshot the Judged Value on the Verdict Row]] — extends (verdict rows for pre-canonical or mutable subjects)
 - [[LangSmith Platform]] — instance-of (annotation queues as the review surface)
 - [[Silicon Sampling and Algorithmic Fidelity]] — related (a model standing in for human respondents, as here for human labelers)
 - [[Dynabench]] — related (human validation of model errors)

@@ -2,7 +2,7 @@
 title: RAG Reranking
 tags: [rag, concept]
 summary: Reranking strategies for RAG pipelines — cross-encoder vs LLM listwise, confidence scoring, and when each is appropriate.
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/playground/docs/archived/rag-tradeoffs.md
   - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
@@ -92,7 +92,6 @@ Limits of this section:
 - [[CRAG Retry Logic]]
 - [[Reciprocal Rank Fusion (RRF)]]
 - [[Specificity-Adaptive Ranking and Slate Composition]] — alternative-to (a deterministic rubric over catalogue rows instead of a learned reranker)
-- [[Borderline-Band Sufficiency Probe]] — extends (rerank scores as ordinal signals with an LLM tiebreak in the uncertain band)
 - [[RA-DIT Dual Instruction Tuning]] — related (tunes the retriever's query encoder from the LM)
 - [[Soft Context Compression for RAG (CLaRa and REFRAG)]] — alternative-to (a generator-trained scorer in place of a separate reranker)
 - [[Pairwise Ranking Prompting (PRP)]] — instance-of (prompted pairwise comparison as the reranker)

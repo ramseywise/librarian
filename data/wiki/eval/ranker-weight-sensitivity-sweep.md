@@ -2,7 +2,7 @@
 title: Ranker Weight Sensitivity Sweep
 tags: [eval, pattern]
 summary: "Turn a weight table's design thesis into a measured curve: perturb one weight at a time by ±10% and renormalise the rest (never clamp), score a synthetic pool large enough for rank correlation to mean something (≥ 20; 30 used), and report Spearman ρ, top-5 overlap, top-1 agreement, inverted-pair count and mean score delta per cell — and when adding questions lowers every absolute score, rank agreement, not score, is the metric that transfers."
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-08-27-b27-sensitivity-sweeps.md
   - data/raw/claude-docs/diskoe/docs/plans/2026-08-27-b27-sensitivity-sweeps.md
@@ -59,7 +59,7 @@ combinatorial cost. A two-dimension interaction sweep is a follow-on, not a requ
 | Mean absolute score delta | tells "weights moved but order held" from "order shuffled" |
 
 Each metric is reported for production and for the equal-weight baseline
-([[Adversarially Independent Baseline Arm]]). The action rule: if a ±10% shift drops
+(Adversarially Independent Baseline Arm). The action rule: if a ±10% shift drops
 top-5 ρ below 0.80, that weight is so load-bearing that any change to it needs a new
 weights version stamp. It goes on record as a design risk. (The measured sweep found no
 cell below 0.80.)
@@ -89,6 +89,5 @@ fixture header makes staleness visible.
 
 ## See Also
 - [[Specificity-Adaptive Ranking and Slate Composition]] — extends (measures the weight profiles that design specifies)
-- [[Adversarially Independent Baseline Arm]] — related (the second arm every cell is reported for)
 - [[Frozen Ranking Baseline from a Pure Ranker]] — related (pure ranker → offline replay is cheap)
 - [[Eval Non-Determinism]] — related (determinism of the ranker is what makes ρ meaningful)

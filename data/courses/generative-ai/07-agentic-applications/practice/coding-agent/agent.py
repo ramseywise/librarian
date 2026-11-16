@@ -4,7 +4,6 @@ The loop has the shape of a Claude tool-use loop, so a real model can replace th
 scripted one by providing the same create(messages, tools) method. Every limit lives
 in the harness. The model cannot reason its way past any of them.
 """
-
 from __future__ import annotations
 
 import ast
@@ -68,9 +67,7 @@ class Workspace:
         # resolve() follows symlinks, so a link inside the repo cannot point out of it.
         path = (self.root / rel).resolve()
         if not path.is_relative_to(self.root):
-            raise ToolError(
-                f"{rel!r} is outside the workspace. Use a path relative to the repo root."
-            )
+            raise ToolError(f"{rel!r} is outside the workspace. Use a path relative to the repo root.")
         return path
 
     def _rel(self, path: Path) -> str:
@@ -95,9 +92,7 @@ class Workspace:
         target = self._resolve(path)
         rel = self._rel(target)
         if not rel.startswith(self.limits.writable):
-            raise ToolError(
-                f"{rel} is read-only. Fix the code under {self.limits.writable}, not the tests."
-            )
+            raise ToolError(f"{rel} is read-only. Fix the code under {self.limits.writable}, not the tests.")
         if rel not in self.read_hashes:
             raise ToolError(f"Read {rel} before editing it.")
         text = target.read_text()
@@ -106,21 +101,15 @@ class Workspace:
             raise ToolError(f"{rel} changed since you read it. Read it again, then retry the edit.")
         count = text.count(old)
         if count == 0:
-            raise ToolError(
-                f"`old` was not found in {rel}. Read the file and copy the text exactly."
-            )
+            raise ToolError(f"`old` was not found in {rel}. Read the file and copy the text exactly.")
         if count > 1:
-            raise ToolError(
-                f"`old` matches {count} places in {rel}. Include more surrounding lines."
-            )
+            raise ToolError(f"`old` matches {count} places in {rel}. Include more surrounding lines.")
         updated = text.replace(old, new)
         if rel.endswith(".py"):
             try:
                 ast.parse(updated)
             except SyntaxError as err:
-                raise ToolError(
-                    f"Edit discarded, {rel} would not parse: {err.msg} (line {err.lineno})."
-                )
+                raise ToolError(f"Edit discarded, {rel} would not parse: {err.msg} (line {err.lineno}).")
         target.write_text(updated)
         self.read_hashes[rel] = hashlib.sha256(updated.encode()).hexdigest()
         self.tests_green = False
@@ -128,31 +117,22 @@ class Workspace:
 
     def _limit_child(self) -> None:
         resource.setrlimit(resource.RLIMIT_CPU, (self.limits.cpu_seconds, self.limits.cpu_seconds))
-        resource.setrlimit(
-            resource.RLIMIT_FSIZE, (self.limits.max_file_bytes, self.limits.max_file_bytes)
-        )
+        resource.setrlimit(resource.RLIMIT_FSIZE, (self.limits.max_file_bytes, self.limits.max_file_bytes))
 
     def _unittest(self) -> tuple[int, str]:
         """Run the fixed test command with a clean environment and a wall-clock limit."""
         env = {"PATH": "/usr/bin:/bin", "PYTHONDONTWRITEBYTECODE": "1", "HOME": str(self.outside)}
         proc = subprocess.Popen(
             [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-t", "."],
-            cwd=self.root,
-            env=env,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-            preexec_fn=self._limit_child,
-            start_new_session=True,
+            cwd=self.root, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
+            preexec_fn=self._limit_child, start_new_session=True,
         )
         try:
             output, _ = proc.communicate(timeout=self.limits.test_timeout_s)
         except subprocess.TimeoutExpired:
             os.killpg(proc.pid, signal.SIGKILL)
             proc.communicate()
-            raise ToolError(
-                f"Tests killed after {self.limits.test_timeout_s:g} s. Look for an infinite loop."
-            )
+            raise ToolError(f"Tests killed after {self.limits.test_timeout_s:g} s. Look for an infinite loop.")
         return proc.returncode, output
 
     def run_tests(self) -> str:
@@ -162,9 +142,7 @@ class Workspace:
 
     def finish(self, summary: str) -> str:
         if not self.tests_green:
-            raise ToolError(
-                "Not finished: the tests have not passed since the last edit. Run them."
-            )
+            raise ToolError("Not finished: the tests have not passed since the last edit. Run them.")
         self.finished = True
         return "Accepted."
 
@@ -177,45 +155,22 @@ class Workspace:
 
 
 TOOLS = [
-    {
-        "name": "read_file",
-        "description": "Read a text file from the repo, with line numbers. Paths are relative to the repo root.",
-        "input_schema": {
-            "type": "object",
-            "additionalProperties": False,
-            "required": ["path"],
-            "properties": {"path": {"type": "string"}},
-        },
-    },
-    {
-        "name": "edit_file",
-        "description": "Replace one exact, unique string in a file you have read. Only code under tipkit/ is writable.",
-        "input_schema": {
-            "type": "object",
-            "additionalProperties": False,
-            "required": ["path", "old", "new"],
-            "properties": {
-                "path": {"type": "string"},
-                "old": {"type": "string"},
-                "new": {"type": "string"},
-            },
-        },
-    },
-    {
-        "name": "run_tests",
-        "description": "Run the repo's unit tests. Takes no arguments. Returns the exit code and output.",
-        "input_schema": {"type": "object", "additionalProperties": False, "properties": {}},
-    },
-    {
-        "name": "finish",
-        "description": "End the task with a summary. Refused unless the tests pass after your last edit.",
-        "input_schema": {
-            "type": "object",
-            "additionalProperties": False,
-            "required": ["summary"],
-            "properties": {"summary": {"type": "string"}},
-        },
-    },
+    {"name": "read_file",
+     "description": "Read a text file from the repo, with line numbers. Paths are relative to the repo root.",
+     "input_schema": {"type": "object", "additionalProperties": False, "required": ["path"],
+                      "properties": {"path": {"type": "string"}}}},
+    {"name": "edit_file",
+     "description": "Replace one exact, unique string in a file you have read. Only code under tipkit/ is writable.",
+     "input_schema": {"type": "object", "additionalProperties": False, "required": ["path", "old", "new"],
+                      "properties": {"path": {"type": "string"}, "old": {"type": "string"},
+                                     "new": {"type": "string"}}}},
+    {"name": "run_tests",
+     "description": "Run the repo's unit tests. Takes no arguments. Returns the exit code and output.",
+     "input_schema": {"type": "object", "additionalProperties": False, "properties": {}}},
+    {"name": "finish",
+     "description": "End the task with a summary. Refused unless the tests pass after your last edit.",
+     "input_schema": {"type": "object", "additionalProperties": False, "required": ["summary"],
+                      "properties": {"summary": {"type": "string"}}}},
 ]
 
 
@@ -261,20 +216,14 @@ def run_agent(model, workspace: Workspace, task: str, trace=print) -> Result:
             seen[key] = seen.get(key, 0) + 1
             if seen[key] > limits.repeat_limit:
                 # Text can be ignored, a halt cannot. See the first warning below.
-                trace(
-                    f"{step:>2}  {block.name}  HALT: same call on unchanged files, {seen[key]} times"
-                )
+                trace(f"{step:>2}  {block.name}  HALT: same call on unchanged files, {seen[key]} times")
                 result.status = "halted_repeat"
                 return result
             try:
                 if seen[key] == limits.repeat_limit:
-                    raise ToolError(
-                        "You have made this same call on unchanged files repeatedly. Change approach."
-                    )
+                    raise ToolError("You have made this same call on unchanged files repeatedly. Change approach.")
                 if block.name not in TOOL_NAMES:
-                    raise ToolError(
-                        f"There is no tool called {block.name}. You have: {sorted(TOOL_NAMES)}."
-                    )
+                    raise ToolError(f"There is no tool called {block.name}. You have: {sorted(TOOL_NAMES)}.")
                 output, is_error = getattr(workspace, block.name)(**block.input), False
             except (ToolError, TypeError) as err:
                 output, is_error = str(err), True
@@ -282,17 +231,9 @@ def run_agent(model, workspace: Workspace, task: str, trace=print) -> Result:
             label = "REFUSED" if is_error else "ok"
             first_line = output.splitlines()[0] if output else ""
             trace(f"{step:>2}  {block.name}  {label}: {first_line[:88]}")
-            result.log.append(
-                {"tool": block.name, "input": block.input, "is_error": is_error, "output": output}
-            )
-            tool_results.append(
-                {
-                    "type": "tool_result",
-                    "tool_use_id": block.id,
-                    "content": output,
-                    "is_error": is_error,
-                }
-            )
+            result.log.append({"tool": block.name, "input": block.input, "is_error": is_error, "output": output})
+            tool_results.append({"type": "tool_result", "tool_use_id": block.id,
+                                 "content": output, "is_error": is_error})
         messages.append({"role": "user", "content": tool_results})
         if workspace.finished:
             result.status = "finished"

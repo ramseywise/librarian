@@ -2,7 +2,7 @@
 title: Silent Failure Catalogue
 tags: [infra, llm, reference]
 summary: "A code-review checklist of the ways errors disappear — swallowed exceptions, fallbacks indistinguishable from empty, un-awaited promises, retries that exhaust without surfacing, default values filling absent data — organised around one question for every handler: who finds out, and how?"
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/galactus/docs/sources/dotclaude-silent-failure-hunter.md
   - data/raw/claude-docs/galactus/skills/review-silent-failure/SKILL.md
@@ -356,7 +356,7 @@ sources:
 
 An externally-sourced agent definition (medium confidence) that the galactus repo kept as
 a reference for its review dimensions. Its value is the enumeration; the organising
-question is the same one [[Collapse Site Detection]] asks of designs.
+question is the same one Collapse Site Detection asks of designs.
 
 ## The catalogue
 
@@ -385,7 +385,7 @@ empty-match skipping a send, a migration dropping a column a backfill needs, liv
 monitoring) alongside three **negative controls** that word-match the catalogue but are
 correct (a typed `Ok | Unavailable` return, a unique-constraint pre-send, a hard-coded
 character cap). The controls exist because a catalogue like this one, applied by grep
-alone, over-fires — see [[Collapse Site Detection]] on scoring precision separately.
+alone, over-fires — see Collapse Site Detection on scoring precision separately.
 
 ## Additions from the galactus review-silent-failure dimension
 
@@ -393,7 +393,7 @@ The galactus dimension extends the catalogue with two classes:
 
 - **Gates without checks.** A gate whose pass/fail depends on an artifact nobody wrote turns
   CI red on *absence* rather than *defect*, and the only fix is to disable it. Write the
-  graders first, then enable the gate (see [[Always-Red Check Carries No Signal]]).
+  graders first, then enable the gate (see Always-Red Check Carries No Signal).
 - **Silent disagreement with live state.** "An instrument that disagrees with reality and
   says nothing invalidates every row it certifies":
   - `CREATE … IF NOT EXISTS` checks the **name**, not the definition. It is an optimistic
@@ -428,11 +428,11 @@ logging-level debates where the error does surface somewhere actionable.
   in-memory fixture. Once a database backs it, a timeout returning null shows a dead link
   for an operator who exists. The review downgraded the finding, because this diff had
   no I/O path that could produce it, and recorded it against the item that owns the swap
-  ([[Async Seam Before the Table]]).
+  (Async Seam Before the Table).
 - **Output that looks correct and does nothing.** A QR board rendered from `localhost`
   produces a perfect-looking code that no phone can reach. A docs note does not cover
   this. It needs a visible dev-only warning in code
-  ([[Printed URL Is a Public Contract]]).
+  (Printed URL Is a Public Contract).
 
 ## Additions from template starter-kit and CI plans (ai-project-template)
 
@@ -475,7 +475,7 @@ logging-level debates where the error does surface somewhere actionable.
   times: a profile query, a saved-ids loader, and auth Server Actions that swallowed
   email-send errors. The fix was the same each time: log the error and return the same
   safe value. For auth, that keeps the no-enumeration response byte-identical
-  ([[Server Shell, Client Leaf]]).
+  (Server Shell, Client Leaf).
 - **Null-on-any-error hides a provider schema rejection.** A judge base class returned
   `null` on any call or parse error. Its first real use graded zero of ten fixtures,
   because the strict structured-output API rejected the shared schema. The run read as
@@ -488,11 +488,11 @@ logging-level debates where the error does surface somewhere actionable.
   an "already enriched" lookup comes back partial and already-enriched rows get
   re-submitted. Paginate explicitly and test the page-2 error path, because a swallowed
   error there returns a partial set as complete
-  ([[Bounded Slice After In-Memory Eligibility]]).
+  (Bounded Slice After In-Memory Eligibility).
 - **A sink that hides rejection hides wiring regressions too.** A beacon sink that answers a
   forged id with the same `202 {recorded: 0}` as a capacity drop is right for security. But
   a client refactor that sends the wrong field then fails silently, and call-count tests stay
-  green. Assert the payload ([[Indistinguishable Rejection on Best-Effort Sinks]]).
+  green. Assert the payload (Indistinguishable Rejection on Best-Effort Sinks).
 
 ## Additions from akira telemetry and enrichment-attribute plans (2026-09-21)
 
@@ -510,19 +510,19 @@ logging-level debates where the error does surface somewhere actionable.
   payload" literals, separate from the unit-test builders that had been updated. The
   previous attribute had hit the identical miss. Grep for every hand-rolled valid-payload
   literal when a required field is added
-  ([[Every Column Names Its Reader]]).
+  (Every Column Names Its Reader).
 
 ## Additions from akira measurement and retrieval plans (2026-09-24)
 
 - **A read-side schema drops the new field.** A comparison tool's own row schema did not
   declare a new output field, the parser stripped it, and the tool reported 0 yield over
-  populated data ([[Read-Side Schema Strips the New Field]]).
+  populated data (Read-Side Schema Strips the New Field).
 - **A paid backfill throws away paid work.** Embed-everything-then-write lost every
   embedding after the first failed insert, and the CLI exited 0 with failures
-  ([[Persist Paid Work Per Chunk]]).
+  (Persist Paid Work Per Chunk).
 - **`create or replace` leaves the old function behind.** Adding defaulted parameters
   created an overload rather than widening the function
-  ([[Widening a Postgres Function Creates an Overload]]).
+  (Widening a Postgres Function Creates an Overload).
 - **A JSON parse failure swallowed into `undefined`** on a client-supplied field, with no
   log. Review marked it moot once the field was removed in favour of a server-verified token.
 
@@ -534,7 +534,7 @@ logging-level debates where the error does surface somewhere actionable.
   `git rm --cached` as a separate change. Until it lands, no doc may claim the file is
   ignored.
 - **A skip that reads as a pass.** A test skip predicate gated on an env var hid 14 tests
-  across the seam a plan was built on ([[Skip Keyed on Config, Not Capability]]).
+  across the seam a plan was built on (Skip Keyed on Config, Not Capability).
 - **`git revert` restores the writer, never the published numbers.** A committed results
   directory with two write paths (an enforcing helper and an older advisory one) makes
   "independently revertible" false. The fix was to route every writer through one enforcing
@@ -561,21 +561,21 @@ are omitted; each bullet appeared in at least one review and most in several.
   single-item CLI exited 0 on a write error; a backfill printed "write complete" after per-row
   failures; a mirror-write failure flag reached no caller or summary.
 - **One transient read error aborts the rest of a batch.** Catch per item, record it as failed,
-  continue, and keep the backlog resumable ([[Persist Paid Work Per Chunk]]).
+  continue, and keep the backlog resumable (Persist Paid Work Per Chunk).
 - **A chained phase opens a fresh budget.** A QC phase run after enrichment created its own
   spend ledger and so got a second full per-run token ceiling; another CLI looped billed calls
   with no ledger at all. Pass one ledger through the whole run
-  ([[Budget Without a Meter Is a Preference]]).
+  (Budget Without a Meter Is a Preference).
 - **Lenient parsers in tooling** — vacuous thresholds, unknown ids accepted, `NaN` limits
-  ([[Strict Parsers for Alarm Config]]).
+  (Strict Parsers for Alarm Config).
 - **Unpaged or wrongly paged reads** under PostgREST's silent 1000-row cap
-  ([[Page on a Total Order]]).
+  (Page on a Total Order).
 - **Quarantine fails open.** Malformed rows dropped with one warn and no ratio escalation;
   escalate to error above a threshold and surface the count in the pool diagnostic.
 - **A floating `void` promise.** Its rejection escapes both the logger and the surrounding
   try block, and Node may terminate on an unhandled rejection.
 - **A Postgres `do instead nothing` rule** turns a loud permission error into a silent 0-row
-  success ([[Do-Instead-Nothing Rule Silences a Loud Denial]]).
+  success (Do-Instead-Nothing Rule Silences a Loud Denial).
 - **A documented invariant that is false.** A migration header claimed rows were "invisible by
   construction" when only ordering plus a `.limit(200)` hid them; "eligible is a superset of
   placed, by construction" was false because eligibility was capped like placement (fix: union
@@ -596,7 +596,7 @@ are omitted; each bullet appeared in at least one review and most in several.
   pure helper with the proxy.
 - **Triggers, CHECKs and advisory locks never executed** because tests mocked the RPC; add a
   real-Postgres integration test including two concurrent writers
-  ([[Live-Database Test Harness Hazards]]).
+  (Live-Database Test Harness Hazards).
 - **RLS gates rows, not columns.** Sensitive note and email columns sat on an anon-readable
   table.
 - **An expression index used only for an identical expression.** The query called
@@ -609,7 +609,7 @@ are omitted; each bullet appeared in at least one review and most in several.
   0.000 to 1.000 jump that looked like tuning; rejected as leakage.
 - **Co-fitting.** Heuristic rules designed by reading the corpus the holdout is drawn from; a
   threshold selected on the very sample it gates; baseline rates computed over tune and holdout
-  together ([[Write-Time Deterministic Holdout]]).
+  together (Write-Time Deterministic Holdout).
 - **Community-edited text reaches the prompt uncapped.** Cap length and strip markup at parse
   time.
 - **Raw account UUIDs in logs or interaction tables**, against a salted-pseudonym rule and with
@@ -629,7 +629,7 @@ are omitted; each bullet appeared in at least one review and most in several.
 - **Wrong-direction import with no lint guard.** The first `agents/` to `core/` import passed
   because the restricted-imports rule was scoped only to `core/`.
 - **Smaller recurring items:** a pushed migration edited in place; a guardrail kept as a comment
-  rather than converted to a grep test ([[Single-Definition Grep Guard]]); a synchronous
+  rather than converted to a grep test (Single-Definition Grep Guard); a synchronous
   `JSON.stringify` in the render path for instrumentation (move it into `after()`); a lockfile
   out of sync after a dependency bump; a test-harness truncate list missing new tables; a
   one-off service-role script committed at the repo root.
@@ -719,11 +719,11 @@ Defect classes from the earlier review wave that the section above does not alre
   `undefined` unless the protocol is `http:` or `https:`.
 - **A call-recording fake hides column and filter errors.** A fake Supabase client whose filter
   methods are passthroughs and which ignores `.select(...)` column lists lets a wrong column name
-  pass every test and fail in production ([[A Fake That Conforms to a Broken Seam]]).
+  pass every test and fail in production (A Fake That Conforms to a Broken Seam).
 - **A guard that fails open on a read error.** Pre-insert duplicate checks destructured only
   `data`, so `(null?.length ?? 0) > 1` was false and the insert proceeded unchecked. Fail closed
   on the read, and page the read with `.order('id')` before `.range()`
-  ([[Bounded Slice After In-Memory Eligibility]]).
+  (Bounded Slice After In-Memory Eligibility).
 - **A NaN safety ceiling.** `Number(flagValue('max-rows') ?? 500)` turned `500x` into `NaN`,
   and `count > NaN` is always false, so a typo disabled the row ceiling on an irreversible
   archive sweep. Four review dimensions raised it independently. Parse limit flags as
@@ -758,40 +758,15 @@ Defect classes from the earlier review wave that the section above does not alre
   directly, so following the instruction literally would have silently disabled the
   SIGTERM handler added the round before. The fix agent caught it. The handler now reads
   the in-memory run id first. **Grep every reader of a variable before deleting its
-  writer.** See [[The Run Record Belongs to the Process]].
+  writer.** See The Run Record Belongs to the Process.
 - **A dispatch scope that omits a plan step looks like a silent-failure finding.** Round
   1 scoped the fix agent to two files and left out the operator-dashboard step. The
   reviewers then flagged that a daily spend-cap hit was indistinguishable from success,
   because CI emails only on failure. The lane was widened.
 
 ## See Also
-- [[Collapse Site Detection]] — alternative-to (design-time vs code-review-time hunt for the same class)
-- [[Silent Fallthrough in String-Keyed Discovery]] — instance-of
-- [[Hydration Gap Silent Input Loss]] — instance-of
 - [[Production Hardening Patterns]] — extends
-- [[Prototype Hardening Pass]] — extends (a pre-demo walk over these classes)
-- [[Always-Red Check Carries No Signal]] — extends
-- [[Layered Ingestion Failure Posture]] — extends (STALE_SUCCESS, per-field validity floors, fail-closed empty builds)
-- [[A Check Must Say Why It Could Not Check]] — extends (an undiagnosed red is the dual of a silent green)
-- [[Settings Field Names Are a Shared Env Namespace]] — extends
-- [[In-Band Stream Errors Read as Bad Answers]] — instance-of
-- [[Printed URL Is a Public Contract]] — extends (the invisible-failure QR guard)
 - [[Gate Dependabot Auto-Merge on Branch Protection]] — related (the workflow_call actor gate)
 - [[Rate-Limit Keying: Identity Over IP]] — related (limited vs write-failed told apart only by log level)
-- [[Server Shell, Client Leaf]] — related (degrade-to-empty loaders that dropped the error)
 - [[Positive-Only Judge Fixtures Measure Recall]] — related (null-on-error judge contract)
-- [[Empty-String Env Override Defeats Nullish Coalescing]] — related (an empty env var read as configured by `??`)
 - [[Transactional Email Sender Setup]] — related (DKIM misalignment and auth-mail throttling fail into the spam folder, not an error)
-- [[Branch Gated on State Only It Writes]] — instance-of (a conditional branch whose precondition only it could write)
-- [[Read-Side Schema Strips the New Field]] — instance-of
-- [[Skip Keyed on Config, Not Capability]] — instance-of (a skipped test reads as a pass under `-q`)
-- [[Persist Paid Work Per Chunk]] — instance-of
-- [[Widening a Postgres Function Creates an Overload]] — instance-of
-- [[Strict Parsers for Alarm Config]] — instance-of
-- [[Page on a Total Order]] — instance-of
-- [[Do-Instead-Nothing Rule Silences a Loud Denial]] — instance-of
-- [[A Constraint Cannot Tell a Regression From a Legacy Null]] — related
-- [[Audit-Don't-Assert Release Checklist]] — extends (true/false/error rows refuse to fold an unrun check into a pass)
-- [[Freshness Key Blind to Content Semantics]] — instance-of (a persisted index whose rebuild check misses builder changes, then search falls back silently)
-- [[Closed-Vocabulary Parser Silently Drops Invented Types]] — instance-of
-- [[Native Library Load-Order Collision]] — instance-of

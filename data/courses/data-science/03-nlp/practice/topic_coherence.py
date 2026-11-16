@@ -10,53 +10,41 @@ Run from this folder (several minutes):
 The note's film descriptions and LDA settings, with seeds 1 and 2 added to its seed 0.
 Writes nlp-topic-coherence.png.
 """
-
 # %%
 import re
 from pathlib import Path
 
+import numpy as np
+import pandas as pd
 import chartstyle as cs
 import matplotlib.pyplot as plt
 import nltk
-import numpy as np
-import pandas as pd
 from gensim.corpora import Dictionary
 from gensim.models import CoherenceModel, LdaModel
 
 nltk.download("stopwords", quiet=True)
 from nltk.corpus import stopwords
 
-movies = pd.read_csv(
-    Path(__file__).parent
-    / "text-analytics-with-python/Ch07 - Text Similarity and Clustering/tmdb_5000_movies.csv.gz"
-)
+movies = pd.read_csv(Path(__file__).parent / "text-analytics-with-python/Ch07 - Text Similarity and Clustering/tmdb_5000_movies.csv.gz")
 movies["description"] = movies["tagline"].fillna("") + " " + movies["overview"].fillna("")
-movies = (
-    movies[movies.description.str.len() > 20]
-    .sort_values("popularity", ascending=False)
-    .reset_index(drop=True)
-)
+movies = movies[movies.description.str.len() > 20].sort_values("popularity", ascending=False).reset_index(drop=True)
 stop = set(stopwords.words("english"))
 
 
 def tidy(text):
-    return " ".join(
-        w for w in re.sub(r"[^a-z\s]", " ", text.lower()).split() if w not in stop and len(w) > 2
-    )
+    return " ".join(w for w in re.sub(r"[^a-z\s]", " ", text.lower()).split() if w not in stop and len(w) > 2)
 
 
 tokens = [d.split() for d in movies.description.map(tidy)]
 dictionary = Dictionary(tokens)
-dictionary.filter_extremes(no_below=5, no_above=0.4)
+dictionary.filter_extremes(no_below=5, no_above=.4)
 bow = [dictionary.doc2bow(t) for t in tokens]
 ks, seeds = [5, 10, 20, 40], [0, 1, 2]
 res = np.zeros((len(ks), len(seeds)))
 for i, k in enumerate(ks):
     for j, s in enumerate(seeds):
         model = LdaModel(corpus=bow, id2word=dictionary, num_topics=k, passes=8, random_state=s)
-        res[i, j] = CoherenceModel(
-            model=model, texts=tokens, dictionary=dictionary, coherence="c_v", processes=1
-        ).get_coherence()
+        res[i, j] = CoherenceModel(model=model, texts=tokens, dictionary=dictionary, coherence="c_v", processes=1).get_coherence()
         print(f"k={k} seed={s} c_v={res[i, j]:.3f}", flush=True)
 print("means", dict(zip(ks, res.mean(1).round(3))))
 
@@ -71,7 +59,7 @@ for j in range(len(seeds)):
 for xi, v in zip(x, m):
     ax.annotate(f"{v:.3f}", (xi, v), xytext=(0, 16), textcoords="offset points", ha="center")
 ax.set_xticks(x, ks)
-ax.set(xlabel="Number of topics", ylabel="Coherence c_v", ylim=(0.25, 0.42), xlim=(-0.3, 3.5))
+ax.set(xlabel="Number of topics", ylabel="Coherence c_v", ylim=(.25, .42), xlim=(-.3, 3.5))
 ax.grid(False, axis="x")
 ax.legend(loc="upper right")
 ax.set_title("No knee: coherence slides from 0.352 to 0.322; seeds differ by about 0.01")

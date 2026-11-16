@@ -1,39 +1,22 @@
 """Note 01: the research agent as a real LangGraph StateGraph with a stub chat model."""
-
 import json
 from itertools import count
 from typing import Annotated, TypedDict
 
 from langchain_core.language_models.chat_models import BaseChatModel
-from langchain_core.messages import (
-    AIMessage,
-    AIMessageChunk,
-    AnyMessage,
-    SystemMessage,
-    ToolMessage,
-)
+from langchain_core.messages import AIMessage, AIMessageChunk, AnyMessage, SystemMessage, ToolMessage
 from langchain_core.outputs import ChatGeneration, ChatGenerationChunk, ChatResult
 from langchain_core.tools import tool as as_tool
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.message import add_messages
-from research_lab import (
-    SYSTEM_PROMPT,
-    Final,
-    Observation,
-    count_tokens,
-    decide,
-    parse_known,
-    publish_report,
-    read_source,
-    search,
-)
+
+from research_lab import SYSTEM_PROMPT, Final, Observation, count_tokens, decide, parse_known, publish_report, read_source, search
 
 _ids = count(1)
 
 
 class StubChatModel(BaseChatModel):
     """A chat model LangGraph cannot tell from a real one, driven by `decide()`."""
-
     behavior: str = "normal"
 
     @property
@@ -47,29 +30,18 @@ class StubChatModel(BaseChatModel):
         question = next(m.content for m in messages if m.type == "human")
         system = "\n".join(m.content for m in messages if m.type == "system")
         asked = {c["id"]: c for m in messages if m.type == "ai" for c in m.tool_calls}
-        observations = [
-            Observation(asked[m.tool_call_id]["name"], asked[m.tool_call_id]["args"], m.content)
-            for m in messages
-            if m.type == "tool"
-        ]
+        observations = [Observation(asked[m.tool_call_id]["name"], asked[m.tool_call_id]["args"], m.content)
+                        for m in messages if m.type == "tool"]
         step = decide(question, observations, self.behavior, parse_known(system))
         if isinstance(step, Final):
             reply = AIMessage(content=step.text)
         else:
-            call = {
-                "name": step.name,
-                "args": step.args,
-                "id": f"call_{next(_ids)}",
-                "type": "tool_call",
-            }
+            call = {"name": step.name, "args": step.args, "id": f"call_{next(_ids)}", "type": "tool_call"}
             reply = AIMessage(content=step.thought, tool_calls=[call])
         prompt = sum(count_tokens(str(m.content)) for m in messages)
         completion = count_tokens(str(reply.content))
-        reply.usage_metadata = {
-            "input_tokens": prompt,
-            "output_tokens": completion,
-            "total_tokens": prompt + completion,
-        }
+        reply.usage_metadata = {"input_tokens": prompt, "output_tokens": completion,
+                                "total_tokens": prompt + completion}
         return ChatResult(generations=[ChatGeneration(message=reply)])
 
     def _stream(self, messages, stop=None, run_manager=None, **kwargs):
@@ -77,21 +49,10 @@ class StubChatModel(BaseChatModel):
         reply = self._generate(messages).generations[0].message
         for word in str(reply.content).split(" "):
             yield ChatGenerationChunk(message=AIMessageChunk(content=word + " "))
-        chunks = [
-            {
-                "name": c["name"],
-                "args": json.dumps(c["args"]),
-                "id": c["id"],
-                "index": i,
-                "type": "tool_call_chunk",
-            }
-            for i, c in enumerate(reply.tool_calls)
-        ]
-        yield ChatGenerationChunk(
-            message=AIMessageChunk(
-                content="", tool_call_chunks=chunks, usage_metadata=reply.usage_metadata
-            )
-        )
+        chunks = [{"name": c["name"], "args": json.dumps(c["args"]), "id": c["id"], "index": i, "type": "tool_call_chunk"}
+                  for i, c in enumerate(reply.tool_calls)]
+        yield ChatGenerationChunk(message=AIMessageChunk(content="", tool_call_chunks=chunks,
+                                                         usage_metadata=reply.usage_metadata))
 
 
 class AgentState(TypedDict):
@@ -112,13 +73,9 @@ def build_agent(model=None, checkpointer=None, interrupt_before=None):
         results = []
         for call in state["messages"][-1].tool_calls:
             if call["name"] not in TOOLS:
-                results.append(
-                    ToolMessage(f"ERROR: no tool named {call['name']}", tool_call_id=call["id"])
-                )
+                results.append(ToolMessage(f"ERROR: no tool named {call['name']}", tool_call_id=call["id"]))
                 continue
-            results.append(
-                ToolMessage(TOOLS[call["name"]].invoke(call["args"]), tool_call_id=call["id"])
-            )
+            results.append(ToolMessage(TOOLS[call["name"]].invoke(call["args"]), tool_call_id=call["id"]))
         return {"messages": results}
 
     def route(state: AgentState):
@@ -147,6 +104,5 @@ def show(messages) -> None:
 
 if __name__ == "__main__":
     from research_lab import QUESTION
-
     result = build_agent().invoke({"messages": [("user", QUESTION)]})
     show(result["messages"])

@@ -2,7 +2,7 @@
 title: ROSCOE Reasoning Chain Metrics
 tags: [eval, concept]
 summary: "ROSCOE scores a model's step-by-step reasoning chain without a gold chain, using 18 metrics built on step-to-context embedding alignment, NLI contradiction and fluency; it beat reference-free baselines (PRISM, CTC Consistency, BARTScore) on synthetic perturbation tests, with moderate correlations on small human-judged sets (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-08-golovneva-2022-roscoe.md
 ---
@@ -39,6 +39,5 @@ All figures are the authors' own and self-reported; they are the maximum over pe
 - [[Text Metrics Beyond N-gram Overlap]] — related (BERTScore and BLEURT are among its baselines)
 - [[Eval Metric Interpretation Pitfalls]] — prerequisite-for
 - [[LLM-as-Judge Evaluation]] — alternative-to (an LLM grades the chain instead of embedding and NLI scores)
-- [[Chain of Thought]] — prerequisite-for (the step-by-step output it scores)
 - [[GPTScore]] — related (another reference-free text metric)
 - [[PrOntoQA]] — related (synthetic benchmark with parsed reasoning chains)

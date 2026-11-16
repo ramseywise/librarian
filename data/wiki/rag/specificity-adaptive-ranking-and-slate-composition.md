@@ -2,7 +2,7 @@
 title: Specificity-Adaptive Ranking and Slate Composition
 tags: [rag, llm, pattern]
 summary: Score a candidate pool with weight profiles that shift by how specific the request is (vague → vibe/context carry the weight, specific → time/location/format do), rank deterministically with bounded penalties, then compose a five-slot slate by role — Best Match, Strong Fit, Safe Pick, Adjacent Fit, Discovery Pick — where exploration slots scale down with specificity instead of being a fixed 1-in-5; ranking creates trust, composition creates taste.
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/diskoe/docs/notion/scoring.md
   - data/raw/claude-docs/playground/docs/notion/scoring.md
@@ -84,7 +84,7 @@ Rules that fell out of writing this down:
   invert the primary ordering.
 - **Deterministic tie-break** — `quality_trust_score` → `time_fit` → earlier start →
   `event_id`. The same request and pool must always yield the same ranking, which is
-  what makes serves replayable (see [[Replayable Slate Ranker]]).
+  what makes serves replayable (see Replayable Slate Ranker).
 - **Signals that must not touch the score.** `diversity_potential_signal` is computed for
   composition and is explicitly forbidden from entering `final_score`. Mixing a
   set-level property into an item-level score is how "diversity" quietly becomes "worse
@@ -131,7 +131,7 @@ The scorer only works because the taxonomy keeps axes apart: `format` (what it i
 vs `plan_role` (where it fits in an evening) vs `audience`; and `decision_signals`
 (machine-read) vs display copy (human-read). "A tag should earn its place" — every tag
 has to be read by a filter, a weight, or a slot rule, or it is deleted (the same
-discipline as [[Every Column Names Its Reader]]).
+discipline as Every Column Names Its Reader).
 
 ## Reputation demotion: an operator flag, not a model axis
 
@@ -149,7 +149,7 @@ whole modifier stack stays bounded (+0.05 / −0.31). Two findings shaped it:
   blocked on the unbuilt legal-posture review. It wasn't needed to fix the case.
 
 The sampling lane later mirrored the same flag (see
-[[Relevance Is the Score, Enrichability Is the Gate]]).
+Relevance Is the Score, Enrichability Is the Gate).
 
 As built (2026-09-25):
 
@@ -183,18 +183,11 @@ analytics.
 ## See Also
 - [[RAG Reranking]] — alternative-to (a learned reranker over passages vs. a deterministic rubric over catalogue rows)
 - [[RAG Retrieval Strategies]] — related (hard filters as the retrieval stage of a two-stage pipeline)
-- [[Replayable Slate Ranker]] — extends (the implementation shape that keeps this ranking replayable)
-- [[Explore Slice for Position Bias]] — related (how exploration slots get their counterfactual)
 - [[Offline Annotation over Online Inference]] — prerequisite-for
 - [[Graded-Uncertainty Enrichment Contract]] — prerequisite-for (where the uncertainty penalty's inputs come from)
 - [[Validated Concept vs Unmeasured System]] — related (the rubric was validated by hand before any of this was implemented)
-- [[Relevance Is the Score, Enrichability Is the Gate]] — related (pre-enrichment sampling score that mirrors the reputation flag)
-- [[No Evidence Ranks Below Confident Mismatch]] — extends (sparse evidence must not be penalised twice)
-- [[Intake Option Separability via Reach Vectors]] — related (how distinct the intake requests really are)
 - [[Constraint Tiers and Two-Phase Relaxation]] — prerequisite-for (how inputs are classified before scoring, and what relaxes when results run thin)
 - [[Anchor-and-Guardrail Similar Items]] — related (the "more like this" layer beside the slate)
 - [[Capped Tiered Tag Assignment]] — related (keeps the vibe tags this scorer reads sparse)
 - [[Ranker Weight Sensitivity Sweep]] — extends (measures how load-bearing each profile weight is)
-- [[Adversarially Independent Baseline Arm]] — alternative-to (the equal-weight floor the profiles must beat)
 - [[RLS Gates Rows, Not Columns]] — related (where the flag audit trail had to move)
-- [[Required Field as Exhaustive Site Finder]] — related (how the penalty reached every modifier literal)

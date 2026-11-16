@@ -2,7 +2,7 @@
 title: Task Decomposition Patterns
 tags: [agents, llm, pattern]
 summary: "Four axes for splitting work across agents — functional, spatial, temporal, and data-driven — distinguished by what each one assumes about independence, and the dependency structure that decides which axis a given task actually admits."
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/playground/skills/workflow-build/SKILL.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--agents-design.md
@@ -100,7 +100,7 @@ overhead routinely exceeds the parallelism gained.
 
 When several issues are built at once in separate worktrees, the constraint is shared lanes and
 the global database, not machine resources: **parallel across lanes, sequential within a lane,
-migrations alone**, with the wave capped at 3. See [[Parallel Across Lanes, Migrations Alone]]
+migrations alone**, with the wave capped at 3. See Parallel Across Lanes, Migrations Alone
 for the measurements and rationale.
 
 ## See Also
@@ -113,7 +113,6 @@ for the measurements and rationale.
 - [[Agent Deployment Anti-Patterns]] — prerequisite-for (verify the single-agent limit first)
 - [[Send API Fan-out]] — instance-of (data-driven decomposition, mechanically)
 - [[Plan and Execute Pattern]] — instance-of (temporal decomposition, mechanically)
-- [[Parallel Across Lanes, Migrations Alone]] — instance-of (concurrent worktree builds)
 - [[Deep Research Agent Systems]] — related (planner and sub-agent search systems)
 - [[CAID Centralized Asynchronous Isolated Delegation]] — instance-of
 - [[HERMES Dev-Primitives]] — instance-of

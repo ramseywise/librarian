@@ -2,7 +2,7 @@
 title: Parameterised Benchmark Instances
 tags: [eval, concept]
 summary: The answer to benchmark leakage for agent evals — publish the instance generator, keep instances private and freshly drawn per run, grade on final environment state, and when training on a benchmark reuse its environments but hold out whole templates or domains, because parameterisation stops answer memorisation but not template overfitting.
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/repos/sisyphus/interviewing--guides--6-evals-observability--interview-guide.md
   - data/raw/repos/sisyphus/interviewing--guides--2-llm-fundamentals--interview-guide.md
@@ -45,13 +45,11 @@ of keeping a held-out domain before deployment in fine-tuning.
 
 This prevents leakage *by construction* at evaluation time. Its complement is detecting
 contamination after the fact — proving a corpus or repo does not contain excluded material,
-as in [[Hashed Fingerprint Contamination Gate]] — and keeping a suite measuring as it
+as in Hashed Fingerprint Contamination Gate — and keeping a suite measuring as it
 saturates ([[Eval Suite Maintenance]]).
 
 ## See Also
-- [[Evals and Observability Interview Study Guide]] — instance-of (asked as "is there an endgame to benchmark leakage?")
 - [[Eval Suite Maintenance]] — extends (saturation and staleness, the other way a suite stops measuring)
-- [[Hashed Fingerprint Contamination Gate]] — alternative-to (detect contamination instead of preventing it)
 - [[Golden Set Mechanics]] — extends (fixed golden cases vs generated instances)
 - [[Eval Contamination Defenses]] — related
 - [[GSM-Symbolic]] — instance-of (templates over 100 GSM8K questions, 50 instances each)

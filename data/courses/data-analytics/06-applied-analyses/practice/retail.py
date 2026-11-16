@@ -52,7 +52,6 @@ load_products, load_product_demand, load_purchase_orders (truth "products", 06/1
     unit_cost, unit_price, salvage_value, holding_cost_per_year, order_cost, christmas_only; week, sku,
     units; po_id, sku, ordered, lead_time_days, received. Truth by_sku holds each newsvendor_q, eoq and safety_stock.
 """
-
 from copy import deepcopy
 from functools import lru_cache
 from statistics import NormalDist
@@ -61,8 +60,8 @@ import numpy as np
 import pandas as pd
 
 SEED = 20250101
-CUT = pd.Timestamp("2025-01-01")  # email budget cut
-REDESIGN = pd.Timestamp("2025-09-15")  # new mobile checkout page ships
+CUT = pd.Timestamp("2025-01-01")          # email budget cut
+REDESIGN = pd.Timestamp("2025-09-15")     # new mobile checkout page ships
 END = pd.Timestamp("2025-12-31")
 CHANNELS = ["paid_social", "organic", "email", "referral"]
 STEPS = ["visit", "product", "basket", "checkout", "payment", "purchase"]
@@ -70,14 +69,9 @@ STEPS = ["visit", "product", "basket", "checkout", "payment", "purchase"]
 # Customers acquired per month, before and after the cut.
 ACQ_BEFORE = {"paid_social": 180, "organic": 260, "email": 120, "referral": 100}
 ACQ_AFTER = {"paid_social": 468, "organic": 260, "email": 40, "referral": 100}
-ORDERS_PER_MONTH = {"paid_social": 0.10, "organic": 0.22, "email": 0.35, "referral": 0.20}
+ORDERS_PER_MONTH = {"paid_social": .10, "organic": .22, "email": .35, "referral": .20}
 # Monthly churn varies across customers: Beta(a, b), means .25, .12, .08, .12.
-CHURN_BETA = {
-    "paid_social": (1.0, 3.0),
-    "organic": (0.9, 6.6),
-    "email": (0.8, 9.2),
-    "referral": (0.9, 6.6),
-}
+CHURN_BETA = {"paid_social": (1.0, 3.0), "organic": (.9, 6.6), "email": (.8, 9.2), "referral": (.9, 6.6)}
 
 
 @lru_cache(maxsize=1)
@@ -89,9 +83,7 @@ def _customers_and_orders(seed=SEED):
         for channel in CHANNELS:
             n = rng.poisson(plan[channel])
             days = rng.integers(0, month.days_in_month, n)
-            rows.append(
-                pd.DataFrame({"acquired": month + pd.to_timedelta(days, "D"), "channel": channel})
-            )
+            rows.append(pd.DataFrame({"acquired": month + pd.to_timedelta(days, "D"), "channel": channel}))
     customers = pd.concat(rows, ignore_index=True).sort_values("acquired", ignore_index=True)
     customers.insert(0, "customer_id", np.arange(1, len(customers) + 1))
 
@@ -103,8 +95,8 @@ def _customers_and_orders(seed=SEED):
     lifetime = rng.geometric(np.clip(churn, 1e-4, 1))
     customers["true_lifetime_months"] = lifetime
     base = customers["channel"].map(ORDERS_PER_MONTH).to_numpy()
-    rate = rng.gamma(0.7, base / 0.7)  # long-tailed order rate, mean = base
-    spend = rng.lognormal(0, 0.35, n)  # some customers always spend more
+    rate = rng.gamma(.7, base / .7)                     # long-tailed order rate, mean = base
+    spend = rng.lognormal(0, .35, n)                    # some customers always spend more
 
     repeats = rng.poisson(rate * lifetime)
     idx = np.repeat(np.arange(n), repeats)
@@ -115,15 +107,13 @@ def _customers_and_orders(seed=SEED):
     later = pd.DataFrame({"i": idx, "order_date": when})
     # The cut removes the reminder that drove repeat orders, for everyone and most for email customers.
     after = later["order_date"] >= CUT
-    keep = np.where(customers["channel"].to_numpy()[later["i"]] == "email", 0.65, 0.70)
+    keep = np.where(customers["channel"].to_numpy()[later["i"]] == "email", .65, .70)
     later = later[~after | (rng.uniform(size=len(later)) < keep)]
     orders = pd.concat([first, later], ignore_index=True)
     orders = orders[orders["order_date"] <= END]
     orders["customer_id"] = orders["i"] + 1
-    orders["value"] = np.round(rng.lognormal(np.log(42), 0.55, len(orders)) * spend[orders["i"]], 2)
-    orders["category"] = rng.choice(
-        ["kitchen", "textiles", "lighting", "furniture"], len(orders), p=[0.4, 0.3, 0.2, 0.1]
-    )
+    orders["value"] = np.round(rng.lognormal(np.log(42), .55, len(orders)) * spend[orders["i"]], 2)
+    orders["category"] = rng.choice(["kitchen", "textiles", "lighting", "furniture"], len(orders), p=[.4, .3, .2, .1])
     orders = orders.sort_values(["order_date", "customer_id"], ignore_index=True)
     orders.insert(0, "order_id", np.arange(1, len(orders) + 1))
     return customers, orders[["order_id", "customer_id", "order_date", "value", "category"]]
@@ -146,11 +136,7 @@ def _weekly(seed=SEED):
     t = np.arange(len(weeks))
     level = 1800 + 3.6 * t
     doy = weeks.dayofyear.to_numpy()
-    season = (
-        1
-        + 0.16 * np.cos(2 * np.pi * (doy - 340) / 365.25)
-        + 0.04 * np.cos(4 * np.pi * (doy - 100) / 365.25)
-    )
+    season = 1 + .16 * np.cos(2 * np.pi * (doy - 340) / 365.25) + .04 * np.cos(4 * np.pi * (doy - 100) / 365.25)
     y = level * season
     for i, week in enumerate(weeks):
         # Black Friday moves: the day after the fourth Thursday of November.
@@ -160,17 +146,15 @@ def _weekly(seed=SEED):
             y[i] *= 1.45
         days_to_xmas = (pd.Timestamp(week.year, 12, 25) - week).days
         if 0 <= days_to_xmas < 7:
-            y[i] *= 0.95
+            y[i] *= .95
         elif 7 <= days_to_xmas < 28:
             y[i] *= 1.28
     noise = np.zeros(len(t))
     for i in range(1, len(t)):
-        noise[i] = 0.45 * noise[i - 1] + rng.normal(0, 0.045)
+        noise[i] = .45 * noise[i - 1] + rng.normal(0, .045)
     y = y * np.exp(noise)
-    y[weeks.get_loc(pd.Timestamp("2023-06-12"))] *= 0.45  # one-week warehouse outage
-    return pd.Series(
-        np.round(y).astype(int), index=pd.DatetimeIndex(weeks, name="week"), name="units"
-    )
+    y[weeks.get_loc(pd.Timestamp("2023-06-12"))] *= .45     # one-week warehouse outage
+    return pd.Series(np.round(y).astype(int), index=pd.DatetimeIndex(weeks, name="week"), name="units")
 
 
 def load_weekly_units(seed=SEED):
@@ -187,26 +171,20 @@ def _sessions(seed=SEED):
         traffic = 1500 * (1.25 if day.month >= 11 else 1) * (1.1 if day.dayofweek >= 5 else 1)
         n = rng.poisson(traffic)
         position = (day - days[0]).days / (len(days) - 1)
-        mobile = rng.uniform(size=n) < 0.58 + 0.08 * position
+        mobile = rng.uniform(size=n) < .58 + .08 * position
         # Autumn gift shopping lifts intent upstream of payment, on every device.
-        intent = 1 + 0.16 * np.clip((day - pd.Timestamp("2025-09-01")).days / 30, 0, 1)
-        pay_mobile = 0.68 if day >= REDESIGN else 0.82
-        probs = np.where(
-            mobile[:, None],
-            [0.55, 0.22 * intent, 0.62, pay_mobile, 0.93],
-            [0.62, 0.30 * intent, 0.68, 0.84, 0.95],
-        )
+        intent = 1 + .16 * np.clip((day - pd.Timestamp("2025-09-01")).days / 30, 0, 1)
+        pay_mobile = .68 if day >= REDESIGN else .82
+        probs = np.where(mobile[:, None],
+                         [.55, .22 * intent, .62, pay_mobile, .93],
+                         [.62, .30 * intent, .68, .84, .95])
         passed = rng.uniform(size=(n, 5)) < probs
-        frames.append(
-            pd.DataFrame(
-                {
-                    "date": day,
-                    "device": np.where(mobile, "mobile", "desktop"),
-                    "channel": rng.choice(CHANNELS, n, p=[0.40, 0.33, 0.12, 0.15]),
-                    "furthest": np.cumprod(passed, axis=1).sum(axis=1),
-                }
-            )
-        )
+        frames.append(pd.DataFrame({
+            "date": day,
+            "device": np.where(mobile, "mobile", "desktop"),
+            "channel": rng.choice(CHANNELS, n, p=[.40, .33, .12, .15]),
+            "furthest": np.cumprod(passed, axis=1).sum(axis=1),
+        }))
     sessions = pd.concat(frames, ignore_index=True)
     sessions.insert(0, "session_id", np.arange(1, len(sessions) + 1))
     n_users = int(len(sessions) / 1.6)
@@ -246,19 +224,8 @@ def load_events(n_users=2000, seed=SEED):
 # Tables added for chapters 03/05 and 06/07 to 06/10. See the module docstring. Each table has its
 # own random stream, so nothing here can move a number in the tables above. Add a stream, don't share one.
 # ---------------------------------------------------------------------------------------------
-STREAMS = {
-    "subscriptions": 101,
-    "club": 102,
-    "journeys": 103,
-    "marketing": 104,
-    "geo_test": 105,
-    "touch_paths": 106,
-    "repeat_log": 107,
-    "fulfilment": 108,
-    "packing_line": 109,
-    "products": 110,
-    "survey": 111,
-}
+STREAMS = {"subscriptions": 101, "club": 102, "journeys": 103, "marketing": 104, "geo_test": 105,
+           "touch_paths": 106, "repeat_log": 107, "fulfilment": 108, "packing_line": 109, "products": 110, "survey": 111}
 
 
 def _stream(name, seed):
@@ -270,37 +237,30 @@ def _z(x):
     return (x - x.mean()) / x.std()
 
 
-CLUB_DATE = pd.Timestamp("2024-07-01")  # Fernhill Club opens; customers choose whether to join
-PRICE_RISE = pd.Timestamp(
-    "2025-03-01"
-)  # subscription box price rise, existing subscribers included
-PLANS = {"standard": (24.0, 28.0), "large": (39.0, 45.0)}  # monthly price before and after the rise
+CLUB_DATE = pd.Timestamp("2024-07-01")      # Fernhill Club opens; customers choose whether to join
+PRICE_RISE = pd.Timestamp("2025-03-01")     # subscription box price rise, existing subscribers included
+PLANS = {"standard": (24.0, 28.0), "large": (39.0, 45.0)}   # monthly price before and after the rise
 
 SUBSCRIPTION_DGP = {
-    "p_subscribe": {"paid_social": 0.15, "organic": 0.20, "email": 0.30, "referral": 0.20},
-    "p_large": 0.30,
+    "p_subscribe": {"paid_social": .15, "organic": .20, "email": .30, "referral": .20},
+    "p_large": .30,
     # Who gets through on the welcome call: a confounder, because these groups also churn differently.
-    "p_call": {"paid_social": 0.35, "organic": 0.55, "email": 0.75, "referral": 0.55},
-    "p_call_large_extra": 0.10,
+    "p_call": {"paid_social": .35, "organic": .55, "email": .75, "referral": .55},
+    "p_call_large_extra": .10,
     # Cancel hazard, per day: Weibull baseline (organic, standard, no call, before the rise) times the HRs.
-    "weibull_shape": 0.75,
+    "weibull_shape": .75,
     "weibull_scale_days": 420.0,
-    "hr_channel": {"paid_social": 1.6, "organic": 1.0, "email": 0.7, "referral": 0.9},
-    "hr_plan": {"standard": 1.0, "large": 0.8},
-    "hr_welcome_early": 0.60,  # the call delays: this HR holds for the first welcome_early_days ...
+    "hr_channel": {"paid_social": 1.6, "organic": 1.0, "email": .7, "referral": .9},
+    "hr_plan": {"standard": 1.0, "large": .8},
+    "hr_welcome_early": .60,        # the call delays: this HR holds for the first welcome_early_days ...
     "welcome_early_days": 90,
-    "hr_welcome_late": 1.0,  # ... and then it wears off, so a single-HR Cox model breaks PH on purpose
-    "hr_price_rise": 1.5,  # from PRICE_RISE on, for people subscribed before it; joiners after it are exempt
+    "hr_welcome_late": 1.0,         # ... and then it wears off, so a single-HR Cox model breaks PH on purpose
+    "hr_price_rise": 1.5,           # from PRICE_RISE on, for people subscribed before it; joiners after it are exempt
     "price_rise_date": PRICE_RISE,
     # Competing risk: a constant downgrade hazard, no covariate but plan.
-    "downgrade_rate_per_30d": {"standard": 0.006, "large": 0.020},
-    "cancel_reason_mix": {
-        "price": 0.20,
-        "no_longer_needed": 0.40,
-        "quality": 0.20,
-        "moved_or_other": 0.20,
-    },
-    "downgrade_reason_mix": {"price": 0.30, "too_much_product": 0.70},
+    "downgrade_rate_per_30d": {"standard": .006, "large": .020},
+    "cancel_reason_mix": {"price": .20, "no_longer_needed": .40, "quality": .20, "moved_or_other": .20},
+    "downgrade_reason_mix": {"price": .30, "too_much_product": .70},
 }
 
 
@@ -310,9 +270,7 @@ def _cancel_days(exposure, base, call, rise_day, d):
     H0 = lambda t: (t / scale) ** k
     out = np.empty(len(exposure))
     for i in range(len(exposure)):
-        cuts = sorted(
-            c for c in (d["welcome_early_days"] if call[i] else np.nan, rise_day[i]) if c == c
-        ) + [np.inf]
+        cuts = sorted(c for c in (d["welcome_early_days"] if call[i] else np.nan, rise_day[i]) if c == c) + [np.inf]
         t0, used = 0.0, 0.0
         for cut in cuts:
             m = base[i]
@@ -334,26 +292,19 @@ def _subscriptions(seed=SEED):
     rng = _stream("subscriptions", seed)
     frame = load_customers(seed)[["customer_id", "channel", "acquired"]]
     frame = frame[rng.uniform(size=len(frame)) < frame["channel"].map(d["p_subscribe"]).to_numpy()]
-    frame = frame.assign(
-        start_date=frame["acquired"] + pd.to_timedelta(rng.integers(0, 31, len(frame)), "D")
-    )
+    frame = frame.assign(start_date=frame["acquired"] + pd.to_timedelta(rng.integers(0, 31, len(frame)), "D"))
     frame = frame[frame["start_date"] < END].drop(columns="acquired").reset_index(drop=True)
     n = len(frame)
     frame["plan"] = rng.choice(list(PLANS), n, p=[1 - d["p_large"], d["p_large"]])
     large = (frame["plan"] == "large").to_numpy()
     p_call = frame["channel"].map(d["p_call"]).to_numpy() + d["p_call_large_extra"] * large
     frame["welcome_call"] = (rng.uniform(size=n) < p_call).astype(int)
-    frame["monthly_price"] = [
-        PLANS[p][int(s >= PRICE_RISE)] for p, s in zip(frame["plan"], frame["start_date"])
-    ]
+    frame["monthly_price"] = [PLANS[p][int(s >= PRICE_RISE)] for p, s in zip(frame["plan"], frame["start_date"])]
     rise = (PRICE_RISE - frame["start_date"]).dt.days.to_numpy(dtype=float)
-    rise[rise <= 0] = np.nan  # joined after the rise: this price is the only one they know
+    rise[rise <= 0] = np.nan                # joined after the rise: this price is the only one they know
     frame["price_rise_day"] = rise
 
-    base = (
-        frame["channel"].map(d["hr_channel"]).to_numpy()
-        * frame["plan"].map(d["hr_plan"]).to_numpy()
-    )
+    base = frame["channel"].map(d["hr_channel"]).to_numpy() * frame["plan"].map(d["hr_plan"]).to_numpy()
     cancel = _cancel_days(rng.exponential(1, n), base, frame["welcome_call"].to_numpy(), rise, d)
     downgrade = rng.exponential(30 / frame["plan"].map(d["downgrade_rate_per_30d"]).to_numpy())
     true_days = np.maximum(np.ceil(np.minimum(cancel, downgrade)), 1).astype(int)
@@ -364,55 +315,29 @@ def _subscriptions(seed=SEED):
     reason = np.empty(n, dtype=object)
     risen = np.nan_to_num(rise, nan=np.inf) <= cancel
     mix = d["cancel_reason_mix"]
-    extra = d["hr_price_rise"] - 1  # the extra hazard after the rise is all price cancels
+    extra = d["hr_price_rise"] - 1          # the extra hazard after the rise is all price cancels
     after = {r: (p + extra * (r == "price")) / d["hr_price_rise"] for r, p in mix.items()}
-    for mask, shares in (
-        ((true_type == "cancel") & ~risen, mix),
-        ((true_type == "cancel") & risen, after),
-        (true_type == "downgrade", d["downgrade_reason_mix"]),
-    ):
+    for mask, shares in (((true_type == "cancel") & ~risen, mix), ((true_type == "cancel") & risen, after),
+                         (true_type == "downgrade", d["downgrade_reason_mix"])):
         reason[mask] = rng.choice(list(shares), mask.sum(), p=list(shares.values()))
 
     frame["event"] = observed.astype(int)
     frame["event_type"] = pd.Series(true_type).where(observed, None)
     frame["churn_reason"] = pd.Series(reason).where(observed, None)
     frame["duration_days"] = np.minimum(true_days, censor)
-    frame["end_date"] = frame["start_date"] + pd.to_timedelta(
-        np.where(observed, true_days, np.nan), "D"
-    )
+    frame["end_date"] = frame["start_date"] + pd.to_timedelta(np.where(observed, true_days, np.nan), "D")
     frame["true_duration_days"] = true_days
     frame["true_event_type"] = true_type
     frame = frame.sort_values(["start_date", "customer_id"], ignore_index=True)
     frame.insert(0, "subscription_id", np.arange(1, n + 1))
-    frame = frame[
-        [
-            "subscription_id",
-            "customer_id",
-            "channel",
-            "plan",
-            "monthly_price",
-            "welcome_call",
-            "start_date",
-            "end_date",
-            "event",
-            "event_type",
-            "churn_reason",
-            "duration_days",
-            "price_rise_day",
-            "true_duration_days",
-            "true_event_type",
-        ]
-    ]
-    truth = {
-        **d,
-        "n": n,
-        "censored_share": 1 - observed.mean(),
-        "mean_days_churned_only": frame.loc[frame["event"] == 1, "duration_days"].mean(),
-        "true_mean_days": true_days.mean(),
-        "true_median_days": float(np.median(true_days)),
-        "call_rate_by_channel": frame.groupby("channel")["welcome_call"].mean().to_dict(),
-        "reason_mix_after_rise": after,
-    }
+    frame = frame[["subscription_id", "customer_id", "channel", "plan", "monthly_price", "welcome_call", "start_date",
+                   "end_date", "event", "event_type", "churn_reason", "duration_days", "price_rise_day",
+                   "true_duration_days", "true_event_type"]]
+    truth = {**d, "n": n, "censored_share": 1 - observed.mean(),
+             "mean_days_churned_only": frame.loc[frame["event"] == 1, "duration_days"].mean(),
+             "true_mean_days": true_days.mean(), "true_median_days": float(np.median(true_days)),
+             "call_rate_by_channel": frame.groupby("channel")["welcome_call"].mean().to_dict(),
+             "reason_mix_after_rise": after}
     return frame, truth
 
 
@@ -426,9 +351,7 @@ def load_subscription_periods(seed=SEED):
     s = _subscriptions(seed)[0]
     periods = np.ceil(s["duration_days"] / 30).astype(int).to_numpy()
     i = np.repeat(np.arange(len(s)), periods)
-    frame = s.iloc[i][
-        ["subscription_id", "customer_id", "channel", "plan", "welcome_call"]
-    ].reset_index(drop=True)
+    frame = s.iloc[i][["subscription_id", "customer_id", "channel", "plan", "welcome_call"]].reset_index(drop=True)
     frame["tenure_month"] = np.concatenate([np.arange(1, p + 1) for p in periods])
     frame["start_day"] = (frame["tenure_month"] - 1) * 30
     frame["stop_day"] = np.minimum(frame["tenure_month"] * 30, s["duration_days"].to_numpy()[i])
@@ -436,38 +359,23 @@ def load_subscription_periods(seed=SEED):
     kind = s["event_type"].to_numpy()[i]
     frame["cancel"] = (last & (kind == "cancel")).astype(int)
     frame["downgrade"] = (last & (kind == "downgrade")).astype(int)
-    frame["welcome_early"] = (
-        (frame["welcome_call"] == 1) & (frame["start_day"] < SUBSCRIPTION_DGP["welcome_early_days"])
-    ).astype(int)
-    frame["price_rise_active"] = (
-        s["price_rise_day"].to_numpy()[i] <= frame["start_day"].to_numpy()
-    ).astype(int)
+    frame["welcome_early"] = ((frame["welcome_call"] == 1)
+                              & (frame["start_day"] < SUBSCRIPTION_DGP["welcome_early_days"])).astype(int)
+    frame["price_rise_active"] = (s["price_rise_day"].to_numpy()[i] <= frame["start_day"].to_numpy()).astype(int)
     return frame
 
 
 CLUB_DGP = {
     # P(join): logit on standardised covariates. Y(0): £ in the next six months, with a curve in prior spend.
-    "logit_join": {
-        "const": -0.40,
-        "z_log_prior_orders": 1.10,
-        "z_log_prior_spend": 0.70,
-        "z_recency": -0.50,
-        "unobserved_engagement": 0.50,
-    },
-    "logit_join_channel": {"paid_social": -0.70, "organic": 0.0, "email": 0.60, "referral": 0.20},
-    "y0": {
-        "const": 55.0,
-        "z_log_prior_orders": 28.0,
-        "z_log_prior_spend": 22.0,
-        "z_log_prior_spend_squared": 12.0,
-        "z_recency": -15.0,
-        "unobserved_engagement": 8.0,
-        "noise_sd": 30.0,
-    },
+    "logit_join": {"const": -.40, "z_log_prior_orders": 1.10, "z_log_prior_spend": .70, "z_recency": -.50,
+                   "unobserved_engagement": .50},
+    "logit_join_channel": {"paid_social": -.70, "organic": 0.0, "email": .60, "referral": .20},
+    "y0": {"const": 55.0, "z_log_prior_orders": 28.0, "z_log_prior_spend": 22.0, "z_log_prior_spend_squared": 12.0,
+           "z_recency": -15.0, "unobserved_engagement": 8.0, "noise_sd": 30.0},
     "y0_channel": {"paid_social": -8.0, "organic": 0.0, "email": 6.0, "referral": 2.0},
     # Y(1) - Y(0) grows with prior orders, so the effect on joiners exceeds the effect on everyone.
     "effect": {"const": 15.0, "z_log_prior_orders": 10.0, "email_extra": 5.0},
-    "unobserved_odds_ratio_per_sd": float(np.exp(0.50)),
+    "unobserved_odds_ratio_per_sd": float(np.exp(.50)),
     "backdoor_observed": ["channel", "prior_orders", "prior_spend", "recency_days", "tenure_days"],
     "not_observed": "true_engagement",
     "post_treatment": "sessions_next_6m",
@@ -479,92 +387,39 @@ def _club(seed=SEED):
     d = CLUB_DGP
     rng = _stream("club", seed)
     orders = load_orders(seed)
-    prior = (
-        orders[orders["order_date"] < CLUB_DATE]
-        .groupby("customer_id")
-        .agg(
-            prior_orders=("order_id", "size"),
-            prior_spend=("value", "sum"),
-            last=("order_date", "max"),
-        )
-    )
-    frame = load_customers(seed)[["customer_id", "channel", "acquired"]].merge(
-        prior, left_on="customer_id", right_index=True
-    )
+    prior = (orders[orders["order_date"] < CLUB_DATE].groupby("customer_id")
+             .agg(prior_orders=("order_id", "size"), prior_spend=("value", "sum"), last=("order_date", "max")))
+    frame = load_customers(seed)[["customer_id", "channel", "acquired"]].merge(prior, left_on="customer_id", right_index=True)
     frame["recency_days"] = (CLUB_DATE - frame["last"]).dt.days
     frame["tenure_days"] = (CLUB_DATE - frame["acquired"]).dt.days
-    frame = (
-        frame[frame["recency_days"] <= 365]
-        .drop(columns=["last", "acquired"])
-        .reset_index(drop=True)
-    )
+    frame = frame[frame["recency_days"] <= 365].drop(columns=["last", "acquired"]).reset_index(drop=True)
     frame["prior_spend"] = frame["prior_spend"].round(2)
     n = len(frame)
-    zo, zs, zr = (
-        _z(np.log1p(frame["prior_orders"])),
-        _z(np.log1p(frame["prior_spend"])),
-        _z(frame["recency_days"]),
-    )
+    zo, zs, zr = _z(np.log1p(frame["prior_orders"])), _z(np.log1p(frame["prior_spend"])), _z(frame["recency_days"])
     u = rng.normal(size=n)
     lj, y = d["logit_join"], d["y0"]
-    logit = (
-        lj["const"]
-        + lj["z_log_prior_orders"] * zo
-        + lj["z_log_prior_spend"] * zs
-        + lj["z_recency"] * zr
-        + frame["channel"].map(d["logit_join_channel"])
-        + lj["unobserved_engagement"] * u
-    )
+    logit = (lj["const"] + lj["z_log_prior_orders"] * zo + lj["z_log_prior_spend"] * zs + lj["z_recency"] * zr
+             + frame["channel"].map(d["logit_join_channel"]) + lj["unobserved_engagement"] * u)
     p = 1 / (1 + np.exp(-logit))
     frame["club"] = (rng.uniform(size=n) < p).astype(int)
     noise = rng.normal(0, y["noise_sd"], n)
-    y0 = (
-        (
-            y["const"]
-            + y["z_log_prior_orders"] * zo
-            + y["z_log_prior_spend"] * zs
-            + y["z_log_prior_spend_squared"] * zs**2
-            + y["z_recency"] * zr
-            + frame["channel"].map(d["y0_channel"])
-            + y["unobserved_engagement"] * u
-            + noise
-        )
-        .clip(lower=0)
-        .round(2)
-    )
+    y0 = (y["const"] + y["z_log_prior_orders"] * zo + y["z_log_prior_spend"] * zs
+          + y["z_log_prior_spend_squared"] * zs ** 2 + y["z_recency"] * zr
+          + frame["channel"].map(d["y0_channel"]) + y["unobserved_engagement"] * u + noise).clip(lower=0).round(2)
     e = d["effect"]
-    y1 = (
-        (
-            y0
-            + e["const"]
-            + e["z_log_prior_orders"] * zo
-            + e["email_extra"] * (frame["channel"] == "email")
-        )
-        .clip(lower=0)
-        .round(2)
-    )
+    y1 = (y0 + e["const"] + e["z_log_prior_orders"] * zo + e["email_extra"] * (frame["channel"] == "email")).clip(lower=0).round(2)
     joined = frame["club"] == 1
     frame["spend_next_6m"] = y1.where(joined, y0)
-    frame["sessions_next_6m"] = rng.poisson(
-        np.exp(1.2 + 0.15 * zo + 0.35 * frame["club"] + 0.2 * u)
-    )
+    frame["sessions_next_6m"] = rng.poisson(np.exp(1.2 + .15 * zo + .35 * frame["club"] + .2 * u))
     frame["true_engagement"] = u
     frame["true_propensity"] = p
     frame["true_y0"] = y0
     frame["true_y1"] = y1
     effect = y1 - y0
-    truth = {
-        **d,
-        "n": n,
-        "club_date": CLUB_DATE,
-        "treated_share": joined.mean(),
-        "true_ate": effect.mean(),
-        "true_att": effect[joined].mean(),
-        "true_atc": effect[~joined].mean(),
-        "naive_difference": frame.loc[joined, "spend_next_6m"].mean()
-        - frame.loc[~joined, "spend_next_6m"].mean(),
-        "selection_bias": y0[joined].mean() - y0[~joined].mean(),
-    }
+    truth = {**d, "n": n, "club_date": CLUB_DATE, "treated_share": joined.mean(), "true_ate": effect.mean(),
+             "true_att": effect[joined].mean(), "true_atc": effect[~joined].mean(),
+             "naive_difference": frame.loc[joined, "spend_next_6m"].mean() - frame.loc[~joined, "spend_next_6m"].mean(),
+             "selection_bias": y0[joined].mean() - y0[~joined].mean()}
     return frame, truth
 
 
@@ -578,40 +433,20 @@ JOURNEY_MONTHS = 18
 JOURNEY_DGP = {
     # Each row of a matrix is a state in JOURNEY_STATES order. "churned" absorbs.
     "transition": {
-        "steady": [[0, 0.85, 0.15, 0], [0, 0.85, 0.13, 0.02], [0, 0.50, 0.42, 0.08], [0, 0, 0, 1]],
-        "drifter": [
-            [0, 0.60, 0.35, 0.05],
-            [0, 0.60, 0.33, 0.07],
-            [0, 0.20, 0.60, 0.20],
-            [0, 0, 0, 1],
-        ],
-        "one_and_done": [
-            [0, 0.05, 0.25, 0.70],
-            [0, 0.20, 0.30, 0.50],
-            [0, 0.05, 0.35, 0.60],
-            [0, 0, 0, 1],
-        ],
-        "comeback": [
-            [0, 0.35, 0.60, 0.05],
-            [0, 0.30, 0.65, 0.05],
-            [0, 0.45, 0.50, 0.05],
-            [0, 0, 0, 1],
-        ],
+        "steady": [[0, .85, .15, 0], [0, .85, .13, .02], [0, .50, .42, .08], [0, 0, 0, 1]],
+        "drifter": [[0, .60, .35, .05], [0, .60, .33, .07], [0, .20, .60, .20], [0, 0, 0, 1]],
+        "one_and_done": [[0, .05, .25, .70], [0, .20, .30, .50], [0, .05, .35, .60], [0, 0, 0, 1]],
+        "comeback": [[0, .35, .60, .05], [0, .30, .65, .05], [0, .45, .50, .05], [0, 0, 0, 1]],
     },
     "type_mix": {
-        "paid_social": {"steady": 0.10, "drifter": 0.25, "one_and_done": 0.55, "comeback": 0.10},
-        "organic": {"steady": 0.25, "drifter": 0.30, "one_and_done": 0.25, "comeback": 0.20},
-        "email": {"steady": 0.40, "drifter": 0.25, "one_and_done": 0.10, "comeback": 0.25},
-        "referral": {"steady": 0.25, "drifter": 0.30, "one_and_done": 0.25, "comeback": 0.20},
+        "paid_social": {"steady": .10, "drifter": .25, "one_and_done": .55, "comeback": .10},
+        "organic": {"steady": .25, "drifter": .30, "one_and_done": .25, "comeback": .20},
+        "email": {"steady": .40, "drifter": .25, "one_and_done": .10, "comeback": .25},
+        "referral": {"steady": .25, "drifter": .30, "one_and_done": .25, "comeback": .20},
     },
-    "extra_orders_when_active": {
-        "steady": 0.5,
-        "drifter": 0.2,
-        "one_and_done": 0.05,
-        "comeback": 0.3,
-    },
-    "mean_order_value": 42 * float(np.exp(0.55**2 / 2)),
-    "monthly_discount": 0.01,
+    "extra_orders_when_active": {"steady": .5, "drifter": .2, "one_and_done": .05, "comeback": .3},
+    "mean_order_value": 42 * float(np.exp(.55 ** 2 / 2)),
+    "monthly_discount": .01,
 }
 
 
@@ -628,77 +463,47 @@ def _journeys(n_customers=4000, seed=SEED):
     d = JOURNEY_DGP
     rng = _stream("journeys", seed)
     customers = load_customers(seed)
-    customers = customers[
-        customers["acquired"] < "2024-07-01"
-    ]  # every journey is seen for all 18 months
+    customers = customers[customers["acquired"] < "2024-07-01"]     # every journey is seen for all 18 months
     picked = np.sort(rng.choice(len(customers), n_customers, replace=False))
     customers = customers.iloc[picked].reset_index(drop=True)
     types = list(d["transition"])
     tensor = np.array([d["transition"][t] for t in types], dtype=float).cumsum(axis=2)
-    who = np.array(
-        [rng.choice(4, p=[d["type_mix"][c][t] for t in types]) for c in customers["channel"]]
-    )
+    who = np.array([rng.choice(4, p=[d["type_mix"][c][t] for t in types]) for c in customers["channel"]])
     states = np.zeros((n_customers, JOURNEY_MONTHS), dtype=int)
     for m in range(1, JOURNEY_MONTHS):
         draws = rng.uniform(size=n_customers)
         states[:, m] = (draws[:, None] > tensor[who, states[:, m - 1]]).sum(axis=1).clip(max=3)
     extra = np.array([d["extra_orders_when_active"][t] for t in types])[who]
-    n_orders = np.where(states == 0, 1, 0) + (states == 1) * (
-        1 + rng.poisson(extra[:, None], states.shape)
-    )
+    n_orders = np.where(states == 0, 1, 0) + (states == 1) * (1 + rng.poisson(extra[:, None], states.shape))
     # Same order value as load_orders: lognormal around £42.
-    revenue = np.array(
-        [rng.lognormal(np.log(42), 0.55, x).sum() for x in n_orders.ravel()]
-    ).reshape(states.shape)
+    revenue = np.array([rng.lognormal(np.log(42), .55, x).sum() for x in n_orders.ravel()]).reshape(states.shape)
     k = np.tile(np.arange(JOURNEY_MONTHS), n_customers)
     i = np.repeat(np.arange(n_customers), JOURNEY_MONTHS)
-    months = (
-        customers["acquired"].dt.year.to_numpy()[i] * 12
-        + customers["acquired"].dt.month.to_numpy()[i]
-        - 1
-        + k
-    )
-    frame = pd.DataFrame(
-        {
-            "customer_id": customers["customer_id"].to_numpy()[i],
-            "channel": customers["channel"].to_numpy()[i],
-            "month_index": k,
-            "month": pd.to_datetime({"year": months // 12, "month": months % 12 + 1, "day": 1}),
-            "state": np.array(JOURNEY_STATES)[states.ravel()],
-            "orders": n_orders.ravel(),
-            "revenue": revenue.ravel().round(2),
-            "true_journey_type": np.array(types)[who[i]],
-        }
-    )
+    months = customers["acquired"].dt.year.to_numpy()[i] * 12 + customers["acquired"].dt.month.to_numpy()[i] - 1 + k
+    frame = pd.DataFrame({
+        "customer_id": customers["customer_id"].to_numpy()[i], "channel": customers["channel"].to_numpy()[i],
+        "month_index": k, "month": pd.to_datetime({"year": months // 12, "month": months % 12 + 1, "day": 1}),
+        "state": np.array(JOURNEY_STATES)[states.ravel()], "orders": n_orders.ravel(),
+        "revenue": revenue.ravel().round(2), "true_journey_type": np.array(types)[who[i]],
+    })
     # The truth: per type, and the mixture a pooled chain is estimating.
     by_type, counts = {}, np.zeros((4, 4))
     for t_i, t in enumerate(types):
         P = np.array(d["transition"][t], dtype=float)
         reward = d["mean_order_value"] * np.array([1, 1 + d["extra_orders_when_active"][t], 0, 0])
         months_left, value = _chain_values(P, reward, d["monthly_discount"])
-        by_type[t] = {
-            "months_to_churn": dict(zip(JOURNEY_STATES, months_left)),
-            "value": dict(zip(JOURNEY_STATES, value)),
-            "monthly_reward": dict(zip(JOURNEY_STATES, reward)),
-            "p_second_order": P[0, 1] + P[0, 2] * P[2, 1] / (1 - P[2, 2]),
-        }
+        by_type[t] = {"months_to_churn": dict(zip(JOURNEY_STATES, months_left)),
+                      "value": dict(zip(JOURNEY_STATES, value)), "monthly_reward": dict(zip(JOURNEY_STATES, reward)),
+                      "p_second_order": P[0, 1] + P[0, 2] * P[2, 1] / (1 - P[2, 2])}
     np.add.at(counts, (states[:, :-1].ravel(), states[:, 1:].ravel()), 1)
     pooled = counts / counts.sum(axis=1, keepdims=True).clip(min=1)
     pooled[3] = [0, 0, 0, 1]
     share = np.bincount(who, minlength=4) / n_customers
-    truth = {
-        **d,
-        "n": n_customers,
-        "states": JOURNEY_STATES,
-        "months": JOURNEY_MONTHS,
-        "by_type": by_type,
-        "realised_type_share": dict(zip(types, share)),
-        "realised_pooled_transition": pooled,
-        # The trap: a single chain averages the types and misprices a new customer.
-        "true_value_of_new_customer": sum(
-            share[i] * by_type[t]["value"]["new"] for i, t in enumerate(types)
-        ),
-    }
+    truth = {**d, "n": n_customers, "states": JOURNEY_STATES, "months": JOURNEY_MONTHS, "by_type": by_type,
+             "realised_type_share": dict(zip(types, share)),
+             "realised_pooled_transition": pooled,
+             # The trap: a single chain averages the types and misprices a new customer.
+             "true_value_of_new_customer": sum(share[i] * by_type[t]["value"]["new"] for i, t in enumerate(types))}
     return frame, truth
 
 
@@ -710,29 +515,16 @@ def load_journeys(n_customers=4000, seed=SEED):
 MARKETING_START = "2023-01-02"
 MARKETING_DGP = {
     # Revenue = baseline + sum over channels of beta * Hill(adstock(spend)), plus noise.
-    "weekly_spend_before_cut": {
-        "paid_social": 2500.0,
-        "organic": 800.0,
-        "email": 1200.0,
-        "referral": 600.0,
-    },
-    "weekly_spend_after_cut": {
-        "paid_social": 6500.0,
-        "organic": 800.0,
-        "email": 400.0,
-        "referral": 600.0,
-    },
-    "spend_noise_sigma": 0.20,
-    "spend_seasonal_lift": 0.25,  # budgets rise before Christmas, when baseline sales rise anyway: a confounder
-    "adstock_alpha": {"paid_social": 0.30, "organic": 0.60, "email": 0.15, "referral": 0.40},
-    "adstock_l_max": 8,  # geometric weights over 0..7 lags, normalised to sum to one
+    "weekly_spend_before_cut": {"paid_social": 2500.0, "organic": 800.0, "email": 1200.0, "referral": 600.0},
+    "weekly_spend_after_cut": {"paid_social": 6500.0, "organic": 800.0, "email": 400.0, "referral": 600.0},
+    "spend_noise_sigma": .20,
+    "spend_seasonal_lift": .25,     # budgets rise before Christmas, when baseline sales rise anyway: a confounder
+    "adstock_alpha": {"paid_social": .30, "organic": .60, "email": .15, "referral": .40},
+    "adstock_l_max": 8,             # geometric weights over 0..7 lags, normalised to sum to one
     "hill_K": {"paid_social": 5000.0, "organic": 1000.0, "email": 900.0, "referral": 500.0},
     "hill_slope": {"paid_social": 1.5, "organic": 1.0, "email": 1.2, "referral": 1.0},
     "beta": {"paid_social": 15000.0, "organic": 3000.0, "email": 6000.0, "referral": 2000.0},
-    "baseline_level": 12000.0,
-    "baseline_trend_per_week": 15.0,
-    "baseline_xmas_lift": 0.30,
-    "revenue_noise_sd": 900.0,
+    "baseline_level": 12000.0, "baseline_trend_per_week": 15.0, "baseline_xmas_lift": .30, "revenue_noise_sd": 900.0,
 }
 
 
@@ -745,7 +537,7 @@ def _adstock(x, alpha, l_max):
 
 
 def _hill(x, K, slope):
-    return x**slope / (x**slope + K**slope)
+    return x ** slope / (x ** slope + K ** slope)
 
 
 def _xmas_weight(weeks):
@@ -768,47 +560,26 @@ def _marketing(seed=SEED):
     contribution_total, truth_roas, truth_marginal = 0, {}, {}
     for c in CHANNELS:
         plan = np.where(after, d["weekly_spend_after_cut"][c], d["weekly_spend_before_cut"][c])
-        burst = 1 + 0.5 * (
-            rng.uniform(size=len(t)) < 0.12
-        )  # flights, so the channels don't move together
-        spend = (
-            plan
-            * burst
-            * (1 + d["spend_seasonal_lift"] * season)
-            * rng.lognormal(0, d["spend_noise_sigma"], len(t))
-        )
+        burst = 1 + .5 * (rng.uniform(size=len(t)) < .12)       # flights, so the channels don't move together
+        spend = plan * burst * (1 + d["spend_seasonal_lift"] * season) * rng.lognormal(0, d["spend_noise_sigma"], len(t))
         ad = _adstock(spend, d["adstock_alpha"][c], d["adstock_l_max"])
         part = d["beta"][c] * _hill(ad, d["hill_K"][c], d["hill_slope"][c])
         frame[f"spend_{c}"] = spend.round(2)
         frame[f"true_contribution_{c}"] = part
         contribution_total = contribution_total + part
-        truth_roas[c] = {
-            "before_cut": part[~after].sum() / spend[~after].sum(),
-            "after_cut": part[after].sum() / spend[after].sum(),
-        }
+        truth_roas[c] = {"before_cut": part[~after].sum() / spend[~after].sum(), "after_cut": part[after].sum() / spend[after].sum()}
         x = ad[after].mean()
-        truth_marginal[c] = d["beta"][c] * (
-            _hill(x + 1, d["hill_K"][c], d["hill_slope"][c])
-            - _hill(x, d["hill_K"][c], d["hill_slope"][c])
-        )
+        truth_marginal[c] = d["beta"][c] * (_hill(x + 1, d["hill_K"][c], d["hill_slope"][c]) - _hill(x, d["hill_K"][c], d["hill_slope"][c]))
     frame["revenue"] = (revenue + contribution_total).round(2)
     customers = load_customers(seed)
     bucket = customers["acquired"].dt.to_period("W-SUN").dt.start_time
     counts = customers.groupby([bucket, "channel"]).size().unstack(fill_value=0)
     for c in CHANNELS:
         frame[f"new_customers_{c}"] = frame["week"].map(counts[c]).fillna(0).astype(int)
-    order = (
-        ["week", "revenue"]
-        + [f"spend_{c}" for c in CHANNELS]
-        + [f"new_customers_{c}" for c in CHANNELS]
-    )
+    order = ["week", "revenue"] + [f"spend_{c}" for c in CHANNELS] + [f"new_customers_{c}" for c in CHANNELS]
     frame = frame[order + ["true_baseline"] + [f"true_contribution_{c}" for c in CHANNELS]]
-    truth = {
-        **d,
-        "true_roas": truth_roas,
-        "true_marginal_roas_after_cut": truth_marginal,
-        "true_baseline_share": frame["true_baseline"].sum() / frame["revenue"].sum(),
-    }
+    truth = {**d, "true_roas": truth_roas, "true_marginal_roas_after_cut": truth_marginal,
+             "true_baseline_share": frame["true_baseline"].sum() / frame["revenue"].sum()}
     return frame, truth
 
 
@@ -817,15 +588,8 @@ def load_marketing_weekly(seed=SEED):
     return _marketing(seed)[0].copy()
 
 
-GEO_TEST_DGP = {
-    "n_geos": 20,
-    "start": "2024-09-02",
-    "pre_weeks": 12,
-    "test_weeks": 8,
-    "noise_sd_share": 0.03,
-    "channel": "paid_social",
-    "holdout": "paid_social spend goes to zero in half of the geos",
-}
+GEO_TEST_DGP = {"n_geos": 20, "start": "2024-09-02", "pre_weeks": 12, "test_weeks": 8, "noise_sd_share": .03,
+                "channel": "paid_social", "holdout": "paid_social spend goes to zero in half of the geos"}
 
 
 @lru_cache(maxsize=1)
@@ -834,65 +598,32 @@ def _geo_test(seed=SEED):
     rng = _stream("geo_test", seed)
     national = _marketing(seed)[0].set_index("week")
     start = pd.Timestamp(d["start"])
-    weeks = pd.date_range(
-        start - pd.Timedelta(weeks=d["pre_weeks"]),
-        periods=d["pre_weeks"] + d["test_weeks"],
-        freq="W-MON",
-    )
+    weeks = pd.date_range(start - pd.Timedelta(weeks=d["pre_weeks"]), periods=d["pre_weeks"] + d["test_weeks"], freq="W-MON")
     share = np.sort(rng.dirichlet(np.full(d["n_geos"], 8.0)))
     # Pair geos of similar size, then flip a coin in each pair.
     holdout = np.array([x for _ in range(d["n_geos"] // 2) for x in rng.permutation([0, 1])])
-    effect_alpha, K, slope, beta = (
-        m["adstock_alpha"]["paid_social"],
-        m["hill_K"]["paid_social"],
-        m["hill_slope"]["paid_social"],
-        m["beta"]["paid_social"],
-    )
+    effect_alpha, K, slope, beta = m["adstock_alpha"]["paid_social"], m["hill_K"]["paid_social"], m["hill_slope"]["paid_social"], m["beta"]["paid_social"]
     other = (national["revenue"] - national["true_contribution_paid_social"]).loc[weeks].to_numpy()
     plan = national["spend_paid_social"].loc[weeks].to_numpy()
     post = (weeks >= start).astype(int)
     frames, lost, saved = [], 0.0, 0.0
     for g in range(d["n_geos"]):
-        spend = share[g] * plan * rng.lognormal(0, 0.10, len(weeks))
+        spend = share[g] * plan * rng.lognormal(0, .10, len(weeks))
         actual = np.where(holdout[g] & (post == 1), 0.0, spend)
-        with_ads = (
-            share[g]
-            * beta
-            * _hill(_adstock(spend / share[g], effect_alpha, m["adstock_l_max"]), K, slope)
-        )
-        got = (
-            share[g]
-            * beta
-            * _hill(_adstock(actual / share[g], effect_alpha, m["adstock_l_max"]), K, slope)
-        )
+        with_ads = share[g] * beta * _hill(_adstock(spend / share[g], effect_alpha, m["adstock_l_max"]), K, slope)
+        got = share[g] * beta * _hill(_adstock(actual / share[g], effect_alpha, m["adstock_l_max"]), K, slope)
         rest = share[g] * other * rng.lognormal(0, d["noise_sd_share"], len(weeks))
-        frames.append(
-            pd.DataFrame(
-                {
-                    "geo": f"G{g + 1:02d}",
-                    "pair": g // 2 + 1,
-                    "week": weeks,
-                    "holdout": int(holdout[g]),
-                    "post": post,
-                    "spend_paid_social": actual.round(2),
-                    "revenue": (rest + got).round(2),
-                    "true_paid_social_contribution": got,
-                    "true_counterfactual_revenue": rest + with_ads,
-                }
-            )
-        )
+        frames.append(pd.DataFrame({
+            "geo": f"G{g + 1:02d}", "pair": g // 2 + 1, "week": weeks, "holdout": int(holdout[g]), "post": post,
+            "spend_paid_social": actual.round(2), "revenue": (rest + got).round(2),
+            "true_paid_social_contribution": got, "true_counterfactual_revenue": rest + with_ads,
+        }))
         if holdout[g]:
             test = post == 1
             lost += (with_ads - got)[test].sum()
             saved += spend[test].sum()
     frame = pd.concat(frames, ignore_index=True)
-    return frame, {
-        **d,
-        "geo_share": share,
-        "true_iroas": lost / saved,
-        "true_revenue_lost": lost,
-        "spend_saved": saved,
-    }
+    return frame, {**d, "geo_share": share, "true_iroas": lost / saved, "true_revenue_lost": lost, "spend_saved": saved}
 
 
 def load_geo_test(seed=SEED):
@@ -903,24 +634,14 @@ def load_geo_test(seed=SEED):
 TOUCH_DGP = {
     "n_paths": 8000,
     # Noisy-or: P(convert) = 1 - (1 - baseline(intent)) * product over touches of (1 - lift of that channel).
-    "lift_per_touch": {"paid_social": 0.01, "organic": 0.02, "email": 0.05, "referral": 0.06},
+    "lift_per_touch": {"paid_social": .01, "organic": .02, "email": .05, "referral": .06},
     "baseline_conversion": "0.02 + 0.25 * intent ** 2",
     "intent": "Beta(1.5, 3)",
     "mean_extra_touches": 1.5,
-    "channel_weights_low_intent": {
-        "paid_social": 0.45,
-        "organic": 0.35,
-        "email": 0.10,
-        "referral": 0.10,
-    },
-    "channel_weights_high_intent": {
-        "paid_social": 0.30,
-        "organic": 0.25,
-        "email": 0.25,
-        "referral": 0.20,
-    },
-    "retarget_intent_above": 0.55,  # paid social chases people who were going to buy, and touches them last
-    "retarget_probability": 0.70,
+    "channel_weights_low_intent": {"paid_social": .45, "organic": .35, "email": .10, "referral": .10},
+    "channel_weights_high_intent": {"paid_social": .30, "organic": .25, "email": .25, "referral": .20},
+    "retarget_intent_above": .55,   # paid social chases people who were going to buy, and touches them last
+    "retarget_probability": .70,
 }
 
 
@@ -933,16 +654,14 @@ def _touch_paths(seed=SEED):
     n_touches = 1 + rng.poisson(d["mean_extra_touches"], n)
     low = np.array([d["channel_weights_low_intent"][c] for c in CHANNELS])
     high = np.array([d["channel_weights_high_intent"][c] for c in CHANNELS])
-    retarget = (intent > d["retarget_intent_above"]) & (
-        rng.uniform(size=n) < d["retarget_probability"]
-    )
+    retarget = (intent > d["retarget_intent_above"]) & (rng.uniform(size=n) < d["retarget_probability"])
     paths = []
     for i in range(n):
         weights = low + (high - low) * intent[i]
         path = list(rng.choice(CHANNELS, n_touches[i], p=weights / weights.sum()))
         paths.append(path + ["paid_social"] * int(retarget[i]))
     lift = d["lift_per_touch"]
-    baseline = 0.02 + 0.25 * intent**2
+    baseline = .02 + .25 * intent ** 2
     survive = np.array([np.prod([1 - lift[c] for c in p]) for p in paths])
     p_convert = 1 - (1 - baseline) * survive
     incremental = {}
@@ -950,26 +669,15 @@ def _touch_paths(seed=SEED):
         without = np.array([np.prod([1 - lift[x] for x in p if x != c]) for p in paths])
         incremental[c] = float((p_convert - (1 - (1 - baseline) * without)).sum())
     converted = rng.uniform(size=n) < p_convert
-    value = rng.lognormal(np.log(42), 0.55, n)
-    frame = pd.DataFrame(
-        {
-            "path_id": np.arange(1, n + 1),
-            "path": [">".join(p) for p in paths],
-            "n_touches": [len(p) for p in paths],
-            "converted": converted.astype(int),
-            "value": np.where(converted, value.round(2), 0.0),
-            "true_intent": intent,
-            "true_p_convert": p_convert,
-        }
-    )
+    value = rng.lognormal(np.log(42), .55, n)
+    frame = pd.DataFrame({"path_id": np.arange(1, n + 1), "path": [">".join(p) for p in paths],
+                          "n_touches": [len(p) for p in paths], "converted": converted.astype(int),
+                          "value": np.where(converted, value.round(2), 0.0),
+                          "true_intent": intent, "true_p_convert": p_convert})
     total = sum(incremental.values())
-    truth = {
-        **d,
-        "true_incremental_conversions": incremental,
-        "true_incremental_share": {c: v / total for c, v in incremental.items()},
-        "conversions_without_any_touch": float(baseline.sum()),
-        "expected_conversions": float(p_convert.sum()),
-    }
+    truth = {**d, "true_incremental_conversions": incremental,
+             "true_incremental_share": {c: v / total for c, v in incremental.items()},
+             "conversions_without_any_touch": float(baseline.sum()), "expected_conversions": float(p_convert.sum())}
     return frame, truth
 
 
@@ -980,16 +688,9 @@ def load_touch_paths(seed=SEED):
 
 REPEAT_LOG_DGP = {
     # Exactly BG/NBD and Gamma-Gamma, in the parameters pymc-marketing reports. Time is in weeks.
-    "r": 0.50,
-    "alpha": 8.0,
-    "a": 0.70,
-    "b": 2.50,  # purchase rate ~ Gamma(r, alpha); dropout ~ Beta(a, b)
-    "p": 6.0,
-    "q": 4.0,
-    "v": 25.0,  # order value ~ Gamma(p, nu); nu ~ Gamma(q, v)
-    "n_customers": 3000,
-    "cohort_start": "2024-01-01",
-    "cohort_end": "2024-06-30",
+    "r": .50, "alpha": 8.0, "a": .70, "b": 2.50,        # purchase rate ~ Gamma(r, alpha); dropout ~ Beta(a, b)
+    "p": 6.0, "q": 4.0, "v": 25.0,                      # order value ~ Gamma(p, nu); nu ~ Gamma(q, v)
+    "n_customers": 3000, "cohort_start": "2024-01-01", "cohort_end": "2024-06-30",
 }
 
 
@@ -1000,7 +701,7 @@ def _repeat_log(seed=SEED):
     n = d["n_customers"]
     span = (pd.Timestamp(d["cohort_end"]) - pd.Timestamp(d["cohort_start"])).days + 1
     first = pd.Timestamp(d["cohort_start"]) + pd.to_timedelta(rng.integers(0, span, n), "D")
-    rate = rng.gamma(d["r"], 1 / d["alpha"], n)  # numpy takes a scale, the model states a rate
+    rate = rng.gamma(d["r"], 1 / d["alpha"], n)         # numpy takes a scale, the model states a rate
     dropout = rng.beta(d["a"], d["b"], n)
     nu = rng.gamma(d["q"], 1 / d["v"], n)
     horizon = (END - first).days.to_numpy() / 7
@@ -1013,34 +714,20 @@ def _repeat_log(seed=SEED):
             if t > horizon[i]:
                 break
             rows.append((i, t))
-            if rng.uniform() < dropout[i]:  # dropout only ever follows a repeat purchase
+            if rng.uniform() < dropout[i]:      # dropout only ever follows a repeat purchase
                 alive[i] = False
                 break
     log = pd.DataFrame(rows, columns=["i", "week"])
     log["customer_id"] = log["i"] + 1
     log["order_date"] = first[log["i"]] + pd.to_timedelta(np.floor(log["week"] * 7), "D")
-    log["value"] = rng.gamma(d["p"], 1 / nu[log["i"]]).round(2).clip(min=0.01)
+    log["value"] = rng.gamma(d["p"], 1 / nu[log["i"]]).round(2).clip(min=.01)
     log["true_alive_at_end"] = alive[log["i"]].astype(int)
     log["true_rate_per_week"] = rate[log["i"]]
     log["true_dropout_p"] = dropout[log["i"]]
     log = log.sort_values(["order_date", "customer_id"], ignore_index=True)
-    frame = log[
-        [
-            "customer_id",
-            "order_date",
-            "value",
-            "true_alive_at_end",
-            "true_rate_per_week",
-            "true_dropout_p",
-        ]
-    ]
-    truth = {
-        **d,
-        "observation_end": END,
-        "time_unit": "weeks",
-        "realised_alive_share": alive.mean(),
-        "true_mean_order_value": d["p"] * d["v"] / (d["q"] - 1),
-    }
+    frame = log[["customer_id", "order_date", "value", "true_alive_at_end", "true_rate_per_week", "true_dropout_p"]]
+    truth = {**d, "observation_end": END, "time_unit": "weeks", "realised_alive_share": alive.mean(),
+             "true_mean_order_value": d["p"] * d["v"] / (d["q"] - 1)}
     return frame, truth
 
 
@@ -1054,13 +741,10 @@ FULFILMENT_DGP = {
     "mean_pick_minutes": {"kitchen": 4.0, "textiles": 3.0, "lighting": 5.0, "furniture": 14.0},
     "mean_pack_minutes": {"kitchen": 3.0, "textiles": 2.0, "lighting": 4.0, "furniture": 9.0},
     "peak_pick_multiplier": 1.30,
-    "time_sigma": 0.40,
+    "time_sigma": .40,
     # Days from order to dispatch ~ Poisson; from dispatch to delivery = 1 + Poisson(mean - 1).
-    "mean_dispatch_days": 0.60,
-    "peak_extra_dispatch_days": 1.0,
-    "outage_start": "2023-06-12",
-    "outage_end": "2023-06-18",
-    "outage_extra_dispatch_days": 4.0,
+    "mean_dispatch_days": .60, "peak_extra_dispatch_days": 1.0,
+    "outage_start": "2023-06-12", "outage_end": "2023-06-18", "outage_extra_dispatch_days": 4.0,
     "mean_transit_days": {"kitchen": 2.0, "textiles": 2.0, "lighting": 2.0, "furniture": 6.0},
 }
 
@@ -1073,18 +757,12 @@ def _fulfilment(seed=SEED):
     n = len(frame)
     peak = frame["order_date"].dt.month.isin([11, 12]).to_numpy()
     outage = frame["order_date"].between(d["outage_start"], d["outage_end"]).to_numpy()
-    shrink = d["time_sigma"] ** 2 / 2  # so the stated numbers are means, not medians
-    pick = frame["category"].map(d["mean_pick_minutes"]).to_numpy() * np.where(
-        peak, d["peak_pick_multiplier"], 1
-    )
+    shrink = d["time_sigma"] ** 2 / 2       # so the stated numbers are means, not medians
+    pick = frame["category"].map(d["mean_pick_minutes"]).to_numpy() * np.where(peak, d["peak_pick_multiplier"], 1)
     frame["pick_minutes"] = (pick * rng.lognormal(-shrink, d["time_sigma"], n)).round(2)
     pack = frame["category"].map(d["mean_pack_minutes"]).to_numpy()
     frame["pack_minutes"] = (pack * rng.lognormal(-shrink, d["time_sigma"], n)).round(2)
-    lag = rng.poisson(
-        d["mean_dispatch_days"]
-        + d["peak_extra_dispatch_days"] * peak
-        + d["outage_extra_dispatch_days"] * outage
-    )
+    lag = rng.poisson(d["mean_dispatch_days"] + d["peak_extra_dispatch_days"] * peak + d["outage_extra_dispatch_days"] * outage)
     transit = 1 + rng.poisson(frame["category"].map(d["mean_transit_days"]).to_numpy() - 1)
     frame["dispatch_date"] = frame["order_date"] + pd.to_timedelta(lag, "D")
     frame["delivered_date"] = frame["dispatch_date"] + pd.to_timedelta(transit, "D")
@@ -1099,20 +777,10 @@ def load_fulfilment(seed=SEED):
 
 PACKING_DGP = {
     # M/M/c on one line, 08:00 to 16:00. Every day starts empty, so waits run a little under steady state.
-    "arrivals_per_hour": {
-        "Monday": 62.0,
-        "Tuesday": 44.0,
-        "Wednesday": 40.0,
-        "Thursday": 38.0,
-        "Friday": 34.0,
-    },
+    "arrivals_per_hour": {"Monday": 62.0, "Tuesday": 44.0, "Wednesday": 40.0, "Thursday": 38.0, "Friday": 34.0},
     "packers": {"Monday": 6, "Tuesday": 5, "Wednesday": 4, "Thursday": 4, "Friday": 4},
     "service_rate_per_hour": 12.0,
-    "open_hour": 8,
-    "shift_hours": 8,
-    "start": "2025-09-29",
-    "weeks": 13,
-    "wage_per_hour": 14.0,
+    "open_hour": 8, "shift_hours": 8, "start": "2025-09-29", "weeks": 13, "wage_per_hour": 14.0,
 }
 
 
@@ -1120,12 +788,7 @@ def erlang_c(arrivals, service, c):
     """M/M/c steady state: P(wait), mean wait, and mean in the system. Same time unit as the rates."""
     a, rho = arrivals / service, arrivals / (service * c)
     if rho >= 1:
-        return {
-            "rho": rho,
-            "p_wait": 1.0,
-            "mean_wait": float("inf"),
-            "mean_in_system": float("inf"),
-        }
+        return {"rho": rho, "p_wait": 1.0, "mean_wait": float("inf"), "mean_in_system": float("inf")}
     term, total = 1.0, 1.0
     for k in range(1, c):
         term *= a / k
@@ -1133,12 +796,7 @@ def erlang_c(arrivals, service, c):
     last = term * a / c / (1 - rho)
     p_wait = last / (total + last)
     wait = p_wait / (c * service - arrivals)
-    return {
-        "rho": rho,
-        "p_wait": p_wait,
-        "mean_wait": wait,
-        "mean_in_system": arrivals * (wait + 1 / service),
-    }
+    return {"rho": rho, "p_wait": p_wait, "mean_wait": wait, "mean_in_system": arrivals * (wait + 1 / service)}
 
 
 @lru_cache(maxsize=1)
@@ -1168,30 +826,14 @@ def _packing_line(seed=SEED):
     frame["wait_minutes"] = (frame["b"] - frame["a"]).round(3)
     frame["pack_minutes"] = (frame["e"] - frame["b"]).round(3)
     frame["date"] = frame["opening"].dt.normalize()
-    frame = frame[
-        [
-            "parcel_id",
-            "date",
-            "weekday",
-            "packer",
-            "arrived",
-            "pack_start",
-            "pack_end",
-            "wait_minutes",
-            "pack_minutes",
-        ]
-    ]
+    frame = frame[["parcel_id", "date", "weekday", "packer", "arrived", "pack_start", "pack_end", "wait_minutes", "pack_minutes"]]
     # Truth in minutes.
     theory = {}
     for name, rate in d["arrivals_per_hour"].items():
         q = erlang_c(rate, d["service_rate_per_hour"], d["packers"][name])
         q["mean_wait_minutes"] = q.pop("mean_wait") * 60
         theory[name] = q
-    return frame, {
-        **d,
-        "erlang_c": theory,
-        "realised_mean_wait_minutes": frame.groupby("weekday")["wait_minutes"].mean().to_dict(),
-    }
+    return frame, {**d, "erlang_c": theory, "realised_mean_wait_minutes": frame.groupby("weekday")["wait_minutes"].mean().to_dict()}
 
 
 def load_packing_line(seed=SEED):
@@ -1214,15 +856,8 @@ PRODUCT_DGP = {
     "FUR-02": ("furniture", 140.0, 320.0, 80.0, 4.0, False, 120.0, 63.0),
     "FUR-03": ("furniture", 60.0, 150.0, 30.0, 12.0, False, 120.0, 49.0),
 }
-INVENTORY_DGP = {
-    "demand_dispersion_k": 8.0,
-    "season_weeks": 8,
-    "staple_season_lift": 0.60,
-    "holding_rate_per_year": 0.25,
-    "lead_time_sigma": 0.25,
-    "service_level": 0.95,
-    "po_interval_weeks": 8,
-}
+INVENTORY_DGP = {"demand_dispersion_k": 8.0, "season_weeks": 8, "staple_season_lift": .60, "holding_rate_per_year": .25,
+                 "lead_time_sigma": .25, "service_level": .95, "po_interval_weeks": 8}
 
 
 def _season_mask(weeks, n_weeks):
@@ -1241,16 +876,7 @@ def _products(seed=SEED):
     products, demand, purchases, truth_sku = [], [], [], {}
     normal = NormalDist()
     z_service = normal.inv_cdf(d["service_level"])
-    for sku, (
-        category,
-        cost,
-        price,
-        salvage,
-        level,
-        christmas,
-        order_cost,
-        lead_days,
-    ) in PRODUCT_DGP.items():
+    for sku, (category, cost, price, salvage, level, christmas, order_cost, lead_days) in PRODUCT_DGP.items():
         mean = level * season if christmas else level * (1 + d["staple_season_lift"] * season)
         k = d["demand_dispersion_k"]
         # Gamma-Poisson draw, written so that a zero mean is simply zero.
@@ -1261,49 +887,26 @@ def _products(seed=SEED):
 
         po_weeks = pd.date_range(MARKETING_START, END, freq=f"{d['po_interval_weeks']}W-MON")
         shrink = d["lead_time_sigma"] ** 2 / 2
-        lead = np.maximum(
-            np.round(lead_days * rng.lognormal(-shrink, d["lead_time_sigma"], len(po_weeks))), 1
-        ).astype(int)
+        lead = np.maximum(np.round(lead_days * rng.lognormal(-shrink, d["lead_time_sigma"], len(po_weeks))), 1).astype(int)
         purchases.append(pd.DataFrame({"sku": sku, "ordered": po_weeks, "lead_time_days": lead}))
 
-        var = mean + mean**2 / k
-        season_mean, season_sd = (
-            mean[season][: d["season_weeks"]].sum(),
-            var[season][: d["season_weeks"]].sum() ** 0.5,
-        )
+        var = mean + mean ** 2 / k
+        season_mean, season_sd = mean[season][:d["season_weeks"]].sum(), var[season][:d["season_weeks"]].sum() ** .5
         cu, co = price - cost, cost - salvage
         fractile = cu / (cu + co)
         one_year = weeks.year == 2025
         annual, weekly_var = mean[one_year].sum(), var[one_year].mean()
         weekly_mean = annual / one_year.sum()
         lead_weeks = lead_days / 7
-        lead_sd_weeks = lead_weeks * (np.exp(d["lead_time_sigma"] ** 2) - 1) ** 0.5
-        truth_sku[sku] = {
-            "weekly_level": level,
-            "christmas_only": christmas,
-            "season_mean": season_mean,
-            "season_sd": season_sd,
-            "critical_fractile": fractile,
-            "newsvendor_q": NormalDist(season_mean, season_sd).inv_cdf(fractile),
-            "annual_demand_2025": annual,
-            "eoq": (2 * annual * order_cost / holding) ** 0.5,
-            "mean_lead_time_days": lead_days,
-            "safety_stock": z_service
-            * (lead_weeks * weekly_var + weekly_mean**2 * lead_sd_weeks**2) ** 0.5,
-        }
-    products = pd.DataFrame(
-        products,
-        columns=[
-            "sku",
-            "category",
-            "unit_cost",
-            "unit_price",
-            "salvage_value",
-            "holding_cost_per_year",
-            "order_cost",
-            "christmas_only",
-        ],
-    )
+        lead_sd_weeks = lead_weeks * (np.exp(d["lead_time_sigma"] ** 2) - 1) ** .5
+        truth_sku[sku] = {"weekly_level": level, "christmas_only": christmas, "season_mean": season_mean, "season_sd": season_sd,
+                          "critical_fractile": fractile,
+                          "newsvendor_q": NormalDist(season_mean, season_sd).inv_cdf(fractile),
+                          "annual_demand_2025": annual, "eoq": (2 * annual * order_cost / holding) ** .5,
+                          "mean_lead_time_days": lead_days,
+                          "safety_stock": z_service * (lead_weeks * weekly_var + weekly_mean ** 2 * lead_sd_weeks ** 2) ** .5}
+    products = pd.DataFrame(products, columns=["sku", "category", "unit_cost", "unit_price", "salvage_value",
+                                               "holding_cost_per_year", "order_cost", "christmas_only"])
     demand = pd.concat(demand, ignore_index=True)
     purchases = pd.concat(purchases, ignore_index=True)
     purchases["received"] = purchases["ordered"] + pd.to_timedelta(purchases["lead_time_days"], "D")
@@ -1329,33 +932,16 @@ def load_purchase_orders(seed=SEED):
 
 SURVEY_DGP = {
     "n_areas": 120,
-    "area_sd": 0.25,  # postcode areas differ, which is what cluster sampling pays for
-    "latent_base": 0.10,
-    "latent_active": 0.35,
-    "latent_many": 0.30,
-    "latent_channel": {"paid_social": -0.35, "organic": 0.0, "email": 0.15, "referral": 0.15},
-    "score_cuts": [
-        -1.25,
-        -0.55,
-        0.25,
-        1.15,
-    ],  # latent to the 1-5 answer; 4 and 5 count as satisfied
-    "p_emailable": {"paid_social": 0.55, "organic": 0.75, "email": 0.92, "referral": 0.75},
-    "emailable_lapsed": 0.75,  # lapsed customers have opted out more often
-    "email_logit": {
-        "base": -2.75,
-        "active": 0.90,
-        "many": 0.50,
-        "email_channel": 0.50,
-        "latent": 0.55,
-    },
-    "followup_logit": {
-        "base": -0.55,
-        "active": 0.55,
-        "many": 0.30,
-        "email_channel": 0.10,
-        "latent": 0.15,
-    },
+    "area_sd": .25,                 # postcode areas differ, which is what cluster sampling pays for
+    "latent_base": .10,
+    "latent_active": .35,
+    "latent_many": .30,
+    "latent_channel": {"paid_social": -.35, "organic": 0.0, "email": .15, "referral": .15},
+    "score_cuts": [-1.25, -.55, .25, 1.15],     # latent to the 1-5 answer; 4 and 5 count as satisfied
+    "p_emailable": {"paid_social": .55, "organic": .75, "email": .92, "referral": .75},
+    "emailable_lapsed": .75,        # lapsed customers have opted out more often
+    "email_logit": {"base": -2.75, "active": .90, "many": .50, "email_channel": .50, "latent": .55},
+    "followup_logit": {"base": -.55, "active": .55, "many": .30, "email_channel": .10, "latent": .15},
 }
 
 
@@ -1364,52 +950,28 @@ def _survey(seed=SEED):
     d = SURVEY_DGP
     rng = _stream("survey", seed)
     orders = load_orders(seed)
-    per = orders.groupby("customer_id").agg(
-        orders=("order_id", "size"), spend=("value", "sum"), last=("order_date", "max")
-    )
-    frame = load_customers(seed)[["customer_id", "channel"]].merge(
-        per, left_on="customer_id", right_index=True, how="inner"
-    )
+    per = orders.groupby("customer_id").agg(orders=("order_id", "size"), spend=("value", "sum"), last=("order_date", "max"))
+    frame = load_customers(seed)[["customer_id", "channel"]].merge(per, left_on="customer_id", right_index=True, how="inner")
     frame = frame.reset_index(drop=True)
     n = len(frame)
     frame["spend"] = frame["spend"].round(2)
-    frame["segment"] = np.select(
-        [frame["orders"] == 1, frame["orders"] <= 3], ["one", "few"], "many"
-    )
+    frame["segment"] = np.select([frame["orders"] == 1, frame["orders"] <= 3], ["one", "few"], "many")
     frame["active"] = frame["last"] >= pd.Timestamp("2025-01-01")
     frame["area"] = rng.integers(0, d["n_areas"], n)
     area_effect = rng.normal(0, d["area_sd"], d["n_areas"])
     active, many = frame["active"].to_numpy(float), (frame["segment"] == "many").to_numpy(float)
-    latent = (
-        d["latent_base"]
-        + d["latent_active"] * active
-        + d["latent_many"] * many
-        + frame["channel"].map(d["latent_channel"]).to_numpy()
-        + area_effect[frame["area"]]
-        + rng.normal(0, 1, n)
-    )
+    latent = (d["latent_base"] + d["latent_active"] * active + d["latent_many"] * many
+              + frame["channel"].map(d["latent_channel"]).to_numpy() + area_effect[frame["area"]] + rng.normal(0, 1, n))
     frame["true_latent"] = latent
     frame["true_score"] = np.searchsorted(d["score_cuts"], latent) + 1
     frame["true_satisfied"] = frame["true_score"] >= 4
-    reach = frame["channel"].map(d["p_emailable"]).to_numpy() * np.where(
-        active == 1, 1, d["emailable_lapsed"]
-    )
+    reach = frame["channel"].map(d["p_emailable"]).to_numpy() * np.where(active == 1, 1, d["emailable_lapsed"])
     frame["emailable"] = rng.random(n) < reach
     email_channel = (frame["channel"] == "email").to_numpy(float)
 
     def chance(c):
-        return 1 / (
-            1
-            + np.exp(
-                -(
-                    c["base"]
-                    + c["active"] * active
-                    + c["many"] * many
-                    + c["email_channel"] * email_channel
-                    + c["latent"] * latent
-                )
-            )
-        )
+        return 1 / (1 + np.exp(-(c["base"] + c["active"] * active + c["many"] * many
+                                 + c["email_channel"] * email_channel + c["latent"] * latent)))
 
     frame["true_p_email"] = chance(d["email_logit"])
     frame["true_p_followup"] = chance(d["followup_logit"])
@@ -1422,18 +984,9 @@ def load_survey_frame(seed=SEED):
     return _survey(seed)[0].copy()
 
 
-_TRUTH = {
-    "subscriptions": _subscriptions,
-    "club": _club,
-    "marketing": _marketing,
-    "geo_test": _geo_test,
-    "touch_paths": _touch_paths,
-    "repeat_log": _repeat_log,
-    "fulfilment": _fulfilment,
-    "packing_line": _packing_line,
-    "products": _products,
-    "survey": _survey,
-}
+_TRUTH = {"subscriptions": _subscriptions, "club": _club, "marketing": _marketing, "geo_test": _geo_test,
+          "touch_paths": _touch_paths, "repeat_log": _repeat_log, "fulfilment": _fulfilment,
+          "packing_line": _packing_line, "products": _products, "survey": _survey}
 
 
 def load_truth(table, seed=SEED):
@@ -1447,12 +1000,5 @@ TRUTH_TABLES = sorted([*_TRUTH, "journeys"])
 
 
 if __name__ == "__main__":
-    print(
-        len(load_customers()),
-        "customers,",
-        len(load_orders()),
-        "orders,",
-        len(load_sessions()),
-        "sessions",
-    )
+    print(len(load_customers()), "customers,", len(load_orders()), "orders,", len(load_sessions()), "sessions")
     print(load_weekly_units().describe().round(0).to_string())

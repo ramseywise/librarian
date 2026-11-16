@@ -18,7 +18,6 @@ charges one rate, 20%, 7.5% or 0%. Invoice amounts are gross. Net is gross / (1 
 VAT is what remains. A credit note uses its invoice's rate. A discount or a settlement difference does not adjust VAT.
 USD invoices are booked at the day's rate, and the difference at payment goes to FX gain or loss.
 """
-
 # %%
 import argparse
 import copy
@@ -40,63 +39,28 @@ from sklearn.ensemble import HistGradientBoostingClassifier
 
 SEED = 11
 SUPPLIERS, INVOICES, DAYS = 80, 900, 300
-P1_END = 179  # period 1 is days 0 to 179; period 2 runs to the last bank line
+P1_END = 179                               # period 1 is days 0 to 179; period 2 runs to the last bank line
 OPENING_CASH = Decimal("2000000.00")
-VAT_RATES = [Decimal("0.20"), Decimal("0.20"), Decimal("0.075"), Decimal("0")]  # fictional
-FX_SHARE, CREDIT_NOTE_SHARE = (
-    0.10,
-    0.05,
-)  # suppliers billing in USD; single payments with a credit note first
-FX_BAND = Decimal(
-    "0.005"
-)  # a USD payment must be within this of the open USD amount at the day's rate
-FEE_ALLOWANCE, DISCOUNT = (
-    Decimal("5.00"),
-    Decimal("0.02"),
-)  # settlement differences we let the machine book
-REF_DIGITS = 5  # a reference agreeing on this many digits names an invoice
-WRONG_LINK_COST, REVIEW_COST = 25.0, 2.0  # invented prices for choosing the gate, see DS 01/13
+VAT_RATES = [Decimal("0.20"), Decimal("0.20"), Decimal("0.075"), Decimal("0")]   # fictional
+FX_SHARE, CREDIT_NOTE_SHARE = 0.10, 0.05   # suppliers billing in USD; single payments with a credit note first
+FX_BAND = Decimal("0.005")                 # a USD payment must be within this of the open USD amount at the day's rate
+FEE_ALLOWANCE, DISCOUNT = Decimal("5.00"), Decimal("0.02")   # settlement differences we let the machine book
+REF_DIGITS = 5                             # a reference agreeing on this many digits names an invoice
+WRONG_LINK_COST, REVIEW_COST = 25.0, 2.0   # invented prices for choosing the gate, see DS 01/13
 ZERO = Decimal("0.00")
 CENT = Decimal("0.01")
 
 BANK, VAT_INPUT, SUSPENSE, AP, CAPITAL, RETAINED = 1000, 1400, 1900, 2000, 3000, 3100
 PURCHASES, WAGES, RENT, OTHER_TAX, BANK_FEES, CARD = 5000, 6100, 6200, 6300, 6400, 6500
 SETTLEMENT, FX_REALISED, FX_UNREALISED = 7100, 7800, 7810
-ACCOUNTS = {
-    BANK: "Bank",
-    VAT_INPUT: "VAT reclaimable",
-    SUSPENSE: "Bank lines awaiting review",
-    AP: "Accounts payable",
-    CAPITAL: "Capital",
-    RETAINED: "Retained earnings",
-    PURCHASES: "Purchases",
-    WAGES: "Wages",
-    RENT: "Rent",
-    OTHER_TAX: "Other taxes",
-    BANK_FEES: "Bank charges",
-    CARD: "Card settlements",
-    SETTLEMENT: "Discounts and settlement differences",
-    FX_REALISED: "FX gain or loss, realised",
-    FX_UNREALISED: "FX gain or loss, unrealised",
-}
-PROFIT_AND_LOSS = {
-    PURCHASES,
-    WAGES,
-    RENT,
-    OTHER_TAX,
-    BANK_FEES,
-    CARD,
-    SETTLEMENT,
-    FX_REALISED,
-    FX_UNREALISED,
-}
-NO_INVOICE = {
-    "PAYROLL RUN": WAGES,
-    "TAX OFFICE": OTHER_TAX,
-    "BANK CHARGES": BANK_FEES,
-    "CARD SETTLEMENT": CARD,
-    "RENT STANDING ORDER": RENT,
-}
+ACCOUNTS = {BANK: "Bank", VAT_INPUT: "VAT reclaimable", SUSPENSE: "Bank lines awaiting review", AP: "Accounts payable",
+            CAPITAL: "Capital", RETAINED: "Retained earnings", PURCHASES: "Purchases", WAGES: "Wages", RENT: "Rent",
+            OTHER_TAX: "Other taxes", BANK_FEES: "Bank charges", CARD: "Card settlements",
+            SETTLEMENT: "Discounts and settlement differences", FX_REALISED: "FX gain or loss, realised",
+            FX_UNREALISED: "FX gain or loss, unrealised"}
+PROFIT_AND_LOSS = {PURCHASES, WAGES, RENT, OTHER_TAX, BANK_FEES, CARD, SETTLEMENT, FX_REALISED, FX_UNREALISED}
+NO_INVOICE = {"PAYROLL RUN": WAGES, "TAX OFFICE": OTHER_TAX, "BANK CHARGES": BANK_FEES, "CARD SETTLEMENT": CARD,
+              "RENT STANDING ORDER": RENT}
 
 
 def cents(x):
@@ -124,10 +88,8 @@ class Posting:
     account: int
     debit: Decimal = ZERO
     credit: Decimal = ZERO
-    invoice: int | None = (
-        None  # payables lines name the invoice, which is what makes a subledger possible
-    )
-    doc: Decimal = ZERO  # signed change in the invoice's document-currency balance
+    invoice: int | None = None   # payables lines name the invoice, which is what makes a subledger possible
+    doc: Decimal = ZERO          # signed change in the invoice's document-currency balance
 
 
 @dataclass(frozen=True)
@@ -163,23 +125,10 @@ class Ledger:
         self.closed_through = -1
         self.active_keys, self.reversed_ids = {}, set()
 
-    def post(
-        self,
-        day,
-        memo,
-        lines,
-        source,
-        actor="system",
-        confidence=None,
-        key=None,
-        reverses=None,
-        reason="",
-    ):
+    def post(self, day, memo, lines, source, actor="system", confidence=None, key=None, reverses=None, reason=""):
         lines = tuple(lines)
         if day <= self.closed_through:
-            raise PostingRejected(
-                f"day {day} is in a closed period (closed through {self.closed_through})"
-            )
+            raise PostingRejected(f"day {day} is in a closed period (closed through {self.closed_through})")
         if len(lines) < 2:
             raise PostingRejected("an entry needs at least two lines")
         for p in lines:
@@ -187,20 +136,14 @@ class Ledger:
                 raise PostingRejected(f"unknown account {p.account}")
             for v in (p.debit, p.credit):
                 if not isinstance(v, Decimal) or v != v.quantize(CENT) or v < 0:
-                    raise PostingRejected(
-                        f"amount {v!r} must be a non-negative Decimal in whole cents"
-                    )
+                    raise PostingRejected(f"amount {v!r} must be a non-negative Decimal in whole cents")
             if (p.debit > 0) == (p.credit > 0):
                 raise PostingRejected("each line is a debit or a credit, not both or neither")
         if debits(lines) != credits(lines):
             raise PostingRejected(f"debits {debits(lines)} do not equal credits {credits(lines)}")
         if key is not None and key in self.active_keys:
-            raise PostingRejected(
-                f"{key} is already posted as entry {self.active_keys[key]}: reverse it first"
-            )
-        entry = Entry(
-            len(self.journal), day, memo, lines, source, actor, confidence, key, reverses, reason
-        )
+            raise PostingRejected(f"{key} is already posted as entry {self.active_keys[key]}: reverse it first")
+        entry = Entry(len(self.journal), day, memo, lines, source, actor, confidence, key, reverses, reason)
         self.journal.append(entry)
         previous = self.hashes[-1] if self.hashes else ""
         self.hashes.append(hashlib.sha256((previous + entry.canonical()).encode()).hexdigest())
@@ -216,15 +159,7 @@ class Ledger:
         if old.source == "reversal":
             raise PostingRejected("a reversal is not reversed; post the entry again")
         mirror = [Posting(p.account, p.credit, p.debit, p.invoice, -p.doc) for p in old.lines]
-        entry = self.post(
-            day,
-            f"reversal of entry {entry_id}: {old.memo}",
-            mirror,
-            "reversal",
-            actor,
-            reverses=entry_id,
-            reason=reason,
-        )
+        entry = self.post(day, f"reversal of entry {entry_id}: {old.memo}", mirror, "reversal", actor, reverses=entry_id, reason=reason)
         self.reversed_ids.add(entry_id)
         if old.key is not None:
             self.active_keys.pop(old.key, None)
@@ -232,7 +167,7 @@ class Ledger:
 
     def balances(self, through=None):
         """Debit minus credit per account."""
-        out = dict.fromkeys(ACCOUNTS, ZERO)
+        out = {a: ZERO for a in ACCOUNTS}
         for e in self.journal:
             if through is None or e.day <= through:
                 for p in e.lines:
@@ -306,7 +241,7 @@ def make_world(seed, fx_share=FX_SHARE, credit_share=CREDIT_NOTE_SHARE):
     frame, lines, links = make_ledger(seed, n_suppliers=SUPPLIERS, n_invoices=INVOICES, days=DAYS)
     rng = np.random.default_rng(seed + 1000)
     horizon = int(lines.day.max()) + 5
-    walk = 0.92 * np.exp(np.cumsum(rng.normal(0, 0.003, horizon)))  # invented EUR per USD
+    walk = 0.92 * np.exp(np.cumsum(rng.normal(0, .003, horizon)))        # invented EUR per USD
     rates = [Decimal(str(round(float(r), 6))) for r in walk]
     usd = rng.random(SUPPLIERS) < fx_share
     vat = [VAT_RATES[i] for i in rng.integers(0, len(VAT_RATES), SUPPLIERS)]
@@ -316,19 +251,8 @@ def make_world(seed, fx_share=FX_SHARE, credit_share=CREDIT_NOTE_SHARE):
         rate = rates[r.issued] if usd[r.supplier] else Decimal(1)
         gross = cents(doc * rate)
         net, tax = split_vat(gross, vat[r.supplier])
-        invoices[int(r.invoice)] = Invoice(
-            int(r.invoice),
-            int(r.supplier),
-            r.name,
-            int(r.issued),
-            "USD" if usd[r.supplier] else "EUR",
-            doc,
-            rate,
-            gross,
-            net,
-            tax,
-            vat[r.supplier],
-        )
+        invoices[int(r.invoice)] = Invoice(int(r.invoice), int(r.supplier), r.name, int(r.issued), "USD" if usd[r.supplier] else "EUR",
+                                           doc, rate, gross, net, tax, vat[r.supplier])
     targets = links.groupby("line").invoice.apply(list).to_dict()
     new_amount, line_doc, notes = {}, {}, []
     for ln in lines.itertuples(index=False):
@@ -341,15 +265,11 @@ def make_world(seed, fx_share=FX_SHARE, credit_share=CREDIT_NOTE_SHARE):
         if first.currency == "USD":
             doc_paid = first.doc if ln.kind == "single" else original
             line_doc[ln.line] = doc_paid
-            new_amount[ln.line] = cents(
-                doc_paid * rates[ln.day] * Decimal(str(round(1 + rng.uniform(0, 0.003), 5)))
-            )
+            new_amount[ln.line] = cents(doc_paid * rates[ln.day] * Decimal(str(round(1 + rng.uniform(0, .003), 5))))
         elif ln.kind == "single" and rng.random() < credit_share and ln.day - first.issued >= 2:
-            credit = cents(first.gross * Decimal(str(round(rng.uniform(0.1, 0.3), 3))))
+            credit = cents(first.gross * Decimal(str(round(rng.uniform(.1, .3), 3))))
             net, tax = split_vat(credit, first.vat_rate)
-            notes.append(
-                CreditNote(first.id, int(rng.integers(first.issued + 1, ln.day)), credit, net, tax)
-            )
+            notes.append(CreditNote(first.id, int(rng.integers(first.issued + 1, ln.day)), credit, net, tax))
             new_amount[ln.line] = original - credit
         else:
             new_amount[ln.line] = original
@@ -363,24 +283,14 @@ def fit_pair_model(seed, fx_share, credit_share):
     """Pair probabilities, trained on another generated ledger, with matching.py's blocking and features."""
     w = make_world(seed, fx_share, credit_share)
     pairs = add_features(block(w.frame_invoices, w.lines), w.frame_invoices, w.lines, w.frame_links)
-    m = HistGradientBoostingClassifier(
-        learning_rate=0.08, max_iter=250, max_leaf_nodes=15, random_state=0, early_stopping=False
-    )
+    m = HistGradientBoostingClassifier(learning_rate=.08, max_iter=250, max_leaf_nodes=15, random_state=0, early_stopping=False)
     return m.fit(pairs[FEATURES], pairs.linked)
 
 
 def candidates(world, model):
-    pairs = add_features(
-        block(world.frame_invoices, world.lines),
-        world.frame_invoices,
-        world.lines,
-        world.frame_links,
-    )
+    pairs = add_features(block(world.frame_invoices, world.lines), world.frame_invoices, world.lines, world.frame_links)
     pairs["p"] = model.predict_proba(pairs[FEATURES])[:, 1]
-    return {
-        line: g.sort_values(["p", "invoice"], ascending=[False, True])
-        for line, g in pairs.groupby("line")
-    }
+    return {line: g.sort_values(["p", "invoice"], ascending=[False, True]) for line, g in pairs.groupby("line")}
 
 
 def supplier_margin(cands):
@@ -394,8 +304,8 @@ def supplier_margin(cands):
 @dataclass
 class Alloc:
     invoice: int
-    carrying: Decimal  # euros of payable this payment clears
-    doc: Decimal  # document-currency amount it clears
+    carrying: Decimal   # euros of payable this payment clears
+    doc: Decimal        # document-currency amount it clears
 
 
 @dataclass
@@ -405,9 +315,7 @@ class Plan:
     amount: Decimal
     allocs: list
     kind: str = "settle"
-    value_day: int | None = (
-        None  # the day the money moved, which sets the rate; a person may post it later
-    )
+    value_day: int | None = None   # the day the money moved, which sets the rate; a person may post it later
 
     def rate_day(self):
         return self.day if self.value_day is None else self.value_day
@@ -418,15 +326,10 @@ class Book:
 
     def __init__(self, world):
         self.world, self.ledger = world, Ledger()
-        self.ledger.post(
-            0,
-            "opening capital",
-            [Posting(BANK, debit=OPENING_CASH), Posting(CAPITAL, credit=OPENING_CASH)],
-            "opening",
-        )
-        self.queue = {}  # line -> amount held in suspense for a person
-        self.bank_entry = {}  # line -> entry id of the entry that took the money out of the bank
-        self.allocated = {}  # line -> invoices the live entry settled, () if none
+        self.ledger.post(0, "opening capital", [Posting(BANK, debit=OPENING_CASH), Posting(CAPITAL, credit=OPENING_CASH)], "opening")
+        self.queue = {}           # line -> amount held in suspense for a person
+        self.bank_entry = {}      # line -> entry id of the entry that took the money out of the bank
+        self.allocated = {}       # line -> invoices the live entry settled, () if none
         self.auto_lines = set()
         self.by_supplier = {}
         self.posted_invoices = {}
@@ -444,40 +347,20 @@ class Book:
     def post_invoice(self, inv):
         self.posted_invoices[inv.id] = inv
         self.by_supplier.setdefault(inv.supplier, []).append(inv.id)
-        lines = [
-            Posting(PURCHASES, debit=inv.net),
-            Posting(AP, credit=inv.gross, invoice=inv.id, doc=inv.doc),
-        ]
+        lines = [Posting(PURCHASES, debit=inv.net), Posting(AP, credit=inv.gross, invoice=inv.id, doc=inv.doc)]
         if inv.vat > 0:
             lines.append(Posting(VAT_INPUT, debit=inv.vat))
-        return self.track(
-            self.ledger.post(
-                inv.issued,
-                f"invoice {inv.id} {inv.name}",
-                lines,
-                "invoice",
-                key=f"invoice:{inv.id}",
-            )
-        )
+        return self.track(self.ledger.post(inv.issued, f"invoice {inv.id} {inv.name}", lines, "invoice", key=f"invoice:{inv.id}"))
 
     def post_credit_note(self, cn):
-        lines = [
-            Posting(AP, debit=cn.gross, invoice=cn.invoice, doc=-cn.gross),
-            Posting(PURCHASES, credit=cn.net),
-        ]
+        lines = [Posting(AP, debit=cn.gross, invoice=cn.invoice, doc=-cn.gross), Posting(PURCHASES, credit=cn.net)]
         if cn.vat > 0:
             lines.append(Posting(VAT_INPUT, credit=cn.vat))
-        return self.track(
-            self.ledger.post(cn.day, f"credit note on invoice {cn.invoice}", lines, "credit_note")
-        )
+        return self.track(self.ledger.post(cn.day, f"credit note on invoice {cn.invoice}", lines, "credit_note"))
 
     def expected_eur(self, invoice, day):
         inv = self.world.invoices[invoice]
-        return (
-            self.eur[invoice]
-            if inv.currency == "EUR"
-            else cents(self.doc[invoice] * self.world.rates[day])
-        )
+        return self.eur[invoice] if inv.currency == "EUR" else cents(self.doc[invoice] * self.world.rates[day])
 
     def violations(self, plan, clearing_held=False):
         """Every accounting reason this plan may not be posted. Empty means it may."""
@@ -497,9 +380,7 @@ class Book:
             if i.id not in self.posted_invoices or i.issued > plan.day:
                 out.append(f"invoice {i.id} not issued by day {plan.day}")
             elif a.carrying > self.eur[i.id] or self.eur[i.id] <= 0:
-                out.append(
-                    f"overpays invoice {i.id}: open {self.eur[i.id]}, allocating {a.carrying}"
-                )
+                out.append(f"overpays invoice {i.id}: open {self.eur[i.id]}, allocating {a.carrying}")
             elif i.currency == "USD" and a.doc > self.doc[i.id] + CENT:
                 out.append(f"overpays invoice {i.id} in USD")
         if out:
@@ -507,9 +388,7 @@ class Book:
         cleared = sum((a.carrying for a in plan.allocs), ZERO)
         difference = cleared - plan.amount
         if invs[0].currency == "USD":
-            wanted = cents(
-                sum((a.doc for a in plan.allocs), ZERO) * self.world.rates[plan.rate_day()]
-            )
+            wanted = cents(sum((a.doc for a in plan.allocs), ZERO) * self.world.rates[plan.rate_day()])
             if abs(plan.amount - wanted) > cents(wanted * FX_BAND):
                 out.append(f"USD amount {plan.amount} is outside the band around {wanted}")
         elif difference < 0:
@@ -537,44 +416,21 @@ class Book:
         if problems:
             raise PostingRejected("; ".join(problems))
         names = ",".join(str(a.invoice) for a in plan.allocs)
-        entry = self.track(
-            self.ledger.post(
-                plan.day,
-                f"bank line {plan.line} to invoice {names}",
-                self.plan_lines(plan),
-                "bank",
-                actor,
-                confidence,
-                f"bank:{plan.line}",
-                reason=reason,
-            )
-        )
+        entry = self.track(self.ledger.post(plan.day, f"bank line {plan.line} to invoice {names}", self.plan_lines(plan), "bank", actor,
+                                            confidence, f"bank:{plan.line}", reason=reason))
         self.bank_entry[plan.line] = entry.id
         self.allocated[plan.line] = tuple(sorted(a.invoice for a in plan.allocs))
         return entry
 
     def post_no_invoice(self, line, day, amount, account, actor):
-        entry = self.ledger.post(
-            day,
-            f"bank line {line}, no invoice: {ACCOUNTS[account]}",
-            [Posting(account, debit=amount), Posting(BANK, credit=amount)],
-            "bank",
-            actor,
-            key=f"bank:{line}",
-        )
+        entry = self.ledger.post(day, f"bank line {line}, no invoice: {ACCOUNTS[account]}",
+                                 [Posting(account, debit=amount), Posting(BANK, credit=amount)], "bank", actor, key=f"bank:{line}")
         self.bank_entry[line], self.allocated[line] = entry.id, ()
         return entry
 
     def to_suspense(self, line, day, amount, why):
-        entry = self.ledger.post(
-            day,
-            f"bank line {line} held: {why}",
-            [Posting(SUSPENSE, debit=amount), Posting(BANK, credit=amount)],
-            "bank",
-            "gate",
-            key=f"bank:{line}",
-            reason=why,
-        )
+        entry = self.ledger.post(day, f"bank line {line} held: {why}", [Posting(SUSPENSE, debit=amount), Posting(BANK, credit=amount)],
+                                 "bank", "gate", key=f"bank:{line}", reason=why)
         self.queue[line] = amount
         self.bank_entry[line] = entry.id
         return entry
@@ -596,31 +452,19 @@ class Book:
         eur, _ = self.ledger.open_items()
         subledger = sum(eur.values(), ZERO)
         if subledger != -balances[AP]:
-            fails.append(
-                f"payables control {-balances[AP]} differs from the sum of open items {subledger}"
-            )
+            fails.append(f"payables control {-balances[AP]} differs from the sum of open items {subledger}")
         negative = [i for i, v in eur.items() if v < 0]
         if negative:
-            fails.append(
-                f"{len(negative)} invoices overpaid, for example invoice {negative[0]} at {eur[negative[0]]}"
-            )
+            fails.append(f"{len(negative)} invoices overpaid, for example invoice {negative[0]} at {eur[negative[0]]}")
         wanted_vat = sum((i.vat for i in self.world.invoices.values() if i.issued <= day), ZERO)
         wanted_vat -= sum((c.vat for c in self.world.credit_notes if c.day <= day), ZERO)
         if wanted_vat != balances[VAT_INPUT]:
-            fails.append(
-                f"VAT account {balances[VAT_INPUT]} differs from the invoice register's {wanted_vat}"
-            )
+            fails.append(f"VAT account {balances[VAT_INPUT]} differs from the invoice register's {wanted_vat}")
         bank = OPENING_CASH - statement_total
         if balances[BANK] != bank:
             gap = abs(balances[BANK] - bank)
-            hint = (
-                "; a gap divisible by 9 often means two digits swapped"
-                if (gap * 100) % 9 == 0 and gap > 0
-                else ""
-            )
-            fails.append(
-                f"bank account {balances[BANK]} differs from the statement {bank} by {gap}{hint}"
-            )
+            hint = "; a gap divisible by 9 often means two digits swapped" if (gap * 100) % 9 == 0 and gap > 0 else ""
+            fails.append(f"bank account {balances[BANK]} differs from the statement {bank} by {gap}{hint}")
         held = sum(self.queue.values(), ZERO)
         if balances[SUSPENSE] != held:
             fails.append(f"suspense {balances[SUSPENSE]} differs from the review queue {held}")
@@ -634,41 +478,25 @@ class Book:
         net = sum(pnl.values(), ZERO)
         lines = [Posting(a, credit=v) if v > 0 else Posting(a, debit=-v) for a, v in pnl.items()]
         lines.append(Posting(RETAINED, debit=net) if net > 0 else Posting(RETAINED, credit=-net))
-        self.ledger.post(
-            day,
-            "close profit and loss to retained earnings",
-            lines,
-            "close",
-            "close",
-            key=f"close:{day}",
-        )
+        self.ledger.post(day, "close profit and loss to retained earnings", lines, "close", "close", key=f"close:{day}")
         self.ledger.closed_through = day
         return net
 
     def revalue(self, day):
         """Open USD payables move to the closing rate, and the move is undone on the first day of the next period."""
         self.reval_entries = []
-        for i in sorted(
-            k for k, v in self.eur.items() if v > 0 and self.world.invoices[k].currency == "USD"
-        ):
+        for i in sorted(k for k, v in self.eur.items() if v > 0 and self.world.invoices[k].currency == "USD"):
             target = cents(self.doc[i] * self.world.rates[day])
             move = target - self.eur[i]
             if move == 0:
                 continue
-            lines = (
-                [Posting(FX_UNREALISED, debit=move), Posting(AP, credit=move, invoice=i)]
-                if move > 0
-                else [Posting(AP, debit=-move, invoice=i), Posting(FX_UNREALISED, credit=-move)]
-            )
-            self.reval_entries.append(
-                self.track(self.ledger.post(day, f"revalue invoice {i}", lines, "revaluation")).id
-            )
+            lines = ([Posting(FX_UNREALISED, debit=move), Posting(AP, credit=move, invoice=i)] if move > 0
+                     else [Posting(AP, debit=-move, invoice=i), Posting(FX_UNREALISED, credit=-move)])
+            self.reval_entries.append(self.track(self.ledger.post(day, f"revalue invoice {i}", lines, "revaluation")).id)
 
     def undo_revaluation(self, day):
         for e in self.reval_entries:
-            self.track(
-                self.ledger.reverse(e, day, "automatic reversal of closing revaluation", "system")
-            )
+            self.track(self.ledger.reverse(e, day, "automatic reversal of closing revaluation", "system"))
         self.reval_entries = []
 
 
@@ -681,32 +509,12 @@ def truth_plan(book, row, post_day=None):
     if row.kind == "part":
         i = targets[0]
         if world.invoices[i].currency == "EUR":
-            return Plan(
-                line,
-                day,
-                amount,
-                [Alloc(i, min(amount, book.eur[i]), min(amount, book.eur[i]))],
-                value_day=value_day,
-            )
+            return Plan(line, day, amount, [Alloc(i, min(amount, book.eur[i]), min(amount, book.eur[i]))], value_day=value_day)
         doc_paid = world.line_doc[line]
         if doc_paid >= book.doc[i] - CENT:
-            return Plan(
-                line, day, amount, [Alloc(i, book.eur[i], book.doc[i])], value_day=value_day
-            )
-        return Plan(
-            line,
-            day,
-            amount,
-            [Alloc(i, cents(book.eur[i] * doc_paid / book.doc[i]), doc_paid)],
-            value_day=value_day,
-        )
-    return Plan(
-        line,
-        day,
-        amount,
-        [Alloc(i, book.eur[i], book.doc[i]) for i in targets],
-        value_day=value_day,
-    )
+            return Plan(line, day, amount, [Alloc(i, book.eur[i], book.doc[i])], value_day=value_day)
+        return Plan(line, day, amount, [Alloc(i, cents(book.eur[i] * doc_paid / book.doc[i]), doc_paid)], value_day=value_day)
+    return Plan(line, day, amount, [Alloc(i, book.eur[i], book.doc[i]) for i in targets], value_day=value_day)
 
 
 def propose(book, row, cands):
@@ -769,11 +577,9 @@ class Result:
     reasons: dict = field(default_factory=dict)
     held_for_confidence: int = 0
     corrected: int = 0
-    would_refuse: int = 0  # naive posts the invariants would have stopped
+    would_refuse: int = 0        # naive posts the invariants would have stopped
     would_refuse_wrong: int = 0  # of those, how many were wrong links
-    would_refuse_right_eur: int = (
-        0  # right links in euros: the invoice had already been paid down by earlier posts
-    )
+    would_refuse_right_eur: int = 0  # right links in euros: the invoice had already been paid down by earlier posts
     closes: list = field(default_factory=list)
     snapshot: Book | None = None
     statement_p1: Decimal = ZERO
@@ -800,17 +606,9 @@ def run_books(world, cands, policy, gate=0.5):
 
     def clear_properly(day):
         """The review queue and the supplier-statement check: a person works through both before the close."""
-        wrong_now = [
-            ln
-            for ln in sorted(book.auto_lines)
-            if rows[ln].day <= day and not is_right(world, ln, book.allocated[ln])
-        ]
+        wrong_now = [ln for ln in sorted(book.auto_lines) if rows[ln].day <= day and not is_right(world, ln, book.allocated[ln])]
         for ln in wrong_now:
-            book.track(
-                book.ledger.reverse(
-                    book.bank_entry[ln], day, "supplier statement disagrees", "clerk"
-                )
-            )
+            book.track(book.ledger.reverse(book.bank_entry[ln], day, "supplier statement disagrees", "clerk"))
             book.allocated.pop(ln)
             book.auto_lines.discard(ln)
         for ln in wrong_now:
@@ -824,28 +622,14 @@ def run_books(world, cands, policy, gate=0.5):
             amount = book.queue.pop(ln)
             r = rows[ln]
             if r.kind == "none":
-                lines = [
-                    Posting(NO_INVOICE[r.text], debit=amount),
-                    Posting(SUSPENSE, credit=amount),
-                ]
-                book.ledger.post(
-                    day, f"clear held line {ln}", lines, "review", "clerk", key=f"cleared:{ln}"
-                )
+                lines = [Posting(NO_INVOICE[r.text], debit=amount), Posting(SUSPENSE, credit=amount)]
+                book.ledger.post(day, f"clear held line {ln}", lines, "review", "clerk", key=f"cleared:{ln}")
                 book.allocated[ln] = ()
                 continue
             plan = truth_plan(book, r, day)
             problems = book.violations(plan, clearing_held=True)
             assert not problems, f"a person's plan failed on line {ln}: {problems}"
-            book.track(
-                book.ledger.post(
-                    day,
-                    f"clear held line {ln} to invoice",
-                    book.plan_lines(plan, SUSPENSE),
-                    "review",
-                    "clerk",
-                    key=f"cleared:{ln}",
-                )
-            )
+            book.track(book.ledger.post(day, f"clear held line {ln} to invoice", book.plan_lines(plan, SUSPENSE), "review", "clerk", key=f"cleared:{ln}"))
             book.allocated[ln] = tuple(sorted(a.invoice for a in plan.allocs))
 
     def clear_naively(day):
@@ -862,11 +646,7 @@ def run_books(world, cands, policy, gate=0.5):
             if not targets:
                 lines = [Posting(NO_INVOICE.get(rows[ln].text, SUSPENSE), debit=amount)]
             lines.append(Posting(SUSPENSE, credit=amount))
-            book.track(
-                book.ledger.post(
-                    day, f"clear held line {ln}", lines, "review", "clerk", key=f"cleared:{ln}"
-                )
-            )
+            book.track(book.ledger.post(day, f"clear held line {ln}", lines, "review", "clerk", key=f"cleared:{ln}"))
 
     def period_end(day):
         statement = sum((r.amount_dec for r in rows.values() if r.day <= day), ZERO)
@@ -913,9 +693,7 @@ def act_on_line(book, res, world, cands, row, policy, gate):
         else:
             book.post_plan(truth_plan(book, row), "clerk")
         return
-    if (
-        row.text in NO_INVOICE
-    ):  # every matcher gets the text rules, so the comparison is about invoices
+    if row.text in NO_INVOICE:                    # every matcher gets the text rules, so the comparison is about invoices
         book.post_no_invoice(line, day, amount, NO_INVOICE[row.text], "rule")
         book.auto_lines.add(line)
         score(res, world, row, (), amount)
@@ -926,7 +704,7 @@ def act_on_line(book, res, world, cands, row, policy, gate):
             res.held_for_confidence += 1
             return
         posted = None
-        for i in c.invoice:  # the top pick that has been issued and booked
+        for i in c.invoice:                       # the top pick that has been issued and booked
             if int(i) in book.posted_invoices:
                 posted = int(i)
                 break
@@ -938,17 +716,9 @@ def act_on_line(book, res, world, cands, row, policy, gate):
             right_link = is_right(world, line, (posted,))
             res.would_refuse_wrong += not right_link
             res.would_refuse_right_eur += right_link and world.invoices[posted].currency == "EUR"
-        book.track(
-            book.ledger.post(
-                day,
-                f"bank line {line} to invoice {posted}",
-                [Posting(AP, debit=amount, invoice=posted), Posting(BANK, credit=amount)],
-                "bank",
-                policy,
-                float(c.iloc[0].p),
-                f"bank:{line}",
-            )
-        )
+        book.track(book.ledger.post(day, f"bank line {line} to invoice {posted}",
+                                    [Posting(AP, debit=amount, invoice=posted), Posting(BANK, credit=amount)],
+                                    "bank", policy, float(c.iloc[0].p), f"bank:{line}"))
         book.allocated[line] = (posted,)
         book.auto_lines.add(line)
         score(res, world, row, (posted,), amount)
@@ -965,9 +735,7 @@ def act_on_line(book, res, world, cands, row, policy, gate):
         return
     problems = book.violations(plan)
     if problems:
-        res.reasons["refused by the invariants"] = (
-            res.reasons.get("refused by the invariants", 0) + 1
-        )
+        res.reasons["refused by the invariants"] = res.reasons.get("refused by the invariants", 0) + 1
         book.to_suspense(line, day, amount, problems[0])
         return
     book.post_plan(plan, "matcher", supplier_margin(c), reason=plan.kind)
@@ -993,9 +761,7 @@ def score(res, world, row, allocated, amount):
 def float_section(person):
     print("2. Float money beside Decimal, on the same clean books")
     a, b = 0.1 + 0.2, Decimal("0.1") + Decimal("0.2")
-    print(
-        f"   0.1 + 0.2 in float is {a!r}; in Decimal it is {b}. round(2.675, 2) gives {round(2.675, 2)}, half up gives {cents(Decimal('2.675'))}"
-    )
+    print(f"   0.1 + 0.2 in float is {a!r}; in Decimal it is {b}. round(2.675, 2) gives {round(2.675, 2)}, half up gives {cents(Decimal('2.675'))}")
     totals = {}
     for e in person.ledger.journal:
         for p in e.lines:
@@ -1004,17 +770,11 @@ def float_section(person):
     print(f"   Float book, every entry in order: debits minus credits is {residual!r}")
     exact_ok = residual == 0.0
     tolerant_ok = abs(residual) < 0.05
-    planted = residual + 0.03  # a real three-cent one-sided error
-    print(
-        f"   Close test, exactly zero:       clean book {'passes' if exact_ok else 'REFUSED, a false alarm'}"
-    )
-    print(
-        f"   Close test, under 0.05 either way: clean book {'passes' if tolerant_ok else 'refused'}, "
-        f"and with a real 0.03 one-sided error planted it {'still PASSES, a miss' if abs(planted) < 0.05 else 'refuses'}"
-    )
-    exact = sum(debits(e.lines) for e in person.ledger.journal) - sum(
-        credits(e.lines) for e in person.ledger.journal
-    )
+    planted = residual + 0.03                # a real three-cent one-sided error
+    print(f"   Close test, exactly zero:       clean book {'passes' if exact_ok else 'REFUSED, a false alarm'}")
+    print(f"   Close test, under 0.05 either way: clean book {'passes' if tolerant_ok else 'refused'}, "
+          f"and with a real 0.03 one-sided error planted it {'still PASSES, a miss' if abs(planted) < 0.05 else 'refuses'}")
+    exact = sum(debits(e.lines) for e in person.ledger.journal) - sum(credits(e.lines) for e in person.ledger.journal)
     assert exact == ZERO
     assert exact_ok is False or residual == 0.0
     # A float open balance, then the second part payment, tested the way a naive matcher tests it.
@@ -1033,16 +793,12 @@ def float_section(person):
             misses += open_f[i] != float(r.amount_dec)
         open_f[i] -= float(r.amount_dec)
         open_d[i] -= r.amount_dec
-    print(
-        f"   Second part payments that clear an invoice: {second}. A float matcher testing open == amount misses {misses} of them"
-    )
+    print(f"   Second part payments that clear an invoice: {second}. A float matcher testing open == amount misses {misses} of them")
     rate_f, rate_d = 0.075, Decimal("0.075")
     nets = [i.gross for i in person.world.invoices.values()]
     moved = [cents(n * rate_d) - money(round(float(n) * rate_f, 2)) for n in nets]
     differ = sum(1 for m in moved if m != 0)
-    print(
-        f"   VAT at 7.5% on {len(nets)} amounts: float round() disagrees with half-up rounding on {differ}, by {sum(abs(m) for m in moved)} in total\n"
-    )
+    print(f"   VAT at 7.5% on {len(nets)} amounts: float round() disagrees with half-up rounding on {differ}, by {sum(abs(m) for m in moved)} in total\n")
     assert differ > 0
 
 
@@ -1066,109 +822,45 @@ def show_worked_entries(book):
     """One entry of each kind, from the clean books. Each has debits equal to credits. A flag can switch a kind off."""
     journal, invoices = book.ledger.journal, book.world.invoices
     bank = [e for e in journal if e.source == "bank"]
-    show_kind(
-        "An invoice with VAT", (e for e in journal if e.source == "invoice" and len(e.lines) == 3)
-    )
-    show_kind(
-        "A credit note reverses part of the expense and the VAT",
-        (e for e in journal if e.source == "credit_note" and len(e.lines) == 3),
-    )
-    show_kind(
-        "One payment settling several invoices",
-        (
-            e
-            for e in bank
-            if sum(p.account == AP for p in e.lines) > 1
-            and not any(p.account == FX_REALISED for p in e.lines)
-        ),
-    )
-    show_kind(
-        "A settlement difference",
-        (e for e in bank if any(p.account == SETTLEMENT for p in e.lines)),
-    )
-    show_kind(
-        "A USD invoice paid at a later rate",
-        (e for e in bank if any(p.account == FX_REALISED for p in e.lines)),
-    )
+    show_kind("An invoice with VAT", (e for e in journal if e.source == "invoice" and len(e.lines) == 3))
+    show_kind("A credit note reverses part of the expense and the VAT", (e for e in journal if e.source == "credit_note" and len(e.lines) == 3))
+    show_kind("One payment settling several invoices", (e for e in bank if sum(p.account == AP for p in e.lines) > 1 and not any(p.account == FX_REALISED for p in e.lines)))
+    show_kind("A settlement difference", (e for e in bank if any(p.account == SETTLEMENT for p in e.lines)))
+    show_kind("A USD invoice paid at a later rate", (e for e in bank if any(p.account == FX_REALISED for p in e.lines)))
     eur = {}
     parts = book.world.lines[book.world.lines.kind == "part"]
     i = book.world.links[int(parts.iloc[0].line)][0]
     trail = [e for e in journal if any(p.invoice == i and p.account == AP for p in e.lines)]
     print(f"   A partial payment: invoice {i} over time, open balance read from the journal")
     for e in trail:
-        eur[i] = eur.get(i, ZERO) + sum(
-            (p.credit - p.debit for p in e.lines if p.invoice == i), ZERO
-        )
+        eur[i] = eur.get(i, ZERO) + sum((p.credit - p.debit for p in e.lines if p.invoice == i), ZERO)
         print(f"     day {e.day:3d} {e.source:8s} open {eur[i]:>10}")
     assert eur[i] == ZERO
-    realised = sum(
-        (
-            p.debit - p.credit
-            for e in journal
-            for p in e.lines
-            if p.account == FX_REALISED and e.source != "close"
-        ),
-        ZERO,
-    )
-    print(
-        f"   Net realised FX across the whole run, debit is a loss: {realised}. Fully determined by the invented rates\n"
-    )
+    realised = sum((p.debit - p.credit for e in journal for p in e.lines if p.account == FX_REALISED and e.source != "close"), ZERO)
+    print(f"   Net realised FX across the whole run, debit is a loss: {realised}. Fully determined by the invented rates\n")
 
 
 # %% The whole lab
 def main():
     ap_ = argparse.ArgumentParser()
     ap_.add_argument("--seed", type=int, default=SEED)
-    ap_.add_argument(
-        "--gate",
-        type=float,
-        default=None,
-        help="confidence gate; by default chosen by price on another ledger",
-    )
+    ap_.add_argument("--gate", type=float, default=None, help="confidence gate; by default chosen by price on another ledger")
     ap_.add_argument("--fx-share", type=float, default=FX_SHARE)
     ap_.add_argument("--credit-share", type=float, default=CREDIT_NOTE_SHARE)
     args = ap_.parse_args()
     start = time.time()
-    print(
-        "Generated books. Fictional VAT, invented rates and prices: no number here describes a real business or tax rule.\n"
-    )
+    print("Generated books. Fictional VAT, invented rates and prices: no number here describes a real business or tax rule.\n")
 
     # %% 1. The ledger's own rules
     print("1. What the ledger refuses, before any matching")
     probe = Ledger()
     ok = [Posting(BANK, debit=Decimal("10.00")), Posting(CAPITAL, credit=Decimal("10.00"))]
     probe.post(5, "fine", ok, "test", key="once")
-    attempts = [
-        (
-            "debits do not equal credits",
-            lambda: probe.post(
-                5,
-                "x",
-                [Posting(BANK, debit=Decimal("10.00")), Posting(CAPITAL, credit=Decimal("9.99"))],
-                "test",
-            ),
-        ),
-        (
-            "a float amount",
-            lambda: probe.post(
-                5, "x", [Posting(BANK, debit=10.0), Posting(CAPITAL, credit=10.0)], "test"
-            ),
-        ),
-        (
-            "half a cent",
-            lambda: probe.post(
-                5,
-                "x",
-                [Posting(BANK, debit=Decimal("1.005")), Posting(CAPITAL, credit=Decimal("1.005"))],
-                "test",
-            ),
-        ),
-        ("the same key twice", lambda: probe.post(5, "x", ok, "test", key="once")),
-        (
-            "reversing a reversal",
-            lambda: probe.reverse(probe.reverse(0, 6, "demo", "demo").id, 7, "demo", "demo"),
-        ),
-    ]
+    attempts = [("debits do not equal credits", lambda: probe.post(5, "x", [Posting(BANK, debit=Decimal("10.00")), Posting(CAPITAL, credit=Decimal("9.99"))], "test")),
+                ("a float amount", lambda: probe.post(5, "x", [Posting(BANK, debit=10.0), Posting(CAPITAL, credit=10.0)], "test")),
+                ("half a cent", lambda: probe.post(5, "x", [Posting(BANK, debit=Decimal("1.005")), Posting(CAPITAL, credit=Decimal("1.005"))], "test")),
+                ("the same key twice", lambda: probe.post(5, "x", ok, "test", key="once")),
+                ("reversing a reversal", lambda: probe.reverse(probe.reverse(0, 6, "demo", "demo").id, 7, "demo", "demo"))]
     for name, attempt in attempts:
         try:
             attempt()
@@ -1179,9 +871,7 @@ def main():
         probe.journal[0].memo = "edited"
         raise AssertionError("entries must be frozen")
     except dataclasses.FrozenInstanceError:
-        print(
-            f"   {'editing a posted entry':30s} refused: entries are frozen, so the only correction is a reversal"
-        )
+        print(f"   {'editing a posted entry':30s} refused: entries are frozen, so the only correction is a reversal")
     print()
 
     world = make_world(args.seed, args.fx_share, args.credit_share)
@@ -1196,23 +886,17 @@ def main():
     kinds = world.lines.kind.value_counts().to_dict()
     usd = sum(i.currency == "USD" for i in world.invoices.values())
     fx_net = -person.book.ledger.balances(through=None)[RETAINED]
-    print(
-        f"   Generated books: {len(world.invoices)} invoices ({usd} in USD), {len(world.credit_notes)} credit notes, {len(world.lines)} bank lines {kinds}"
-    )
-    print(
-        f"   A person with every supplier's statement closes both periods; payables end at {person.book.ledger.balances()[AP]}, retained result {fx_net}\n"
-    )
+    print(f"   Generated books: {len(world.invoices)} invoices ({usd} in USD), {len(world.credit_notes)} credit notes, {len(world.lines)} bank lines {kinds}")
+    print(f"   A person with every supplier's statement closes both periods; payables end at {person.book.ledger.balances()[AP]}, retained result {fx_net}\n")
     show_worked_entries(person.book)
     float_section(person.book)
 
     # %% 3. Choosing the gate, on another ledger
-    print(
-        "3. The confidence gate, priced on a second generated ledger. "
-        f"Assumed: a wrong link costs {WRONG_LINK_COST:.0f} to find and fix, a review {REVIEW_COST:.0f}"
-    )
+    print("3. The confidence gate, priced on a second generated ledger. "
+          f"Assumed: a wrong link costs {WRONG_LINK_COST:.0f} to find and fix, a review {REVIEW_COST:.0f}")
     print("     gate   auto-posted  wrong  held for a person  cost per 1,000 lines")
     table = []
-    for gate in (0.0, 0.1, 0.2, 0.3, 0.5, 0.7, 0.8, 0.9, 0.95):
+    for gate in (0.0, .1, .2, .3, .5, .7, .8, .9, .95):
         r = run_books(tuning, tune_cands, "gated", gate)
         n = len(tuning.lines)
         held = n - r.auto
@@ -1226,9 +910,7 @@ def main():
     per_line = run_books(world, cands, "per_line")
     conf = run_books(world, cands, "confidence", gate)
     gated = run_books(world, cands, "gated", gate)
-    print(
-        "4. Three matchers on the same lines. Right means exactly the invoices the line truly settles, or none"
-    )
+    print("4. Three matchers on the same lines. Right means exactly the invoices the line truly settles, or none")
     print(f"   {'':34s} {'per-line top pick':>18s} {'gate only':>10s} {'gate + invariants':>18s}")
 
     def row(label, values):
@@ -1243,88 +925,37 @@ def main():
     open_stats = []
     for r in results:
         eur, _ = r.book.ledger.open_items()
-        open_stats.append(
-            (
-                sum(1 for v in eur.values() if v < 0),
-                sum(1 for v in eur.values() if v > 0),
-                sum((abs(v) for v in eur.values()), ZERO),
-            )
-        )
+        open_stats.append((sum(1 for v in eur.values() if v < 0), sum(1 for v in eur.values() if v > 0), sum((abs(v) for v in eur.values()), ZERO)))
     eur_g = gated.book.ledger.open_items()[0]
     row("invoices overpaid at the end", [s[0] for s in open_stats])
     row("invoices still open at the end", [s[1] for s in open_stats])
     row("payables error at the end, euros", [f"{s[2]:,.0f}" for s in open_stats])
-    tb = [
-        sum((debits(e.lines) for e in r.book.ledger.journal), ZERO)
-        == sum((credits(e.lines) for e in r.book.ledger.journal), ZERO)
-        for r in results
-    ]
+    tb = [sum((debits(e.lines) for e in r.book.ledger.journal), ZERO) == sum((credits(e.lines) for e in r.book.ledger.journal), ZERO) for r in results]
     row("trial balance balances", tb)
     row("period 1 close", [r.closes[0][1] for r in results])
-    print(
-        "   Every invoice was truly paid by the end, so every euro of payables left is an error. The right answer ends at zero"
-    )
-    print(
-        f"   Why the per-line close failed: {per_line.closes[0][2][0] if per_line.closes[0][1] == 'refused' else 'it did not'}"
-    )
-    print(
-        f"   By kind, right of posted, gate + invariants: { {k: f'{v[0]} of {v[1]}' for k, v in sorted(gated.by_kind.items())} }"
-    )
-    print(
-        f"   Passed the gate, then the arithmetic refused: {dict(sorted(gated.reasons.items(), key=lambda kv: -kv[1]))}"
-    )
+    print("   Every invoice was truly paid by the end, so every euro of payables left is an error. The right answer ends at zero")
+    print(f"   Why the per-line close failed: {per_line.closes[0][2][0] if per_line.closes[0][1] == 'refused' else 'it did not'}")
+    print(f"   By kind, right of posted, gate + invariants: { {k: f'{v[0]} of {v[1]}' for k, v in sorted(gated.by_kind.items())} }")
+    print(f"   Passed the gate, then the arithmetic refused: {dict(sorted(gated.reasons.items(), key=lambda kv: -kv[1]))}")
     print(f"   Stopped by the gate itself: {gated.held_for_confidence}")
-    print(
-        f"   Wrong links reversed and reposted after the supplier-statement check: {gated.corrected}. This check is a perfect oracle here, a real one isn't"
-    )
-    print(
-        f"   Run over the per-line matcher's posts, the invariants would have stopped {per_line.would_refuse} of {per_line.auto - len(world.lines[world.lines.kind == 'none'])}, "
-        f"{per_line.would_refuse_wrong} of them wrong links. Of the right links, {per_line.would_refuse_right_eur} were in euros, whose invoice earlier posts "
-        f"had already paid down, so a wrong link also blocks the right one after it; {per_line.would_refuse - per_line.would_refuse_wrong - per_line.would_refuse_right_eur} were USD, where a moved rate can leave a difference"
-    )
-    print(
-        "   In the third column the search only proposes what fits, so the checks above are its second lock and rarely fire."
-    )
-    print(
-        "   The invariants catch what is impossible. A wrong link that fits the arithmetic still passes, which is why wrong isn't zero.\n"
-    )
+    print(f"   Wrong links reversed and reposted after the supplier-statement check: {gated.corrected}. This check is a perfect oracle here, a real one isn't")
+    print(f"   Run over the per-line matcher's posts, the invariants would have stopped {per_line.would_refuse} of {per_line.auto - len(world.lines[world.lines.kind == 'none'])}, "
+          f"{per_line.would_refuse_wrong} of them wrong links. Of the right links, {per_line.would_refuse_right_eur} were in euros, whose invoice earlier posts "
+          f"had already paid down, so a wrong link also blocks the right one after it; {per_line.would_refuse - per_line.would_refuse_wrong - per_line.would_refuse_right_eur} were USD, where a moved rate can leave a difference")
+    print("   In the third column the search only proposes what fits, so the checks above are its second lock and rarely fire.")
+    print("   The invariants catch what is impossible. A wrong link that fits the arithmetic still passes, which is why wrong isn't zero.\n")
     probe_book = gated.snapshot
-    open_eur = sorted(
-        i for i, v in probe_book.eur.items() if v > 0 and world.invoices[i].currency == "EUR"
-    )
+    open_eur = sorted(i for i, v in probe_book.eur.items() if v > 0 and world.invoices[i].currency == "EUR")
     i0 = open_eur[0]
     other = next(i for i in open_eur if world.invoices[i].supplier != world.invoices[i0].supplier)
     over = probe_book.eur[i0] + Decimal("1.00")
-    bad_plans = {
-        "overpays": Plan(9_000_001, P1_END, over, [Alloc(i0, over, over)]),
-        "two suppliers": Plan(
-            9_000_002,
-            P1_END,
-            probe_book.eur[i0] + probe_book.eur[other],
-            [
-                Alloc(i0, probe_book.eur[i0], probe_book.eur[i0]),
-                Alloc(other, probe_book.eur[other], probe_book.eur[other]),
-            ],
-        ),
-        "before issue": Plan(
-            9_000_003,
-            world.invoices[i0].issued - 1,
-            probe_book.eur[i0],
-            [Alloc(i0, probe_book.eur[i0], probe_book.eur[i0])],
-        ),
-        "invoice twice": Plan(
-            9_000_004,
-            P1_END,
-            probe_book.eur[i0] * 2,
-            [Alloc(i0, probe_book.eur[i0], probe_book.eur[i0])] * 2,
-        ),
-        "unexplained gap": Plan(
-            9_000_005,
-            P1_END,
-            cents(probe_book.eur[i0] / 2),
-            [Alloc(i0, probe_book.eur[i0], probe_book.eur[i0])],
-        ),
-    }
+    bad_plans = {"overpays": Plan(9_000_001, P1_END, over, [Alloc(i0, over, over)]),
+                 "two suppliers": Plan(9_000_002, P1_END, probe_book.eur[i0] + probe_book.eur[other],
+                                       [Alloc(i0, probe_book.eur[i0], probe_book.eur[i0]), Alloc(other, probe_book.eur[other], probe_book.eur[other])]),
+                 "before issue": Plan(9_000_003, world.invoices[i0].issued - 1, probe_book.eur[i0], [Alloc(i0, probe_book.eur[i0], probe_book.eur[i0])]),
+                 "invoice twice": Plan(9_000_004, P1_END, probe_book.eur[i0] * 2, [Alloc(i0, probe_book.eur[i0], probe_book.eur[i0])] * 2),
+                 "unexplained gap": Plan(9_000_005, P1_END, cents(probe_book.eur[i0] / 2),
+                                         [Alloc(i0, probe_book.eur[i0], probe_book.eur[i0])])}
     for name, bad in bad_plans.items():
         assert probe_book.violations(bad), f"the invariants accepted a plan that {name}"
     assert sum(eur_g.values(), ZERO) == ZERO and not any(v < 0 for v in eur_g.values())
@@ -1336,74 +967,29 @@ def main():
     clean = gated.snapshot
     day, statement = P1_END, gated.statement_p1
     assert clean.checks(day, statement) == []
-    print(
-        f"   clean books: all checks pass, trial balance {sum((debits(e.lines) for e in clean.ledger.journal), ZERO):,}"
-    )
+    print(f"   clean books: all checks pass, trial balance {sum((debits(e.lines) for e in clean.ledger.journal), ZERO):,}")
 
-    bank_entries = [
-        e
-        for e in clean.ledger.journal
-        if e.source == "bank"
-        and e.key
-        and e.id not in clean.ledger.reversed_ids
-        and e.lines[0].account == AP
-        and all(p.account in (AP, BANK) for p in e.lines)
-        and e.lines[-1].credit >= 100
-    ]
-    target = next(
-        e
-        for e in bank_entries
-        if str(e.lines[-1].credit).replace(".", "")[0]
-        != str(e.lines[-1].credit).replace(".", "")[1]
-    )
-    invoice_entry = next(
-        e
-        for e in clean.ledger.journal
-        if e.source == "invoice"
-        and e.id not in clean.ledger.reversed_ids
-        and clean.world.invoices[int(e.memo.split()[1])].vat_rate == Decimal("0.20")
-    )
+    bank_entries = [e for e in clean.ledger.journal if e.source == "bank" and e.key and e.id not in clean.ledger.reversed_ids and e.lines[0].account == AP
+                    and all(p.account in (AP, BANK) for p in e.lines) and e.lines[-1].credit >= 100]
+    target = next(e for e in bank_entries if str(e.lines[-1].credit).replace(".", "")[0] != str(e.lines[-1].credit).replace(".", "")[1])
+    invoice_entry = next(e for e in clean.ledger.journal if e.source == "invoice" and e.id not in clean.ledger.reversed_ids
+                         and clean.world.invoices[int(e.memo.split()[1])].vat_rate == Decimal("0.20"))
 
     def plant_one_sided(b):
         """A legacy import writes straight into the table, debit only, past post()."""
-        e = Entry(
-            len(b.ledger.journal),
-            day,
-            "legacy import",
-            (Posting(PURCHASES, debit=Decimal("0.03")),),
-            "import",
-            "legacy",
-        )
+        e = Entry(len(b.ledger.journal), day, "legacy import", (Posting(PURCHASES, debit=Decimal("0.03")),), "import", "legacy")
         b.ledger.journal.append(e)
 
     def plant_untagged(b):
         """Balanced, in the control account, naming no invoice: a manual journal to make a supplier's figure look right."""
-        b.ledger.post(
-            day,
-            "manual adjustment",
-            [Posting(AP, debit=Decimal("250.00")), Posting(PURCHASES, credit=Decimal("250.00"))],
-            "manual",
-            "someone",
-        )
+        b.ledger.post(day, "manual adjustment", [Posting(AP, debit=Decimal("250.00")), Posting(PURCHASES, credit=Decimal("250.00"))], "manual", "someone")
 
     def plant_wrong_vat(b):
         """Balanced, right payable, wrong rate: booked at 7.5% where the supplier charges 20%."""
         inv = b.world.invoices[int(invoice_entry.memo.split()[1])]
         b.track(b.ledger.reverse(invoice_entry.id, day, "rebooked", "someone"))
         net, tax = split_vat(inv.gross, Decimal("0.075"))
-        b.track(
-            b.ledger.post(
-                day,
-                f"invoice {inv.id} rebooked",
-                [
-                    Posting(PURCHASES, debit=net),
-                    Posting(VAT_INPUT, debit=tax),
-                    Posting(AP, credit=inv.gross, invoice=inv.id, doc=inv.doc),
-                ],
-                "invoice",
-                "someone",
-            )
-        )
+        b.track(b.ledger.post(day, f"invoice {inv.id} rebooked", [Posting(PURCHASES, debit=net), Posting(VAT_INPUT, debit=tax), Posting(AP, credit=inv.gross, invoice=inv.id, doc=inv.doc)], "invoice", "someone"))
 
     def plant_transposition(b):
         """Balanced, but the bank figure has two digits swapped, so the books disagree with the statement."""
@@ -1412,47 +998,21 @@ def main():
         swapped = Decimal(digits[1] + digits[0] + digits[2:])
         b.track(b.ledger.reverse(target.id, day, "rekeyed", "someone"))
         allocated = [p for p in target.lines if p.account == AP][0]
-        b.track(
-            b.ledger.post(
-                day,
-                "rekeyed payment",
-                [
-                    Posting(AP, debit=swapped, invoice=allocated.invoice),
-                    Posting(BANK, credit=swapped),
-                ],
-                "bank",
-                "someone",
-            )
-        )
+        b.track(b.ledger.post(day, "rekeyed payment", [Posting(AP, debit=swapped, invoice=allocated.invoice), Posting(BANK, credit=swapped)], "bank", "someone"))
 
     def plant_overpaid(b):
         """Balanced, in suspense and the payables, but more than the invoice ever owed."""
         i = next(k for k, v in b.eur.items() if v == 0 and b.world.invoices[k].currency == "EUR")
-        b.ledger.post(
-            day,
-            "duplicate payment",
-            [
-                Posting(AP, debit=Decimal("40.00"), invoice=i),
-                Posting(SUSPENSE, credit=Decimal("40.00")),
-            ],
-            "manual",
-            "someone",
-        )
+        b.ledger.post(day, "duplicate payment", [Posting(AP, debit=Decimal("40.00"), invoice=i), Posting(SUSPENSE, credit=Decimal("40.00"))], "manual", "someone")
 
-    plants = [
-        ("one-sided legacy import of 0.03", plant_one_sided, "trial balance off"),
-        ("balanced, payables with no invoice", plant_untagged, "payables control"),
-        ("balanced, VAT at the wrong rate", plant_wrong_vat, "VAT account"),
-        ("balanced, two bank digits swapped", plant_transposition, "bank account"),
-        ("balanced, an invoice overpaid", plant_overpaid, "invoices overpaid"),
-    ]
+    plants = [("one-sided legacy import of 0.03", plant_one_sided, "trial balance off"), ("balanced, payables with no invoice", plant_untagged, "payables control"),
+              ("balanced, VAT at the wrong rate", plant_wrong_vat, "VAT account"), ("balanced, two bank digits swapped", plant_transposition, "bank account"),
+              ("balanced, an invoice overpaid", plant_overpaid, "invoices overpaid")]
     print(f"   {'planted error':38s} {'balances?':>10s}   why the close refused")
     for name, plant, expected in plants:
         b = copy.deepcopy(clean)
         plant(b)
-        tb_ok = sum((debits(e.lines) for e in b.ledger.journal), ZERO) == sum(
-            (credits(e.lines) for e in b.ledger.journal), ZERO
-        )
+        tb_ok = sum((debits(e.lines) for e in b.ledger.journal), ZERO) == sum((credits(e.lines) for e in b.ledger.journal), ZERO)
         try:
             b.close(day, statement)
             raise AssertionError(f"close accepted: {name}")
@@ -1460,41 +1020,19 @@ def main():
             print(f"   {name:38s} {'yes' if tb_ok else 'NO':>10s}   {refused.failures[0]}")
             for extra in refused.failures[1:]:
                 print(f"   {'':38s} {'':>10s}   {extra}")
-            assert any(expected in f for f in refused.failures), (
-                f"{name}: the check meant to catch this one did not fire"
-            )
+            assert any(expected in f for f in refused.failures), f"{name}: the check meant to catch this one did not fire"
     b = copy.deepcopy(clean)
     plant_wrong_vat(b)
     inv = b.world.invoices[int(invoice_entry.memo.split()[1])]
-    wrong_entry = next(
-        e for e in reversed(b.ledger.journal) if e.memo == f"invoice {inv.id} rebooked"
-    )
+    wrong_entry = next(e for e in reversed(b.ledger.journal) if e.memo == f"invoice {inv.id} rebooked")
     b.track(b.ledger.reverse(wrong_entry.id, day, "wrong rate", "reviewer"))
     net, tax = split_vat(inv.gross, inv.vat_rate)
-    b.track(
-        b.ledger.post(
-            day,
-            f"invoice {inv.id} rebooked correctly",
-            [
-                Posting(PURCHASES, debit=net),
-                Posting(VAT_INPUT, debit=tax),
-                Posting(AP, credit=inv.gross, invoice=inv.id, doc=inv.doc),
-            ],
-            "invoice",
-            "reviewer",
-        )
-    )
+    b.track(b.ledger.post(day, f"invoice {inv.id} rebooked correctly", [Posting(PURCHASES, debit=net), Posting(VAT_INPUT, debit=tax), Posting(AP, credit=inv.gross, invoice=inv.id, doc=inv.doc)], "invoice", "reviewer"))
     b.close(day, statement)
     owed_in_doc = lambda ledger: {i: v for i, v in ledger.open_items()[1].items() if v != 0}
-    assert owed_in_doc(b.ledger) == owed_in_doc(clean.ledger), (
-        "a reversal must take the document-currency amount back out too"
-    )
-    print(
-        "   Fixing the VAT error with a reversal and a correct entry: the close now passes, and all three entries stay on the record"
-    )
-    print(
-        f"   Clean run: {gated.closes[0][1]} on day {gated.closes[0][0]}, then {gated.closes[1][1]} on day {gated.closes[1][0]}\n"
-    )
+    assert owed_in_doc(b.ledger) == owed_in_doc(clean.ledger), "a reversal must take the document-currency amount back out too"
+    print("   Fixing the VAT error with a reversal and a correct entry: the close now passes, and all three entries stay on the record")
+    print(f"   Clean run: {gated.closes[0][1]} on day {gated.closes[0][0]}, then {gated.closes[1][1]} on day {gated.closes[1][0]}\n")
 
     # %% 6. Reversal and the audit trail
     print("6. Reversal, not edit, and what the trail shows")
@@ -1503,73 +1041,32 @@ def main():
     if ln is not None:
         print(f"   Bank line {ln}, truly invoice(s) {world.links.get(ln, 'none')}:")
         for e in final.journal:
-            if (
-                e.memo.startswith(f"bank line {ln} ")
-                or (
-                    e.memo.startswith("reversal of entry")
-                    and final.journal[e.reverses].memo.startswith(f"bank line {ln} ")
-                )
-                or e.memo.startswith(f"clear held line {ln} ")
-            ):
+            if e.memo.startswith(f"bank line {ln} ") or e.memo.startswith(f"reversal of entry") and final.journal[e.reverses].memo.startswith(f"bank line {ln} ") or e.memo.startswith(f"clear held line {ln} "):
                 conf_text = f"confidence {e.confidence:.2f}" if e.confidence is not None else ""
-                print(
-                    f"     entry {e.id:5d} day {e.day:3d} {e.actor:8s} {e.memo[:60]:60s} {conf_text} {e.reason}"
-                )
+                print(f"     entry {e.id:5d} day {e.day:3d} {e.actor:8s} {e.memo[:60]:60s} {conf_text} {e.reason}")
     p1 = final.balances(through=P1_END)
-    sample = next(
-        e
-        for e in final.journal
-        if e.day <= P1_END
-        and e.source == "bank"
-        and e.id not in final.reversed_ids
-        and e.lines[0].account == AP
-        and e.lines[0].debit > 0
-    )
+    sample = next(e for e in final.journal if e.day <= P1_END and e.source == "bank" and e.id not in final.reversed_ids and e.lines[0].account == AP and e.lines[0].debit > 0)
     demo = copy.deepcopy(gated.book)
     try:
-        demo.ledger.post(
-            P1_END,
-            "backdated fix",
-            [Posting(BANK, debit=Decimal("1.00")), Posting(PURCHASES, credit=Decimal("1.00"))],
-            "manual",
-            "someone",
-        )
+        demo.ledger.post(P1_END, "backdated fix", [Posting(BANK, debit=Decimal("1.00")), Posting(PURCHASES, credit=Decimal("1.00"))], "manual", "someone")
         raise AssertionError("closed period accepted a post")
     except PostingRejected as e:
         print(f"   A backdated post: refused: {e}")
-    demo.track(
-        demo.ledger.reverse(
-            sample.id, final.journal[-1].day + 1, "later query from the supplier", "clerk"
-        )
-    )
-    assert demo.ledger.balances(through=P1_END) == p1, (
-        "a later reversal must not move a closed period"
-    )
-    print(
-        f"   A reversal of entry {sample.id}, from a closed period, is dated today: period 1's balances are unchanged, today's move by {sample.lines[0].debit}"
-    )
+    demo.track(demo.ledger.reverse(sample.id, final.journal[-1].day + 1, "later query from the supplier", "clerk"))
+    assert demo.ledger.balances(through=P1_END) == p1, "a later reversal must not move a closed period"
+    print(f"   A reversal of entry {sample.id}, from a closed period, is dated today: period 1's balances are unchanged, today's move by {sample.lines[0].debit}")
     assert gated.book.ledger.verify_chain()
     tampered = copy.deepcopy(gated.book)
     old = tampered.ledger.journal[sample.id]
     tampered.ledger.journal[sample.id] = dataclasses.replace(old, memo=old.memo + " (edited)")
     assert not tampered.ledger.verify_chain()
-    print(
-        f"   Hash chain over {len(final.journal):,} entries: verifies. Editing one memo behind the API: the chain breaks at that entry"
-    )
+    print(f"   Hash chain over {len(final.journal):,} entries: verifies. Editing one memo behind the API: the chain breaks at that entry")
     actors = pd.Series([e.actor for e in final.journal]).value_counts().to_dict()
     print(f"   Who posted: {actors}")
     reversals = sum(e.source == "reversal" for e in final.journal)
-    assert all(
-        e.id in final.reversed_ids
-        for e in final.journal
-        if e.source == "revaluation" and e.day <= P1_END
-    ), "a period 1 revaluation was never undone"
-    print(
-        f"   Reversals on record: {reversals}, of which revaluations undone: {sum(e.source == 'reversal' and e.actor == 'system' for e in final.journal)}"
-    )
-    print(
-        f"\nRuntime {time.time() - start:.0f} s. Results describe this generated ledger and these invented prices and rules."
-    )
+    assert all(e.id in final.reversed_ids for e in final.journal if e.source == "revaluation" and e.day <= P1_END), "a period 1 revaluation was never undone"
+    print(f"   Reversals on record: {reversals}, of which revaluations undone: {sum(e.source == 'reversal' and e.actor == 'system' for e in final.journal)}")
+    print(f"\nRuntime {time.time() - start:.0f} s. Results describe this generated ledger and these invented prices and rules.")
 
 
 if __name__ == "__main__":

@@ -2,7 +2,7 @@
 title: Verification Loops
 tags: [llm, agents, eval, concept]
 summary: "Models stop at the first plausible solution and rate their own work generously — two distinct failures needing two distinct fixes: a forced verification pass, and an external evaluator that never generates — calibrated, thresholded per dimension, and bound by a written sprint contract."
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--05-verification-loops.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--05-verification-loops.md
@@ -300,7 +300,6 @@ afterward.
 - [[Loop Detection and the Two-Retry Rule]] — related
 - [[Eval Ladder]] — prerequisite-for
 - [[LLM-as-Judge Evaluation]] — related
-- [[TDD as Coding-Agent Harness]] — instance-of
 - [[Loop Engineering]] — related (part of; capability level 2 is this loop)
 - [[Loop Autonomy Ladder]] — prerequisite-for (rung 2 is where the verifier stops being optional)
 - [[Recursive Self-Improvement]] — extends (the write boundary enforces generator/evaluator separation structurally)
@@ -310,9 +309,6 @@ afterward.
 - [[AlphaCodium Flow Engineering]] — instance-of
 - [[Paper-Replication Completion Gate]] — instance-of
 - [[InfCode Adversarial Test-Patch Refinement]] — instance-of
-- [[Scan-Floor Guard Against Silent No-Op Checks]] — extends (a verifier must prove it exercised something)
-- [[Artifact Is Not Evidence: Push and Probe]] — extends (verify the behaviour, not the artifact)
-- [[Build the Checker Before the Generator]] — prerequisite-for
 - [[Spec, Verifier, Environment Layering]] — extends (criteria before work, second-model critic, external signal)
 - [[Three-Layer Termination Check]] — extends (what "verify passes" means)
 - [[Agent-Oriented Error Messages]] — related

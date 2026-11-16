@@ -2,7 +2,7 @@
 title: ChatDev Chat Chain Software Company
 tags: [harness, agents, multi-agent, concept]
 summary: "ChatDev runs role-specialised LLM agents (CEO, CTO, programmer, reviewer, tester) through a chat chain of five subtasks in design, coding and testing phases, with a step where the assistant asks for specifics before answering; the authors report it beating two baselines on their own dataset and metrics, at several times the tokens and time of a single agent (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-07-qian-2023-chatdev.md
 ---
@@ -28,7 +28,6 @@ Setup for the comparisons: the authors' own SRDD dataset of 1,200 software requi
 - Only ChatGPT-3.5 was used; the seeds, run counts, human raters, embedding model and model snapshot go unstated; the dataset was built by the authors and the baselines were run on it with the authors' metrics.
 
 ## See Also
-- [[Multi-Agent Role Specialization]] — prerequisite-for
 - [[Multi-Agent Topology Patterns]] — related
 - [[OpenHands Generalist Agent Platform]] — alternative-to (fixed procedure versus chat chain)
 - [[Protocol-Driven Multi-Agent Collaboration]] — related

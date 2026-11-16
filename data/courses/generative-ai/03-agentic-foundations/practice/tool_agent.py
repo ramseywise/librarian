@@ -13,16 +13,13 @@ a function of the conversation, so a model "fixing" its call depends on what you
 tools, the stock data and the scripted decisions are invented for this lab. The sizes printed are characters re-sent
 in this run, a stand-in for input tokens, not a measurement of any model.
 """
-
 # %%
 import json
 from dataclasses import dataclass
 from types import SimpleNamespace as NS
 
-STOCK = {
-    "itemA": {"on_hand": 500, "peak_weekly": 90, "weeks_to_deliver": 2},
-    "itemB": {"on_hand": 100, "peak_weekly": 90, "weeks_to_deliver": 2},
-}
+STOCK = {"itemA": {"on_hand": 500, "peak_weekly": 90, "weeks_to_deliver": 2},
+         "itemB": {"on_hand": 100, "peak_weekly": 90, "weeks_to_deliver": 2}}
 MAX_STEPS = 6
 
 
@@ -75,7 +72,6 @@ def check_args(name, args):
 
 def dispatch(warehouse, name, args, vague=False):
     """Run one call. Every failure comes back as a result the model can read, and the loop keeps going."""
-
     def fail(message):
         return ("Error" if vague else f"Error: {message}"), True
 
@@ -105,11 +101,7 @@ def check_protocol(messages):
         if not asked:
             continue
         follow = messages[i + 1]["content"] if i + 1 < len(messages) else []
-        got = {
-            r["tool_use_id"]
-            for r in follow
-            if isinstance(r, dict) and r.get("type") == "tool_result"
-        }
+        got = {r["tool_use_id"] for r in follow if isinstance(r, dict) and r.get("type") == "tool_result"}
         if asked != got:
             raise ProtocolError(f"tool_use ids {sorted(asked)} answered by {sorted(got)}")
 
@@ -138,11 +130,7 @@ def say(text):
 
 
 def last_results(messages):
-    return (
-        [r["content"] for r in messages[-1]["content"]]
-        if isinstance(messages[-1]["content"], list)
-        else []
-    )
+    return [r["content"] for r in messages[-1]["content"]] if isinstance(messages[-1]["content"], list) else []
 
 
 # %% The loop
@@ -162,47 +150,26 @@ def run_agent(turn, prompt, warehouse=None, vague=False, max_steps=MAX_STEPS, re
     messages = [{"role": "user", "content": prompt}]
     calls = errors = 0
     for _ in range(max_steps):
-        response = client.messages.create(
-            model="stub", max_tokens=1000, tools=sorted(SCHEMAS), messages=messages
-        )
+        response = client.messages.create(model="stub", max_tokens=1000, tools=sorted(SCHEMAS), messages=messages)
         if response.stop_reason != "tool_use":
             text = next(b.text for b in response.content if b.type == "text")
             return Run(response.stop_reason, text, calls, errors, client.sizes, warehouse.orders)
-        messages.append(
-            {"role": "assistant", "content": response.content}
-        )  # the call goes in before its result
+        messages.append({"role": "assistant", "content": response.content})    # the call goes in before its result
         results = []
-        for block in response.content:  # one turn can hold several calls
+        for block in response.content:                                         # one turn can hold several calls
             if block.type != "tool_use":
                 continue
             calls += 1
             key = (block.name, json.dumps(block.input, sort_keys=True))
             seen[key] = seen.get(key, 0) + 1
             if seen[key] > repeat_limit:
-                output, failed = (
-                    f"Error: {block.name} already failed or ran {repeat_limit} times with these arguments. Stop and report.",
-                    True,
-                )
+                output, failed = f"Error: {block.name} already failed or ran {repeat_limit} times with these arguments. Stop and report.", True
             else:
                 output, failed = dispatch(warehouse, block.name, block.input, vague)
             errors += failed
-            results.append(
-                {
-                    "type": "tool_result",
-                    "tool_use_id": block.id,
-                    "content": output,
-                    "is_error": failed,
-                }
-            )
+            results.append({"type": "tool_result", "tool_use_id": block.id, "content": output, "is_error": failed})
         messages.append({"role": "user", "content": results})
-    return Run(
-        "step cap",
-        "I couldn't finish; here is where I got to.",
-        calls,
-        errors,
-        client.sizes,
-        warehouse.orders,
-    )
+    return Run("step cap", "I couldn't finish; here is where I got to.", calls, errors, client.sizes, warehouse.orders)
 
 
 # %% Scripted turns, each a function of what the tools really returned
@@ -266,9 +233,8 @@ def buggy_loop_demo():
     messages = [{"role": "user", "content": "Check both."}]
     first = client.messages.create(messages=messages)
     messages.append({"role": "assistant", "content": first.content})
-    messages.append(
-        {"role": "user", "content": [{"type": "tool_result", "tool_use_id": "a", "content": "{}"}]}
-    )  # result for "b" is missing
+    messages.append({"role": "user", "content": [
+        {"type": "tool_result", "tool_use_id": "a", "content": "{}"}]})         # result for "b" is missing
     try:
         client.messages.create(messages=messages)
     except ProtocolError as e:
@@ -289,10 +255,8 @@ SCENARIOS = [
 ]
 
 if __name__ == "__main__":
-    print(
-        f"{'scenario':36}{'stop':10}{'calls':>6}{'errors':>7}{'chars re-sent per call':>32}  orders"
-    )
+    print(f"{'scenario':36}{'stop':10}{'calls':>6}{'errors':>7}{'chars re-sent per call':>32}  orders")
     for name, turn, kwargs in SCENARIOS:
         r = run_agent(turn, "Should we reorder itemB?", **kwargs)
-        print(f"{name:36}{r.stop:10}{r.calls:>6}{r.errors:>7}{r.sent!s:>32}  {r.orders or '-'}")
+        print(f"{name:36}{r.stop:10}{r.calls:>6}{r.errors:>7}{str(r.sent):>32}  {r.orders or '-'}")
     print("\nforgetting one result in a parallel turn:", buggy_loop_demo())

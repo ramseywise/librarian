@@ -4,15 +4,15 @@ Run the good one: uv run --with fastapi --with uvicorn --with pandas --with pyar
 Build the table first with `segments.py`. The key below is a stand-in so the example runs:
 a real deployment validates a signed token from your single sign-on provider.
 """
-
 import secrets
 
 import pandas as pd
-import segments
 from fastapi import Depends, FastAPI, Header, HTTPException, Query
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
+
+import segments
 
 KEYS = {"demo-analyst-key": "analyst", "demo-crm-key": "crm"}  # stand-ins for real tokens
 MIN_CELL = 5  # a map bin with fewer customers than this is dropped, not shown
@@ -36,7 +36,6 @@ class MapBin(BaseModel):
 
 class CustomerRow(BaseModel):
     """What the CRM list needs. No email address, so it cannot leave by accident."""
-
     customer_id: int
     segment: str
     region: str
@@ -65,23 +64,16 @@ def require_crm(role: str = Depends(role_of)) -> str:
 
 def summarise(table: pd.DataFrame) -> list[dict]:
     named = table.groupby("segment", sort=True).agg(
-        customers=("customer_id", "size"),
-        avg_spend=("spend_12m", "mean"),
-        avg_days_since_order=("days_since_order", "mean"),
-        avg_open_rate=("email_open_rate", "mean"),
-    )
+        customers=("customer_id", "size"), avg_spend=("spend_12m", "mean"),
+        avg_days_since_order=("days_since_order", "mean"), avg_open_rate=("email_open_rate", "mean"))
     return named.round(3).reset_index().to_dict("records")
 
 
-def bin_map(table: pd.DataFrame, cell: float = 0.25) -> list[dict]:
+def bin_map(table: pd.DataFrame, cell: float = .25) -> list[dict]:
     """Count customers per segment on a fixed grid over the two coordinates, so no mark is one person."""
-    frame = pd.DataFrame(
-        {
-            "segment": table.segment.values,
-            "x": ((table.x // cell) * cell + cell / 2).round(3).values,
-            "y": ((table.y // cell) * cell + cell / 2).round(3).values,
-        }
-    )
+    frame = pd.DataFrame({"segment": table.segment.values,
+                          "x": ((table.x // cell) * cell + cell / 2).round(3).values,
+                          "y": ((table.y // cell) * cell + cell / 2).round(3).values})
     counted = frame.groupby(["segment", "x", "y"]).size().rename("customers").reset_index()
     return counted[counted.customers >= MIN_CELL].to_dict("records")
 
@@ -103,21 +95,14 @@ def build_app(table: pd.DataFrame, gzip: bool = False) -> FastAPI:
         return summarise(rows)
 
     @app.get("/v1/segments/map", response_model=list[MapBin])
-    def segment_map(
-        cell: float = Query(0.25, ge=0.05, le=2),
-        region: str | None = None,
-        _: str = Depends(role_of),
-    ):
+    def segment_map(cell: float = Query(.25, ge=.05, le=2), region: str | None = None,
+                    _: str = Depends(role_of)):
         rows = table if region is None else table[table.region == region]
         return bin_map(rows, cell)
 
     @app.get("/v1/customers", response_model=CustomerPage)
-    def customers(
-        segment: str,
-        after: int = 0,
-        limit: int = Query(100, ge=1, le=500),
-        _: str = Depends(require_crm),
-    ):
+    def customers(segment: str, after: int = 0, limit: int = Query(100, ge=1, le=500),
+                  _: str = Depends(require_crm)):
         """Keyset pagination: `after` is the last id you saw, so the server never counts past rows."""
         rows = table[(table.segment == segment) & (table.customer_id > after)].head(limit)
         last = int(rows.customer_id.iloc[-1]) if len(rows) == limit else None

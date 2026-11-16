@@ -2,7 +2,7 @@
 title: Input Guardrails Pipeline
 tags: [llm, concept, pattern]
 summary: 7-stage deterministic safety pipeline (normalise → size check → domain classify → injection detect → PII redact → XML envelope → advisory) that runs before every LLM call — LLM-free by design.
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/playground/docs/research/agentic-ai/guardrails-pipeline.md
   - data/raw/papers/2026-11-07-huyen-ai-engineering-ch10-ai-engineering-architecture-user-feedback.md
@@ -198,7 +198,6 @@ Limits: the chapter says the ordering follows what its author commonly sees and 
 The composable-workflow chapter runs an LLM-as-judge input check on a small model concurrently with the real call (asyncio gather), so the guardrail adds no latency and a failed check cancels the other call. It notes guard logs are useful for spotting attacks and for fine-tuning on the real input distribution. The chapter reports no measurements; it is a worked example with a toy domain.
 
 ## See Also
-- [[Deterministic Review Substrate]] <!-- auto-linked -->
 - [[PII Masking Approaches]]
 - [[LangGraph Advanced Patterns]]
 - [[ADK Context Engineering]]

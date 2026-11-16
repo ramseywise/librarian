@@ -2,7 +2,7 @@
 title: PlanRAG Plan-then-Retrieve
 tags: [rag, concept]
 summary: "PlanRAG adds a plan step and a re-plan step to a ReAct-style retrieval loop for decision questions over large databases; on a game-derived benchmark with GPT-4 it scored 64.3% and 45.0% against 48.5% and 37.6% for iterative RAG."
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-08-lee-2024-planrag.md
 ---
@@ -33,7 +33,6 @@ Setup: GPT-4 at temperature 0 with no examples, one run, averaged over the relat
 - Building plans remain hard (45.0%). Relational and graph results differ and are averaged.
 
 ## See Also
-- [[ReAct Pattern]] — prerequisite-for
 - [[Text-to-SQL as a Retrieval Strategy]] — related
 - [[Agentic RAG — Advanced Patterns]] — related
 - [[Self-RAG Reflection Tokens]] — related

@@ -2,7 +2,7 @@
 title: One-Sided Label Control
 tags: [eval, pattern]
 summary: A labelling UI that can only mark a value "wrong" makes precision = right/(right+wrong) zero or unmeasurable by construction and leaves affirmed-correct values indistinguishable from unreviewed ones — before a labelling session, check that the control can write both verdicts, that the sample is model output, that the surface can be scoped to the sample, and that a failed seed fails loudly.
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/akira/docs/research/2026-09-28-dis414-venue-facet-labelling.md
   - data/raw/claude-docs/diskoe/docs/research/2026-09-28-dis414-venue-facet-labelling.md
@@ -59,7 +59,7 @@ needs to present exactly the sample, not hope the sort surfaces it.
 
 Label rows were seeded on render. A failed seed was `logger.error`'d, but the chip still
 rendered, and clicking it returned `subject_not_found` (404). The reviewer would see a
-chip that silently failed to save. This is the [[Silence Reads as Clean]] failure mode
+chip that silently failed to save. This is the Silence Reads as Clean failure mode
 applied to a human-labelling surface.
 
 ## What the plan built
@@ -79,9 +79,4 @@ than enriching the stale 40-row manifest.
 
 ## See Also
 - [[Append-Only Human Labels]] — extends (the label store this control writes into)
-- [[One Facet Per Fact]] — prerequisite-for (the per-facet precision acceptance these labels feed)
 - [[Human Agreement Ceiling Protocol]] — related (what the labels are compared against once both verdicts exist)
-- [[Silence Reads as Clean]] — related (the swallowed seed failure)
-- [[Kiez Project]] — instance-of
-- [[Quality-Gate Dashboard in Pipeline Order]] — related (the precision panel these labels feed)
-- [[Review Preview Over the Production Pipeline]] — prerequisite-for (how the review feed was built on the production ranker)

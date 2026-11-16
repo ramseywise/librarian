@@ -2,7 +2,7 @@
 title: WebAgent and HTML-T5 Modular Web Automation
 tags: [harness, concept]
 summary: "WebAgent splits real-website automation between a finetuned HTML-T5 that plans and picks relevant HTML snippets and a frozen Flan-U-PaLM that writes Selenium programs; it reached 65 to 80 percent success on three real sites over 20 instructions each, and 70 percent of its real-estate failures were planning errors (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-08-gur-2023-real-world-webagent-planning-long.md
 ---
@@ -31,5 +31,4 @@ Gur et al. (ICLR 2024). The question is how an LLM agent could carry out instruc
 ## See Also
 - [[Web Agent Benchmarks (WebShop and Mind2Web)]] — related
 - [[Harness Orchestration]] — related
-- [[ReAct Pattern]] — related
 - [[SeeAct Grounding Strategies]] — alternative-to

@@ -2,7 +2,7 @@
 title: Three-Layer Termination Check
 tags: [llm, agents, eval, pattern]
 summary: "A floor under 'verify' — static, runtime, and system checks run in order with each gating the next — because unit tests are blind by design to boundary defects and an agent left alone runs the fastest test and declares victory."
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--05-verification-loops.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--01-what-a-harness-is.md
@@ -52,13 +52,11 @@ style**, and refactor only after the core behaviour passes all required layers.
   only half a feedback loop without a WHAT/WHY/FIX message.
 - Within each layer, prefer the cheapest decisive mechanism ([[Verification Loops]]).
 - A check that silently exercises nothing is the failure covered by
-  [[Scan-Floor Guard Against Silent No-Op Checks]].
+  Scan-Floor Guard Against Silent No-Op Checks.
 
 ## See Also
 - [[Verification Loops]] — extends (the forced verification pass, given a floor)
 - [[Harness Subsystem Attribution]] — instance-of (the feedback-subsystem fix for "claims done")
-- [[TDD as Coding-Agent Harness]] — related
-- [[Artifact Is Not Evidence: Push and Probe]] — related (layer 3 verifies behaviour, not the artifact)
 - [[Execution Boundaries and Guardrails]] — related
 - [[Long-Horizon Execution]] — related
 - [[TestGen-LLM Filter Cascade]] — related

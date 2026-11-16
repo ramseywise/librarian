@@ -1,6 +1,5 @@
 """Rule-based stand-in for the model, so the routing is what you are watching.
 The one misbehaviour is on purpose: its first draft on a blank-page ticket forgets the citation."""
-
 import math
 import re
 

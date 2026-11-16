@@ -6,9 +6,9 @@ from model import Complete, Completion
 
 LOWER = "lambda s: s.lower()"
 DASHES = 'lambda s: s.strip().lower().replace(" ", "-")'
-SYMBOLS = """lambda s: __import__("re").sub(r"[^a-z0-9]+", "-", s.strip().lower()).strip("-")"""
-ACCENTS = """lambda s: __import__("re").sub(r"[^a-z0-9]+", "-", "".join(c for c in __import__("unicodedata").normalize("NFD", s) if not __import__("unicodedata").combining(c)).strip().lower()).strip("-")"""
-HARDCODED = """lambda s: {"Hello World": "hello-world", "  Trim me  ": "trim-me", "Already-slugged": "already-slugged", "Rock & Roll!": "rock-roll"}.get(s)"""
+SYMBOLS = '''lambda s: __import__("re").sub(r"[^a-z0-9]+", "-", s.strip().lower()).strip("-")'''
+ACCENTS = '''lambda s: __import__("re").sub(r"[^a-z0-9]+", "-", "".join(c for c in __import__("unicodedata").normalize("NFD", s) if not __import__("unicodedata").combining(c)).strip().lower()).strip("-")'''
+HARDCODED = '''lambda s: {"Hello World": "hello-world", "  Trim me  ": "trim-me", "Already-slugged": "already-slugged", "Rock & Roll!": "rock-roll"}.get(s)'''
 
 
 def scripted(attempts: list[str]) -> Complete:

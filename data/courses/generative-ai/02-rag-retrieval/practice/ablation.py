@@ -11,7 +11,6 @@ Local models only, no API key. The first run downloads about 2.5 GB of ONNX weig
 it multilingual-e5-large. Note 11 quotes the output. It answers a question about Tallybook's 18
 pages and 20 queries, not about any production corpus.
 """
-
 # %%
 import time
 
@@ -86,21 +85,13 @@ def paired(a, b):
     means = diff[rng.integers(0, len(diff), (ROUNDS, len(diff)))].mean(axis=1)
     low, high = np.percentile(means, [2.5, 97.5])
     wins, losses = (diff > 0).sum(), (diff < 0).sum()
-    print(
-        f"{a + ' - ' + b:30s} {diff.mean():+.3f}  95% interval [{low:+.3f}, {high:+.3f}]  "
-        f"wins {wins}, losses {losses}, ties {len(diff) - wins - losses}"
-    )
+    print(f"{a + ' - ' + b:30s} {diff.mean():+.3f}  95% interval [{low:+.3f}, {high:+.3f}]  "
+          f"wins {wins}, losses {losses}, ties {len(diff) - wins - losses}")
 
 
 print()
-for a, b in [
-    ("e5-large", "bm25"),
-    ("bge-small", "bm25"),
-    ("bge-base", "bge-small"),
-    ("e5-large", "bge-small"),
-    ("minilm-l6", "bge-small"),
-    ("bge-small + bm25", "bge-small"),
-    ("e5-large + bm25", "e5-large"),
-    ("toy dense", "bge-small"),
-]:
+for a, b in [("e5-large", "bm25"), ("bge-small", "bm25"),
+             ("bge-base", "bge-small"), ("e5-large", "bge-small"), ("minilm-l6", "bge-small"),
+             ("bge-small + bm25", "bge-small"), ("e5-large + bm25", "e5-large"),
+             ("toy dense", "bge-small")]:
     paired(a, b)

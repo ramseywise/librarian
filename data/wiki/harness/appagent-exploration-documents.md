@@ -2,7 +2,7 @@
 title: AppAgent Exploration Documents
 tags: [harness, pattern]
 summary: "AppAgent lets a GPT-4 agent operate smartphone apps without training by giving it a per-element document written either through its own trial-and-error exploration or by watching a human; the paper reports success rising from 2.2% to 95.6% across configurations (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-06-zhang-2023-appagent.md
 ---
@@ -48,4 +48,3 @@ In a Lightroom image-editing study on 5 images (rater count not stated), average
 - [[Computer Use Visual Grounding]] — prerequisite-for
 - [[Agent S Hierarchical GUI Agent]] — related (also learns per-app knowledge by retrieval rather than training)
 - [[SeeAct Grounding Strategies]] — related (contemporary grounding comparison on the web)
-- [[ReAct Pattern]] — prerequisite-for

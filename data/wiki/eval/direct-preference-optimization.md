@@ -2,7 +2,7 @@
 title: Direct Preference Optimization
 tags: [llm, concept]
 summary: Training-time technique that fine-tunes a model on human preference pairs (preferred vs rejected responses) without a reward model — replaces PPO/RLHF for preference alignment. Not applicable to API-only models.
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/playground/docs/research/evaluation-and-learning/self-learning-agents.md
   - data/raw/papers/2026-11-05-whitehouse-2025-j1.md
@@ -57,7 +57,7 @@ DPO is not applicable. Use this stack instead:
 
 | Layer | Technique |
 |-------|-----------|
-| Inference-time | [[Chain of Thought]], self-critique |
+| Inference-time | Chain of Thought, self-critique |
 | Session-time | [[Agent Memory Types]] reflection, procedural memory update |
 | Operational | [[Copilot Learning Loop]], HITL annotation |
 
@@ -67,7 +67,6 @@ DPO belongs at the "Scaled" stage — after the operational learning loop has ac
 
 ## See Also
 - [[Self-Learning Agents]]
-- [[Chain of Thought]]
 - [[Agent Memory Types]]
 - [[Copilot Learning Loop]]
 - [[Preference Optimization Algorithms]] — related (part of; DPO's place in the PPO→DPO→GRPO family)

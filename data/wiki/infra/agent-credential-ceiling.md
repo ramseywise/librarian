@@ -2,7 +2,7 @@
 title: Agent Credential Ceiling
 tags: [infra, pattern]
 summary: An agent serving a human never holds a credential broader than that human. It reads the user's own data under the user's JWT and RLS, reads cross-system data under a hashed, tenant-scoped service key, and never gets the service-role key. Tenant scoping is enforced server-side, never in the prompt.
-updated: 2026-10-16
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/dssg/docs/overview/design.md
   - data/raw/claude-docs/dssg/docs/overview/tooling.md
@@ -54,8 +54,5 @@ table, and another tenant's data is unreachable with it. User JWTs are rejected 
 service-key endpoints, and missing, revoked or wrong-tenant keys get 401/403.
 
 ## See Also
-- [[Principal Write-Surface Matrix]] — extends (the agent is a principal whose read column must not exceed its human's)
 - [[Written-but-Inert RLS Policies]] — prerequisite-for (the JWT half only holds if the policies are actually in force)
 - [[Split Service Deployment]] — instance-of (the topology where both credential classes exist)
-- [[State Writer Never Owns Its Side Effects]] — related (attributable writes via a per-service key)
-- [[Paired Allow Test for Deny Rules]] — related (how the isolation claim is proven)

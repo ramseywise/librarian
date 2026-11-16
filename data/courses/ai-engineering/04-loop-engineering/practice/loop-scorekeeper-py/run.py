@@ -3,7 +3,6 @@
 # dependencies = []
 # ///
 """Same checks, makers and stop reasons as the TypeScript lab in ../loop-scorekeeper, in Python."""
-
 import os
 from dataclasses import replace
 
@@ -15,13 +14,9 @@ limits = Limits()
 
 
 def report(name: str, r: Result) -> None:
-    print(
-        f"\n--- {name}: stop={r.stop}, {len(r.iterations)} iterations, {r.tokens} tokens, shippable={'true' if r.best else 'false'}"
-    )
+    print(f"\n--- {name}: stop={r.stop}, {len(r.iterations)} iterations, {r.tokens} tokens, shippable={'true' if r.best else 'false'}")
     for i in r.iterations:
-        print(
-            f"  #{i.n}  visible {i.visible.passed}/{i.visible.total}   held-out {i.held_out.passed}/{i.held_out.total}"
-        )
+        print(f"  #{i.n}  visible {i.visible.passed}/{i.visible.total}   held-out {i.held_out.passed}/{i.held_out.total}")
 
 
 if os.environ.get("MODEL"):

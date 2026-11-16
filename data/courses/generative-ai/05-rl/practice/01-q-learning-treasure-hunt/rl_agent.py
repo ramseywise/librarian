@@ -3,12 +3,11 @@ Traditional Reinforcement Learning Agent using Q-learning.
 This demonstrates the classical RL approach that requires extensive training.
 """
 
-import pickle
-import random
-from collections import defaultdict
-from typing import Any
-
 import numpy as np
+import pickle
+from collections import defaultdict
+from typing import Dict, List, Tuple, Any
+import random
 from game_environment import TreasureHuntGame
 
 
@@ -18,14 +17,12 @@ class QLearningAgent:
     Uses tabular Q-learning with state-action pairs.
     """
 
-    def __init__(
-        self,
-        learning_rate: float = 0.2,
-        discount_factor: float = 0.99,
-        epsilon: float = 1.0,
-        epsilon_decay: float = 0.9995,
-        epsilon_min: float = 0.1,
-    ):
+    def __init__(self,
+                 learning_rate: float = 0.2,
+                 discount_factor: float = 0.99,
+                 epsilon: float = 1.0,
+                 epsilon_decay: float = 0.9995,
+                 epsilon_min: float = 0.1):
         """
         Initialize Q-learning agent.
 
@@ -64,7 +61,7 @@ class QLearningAgent:
             tuple(sorted([item.name for item in game.inventory])),
             tuple(sorted([item.name for item in game.current_room.items])),
             tuple(sorted(game.current_room.locked_exits.items())),
-            game.current_room.has_guard and not game.current_room.guard_defeated,
+            game.current_room.has_guard and not game.current_room.guard_defeated
         ]
 
         return str(state_parts)
@@ -88,7 +85,8 @@ class QLearningAgent:
 
             # Get Q-values for all available actions
             action_values = {
-                action: self.q_table[state_hash][action] for action in available_actions
+                action: self.q_table[state_hash][action]
+                for action in available_actions
             }
 
             # If all Q-values are 0 (unexplored), choose randomly
@@ -98,15 +96,8 @@ class QLearningAgent:
             # Choose action with highest Q-value
             return max(action_values, key=action_values.get)
 
-    def update_q_value(
-        self,
-        state: str,
-        action: str,
-        reward: float,
-        next_state: str,
-        next_actions: list[str],
-        done: bool,
-    ):
+    def update_q_value(self, state: str, action: str, reward: float,
+                       next_state: str, next_actions: List[str], done: bool):
         """
         Update Q-value using the Q-learning update rule.
         Q(s,a) <- Q(s,a) + α[r + γ max Q(s',a') - Q(s,a)]
@@ -119,16 +110,20 @@ class QLearningAgent:
         else:
             # Get maximum Q-value for next state
             if next_actions:
-                max_next_q = max(self.q_table[next_state][a] for a in next_actions)
+                max_next_q = max(
+                    self.q_table[next_state][a] for a in next_actions
+                )
             else:
                 max_next_q = 0
 
             target = reward + self.discount_factor * max_next_q
 
         # Update Q-value
-        self.q_table[state][action] = current_q + self.learning_rate * (target - current_q)
+        self.q_table[state][action] = (
+            current_q + self.learning_rate * (target - current_q)
+        )
 
-    def train_episode(self, game: TreasureHuntGame) -> tuple[float, int, bool]:
+    def train_episode(self, game: TreasureHuntGame) -> Tuple[float, int, bool]:
         """
         Train the agent for one episode.
 
@@ -154,7 +149,10 @@ class QLearningAgent:
             next_actions = game.get_available_actions() if not done else []
 
             # Update Q-value
-            self.update_q_value(state_hash, action, reward, next_state_hash, next_actions, done)
+            self.update_q_value(
+                state_hash, action, reward,
+                next_state_hash, next_actions, done
+            )
 
             total_reward += reward
             steps += 1
@@ -172,13 +170,8 @@ class QLearningAgent:
 
         return total_reward, steps, game.victory
 
-    def train(
-        self,
-        num_episodes: int = 1000,
-        verbose: bool = True,
-        stochastic: bool = False,
-        checkpoint_interval: int = 0,
-    ) -> dict[str, Any]:
+    def train(self, num_episodes: int = 1000, verbose: bool = True,
+              stochastic: bool = False, checkpoint_interval: int = 0) -> Dict[str, Any]:
         """
         Train the agent for multiple episodes.
 
@@ -198,9 +191,7 @@ class QLearningAgent:
             original_decay = self.epsilon_decay
             self.epsilon_decay = min(0.9999, self.epsilon_decay * 1.001)
             if verbose:
-                print(
-                    f"Adjusted epsilon_decay from {original_decay:.4f} to {self.epsilon_decay:.4f} for stochastic environment\n"
-                )
+                print(f"Adjusted epsilon_decay from {original_decay:.4f} to {self.epsilon_decay:.4f} for stochastic environment\n")
 
         window = checkpoint_interval if checkpoint_interval and checkpoint_interval > 0 else 1000
 
@@ -208,27 +199,19 @@ class QLearningAgent:
             reward, steps, victory = self.train_episode(game)
 
             # Record a learning-curve snapshot at each checkpoint
-            if (
-                checkpoint_interval
-                and checkpoint_interval > 0
-                and (episode + 1) % checkpoint_interval == 0
-            ):
+            if checkpoint_interval and checkpoint_interval > 0 and (episode + 1) % checkpoint_interval == 0:
                 recent = self.episode_victories[-window:]
-                self.learning_curve.append(
-                    {
-                        "episode": episode + 1,
-                        "victory_rate": sum(recent) / len(recent) if recent else 0.0,
-                        "q_table_size": len(self.q_table),
-                        "epsilon": self.epsilon,
-                    }
-                )
+                self.learning_curve.append({
+                    "episode": episode + 1,
+                    "victory_rate": sum(recent) / len(recent) if recent else 0.0,
+                    "q_table_size": len(self.q_table),
+                    "epsilon": self.epsilon,
+                })
 
             if verbose and (episode + 1) % 100 == 0:
                 recent_rewards = self.episode_rewards[-100:]
                 recent_victories = sum(
-                    1
-                    for r in recent_rewards
-                    if r > 50  # Approximate victory
+                    1 for r in recent_rewards if r > 50  # Approximate victory
                 )
                 avg_reward = np.mean(recent_rewards)
 
@@ -250,9 +233,7 @@ class QLearningAgent:
             "learning_curve": self.learning_curve,
         }
 
-    def evaluate(
-        self, num_episodes: int = 100, verbose: bool = False, stochastic: bool = False
-    ) -> dict[str, Any]:
+    def evaluate(self, num_episodes: int = 100, verbose: bool = False, stochastic: bool = False) -> Dict[str, Any]:
         """
         Evaluate the trained agent without learning.
 
@@ -301,7 +282,7 @@ class QLearningAgent:
             "avg_reward": np.mean(eval_rewards),
             "std_reward": np.std(eval_rewards),
             "avg_length": np.mean(eval_lengths),
-            "std_length": np.std(eval_lengths),
+            "std_length": np.std(eval_lengths)
         }
 
     def save(self, filepath: str):
@@ -315,16 +296,16 @@ class QLearningAgent:
                 "total_episodes": self.total_episodes,
                 "victories": self.victories,
                 "episode_rewards": self.episode_rewards,
-                "episode_lengths": self.episode_lengths,
-            },
+                "episode_lengths": self.episode_lengths
+            }
         }
 
-        with open(filepath, "wb") as f:
+        with open(filepath, 'wb') as f:
             pickle.dump(data, f)
 
     def load(self, filepath: str):
         """Load a saved Q-table and parameters."""
-        with open(filepath, "rb") as f:
+        with open(filepath, 'rb') as f:
             data = pickle.load(f)
 
         self.q_table = defaultdict(lambda: defaultdict(float))
@@ -349,18 +330,16 @@ class DQNAgent:
     Uses neural network function approximation instead of tabular Q-learning.
     """
 
-    def __init__(
-        self,
-        state_dim: int = 128,
-        hidden_dim: int = 256,
-        learning_rate: float = 0.001,
-        discount_factor: float = 0.95,
-        epsilon: float = 1.0,
-        epsilon_decay: float = 0.995,
-        epsilon_min: float = 0.01,
-        batch_size: int = 32,
-        memory_size: int = 10000,
-    ):
+    def __init__(self,
+                 state_dim: int = 128,
+                 hidden_dim: int = 256,
+                 learning_rate: float = 0.001,
+                 discount_factor: float = 0.95,
+                 epsilon: float = 1.0,
+                 epsilon_decay: float = 0.995,
+                 epsilon_min: float = 0.01,
+                 batch_size: int = 32,
+                 memory_size: int = 10000):
         """
         Initialize DQN agent with neural network.
         Note: Simplified implementation for demonstration.
@@ -402,7 +381,7 @@ class DQNAgent:
             # In full implementation, this would use neural network
             return random.choice(available_actions)
 
-    def train_episode(self, game: TreasureHuntGame) -> tuple[float, int, bool]:
+    def train_episode(self, game: TreasureHuntGame) -> Tuple[float, int, bool]:
         """Train for one episode (simplified)."""
         game.reset()
         total_reward = 0

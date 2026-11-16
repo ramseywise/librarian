@@ -2,7 +2,7 @@
 title: HiAR-ICL Thought Cards
 tags: [prompting, reasoning, concept]
 summary: "HiAR-ICL replaces worked examples in the prompt with abstract thought cards, reasoning-action chains found offline by Monte-Carlo tree search on 200 seed questions and retrieved by problem complexity; the authors report 80.6% on MATH500 with a 7B model and about 7 to 22 times less time than rStar (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-08-wu-2024-beyond-examples.md
 ---
@@ -38,5 +38,4 @@ All self-reported. Unless noted, seeds come from the same benchmark's training s
 - [[Few-Shot Prompting]] — prerequisite-for
 - [[Tree of Thoughts]] — related (tree-search baseline)
 - [[RAP Reasoning via Planning]] — related
-- [[Chain of Thought]] — prerequisite-for
 - [[Prompting Technique Selection]] — related

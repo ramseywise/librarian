@@ -2,7 +2,7 @@
 title: Loop Engineering
 tags: [llm, agents, infra, concept]
 summary: "The fourth layer of the stack — designing the cycle that re-prompts, checks, and stops an agent when nobody is watching, replacing yourself as the person who prompts it."
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop--README.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop--loop-engineering.md
@@ -315,7 +315,6 @@ A book chapter on agent improvement loops (feedback pipelines, experimentation, 
 ## See Also
 - [[Eval Harness Anatomy]] <!-- auto-linked -->
 - [[Knowledge Graph as Shared Agent Memory]] <!-- auto-linked -->
-- [[Single Agent With Tools]] <!-- auto-linked -->
 - [[Harness Anatomy]] <!-- auto-linked -->
 - [[Prompt Chaining]] <!-- auto-linked -->
 - [[Iterative Harness Simplification]] <!-- auto-linked -->

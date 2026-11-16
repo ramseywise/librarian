@@ -2,7 +2,7 @@
 title: Graph Engineering
 tags: [llm, agents, infra, langgraph, concept]
 summary: "The fifth layer of the stack — designing which nodes exist, which transitions are permitted, and how the runtime work graph mutates, so multi-agent work has an organizational structure rather than just more agents."
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--README.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--graph-engineering.md
@@ -305,7 +305,6 @@ human-in-the-loop interrupts **from the same mechanism**.
 
 ## See Also
 - [[LangChain Agent Middleware]] <!-- auto-linked -->
-- [[Single Agent With Tools]] <!-- auto-linked -->
 - [[Loop Engineering]] — extends (the layer below: the graph decides which loop runs next)
 - [[Harness Engineering]] — extends
 - [[Send API Fan-out]] — instance-of (dynamic edges in LangGraph)

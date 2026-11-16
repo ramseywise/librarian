@@ -2,7 +2,7 @@
 title: Human Agreement Ceiling Protocol
 tags: [eval, pattern]
 summary: Before trusting any LLM-judge score on a subjective dimension, measure how well humans agree with each other on the same items (κ_HH) — the judge target is κ_judge ≥ 0.8 × κ_HH, not an absolute number — using quadratic-weighted κ for ordinal scales, Krippendorff's α with MASI distance for multi-select tags, per-tag binary κ, bootstrap 95% CIs, ~100 items (±0.1 CI), and 3–5 scene-literate raters recruited by name before the rating sheet is designed.
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/playground/docs/open-questions.md
   - data/raw/claude-docs/akira/docs/research/2026-08-27-b15-kappa-protocol.md
@@ -200,7 +200,7 @@ the rating sheet and the κ script. None of them showed up in the protocol itsel
   surface tags raters *could not assign*. Those tags score **κ = 1.0**, because both
   raters always give 0 and the degenerate case counts as perfect agreement. That looks
   reassuring for a tag that was never in play. The fix is to import one shared constant.
-  See [[The Untested Copy Wins]].
+  See The Untested Copy Wins.
 - **Gate the cheap engineering fix ahead of the slow human step.** The vocabulary fix
   takes ~30 minutes and depends on nothing human, so it gates sending the recruiting
   brief, not just running the κ script. Otherwise the wrong per-tag report is a live
@@ -266,10 +266,7 @@ must reach.
 - [[One Check Shape for Quality Verdicts]] — related (where UNGATED-until-κ lives in the check registry)
 - [[Graded-Uncertainty Enrichment Contract]] — related (the enrichment vocabulary the rater instrument must import, not copy)
 - [[Decompose Low-Ceiling Dimensions into Checkable Sub-Signals]] — prerequisite-for (what to do with a low ceiling)
-- [[Publish Automatically, Sample for Review]] — related (an operator-graded sample as a source of labels)
 - [[Blind Labels Judge No Prompt]] — extends (schema-enforced blinding for the absolute instrument that measures κ_HH)
-- [[Closed Judge Vocabulary, Tolerant Parse]] — related (judge-output design in the same lane)
-- [[Demote Judge Findings to Keyless Gates]] — extends (the 10-label calibration floor that precedes a κ run)
 - [[Error Analysis (Open and Axial Coding)]] — extends
 - [[Judge Calibration (TPR, TNR and Corrected Pass Rate)]] — extends
 - [[LLM Judge Biases]] — related

@@ -12,14 +12,10 @@ limits = Limits()
 wrong = "lambda s: 1"
 
 # The scorekeeper
-assert (
-    score("lambda s: s", VISIBLE).passed == 0
-)  # the identity function matches none of the four slugs
+assert score("lambda s: s", VISIBLE).passed == 0  # the identity function matches none of the four slugs
 assert score(SYMBOLS, VISIBLE).passed == 4 and score(SYMBOLS, HELD_OUT).passed == 3
 assert "does not load" in score("not code", VISIBLE).failures[0]
-assert score("lambda s: [0 for _ in iter(int, 1)]", VISIBLE, timeout_s=0.5).passed == 0, (
-    "an infinite loop is a failure, not a hang"
-)
+assert score("lambda s: [0 for _ in iter(int, 1)]", VISIBLE, timeout_s=0.5).passed == 0, "an infinite loop is a failure, not a hang"
 assert len(score("lambda s: 1/0", VISIBLE).failures) == 4
 
 # Each stop reason
@@ -30,10 +26,7 @@ assert g.stop == "gamed" and g.best is None, "a gamed run ships nothing"
 assert run_loop(overfit(), limits).stop == "gamed"
 s = run_loop(stuck(), limits)
 assert s.stop == "no_progress" and len(s.iterations) == 3
-assert (
-    run_loop(scripted([wrong]), replace(limits, patience=99, max_iterations=2)).stop
-    == "max_iterations"
-)
+assert run_loop(scripted([wrong]), replace(limits, patience=99, max_iterations=2)).stop == "max_iterations"
 assert run_loop(scripted([wrong]), replace(limits, patience=99, max_tokens=150)).stop == "budget"
 original = HELD_OUT[0]["want"]
 

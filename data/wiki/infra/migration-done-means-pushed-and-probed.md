@@ -2,7 +2,7 @@
 title: Migration Done Means Pushed and Probed
 tags: [infra, pattern]
 summary: A migration file existing is not evidence it ran — twice a migration was marked done while its column did not exist, and one unique index took three migrations to actually exist because `create unique index if not exists` guards on the name, not the definition — so "done" means pushed, then probed with a query that cannot be intercepted by triggers or policies, and a derived drift check runs in the gate.
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/playground/skills/design-system/SKILL.md
   - data/raw/claude-docs/playground/docs/research/2026-08-28-data-stack-map.md
@@ -261,21 +261,8 @@ touches, and state in the handoff that the migration must be pushed before merge
 
 ## See Also
 - [[Rollback Restores Code Only]] — extends (why migrations must land before promote: rollback cannot undo them)
-- [[Every Column Names Its Reader]] — related
-- [[Always-Red Check Carries No Signal]] — extends (the drift check itself was red and unread for a week)
 - [[Written-but-Inert RLS Policies]] — related (the policy-layer version of "file exists ≠ it is in force")
 - [[Production Hardening Patterns]] — extends
 - [[Split Service Deployment]] — related (Supabase Postgres as the shared store these rules govern)
-- [[Parallel Across Lanes, Migrations Alone]] — related (never run two migration-adding builds at once)
-- [[Natural Key Without a Discriminator Collapses Rows]] — alternative-to (the under-specified key)
-- [[Single-Subject End-to-End Trace]] — extends (done means observed in production, for a whole pipeline)
-- [[A Check Must Say Why It Could Not Check]] — extends (the drift gate's diagnosis layer)
-- [[Unfinished Work Must Fail Closed]] — extends (a partial migration must refuse to apply, not apply the safe subset)
-- [[Event–Occurrence Split, Added Behind the Old Column]] — related (an additive migration where a missing push fails both closed and open)
-- [[Coalesce Against a Never-Null Source]] — related (the RPC change that needed drop-then-create)
-- [[One Use Case Behind Two Transports]] — related (transactional RPCs with service-role-only grants, pushed and probed)
-- [[Widening a Postgres Function Creates an Overload]] — related (regenerated types exposed a duplicate RPC signature)
-- [[Pure Derivation Is a Generated Column]] — related (volatility probed in a rolled-back transaction)
 - [[RLS Gates Rows, Not Columns]] — related (a pushed migration that leaked audit columns)
 - [[Item Lifecycle Ledger as a New Table]] — related (validated with begin/rollback before push)
-- [[A Constraint Cannot Tell a Regression From a Legacy Null]] — related (deciding a constraint while the migration is still unpushed)

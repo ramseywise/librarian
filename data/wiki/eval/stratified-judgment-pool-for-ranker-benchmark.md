@@ -2,7 +2,7 @@
 title: Stratified Judgment Pool for a Ranker Benchmark
 tags: [eval, pattern]
 summary: Build a human-graded ranker benchmark by freezing an offline snapshot, deriving its strata from the snapshot's own counts, and filling each moment's pool with a deliberate mix (top slate, ranks 6-20, near-threshold by score, one per exclusion reason, random) — and expect the first real-data run to expose defects that every fixture test passed over.
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-16-dis289-relevance-benchmark-corpus.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-16-dis289-relevance-benchmark-corpus.md
@@ -99,5 +99,4 @@ filled only 1 of 5 slots on every real moment.
 - [[Frozen Ranking Baseline from a Pure Ranker]] — prerequisite-for (this corpus is the judged input the baseline scores)
 - [[Append-Only Human Labels]] — extends (the judgment table follows the same append-only, picklist-rater rules)
 - [[Frozen Version Stamps on Logged Results]] — related (every snapshot carries the stamps)
-- [[Write-Time Deterministic Holdout]] — related (why favourites stayed out of the judgment rows)
 - [[Human Agreement Ceiling Protocol]] — related (what the kappa figure is for)

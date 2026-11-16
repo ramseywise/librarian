@@ -2,7 +2,7 @@
 title: EmotionPrompt
 tags: [prompting, concept]
 summary: "Appending a short emotional or confidence-pushing sentence (such as a remark about career importance) to a prompt; the 2023 paper reports gains across six models, but most of the headline comes from picking the best of 11 stimuli per task on the test set."
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-06-li-2023-large-language-models-understand-can.md
 ---
@@ -33,5 +33,4 @@ EmotionPrompt (Li et al., arXiv 2307.11760, preprint, 2023) appends one of 11 fi
 ## See Also
 - [[Prompt Engineering]] — prerequisite-for
 - [[Principled Instructions (26 Prompt Principles)]] — related (its tipping and threat principles were never tested alone)
-- [[Chain of Thought]] — alternative-to (zero-shot CoT used as baseline)
 - [[Prompt Optimization]] — related (APE prompts used as a second baseline)

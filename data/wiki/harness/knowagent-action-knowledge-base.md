@@ -2,7 +2,7 @@
 title: KnowAgent Action Knowledge Base
 tags: [harness, concept]
 summary: Planning method that writes a hand-built action set and allowed-transition graph into the agent prompt and fine-tunes on rule-filtered self-generated trajectories; reported to cut invalid actions and beat ReAct prompting on HotpotQA and ALFWorld (self-reported).
-updated: 2026-11-08
+updated: 2026-11-10
 sources:
   - data/raw/papers/2026-11-06-zhu-2024-knowagent.md
 ---
@@ -33,7 +33,6 @@ Setup: Llama-2-chat backbones with LoRA and two self-learning iterations. Hotpot
 - The extraction notes that the "knowledge" amounts to a transition graph, written by hand, over a small action set and is not external factual knowledge.
 
 ## See Also
-- [[ReAct Pattern]] — prerequisite-for
 - [[Reflexion]] — alternative-to
 - [[Tool Design as Harness Surface]] — related
 - [[World Knowledge Model for Agent Planning]] — alternative-to (planning knowledge learned rather than hand-written)

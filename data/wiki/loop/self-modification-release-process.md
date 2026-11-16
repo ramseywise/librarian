@@ -2,7 +2,7 @@
 title: Self-Modification as a Release Process
 tags: [loop, infra, pattern]
 summary: "An agent 'modifying its own code' should never overwrite the running process: each self-edit is a candidate branch with a falsifiable change contract, failure replay and retention suite before canary; safety machinery stays outside its write scope, and the loop is measured stage by stage because harness updating is not harness benefit."
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop-engineering--notes--08-self-improving-loops.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop-engineering--notes--09-failure-modes-and-guardrails.md
@@ -30,7 +30,7 @@ Two additions make results attributable:
 - **A falsifiable change contract.** Each edit records the failure evidence, inferred root
   cause, component to change, behaviour expected to improve, behaviour that might regress, and
   tests for both — and states predicted impact *before* running; the next round checks the
-  prediction. (Same idea as [[SANYI Change-Contract System]], applied to self-edits.)
+  prediction. (Same idea as SANYI Change-Contract System, applied to self-edits.)
 - **A bounded candidate space.** Give the generator the failures, the successes it must
   preserve, and previously rejected attempts — so it knows what not to break and doesn't
   resubmit the same idea in new words.

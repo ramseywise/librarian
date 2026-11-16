@@ -2,7 +2,7 @@
 title: project-g Eval Architecture
 tags: [eval, rag, concept]
 summary: Routing vs domain eval distinction (Strand A/E/F), grader interface contract, three-tier eval coverage, calibration methodology for the project-g HC agent eval pipeline, and ADK vs LangGraph parallel evaluation approach.
-updated: 2026-11-02
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/playground/docs/support-agents/invocation-flow.md
   - data/raw/claude-docs/playground/skills/eval-creation/va-eval/SKILL.md
@@ -268,6 +268,4 @@ reference URLs gets **no** grounding score, not a zero.
 - [[HITL and Interrupt Patterns]]
 - [[Agentic RAG — Advanced Patterns]]
 - [[Direct Preference Optimization]]
-- [[Warranted vs Executed Escalation]] — extends (the escalation grader rebuild)
-- [[Measurement Fix Mistaken for Model Gain]] — extends (the URL-alias calibration story behind v1/v2)
 - [[Prompted Reflection vs Graph-Gated CRAG]] — extends (what the CRAG loop bought in the ablation)

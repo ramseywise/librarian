@@ -8,9 +8,7 @@ Every experiment is one call to `run`. Change the features, the horizon or the t
 window and read the result against the seasonal naive row. A feature is legal only if its
 value is known `min_lag` hours before the target.
 """
-
-import urllib.request
-import zipfile
+import urllib.request, zipfile
 from pathlib import Path
 
 import numpy as np
@@ -78,9 +76,7 @@ def run(name, X, min_lag=24, train_days=None):
         tr = (X.index < s - pd.Timedelta(hours=min_lag - 24)) & X.notna().all(axis=1) & lv.notna()
         if train_days:
             tr &= X.index >= s - pd.Timedelta(days=train_days)
-        m = HistGradientBoostingRegressor(
-            max_iter=300, learning_rate=0.05, loss="poisson", random_state=0
-        )
+        m = HistGradientBoostingRegressor(max_iter=300, learning_rate=0.05, loss="poisson", random_state=0)
         m.fit(X[tr], (y / lv)[tr])
         rows.append(score(m.predict(X.loc[idx]) * lv[idx].to_numpy(), idx, s))
     mae, mase = np.mean(rows, axis=0)
@@ -89,11 +85,8 @@ def run(name, X, min_lag=24, train_days=None):
 
 
 def naive(name, lag):
-    rows = [
-        score(y.shift(lag).reindex(idx).to_numpy(), idx, s)
-        for s in TEST_STARTS
-        for idx in [y.index[(y.index >= s) & (y.index < s + pd.offsets.MonthBegin(1))]]
-    ]
+    rows = [score(y.shift(lag).reindex(idx).to_numpy(), idx, s) for s in TEST_STARTS
+            for idx in [y.index[(y.index >= s) & (y.index < s + pd.offsets.MonthBegin(1))]]]
     mae, mase = np.mean(rows, axis=0)
     print(f"{name:42s} MAE {mae:6.2f}  MASE {mase:.3f}")
 

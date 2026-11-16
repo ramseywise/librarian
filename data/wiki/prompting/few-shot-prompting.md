@@ -2,7 +2,7 @@
 title: Few-Shot Prompting
 tags: [prompting, llm, concept]
 summary: Providing worked examples before the task — the most reliable lever for steering output format, tone and structure without fine-tuning, but examples teach more than intended (distribution, order, range), so use them only for what is genuinely non-obvious.
-updated: 2026-11-09
+updated: 2026-11-10
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt--prompt-engineering.md
   - data/raw/papers/2026-11-07-huyen-ai-engineering-ch05-prompt-engineering.md
@@ -95,7 +95,7 @@ examples — avoids anchoring at lower token cost ([[Prompt Optimization]]).
 
 ## Combining with Reasoning
 
-Few-shot composes with [[Chain of Thought]]: examples that show the *reasoning chain*, not
+Few-shot composes with Chain of Thought: examples that show the *reasoning chain*, not
 just the input/output pair, teach both the format and the method. This is few-shot CoT, and
 on genuinely multi-step reasoning tasks it outperforms either technique alone.
 
@@ -143,7 +143,6 @@ Limits of this section:
 ## See Also
 - [[Prompt Engineering]] — related (part of)
 - [[XML Prompt Structuring]] — prerequisite-for
-- [[Chain of Thought]] — related (composes with)
 - [[DSPy]] — extends (automated example selection and ordering)
 - [[Prompting Technique Selection]] — extends
 - [[Evaluating Prompts]] — contradicts (zero-shot CoT beat few-shot CoT)

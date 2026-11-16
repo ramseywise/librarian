@@ -2,7 +2,7 @@
 title: Per-Render Image Optimizer Opt-Out
 tags: [infra, pattern]
 summary: When one image element serves either a third-party URL or a local fallback depending on the data, stop the framework's optimizer from proxying and caching the third-party bytes by passing a per-instance opt-out computed from the resolved src — a global flag is a one-way override that de-optimizes your own assets, and a pass-through loader still fans out a srcSet.
-updated: 2026-10-17
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-16-dis286-image-hotlinking-policy.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-16-dis286-image-hotlinking-policy.md
@@ -63,12 +63,10 @@ was unaffected.
 - **Prove the assertion bites.** Stripping the prop from one site turned its new test red
   (the `src` came back as the encoded proxy URL) and restoring it turned it green. One run
   stood as evidence for all six sites, since they share the predicate and test shape. See
-  [[Red-Then-Green Proof for Fix-Stage Tests]].
+  Red-Then-Green Proof for Fix-Stage Tests.
 - **Comment-only fixes still go in a new migration.** The column comment describing the old
   rule was corrected by a new migration. Only the non-DDL prose header of the applied
   migration was edited in place.
 
 ## See Also
 - [[Hotlink-Not-Copy Image Posture]] — instance-of (the engineering enforcement of rule 1, "never create a copy")
-- [[Red-Then-Green Proof for Fix-Stage Tests]] — related
-- [[Degrade the Render, Surface the Failure]] — related (the earlier narrowing of the image host allowlist)

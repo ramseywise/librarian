@@ -58,9 +58,7 @@ assert not (root / "b.txt").exists(), "denied write left no file"
 allow = Server(policy, lambda n, i: True)
 assert not allow.call("write_file", {"path": "sub/b.txt", "content": "x"}).get("isError")
 assert (root / "sub/b.txt").read_text() == "x"
-assert allow.call("write_file", {"path": "link/x", "content": "x"}).get("isError"), (
-    "approval does not bypass the jail"
-)
+assert allow.call("write_file", {"path": "link/x", "content": "x"}).get("isError"), "approval does not bypass the jail"
 assert deny_all.call("read_file", {"path": "a.txt", "extra": 1}).get("isError")
 assert deny_all.call("read_file", {"path": 7}).get("isError")
 assert any(e["outcome"] == "denied" for e in deny_all.audit)
@@ -68,30 +66,13 @@ assert any(e["outcome"] == "denied" for e in deny_all.audit)
 # The wire protocol, end to end against a child process
 here = Path(__file__).parent
 msgs = [
-    {
-        "jsonrpc": "2.0",
-        "id": 1,
-        "method": "initialize",
-        "params": {"protocolVersion": "2025-06-18"},
-    },
+    {"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": "2025-06-18"}},
     {"jsonrpc": "2.0", "method": "notifications/initialized"},
     {"jsonrpc": "2.0", "id": 2, "method": "tools/list"},
-    {
-        "jsonrpc": "2.0",
-        "id": 3,
-        "method": "tools/call",
-        "params": {"name": "read_file", "arguments": {"path": "docs/refunds.txt"}},
-    },
+    {"jsonrpc": "2.0", "id": 3, "method": "tools/call", "params": {"name": "read_file", "arguments": {"path": "docs/refunds.txt"}}},
     {"jsonrpc": "2.0", "id": 4, "method": "no/such"},
 ]
-done = subprocess.run(
-    [sys.executable, "server.py"],
-    cwd=here,
-    input="\n".join(map(json.dumps, msgs)) + "\n",
-    capture_output=True,
-    text=True,
-    timeout=20,
-)
+done = subprocess.run([sys.executable, "server.py"], cwd=here, input="\n".join(map(json.dumps, msgs)) + "\n", capture_output=True, text=True, timeout=20)
 replies = [json.loads(l) for l in done.stdout.splitlines()]
 assert replies[0]["result"]["serverInfo"]["name"] == "tool-server-sandbox"
 assert len(replies[1]["result"]["tools"]) == 4

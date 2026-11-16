@@ -2,7 +2,7 @@
 title: Capped Tiered Tag Assignment
 tags: [prompting, eval, pattern]
 summary: An annotation rule for multi-label tags (moods, vibes) — the item's category defines a plausible range split into primary, secondary and situational tags, each item gets 1–3 (default 2) with at most one "stretch" tag, every tag needs concrete evidence, and under-tagging beats over-tagging because tag inflation makes filters and matching useless.
-updated: 2026-10-16
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/diskoe/docs/research/2026-10-09-notion-search-and-recommendation-specs.md
   - data/raw/claude-docs/kiez-archive/docs/research/2026-10-09-notion-search-and-recommendation-specs.md
@@ -51,7 +51,5 @@ should earn its place" in the taxonomy (see
 vocabulary.
 
 ## See Also
-- [[One Facet Per Fact]] — related (separating kinds of fact; this caps values within one facet)
 - [[Graded-Uncertainty Enrichment Contract]] — related (the enrichment contract these rules fed)
-- [[Every Column Names Its Reader]] — related (every tag must be read by something)
 - [[Anchor-and-Guardrail Similar Items]] — prerequisite-for (vibe matching relies on sparse, primary-first tags)

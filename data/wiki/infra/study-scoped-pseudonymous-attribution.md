@@ -2,7 +2,7 @@
 title: Study-Scoped Pseudonymous Attribution
 tags: [infra, eval, decision]
 summary: When an evaluation study needs to follow named testers across sessions, attribute only an explicitly enrolled, time-bounded study via a random per-account pseudonym on the parent record — not a user_id on all telemetry — and treat the pseudonym as personal data whose erasure must delete every linked row, replay copy and export, not just the mapping.
-updated: 2026-11-04
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/diskoe/docs/research/2026-09-16-dsk-309-tester-journey-attribution.md
   - data/raw/claude-docs/akira/docs/research/2026-09-16-dsk-309-tester-journey-attribution.md
@@ -102,12 +102,10 @@ joins rather than a repeated identity column.
 - **Pseudonym namespaces multiply.** A separate save log had already pseudonymized with
   `sha256(user_id)`, which does not join to the study's random pseudonym. Downstream
   exporters must bridge server-side on the real id
-  ([[Write-Time Deterministic Holdout]]).
+  (Write-Time Deterministic Holdout).
 
 ## See Also
 - [[PII Masking Approaches]] — extends
-- [[Every Column Names Its Reader]] — instance-of
 - [[Append-Only Human Labels]] — extends
 - [[Frozen Version Stamps on Logged Results]] — extends
-- [[Write-Time Deterministic Holdout]] — related (the labelled-session exporter joins both pseudonym namespaces)
 - [[Pseudonymised Is Not Anonymised: Hashing Attacks and Keyed Pseudonyms]] — related (why hashing alone is not enough)

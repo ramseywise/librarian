@@ -2,7 +2,7 @@
 title: Frozen Ranking Baseline from a Pure Ranker
 tags: [eval, foundations, pattern]
 summary: Because the ranker and composer are pure functions, an offline "snapshot in, ranked slate out" baseline is a composition of three things the tree already has — not new infrastructure — and the genuinely missing pieces are an export that keeps excluded candidates with their reason, a slice-breakdown layer over the per-case grade file, and a version stamp for every rule table.
-updated: 2026-10-30
+updated: 2026-11-10
 sources:
   - data/raw/claude-docs/diskoe/docs/research/2026-09-16-dis290-frozen-ranking-baseline.md
   - data/raw/claude-docs/diskoe/docs/research/2026-09-16-dis289-relevance-benchmark-corpus.md
@@ -38,7 +38,7 @@ looked covered.
 ## Purity is the eval harness
 
 `rank(candidates, context)` and the composer take no I/O: time, viewport and seed are
-inputs, and the header states the determinism contract. That is what [[Replayable Slate Ranker]] buys at eval time: an offline execution path already existed (a recommendation-
+inputs, and the header states the determinism contract. That is what Replayable Slate Ranker buys at eval time: an offline execution path already existed (a recommendation-
 quality metric and a `compare-rankers` dev script), a snapshot exporter already existed,
 and the harness's per-case shape (`EvalCase → GraderResult{isCorrect, score, dimensions}`)
 already carried multi-number, per-item results. Freezing a baseline is **composing** those
@@ -131,13 +131,9 @@ It printed a second error and exited 1 after the new CLI had already succeeded. 
 was the same entry-point guard its sibling scripts already used.
 
 ## See Also
-- [[Build the Knobs, Not the Choice]] — related (the variant registry this CLI enumerates)
 - [[Eval Falsifiability]] — related (fixtures must disagree with the ranker somewhere, or NDCG passes by construction)
-- [[Replayable Slate Ranker]] — extends (purity is what makes the offline baseline a composition rather than a build)
 - [[Frozen Version Stamps on Logged Results]] — related (the stamps the snapshot must carry to join judgments)
 - [[UNGATED Metric Convention]] — instance-of (register everything now, threshold only from an observed rate)
 - [[Append-Only Human Labels]] — prerequisite-for (the judgment rows this baseline is scored against)
-- [[Write-Only Fields and the Reader Map]] — related (the exporter that dropped the rows a reader needed)
-- [[REUSE/ADAPT/SKIP Asset Verdicts]] — related (the per-asset verdict table that found the three reusable pieces)
 - [[Offline Prompt Experiment Runner]] — extends (the manifest → run → JSONL → report skeleton reused here)
 - [[Stratified Judgment Pool for a Ranker Benchmark]] — extends (how the judged corpus was actually built and what its first real run broke)
