@@ -162,6 +162,10 @@ def test_payload_has_no_tag_shared_edges_and_lists_domains(mock_wiki: Path) -> N
     result = parse_wiki()
     assert {e["data"]["edgeType"] for e in result["edges"]} == {"wikilink"}
     assert result["domains"] == ["infra", "rag"]
+    assert result["areas"] == [
+        {"id": "generative-ai", "title": "Generative AI", "domains": ["rag"]},
+        {"id": "ai-engineering", "title": "AI Engineering", "domains": ["infra"]},
+    ]
 
 
 @pytest.mark.unit
@@ -254,6 +258,9 @@ def test_api_graph_edges_all_adds_tag_shared(
     slim = client.get("/api/graph").json()
     assert [e["id"] for e in slim["edges"]] == ["wl:a-page->b-page"]
     assert slim["domains"] == ["eval", "rag"]
+    assert [a["id"] for a in slim["areas"]] == ["generative-ai"]
+    atlas = client.get("/api/graph/atlas").json()
+    assert atlas["areas"] == slim["areas"]
     full = client.get("/api/graph", params={"edges": "all"}).json()
     assert {e["id"] for e in full["edges"]} == {"wl:a-page->b-page", "ts:a-page->b-page"}
     assert client.get("/api/graph", params={"edges": "bogus"}).status_code == 422

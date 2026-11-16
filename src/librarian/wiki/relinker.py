@@ -88,7 +88,7 @@ def load_pages() -> dict[str, PageInfo]:
         tags = page_tags(fm(post))
         if "tombstone" in tags:  # retired: its successor carries the content
             continue
-        domain = md_file.parent.name
+        domain = md_file.relative_to(WIKI_DIR).parts[0]
         type_tag = next((t for t in tags if t in TYPE_TAGS), "concept")
 
         pages[md_file.stem] = PageInfo(

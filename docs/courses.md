@@ -35,6 +35,25 @@ Moved from CLAUDE.md. Contract summary stays in CLAUDE.md: courses are authored 
   `cards: [{front, back, lesson?}, ...]`, served by `GET /api/courses/flashcards/<module or
   lesson id>`, studied at `#/flashcards/<id>`; self-grades go via `POST /api/courses/flashcard-results` to the attempts store, and `src/librarian/courses/leitner.py` computes due dates from it; it stores no schedule of its own.
   **Attempts store:** the `attempts` table of the database (`librarian.db`; `src/librarian/courses/attempts.py`) holds every graded event, each owned by one user: flashcards, quiz answers and drill runs (`POST /api/courses/drill-results`). Every study route reads and writes only the caller's rows, and Leitner days are the user's calendar days (`users.timezone`). An old `var/attempts.sqlite3` comes in with `librarian db import-attempts`; an old `logs/flashcards.jsonl` is imported once into the owner's history and left alone. **Progress:** `GET`/`POST /api/courses/progress` (`src/librarian/courses/progress.py`) stores each lesson as `opened` or `done` per user (done is never downgraded); `/api/me` carries the summary. **Quizzes:** `<module>/_quiz.md` (frontmatter `questions: [{prompt, options, answer, explanation?, lesson?, id?}]`), checked by `librarian courses check quiz`, served without answers by `GET /api/courses/quiz/<id>` and graded by `POST /api/courses/quiz-results`; a wrong answer is due tomorrow like a missed card. Never seed one from `private/`. **Slides viewer:** `#/slides/<module>[/<lecture>]`; `GET /api/courses/slides/<id>` rebuilds a stale deck in the background into `var/slides/` (images need `uv` and macOS Quick Look; without them the viewer shows the slide text). **Study home:** `#/study`, from `GET /api/courses/study`: cards and questions due, the next drill for the weakest track, the module's lecture.
+- **Labs** (`#/labs`, `src/librarian/courses/labs.py`): every entry of a pillar's
+  `practice/manifest.yaml` whose path is in the mirror. The importer (`plan_labs`) adopts every
+  committed file of a lab whose `licence` is not `unrecorded`; an `unrecorded` one is logged as
+  `lab_not_cleared` and stays out. Helpers (`pattern: other`, no `demonstrates`) are not labs. A lab's
+  notes are its `demonstrates` plus any public note in its module that names the lab's file; a note
+  lists its labs (`labs` on the lesson) and links each to its workspace. `GET /api/courses/labs[/<id>]`
+  serves the list and one lab with its editable files. Two commands come from an entry: `run`, its
+  entry script (the file, or a folder's `run.py`/`main.py`/... or its only script), and `check`, its
+  `verified_by` when that is a plain `uv run` of a file or module (optionally after one `cd <lab
+  folder> &&`); anything else stays text on the page. Only Python labs run; notebooks and TypeScript
+  are read-only. **Running** (`POST /api/courses/lab-runs`, SSE; `src/librarian/courses/lab_runner.py`)
+  is local only: the route is a 404 unless `LIBRARIAN_DEV_RUN_LABS=1` (`make api` sets it) and public
+  mode is off. `LocalRunner` clones the lab's practice folder from `COURSE_SOURCES_DIR` (falling back to
+  the mirror) into a temp dir, writes the editor's edits into the copy, runs the argv without a shell in
+  its own process group with an allowlisted environment (provider keys only for `runs_offline: false`),
+  kills it after `LAB_RUN_TIMEOUT_S` (300), streams the output and returns the figures the run
+  wrote. It is no sandbox; a container backend implements the same `LabRunner` interface later. The
+  chat gets the open lab as `lab` on `POST /api/chat`: the server builds a brief (purpose, notes, the
+  edit as a diff, the output tail) and sends it as an uncached system block framed as data.
 - Private and tombstoned wiki pages are never linked from lessons.
 - **`data/courses/private/`** (gitignored, mirrors the layout: `private/<course>/<module>/...`) holds
   what must not be public: solutions to site problems (`leetcode/`, `hackerrank/`), `coding/scratch/`,

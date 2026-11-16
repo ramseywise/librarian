@@ -84,7 +84,8 @@ def get_graph_atlas() -> dict[str, Any]:
     """The map's first paint: /api/graph without summaries, paths or edge objects.
 
     Wikilinks are `[source, target]` index pairs into `nodes` (with the relationship as a
-    third item when typed), about a tenth of the edge JSON. The full graph still arrives over
+    third item when typed), about a tenth of the edge JSON. `areas` is the ring's grouping of
+    directories (`librarian.wiki.areas`). The full graph still arrives over
     /ws; the UI uses this until it does. Same pages as parse_wiki(): no private, no tombstones.
     """
     graph = parse_wiki()
@@ -105,7 +106,12 @@ def get_graph_atlas() -> dict[str, Any]:
         if rel := e["data"].get("relationship"):
             pair.append(rel)
         links.append(pair)
-    return {"nodes": nodes, "links": links, "domains": graph["domains"]}
+    return {
+        "nodes": nodes,
+        "links": links,
+        "domains": graph["domains"],
+        "areas": graph["areas"],
+    }
 
 
 # Sync routes (threadpool): both block on embeddings, and compute_embeddings serialises

@@ -54,9 +54,13 @@ def _make_entry(
 @pytest.mark.unit
 def test_golden_dataset_loads() -> None:
     entries = load_golden_dataset(str(GOLDEN_PATH))
-    assert len(entries) == 150, f"expected 150 entries, got {len(entries)}"
+    # 125 since 2026-11-10: the 25 entries whose source pages went private (patterns, meta,
+    # projects, interview) moved to the gitignored evals/private/golden_dataset.json.
+    assert len(entries) == 125, f"expected 125 entries, got {len(entries)}"
     assert sum(e.negative for e in entries) == 10
-    assert sum(len(e.source_pages) > 1 for e in entries) >= 15
+    assert (
+        sum(len(e.source_pages) > 1 for e in entries) >= 14
+    )  # 3 multi-page entries lost a private page
 
 
 @pytest.mark.unit
@@ -472,4 +476,4 @@ def test_oracle_eval_passes_floors() -> None:
     assert report.mean_reciprocal_rank >= MRR_FLOOR, (
         f"MRR {report.mean_reciprocal_rank:.3f} below floor {MRR_FLOOR}"
     )
-    assert report.n_entries == 140
+    assert report.n_entries == 115  # 125 entries minus the 10 negatives

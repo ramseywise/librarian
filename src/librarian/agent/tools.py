@@ -175,7 +175,7 @@ class _McpSearch(BaseModel):
     query: str = Field(description="Search terms")
     domain: str = Field(
         default="",
-        description="Optional domain to scope the search — any directory under\n    data/wiki/ (e.g. 'rag', 'langgraph', 'patterns') or a domain tag.\n    'course' searches all course lessons, 'course/<subject>' one course\n    (e.g. 'course/ai-engineering'). Omitted: results are ranked wiki pages,\n    followed by a short separate list of the best-matching lessons.",
+        description="Optional domain to scope the search — any directory under\n    data/wiki/ (e.g. 'rag', 'frameworks', 'data-science') or a domain tag.\n    'course' searches all course lessons, 'course/<subject>' one course\n    (e.g. 'course/ai-engineering'). Omitted: results are ranked wiki pages,\n    followed by a short separate list of the best-matching lessons.",
     )
     limit: int = Field(default=10, ge=1, le=50, description="Max results (default 10, max 50)")
     expand: bool = Field(

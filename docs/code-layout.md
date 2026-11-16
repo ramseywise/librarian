@@ -15,9 +15,9 @@ write-back route or tool exists; the UI is read-only over the wiki.
 
 **Feature notes:** the map filter panel, the atlas and glossary, the skill verbs, the retrieval eval
 gate and the code index (`src/librarian/tools/codemap/`, MCP `find_symbol`/`repo_map`) are described in the wiki page
-[Librarian Repo Feature Notes](data/wiki/projects/librarian-repo-feature-notes.md). Rules that survive from them:
+[Librarian Repo Feature Notes](docs/feature-notes.md). Rules that survive from them:
 
-- The graph UI's map panel is an overlay: `data/wiki/` directories stay the canonical domains for tags, MCP and `/lint`. Private pages never appear in it.
+- The graph UI's map panel is an overlay: `data/wiki/` directories stay the canonical domains for tags, MCP and `/lint`. Private pages never appear in it. The domain grouping (`src/librarian/wiki/areas.py`, directories at the courses' grain as areas, one per course) is part of that overlay: a directory in no area shows as its own sector and `wiki sync-check` notes it.
 - Every wiki verb/skill (`/quiz`, `/gaps`, `/challenge`, `/wiki-weekly`, `/harness-audit`, `/evals-bootstrap`, `/wiki-graph`, `/write`) skips private pages. `/wiki-weekly` is the wiki's report; `/weekly` is the course's. `/wiki-rename` (`librarian.wiki.rename`) rewrites links in `private/` too, reporting those only as a count.
 - A ranking change must clear all six `make eval-gate` arms (`sem`, `nofts`, `uniform`, `course`, `graph`, `multihop`). Backlinks are deliberately not a ranking signal; never judge ranking on `sem` alone.
 

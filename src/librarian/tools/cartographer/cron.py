@@ -86,7 +86,7 @@ def _update_wiki_session_log(raw_sessions: Path, wiki_dir: Path) -> int:
     """
     import re
 
-    session_log = wiki_dir / "meta" / "session-log.md"
+    session_log = wiki_dir / "private" / "meta" / "session-log.md"
     if not session_log.exists() or not raw_sessions.exists():
         return 0
 

@@ -7,6 +7,7 @@ import yaml
 
 from librarian.config import get_settings
 from librarian.log_config import get_logger
+from librarian.wiki.areas import areas_for
 from librarian.wiki.common import (
     CANONICAL_LINK_TYPES,
     TYPED_LINK_RE,
@@ -125,7 +126,8 @@ def parse_wiki_uncached() -> dict:
             )
         )
 
-        domain = [md_file.parent.name]
+        # The top-level directory: a subdirectory (frameworks/adk) only files the pages.
+        domain = [md_file.relative_to(WIKI_DIR).parts[0]]
         type_tag = next((t for t in tags if t in TYPE_TAGS), "concept")
 
         nodes.append(
@@ -183,7 +185,9 @@ def parse_wiki_uncached() -> dict:
                 }
             )
 
-    return {"nodes": nodes, "edges": edges, "domains": sorted(_domain_tag_set())}
+    domains = sorted(_domain_tag_set())
+    areas = areas_for(domains)
+    return {"nodes": nodes, "edges": edges, "domains": domains, "areas": areas}
 
 
 def tag_shared_edges(nodes: list[dict], domains: list[str] | set[str]) -> list[dict]:

@@ -40,7 +40,8 @@
       "id": "chat-04",
       "question": "What is agent-computer interface (ACI) design and why does it matter?",
       "expected_pages": [
-        "aci-agent-computer-interface"
+        "swe-agent-agent-computer-interface",
+        "tool-design-as-harness-surface"
       ],
       "rubric": [
         "Describes it as the tool-design discipline between agent and tools, analogous to HCI",

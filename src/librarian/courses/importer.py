@@ -38,7 +38,9 @@ removes a `_flashcards.md`.
 Practice code (non-lesson files under `<module>/practice/` and `practice/interviewing/`) is
 mirrored by git history: files the sibling committed since the commit recorded in
 `_mirror.json` are copied when their folder already exists here. A new practice folder is
-reported, not copied, because third-party course folders live there too.
+reported, not copied, because third-party course folders live there too. Labs are the exception:
+every committed file of a lab its pillar's `practice/manifest.yaml` clears (`licence: course` or a
+licence THIRD_PARTY.md names; never `unrecorded`) is copied on each run (see plan_labs).
 
 learn-ai-engineering is where coursework is written; this is its mirror. Every generated
 file carries `imported_hash`, a hash of the text the importer wrote:
@@ -1067,6 +1069,55 @@ def plan_practice(plan: Plan, source: Path, subjects: list[str], since: str) -> 
         plan.copies[dest] = src
 
 
+def _lab_entries(manifest: Path) -> list[dict]:
+    """The `examples:` entries of a pillar's practice/manifest.yaml; [] when it does not parse."""
+    try:
+        data = yaml.safe_load(manifest.read_text())
+    except (OSError, UnicodeDecodeError, yaml.YAMLError) as e:
+        log.warning("lab_manifest_unreadable", path=str(manifest), error=str(e).splitlines()[0])
+        return []
+    entries = data.get("examples") if isinstance(data, dict) else None
+    return [e for e in entries or [] if isinstance(e, dict) and isinstance(e.get("path"), str)]
+
+
+def plan_labs(plan: Plan, source: Path, subjects: list[str]) -> None:
+    """Every committed file of each lab its manifest clears for publishing, folder mirrored or not.
+
+    The manifest's `licence` is the decision a new practice folder otherwise waits for: `course`
+    (written for the course) and a licence THIRD_PARTY.md names (the sibling's manifest check holds
+    it to that) come; `unrecorded` never does. Lessons and images still go through the lesson pass.
+    """
+    for subject in subjects:
+        if subject in SUBJECT_SOURCES:
+            continue
+        for manifest in sorted((source / subject).glob("*/practice/manifest.yaml")):
+            pillar = manifest.parent.parent
+            module = pillar.name
+            for entry in _lab_entries(manifest):
+                rel = Path(entry["path"])
+                if set(rel.parts) & PRACTICE_REFERENCE_ONLY or ".." in rel.parts:
+                    continue
+                if str(entry.get("licence") or "unrecorded") == "unrecorded":
+                    log.info("lab_not_cleared", path=f"{subject}/{module}/{rel}")
+                    continue
+                prefix = (pillar / rel).relative_to(source).as_posix()
+                for tracked in sorted(plan.tracked):
+                    if tracked != prefix and not tracked.startswith(prefix + "/"):
+                        continue
+                    src = source / tracked
+                    parts = tracked.split("/")[1:]  # <module>/practice/...
+                    if src.suffix.lower() in LESSON_EXTS | IMAGE_EXTS or set(parts) & SKIP_DIRS:
+                        continue
+                    if not src.is_file() or src.stat().st_size > MAX_PRACTICE_BYTES:
+                        continue
+                    dest = _practice_dest(subject, parts)
+                    if dest is not None:
+                        plan.copies[dest] = src
+            dest = _practice_dest(subject, [module, "practice", "manifest.yaml"])
+            if dest is not None:
+                plan.copies[dest] = manifest
+
+
 _MANIFEST_ENTRY_RE = re.compile(r'^  - path: "?([^"\n]+)"?$', re.MULTILINE)
 
 
@@ -1337,6 +1388,7 @@ def main(argv: list[str] | None = None) -> None:
     since = args.since or state.get("source_commit")
     head = (_git_lines(source, "rev-parse", "HEAD") or [""])[0]
     plan = build_plan(source, subjects)
+    plan_labs(plan, source, subjects)
     if since:
         plan_practice(plan, source, subjects, since)
     else:

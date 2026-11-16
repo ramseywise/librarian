@@ -3,7 +3,8 @@
 The directories under `data/wiki/` (minus `private/`) are the domain list. This checks that the
 three backend derivations still read the disk instead of a literal list, that the frontend
 holds no domain list outside `theme/domains.ts`, and compares the fixed colour map with the
-directories. DRIFT exits 1; thin/thick domains and colour gaps are notes. Read-only: choosing a
+directories and the atlas's area table (`wiki/areas.py`). DRIFT exits 1; thin/thick domains,
+colour gaps and directories outside every area are notes. Read-only: choosing a
 colour for a new domain stays with the `/wiki-sync` skill.
 """
 
@@ -18,6 +19,7 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 
 from librarian.config import get_settings
+from librarian.wiki.areas import ghost_area_domains, unmapped
 
 WIKI_DIR = get_settings().wiki_dir
 SRC_DIR = Path(__file__).resolve().parents[1]
@@ -118,6 +120,14 @@ def check(wiki_dir: Path, src_dir: Path, app_src: Path) -> tuple[dict[str, int],
             Finding("NOTE", k, "ghost KNOWN colour (no data/wiki/ directory)")
             for k in sorted(known - set(domains) - {"private"})
         ]
+    out += [
+        Finding("NOTE", d, "in no atlas area (wiki/areas.py): drawn as its own sector")
+        for d in unmapped(domains)
+    ]
+    out += [
+        Finding("NOTE", d, "ghost area directory in wiki/areas.py (no data/wiki/ directory)")
+        for d in ghost_area_domains(domains)
+    ]
     if app_src.is_dir():
         for path in sorted([*app_src.rglob("*.ts"), *app_src.rglob("*.tsx")]):
             rel = path.relative_to(app_src).as_posix()

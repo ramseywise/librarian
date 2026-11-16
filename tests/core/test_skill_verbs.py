@@ -77,6 +77,8 @@ def test_sync_check_clean_and_notes(tmp_path: Path) -> None:
     assert ("THIN", "thin") in kinds
     assert ("NOTE", "harness") in kinds  # no fixed colour
     assert ("NOTE", "adk") in kinds  # ghost colour
+    assert ("NOTE", "thin") in kinds  # in no atlas area
+    assert not any(f.where == "rag" and "no atlas area" in f.message for f in findings)
     assert not any(f.kind == "DRIFT" for f in findings)
 
 

@@ -6,6 +6,7 @@ still takes effect here."""
 
 from __future__ import annotations
 
+import difflib
 import re
 from collections import Counter
 from datetime import date
@@ -13,7 +14,7 @@ from pathlib import Path
 from typing import Any
 
 from librarian.accounts import User
-from librarian.courses import attempts, leitner, sources
+from librarian.courses import attempts, labs, leitner, sources
 from librarian.courses.linker import _link_wikilinks, _prose
 from librarian.courses.loader import LessonRec, _outline, _wiki_json
 
@@ -52,7 +53,154 @@ def lesson_detail(lesson_id: str) -> dict[str, Any] | None:
         "concepts": [_wiki_json(cat.wiki[c]) for c in lesson.concepts if c in cat.wiki],
         "prev": neighbour(pos - 1),
         "next": neighbour(pos + 1),
+        "labs": [lab_outline(lab) for lab in labs_for_lesson(lesson_id)],
     }
+
+
+def lab_outline(lab: labs.Lab) -> dict[str, Any]:
+    """The list row of a lab."""
+    return {
+        "id": lab.id,
+        "title": lab.title,
+        "course": lab.course,
+        "module": lab.module,
+        "path": lab.path,
+        "purpose": lab.purpose,
+        "pattern": lab.pattern,
+        "language": lab.language,
+        "runsOffline": lab.runs_offline,
+        "hasRun": lab.run is not None,
+        "hasCheck": lab.check is not None,
+    }
+
+
+def _lab_notes(cat: Any) -> dict[str, list[str]]:  # noqa: ANN401 - the Catalog
+    """Lab id → the public lesson ids it backs: its manifest's `demonstrates`, plus any note in
+    its module that names the lab's file (a manifest can leave `demonstrates` empty)."""
+    by_module: dict[str, list[LessonRec]] = {}
+    for r in cat.lessons.values():
+        if not r.private:
+            by_module.setdefault("/".join(r.id.split("/")[:2]), []).append(r)
+    lower = {i.lower(): i for i in cat.lessons if not cat.lessons[i].private}
+    out: dict[str, list[str]] = {}
+    for lab in labs.all_labs().values():
+        found = [lower[n.lower()] for n in lab.notes if n.lower() in lower]
+        name = Path(lab.path).name
+        for r in by_module.get(f"{lab.course}/{lab.module}", []):
+            if r.id not in found and r.kind != "drill" and name in r.body:
+                found.append(r.id)
+        out[lab.id] = found
+    return out
+
+
+def labs_for_lesson(lesson_id: str) -> list[labs.Lab]:
+    """The labs that back one lesson — the note → lab direction."""
+    all_labs = labs.all_labs()
+    notes = _lab_notes(_cat().catalog())
+    return [all_labs[i] for i, ids in notes.items() if lesson_id in ids]
+
+
+def list_labs(
+    course: str | None = None, module: str | None = None, language: str | None = None
+) -> list[dict[str, Any]]:
+    """Every mirrored lab, filtered, each with the notes it backs — the Labs mode list."""
+    cat = _cat().catalog()
+    notes = _lab_notes(cat)
+    out = []
+    for lab in labs.all_labs().values():
+        if (
+            (course and lab.course != course)
+            or (module and lab.module != module)
+            or (language and lab.language != language)
+        ):
+            continue
+        lesson_rows = [_outline(cat.lessons[i]) for i in notes.get(lab.id, [])]
+        out.append({**lab_outline(lab), "notes": lesson_rows})
+    return out
+
+
+def lab_detail(lab_id: str) -> dict[str, Any] | None:
+    """One lab with its editable files' text, the notes it backs and its commands; None when unknown."""
+    lab = labs.get(lab_id)
+    if lab is None:
+        return None
+    cat = _cat().catalog()
+    files = []
+    for rel in lab.files:
+        if (path := labs.lab_file(lab, rel)) is None:
+            continue
+        try:
+            files.append({"path": rel, "text": path.read_text()})
+        except (OSError, UnicodeDecodeError):
+            continue
+    return {
+        **lab_outline(lab),
+        "licence": lab.licence,
+        "verifiedBy": lab.verified_by,
+        "run": lab.run.display() if lab.run else None,
+        "check": lab.check.display() if lab.check else None,
+        "files": files,
+        "notes": [_outline(cat.lessons[i]) for i in _lab_notes(cat).get(lab.id, [])],
+    }
+
+
+BRIEF_DIFF_CHARS = 12_000
+BRIEF_CODE_CHARS = 12_000
+BRIEF_OUTPUT_CHARS = 8_000
+
+
+def lab_brief(
+    lab_id: str, files: dict[str, str], output: str = "", exit_code: int | None = None
+) -> str | None:
+    """What the chat agent is told about an open lab: its purpose, the notes it backs, the user's
+    edit as a diff from the mirror's copy (or the entry file when nothing changed) and the tail of
+    the last run. None for an unknown lab. Every part is capped, the output keeping its end."""
+    lab = labs.get(lab_id)
+    if lab is None:
+        return None
+    cat = _cat().catalog()
+    notes = [cat.lessons[i] for i in _lab_notes(cat).get(lab.id, [])]
+    parts = [f"Lab: {lab.title} ({lab.id})", f"Language: {lab.language}", f"Purpose: {lab.purpose}"]
+    if notes:
+        parts.append("Notes it backs:\n" + "\n".join(f"- {r.title}: {r.summary}" for r in notes))
+    if lab.run:
+        parts.append(f"Run command: {lab.run.display()}")
+    if lab.check:
+        parts.append(f"Check command: {lab.check.display()}")
+
+    diffs = []
+    for rel in lab.files:
+        if rel not in files or (path := labs.lab_file(lab, rel)) is None:
+            continue
+        try:
+            original = path.read_text()
+        except (OSError, UnicodeDecodeError):
+            continue
+        if files[rel] != original:
+            diffs.append(
+                "".join(
+                    difflib.unified_diff(
+                        original.splitlines(keepends=True),
+                        files[rel].splitlines(keepends=True),
+                        f"original/{rel}",
+                        f"edited/{rel}",
+                    )
+                )
+            )
+    if diffs:
+        parts.append("The user's edit (unified diff):\n" + "\n".join(diffs)[:BRIEF_DIFF_CHARS])
+    else:
+        parts.append("The user has not changed the lab's files.")
+        entry = next((f for f in lab.files if f.endswith(".py")), None)
+        if entry and (path := labs.lab_file(lab, entry)) is not None:
+            text = files.get(entry) or path.read_text(errors="replace")
+            parts.append(f"{entry}:\n{text[:BRIEF_CODE_CHARS]}")
+    if output:
+        tail = output[-BRIEF_OUTPUT_CHARS:]
+        status = "" if exit_code is None else f" (exit status {exit_code})"
+        cut = "" if len(tail) == len(output) else " — the end of it"
+        parts.append(f"Last run's output{status}{cut}:\n{tail}")
+    return "\n\n".join(parts)
 
 
 _MD_NOISE_RE = re.compile(r"\[\[|\]\]|[#*_`|>]+|-{3,}|\[([^\]]*)\]\([^)]*\)")

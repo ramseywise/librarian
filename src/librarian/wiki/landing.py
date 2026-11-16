@@ -38,11 +38,9 @@ WIKI_DIR = get_settings().wiki_dir
 SECTION_NAMES = {
     "rag": "RAG",
     "mcp": "MCP",
-    "adk": "Google ADK",
-    "langgraph": "LangGraph",
+    "llm": "LLM",
     "infra": "Infrastructure",
     "eval": "Evaluation",
-    "interview": "Interview Prep",
 }
 _PAGE_COUNT_RE = re.compile(r"\*\*(\d+) pages\*\*")
 _ENTRY_RE = re.compile(r"^- \[\[(.+?)\]\]")

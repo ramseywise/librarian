@@ -51,12 +51,13 @@ def test_missing_wiki_dir_yields_empty(tmp_path: Path, monkeypatch: pytest.Monke
 
 def test_real_wiki_dirs_are_all_domains() -> None:
     """Against the real repo: every on-disk domain dir is addressable (F4's bug was
-    interview/context/etc. being unlisted)."""
+    context/etc. being unlisted). A nested directory (frameworks/adk) is one domain."""
     on_disk = sorted(
         d.name for d in corpus.WIKI_DIR.iterdir() if d.is_dir() and d.name != "private"
     )
     assert corpus.wiki_domains() == on_disk
-    assert "interview" in on_disk  # the canonical missing-from-the-old-list example
+    assert "frameworks" in on_disk  # nested: frameworks/adk and frameworks/langgraph
+    assert "adk" not in on_disk
 
 
 def test_relinker_domain_tags_follow_disk(wiki: Path, monkeypatch: pytest.MonkeyPatch) -> None:

@@ -176,6 +176,12 @@ from librarian.courses.queries import (
     flashcards_due as flashcards_due,
 )
 from librarian.courses.queries import (
+    lab_brief as lab_brief,
+)
+from librarian.courses.queries import (
+    lab_detail as lab_detail,
+)
+from librarian.courses.queries import (
     lesson_detail as lesson_detail,
 )
 from librarian.courses.queries import (
@@ -183,6 +189,9 @@ from librarian.courses.queries import (
 )
 from librarian.courses.queries import (
     list_courses as list_courses,
+)
+from librarian.courses.queries import (
+    list_labs as list_labs,
 )
 from librarian.courses.queries import (
     log_flashcard_result as log_flashcard_result,

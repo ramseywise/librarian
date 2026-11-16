@@ -188,6 +188,10 @@ class Settings(BaseSettings):
     dev_build_slides: bool = Field(
         default=False, validation_alias=_env("LIBRARIAN_DEV_BUILD_SLIDES")
     )
+    # Labs: running a lab's code is local only (`make api` turns it on). It runs whatever the
+    # editor sends, as this user, so a deployment leaves it off and public mode refuses it anyway.
+    dev_run_labs: bool = Field(default=False, validation_alias=_env("LIBRARIAN_DEV_RUN_LABS"))
+    lab_run_timeout_s: int = Field(default=300, ge=5, validation_alias=_env("LAB_RUN_TIMEOUT_S"))
     # Dev only (`make api` turns it on): watch data/wiki, push graph updates over /ws and rebuild
     # the course catalog after an edit. Per process, so a deployment leaves it off.
     dev_watch: bool = Field(default=False, validation_alias=_env("LIBRARIAN_DEV_WATCH"))

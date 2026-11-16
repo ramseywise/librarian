@@ -19,6 +19,7 @@ from librarian.api import prom
 from librarian.api.routers.release import served_release
 from librarian.api.security import SignedIn, chat_limiter
 from librarian.config import get_release, get_settings
+from librarian.courses import catalog as courses
 from librarian.db import get_engine
 from librarian.log_config import get_logger
 from librarian.observability import set_variant
@@ -43,9 +44,20 @@ class ChatTurn(BaseModel):
     content: str = Field(min_length=1, max_length=_MAX_MESSAGE_CHARS)
 
 
+class LabContext(BaseModel):
+    """The lab open beside the chat: the editor's files and the last run. The server builds the
+    agent's brief from it (the diff against the lab's own files, its notes), never the client."""
+
+    id: str = Field(min_length=1, max_length=400)
+    files: dict[str, str] = Field(default_factory=dict, max_length=30)
+    output: str = Field(default="", max_length=_MAX_MESSAGE_CHARS)
+    exit: int | None = None
+
+
 class ChatRequest(BaseModel):
     query: str = Field(min_length=1, max_length=_MAX_MESSAGE_CHARS)
     history: list[ChatTurn] = Field(default_factory=list, max_length=_MAX_HISTORY_ITEMS)
+    lab: LabContext | None = None
 
     @model_validator(mode="after")
     def _alternating(self) -> Self:
@@ -70,6 +82,15 @@ async def chat_stream(req: ChatRequest, user: SignedIn, request: Request) -> Str
     # 429 before any model call
     chat_limiter.admit(settings, user_id=user.id, user_cap=not user.is_admin)
     history = [t.model_dump() for t in req.history]
+    brief = None
+    if req.lab is not None:
+        if any(len(text) > 200_000 for text in req.lab.files.values()):
+            raise HTTPException(status_code=413, detail="lab file too large")
+        brief = await asyncio.to_thread(
+            courses.lab_brief, req.lab.id, req.lab.files, req.lab.output, req.lab.exit
+        )
+        if brief is None:
+            raise HTTPException(status_code=404, detail="lab not found")
 
     def on_usage(usage: TokenUsage) -> None:
         chat_limiter.record_usage(settings, usage, user.id)
@@ -106,6 +127,7 @@ async def chat_stream(req: ChatRequest, user: SignedIn, request: Request) -> Str
             user_id=None if settings.open_mode else user.id,
             variant=variant,
             release=served_release() or get_release(),
+            brief=brief,
         )
         first_token = True
         async for event in stream:

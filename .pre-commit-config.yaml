@@ -10,6 +10,9 @@ repos:
       - id: check-toml
       - id: check-json
       - id: check-ast
+        # Course practice scripts are notebook exports mirrored from ../learn-ai-engineering
+        # (IPython magics, Python 2 prints); author fixes there, not here.
+        exclude: ^data/courses/.*/practice/courses/
       - id: detect-private-key
       # Disabled: solo project, committing directly to main is fine
       # - id: no-commit-to-branch

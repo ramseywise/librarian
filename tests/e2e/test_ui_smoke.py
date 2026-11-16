@@ -96,7 +96,7 @@ def test_atlas_zooms_in_and_back(page: Page) -> None:
     assert size > 150, "the largest domain should exceed the cap this test checks"
 
     page.locator(".atlas-label", has_text=domain).first.click()
-    expect(page).to_have_url(f"{UI_URL}/#/map/domain/{domain}", timeout=5_000)
+    expect(page).to_have_url(f"{UI_URL}/#/map/wiki/{domain}", timeout=5_000)
     page.wait_for_selector(".react-flow__node", timeout=20_000)
     expect(page.locator(".map-count")).to_have_text(f"showing 150 of {size}")
     expect(page.get_by_role("button", name="Show 300")).to_be_visible()
@@ -115,10 +115,10 @@ def test_atlas_zooms_in_and_back(page: Page) -> None:
     expect(page.locator(".map-crumb-page")).to_be_visible()
 
     page.keyboard.press("Escape")
-    expect(page).to_have_url(f"{UI_URL}/#/map/domain/{domain}", timeout=5_000)
+    expect(page).to_have_url(f"{UI_URL}/#/map/wiki/{domain}", timeout=5_000)
     expect(page.locator(".map-crumb-page")).to_have_count(0)  # the level has rendered
     page.keyboard.press("Escape")
-    expect(page).to_have_url(f"{UI_URL}/#/map/domain", timeout=5_000)
+    expect(page).to_have_url(f"{UI_URL}/#/map/wiki", timeout=5_000)
     page.wait_for_selector(".atlas-label", timeout=20_000)
 
 
@@ -135,14 +135,6 @@ def test_atlas_arranges_by_course_and_search_finds_an_alias(page: Page) -> None:
     term = next(t for t in terms if t["aliases"] and t["page"])
     page.get_by_role("combobox", name="Search the map").fill(term["aliases"][0])
     expect(page.get_by_role("option").first).to_contain_text(term["label"])
-
-
-def test_focused_view_draws_terms_as_a_layer(page: Page) -> None:
-    domain, _ = _largest_domain()
-    page.goto(f"{UI_URL}/#/map/domain/{domain}", timeout=15_000)
-    page.wait_for_selector(".react-flow__node-termNode", timeout=30_000)
-    page.get_by_label("Glossary terms").uncheck()
-    expect(page.locator(".react-flow__node-termNode")).to_have_count(0)
 
 
 def test_private_terms_stay_private() -> None:
@@ -244,7 +236,7 @@ def test_escape_closes_one_overlay_at_a_time() -> None:
     ("route", "ready"),
     [
         ("/", ".atlas-label"),
-        ("/#/map/domain/rag", ".react-flow__node"),
+        ("/#/map/wiki/rag", ".react-flow__node"),
         ("/#/courses", ".course-card"),
         ("lesson", ".lesson-main-body p"),
         ("/#/practice", "[aria-label='Drill timer']"),

@@ -1,19 +1,21 @@
-"""/api/courses: the course catalog, lessons, search, practice drills, flashcards, quizzes and slides.
+"""/api/courses: the course catalog, lessons, labs, search, practice drills, flashcards, quizzes and slides.
 
 Routes that read or write study state (attempts, schedules, progress) are the caller's: they take
 `SignedIn`, and one user never sees another's history."""
 
 from __future__ import annotations
 
+import json
+from collections.abc import AsyncIterator
 from typing import Any, Literal
 
 from fastapi import APIRouter, HTTPException, Query
-from fastapi.responses import FileResponse
-from pydantic import BaseModel
+from fastapi.responses import FileResponse, StreamingResponse
+from pydantic import BaseModel, Field
 
 from librarian.api.security import SignedIn
 from librarian.courses import catalog as lib
-from librarian.courses import progress, slides, sources, study
+from librarian.courses import lab_runner, labs, progress, slides, sources, study
 
 router = APIRouter(prefix="/api/courses")
 
@@ -34,6 +36,61 @@ def get_lesson(lesson_id: str) -> dict[str, Any]:
     if detail is None:
         raise HTTPException(status_code=404, detail="lesson not found")
     return detail
+
+
+@router.get("/labs")
+def list_labs(
+    course: str | None = None, module: str | None = None, language: str | None = None
+) -> dict[str, Any]:
+    """Every lab, filtered; `canRun` says whether this server runs them (a dev machine only)."""
+    return {"labs": lib.list_labs(course, module, language), "canRun": lab_runner.runs_enabled()}
+
+
+@router.get("/labs/{lab_id:path}")
+def get_lab(lab_id: str) -> dict[str, Any]:
+    detail = lib.lab_detail(lab_id)
+    if detail is None:
+        raise HTTPException(status_code=404, detail="lab not found")
+    return {**detail, "canRun": lab_runner.runs_enabled()}
+
+
+class LabRun(BaseModel):
+    lab: str = Field(min_length=1, max_length=400)
+    mode: Literal["run", "check"] = "run"
+    # Practice-relative path → the editor's text; only the lab's own files are accepted.
+    files: dict[str, str] = Field(default_factory=dict, max_length=labs.MAX_EDITABLE_FILES)
+
+
+@router.post("/lab-runs")
+async def run_lab(body: LabRun, _: SignedIn) -> StreamingResponse:
+    """Run a lab (its entry script, or its check) with the editor's files, as server-sent events.
+
+    Dev only: 404 unless LIBRARIAN_DEV_RUN_LABS is on and public mode is off, like the slide build.
+    The code runs as the server's user (see `lab_runner`), so no deployment turns this on.
+    """
+    if not lab_runner.runs_enabled():
+        raise HTTPException(status_code=404, detail="not found")
+    lab = labs.get(body.lab)
+    if lab is None:
+        raise HTTPException(status_code=404, detail="lab not found")
+    if any(len(text) > labs.MAX_EDITABLE_BYTES for text in body.files.values()):
+        raise HTTPException(status_code=413, detail="file too large")
+    request = lab_runner.RunRequest(lab, body.mode, body.files)
+    runner = lab_runner.get_runner()
+    try:
+        lab_runner.validate(request)
+    except lab_runner.LabRunError as e:
+        raise HTTPException(status_code=422, detail=str(e)) from e
+
+    async def generate() -> AsyncIterator[str]:
+        async for event in runner.run(request):
+            yield f"data: {json.dumps(event)}\n\n"
+
+    return StreamingResponse(
+        generate(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
 
 
 @router.get("/search")

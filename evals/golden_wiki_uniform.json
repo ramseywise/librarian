@@ -5,7 +5,7 @@
     "query": "Should I use a pretrained text embedding model with a linear classifier on top, or fine-tune it, compared with plain TF-IDF?",
     "expected_answer": "A small frozen encoder lost to TF-IDF at all label counts, a larger one only won with few labels, and fine-tuning DistilBERT clearly beat word counts only at 5,000 labels. Measure on your own task and keep TF-IDF as the benchmark.",
     "source_pages": [
-      "data/wiki/foundations/frozen-vs-fine-tuned-sentence-encoders.md"
+      "data/wiki/data-science/frozen-vs-fine-tuned-sentence-encoders.md"
     ],
     "difficulty": "easy"
   },
@@ -15,7 +15,7 @@
     "query": "When fitting a hidden-group model for customer data with numeric and categorical columns, why does it report too many groups?",
     "expected_answer": "Correlated columns within a class violate the local independence assumption, so the model adds classes to explain them and inflates the class count; BIC can still pick one class when there is no structure.",
     "source_pages": [
-      "data/wiki/foundations/latent-class-analysis-for-mixed-data.md"
+      "data/wiki/data-science/latent-class-analysis-for-mixed-data.md"
     ],
     "difficulty": "medium"
   },
@@ -25,17 +25,7 @@
     "query": "Our monitoring screen stayed green for months while repeat purchases quietly dropped by a third. How should the metrics be set up so that doesn't happen?",
     "expected_answer": "Pair every growth metric that can be pushed by spending with a health metric (e.g. repeat rate) and give each metric context like prior year or target, built around a named recurring decision.",
     "source_pages": [
-      "data/wiki/foundations/dashboard-design-paired-metrics-and-context.md"
-    ],
-    "difficulty": "hard"
-  },
-  {
-    "id": "uniform-004",
-    "category": "retrieval",
-    "query": "Lint passes on my machine but the pull request build fails with import sorting errors on many matrix jobs even though I never touched imports. Why?",
-    "expected_answer": "PR CI builds the merge of main and the branch, so a changed default on main can break it while the branch tip is green. Reproduce against the merge ref and find the single root cause behind all failing legs.",
-    "source_pages": [
-      "data/wiki/patterns/ci-tests-the-merge-ref.md"
+      "data/wiki/data-analytics/dashboard-design-paired-metrics-and-context.md"
     ],
     "difficulty": "hard"
   },
@@ -45,19 +35,9 @@
     "query": "How many units should a retailer order for a seasonal product when demand is uncertain and leftovers are sold at a discount?",
     "expected_answer": "Order the demand quantile equal to underage cost divided by underage plus overage cost rather than the mean forecast; the gain is real but small and forecast error matters more.",
     "source_pages": [
-      "data/wiki/foundations/newsvendor-critical-ratio.md"
+      "data/wiki/data-analytics/newsvendor-critical-ratio.md"
     ],
     "difficulty": "easy"
-  },
-  {
-    "id": "uniform-006",
-    "category": "retrieval",
-    "query": "How do I make sure the same ranked 'what to look at next' list comes out in the same order on a report, a map view and a dashboard?",
-    "expected_answer": "Put the derivation and its input readers in one shared module, extract a pure scoring function per surface, and assert all give the same relative order over one fixture set.",
-    "source_pages": [
-      "data/wiki/patterns/cross-surface-order-parity-test.md"
-    ],
-    "difficulty": "medium"
   },
   {
     "id": "uniform-007",
@@ -75,17 +55,7 @@
     "query": "Old machine learning notebooks from years ago no longer run after upgrading libraries; how do I decide which are quick fixes and which need rewriting?",
     "expected_answer": "Triage in two phases: renamed or moved parameters and namespaces are mechanical find-and-replace, while removed APIs with no equivalent need a genuine rewrite. The page also gives migration maps for sklearn, TensorFlow 1 to 2 and PyMC3 to PyMC 5.",
     "source_pages": [
-      "data/wiki/foundations/notebook-dependency-staleness.md"
-    ],
-    "difficulty": "hard"
-  },
-  {
-    "id": "uniform-009",
-    "category": "retrieval",
-    "query": "My project scaffold generates an evaluation-grader feature even for projects that have no conversational agent, because the project type label usually matches. How should I decide when to enable it?",
-    "expected_answer": "Gate the feature on a predicate over the component that produces its input (the agent), not on a project-type label, and gate the per-item toggles too so explicit overrides can't break the coupling.",
-    "source_pages": [
-      "data/wiki/patterns/gate-coupled-features-on-the-producer.md"
+      "data/wiki/data-science/notebook-dependency-staleness.md"
     ],
     "difficulty": "hard"
   },
@@ -105,7 +75,7 @@
     "query": "Our experiment dashboard lets us look daily and stop as soon as the probability that B beats A passes 95%, but too many launches turn out to do nothing. What is going on?",
     "expected_answer": "Bayesian stopping rules are not immune to repeated looks: a daily P(B>A)>0.95 rule shipped 23.8% of no-effect changes in simulation, and an expected-loss rule needs a minimum sample size to avoid shipping harmful changes.",
     "source_pages": [
-      "data/wiki/foundations/peeking-under-bayesian-stopping-rules.md"
+      "data/wiki/data-analytics/peeking-under-bayesian-stopping-rules.md"
     ],
     "difficulty": "hard"
   },
@@ -145,7 +115,7 @@
     "query": "Should the support knowledge retrieval be fully managed by a cloud vendor's knowledge base or a Python service, and what migration path was chosen?",
     "expected_answer": "Start with the fully managed cloud knowledge-base option for prototyping, then migrate to a polyglot setup once evaluation validates quality, since the managed option gives up retry logic, caching and custom reranking.",
     "source_pages": [
-      "data/wiki/langgraph/2026-04-12-orchestration-architecture.md"
+      "data/wiki/frameworks/langgraph/2026-04-12-orchestration-architecture.md"
     ],
     "difficulty": "medium"
   },
@@ -160,44 +130,14 @@
     "difficulty": "hard"
   },
   {
-    "id": "uniform-017",
-    "category": "retrieval",
-    "query": "How should an automation loop behave when one stage needs a person who may take days to respond?",
-    "expected_answer": "The orchestrator detects the gate, halts and prints the next step, never dispatches the gate stage itself, and re-derives its position from files each time it is re-invoked.",
-    "source_pages": [
-      "data/wiki/patterns/orchestrate-around-the-human-gate.md"
-    ],
-    "difficulty": "medium"
-  },
-  {
     "id": "uniform-018",
     "category": "retrieval",
     "query": "What does expected loss versus unexpected loss mean for bank capital, and why does capital rise much more slowly than loss as default probability rises?",
     "expected_answer": "Expected loss is PD x LGD x EAD covered by pricing; capital covers the unexpected part in a one-in-a-thousand-year bad state of a one-factor model, with correlation declining as PD rises, so capital grows slower than expected loss.",
     "source_pages": [
-      "data/wiki/foundations/basel-irb-capital-vocabulary.md"
+      "data/wiki/data-analytics/basel-irb-capital-vocabulary.md"
     ],
     "difficulty": "medium"
-  },
-  {
-    "id": "uniform-019",
-    "category": "retrieval",
-    "query": "When is it worth splitting an AI system into several agents with different jobs instead of one agent with tools?",
-    "expected_answer": "Only when the task needs genuinely different modes of thinking and one agent can't hold quality; it is never a starting point, and roles that are just different prompts for the same task fail the test.",
-    "source_pages": [
-      "data/wiki/patterns/multi-agent-role-specialization.md"
-    ],
-    "difficulty": "easy"
-  },
-  {
-    "id": "uniform-020",
-    "category": "retrieval",
-    "query": "Obsidian can't toggle edge types or lay out notes by embedding similarity; what local tool explores the wiki graph that way?",
-    "expected_answer": "A local React Flow explorer with wikilink, semantic and shared-tag edge types, UMAP layout, and an agent chat that highlights nodes and proposes wikilinks to write back.",
-    "source_pages": [
-      "data/wiki/projects/librarian-graph-explorer.md"
-    ],
-    "difficulty": "easy"
   },
   {
     "id": "uniform-021",
@@ -205,19 +145,9 @@
     "query": "Why did my cross-validation score look great after selecting the top features on all the data first?",
     "expected_answer": "Feature selection outside the CV loop leaks: on pure noise it produced R squared 0.89 versus -0.03 when selection ran inside a pipeline refit per fold. Any fitted preprocessing step belongs inside the folds.",
     "source_pages": [
-      "data/wiki/foundations/pipelines-prevent-preprocessing-leakage.md"
+      "data/wiki/data-science/pipelines-prevent-preprocessing-leakage.md"
     ],
     "difficulty": "medium"
-  },
-  {
-    "id": "uniform-022",
-    "category": "retrieval",
-    "query": "Our script that copies shared skills into generated projects passes CI, yet projects ship with broken paths and missing referenced files. Why didn't the check catch it?",
-    "expected_answer": "A guard that only checks listed names exist upstream cannot see machine-local paths in content, orphaned directories, referenced but unvendored dependencies or stale indexes; add content checks and a report-only check mode instead of silent repair.",
-    "source_pages": [
-      "data/wiki/patterns/name-only-sync-guards-miss-content-drift.md"
-    ],
-    "difficulty": "hard"
   },
   {
     "id": "uniform-023",
@@ -225,29 +155,9 @@
     "query": "How should I structure a machine-learning code template so users don't just write one giant run script?",
     "expected_answer": "Organise by process stage (ingest, transform, features, training, evaluation, calibration, monitoring) with Pydantic schemas at each boundary, keeping technique folders as libraries the stages call.",
     "source_pages": [
-      "data/wiki/foundations/ml-stage-layering.md"
+      "data/wiki/data-science/ml-stage-layering.md"
     ],
     "difficulty": "medium"
-  },
-  {
-    "id": "uniform-024",
-    "category": "retrieval",
-    "query": "What rules should I follow when launching coding agents in separate git worktrees?",
-    "expected_answer": "Branch from committed state, create the worktree in the target repo, let the dispatcher own the git workflow, and treat the agent's commits as provisional until a human reviews the diff.",
-    "source_pages": [
-      "data/wiki/patterns/worktree-agent-dispatch-contract.md"
-    ],
-    "difficulty": "medium"
-  },
-  {
-    "id": "uniform-025",
-    "category": "retrieval",
-    "query": "Our single roadmap document has turned into a requirements list, backlog, decision log and risk register all at once and nobody can cite anything. How should I restructure it?",
-    "expected_answer": "Split it into three documents answering scope, requirements and roadmap, give requirements, decisions, risks and doc-vs-code contradictions stable prefixed IDs, and never treat dated research docs as contracts.",
-    "source_pages": [
-      "data/wiki/meta/three-doc-spec-split.md"
-    ],
-    "difficulty": "hard"
   },
   {
     "id": "uniform-026",
@@ -255,39 +165,9 @@
     "query": "How does a convolution network see far back in an audio signal without needing hundreds of layers?",
     "expected_answer": "By doubling the dilation factor each layer while keeping the filter causal, the receptive field grows exponentially with depth (1 to 512 gives 1024 samples per block), as in WaveNet.",
     "source_pages": [
-      "data/wiki/foundations/dilated-causal-convolutions.md"
+      "data/wiki/data-science/dilated-causal-convolutions.md"
     ],
     "difficulty": "easy"
-  },
-  {
-    "id": "uniform-027",
-    "category": "retrieval",
-    "query": "My retrieval step is a web search with no reranker score; how can I still estimate how confident the answer is?",
-    "expected_answer": "Derive confidence from which source answered: direct synthesized answer is high, raw results medium, nothing found low. Collapse tiers that cause no behaviour change and let only the lowest trigger an honest non-answer.",
-    "source_pages": [
-      "data/wiki/patterns/provenance-tiered-confidence-gate.md"
-    ],
-    "difficulty": "medium"
-  },
-  {
-    "id": "uniform-028",
-    "category": "retrieval",
-    "query": "A chatbot attached the sources from an earlier question to a new unrelated answer in a long conversation, yet all my single-message tests pass. What is the bug?",
-    "expected_answer": "The citation collector walked message history backwards without stopping at the most recent human message, so earlier turns' tool citations leaked in; stop the walk at the latest user turn.",
-    "source_pages": [
-      "data/wiki/patterns/turn-bounded-citation-walk.md"
-    ],
-    "difficulty": "hard"
-  },
-  {
-    "id": "uniform-029",
-    "category": "retrieval",
-    "query": "If a secondary lookup fails but the main page data loaded, should I throw to the error page or render a degraded page?",
-    "expected_answer": "Keep rendering the degraded shape but log the failure where on-call actually looks, since the problem is that failure and absence look alike to operators; throw only if continuing could record a wrong outcome.",
-    "source_pages": [
-      "data/wiki/patterns/degrade-the-render-surface-the-failure.md"
-    ],
-    "difficulty": "medium"
   },
   {
     "id": "uniform-030",
@@ -300,16 +180,6 @@
     "difficulty": "medium"
   },
   {
-    "id": "uniform-031",
-    "category": "retrieval",
-    "query": "The TypeScript backend in our template has no retrieval evaluation suite that the Python one has; is that a gap to fill?",
-    "expected_answer": "Not necessarily: ask whether the backend's role requires it. The TS agent has no retrieval step, so hit-rate grading would be meaningless, making the missing suite a deliberate asymmetry rather than a gap.",
-    "source_pages": [
-      "data/wiki/patterns/role-scoped-parity.md"
-    ],
-    "difficulty": "hard"
-  },
-  {
     "id": "uniform-032",
     "category": "retrieval",
     "query": "How do I make an LLM-written summary with claims checkable by code instead of trusting it?",
@@ -320,52 +190,12 @@
     "difficulty": "medium"
   },
   {
-    "id": "uniform-033",
-    "category": "retrieval",
-    "query": "In which repository should I open a ticket when an idea comes up while I'm working in a different repo?",
-    "expected_answer": "File it in the repo whose code it changes, not a central board; when moving a misfiled issue, fully qualify cross-repo references first because bare #N references rebind to the destination repo.",
-    "source_pages": [
-      "data/wiki/patterns/issues-live-in-the-repo-they-change.md"
-    ],
-    "difficulty": "easy"
-  },
-  {
     "id": "uniform-034",
     "category": "retrieval",
     "query": "What thresholds should an evaluation report use so it doesn't print misleading percentages from few human labels?",
     "expected_answer": "Always print N with rates, show raw counts only for buckets under 30, add a fixed insufficient-N banner when the total is under 100, and compute before/after deltas only when both runs clear the floor on the same population.",
     "source_pages": [
       "data/wiki/eval/small-n-reporting-floor.md"
-    ],
-    "difficulty": "medium"
-  },
-  {
-    "id": "uniform-035",
-    "category": "retrieval",
-    "query": "How do I decide which screens get the bottom navigation bar in a Next.js app without a pathname conditional?",
-    "expected_answer": "Use nested route groups so the layout file location determines membership, and add a guard on the location because a page moved one directory silently gains or loses the tab bar while render tests pass.",
-    "source_pages": [
-      "data/wiki/patterns/layout-membership-by-location.md"
-    ],
-    "difficulty": "medium"
-  },
-  {
-    "id": "uniform-036",
-    "category": "retrieval",
-    "query": "We launched a ranked list with hand-picked weights and want to know how much clicks depend on being near the top versus quality, without a separate experiment platform.",
-    "expected_answer": "Serve the same selected items in a seeded random order on a small fraction of requests (one in twenty), flag them, and compare interaction rates by position between explore and normal serves.",
-    "source_pages": [
-      "data/wiki/patterns/explore-slice-for-position-bias.md"
-    ],
-    "difficulty": "hard"
-  },
-  {
-    "id": "uniform-037",
-    "category": "retrieval",
-    "query": "How should I anonymise real support tickets into test fixtures, and where does an LLM fit in?",
-    "expected_answer": "Run a deterministic regex scrub first to replace structural PII with typed placeholders, then have a local or data-processing-agreement-covered LLM review only the placeholder output, and gate the commit with a grep check.",
-    "source_pages": [
-      "data/wiki/patterns/deterministic-scrub-before-llm-review.md"
     ],
     "difficulty": "medium"
   },
@@ -395,7 +225,7 @@
     "query": "How do I prove a sales forecasting model is better than a simple approach?",
     "expected_answer": "Compare against free baselines, above all seasonal naive, over many rolling origins using a scaled error plus bias, and hold the last origin back as an untouched exam.",
     "source_pages": [
-      "data/wiki/foundations/forecast-baselines-and-rolling-origin-backtest.md"
+      "data/wiki/data-analytics/forecast-baselines-and-rolling-origin-backtest.md"
     ],
     "difficulty": "medium"
   },
@@ -405,7 +235,7 @@
     "query": "I sliced my model's mistakes by 21 customer groups and a few look much worse, but I'm worried they are chance findings. How do I check?",
     "expected_answer": "Use Wilson intervals and a false-discovery correction like Benjamini-Hochberg across slices, confirm on unread rows, and note group error-rate gaps are expected because FPR, PPV and FNR are tied by an identity.",
     "source_pages": [
-      "data/wiki/foundations/slicing-errors-with-correction-and-the-rate-identity.md"
+      "data/wiki/data-science/slicing-errors-with-correction-and-the-rate-identity.md"
     ],
     "difficulty": "hard"
   },
@@ -415,7 +245,7 @@
     "query": "How do I compute a proper standard error for revenue per session in an A/B test randomised by user?",
     "expected_answer": "Use a first-order Taylor expansion using variances and covariance across users; treating sessions as independent understated the standard error by about 40%, and a user-level bootstrap agrees with it.",
     "source_pages": [
-      "data/wiki/foundations/delta-method-for-ratio-metrics.md"
+      "data/wiki/data-analytics/delta-method-for-ratio-metrics.md"
     ],
     "difficulty": "easy"
   },
@@ -425,7 +255,7 @@
     "query": "Why does my document classifier have decent accuracy but fail on rare genres, and which metric shows it?",
     "expected_answer": "Large classes carry accuracy while small ones are barely predicted; macro-F1 exposes that, log-loss punishes overconfident Naive Bayes, and multi-label tasks need micro versus macro averages.",
     "source_pages": [
-      "data/wiki/foundations/text-classification-metrics-macro-f1-log-loss-and-calibration.md"
+      "data/wiki/data-science/text-classification-metrics-macro-f1-log-loss-and-calibration.md"
     ],
     "difficulty": "medium"
   },
@@ -438,16 +268,6 @@
       "data/wiki/eval/eval-harness-anatomy.md"
     ],
     "difficulty": "easy"
-  },
-  {
-    "id": "uniform-045",
-    "category": "retrieval",
-    "query": "How do I build a recommendation ranker so a logged result can be reproduced exactly later?",
-    "expected_answer": "Make it pure functions with time, viewport, session history and a seed passed in, ties broken by id, signals in [0,1], and write one serve row before responding.",
-    "source_pages": [
-      "data/wiki/patterns/replayable-slate-ranker.md"
-    ],
-    "difficulty": "medium"
   },
   {
     "id": "uniform-046",
@@ -465,17 +285,7 @@
     "query": "Our overall repeat rate fell 11 points. How do I tell if each channel got worse or the channel proportions shifted?",
     "expected_answer": "Split the change into a rate effect (new segment rates on old mix) and a mix effect, noting the split depends on order and doesn't prove cause.",
     "source_pages": [
-      "data/wiki/foundations/rate-and-mix-decomposition.md"
-    ],
-    "difficulty": "hard"
-  },
-  {
-    "id": "uniform-048",
-    "category": "retrieval",
-    "query": "I replaced one config variable with two and did a search-and-replace of the old name, but the generated hooks shipped broken. What went wrong?",
-    "expected_answer": "Splitting a multi-segment path variable is not a rename; each consumer wanted a different segment, so every consumer must be read individually and the result verified by rendering rather than grepping.",
-    "source_pages": [
-      "data/wiki/patterns/read-every-consumer-migration.md"
+      "data/wiki/data-analytics/rate-and-mix-decomposition.md"
     ],
     "difficulty": "hard"
   },
@@ -485,17 +295,7 @@
     "query": "How do I decide whether to ship variant B using the probability it beats A and what I would lose if wrong?",
     "expected_answer": "Sample each arm's Beta posterior to get P(B>A), a lift interval and expected loss; ship when expected loss is below the smallest difference you care about, and report lift size.",
     "source_pages": [
-      "data/wiki/foundations/bayesian-ab-testing-with-expected-loss.md"
-    ],
-    "difficulty": "easy"
-  },
-  {
-    "id": "uniform-050",
-    "category": "retrieval",
-    "query": "What naming scheme should git branches follow so they tie back to tickets?",
-    "expected_answer": "Use type-TICKET-short-slug with a per-repo type list and a hotfix escape hatch for production-blocking bugs.",
-    "source_pages": [
-      "data/wiki/patterns/branch-naming-convention.md"
+      "data/wiki/data-analytics/bayesian-ab-testing-with-expected-loss.md"
     ],
     "difficulty": "easy"
   },
@@ -508,16 +308,6 @@
       "data/wiki/infra/cloud-service-deployment.md"
     ],
     "difficulty": "medium"
-  },
-  {
-    "id": "uniform-052",
-    "category": "retrieval",
-    "query": "Several parallel plans each invented their own way to look up operator info before the database table exists. How do I avoid that?",
-    "expected_answer": "Ship the lookup as a typed fixture behind the final async interface, with null meaning one thing, enumerated invariant tests and separate display and scoring fields, and have one dispatcher name the canonical contract first.",
-    "source_pages": [
-      "data/wiki/patterns/async-seam-before-the-table.md"
-    ],
-    "difficulty": "hard"
   },
   {
     "id": "uniform-053",
@@ -535,27 +325,7 @@
     "query": "How can I estimate customer lifetime value from monthly state transitions in one calculation, and what goes wrong?",
     "expected_answer": "Treat churned as absorbing, build the transition table, and solve V=(I - P/(1+d))^-1 R; a single pooled chain averages unlike customers and undervalues them by about 19%, so use a mixture of chains.",
     "source_pages": [
-      "data/wiki/foundations/markov-chain-customer-value.md"
-    ],
-    "difficulty": "medium"
-  },
-  {
-    "id": "uniform-055",
-    "category": "retrieval",
-    "query": "How should an automated code reviewer phrase a suspicion it can't fully prove versus one confirmed by a test?",
-    "expected_answer": "Each finding carries one of four states: verified, supported, hypothesis or question, where hypotheses must not be phrased as confirmed defects and questions as clarification requests; the producing subagent self-verifies.",
-    "source_pages": [
-      "data/wiki/patterns/evidence-classification-model.md"
-    ],
-    "difficulty": "hard"
-  },
-  {
-    "id": "uniform-056",
-    "category": "retrieval",
-    "query": "When combining findings from several external analysis tools, should I normalise their severity levels?",
-    "expected_answer": "No: keep each tool's native severity untouched and add a separate merge-impact field answering whether this PR should merge, owned by the orchestrator.",
-    "source_pages": [
-      "data/wiki/patterns/source-severity-vs-merge-impact.md"
+      "data/wiki/data-analytics/markov-chain-customer-value.md"
     ],
     "difficulty": "medium"
   },
@@ -565,19 +335,9 @@
     "query": "My transformer classifier trains fine and gets good accuracy as a batch, but gives much worse results one example at a time. No errors raised.",
     "expected_answer": "Likely batch_first=False default so examples attend across the batch (0.966 batched vs 0.658 single), plus padding mask issues and loss broadcast shape; test that padding doesn't change output.",
     "source_pages": [
-      "data/wiki/foundations/transformer-encoder-silent-shape-bugs.md"
+      "data/wiki/data-science/transformer-encoder-silent-shape-bugs.md"
     ],
     "difficulty": "hard"
-  },
-  {
-    "id": "uniform-058",
-    "category": "retrieval",
-    "query": "How do I stop a CI guard script from passing when it silently scanned nothing?",
-    "expected_answer": "Record how many units were inspected and fail when the count falls below a plausible floor (e.g. at least 30 files), since a check unable to distinguish clean from not run is worse than none.",
-    "source_pages": [
-      "data/wiki/patterns/scan-floor-guard-against-silent-no-op-checks.md"
-    ],
-    "difficulty": "medium"
   },
   {
     "id": "uniform-059",
@@ -590,34 +350,14 @@
     "difficulty": "medium"
   },
   {
-    "id": "uniform-060",
-    "category": "retrieval",
-    "query": "How are coding practice reps organised and logged separately from course material, and how do they link to concepts?",
-    "expected_answer": "As a gym of language/topic tracks with one file per drill; frontmatter concepts create concept-to-drill graph edges, bodies are spoiler-safe, and one append-only log is read live by practice mode.",
-    "source_pages": [
-      "data/wiki/interview/drill-gym-tracks-and-schema.md"
-    ],
-    "difficulty": "medium"
-  },
-  {
     "id": "uniform-061",
     "category": "retrieval",
     "query": "I have an orders table and want each order's share of its region's revenue as a new column without collapsing any rows. Which grouped operation keeps the original row count, and how do the others differ?",
     "expected_answer": "Use transform: it broadcasts a group figure back to every row so you can divide by it. agg returns one row per group, filter keeps or drops whole groups, and apply is the general but slowest escape hatch.",
     "source_pages": [
-      "data/wiki/foundations/groupby-split-apply-combine-and-result-shapes.md"
+      "data/wiki/data-analytics/groupby-split-apply-combine-and-result-shapes.md"
     ],
     "difficulty": "easy"
-  },
-  {
-    "id": "uniform-062",
-    "category": "retrieval",
-    "query": "Our place-description labels mix atmosphere words with things like 'good for dates' and 'open late', and we can't tell why any given label is wrong. How should the labelling vocabulary be restructured?",
-    "expected_answer": "Give each kind of fact its own facet (vibe, audience fit, time fit, offer) with its own evidence rule and measurement, derive what a rule can compute (time from opening hours), stamp per-value provenance, and accept on per-facet precision before coverage.",
-    "source_pages": [
-      "data/wiki/patterns/one-facet-per-fact.md"
-    ],
-    "difficulty": "medium"
   },
   {
     "id": "uniform-063",
@@ -635,7 +375,7 @@
     "query": "My tree-based hourly demand forecast keeps coming in too low because demand grew a lot year over year, so every test hour is above anything seen in training. How do I fix that?",
     "expected_answer": "A tree is capped by its training range, so divide the target and lags by a recent level known at issue time (such as the previous week's mean), learn the shape relative to it, then multiply back. On the worked series MASE reached 0.786 against LSTM 1.039, TCN 0.981 and DLinear 1.056.",
     "source_pages": [
-      "data/wiki/foundations/gradient-boosted-forecasting-relative-to-level.md"
+      "data/wiki/data-science/gradient-boosted-forecasting-relative-to-level.md"
     ],
     "difficulty": "medium"
   },
@@ -645,37 +385,7 @@
     "query": "Our voice assistant cuts people off when they read out a phone number but also waits awkwardly long after short answers. Why does a silence timer fail both ways and what replaces it?",
     "expected_answer": "Pauses inside a turn often exceed gaps between turns, and silence detection emits only one bit and cannot predict. Streaming perception (causal encoder with incremental decoding, LLM-based or in-recogniser turn detection) judges end of turn from meaning plus acoustics.",
     "source_pages": [
-      "data/wiki/foundations/semantic-turn-detection.md"
-    ],
-    "difficulty": "medium"
-  },
-  {
-    "id": "uniform-066",
-    "category": "retrieval",
-    "query": "How can I mechanically reject code-review comments from an AI reviewer that never actually opened the file it cites?",
-    "expected_answer": "Require each finding to carry a quoted_span, the literal source text at the cited line, and have a validator check it whitespace-normalised within one line; a mismatch rejects the finding. Convention claims must also cite the spec or not invoke it.",
-    "source_pages": [
-      "data/wiki/patterns/quoted-span-proof-of-reading.md"
-    ],
-    "difficulty": "medium"
-  },
-  {
-    "id": "uniform-067",
-    "category": "retrieval",
-    "query": "The dashboard card summarising our agent's log files suddenly shows 'no data' after the model started writing entries slightly differently, with no errors anywhere. Where is the format actually defined, and why was it silent?",
-    "expected_answer": "The real format contract is the downstream parsers' positional regexes, since the skills barely specify the format. Parsers log a warning and move on, so drift looks like a quiet week rather than a failure.",
-    "source_pages": [
-      "data/wiki/patterns/format-contract-lives-in-the-parser.md"
-    ],
-    "difficulty": "hard"
-  },
-  {
-    "id": "uniform-068",
-    "category": "retrieval",
-    "query": "Two repos were forked from the same architecture notes, and six weeks later one still respects its layering rules while the other is full of violations. What explains the difference and what should we do about our own rules?",
-    "expected_answer": "The divergence was enforcement: rules stated only in docs drift within weeks, while rules enforced in lint/CI with an empty exception list hold. For each architectural rule, name the check that enforces it or label it aspirational.",
-    "source_pages": [
-      "data/wiki/patterns/stated-seams-drift-enforced-seams-hold.md"
+      "data/wiki/llm/semantic-turn-detection.md"
     ],
     "difficulty": "medium"
   },
@@ -685,7 +395,7 @@
     "query": "In a distributed word-count job some totals came out silently wrong because workers routed keys using the language's built-in string hash. Why, and how do dataflow engines recover lost work without replicating data?",
     "expected_answer": "A per-process salted hash splits one key across reducers; the partition hash must be stable across processes. Spark recovers by recomputing lost partitions from lineage of deterministic transformations, writing intermediate data down only when recomputation is expensive.",
     "source_pages": [
-      "data/wiki/foundations/mapreduce-the-shuffle-and-spark-lineage.md"
+      "data/wiki/data-engineering/mapreduce-the-shuffle-and-spark-lineage.md"
     ],
     "difficulty": "medium"
   },
@@ -700,42 +410,12 @@
     "difficulty": "easy"
   },
   {
-    "id": "uniform-071",
-    "category": "retrieval",
-    "query": "We logged a week of stage events from our plan, build and review agent pipeline and the retry-rate quality signal looked nearly perfect, yet plans kept failing downstream. What went wrong with the measurement?",
-    "expected_answer": "The retry counter read 0.017 because failures were paid for one stage later as plan-invalid at build time; measure failure where it is paid. The ledgers also didn't join, logging died mid-loop, and unscoped issues skipping research were later invalidated.",
-    "source_pages": [
-      "data/wiki/meta/workflow-pipeline-telemetry-audit.md"
-    ],
-    "difficulty": "hard"
-  },
-  {
     "id": "uniform-072",
     "category": "retrieval",
     "query": "I one-hot encoded the categorical columns next to numeric ones and ran k-means on customer data; the clusters look tidy but seem to ignore the categories entirely. Why, and what are the alternatives?",
     "expected_answer": "k-means weighs columns by variance and dummies have tiny variance, so categories go unheard while still giving tidy groups. Use FAMD, MCA, Gower with PAM, or latent class analysis depending on which columns hold the groups.",
     "source_pages": [
-      "data/wiki/foundations/clustering-categorical-and-mixed-data.md"
-    ],
-    "difficulty": "medium"
-  },
-  {
-    "id": "uniform-073",
-    "category": "retrieval",
-    "query": "Clients are supposed to get an email whenever their engagement moves to a new stage, but nothing sends it because no service feels responsible. How should this be designed so every change triggers communications?",
-    "expected_answer": "Give the stage field one accountable writer and have a database webhook on update call a comms route that renders and sends the email; the writer never owns delivery. New consumers then need no producer changes, and the receiver must be idempotent.",
-    "source_pages": [
-      "data/wiki/patterns/state-writer-never-owns-side-effects.md"
-    ],
-    "difficulty": "medium"
-  },
-  {
-    "id": "uniform-074",
-    "category": "retrieval",
-    "query": "Our analytics beacon endpoint accepts a client-supplied result-set id, so anyone can forge it and pollute our metrics. How do we defend it without giving attackers a way to probe?",
-    "expected_answer": "Sign the id at issue, verify at the sink and write the id recovered from the token; reject bad signatures with the same 202 recorded 0 as any drop, logging a greppable warning. Tests must assert the beacon payload since wiring regressions fail silently.",
-    "source_pages": [
-      "data/wiki/patterns/indistinguishable-rejection-on-best-effort-sinks.md"
+      "data/wiki/data-analytics/clustering-categorical-and-mixed-data.md"
     ],
     "difficulty": "medium"
   },
@@ -745,7 +425,7 @@
     "query": "What is a strong baseline for classifying documents into topics with a few thousand labelled examples, and which model families are poor choices on sparse text features?",
     "expected_answer": "TF-IDF unigrams/bigrams with regularised logistic regression or a linear SVM, inside a pipeline so vectoriser is refit per fold. Random forests and gradient boosting do worse and are slower; averaged word vectors usually trail tuned TF-IDF.",
     "source_pages": [
-      "data/wiki/foundations/linear-text-classifiers-and-the-tf-idf-baseline.md"
+      "data/wiki/data-science/linear-text-classifiers-and-the-tf-idf-baseline.md"
     ],
     "difficulty": "easy"
   },
@@ -755,7 +435,7 @@
     "query": "ESLint flags dozens of untyped 'any' values in our TypeScript codebase. What legitimate ways are there to remove them, and where should I start?",
     "expected_answer": "Use a real type, unknown with narrowing for runtime-shaped values, or a generic when the function only passes the value through. Start with shared types files since one fix there reaches every consumer, though expect a wave of newly visible errors.",
     "source_pages": [
-      "data/wiki/foundations/typescript-any-escapes.md"
+      "data/wiki/programming/typescript-any-escapes.md"
     ],
     "difficulty": "easy"
   },
@@ -765,7 +445,7 @@
     "query": "Someone ran a bad DELETE on our primary database and the standby replica was emptied within milliseconds. Why didn't replication protect us, and what would have?",
     "expected_answer": "A replica copies mistakes; replicas cover hardware while backups cover people. A base backup plus archived WAL enables point-in-time recovery to just before the mistake. Sync replication also stalls commits if the standby stalls.",
     "source_pages": [
-      "data/wiki/foundations/replication-backups-and-the-durability-ladder-above-the-disk.md"
+      "data/wiki/data-engineering/replication-backups-and-the-durability-ladder-above-the-disk.md"
     ],
     "difficulty": "easy"
   },
@@ -775,17 +455,7 @@
     "query": "Our model that decides whether two product records are the same item scores great on a random split of record pairs but flops on a brand-new catalogue. Why, and how should I split the data?",
     "expected_answer": "Match labels are transitive, so a random pair split leaks answers. Close the labels into groups, hold out whole groups, block inside each side, hold out everything a model could confuse, and tune the merge threshold on group F1.",
     "source_pages": [
-      "data/wiki/foundations/entity-disjoint-splits-and-group-scores-for-pair-matchers.md"
-    ],
-    "difficulty": "medium"
-  },
-  {
-    "id": "uniform-079",
-    "category": "retrieval",
-    "query": "Our paginated reads through a REST layer over Postgres occasionally skip or repeat rows between pages, and unpaged reads quietly stop at 1000 rows. What is going on?",
-    "expected_answer": "The API silently caps unpaged selects at 1000 rows, and paging on a non-unique key like created_at lets ties fall on both or neither side of a boundary. Append the primary key as tiebreaker, loop range until a short page, and test against a fake that honours range.",
-    "source_pages": [
-      "data/wiki/patterns/page-on-a-total-order.md"
+      "data/wiki/data-science/entity-disjoint-splits-and-group-scores-for-pair-matchers.md"
     ],
     "difficulty": "medium"
   },
@@ -800,22 +470,12 @@
     "difficulty": "easy"
   },
   {
-    "id": "uniform-081",
-    "category": "retrieval",
-    "query": "I have an interview on testing non-deterministic LLM systems. What is the difference between pass@k and pass^k, and how are tests tiered by cost?",
-    "expected_answer": "pass@k means at least one of k trials succeeds (capability ceiling); pass^k means all succeed (reliability, 75% per trial gives about 42% for k=3). Tiers: unit, trajectory, end-to-end, cheapest first, with tracing built before metrics.",
-    "source_pages": [
-      "data/wiki/interview/evals-observability-interview-guide.md"
-    ],
-    "difficulty": "easy"
-  },
-  {
     "id": "uniform-082",
     "category": "retrieval",
     "query": "Rather than picking from a menu of chart types, is there a way to think of a chart as a set of composable decisions, so I could turn a line chart into small multiples by changing one thing?",
     "expected_answer": "The grammar of graphics decomposes a chart into data, mark, encoding, statistic, scale, coordinates and facet, each changeable independently. Chart choice becomes which encoding makes the target comparison easiest to read.",
     "source_pages": [
-      "data/wiki/foundations/grammar-of-graphics.md"
+      "data/wiki/data-analytics/grammar-of-graphics.md"
     ],
     "difficulty": "easy"
   },
@@ -835,7 +495,7 @@
     "query": "Our event consumer sometimes loses messages after a crash even though the job looked healthy, and a producer team changed a field type without telling anyone. What settings and tooling guard against both?",
     "expected_answer": "Auto-commit of offsets on a timer is at-most-once on a crash; commit manually after the write succeeds and make the sink idempotent. Avro with a schema registry rejects a breaking producer schema, turning a silent downstream break into a failed deploy.",
     "source_pages": [
-      "data/wiki/foundations/kafka-ingest-model-delivery-semantics-and-stream-windows.md"
+      "data/wiki/data-engineering/kafka-ingest-model-delivery-semantics-and-stream-windows.md"
     ],
     "difficulty": "medium"
   },
@@ -855,7 +515,7 @@
     "query": "The feature-importance chart from my gradient-boosted model ranks a random ID column above several meaningful fields. Why does that happen, and what should I use to judge which columns matter?",
     "expected_answer": "Impurity (gain) importance is summed on training data so it credits overfit noise and many-valued columns. Use permutation importance on held-out data (grouping correlated columns), and use partial dependence with ICE lines to see an effect's shape.",
     "source_pages": [
-      "data/wiki/foundations/tree-ensemble-interpretation-beyond-impurity-importance.md"
+      "data/wiki/data-science/tree-ensemble-interpretation-beyond-impurity-importance.md"
     ],
     "difficulty": "easy"
   },
@@ -865,7 +525,7 @@
     "query": "In TypeScript I have an API response that is either success with data or failure with an error, and I want the compiler to tell me every place I forgot to handle a newly added variant. How?",
     "expected_answer": "Model it as a union with a literal kind field, narrow with a switch, and in the default branch assign the value to a variable typed never so that an unhandled new member fails to compile. Keep a runtime throw for externally sourced values.",
     "source_pages": [
-      "data/wiki/foundations/typescript-discriminated-unions-and-narrowing.md"
+      "data/wiki/programming/typescript-discriminated-unions-and-narrowing.md"
     ],
     "difficulty": "easy"
   },
@@ -895,7 +555,7 @@
     "query": "My linear regression with hundreds of polynomial features gets a hugely negative test R squared. What kinds of penalties fix this, and why does the strength knob point the opposite way for classifiers?",
     "expected_answer": "Add ridge (L2, shrinks all weights) or lasso (L1, zeroes some weights, so selects features); lasso matched ridge with 7 nonzero weights of 285. For classifiers the knob is C, the inverse of regularisation strength, so low C means more regularisation, opposite to alpha.",
     "source_pages": [
-      "data/wiki/foundations/penalised-linear-models-ridge-lasso-elastic-net.md"
+      "data/wiki/data-science/penalised-linear-models-ridge-lasso-elastic-net.md"
     ],
     "difficulty": "easy"
   },
@@ -905,7 +565,7 @@
     "query": "We rebuild a big reporting table nightly and want to publish it only if checks pass, with a near-instant way back if the numbers turn out wrong. What technique gives that and when does rollback stop being easy?",
     "expected_answer": "Build the new table beside the old, audit it, then repoint a view at it in about a millisecond; rollback is the same swap. It is only easy while the old build is kept and nothing has been written on top of the new version; storage doubles meanwhile.",
     "source_pages": [
-      "data/wiki/foundations/blue-green-view-swap-for-data-deploys.md"
+      "data/wiki/data-engineering/blue-green-view-swap-for-data-deploys.md"
     ],
     "difficulty": "medium"
   },
@@ -920,52 +580,12 @@
     "difficulty": "medium"
   },
   {
-    "id": "uniform-093",
-    "category": "retrieval",
-    "query": "Three of the score components in our ranking experiment read exactly zero across every one of tens of thousands of scored pairs. Should I go fix the code?",
-    "expected_answer": "Trace first: record per pair each modifier's value and whether its input fields were present. A zero is either a plumbing bug (a second eval-local constructor using a different spelling than production) or a real absence where the corpus never emits the field; the two need opposite responses.",
-    "source_pages": [
-      "data/wiki/patterns/dead-modifier-trace.md"
-    ],
-    "difficulty": "hard"
-  },
-  {
-    "id": "uniform-094",
-    "category": "retrieval",
-    "query": "Most of the experiment hypotheses in our tooling tracker can never be marked verified or failed because nothing can measure their metric. How do we make the unmeasurable ones visible and stop new ones sneaking in?",
-    "expected_answer": "Declare every citable metric in one registry (name, kind, resolver or UNOBSERVABLE, description) and resolve each ledger row to one of four states: registered, needs-collection, unobservable, unregistered. A companion gate refuses rows whose metric does not resolve; this turned 49 unmeasurable hypotheses into a counted backlog.",
-    "source_pages": [
-      "data/wiki/patterns/signal-registry-resolution-states.md"
-    ],
-    "difficulty": "hard"
-  },
-  {
-    "id": "uniform-095",
-    "category": "retrieval",
-    "query": "We're about to launch a ranked-results feature and the team wants to add analytics afterwards in a later sprint. Why might that be a mistake, and what exactly should the logs capture?",
-    "expected_answer": "Serve-time data cannot be backfilled, so logging ships in the same commit as or before the feature. Log the full ordered result set, version stamps, as-displayed position, viewport events including negatives, and decide position conventions for new slot types before first serve; keep a baseline arm.",
-    "source_pages": [
-      "data/wiki/patterns/ship-logging-before-features.md"
-    ],
-    "difficulty": "medium"
-  },
-  {
-    "id": "uniform-096",
-    "category": "retrieval",
-    "query": "After we renamed a tool, a hook in our agent settings simply stopped firing and nothing complained; CI jobs also pointed at deleted directories for weeks. Is there a general name for this, and how do we guard against it?",
-    "expected_answer": "Config reference rot: config names things, and a stale reference parses and silently does nothing. Guard lists in both directions (stale names and unlisted additions) with exhaustive accounting plus an explicit exclusion block, and check paths at write time with an advisory hook.",
-    "source_pages": [
-      "data/wiki/patterns/config-reference-rot.md"
-    ],
-    "difficulty": "hard"
-  },
-  {
     "id": "uniform-097",
     "category": "retrieval",
     "query": "I want to find multi-word phrases like place names in a pile of film descriptions, but ranking by raw pair counts gives me 'of the' and ranking by association score gives one-off names. What's the right approach?",
     "expected_answer": "Use pointwise mutual information (log of joint probability over the product of marginals) with a minimum count to stop rare pairs scoring highest; raw frequency with stop words removed finds common phrases while PMI with a floor finds distinctive ones.",
     "source_pages": [
-      "data/wiki/foundations/collocations-and-pointwise-mutual-information.md"
+      "data/wiki/data-science/collocations-and-pointwise-mutual-information.md"
     ],
     "difficulty": "easy"
   },
@@ -975,39 +595,9 @@
     "query": "We want to switch to a different embedding model for our search index without downtime. Why can't we just re-embed documents in place and how do we cut over safely?",
     "expected_answer": "Vectors from different models are not comparable, and queries still run but return garbage. Build a second collection from a snapshot, dual write edits, verify with the retrieval eval set, swap an alias atomically, and keep the old collection for rollback.",
     "source_pages": [
-      "data/wiki/foundations/re-embedding-a-vector-store-with-a-second-index.md"
+      "data/wiki/data-engineering/re-embedding-a-vector-store-with-a-second-index.md"
     ],
     "difficulty": "medium"
-  },
-  {
-    "id": "uniform-099",
-    "category": "retrieval",
-    "query": "An outside review found twenty gaps in an HTML design document that a skill regenerates from our specs. Should we patch the document?",
-    "expected_answer": "No: sort findings by where the fix belongs (generator bug, already tracked, genuinely missing, endorsements), fix the skill template or specs, and validate the skill's checklist by showing it reads zero on the failed output and passes on a hand-made reference.",
-    "source_pages": [
-      "data/wiki/patterns/fix-the-generator-not-the-generated-record.md"
-    ],
-    "difficulty": "hard"
-  },
-  {
-    "id": "uniform-100",
-    "category": "retrieval",
-    "query": "Which actions should an unattended agent be allowed to take on its own, given operators rarely act on its proposals?",
-    "expected_answer": "Draw the line at what cannot be undone, which is notification rather than mutation: automate reversible mutations with an audit trail (labels, closing issues, ledger appends) and keep anything that reaches a human behind the propose gate. Operator approval was the least reliable component (about 9 to 60 percent acted on).",
-    "source_pages": [
-      "data/wiki/patterns/reversibility-cliff.md"
-    ],
-    "difficulty": "hard"
-  },
-  {
-    "id": "uniform-101",
-    "category": "retrieval",
-    "query": "Our self-improving agent setup reports a 99 percent pass rate on its skill tests, yet a bad global rule got through. How is the metric misleading?",
-    "expected_answer": "The eval only checks that inputs route to the right skill; behavioural cases are logged as skipped and left out of the score, so 363 of 366 reads as health. Changes with the widest blast radius (global rules, hooks, skills) get the thinnest check; report skips beside pass rate and mirror write authority to verification strength.",
-    "source_pages": [
-      "data/wiki/patterns/verification-thins-where-blast-radius-widens.md"
-    ],
-    "difficulty": "hard"
   },
   {
     "id": "uniform-102",
@@ -1016,16 +606,6 @@
     "expected_answer": "Program-aided language models: few-shot examples are code with reasoning in comments, the model writes a program and an interpreter computes the answer. Executing model output is only acceptable in a sandbox, and today it is usually a code-execution tool.",
     "source_pages": [
       "data/wiki/prompting/program-aided-language-models.md"
-    ],
-    "difficulty": "easy"
-  },
-  {
-    "id": "uniform-103",
-    "category": "retrieval",
-    "query": "Preparing for a job interview on data pipelines and getting models into production: what word do interviewers listen for, and how do LLM-era systems map onto classic MLOps?",
-    "expected_answer": "Idempotency: reruns must not double-write. LLM-era mapping: embedding pipelines are ETL, prompt and config versioning is model-registry thinking, and eval suites in CI are the monitoring story. Default to batch until a product need forces streaming.",
-    "source_pages": [
-      "data/wiki/interview/data-eng-mlops-interview-guide.md"
     ],
     "difficulty": "easy"
   },
@@ -1045,19 +625,9 @@
     "query": "We have a ride-time prediction model and need to decide whether to score nightly into a table, run it as a stream, or expose an API. How do I choose, and what makes a nightly scoring job safe to rerun?",
     "expected_answer": "Batch unless someone is waiting; stream if a backend can wait seconds; online only if a person or synchronous call waits. Make batch rerun-safe by writing to a deterministic location and replacing it whole, with reproducible row ids and model_version on every row.",
     "source_pages": [
-      "data/wiki/foundations/choosing-batch-stream-or-online-serving.md"
+      "data/wiki/data-engineering/choosing-batch-stream-or-online-serving.md"
     ],
     "difficulty": "medium"
-  },
-  {
-    "id": "uniform-106",
-    "category": "retrieval",
-    "query": "My leakage-exclusion list for a credit model came out empty after research, and a reviewer can't tell whether I checked or skipped it. How should an empty result be presented so it counts as evidence?",
-    "expected_answer": "Carry the argument in code: state the assumption that makes it empty (linked to the constant it depends on, such as the horizon), add a named considered-and-kept set so the claim is falsifiable, and state the revisit trigger. Likewise a guard's empty findings list is not a pass unless it shows it ran.",
-    "source_pages": [
-      "data/wiki/patterns/argued-empty-list.md"
-    ],
-    "difficulty": "hard"
   },
   {
     "id": "uniform-107",
@@ -1065,7 +635,7 @@
     "query": "In Python, when should I catch exceptions, how do I keep the original error when I translate it into my own, and what is the cleanest way to make a setup and teardown helper that still cleans up on failure?",
     "expected_answer": "Catch the narrowest exception you can handle, re-raise with raise ... from err to keep the cause, and give each package one base exception class with fields callers can branch on. For cleanup use with/finally; a @contextmanager generator needs try/finally around the yield or teardown is skipped on error.",
     "source_pages": [
-      "data/wiki/foundations/python-exceptions-and-context-managers.md"
+      "data/wiki/programming/python-exceptions-and-context-managers.md"
     ],
     "difficulty": "easy"
   },
@@ -1080,22 +650,12 @@
     "difficulty": "medium"
   },
   {
-    "id": "uniform-109",
-    "category": "retrieval",
-    "query": "Our code-review pipeline only runs some of its checkers on small chore PRs. How do we stop a reader mistaking the missing checker output for a clean bill of health?",
-    "expected_answer": "Declare a scope with a rationale up front and list every reporter in the verdict with a status and reason: n/a for structurally inapplicable, skipped by scope as a cost decision, or skipped for a missing precondition, which is a coverage gap. An omitted section reads as a pass; a recorded skip is challengeable evidence.",
-    "source_pages": [
-      "data/wiki/patterns/scope-gated-reporter-dispatch.md"
-    ],
-    "difficulty": "medium"
-  },
-  {
     "id": "uniform-110",
     "category": "retrieval",
     "query": "A randomized experiment on one customer segment showed a clear lift. When can I expect that effect to hold for a different population, and what if the difference is something I never measured?",
     "expected_answer": "Randomisation gives only internal validity. If the selector into the sample is measured and also modifies the effect, reweighting recovers the population effect (0.117 raw became 0.169 versus a true 0.158); if the selector is unmeasured, reweighting cannot fix it (0.265 stayed 0.264).",
     "source_pages": [
-      "data/wiki/foundations/external-validity-and-transportability.md"
+      "data/wiki/data-analytics/external-validity-and-transportability.md"
     ],
     "difficulty": "medium"
   },
@@ -1105,7 +665,7 @@
     "query": "Our customer satisfaction survey got thousands of replies and a tiny published margin of error, but the real figure turned out far lower. Why doesn't a big sample or a decent response rate protect us?",
     "expected_answer": "The margin of error covers only sampling error; coverage and nonresponse errors do not shrink with more replies. Bias is roughly cov(chance of answering, answer) over mean chance, so rate matters only in the denominator. A blast email gave 73.0% against a true 49.6%.",
     "source_pages": [
-      "data/wiki/foundations/survey-error-sources-and-nonresponse-bias.md"
+      "data/wiki/data-analytics/survey-error-sources-and-nonresponse-bias.md"
     ],
     "difficulty": "medium"
   },
@@ -1115,7 +675,7 @@
     "query": "Our A/B test dashboard shows a nice win, but the two groups have 50.4 percent and 49.6 percent of two million users when we designed an even split. Should I trust the result, and what do I do?",
     "expected_answer": "No: a chi-square test on arm counts gives p about 1e-29, so users were lost or added non-randomly. Stop rather than reweight, localise the cause by slicing counts through assignment, execution, logging and analysis stages, and validate the pipeline with A/A tests.",
     "source_pages": [
-      "data/wiki/foundations/sample-ratio-mismatch.md"
+      "data/wiki/data-analytics/sample-ratio-mismatch.md"
     ],
     "difficulty": "easy"
   },
@@ -1125,7 +685,7 @@
     "query": "We migrated our trips table to a new warehouse engine and the row counts and revenue sum match exactly, yet analysts say daily numbers are off. Why did our checks pass, and how should we have compared?",
     "expected_answer": "Totals can match while no day matches (a one-hour offset left 0 of 367 days equal with identical row count and revenue). Run old and new in parallel and compare per partition and key, at the grain people read; checks fail when coarser than the fault.",
     "source_pages": [
-      "data/wiki/foundations/parallel-run-and-reconcile-at-the-grain-people-read.md"
+      "data/wiki/data-engineering/parallel-run-and-reconcile-at-the-grain-people-read.md"
     ],
     "difficulty": "medium"
   },
@@ -1150,36 +710,6 @@
     "difficulty": "medium"
   },
   {
-    "id": "uniform-116",
-    "category": "retrieval",
-    "query": "We are starting a repo from scratch and have to demonstrate to legal that nothing from a former vendor's code or vocabulary got in, without publishing that material. How can the claim be machine-checked?",
-    "expected_answer": "Make the first commit a gate holding SHA-256 hashes of normalised lines, of vocabulary sets and of numeric profiles (safe to publish). Run line checks in CI, set checks (50%+ overlap) locally, and calibrate by making it flag the known contaminated old tree before trusting it.",
-    "source_pages": [
-      "data/wiki/patterns/hashed-fingerprint-contamination-gate.md"
-    ],
-    "difficulty": "hard"
-  },
-  {
-    "id": "uniform-117",
-    "category": "retrieval",
-    "query": "Our server-rendered pages take two to five seconds to show and I suspect the login check is being called repeatedly. What should I do before changing code, and what is the likely fix?",
-    "expected_answer": "Measure per phase on a deployed build first, since dev servers distort timing. The auth provider's user lookup can run in the proxy, layout and page (three round trips) because cache() does not dedupe fresh clients; collapse to one cached request-scoped call and skip the proxy refresh when there is no auth cookie.",
-    "source_pages": [
-      "data/wiki/patterns/ssr-auth-fan-out.md"
-    ],
-    "difficulty": "medium"
-  },
-  {
-    "id": "uniform-118",
-    "category": "retrieval",
-    "query": "We need a nightly job that moves old rows to an archive table and then deletes them, and a bug would be unrecoverable. How do I structure it so a failure can't leave rows deleted without a copy?",
-    "expected_answer": "Do both in a single SQL statement: a writable CTE where DELETE ... RETURNING feeds INSERT ... SELECT, so a failed insert rolls the delete back. Add a row ceiling enforced in the database and the app, plus a count-delta assertion; every layer refuses or detects rather than repairs.",
-    "source_pages": [
-      "data/wiki/patterns/atomic-archive-then-delete.md"
-    ],
-    "difficulty": "medium"
-  },
-  {
     "id": "uniform-119",
     "category": "retrieval",
     "query": "Our shared knowledge base answers questions for multiple clients, and when I filter by permission after the vector search, relevant results disappear for small clients. What is happening and what is the usual remedy?",
@@ -1190,22 +720,12 @@
     "difficulty": "easy"
   },
   {
-    "id": "uniform-120",
-    "category": "retrieval",
-    "query": "How can I mechanically detect when my chat assistant credits a document in its answer that it never actually opened this turn?",
-    "expected_answer": "Have it cite in a fixed marker like [page:id], then compute ungrounded as cited minus pages successfully read in this answer. A search excerpt does not count as a reading, and prior turns carry text only so the model must re-read before citing.",
-    "source_pages": [
-      "data/wiki/patterns/cited-minus-read-grounding-check.md"
-    ],
-    "difficulty": "easy"
-  },
-  {
     "id": "uniform-121",
     "category": "retrieval",
     "query": "Our data lake job crashed after writing half of the new files for a table, and readers got inflated counts with no errors. Why does the usual write-then-rename habit not work in cloud buckets, and what does?",
     "expected_answer": "Object stores have no rename and no multi-key atomicity, only atomic single-key writes, so a reader listing the prefix saw old and new files together (6,000 rows instead of 4,000). Write the new version under a new prefix, then flip one pointer key atomically, ideally with a conditional write.",
     "source_pages": [
-      "data/wiki/foundations/object-store-guarantees-and-the-partial-write-problem.md"
+      "data/wiki/data-engineering/object-store-guarantees-and-the-partial-write-problem.md"
     ],
     "difficulty": "medium"
   },
@@ -1215,7 +735,7 @@
     "query": "For a small movie catalogue, what is a simple recommender that learns item-to-item weights in closed form and beat nearest-neighbour methods, and why wouldn't I use it for a catalogue of millions?",
     "expected_answer": "EASE: regress each item on the others with L2 regularisation and a zero diagonal, solved with one matrix inverse (B_ij = -P_ij/P_jj). It gave recall 0.1550 against 0.1369 for item kNN, but inversion is cubic in items so it suits tens of thousands, and it cannot score unseen items.",
     "source_pages": [
-      "data/wiki/foundations/ease-and-item-based-neighbourhood-recommenders.md"
+      "data/wiki/data-science/ease-and-item-based-neighbourhood-recommenders.md"
     ],
     "difficulty": "hard"
   },
@@ -1235,19 +755,9 @@
     "query": "A colleague left a branch and a few stashes before going on leave. How can I quickly see exactly what work on that branch isn't on main yet, and when should I use a stash versus a branch?",
     "expected_answer": "git log --oneline origin/branch ^main lists commits not reachable from main; empty means safe to delete, though squash-merged work looks unmerged. Stash is for hours and fails silently, so use a named WIP branch for anything lasting a day; read git stash show -p and use -u for new files.",
     "source_pages": [
-      "data/wiki/foundations/git-branch-triage.md"
+      "data/wiki/programming/git-branch-triage.md"
     ],
     "difficulty": "easy"
-  },
-  {
-    "id": "uniform-125",
-    "category": "retrieval",
-    "query": "We are adding a button so the browser can tell us about its caught errors, and someone says it is just logging so security doesn't matter. Why is that wrong and what limits should the endpoint have?",
-    "expected_answer": "An unauthenticated route taking free text into a log stream is an anonymous write sink, unlike bounded uuid/enum telemetry. Use hard size caps (300 chars per string, 2 KB body), no stack traces, a fixed three-field payload, fingerprint dedupe and a real rate limiter, and make sure something reads the logs.",
-    "source_pages": [
-      "data/wiki/patterns/client-error-seam-is-an-anonymous-log-sink.md"
-    ],
-    "difficulty": "hard"
   },
   {
     "id": "uniform-126",
@@ -1255,19 +765,9 @@
     "query": "I'm setting up a new project that uses LangChain and want to know which packages to install, what versions to allow, and which one is a trap for upgrades.",
     "expected_answer": "Use langchain, langchain-core, langgraph and langsmith on 1.0 LTS with strict semver (>=1.0,<2.0), plus dedicated provider and tool packages a la carte. langchain-community is not semver, so pin the exact minor, and prefer a dedicated integration when one exists.",
     "source_pages": [
-      "data/wiki/langgraph/langchain-dependencies.md"
+      "data/wiki/frameworks/langgraph/langchain-dependencies.md"
     ],
     "difficulty": "medium"
-  },
-  {
-    "id": "uniform-127",
-    "category": "retrieval",
-    "query": "Our research issues keep ending up either closed and forgotten or open forever when the answer is not yet. What disposition keeps the research useful and tells us when to revisit?",
-    "expected_answer": "Do the research, rewrite the vague trigger into a measurable condition, record the one fact that would flip the decision with the reversibility note, and park the issue with the brief attached rather than closing it or leaving it undated.",
-    "source_pages": [
-      "data/wiki/patterns/named-trigger-deferral.md"
-    ],
-    "difficulty": "easy"
   },
   {
     "id": "uniform-128",
@@ -1275,7 +775,7 @@
     "query": "An audit of our hiring model shows one group's selection ratio at 0.806 against the top group and someone wants to declare it passes the four-fifths rule. What caveats apply, and how should small groups be handled?",
     "expected_answer": "Report ratios with counts and a delta-method interval, not a pass mark: 0.806 had interval [0.714, 0.910]. The four-fifths rule is a US rule of thumb, not portable or a compliance line. With groups of 20-50 intervals rarely settle anything, so say the data cannot support a conclusion rather than dropping the group.",
     "source_pages": [
-      "data/wiki/foundations/auditing-selection-rates-with-intervals-and-intersections.md"
+      "data/wiki/data-science/auditing-selection-rates-with-intervals-and-intersections.md"
     ],
     "difficulty": "hard"
   },
@@ -1285,7 +785,7 @@
     "query": "We are launching a multi-turn LangGraph assistant for outside clients who log in, with several workers behind it. What deployment shape and conversation-state storage should we plan for?",
     "expected_answer": "External logged-in users call for the split service rung (separate frontend and backend with auth and data scoping), the highest-ops topology on the ladder. With multiple workers or serverless, use an external database checkpointer such as Postgres, because MemorySaver silently loses thread state across workers.",
     "source_pages": [
-      "data/wiki/langgraph/runtime-topology.md",
+      "data/wiki/frameworks/langgraph/runtime-topology.md",
       "data/wiki/infra/deployment-topology-ladder.md"
     ],
     "difficulty": "medium"
@@ -1296,8 +796,8 @@
     "query": "We emailed an opt-in offer and customers who opted in ordered far more than those who didn't. How much of that gap can be selection, how do we check the groups are comparable before reading outcomes, and what can still go wrong?",
     "expected_answer": "In the simulation the naive gap was 1.21 orders against a true effect of 0.30, with 0.91 being selection. Check standardised mean differences (under 0.25, variance ratio 0.5-2) and propensity overlap first; weighting fixes only observed covariates, and propensity weights up to 48.3 shrink effective sample size, while an unmeasured cause still biases the estimate (0.642).",
     "source_pages": [
-      "data/wiki/foundations/covariate-balance-and-overlap-checks.md",
-      "data/wiki/foundations/potential-outcomes-and-selection-bias.md"
+      "data/wiki/data-analytics/covariate-balance-and-overlap-checks.md",
+      "data/wiki/data-analytics/potential-outcomes-and-selection-bias.md"
     ],
     "difficulty": "hard"
   },
@@ -1307,8 +807,8 @@
     "query": "After a delete committed on our lake table, a plain read of the files returned 2.5 million rows while the table reader said 1.5 million, with no error. What's the mechanism that makes one of them right?",
     "expected_answer": "The table is the ordered log of add and remove actions over immutable Parquet files, so only the log gives the live set; a directory glob also sees the removed files, which are not deleted. Open formats let anyone read the files wrongly, so enforce readers going through the log or catalog.",
     "source_pages": [
-      "data/wiki/foundations/table-format-as-a-commit-log-over-parquet.md",
-      "data/wiki/foundations/lakehouse-vs-warehouse-decision.md"
+      "data/wiki/data-engineering/table-format-as-a-commit-log-over-parquet.md",
+      "data/wiki/data-engineering/lakehouse-vs-warehouse-decision.md"
     ],
     "difficulty": "medium"
   },
@@ -1318,8 +818,8 @@
     "query": "We run a Bayesian A/B test, look at it every day, and ship as soon as the expected loss is small. We were told Bayesian results are immune to peeking. How risky is this, and how do we pick the threshold and guard against it?",
     "expected_answer": "Not immune: daily checks with an expected-loss rule (0.05 points) shipped 58.9% of no-effect changes and 14.3% of harmful -0.5 point ones. A minimum sample size of two weeks cut harmful shipping to 3.8%, and a tighter epsilon of 0.01 cut it to 2.8%. The threshold should come from an explicit loss over the posterior, with full weeks.",
     "source_pages": [
-      "data/wiki/foundations/cost-based-decisions-from-a-posterior.md",
-      "data/wiki/foundations/peeking-under-bayesian-stopping-rules.md"
+      "data/wiki/data-analytics/cost-based-decisions-from-a-posterior.md",
+      "data/wiki/data-analytics/peeking-under-bayesian-stopping-rules.md"
     ],
     "difficulty": "hard"
   },
@@ -1335,17 +835,6 @@
     "difficulty": "medium"
   },
   {
-    "id": "uniform-134",
-    "category": "retrieval",
-    "query": "We keep copies of shared agent skills and hook scripts in several repos, and we edited a repo copy of a hook but the behaviour didn't change. Why does this happen and how should those copies be managed?",
-    "expected_answer": "Hook paths resolve through a symlink to the global directory, so repo copies never run; fix the global hook first, re-vendor, keep byte-identical and check parity at session start. Hand-copied files become unmanaged forks; sync should be a render with link rewriting and variable substitution, not a copy.",
-    "source_pages": [
-      "data/wiki/patterns/sync-as-render-not-copy.md",
-      "data/wiki/patterns/vendored-hooks-resolve-to-global.md"
-    ],
-    "difficulty": "hard"
-  },
-  {
     "id": "uniform-135",
     "category": "retrieval",
     "query": "For an events recommender I want to know how much my ranking depends on its score weights, and separately whether an LLM-assigned evening tag actually changes with the event's start time. How do I design each test and what could mislead me?",
@@ -1357,24 +846,13 @@
     "difficulty": "hard"
   },
   {
-    "id": "uniform-136",
-    "category": "retrieval",
-    "query": "Our test suite and nightly reporting job are both green, yet we shipped a crash in a helper that tests supposedly covered and a dashboard artifact nobody could open. What do these have in common and how do I catch them?",
-    "expected_answer": "In both the check passed without the thing actually running: a test patched the function itself so its body never executed, and an upload job stayed green while dropping hidden directories. Run the code under test with only its dependencies mocked, and treat absence as a distinct state rather than an empty clean result.",
-    "source_pages": [
-      "data/wiki/patterns/mocked-away-body-hides-the-defect.md",
-      "data/wiki/patterns/silence-reads-as-clean.md"
-    ],
-    "difficulty": "medium"
-  },
-  {
     "id": "uniform-137",
     "category": "retrieval",
     "query": "What kind of normalization does the original attention-only translation model use around its sublayers, and how does the batch-statistics kind behave differently in training versus serving?",
     "expected_answer": "The transformer wraps each sublayer with a residual connection and layer normalization. Batch normalization instead uses mini-batch mean and variance during training but population statistics (an exponential moving average) at inference, which can cause a train/inference mismatch.",
     "source_pages": [
-      "data/wiki/foundations/transformer-architecture.md",
-      "data/wiki/foundations/batch-normalization.md"
+      "data/wiki/llm/transformer-architecture.md",
+      "data/wiki/llm/batch-normalization.md"
     ],
     "difficulty": "easy"
   },
@@ -1384,8 +862,7 @@
     "query": "We are documenting a pile of agent capabilities across several frameworks and a table of per-framework equivalents looks silly for some. How should we classify them, and what shapes of output does a UI-embedded assistant need beyond plain text?",
     "expected_answer": "Tier them: runtime-coupled, runtime-adjacent (needs a parity table) and runtime-independent library code, which gets a host-language statement rather than a parity table. A UI assistant can return structured text, charts and tables, buttons and dropdowns, action cards or full forms, populated through a structured-output schema.",
     "source_pages": [
-      "data/wiki/patterns/capability-runtime-coupling-tiers.md",
-      "data/wiki/adk/multi-modal-agent-response.md"
+      "data/wiki/frameworks/adk/multi-modal-agent-response.md"
     ],
     "difficulty": "medium"
   },
@@ -1395,21 +872,10 @@
     "query": "My revenue report inflated after I joined orders to refund lines, and another query meant to exclude one person's rows also lost rows with no person recorded. What causes each and what are the fixes?",
     "expected_answer": "Joining to a many-side repeats each order per refund line; aggregate to the order grain first and reconcile the total with the source. Comparisons with NULL are unknown, so != drops null rows (add OR IS NULL) and NOT IN with a NULL returns nothing (use NOT EXISTS).",
     "source_pages": [
-      "data/wiki/foundations/sql-fan-out-and-source-reconciliation.md",
-      "data/wiki/foundations/sql-null-three-valued-logic.md"
+      "data/wiki/data-analytics/sql-fan-out-and-source-reconciliation.md",
+      "data/wiki/programming/sql-null-three-valued-logic.md"
     ],
     "difficulty": "easy"
-  },
-  {
-    "id": "uniform-140",
-    "category": "retrieval",
-    "query": "We maintain a project scaffolding template with many on/off options, changed the default for one computed setting, and the build stayed green while downstream projects broke on their next update. What went wrong and how should we have verified?",
-    "expected_answer": "Computed (never-asked) variables are re-derived on every update, so existing consumers flipped layout and ended up with a duplicated tree; pin the old value in their answers file. Static checks with hardcoded defaults cannot see this; render and execute every toggle configuration (install, lint, tests) and diff against main.",
-    "source_pages": [
-      "data/wiki/patterns/changing-a-derived-default-is-a-migration.md",
-      "data/wiki/patterns/execute-every-toggle-configuration.md"
-    ],
-    "difficulty": "hard"
   },
   {
     "id": "neg-uniform-001",

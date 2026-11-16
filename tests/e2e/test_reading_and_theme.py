@@ -204,7 +204,7 @@ def test_due_filter_studies_and_grades_without_logging(page: Page) -> None:
     )
 
 
-@pytest.mark.parametrize("route", ["/", "/#/map/domain/rag"])
+@pytest.mark.parametrize("route", ["/", "/#/map/wiki/rag"])
 def test_health_strip_clears_the_controls_around_it(page: Page, route: str) -> None:
     page.goto(UI_URL + route, timeout=15_000)
     strip = page.get_by_role("region", name="Wiki health")
@@ -245,7 +245,7 @@ def test_due_filter_is_readable_in_dark(page: Page) -> None:
     ("route", "ready"),
     [
         ("/", ".atlas-label"),
-        ("/#/map/domain/rag", ".react-flow__node"),
+        ("/#/map/wiki/rag", ".react-flow__node"),
         ("/#/courses", ".course-card"),
         ("lesson", ".lesson-main-body p"),
         ("/#/practice", "[aria-label='Drill timer']"),
