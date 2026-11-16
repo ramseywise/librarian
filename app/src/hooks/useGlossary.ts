@@ -6,8 +6,8 @@ import { useRevisionFetch } from "./useRevisionFetch";
 /**
  * The glossary and where each term is mentioned; null until both answer. `revision` changes with
  * each graph payload, so mentions follow the wiki. An unchanged answer keeps the same object,
- * so a graph update can't reshuffle the term layer. The layer is optional: a failed request
- * leaves the map without terms and without an error.
+ * so a graph update can't reshuffle the term filters. The glossary is optional: a failed request
+ * leaves the map without term filters and without an error.
  */
 export function useGlossary(revision: unknown, enabled: boolean): Glossary | null {
   const [glossary, setGlossary] = useState<Glossary | null>(null);

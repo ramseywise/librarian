@@ -102,7 +102,7 @@
   label: Chain of thought
   aliases: [chain-of-thought, CoT]
   def: Prompting a model to show its reasoning before answering, which helps on multi-step logic at no training cost.
-  page: chain-of-thought
+  page: chain-of-thought-prompting
 - id: prompt-injection
   label: Prompt injection
   aliases: [injection attack, injection attacks]
@@ -134,7 +134,7 @@
   label: ReAct
   aliases: [ReAct loop, ReAct agent]
   def: The basic single-agent loop, where the model alternates thought and tool calls until it can answer.
-  page: react-pattern
+  page: react-synergizing-reasoning-and-acting
 - id: harness
   label: Agent harness
   aliases: [agent harnesses, harness engineering]
@@ -148,8 +148,8 @@
 - id: hitl
   label: Human in the loop
   aliases: [human-in-the-loop, HITL]
-  def: Where a person reviews or decides; found by running one task at fixed levels of involvement and seeing where quality drops.
-  page: hitl-gradient
+  def: Where a person reviews or decides in an agent run; breakpoints, interrupts, clarification loops and approval gates for irreversible actions.
+  page: adk-hitl-patterns
 - id: guardrails
   label: Guardrails
   aliases: [guardrail, input guardrails]
@@ -164,7 +164,7 @@
   label: Lifecycle hooks
   aliases: [lifecycle hook, PreToolUse, PostToolUse]
   def: Scripts run around tool events that can block by exit code, enforcing rules without reminding the model.
-  page: claude-code-hook-architecture
+  page: opendev-terminal-coding-agent
 - id: mcp
   label: MCP
   aliases: [Model Context Protocol]

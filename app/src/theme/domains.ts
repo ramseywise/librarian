@@ -3,8 +3,10 @@
  *
  * The domain *list* is never hardcoded in the frontend: it comes from the graph payload
  * (`domains`, derived from data/wiki/ directories on the server). This module only maps a
- * domain name to a colour. Known domains keep their historical colours; any new wiki
- * directory gets a stable colour from the palette, so adding a domain needs no code change.
+ * domain name to a colour. Known domains keep their historical colours; a subject directory
+ * (programming, data-analytics, ...) takes its course's colour, since it is that course's area;
+ * any new wiki directory gets a stable colour from the palette, so adding a domain needs no code
+ * change.
  * Every colour must reach 4.5:1 on the card background (--surface-field), since it
  * colours the small domain label on each card; domains.test.ts enforces this.
  *
@@ -16,19 +18,19 @@
 import { currentTheme, type Theme } from "../utils/theme";
 
 export const KNOWN: Record<string, string> = {
+  // The four subject directories share their course's colour: each is its own area.
+  programming: "#64B5F6",
+  "data-analytics": "#FFD54F",
+  "data-science": "#BA68C8",
+  "data-engineering": "#4DB6AC",
+  llm: "#9473CC",
+  frameworks: "#FF9800",
   rag: "#2196F3",
-  langgraph: "#4CAF50",
-  adk: "#FF9800",
   infra: "#688897",
-  patterns: "#EC3F7A",
   eval: "#FFEB3B",
   "deep-agents": "#717FCD",
   memory: "#00BCD4",
   mcp: "#C552D9",
-  meta: "#A67A6A",
-  projects: "#009688",
-  foundations: "#9473CC",
-  interview: "#FF5722",
   context: "#26A69A",
   prompting: "#F06292",
   harness: "#9C7D72",
@@ -130,6 +132,15 @@ export function domainColor(domain: string | undefined | null, theme: Theme = cu
 
 export function courseColor(course: string, theme: Theme = currentTheme()): string {
   return forTheme(COURSE_COLORS[course] ?? PALETTE[hash(course) % PALETTE.length], theme);
+}
+
+/**
+ * An atlas sector in the area grouping: an area is named after its course, so it takes the
+ * course colour; a directory in no area keeps its own.
+ */
+export function areaColor(id: string, theme: Theme = currentTheme()): string {
+  if (COURSE_COLORS[id]) return forTheme(COURSE_COLORS[id], theme);
+  return domainColor(id, theme);
 }
 
 export const TYPE_COLORS: Record<string, string> = {

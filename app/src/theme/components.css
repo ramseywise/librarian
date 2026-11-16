@@ -245,6 +245,7 @@
 .cur-dot { flex: none; width: 8px; height: 8px; border-radius: 50%; }
 .cur-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cur-count { flex: none; color: var(--text-faint); font-variant-numeric: tabular-nums; }
+.atlas-list-gaps { margin-left: 6px; font-size: 0.85em; }
 .cur-chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 /* No ▸ toggle on this row: indent past where one would be. */
 .cur-outside { margin-top: var(--space-2); padding-left: calc(20px + var(--space-1)); }

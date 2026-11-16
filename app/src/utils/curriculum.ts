@@ -1,7 +1,7 @@
 import type { Node } from "@xyflow/react";
 import { courseColor } from "../theme/domains";
 import type { Theme } from "./theme";
-import type { Curriculum, Facets, Glossary, WikiNodeData } from "../types";
+import type { Area, Curriculum, Facets, Glossary, WikiNodeData } from "../types";
 
 export const courseFacet = (course: string) => `course:${course}`;
 export const moduleFacet = (course: string, module: string) => `module:${course}/${module}`;
@@ -11,9 +11,13 @@ export const OUTSIDE_COURSES = "beyond:all";
 export const dirFacet = (dir: string) => `dir:${dir}`;
 export const tagFacet = (tag: string) => `tag:${tag}`;
 export const termFacet = (term: string) => `term:${term}`;
+/** Every page in an area's directories. */
+export const areaFacet = (area: string) => `area:${area}`;
+/** An area's pages no lesson links yet: what its course has still to cover. */
+export const gapFacet = (area: string) => `gap:${area}`;
 
-const FACET_ID = /^(course|module|beyond|dir|tag|term):/;
-const CURRICULUM_FACET = /^(course|module|beyond):/;
+const FACET_ID = /^(course|module|beyond|area|gap|dir|tag|term):/;
+const CURRICULUM_FACET = /^(course|module|beyond|gap):/;
 export const isFacetId = (tag: string) => FACET_ID.test(tag);
 export const isModuleFacet = (tag: string) => tag.startsWith("module:");
 
@@ -29,13 +33,15 @@ export function facetPending(id: string, c: Curriculum | null, glossary: Glossar
 
 /**
  * Filter id → the pages it selects: every course, module and "beyond" directory once the
- * curriculum is in (and all pages outside a course), every wiki directory, every frontmatter
- * tag, and every glossary term (the pages that mention it).
+ * curriculum is in (and all pages outside a course), every wiki directory, every area (and,
+ * with the curriculum, its gap: the area's pages no lesson links), every frontmatter tag, and
+ * every glossary term (the pages that mention it).
  */
 export function facetsOf(
   c: Curriculum | null,
   nodes: Pick<Node<WikiNodeData>, "id" | "data">[] = [],
   glossary: Glossary | null = null,
+  areas: Area[] = [],
 ): Facets {
   const out: Facets = new Map();
   if (c) {
@@ -51,9 +57,15 @@ export function facetsOf(
     if (set) set.add(page);
     else out.set(id, new Set([page]));
   };
+  const areaOfDir = new Map(areas.flatMap((a) => a.domains.map((d) => [d, a.id] as [string, string])));
   for (const n of nodes) {
     const dir = n.data.path?.split("/")[0];
     if (dir) add(dirFacet(dir), n.id);
+    const area = dir && areaOfDir.get(dir);
+    if (area) {
+      add(areaFacet(area), n.id);
+      if (c && !c.primaryCourse[n.id]) add(gapFacet(area), n.id);
+    }
     for (const t of n.data.tags ?? []) add(tagFacet(t), n.id);
   }
   if (glossary) for (const [term, pages] of Object.entries(glossary.mentions)) out.set(termFacet(term), new Set(pages));

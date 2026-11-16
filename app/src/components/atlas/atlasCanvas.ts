@@ -60,6 +60,9 @@ export function clear(ctx: CanvasRenderingContext2D, g: RingGeometry, dpr: numbe
 export const SPIKE_NORMAL = 0;
 export const SPIKE_DIM = 1;
 export const SPIKE_LIT = 2;
+/** A page no lesson links yet: its sector's colour, but faint, so the course gaps show. */
+export const SPIKE_FAINT = 3;
+const FAINT_ALPHA = 0.32;
 
 /** Per spike, parallel arrays: what a frame needs, without allocating per spike. */
 export interface SpikeFrame {
@@ -121,7 +124,8 @@ export function drawRing(ctx: CanvasRenderingContext2D, f: RingFrame): void {
     const state = dim ? SPIKE_DIM : Number(key[0]);
     ctx.strokeStyle = dim ? palette.dim : key.slice(2);
     ctx.lineWidth = state === SPIKE_LIT ? 1.6 : 1;
-    ctx.globalAlpha = f.alpha * (dim ? 0.55 : state === SPIKE_LIT ? 1 : f.anyActive ? 0.95 : 0.85);
+    ctx.globalAlpha =
+      f.alpha * (dim ? 0.55 : state === SPIKE_LIT ? 1 : state === SPIKE_FAINT ? FAINT_ALPHA : f.anyActive ? 0.95 : 0.85);
     ctx.beginPath();
     for (const i of list) {
       const s = Math.sin(spikes.angle[i]);

@@ -13,7 +13,6 @@ import {
   type RingGeometry,
   type RingInsets,
   type Spike,
-  BEYOND_SECTOR,
 } from "../../utils/atlas";
 import { DEFAULT_CAP, mapPath, type Grouping } from "../../utils/mapRoute";
 import {
@@ -24,6 +23,7 @@ import {
   readPalette,
   resolveColor,
   SPIKE_DIM,
+  SPIKE_FAINT,
   SPIKE_LIT,
   SPIKE_NORMAL,
   type Camera,
@@ -32,6 +32,7 @@ import {
   type RingFrame,
   type SpikeFrame,
 } from "./atlasCanvas";
+import { gapText, sectorSummary } from "./atlasText";
 
 export interface AtlasPageInfo {
   title: string;
@@ -44,11 +45,12 @@ interface Props {
   info: Map<string, AtlasPageInfo>;
   degree: Map<string, number>;
   totalLinks: number;
-  termCount: number;
   /** Pages the filter selects (others dim); null without a filter. */
   matches: Set<string> | null;
   /** Pages lit by search or chat; null when nothing is. */
   lit: Set<string> | null;
+  /** Pages some lesson links; the rest draw faint as course gaps. Null until the curriculum arrives. */
+  taught: Set<string> | null;
   onOpenSector: (sector: string) => void;
   onOpenPage: (sector: string, page: string) => void;
   /** Where the map is coming back from: the camera eases out of it. */
@@ -78,7 +80,7 @@ const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 
 function insetsFor(wide: boolean, grouping: Grouping): RingInsets {
   return wide
     ? // The sidebar is its own column now, not a panel over the canvas: nothing to reserve on the left.
-      { left: 0, top: 76, bottom: 10, labelWidth: grouping === "course" ? 138 : 104 }
+      { left: 0, top: 76, bottom: 10, labelWidth: grouping === "domain" ? 138 : 104 }
     : { left: 0, top: 96, bottom: 150, labelWidth: 84 };
 }
 
@@ -119,9 +121,9 @@ export function Atlas({
   info,
   degree,
   totalLinks,
-  termCount,
   matches,
   lit,
+  taught,
   onOpenSector,
   onOpenPage,
   enterFrom,
@@ -145,6 +147,11 @@ export function Atlas({
     return on ? ring.spikes.filter((s) => on.has(s.id)).length : null;
   }, [lit, matches, ring]);
   const cursorSpike = cursor?.spike != null ? (ring.spikes[cursor.spike] ?? null) : null;
+  /** Per sector, how many of its pages no lesson links yet; null until the curriculum is in. */
+  const gaps = useMemo(
+    () => (taught ? new Map(ring.sectors.map((s) => [s.id, s.pageIds.filter((id) => !taught.has(id)).length])) : null),
+    [ring, taught],
+  );
 
   // What the imperative drawing reads. Written in a layout effect, read from handlers and rAF.
   const draw = useRef({
@@ -346,7 +353,7 @@ export function Atlas({
       const inLit = lit?.has(s.id);
       const inMatch = !matches || matches.has(s.id);
       const on = lit ? !!inLit : inMatch;
-      states[i] = !on ? SPIKE_DIM : inLit ? SPIKE_LIT : SPIKE_NORMAL;
+      states[i] = !on ? SPIKE_DIM : inLit ? SPIKE_LIT : taught && !taught.has(s.id) ? SPIKE_FAINT : SPIKE_NORMAL;
       if (on) hasSector.add(s.sector);
       if (!on) active = true;
     });
@@ -425,7 +432,7 @@ export function Atlas({
     d.raf = requestAnimationFrame(tick);
     // `moving` only guards re-entry above; it must not restart this effect.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ring, g, degree, grouping, matches, lit, paintBase, paintHot, stopAnim]);
+  }, [ring, g, degree, grouping, matches, lit, taught, paintBase, paintHot, stopAnim]);
 
   // A theme switch: repaint with the new colours. Sector colours are resolved in spikeFrame, so a
   // sector on a CSS variable picks its colour up on the next ring; arcs resolve on every paint.
@@ -564,14 +571,19 @@ export function Atlas({
       d.hoverSector = sector;
       paintHot();
       if (tip) {
-        if (spike) fillTip(tip, info.get(spike.id), d.ring.sectors[spike.sector], degree.get(spike.id) ?? 0);
-        else if (sector != null) fillSectorTip(tip, d.ring.sectors[sector]);
+        if (spike) {
+          const untaught = taught != null && !taught.has(spike.id);
+          fillTip(tip, info.get(spike.id), d.ring.sectors[spike.sector], degree.get(spike.id) ?? 0, untaught);
+        } else if (sector != null) {
+          const s = d.ring.sectors[sector];
+          fillSectorTip(tip, s, gaps?.get(s.id) ?? null);
+        }
         else hideTip(tip);
       }
       if (hotRef.current) hotRef.current.style.cursor = spike || sector != null ? "pointer" : "default";
     }
     if (tip && (spike || sector != null)) moveTip(tip, at.x, at.y, d.g);
-  }, [info, degree, paintHot]);
+  }, [info, degree, taught, gaps, paintHot]);
 
   const onPointerMove = useCallback(
     (e: React.PointerEvent) => {
@@ -781,9 +793,7 @@ export function Atlas({
                 onFocus={() => setHoverSector(l.sector)}
                 onBlur={() => setHoverSector(null)}
               >
-                <title>
-                  {`${s.label}: ${s.pageIds.length} pages${grouping === "course" && s.id !== BEYOND_SECTOR ? " with this as their main course" : ""}`}
-                </title>
+                <title>{sectorSummary(s, gaps?.get(s.id) ?? null)}</title>
                 <text x={l.x} y={l.y} textAnchor={l.anchor}>
                   {l.text} <tspan className="atlas-label-count">{l.count}</tspan>
                 </text>
@@ -804,11 +814,17 @@ export function Atlas({
               <>
                 <div className="atlas-card-title">{selInfo?.title ?? cursorSpike.id}</div>
                 <div className="atlas-card-summary">{selInfo?.summary}</div>
-                <div className="atlas-card-note">{degree.get(cursorSpike.id) ?? 0} links</div>
+                <div className="atlas-card-note">
+                  {degree.get(cursorSpike.id) ?? 0} links
+                  {taught && !taught.has(cursorSpike.id) && " · not yet in a lesson"}
+                </div>
               </>
             ) : (
               <>
                 <div className="atlas-card-title">{selSector.pageIds.length} pages</div>
+                {gaps?.get(selSector.id) ? (
+                  <div className="atlas-card-note">{gapText(gaps.get(selSector.id)!)}</div>
+                ) : null}
                 <div className="atlas-card-summary">
                   Best linked: {selSector.pageIds.slice(0, 3).map(titleOf).join(", ")}
                 </div>
@@ -836,11 +852,9 @@ export function Atlas({
               {matchedTotal != null ? `${matchedTotal} of ${pageTotal}` : pageTotal.toLocaleString("en-US")}
             </div>
             <div className="atlas-card-note">{matchedTotal != null ? "pages match" : "wiki pages"}</div>
-            <div className="atlas-card-note">
-              {totalLinks.toLocaleString("en-US")} links
-              {termCount > 0 && ` · ${termCount} glossary terms`}
-            </div>
+            <div className="atlas-card-note">{totalLinks.toLocaleString("en-US")} links</div>
             <div className="atlas-card-legend">Spike length: links to and from a page</div>
+            {taught && <div className="atlas-card-legend">Faint spike: no lesson links the page yet</div>}
           </>
         )}
       </div>
@@ -887,19 +901,27 @@ function tipLine(cls: string, text: string): HTMLDivElement {
   return div;
 }
 
-function fillTip(tip: HTMLElement, page: AtlasPageInfo | undefined, sector: AtlasSector, links: number): void {
+function fillTip(
+  tip: HTMLElement,
+  page: AtlasPageInfo | undefined,
+  sector: AtlasSector,
+  links: number,
+  untaught: boolean,
+): void {
+  const meta = `${sector.label} · ${links} ${links === 1 ? "link" : "links"}`;
   tip.replaceChildren(
     tipLine("atlas-tip-title", page?.title ?? ""),
     tipLine("atlas-tip-summary", page?.summary ?? ""),
-    tipLine("atlas-tip-meta", `${sector.label} · ${links} ${links === 1 ? "link" : "links"}`),
+    tipLine("atlas-tip-meta", untaught ? `${meta} · not yet in a lesson` : meta),
   );
   tip.hidden = false;
 }
 
-function fillSectorTip(tip: HTMLElement, sector: AtlasSector): void {
+function fillSectorTip(tip: HTMLElement, sector: AtlasSector, gaps: number | null): void {
+  const count = `${sector.pageIds.length} pages`;
   tip.replaceChildren(
     tipLine("atlas-tip-title", sector.label),
-    tipLine("atlas-tip-meta", `${sector.pageIds.length} pages · click to open the best linked`),
+    tipLine("atlas-tip-meta", `${gaps ? `${count} · ${gapText(gaps)}` : count} · click to open the best linked`),
   );
   tip.hidden = false;
 }

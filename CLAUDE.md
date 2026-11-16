@@ -13,7 +13,7 @@ A personal agent design reference following Karpathy's LLM Wiki pattern. Raw sou
 
 **Mental model:** `data/raw/` = source code. Claude = compiler. `data/wiki/` = executable output.
 
-Rules that survive from the feature notes ([Librarian Repo Feature Notes](data/wiki/projects/librarian-repo-feature-notes.md)):
+Rules that survive from the feature notes ([Librarian Repo Feature Notes](docs/feature-notes.md)):
 
 - The graph UI's map panel is an overlay: `data/wiki/` directories stay the canonical domains for tags, MCP and `/lint`. Private pages never appear in it.
 - Every wiki verb/skill (`/quiz`, `/gaps`, `/challenge`, `/wiki-weekly`, `/harness-audit`, `/evals-bootstrap`, `/wiki-graph`, `/write`) skips private pages. `/wiki-weekly` is the wiki's report; `/weekly` is the course's. `/wiki-rename` (`librarian.wiki.rename`) rewrites links in `private/` too, reporting those only as a count.
@@ -48,10 +48,10 @@ Detail docs:
 - Claude is the **only writer** here. Do not manually edit unless correcting a factual error.
 - One `.md` file per entity, concept, project, or decision.
 - **Directory = domain (primary retrieval axis). Type = tag (frontmatter only).** Directory list: [docs/wiki-schema.md](docs/wiki-schema.md).
-- **Routing:** did *you* discover it while building (→ `patterns/`: named, non-obvious mechanisms from your own sessions plus framework-agnostic classics; never dilute with textbook material), is it textbook knowledge from an external source (→ a subject dir, by subject), or exam technique only true while interviewing (→ `interview/`)?
+- **Routing:** did *you* discover it while building (→ `private/patterns/`: named, non-obvious mechanisms from your own sessions plus framework-agnostic classics; never dilute with textbook material), is it textbook knowledge from an external source (→ a public subject dir, by subject: `programming/`, `data-analytics/`, `data-science/`, `data-engineering/`, `llm/`, `frameworks/<adk|langgraph>/`, or an agent-building dir such as `rag/`, `prompting/`, `harness/`), or exam technique only true while interviewing (→ `private/interview/`)? Internal pages (`patterns/`, `meta/`, `projects/`) and interview prep live under `private/` since 2026-11-10; the domain of a page is its top-level directory, so `frameworks/adk/x.md` is tagged `frameworks` (with `adk` as a topic tag).
 - `data/wiki/private/` — company/project-specific pages (proprietary context, client names, internal details); **gitignored, never committed**. Same page format; still compiled and queryable locally.
 - `data/wiki/_index.md` — auto-generated TOC, updated after every ingest; never lists `private/` entries. `data/wiki/_conflicts.md` — flagged contradictions.
-- **ADRs live in their domain directory** (not a flat `decisions/`), tagged `type: decision`. **Projects stay flat** in `data/wiki/projects/` until a project exceeds ~5 pages.
+- **ADRs live in their domain directory** (not a flat `decisions/`), tagged `type: decision`. **Projects stay flat** in `data/wiki/private/projects/` until a project exceeds ~5 pages.
 
 ### `data/telemetry/` and `data/courses/`
 
@@ -140,12 +140,12 @@ Run for **every** new raw source, however small. Log one line per run: `uv run l
 7. **Cross-references (bidirectional):** add `[[wikilinks]]`, with atomic pages linked inline from at least one coarser page; for each new page add backlinks from 2–3 existing pages' `## See Also`, typed where clear.
 8. **Index:** `uv run librarian wiki index-add <pages>` (updates `data/wiki/_index.md`).
 9. **Orphan check (blocking):** every new page needs an incoming backlink; `uv run librarian wiki verify <pages>` checks this and the index entry (exit 1 on failure). If you cannot find a page to backlink from, STOP and report; do not mark the file ingested in the manifest.
-10. **Relink pass:** `uv run librarian wiki relink` is suggest-only and never modifies a page. Review `data/wiki/_relink_suggestions.md`, add worthwhile candidates **manually, with typed relationships** (`- [[Page]] — extends`), delete dismissed entries (rationale: `data/wiki/meta/wiki-graph-engineering.md`).
-11. **Accumulator ceiling:** pages with per-session appended rows (e.g. `meta/session-log.md`) keep the last ~30 entries in full; roll older ones into month-range summary rows at ingest time (same rule as index files). Compaction is the backstop.
+10. **Relink pass:** `uv run librarian wiki relink` is suggest-only and never modifies a page. Review `data/wiki/_relink_suggestions.md`, add worthwhile candidates **manually, with typed relationships** (`- [[Page]] — extends`), delete dismissed entries (rationale: `data/wiki/private/meta/wiki-graph-engineering.md`).
+11. **Accumulator ceiling:** pages with per-session appended rows (e.g. `private/meta/session-log.md`) keep the last ~30 entries in full; roll older ones into month-range summary rows at ingest time (same rule as index files). Compaction is the backstop.
 
 ## Query Protocol
 
-1. Check `data/wiki/_index.md` (or the domain subdirectory, or `data/wiki/projects/`). 2. Read pages in full. 3. Synthesise a grounded answer citing pages. 4. Offer to file a worthwhile insight as a page. 5. Flag a gap for future ingest if no page covers it.
+1. Check `data/wiki/_index.md` (or the domain subdirectory, or `data/wiki/private/projects/`). 2. Read pages in full. 3. Synthesise a grounded answer citing pages. 4. Offer to file a worthwhile insight as a page. 5. Flag a gap for future ingest if no page covers it.
 
 ## Lint Protocol
 

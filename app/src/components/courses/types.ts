@@ -73,6 +73,51 @@ export interface Lesson extends LessonOutline {
   sourceLinks?: Record<string, string>;
   prev: LessonOutline | null;
   next: LessonOutline | null;
+  /** Labs whose manifest entry backs this lesson, or whose file it names. */
+  labs?: LabOutline[];
+}
+
+/** A runnable practice example from a pillar's practice/manifest.yaml. `id` is its path under data/courses. */
+export interface LabOutline {
+  id: string;
+  title: string;
+  course: string;
+  module: string;
+  /** Relative to the module, starting with practice/. */
+  path: string;
+  purpose: string;
+  pattern: string;
+  language: "python" | "typescript" | "jupyter" | string;
+  runsOffline: boolean;
+  /** It has an entry script (`run`) / a `verified_by` this app can run (`check`). */
+  hasRun: boolean;
+  hasCheck: boolean;
+}
+
+export interface LabRow extends LabOutline {
+  notes: LessonOutline[];
+}
+
+export interface LabsList {
+  labs: LabRow[];
+  /** This server runs labs (a dev machine with LIBRARIAN_DEV_RUN_LABS); false in a deployment. */
+  canRun: boolean;
+}
+
+export interface LabFile {
+  /** Relative to the practice folder. */
+  path: string;
+  text: string;
+}
+
+export interface LabDetail extends LabOutline {
+  licence: string;
+  verifiedBy: string;
+  run: string | null;
+  check: string | null;
+  files: LabFile[];
+  notes: LessonOutline[];
+  canRun: boolean;
 }
 
 export interface PracticeDrill extends LessonOutline {

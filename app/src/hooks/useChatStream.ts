@@ -23,6 +23,16 @@ export interface ChatMessage {
   answerId?: string;
 }
 
+/** The lab open beside the chat (POST /api/chat/stream `lab`): the server builds the agent's brief from it. */
+export interface LabChatContext {
+  id: string;
+  /** The editor's files, practice-relative path → text. */
+  files: Record<string, string>;
+  /** The last run's output, and its exit status when it finished. */
+  output: string;
+  exit: number | null;
+}
+
 interface HistoryTurn {
   role: "user" | "assistant";
   content: string;
@@ -135,7 +145,7 @@ export function useChatStream(onHighlight: (pages: string[]) => void) {
     onHighlightRef.current = onHighlight;
   }, [onHighlight]);
 
-  const sendQuery = useCallback(async (query: string) => {
+  const sendQuery = useCallback(async (query: string, lab?: LabChatContext | null) => {
     if (streamingRef.current) return;
     streamingRef.current = true;
     const requestId = ++requestRef.current;
@@ -169,7 +179,7 @@ export function useChatStream(onHighlight: (pages: string[]) => void) {
       const resp = await apiFetch("/api/chat/stream", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query, history }),
+        body: JSON.stringify(lab ? { query, history, lab } : { query, history }),
         signal: controller.signal,
       });
       responded = true;

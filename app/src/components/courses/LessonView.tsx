@@ -117,6 +117,18 @@ export function LessonView({ lesson, courseTitle, done, onMarkDone, onOpen, onOp
             )}
           </div>
 
+          {lesson.labs && lesson.labs.length > 0 && (
+            <div className="lesson-labs">
+              <div className="section-label">Labs for this note</div>
+              {lesson.labs.map((lab) => (
+                <a key={lab.id} href={`#/labs/${lab.id}`} className="lesson-lab" title={lab.path}>
+                  <span className="lesson-lab-title">▶ {lab.title}</span>
+                  {lab.purpose && <span className="lesson-lab-purpose">{lab.purpose}</span>}
+                </a>
+              ))}
+            </div>
+          )}
+
           {lesson.concepts.length > 0 && (
             <div className="lesson-concepts">
               <div className="section-label">Concepts in the graph</div>

@@ -272,6 +272,61 @@
 }
 .filter-chip.is-active { background: var(--surface-selected); border-color: var(--border-selected); color: var(--accent-text); }
 
+/* ---- Labs ---- */
+.lab-group { margin-bottom: var(--space-8); }
+.lab-group > .section-label { margin-top: var(--space-7); }
+.lab-purpose { color: var(--text-body); font-size: var(--fs-base); margin-top: var(--space-1); line-height: 1.5; }
+.lab-badge {
+  font-size: var(--fs-sm); color: var(--text-dim); border: 1px solid var(--border-chip);
+  border-radius: var(--radius-chip); padding: 0 var(--space-3);
+}
+.lab-badge--check { color: var(--success); border-color: color-mix(in srgb, var(--success) 40%, transparent); }
+.lab-callout {
+  border: 1px solid var(--border-subtle); background: var(--surface-card); border-radius: var(--radius-md);
+  color: var(--text-soft); font-size: var(--fs-base); padding: var(--space-4) var(--space-5); margin: var(--space-5) 0;
+  overflow-wrap: anywhere;
+}
+.lab-page { max-width: 1100px; }
+.lab-crumbs { color: var(--text-faint); font-size: var(--fs-md); margin-bottom: var(--space-4); overflow-wrap: anywhere; }
+.lab-notes { align-items: center; margin-bottom: var(--space-5); }
+.lab-notes .section-label { margin: 0 var(--space-3) 0 0; }
+.lab-toolbar { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; margin: var(--space-5) 0; }
+.round-btn--primary { border-color: var(--accent); color: var(--accent-text); }
+.round-btn:disabled { opacity: 0.5; cursor: default; }
+.lab-tabs { display: flex; gap: 2px; overflow-x: auto; border-bottom: 1px solid var(--border); }
+.lab-tab {
+  background: none; border: none; border-bottom: 2px solid transparent; color: var(--text-dim);
+  font-size: var(--fs-md); padding: var(--space-2) var(--space-5); cursor: pointer; font-family: inherit; white-space: nowrap;
+}
+.lab-tab.is-active { color: var(--text); border-bottom-color: var(--accent); }
+.lab-editor { border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; font-size: var(--fs-md); }
+.lab-editor .cm-editor { max-height: 60vh; }
+.lab-dirty { color: var(--text-faint); font-size: var(--fs-md); margin-top: var(--space-2); }
+.lab-output { margin-top: var(--space-6); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+.lab-output-head {
+  display: flex; flex-wrap: wrap; gap: var(--space-5); align-items: center; background: var(--surface-card);
+  padding: var(--space-3) var(--space-5); font-size: var(--fs-md); overflow-wrap: anywhere;
+}
+.lab-running { color: var(--text-faint); }
+.lab-verdict { font-weight: 600; margin-left: auto; }
+.lab-verdict--fail { color: var(--danger); }
+.lab-stream {
+  margin: 0; padding: var(--space-4) var(--space-5); max-height: 50vh; overflow: auto; font-size: var(--fs-md);
+  white-space: pre-wrap; overflow-wrap: anywhere; color: var(--text-body);
+}
+.lab-stderr { color: var(--warn); }
+.lab-figure { margin: var(--space-4) var(--space-5); }
+.lab-figure img { max-width: 100%; background: #fff; border-radius: var(--radius-md); }
+.lab-figure figcaption { color: var(--text-faint); font-size: var(--fs-sm); margin-top: var(--space-1); }
+.lesson-labs { margin-top: 36px; display: flex; flex-direction: column; gap: var(--space-3); }
+.lesson-lab {
+  display: flex; flex-direction: column; gap: var(--space-1); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5); text-decoration: none; color: var(--text);
+}
+.lesson-lab:hover { border-color: var(--border-emphasis); }
+.lesson-lab-title { font-weight: 500; }
+.lesson-lab-purpose { color: var(--text-dim); font-size: var(--fs-md); line-height: 1.5; }
+
 /* ---- Breakpoint: below 1100px the course sidebar becomes a drawer ---- */
 @media (max-width: 1099px) {
   .course-drawer {

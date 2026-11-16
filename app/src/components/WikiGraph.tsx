@@ -16,7 +16,6 @@ import "@xyflow/react/dist/style.css";
 import { Atlas, type AtlasPageInfo } from "./atlas/Atlas";
 import { MapBar } from "./MapBar";
 import { MapSearch } from "./MapSearch";
-import { TermNode } from "./TermNode";
 import { WikiNode, type WikiFlowNode } from "./WikiNode";
 import { EdgeTogglePanel } from "./EdgeTogglePanel";
 import { GraphSidebar } from "./GraphSidebar";
@@ -27,14 +26,7 @@ import { useHashRoute } from "../hooks/useHashRoute";
 import { useWikiData } from "../hooks/useWikiData";
 import { sectorIdOf, sectorsOf } from "../utils/atlas";
 import { facetPending, facetsOf, isModuleFacet, modulesOf, withCourseGroups } from "../utils/curriculum";
-import {
-  isTermNodeId,
-  NO_TERMS,
-  searchMap,
-  termIdOf,
-  termLayer,
-  termNodeId,
-} from "../utils/glossary";
+import { searchMap } from "../utils/glossary";
 import { applyDagreLayout, declutter, placeMissingNodes, type XY } from "../utils/layout";
 import {
   applyView,
@@ -64,12 +56,10 @@ import {
 } from "../utils/mapRoute";
 import { useTheme } from "../hooks/useTheme";
 import { domainColor } from "../theme/domains";
-import { HealthStrip } from "./HealthStrip";
-import { AtlasList } from "./atlas/AtlasList";
 import "../theme/atlas.css";
 import type { EdgeVisibility, LayoutMode, SelectedNode, WikiNodeData } from "../types";
 
-const NODE_TYPES = { wikiNode: WikiNode, termNode: TermNode };
+const NODE_TYPES = { wikiNode: WikiNode };
 const NO_NODES: WikiFlowNode[] = [];
 const NO_IDS = new Set<string>();
 /** At or past this many pages in the filter, a global view carries little: the atlas is the way in. */
@@ -142,7 +132,6 @@ function WikiGraphInner({
     semantic: true,
     module: true,
     "tag-shared": false,
-    terms: true,
   });
   // The level of the map lives in the route. Under the courses tabs the graph stays mounted and
   // the route isn't a map route, so it keeps the level it had.
@@ -155,6 +144,7 @@ function WikiGraphInner({
     baseNodes,
     wikilinkEdges,
     domains,
+    areas,
     tagSharedEdges,
     semanticEdges,
     fetchSemanticEdges,
@@ -167,7 +157,7 @@ function WikiGraphInner({
   const [layout, setLayout] = useState<LayoutMode>("umap-semantic");
   const onAll = mapView.level === "all";
   const grouping: Grouping = mapView.level === "all" ? "domain" : mapView.grouping;
-  // The sidebar's Domain / Course switch: follows the map's grouping, and on a focused level
+  // The sidebar's Domain / Wiki switch: follows the map's grouping, and on a focused level
   // changes only which filters it lists (the atlas is where the grouping itself changes).
   const [sideGrouping, setSideGrouping] = useState<Grouping>(grouping);
   useEffect(() => setSideGrouping(grouping), [grouping]);
@@ -187,7 +177,9 @@ function WikiGraphInner({
   const theme = useTheme();
   const curriculum = useCurriculum(baseNodes, hasNodes);
   const glossary = useGlossary(baseNodes, hasNodes);
-  const facets = useMemo(() => facetsOf(curriculum, baseNodes, glossary), [curriculum, baseNodes, glossary]);
+  const facets = useMemo(() => facetsOf(curriculum, baseNodes, glossary, areas), [curriculum, baseNodes, glossary, areas]);
+  /** Pages some lesson links; the atlas draws the rest faint. Null until the curriculum is in. */
+  const taught = useMemo(() => (curriculum ? new Set(Object.keys(curriculum.primaryCourse)) : null), [curriculum]);
   const pageModules = useMemo(() => modulesOf(curriculum), [curriculum]);
   const loadingUmap = !onAtlas && layout === "umap-semantic" && hasNodes && !umapPositions && !umapFailed;
 
@@ -239,10 +231,9 @@ function WikiGraphInner({
     () => baseNodes.map((n) => ({ id: n.id, domain: n.data.domain[0] ?? n.data.typeTag })),
     [baseNodes],
   );
-  const curriculumPending = grouping === "course" && !curriculum;
   const sectors = useMemo(
-    () => sectorsOf(atlasPages, degree, grouping, curriculum, theme),
-    [atlasPages, degree, grouping, curriculum, theme],
+    () => sectorsOf(atlasPages, degree, grouping, areas, theme),
+    [atlasPages, degree, grouping, areas, theme],
   );
   const pageInfo = useMemo(
     () => new Map<string, AtlasPageInfo>(baseNodes.map((n) => [n.id, { title: n.data.title, summary: n.data.summary }])),
@@ -271,11 +262,11 @@ function WikiGraphInner({
   useEffect(() => {
     if (!hasNodes || parsedView === null) return;
     const bad =
-      (mapView.level === "sector" && !curriculumPending && !sector) ||
-      (mapView.level === "page" && (!pageInfo.has(mapView.page) || (!curriculumPending && !sector))) ||
+      (mapView.level === "sector" && !sector) ||
+      (mapView.level === "page" && (!pageInfo.has(mapView.page) || !sector)) ||
       (mapView.level === "all" && !facetsPending && !restoringTags.current && pagesInFilter >= ALL_NODES_LIMIT);
     if (bad) replaceRoute("/");
-  }, [hasNodes, parsedView, mapView, curriculumPending, sector, pageInfo, facetsPending, pagesInFilter]);
+  }, [hasNodes, parsedView, mapView, sector, pageInfo, facetsPending, pagesInFilter]);
 
   // --- Layout: base positions (UMAP or dagre), then the filter subgraph on top ----------
   const baseLayout = useMemo<Record<string, XY> | null>(() => {
@@ -317,16 +308,8 @@ function WikiGraphInner({
   // --- View: what is rendered, dimming / highlight, and the rendered edges ---------------
   const focusIds = useMemo(() => {
     if (!focusNodeId) return null;
-    if (isTermNodeId(focusNodeId)) {
-      // A term lights the pages already here that mention it; it doesn't pull the rest in.
-      const here = new Set([focusNodeId]);
-      for (const id of glossary?.mentions[termIdOf(focusNodeId)] ?? []) {
-        if (scopeIds?.has(id) || revealed.has(id)) here.add(id);
-      }
-      return here;
-    }
     return new Set([focusNodeId, ...reveal(focusNodeId)]);
-  }, [focusNodeId, glossary, scopeIds, revealed, reveal]);
+  }, [focusNodeId, reveal]);
 
   const search = useMemo(() => searchMap(deferredSearch, baseNodes, glossary), [deferredSearch, baseNodes, glossary]);
 
@@ -373,19 +356,6 @@ function WikiGraphInner({
     return withCourseGroups(applyView(laidOut, view), curriculum, theme);
   }, [placed, onAtlas, baseNodes, rendered, view, curriculum, theme]);
 
-  // Glossary terms, as a layer over a focused level. Not over "All nodes": hundreds of pages.
-  const terms = useMemo(
-    () =>
-      glossary && edgeVis.terms && scope
-        ? termLayer(pageNodes, glossary, { anchorId, focusIds, focusId: focusNodeId })
-        : NO_TERMS,
-    [glossary, edgeVis.terms, scope, pageNodes, anchorId, focusIds, focusNodeId],
-  );
-  const viewNodes = useMemo(
-    () => (terms.nodes.length ? [...pageNodes, ...terms.nodes] : pageNodes),
-    [pageNodes, terms],
-  );
-
   const sameModule = useMemo(
     () => (edgeVis.module ? moduleEdges(pageNodes.map((n) => n.id), pageModules, degree) : []),
     [edgeVis.module, pageNodes, pageModules, degree],
@@ -398,13 +368,12 @@ function WikiGraphInner({
           semantic: semanticEdges,
           tagShared: tagSharedEdges,
           module: sameModule,
-          mentions: terms.edges,
         },
         edgeVis,
-        viewNodes,
+        pageNodes,
         view,
       ),
-    [wikilinkEdges, semanticEdges, tagSharedEdges, sameModule, terms, edgeVis, viewNodes, view],
+    [wikilinkEdges, semanticEdges, tagSharedEdges, sameModule, edgeVis, pageNodes, view],
   );
 
   // --- Sync derived nodes into React Flow state (keeps node dragging working) -----------
@@ -432,7 +401,7 @@ function WikiGraphInner({
     lastPlaced.current = placed;
     setNodes((prev) => {
       const prevById = new Map(prev.map((n) => [n.id, n]));
-      return viewNodes.map((n) => {
+      return pageNodes.map((n) => {
         const p = prevById.get(n.id);
         if (!p) return n;
         return {
@@ -443,7 +412,7 @@ function WikiGraphInner({
         };
       });
     });
-  }, [viewNodes, positions, placed, filterIds, scopeIds, onAll, setNodes]);
+  }, [pageNodes, positions, placed, filterIds, scopeIds, onAll, setNodes]);
 
   useEffect(() => {
     if (!pendingFit.current || !nodes.length) return;
@@ -461,17 +430,17 @@ function WikiGraphInner({
   // --- focusPage (arriving from a lesson, or a chat citation): go to that page's level ----
   const hasRenderedNodes = nodes.length > 0;
   useEffect(() => {
-    if (!focusPage || !hasNodes || curriculumPending) return;
+    if (!focusPage || !hasNodes) return;
     const page = atlasPages.find((p) => p.id === focusPage);
     // An unknown or private page: drop the request rather than leave it pending, so it can't
     // fire later on an unrelated graph update.
     if (page) {
       navigate(
-        mapPath({ level: "page", grouping, sector: sectorIdOf(page, grouping, curriculum), page: page.id, cap: PAGE_CAP }),
+        mapPath({ level: "page", grouping, sector: sectorIdOf(page, grouping, areas), page: page.id, cap: PAGE_CAP }),
       );
     }
     onFocusApplied?.();
-  }, [focusPage, hasNodes, curriculumPending, atlasPages, grouping, curriculum, navigate, onFocusApplied]);
+  }, [focusPage, hasNodes, atlasPages, grouping, areas, navigate, onFocusApplied]);
 
   // A new level starts clean, and a page's level opens that page's panel. Keyed on the level, not
   // on the node objects, so a graph update can't reopen a panel you closed. The cap is part of
@@ -535,14 +504,10 @@ function WikiGraphInner({
   }, [hasRenderedNodes, connected, edgeVis.semantic, hasSemanticEdges, handleLoadSemantic]);
 
   // Clicking a node focuses it and keeps its neighbours on the canvas, so the graph can be
-  // walked outward click by click. Clicking it again unfocuses. A term only lights its pages.
+  // walked outward click by click. Clicking it again unfocuses.
   const handleNodeClick = useCallback(
     (_: React.MouseEvent, node: WikiFlowNode) => {
       setFocusNodeId((prev) => (prev === node.id ? null : node.id));
-      if (isTermNodeId(node.id)) {
-        onNodeSelect?.(null);
-        return;
-      }
       setRevealed((prev) => {
         const next = new Set(prev);
         next.add(node.id);
@@ -564,16 +529,14 @@ function WikiGraphInner({
       const page = atlasPages.find((p) => p.id === pageId);
       if (!page) return;
       navigate(
-        mapPath({ level: "page", grouping, sector: sectorIdOf(page, grouping, curriculum), page: pageId, cap: PAGE_CAP }),
+        mapPath({ level: "page", grouping, sector: sectorIdOf(page, grouping, areas), page: pageId, cap: PAGE_CAP }),
       );
     },
-    [atlasPages, grouping, curriculum, navigate],
+    [atlasPages, grouping, areas, navigate],
   );
 
   const handleNodeDoubleClick = useCallback(
-    (_: React.MouseEvent, node: WikiFlowNode) => {
-      if (!isTermNodeId(node.id)) openPage(node.id);
-    },
+    (_: React.MouseEvent, node: WikiFlowNode) => openPage(node.id),
     [openPage],
   );
 
@@ -593,20 +556,18 @@ function WikiGraphInner({
 
   // Esc goes back one level. Not while typing, and not when it's closing the narrow-screen menu.
   const backTo = parentOf(mapView);
-  const termOpen = !!focusNodeId && isTermNodeId(focusNodeId);
-  const escapeState = useRef({ backTo, menuOpen, onMap: parsedView !== null, termOpen });
+  const escapeState = useRef({ backTo, menuOpen, onMap: parsedView !== null });
   useEffect(() => {
-    escapeState.current = { backTo, menuOpen, onMap: parsedView !== null, termOpen };
+    escapeState.current = { backTo, menuOpen, onMap: parsedView !== null };
   });
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape" || e.defaultPrevented) return;
-      const { backTo: to, menuOpen: menu, onMap, termOpen: term } = escapeState.current;
+      const { backTo: to, menuOpen: menu, onMap } = escapeState.current;
       const target = e.target as HTMLElement | null;
       if (!to || menu || !onMap || target?.matches?.("input, textarea")) return;
       e.preventDefault();
-      if (term) setFocusNodeId(null);
-      else navigate(mapPath(to));
+      navigate(mapPath(to));
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
@@ -648,7 +609,7 @@ function WikiGraphInner({
       ? "● computing layout…"
       : "● live";
 
-  const pageCount = nodes.filter((n) => !isTermNodeId(n.id)).length;
+  const pageCount = nodes.length;
   const atlasMatches = primaryIds;
   const atlasLit = useMemo(() => {
     if (search) return search.lit;
@@ -662,11 +623,7 @@ function WikiGraphInner({
       navigate(mapPath({ ...mapView, cap: nextCap }));
     }
   }, [nextCap, mapView, navigate]);
-  const focusedTerm =
-    focusNodeId && isTermNodeId(focusNodeId)
-      ? glossary?.terms.find((t) => termNodeId(t.id) === focusNodeId)
-      : null;
-  const clickedPage = focusNodeId && !isTermNodeId(focusNodeId) && focusNodeId !== anchorId ? focusNodeId : null;
+  const clickedPage = focusNodeId && focusNodeId !== anchorId ? focusNodeId : null;
   const allNodesAllowed = pagesInFilter < ALL_NODES_LIMIT;
   const openAll = useCallback(
     () => navigate(mapPath({ level: "all", tags: [...activeTags].sort() })),
@@ -689,7 +646,7 @@ function WikiGraphInner({
 
   // Connections, arrangement and the minimap act on the page canvas. The atlas draws no lines, so
   // the sidebar has no Map section there rather than disabled controls.
-  const mapControls = !onAtlas && !curriculumPending && (
+  const mapControls = !onAtlas && (
     <>
       <EdgeTogglePanel
         visibility={edgeVis}
@@ -732,24 +689,16 @@ function WikiGraphInner({
           if (onAtlas) navigate(mapPath({ level: "atlas", grouping: g }));
         }}
         search={hasNodes ? <MapSearch value={searchText} onChange={setSearchText} result={search} onOpenPage={openPage} /> : undefined}
+        areas={areas}
         curriculum={curriculum}
         glossary={glossary}
         facets={facets}
         activeTags={activeTags}
         onChange={onActiveTagsChange}
         onBrief={onBrief}
+        titleOf={(id) => pageInfo.get(id)?.title ?? id}
+        onOpenPage={openPage}
         map={mapControls || undefined}
-        list={
-          hasNodes ? (
-            <AtlasList
-              sectors={sectors.filter((s) => s.pageIds.length > 0)}
-              grouping={curriculumPending ? "domain" : grouping}
-              titleOf={(id) => pageInfo.get(id)?.title ?? id}
-              matches={atlasLit ?? atlasMatches}
-            />
-          ) : undefined
-        }
-        health={<HealthStrip />}
       />
 
       <div className="graph-canvas">
@@ -789,30 +738,22 @@ function WikiGraphInner({
 
         {allNodes}
 
-        {onAtlas && curriculumPending && hasNodes && (
-          <div className="map-note" role="status">
-            Loading the curriculum; showing domains until it arrives.
-          </div>
-        )}
-
         {onAtlas ? (
           hasNodes && (
             <Atlas
               sectors={sectors}
-              grouping={curriculumPending ? "domain" : grouping}
+              grouping={grouping}
               info={pageInfo}
               degree={degree}
               totalLinks={wikilinkEdges.length}
-              termCount={glossary?.terms.length ?? 0}
               matches={atlasMatches}
               lit={atlasLit}
+              taught={taught}
               onOpenSector={openSectorLevel}
               onOpenPage={openPageLevel}
               enterFrom={enterFrom}
             />
           )
-        ) : curriculumPending ? (
-          <div className="map-loading">Loading the curriculum…</div>
         ) : (
           <ReactFlow
             className="map-fade-in"
@@ -833,26 +774,6 @@ function WikiGraphInner({
             <Background variant={BackgroundVariant.Dots} color="var(--border)" gap={20} />
             <Controls className="graph-flow-controls" />
           </ReactFlow>
-        )}
-
-        {focusedTerm && (
-          <div className="term-card" role="group" aria-label={`Glossary term ${focusedTerm.label}`}>
-            <div className="term-card-title">{focusedTerm.label}</div>
-            <div>{focusedTerm.def}</div>
-            <div className="term-card-note">
-              {(focusIds?.size ?? 1) - 1} pages here mention it · {focusedTerm.mentions} in the wiki
-            </div>
-            <div className="term-card-actions">
-              {focusedTerm.page && (
-                <button type="button" className="pill-btn" onClick={() => openPage(focusedTerm.page!)}>
-                  Open its page
-                </button>
-              )}
-              <button type="button" className="pill-btn" onClick={() => setFocusNodeId(null)}>
-                Close
-              </button>
-            </div>
-          </div>
         )}
       </div>
     </div>

@@ -23,7 +23,7 @@ obsidian:
 	open -a Obsidian $(PWD)/data/wiki
 
 api:
-	LIBRARIAN_DEV_BUILD_SLIDES=1 LIBRARIAN_DEV_WATCH=1 uv run --extra api librarian api --reload --port 8000
+	LIBRARIAN_DEV_BUILD_SLIDES=1 LIBRARIAN_DEV_WATCH=1 LIBRARIAN_DEV_RUN_LABS=1 uv run --extra api librarian api --reload --port 8000
 
 mcp:
 	uv run librarian mcp

@@ -5,12 +5,10 @@
  * Angles are radians clockwise from 12 o'clock.
  */
 
-import { courseColor, domainColor } from "../theme/domains";
+import { areaColor, domainColor } from "../theme/domains";
 import type { Theme } from "./theme";
-import type { Curriculum } from "../types";
+import type { Area } from "../types";
 import type { Grouping } from "./mapRoute";
-
-export const BEYOND_SECTOR = "beyond";
 
 /**
  * Spike length, in links to and from a page. An ordinal scale: 1,239 pages split 12 / 81 / 521 /
@@ -45,15 +43,21 @@ export interface AtlasSector {
 const byDegree = (degree: Map<string, number>) => (a: string, b: string) =>
   (degree.get(b) ?? 0) - (degree.get(a) ?? 0) || a.localeCompare(b);
 
+/** Directory → area id, for the directories the server put in an area. */
+export function areaOf(areas: Area[]): Map<string, string> {
+  return new Map(areas.flatMap((a) => a.domains.map((d) => [d, a.id] as [string, string])));
+}
+
 /**
- * Directory sectors run largest first. Course sectors keep the curriculum's order, with pages in
- * by main course (the one that colours their cards) so each page is in exactly one sector.
+ * Area sectors keep the server's order (the course order), each followed by any directory in no
+ * area as its own sector, largest first. Directory sectors run largest first. Either way a page
+ * is in exactly one sector.
  */
 export function sectorsOf(
   pages: AtlasPage[],
   degree: Map<string, number>,
   grouping: Grouping,
-  curriculum: Curriculum | null,
+  areas: Area[],
   theme?: Theme,
 ): AtlasSector[] {
   const buckets = new Map<string, string[]>();
@@ -63,38 +67,32 @@ export function sectorsOf(
     else buckets.set(key, [id]);
   };
   const rank = byDegree(degree);
+  const bySize = ([a, x]: [string, string[]], [b, y]: [string, string[]]) => y.length - x.length || a.localeCompare(b);
+  const directory = ([id, ids]: [string, string[]]): AtlasSector => ({
+    id,
+    label: id,
+    color: domainColor(id, theme),
+    pageIds: ids.sort(rank),
+  });
 
-  if (grouping === "course" && curriculum) {
-    for (const p of pages) add(curriculum.primaryCourse[p.id] ?? BEYOND_SECTOR, p.id);
-    const out: AtlasSector[] = curriculum.courses
-      .filter((c) => buckets.has(c.id))
-      .map((c) => ({
-        id: c.id,
-        label: c.title,
-        color: courseColor(c.id, theme),
-        pageIds: buckets.get(c.id)!.sort(rank),
-      }));
-    const beyond = buckets.get(BEYOND_SECTOR);
-    if (beyond) {
-      out.push({
-        id: BEYOND_SECTOR,
-        label: "Not in a course",
-        color: "var(--text-dim)",
-        pageIds: beyond.sort(rank),
-      });
-    }
-    return out;
+  if (grouping === "domain" && areas.length) {
+    const lookup = areaOf(areas);
+    for (const p of pages) add(lookup.get(p.domain) ?? p.domain, p.id);
+    const areaIds = new Set(areas.map((a) => a.id));
+    const out: AtlasSector[] = areas
+      .filter((a) => buckets.has(a.id))
+      .map((a) => ({ id: a.id, label: a.title, color: areaColor(a.id, theme), pageIds: buckets.get(a.id)!.sort(rank) }));
+    const rest = [...buckets.entries()].filter(([id]) => !areaIds.has(id)).sort(bySize);
+    return [...out, ...rest.map(directory)];
   }
 
   for (const p of pages) add(p.domain, p.id);
-  return [...buckets.entries()]
-    .sort(([a, x], [b, y]) => y.length - x.length || a.localeCompare(b))
-    .map(([id, ids]) => ({ id, label: id, color: domainColor(id, theme), pageIds: ids.sort(rank) }));
+  return [...buckets.entries()].sort(bySize).map(directory);
 }
 
 /** Which sector a page is in; for a link that has a page but no sector yet. */
-export function sectorIdOf(page: AtlasPage, grouping: Grouping, curriculum: Curriculum | null): string {
-  if (grouping === "course" && curriculum) return curriculum.primaryCourse[page.id] ?? BEYOND_SECTOR;
+export function sectorIdOf(page: AtlasPage, grouping: Grouping, areas: Area[]): string {
+  if (grouping === "domain") return areaOf(areas).get(page.domain) ?? page.domain;
   return page.domain;
 }
 

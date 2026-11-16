@@ -14,7 +14,7 @@ const pages: AtlasPage[] = [
   ...Array.from({ length: 3 }, (_, i) => ({ id: `eval-${i}`, domain: "eval" })),
 ];
 const degree = new Map([["rag-3", 20], ["rag-1", 5]]);
-const sectors = sectorsOf(pages, degree, "domain", null);
+const sectors = sectorsOf(pages, degree, "wiki", []);
 const info = new Map(pages.map((p) => [p.id, { title: `Title ${p.id}`, summary: `Summary ${p.id}` }]));
 
 // jsdom has no layout, so give the stage a size and let the canvas calls fall through to null.
@@ -30,13 +30,13 @@ function setup(extra: Partial<React.ComponentProps<typeof Atlas>> = {}) {
   render(
     <Atlas
       sectors={sectors}
-      grouping="domain"
+      grouping="wiki"
       info={info}
       degree={degree}
       totalLinks={12}
-      termCount={4}
       matches={null}
       lit={null}
+      taught={null}
       enterFrom={null}
       onOpenSector={onOpenSector}
       onOpenPage={onOpenPage}
@@ -53,10 +53,11 @@ describe("Atlas", () => {
     expect(canvas).toHaveAttribute("tabindex", "0");
   });
 
-  it("counts the wiki, with terms as a number and no more", () => {
+  it("counts the wiki pages and links, and no glossary terms", () => {
     setup();
     expect(screen.getByText("wiki pages")).toBeInTheDocument();
-    expect(screen.getByText(/4 glossary terms/)).toBeInTheDocument();
+    expect(screen.getByText("12 links")).toBeInTheDocument();
+    expect(screen.queryByText(/glossary terms/)).toBeNull();
   });
 
   it("counts the matches when a filter or search is on", () => {
@@ -93,15 +94,29 @@ describe("Atlas", () => {
     expect(out).toBeDisabled();
   });
 
+  it("counts each sector's pages no lesson links yet, once the curriculum is in", () => {
+    const taught = new Set(["rag-0", "rag-1", "eval-0", "eval-1", "eval-2"]);
+    render(<AtlasList sectors={sectors} grouping="wiki" titleOf={(id) => id} matches={null} taught={taught} />);
+    expect(screen.getByText("rag").closest("summary")).toHaveTextContent("rag 6 · 4 not yet in a lesson");
+    expect(screen.getByText("eval").closest("summary")).not.toHaveTextContent("not yet in a lesson");
+  });
+
+  it("names the course gaps in the sector labels and the legend", () => {
+    setup({ taught: new Set(["rag-0", "eval-0", "eval-1", "eval-2"]) });
+    expect(screen.getByText("Faint spike: no lesson links the page yet")).toBeInTheDocument();
+    const label = screen.getByRole("link", { name: /^rag/ });
+    expect(label.querySelector("title")?.textContent).toBe("rag: 6 pages · 5 not yet in a lesson");
+  });
+
   it("offers everything as plain links without the canvas", () => {
-    render(<AtlasList sectors={sectors} grouping="domain" titleOf={(id) => info.get(id)?.title ?? id} matches={null} />);
+    render(<AtlasList sectors={sectors} grouping="wiki" titleOf={(id) => info.get(id)?.title ?? id} matches={null} taught={null} />);
     const sector = screen.getByText("eval").closest("details")!;
     sector.open = true;
     fireEvent(sector, new Event("toggle"));
     expect(within(sector).getByRole("link", { name: "Title eval-0" })).toHaveAttribute(
       "href",
-      "#/map/domain/eval/eval-0",
+      "#/map/wiki/eval/eval-0",
     );
-    expect(within(sector).getByRole("link", { name: "Open this sector" })).toHaveAttribute("href", "#/map/domain/eval");
+    expect(within(sector).getByRole("link", { name: "Open this sector" })).toHaveAttribute("href", "#/map/wiki/eval");
   });
 });

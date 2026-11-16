@@ -181,7 +181,7 @@ export function TagFilterPanel({ curriculum, activeTags, onChange, onBrief }: Pr
           <CourseRow key={c.id} course={c} activeTags={activeTags} onToggle={toggle} onBrief={onBrief} />
         ))}
         {outside > 0 && (
-          <li className="cur-row cur-outside" title="Pages no lesson links yet: mostly build findings in patterns/">
+          <li className="cur-row cur-outside" title="Pages no lesson links yet">
             <button
               type="button"
               className="cur-filter"

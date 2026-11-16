@@ -316,7 +316,6 @@ export const EDGE_STYLES: Record<string, CSSProperties> = {
   semantic: { stroke: "var(--edge-semantic)", strokeWidth: 1, strokeDasharray: "4 3" },
   "tag-shared": { stroke: "var(--edge-tag)", strokeWidth: 1, strokeDasharray: "2 4" },
   module: { stroke: "var(--edge-module)", strokeWidth: 1.5, opacity: 0.6 },
-  mentions: { stroke: "var(--concept)", strokeWidth: 1, strokeDasharray: "1 5", opacity: 0.55 },
 };
 
 export interface EdgeSources {
@@ -325,8 +324,6 @@ export interface EdgeSources {
   tagShared: GraphEdge[];
   /** Same-module stars among the rendered pages (moduleEdges). */
   module?: GraphEdge[];
-  /** Term → page, already limited to the terms on the canvas. */
-  mentions?: GraphEdge[];
 }
 
 /**
@@ -360,7 +357,6 @@ export function visibleEdges(
     ...(vis.semantic ? src.semantic : []),
     ...(vis["tag-shared"] ? src.tagShared : []),
     ...(vis.module ? (src.module ?? []) : []),
-    ...(vis.terms ? (src.mentions ?? []) : []),
   ];
 
   const anyHighlighted = viewNodes.some((n) => n.data.highlighted);

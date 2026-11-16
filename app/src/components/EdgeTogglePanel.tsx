@@ -13,7 +13,6 @@ const EDGE_META: { key: keyof EdgeVisibility; label: string; hint: string; color
   { key: "semantic", label: "Similar meaning", hint: "by embedding", color: "var(--edge-semantic)", description: "Cosine similarity ≥ 0.65 between the pages' MiniLM embeddings" },
   { key: "module", label: "Same module", hint: "taught together", color: "var(--edge-module)", description: "Pages taught in the same curriculum module, each joined to the module's best-linked page here" },
   { key: "tag-shared", label: "Shared tag", hint: "same domain tag", color: "var(--edge-tag)", description: "Pages sharing a domain tag. Shown around emphasised pages only: the filter, the clicked node or chat results." },
-  { key: "terms", label: "Glossary terms", hint: "term → pages that use it", color: "var(--concept)", description: "Glossary terms on these pages, joined to the pages that mention them" },
 ];
 
 export function EdgeTogglePanel({ visibility, onChange, onLoadSemantic, loadingSemanticEdges }: Props) {

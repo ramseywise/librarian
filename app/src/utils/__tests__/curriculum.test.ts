@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Node } from "@xyflow/react";
-import type { Curriculum, WikiNodeData } from "../../types";
+import type { Area, Curriculum, WikiNodeData } from "../../types";
 import { courseColor, domainColor } from "../../theme/domains";
 import { applyView, filterPrimaryIds } from "../graphView";
 import { facetPending, facetsOf, withCourseGroups } from "../curriculum";
@@ -24,6 +24,23 @@ const curriculum: Curriculum = {
 };
 const facets = facetsOf(curriculum);
 const nodes = [node("a"), node("b"), node("c", "patterns"), node("d", "patterns"), node("e", "patterns"), node("p", "projects", "project")];
+
+describe("area and gap facets", () => {
+  const areas: Area[] = [{ id: "generative-ai", title: "Generative AI", domains: ["rag"] }];
+  const withPaths = nodes.map((n) => ({ ...n, data: { ...n.data, path: `${n.data.domain[0]}/${n.id}.md` } }));
+
+  it("an area is its directories' pages; its gap is those no lesson links, only with the curriculum", () => {
+    const f = facetsOf(curriculum, [...withPaths, { ...node("q"), data: { ...node("q").data, path: "rag/q.md" } }], null, areas);
+    expect([...f.get("area:generative-ai")!].sort()).toEqual(["a", "b", "q"]);
+    expect([...f.get("gap:generative-ai")!]).toEqual(["q"]);
+    expect(f.has("area:patterns")).toBe(false);
+    const noCurriculum = facetsOf(null, withPaths, null, areas);
+    expect(noCurriculum.has("area:generative-ai")).toBe(true);
+    expect(noCurriculum.has("gap:generative-ai")).toBe(false);
+    expect(facetPending("gap:generative-ai", null, null)).toBe(true);
+    expect(facetPending("area:generative-ai", null, null)).toBe(false);
+  });
+});
 
 describe("curriculum filters", () => {
   it.each([

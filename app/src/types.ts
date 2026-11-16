@@ -1,4 +1,4 @@
-export type EdgeType = "wikilink" | "semantic" | "tag-shared" | "module" | "mentions";
+export type EdgeType = "wikilink" | "semantic" | "tag-shared" | "module";
 export type LayoutMode = "dagre" | "umap-semantic";
 
 export interface WikiNodeData extends Record<string, unknown> {
@@ -32,11 +32,12 @@ export interface EdgeVisibility {
   "tag-shared": boolean;
   /** Pages taught in the same curriculum module. */
   module: boolean;
-  /** The glossary layer: term nodes and their "mentions" edges, focused views only. */
-  terms: boolean;
 }
 
-/** One entry of GET /api/glossary. Only terms with a public mention are served. */
+/**
+ * One entry of GET /api/glossary. Only terms with a public mention are served. Terms are filters
+ * (`term:<id>` lights the pages mentioning one) and search hits; they are not drawn on the map.
+ */
 export interface GlossaryTerm {
   id: string;
   label: string;
@@ -79,7 +80,18 @@ export interface Curriculum {
   stale: boolean;
 }
 
-/** Filter id (`course:<id>`, `module:<course>/<module>`, `beyond:<dir>`, `tag:<tag>`, `term:<id>`) → its pages. */
+/**
+ * One sector of the atlas's area grouping: a few wiki directories read as one, at the grain of
+ * the courses (an area id is a course id). Served with the graph payload from
+ * `librarian.wiki.areas`; a directory in no area is drawn as its own sector.
+ */
+export interface Area {
+  id: string;
+  title: string;
+  domains: string[];
+}
+
+/** Filter id (`course:<id>`, `module:<course>/<module>`, `beyond:<dir>`, `area:<id>`, `gap:<id>`, `dir:<dir>`, `tag:<tag>`, `term:<id>`) → its pages. */
 export type Facets = Map<string, Set<string>>;
 
 export interface SelectedNode {
@@ -90,10 +102,12 @@ export interface SelectedNode {
 /**
  * Graph payload — `graph_update` over /ws and GET /api/graph.
  * `edges` holds wikilink edges only; tag-shared edges are derived client-side
- * (utils/tagEdges.ts). `domains` is the server's disk-derived domain list (no `private`).
+ * (utils/tagEdges.ts). `domains` is the server's disk-derived domain list (no `private`);
+ * `areas` folds those directories into the ring's sectors (empty from an older server).
  */
 export interface GraphPayload {
   nodes: import("@xyflow/react").Node<WikiNodeData>[];
   edges: import("@xyflow/react").Edge<WikiEdgeData>[];
   domains: string[];
+  areas: Area[];
 }

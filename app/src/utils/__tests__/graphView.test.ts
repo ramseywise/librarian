@@ -30,7 +30,7 @@ const edge = (source: string, target: string, edgeType: WikiEdgeData["edgeType"]
 const NONE: ViewState = {
   focusId: null, focusIds: null, filterIds: null, activeTags: new Set(),
 };
-const ALL_ON: EdgeVisibility = { wikilink: true, semantic: true, module: true, "tag-shared": true, terms: true };
+const ALL_ON: EdgeVisibility = { wikilink: true, semantic: true, module: true, "tag-shared": true };
 
 const nodes = [node("p", "projects", "project"), node("a", "rag"), node("b", "eval"), node("c", "memory")];
 const flags = (ns: Node<WikiNodeData>[]) =>
@@ -137,7 +137,7 @@ describe("visibleEdges", () => {
 
   it("respects the toggles when no filter is active", () => {
     const v = NONE;
-    const out = visibleEdges(src, { wikilink: true, semantic: false, module: false, "tag-shared": false, terms: false }, applyView(nodes, v), v);
+    const out = visibleEdges(src, { wikilink: true, semantic: false, module: false, "tag-shared": false }, applyView(nodes, v), v);
     expect(out.map((e) => e.id)).toEqual(["wikilink:a->b"]);
     expect(out[0].style).toBeDefined();
   });
@@ -170,7 +170,7 @@ describe("visibleEdges", () => {
     const noTagShared = { ...ALL_ON, "tag-shared": false };
     const ids = visibleEdges(src, noTagShared, applyView(nodes, v), v).map((e) => e.id);
     expect(ids).toEqual(["wikilink:a->b"]);
-    const off = { wikilink: false, semantic: false, module: false, "tag-shared": false, terms: false };
+    const off = { wikilink: false, semantic: false, module: false, "tag-shared": false };
     expect(visibleEdges(src, off, applyView(nodes, v), v)).toEqual([]);
   });
 

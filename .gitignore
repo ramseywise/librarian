@@ -63,6 +63,9 @@ data/cron/
 # data/wiki/ is tracked — it is the repo's product, not rebuildable output.
 # Only private pages stay local.
 data/wiki/private/
+# Golden eval entries whose source pages went private on 2026-11-10: kept locally, never run by
+# the gate, never committed.
+evals/private/
 
 # ...except the session log, which is both. `--cron` regenerates it from raw/sessions/,
 # and since #60 gave it real topics its rows carry verbatim first prompts — the same

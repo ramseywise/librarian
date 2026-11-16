@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { COURSE_COLORS, KNOWN, LIGHT_CARD_BG, PALETTE, TYPE_COLORS, contrastRatio, courseColor, domainColor, lightVariant, tagColor } from "../domains";
+import { COURSE_COLORS, KNOWN, LIGHT_CARD_BG, PALETTE, TYPE_COLORS, areaColor, contrastRatio, courseColor, domainColor, lightVariant, tagColor } from "../domains";
 
 describe("domainColor", () => {
   it("keeps historical colours for known domains", () => {
@@ -27,14 +27,25 @@ function luminance(hex: string): number {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
+describe("areaColor", () => {
+  it("takes the course colour for an area, and the directory colour for a loose directory", () => {
+    expect(areaColor("generative-ai", "dark")).toBe(COURSE_COLORS["generative-ai"]);
+    expect(areaColor("deep-agents", "dark")).toBe(KNOWN["deep-agents"]);
+    expect(areaColor("generative-ai", "light")).toBe(lightVariant(COURSE_COLORS["generative-ai"]));
+  });
+});
+
 describe("courseColor", () => {
   it("gives a new course a stable palette colour", () => {
     expect(PALETTE).toContain(courseColor("brand-new-course"));
     expect(courseColor("brand-new-course")).toBe(courseColor("brand-new-course"));
   });
-  it("never reuses a directory colour, so the legend stays unambiguous", () => {
-    const directories = new Set(Object.values(KNOWN));
-    for (const c of Object.values(COURSE_COLORS)) expect(directories.has(c)).toBe(false);
+  it("never reuses another directory's colour, so the legend stays unambiguous", () => {
+    // A subject directory is its course's area, so the two deliberately share a colour.
+    for (const [course, c] of Object.entries(COURSE_COLORS)) {
+      const clashes = Object.entries(KNOWN).filter(([dir, k]) => k === c && dir !== course);
+      expect(clashes).toEqual([]);
+    }
   });
   it("gives every course its own colour", () => {
     const colours = Object.values(COURSE_COLORS);

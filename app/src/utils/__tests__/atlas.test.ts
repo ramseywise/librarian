@@ -1,10 +1,9 @@
 import { describe, expect, it } from "vitest";
-import type { Curriculum } from "../../types";
+import type { Area } from "../../types";
 import {
   BANDS,
   bandOf,
   bandRadius,
-  BEYOND_SECTOR,
   hitTest,
   LABEL_ROW,
   layoutLabels,
@@ -19,20 +18,10 @@ import {
 const pages = (domain: string, n: number, from = 0): AtlasPage[] =>
   Array.from({ length: n }, (_, i) => ({ id: `${domain}-${from + i}`, domain }));
 
-const curriculum: Curriculum = {
-  courses: [
-    {
-      id: "ai",
-      title: "AI",
-      pageIds: ["a-0", "a-1"],
-      modules: [{ id: "m", title: "M", firstLesson: null, pageIds: ["a-0", "a-1"] }],
-    },
-    { id: "ds", title: "DS", pageIds: ["a-1", "b-0"], modules: [] },
-  ],
-  beyond: [{ domain: "b", pageIds: ["b-1"] }],
-  primaryCourse: { "a-0": "ai", "a-1": "ai", "b-0": "ds" },
-  stale: false,
-};
+const areas: Area[] = [
+  { id: "generative-ai", title: "Generative AI", domains: ["a", "c"] },
+  { id: "ai-engineering", title: "AI Engineering", domains: ["b"] },
+];
 
 const insets = { left: 0, top: 0, bottom: 0, labelWidth: 100 };
 
@@ -46,27 +35,32 @@ describe("bandOf", () => {
 describe("sectorsOf", () => {
   it("groups by domain, largest first, each sorted by degree", () => {
     const degree = new Map([["b-1", 9], ["b-0", 2], ["a-0", 5]]);
-    const sectors = sectorsOf([...pages("a", 1), ...pages("b", 2)], degree, "domain", null);
+    const sectors = sectorsOf([...pages("a", 1), ...pages("b", 2)], degree, "wiki", []);
     expect(sectors.map((s) => s.id)).toEqual(["b", "a"]);
     expect(sectors[0].pageIds).toEqual(["b-1", "b-0"]);
   });
 
-  it("puts a page in its main course only, and the rest in Beyond", () => {
-    const all = [...pages("a", 2), ...pages("b", 2)];
-    const sectors = sectorsOf(all, new Map(), "course", curriculum);
-    const byId = new Map(sectors.map((s) => [s.id, s]));
-    expect(byId.get("ai")?.pageIds.sort()).toEqual(["a-0", "a-1"]);
-    expect(byId.get("ds")?.pageIds).toEqual(["b-0"]);
-    expect(byId.get(BEYOND_SECTOR)?.pageIds).toEqual(["b-1"]);
+  it("groups directories into areas in the server's order, with loose directories after", () => {
+    const all = [...pages("a", 2), ...pages("c", 1), ...pages("b", 2), ...pages("x", 3), ...pages("y", 1)];
+    const sectors = sectorsOf(all, new Map(), "domain", areas);
+    expect(sectors.map((s) => s.id)).toEqual(["generative-ai", "ai-engineering", "x", "y"]);
+    expect(sectors[0].label).toBe("Generative AI");
+    expect(sectors[0].pageIds.sort()).toEqual(["a-0", "a-1", "c-0"]);
+    expect(sectors[2].label).toBe("x");
     expect(sectors.flatMap((s) => s.pageIds).sort()).toEqual(all.map((p) => p.id).sort());
-    expect(sectorIdOf({ id: "b-1", domain: "b" }, "course", curriculum)).toBe(BEYOND_SECTOR);
-    expect(sectorIdOf({ id: "b-0", domain: "b" }, "course", curriculum)).toBe("ds");
-    expect(sectorIdOf({ id: "b-0", domain: "b" }, "domain", curriculum)).toBe("b");
+    expect(sectorIdOf({ id: "c-0", domain: "c" }, "domain", areas)).toBe("generative-ai");
+    expect(sectorIdOf({ id: "x-0", domain: "x" }, "domain", areas)).toBe("x");
+    expect(sectorIdOf({ id: "a-0", domain: "a" }, "wiki", areas)).toBe("a");
+  });
+
+  it("falls back to directories when the server sent no areas", () => {
+    const sectors = sectorsOf([...pages("a", 1), ...pages("b", 2)], new Map(), "domain", []);
+    expect(sectors.map((s) => s.id)).toEqual(["b", "a"]);
   });
 });
 
 describe("layoutRing", () => {
-  const sectors = sectorsOf([...pages("big", 1200), ...pages("tiny", 1), ...pages("mid", 40)], new Map(), "domain", null);
+  const sectors = sectorsOf([...pages("big", 1200), ...pages("tiny", 1), ...pages("mid", 40)], new Map(), "wiki", []);
   const ring = layoutRing(sectors);
 
   it("gives every page one spike, in angle order, inside a full turn", () => {
@@ -101,7 +95,7 @@ describe("layoutLabels", () => {
     ["interview", 35], ["rag", 34], ["harness", 31], ["context", 22], ["adk", 20], ["langgraph", 17],
     ["graph", 13], ["memory", 12], ["loop", 11], ["projects", 10], ["mcp", 9],
   ];
-  const ring = layoutRing(sectorsOf(shape.flatMap(([d, n]) => pages(d, n)), new Map(), "domain", null));
+  const ring = layoutRing(sectorsOf(shape.flatMap(([d, n]) => pages(d, n)), new Map(), "wiki", []));
 
   for (const [w, h] of [[1080, 860], [390, 700], [800, 420]]) {
     it(`keeps labels a row apart and on the stage at ${w}x${h}`, () => {
@@ -121,13 +115,13 @@ describe("layoutLabels", () => {
 
   it("truncates only for lack of room", () => {
     const g = ringGeometry(1400, 860, { left: 0, top: 80, bottom: 10, labelWidth: 84 });
-    const long = layoutRing(sectorsOf(pages("a-rather-long-sector-name", 3), new Map(), "domain", null));
+    const long = layoutRing(sectorsOf(pages("a-rather-long-sector-name", 3), new Map(), "wiki", []));
     expect(layoutLabels(long, g)[0].text).toBe("a-rather-long-sector-name");
   });
 });
 
 describe("hitTest", () => {
-  const ring = layoutRing(sectorsOf([...pages("a", 300), ...pages("b", 300)], new Map(), "domain", null));
+  const ring = layoutRing(sectorsOf([...pages("a", 300), ...pages("b", 300)], new Map(), "wiki", []));
   const g = ringGeometry(1000, 800, insets);
 
   it("finds the spike under the pointer", () => {

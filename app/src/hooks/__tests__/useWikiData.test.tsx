@@ -34,6 +34,7 @@ describe("fromAtlas", () => {
       ],
       links: [[0, 1, "extends"], [1, 0], [0, 7]],
       domains: ["eval", "private", "rag"],
+      areas: [],
     });
     expect(g.nodes.map((n) => [n.id, n.data.domain[0], n.data.summary])).toEqual([["a", "rag", ""], ["b", "eval", ""]]);
     expect(g.edges).toEqual([
@@ -138,6 +139,7 @@ describe("useWikiData socket lifecycle", () => {
       nodes: [node("a", "rag", ["rag"]), node("b", "eval", ["rag"])],
       edges: [],
       domains: ["eval", "rag"],
+      areas: [],
     };
     act(() => FakeWebSocket.instances[0].onmessage?.({ data: JSON.stringify({ type: "graph_update", data }) }));
     expect(result.current.domains).toEqual(["eval", "rag"]);

@@ -30,6 +30,7 @@ export function PracticeView({ onOpenLesson, onOpenConcept }: Props) {
   return (
     <div className="course-scroll course-page">
       <div className="course-page-inner course-page-inner--practice">
+        <a href="#/labs" className="practice-link">← Labs</a>
         <h1 className="course-page-title">Practice</h1>
         <p className="course-page-lede">
           Timed drills, by language. Attempt cold, then open the solution.

@@ -3,7 +3,7 @@ import { WikiGraph } from "./components/WikiGraph";
 import { ChatPanel } from "./components/ChatPanel";
 import { NodeDetailPanel } from "./components/NodeDetailPanel";
 import { pageTitle, useDocumentTitle } from "./components/courses/useDocumentTitle";
-import { useChatStream } from "./hooks/useChatStream";
+import { useChatStream, type LabChatContext } from "./hooks/useChatStream";
 import { useHashRoute } from "./hooks/useHashRoute";
 import { useSlashSearch } from "./hooks/useSlashSearch";
 import { ThemeToggle } from "./components/ThemeToggle";
@@ -20,7 +20,7 @@ const NARROW_QUERY = "(max-width: 1099px)";
 const isNarrow = () =>
   typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia(NARROW_QUERY).matches;
 
-// Courses and Practice pull in react-markdown + KaTeX; load them only when opened.
+// Courses, Practice and Labs pull in react-markdown + KaTeX (Labs, CodeMirror); load them only when opened.
 const CoursesView = lazy(() =>
   import("./components/courses/CoursesView").then((m) => ({ default: m.CoursesView }))
 );
@@ -38,6 +38,12 @@ const StudyHome = lazy(() =>
 );
 const PracticeView = lazy(() =>
   import("./components/courses/PracticeView").then((m) => ({ default: m.PracticeView }))
+);
+const LabsView = lazy(() =>
+  import("./components/courses/LabsView").then((m) => ({ default: m.LabsView }))
+);
+const LabWorkspace = lazy(() =>
+  import("./components/courses/LabWorkspace").then((m) => ({ default: m.LabWorkspace }))
 );
 const LoginView = lazy(() => import("./components/account/LoginView").then((m) => ({ default: m.LoginView })));
 const AdminView = lazy(() => import("./components/account/AdminView").then((m) => ({ default: m.AdminView })));
@@ -63,13 +69,15 @@ export default function App() {
   const inPrivacy = route === "/privacy";
   const inAccount = inLogin || inAdmin || inPrivacy;
   const inPractice = route === "/practice";
+  const inLabs = route === "/labs" || route.startsWith("/labs/");
+  const labId = route.startsWith("/labs/") ? route.slice("/labs/".length) : "";
   const inFlashcards = route.startsWith("/flashcards/");
   const inStudy = route === "/study";
   const inSlides = route.startsWith("/slides/");
   const inQuiz = route.startsWith("/quiz/");
   // Every page drawn over the graph; the graph stays mounted underneath.
   const inCourses =
-    route === "/courses" || route.startsWith("/courses/") || inPractice || inFlashcards || inStudy || inSlides || inQuiz || inAccount;
+    route === "/courses" || route.startsWith("/courses/") || inPractice || inLabs || inFlashcards || inStudy || inSlides || inQuiz || inAccount;
   const courseRoute = route.replace(/^\/courses\/?/, "");
   // Course views set their own titles; the graph's is set here.
   useDocumentTitle(inCourses ? null : pageTitle("Graph"));
@@ -98,10 +106,16 @@ export default function App() {
 
   const { messages, streaming, sendQuery, stop, clear } = useChatStream(handleHighlight);
 
+  // An open lab registers what the chat is told about it; every send carries it while it is open.
+  const labContextRef = useRef<(() => LabChatContext) | null>(null);
+  const setLabContext = useCallback((get: (() => LabChatContext) | null) => {
+    labContextRef.current = get;
+  }, []);
+
   const handleSend = useCallback(
     (query: string) => {
       lastQueryRef.current = query;
-      sendQuery(query);
+      sendQuery(query, labContextRef.current?.() ?? null);
     },
     [sendQuery]
   );
@@ -129,6 +143,7 @@ export default function App() {
   const clearFocus = useCallback(() => setFocusPage(null), []);
 
   const openLesson = useCallback((lessonId: string) => navigate(`/courses/${lessonId}`), [navigate]);
+  const openLab = useCallback((id: string) => navigate(`/labs/${id}`), [navigate]);
 
   const askAbout = useCallback(
     (question: string) => {
@@ -185,15 +200,15 @@ export default function App() {
           <button
             onClick={() => navigate("/courses")}
             className="tab"
-            aria-current={inCourses && !inPractice && !inStudy && !inAccount ? "page" : undefined}
+            aria-current={inCourses && !inPractice && !inLabs && !inStudy && !inAccount ? "page" : undefined}
           >
             Courses
           </button>
           <button onClick={() => navigate("/study")} className="tab" aria-current={inStudy ? "page" : undefined}>
             Study
           </button>
-          <button onClick={() => navigate("/practice")} className="tab" aria-current={inPractice ? "page" : undefined}>
-            Practice
+          <button onClick={() => navigate("/labs")} className="tab" aria-current={inLabs || inPractice ? "page" : undefined}>
+            Labs
           </button>
         </nav>
         <div className="app-header-actions">
@@ -233,6 +248,17 @@ export default function App() {
                   <SlidesView deckId={route.slice("/slides/".length)} />
                 ) : inQuiz ? (
                   <QuizView quizId={route.slice("/quiz/".length)} />
+                ) : labId ? (
+                  <LabWorkspace
+                    key={labId}
+                    labId={labId}
+                    onOpenLesson={openLesson}
+                    onBack={() => navigate("/labs")}
+                    onAsk={askAbout}
+                    onChatContext={setLabContext}
+                  />
+                ) : inLabs ? (
+                  <LabsView onOpenLab={openLab} onOpenLesson={openLesson} onOpenDrills={() => navigate("/practice")} />
                 ) : inPractice ? (
                   <PracticeView onOpenLesson={openLesson} onOpenConcept={openConcept} />
                 ) : inFlashcards ? (

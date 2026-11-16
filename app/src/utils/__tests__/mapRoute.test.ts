@@ -16,21 +16,29 @@ describe("parseMapRoute", () => {
 
   it("round-trips every level", () => {
     const views: MapView[] = [
-      { level: "atlas", grouping: "course" },
-      { level: "sector", grouping: "domain", sector: "rag", cap: DEFAULT_CAP },
-      { level: "sector", grouping: "domain", sector: "rag", cap: 300 },
-      { level: "page", grouping: "course", sector: "beyond the/curriculum", page: "a&b", cap: PAGE_CAP },
-      { level: "page", grouping: "domain", sector: "rag", page: "p", cap: 120 },
+      { level: "atlas", grouping: "domain" },
+      { level: "sector", grouping: "wiki", sector: "rag", cap: DEFAULT_CAP },
+      { level: "sector", grouping: "wiki", sector: "rag", cap: 300 },
+      { level: "page", grouping: "domain", sector: "beyond the/curriculum", page: "a&b", cap: PAGE_CAP },
+      { level: "page", grouping: "wiki", sector: "rag", page: "p", cap: 120 },
       { level: "all", tags: [] },
       { level: "all", tags: ["rag", "course:data-science"] },
     ];
     for (const v of views) expect(parseMapRoute(mapPath(v))).toEqual(v);
   });
 
+  it("reads an old course or area link as the domain grouping it became", () => {
+    expect(parseMapRoute("/map/course")).toEqual({ level: "atlas", grouping: "domain" });
+    expect(parseMapRoute("/map/area")).toEqual({ level: "atlas", grouping: "domain" });
+    expect(parseMapRoute("/map/course/data-science")).toEqual({ level: "sector", grouping: "domain", sector: "data-science", cap: DEFAULT_CAP });
+    expect(parseMapRoute("/")).toEqual(ATLAS);
+    expect(ATLAS).toEqual({ level: "atlas", grouping: "domain" });
+  });
+
   it("keeps a default cap out of the link, per level", () => {
-    expect(mapPath({ level: "sector", grouping: "domain", sector: "rag", cap: DEFAULT_CAP })).toBe("/map/domain/rag");
-    expect(mapPath({ level: "page", grouping: "domain", sector: "rag", page: "p", cap: PAGE_CAP })).toBe(
-      "/map/domain/rag/p",
+    expect(mapPath({ level: "sector", grouping: "wiki", sector: "rag", cap: DEFAULT_CAP })).toBe("/map/wiki/rag");
+    expect(mapPath({ level: "page", grouping: "wiki", sector: "rag", page: "p", cap: PAGE_CAP })).toBe(
+      "/map/wiki/rag/p",
     );
   });
 
@@ -47,11 +55,11 @@ describe("parseMapRoute", () => {
 
 describe("parentOf and levelKey", () => {
   it("steps page, sector, atlas, and stops", () => {
-    const page: MapView = { level: "page", grouping: "course", sector: "s", page: "p", cap: 120 };
+    const page: MapView = { level: "page", grouping: "domain", sector: "s", page: "p", cap: 120 };
     const sector = parentOf(page)!;
-    expect(sector).toEqual({ level: "sector", grouping: "course", sector: "s", cap: DEFAULT_CAP });
+    expect(sector).toEqual({ level: "sector", grouping: "domain", sector: "s", cap: DEFAULT_CAP });
     const atlas = parentOf(sector)!;
-    expect(atlas).toEqual({ level: "atlas", grouping: "course" });
+    expect(atlas).toEqual({ level: "atlas", grouping: "domain" });
     expect(parentOf(atlas)).toBeNull();
     expect(parentOf({ level: "all", tags: ["x"] })).toEqual(ATLAS);
   });
@@ -73,9 +81,9 @@ describe("replaceRoute", () => {
     let told = 0;
     const listener = () => told++;
     window.addEventListener("hashchange", listener);
-    replaceRoute("/map/course");
+    replaceRoute("/map/area");
     window.removeEventListener("hashchange", listener);
-    expect(window.location.hash).toBe("#/map/course");
+    expect(window.location.hash).toBe("#/map/area");
     expect(window.history.length).toBe(before);
     expect(told).toBe(1);
   });

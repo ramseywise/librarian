@@ -199,47 +199,6 @@
   font-size: var(--fs-base);
 }
 
-/* ---- Glossary terms: pills, in the concept colour, never cards ------------------ */
-.term-node {
-  /* Canvas units: read at the zoom a focused view fits to, so larger than the cards' text. */
-  max-width: 225px;
-  padding: 8px 16px;
-  transform-origin: center;
-  border-radius: var(--radius-pill);
-  background: var(--surface);
-  border: 1px dashed var(--concept);
-  color: var(--concept);
-  font-size: 20px;
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  transition: opacity 120ms;
-}
-.term-node.is-focused { border-style: solid; box-shadow: 0 0 0 2px var(--concept); }
-.term-node.is-dimmed { opacity: 0.2; }
-.term-node-label { pointer-events: none; }
-.react-flow .term-node-handle { opacity: 0; width: 1px; height: 1px; min-width: 0; min-height: 0; border: none; }
-
-.term-card {
-  position: absolute;
-  left: 50%;
-  bottom: var(--space-5);
-  transform: translateX(-50%);
-  z-index: var(--z-detail);
-  width: min(420px, calc(100% - var(--space-9)));
-  box-sizing: border-box;
-  background: var(--surface-raised);
-  border: 1px solid var(--concept);
-  border-radius: var(--radius-lg);
-  padding: var(--space-5) var(--space-6);
-  color: var(--text-soft);
-  font-size: var(--fs-base);
-}
-.term-card-title { font-weight: 600; color: var(--text-strong); margin-bottom: var(--space-1); }
-.term-card-note { color: var(--text-muted); font-size: var(--fs-sm); margin-top: var(--space-2); }
-.term-card-actions { display: flex; gap: var(--space-3); margin-top: var(--space-3); }
-
 @media (max-width: 759px) {
   .map-bar { top: 44px; left: var(--space-5); right: var(--space-5); transform: none; width: auto; max-width: none; justify-content: flex-start; }
   .map-search-input { width: 150px; }

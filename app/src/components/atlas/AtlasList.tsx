@@ -1,21 +1,26 @@
 import { useState } from "react";
 import type { AtlasSector } from "../../utils/atlas";
 import { DEFAULT_CAP, mapPath, PAGE_CAP, type Grouping } from "../../utils/mapRoute";
+import { gapText } from "./atlasText";
 
 interface Props {
   sectors: AtlasSector[];
   grouping: Grouping;
   titleOf: (id: string) => string;
   matches: Set<string> | null;
+  /** Pages some lesson links; null until the curriculum arrives. */
+  taught: Set<string> | null;
 }
 
-function SectorRows({ sector, grouping, titleOf, matches }: { sector: AtlasSector } & Omit<Props, "sectors">) {
+function SectorRows({ sector, grouping, titleOf, matches, taught }: { sector: AtlasSector } & Omit<Props, "sectors">) {
   const [open, setOpen] = useState(false);
   const ids = matches ? sector.pageIds.filter((id) => matches.has(id)) : sector.pageIds;
+  const gaps = taught ? ids.filter((id) => !taught.has(id)).length : 0;
   return (
     <details className="atlas-list-sector" onToggle={(e) => setOpen(e.currentTarget.open)}>
       <summary>
         {sector.label} <span className="cur-count">{ids.length}</span>
+        {gaps > 0 && <span className="cur-count atlas-list-gaps">{` · ${gapText(gaps)}`}</span>}
       </summary>
       {open && (
         <ul>
@@ -36,11 +41,11 @@ function SectorRows({ sector, grouping, titleOf, matches }: { sector: AtlasSecto
 }
 
 /** The whole atlas as plain links: what the ring shows, reachable without the canvas. */
-export function AtlasList({ sectors, grouping, titleOf, matches }: Props) {
+export function AtlasList({ sectors, grouping, titleOf, matches, taught }: Props) {
   return (
     <div className="atlas-list">
       {sectors.map((s) => (
-        <SectorRows key={s.id} sector={s} grouping={grouping} titleOf={titleOf} matches={matches} />
+        <SectorRows key={s.id} sector={s} grouping={grouping} titleOf={titleOf} matches={matches} taught={taught} />
       ))}
     </div>
   );

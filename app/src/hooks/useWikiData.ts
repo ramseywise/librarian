@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Edge, Node } from "@xyflow/react";
-import type { GraphPayload, WikiEdgeData, WikiNodeData } from "../types";
+import type { Area, GraphPayload, WikiEdgeData, WikiNodeData } from "../types";
 import { tagSharedEdges as computeTagSharedEdges } from "../utils/tagEdges";
 import { RELEASE_EVENT, apiFetch, wsProtocols } from "../utils/api";
 import type { XY } from "../utils/layout";
@@ -41,12 +41,13 @@ export function parseGraphMessage(raw: string): GraphPayload | null {
   if (!msg || typeof msg !== "object") return null;
   const { type, data } = msg as { type?: unknown; data?: unknown };
   if (type !== "graph_update" || !data || typeof data !== "object") return null;
-  const { nodes, edges, domains } = data as Partial<GraphPayload>;
+  const { nodes, edges, domains, areas } = data as Partial<GraphPayload>;
   if (!Array.isArray(nodes) || !Array.isArray(edges)) return null;
   return {
     nodes,
     edges: edges.filter((e) => e.data?.edgeType === "wikilink"),
     domains: Array.isArray(domains) ? domains.filter((d) => d !== "private") : deriveDomains(nodes),
+    areas: Array.isArray(areas) ? areas : [],
   };
 }
 
@@ -55,6 +56,9 @@ export interface AtlasPayload {
   nodes: { id: string; title: string; domain: string; typeTag: string; tags: string[] }[];
   links: ([number, number] | [number, number, string])[];
   domains: string[];
+  /** Absent from an older server: the ring then has a sector per directory. */
+  areas?: Area[];
+  /** Absent from an older server: the sidebar then lists each area on its own. */
 }
 
 /** The atlas payload as a GraphPayload, with empty summaries until the full graph arrives. */
@@ -81,10 +85,10 @@ export function fromAtlas(a: AtlasPayload): GraphPayload {
     const data: WikiEdgeData = relationship ? { edgeType: "wikilink", relationship } : { edgeType: "wikilink" };
     return [{ id: `wl:${source}->${target}`, source, target, data }];
   });
-  return { nodes, edges, domains: a.domains.filter((d) => d !== "private") };
+  return { nodes, edges, domains: a.domains.filter((d) => d !== "private"), areas: a.areas ?? [] };
 }
 
-const EMPTY: GraphPayload = { nodes: [], edges: [], domains: [] };
+const EMPTY: GraphPayload = { nodes: [], edges: [], domains: [], areas: [] };
 const NO_EDGES: Edge<WikiEdgeData>[] = [];
 
 /**
@@ -207,6 +211,7 @@ export function useWikiData({ tagShared = true, live = true }: { tagShared?: boo
     baseNodes: graph.nodes as Node<WikiNodeData>[],
     wikilinkEdges: graph.edges,
     domains: graph.domains,
+    areas: graph.areas,
     tagSharedEdges,
     semanticEdges,
     fetchSemanticEdges,

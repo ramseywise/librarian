@@ -62,3 +62,19 @@ describe("LessonView report", () => {
     vi.unstubAllGlobals();
   });
 });
+
+describe("LessonView labs", () => {
+  it("links the labs that back the note", () => {
+    const lab = {
+      id: "ds/01-m/practice/importance_noise.py", title: "Importance noise", course: "ds", module: "01-m",
+      path: "practice/importance_noise.py", purpose: "P", pattern: "evaluation", language: "python",
+      runsOffline: true, hasRun: true, hasCheck: false,
+    };
+    render(
+      <LessonView lesson={{ ...drill, kind: "reading", drill: undefined, labs: [lab] }} courseTitle="DS" done={false}
+        onMarkDone={vi.fn()} onOpen={vi.fn()} onOpenConcept={vi.fn()} onAsk={vi.fn()} onToc={vi.fn()} onActiveHeading={vi.fn()} />,
+    );
+    expect(screen.getByText("Labs for this note")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Importance noise/ })).toHaveAttribute("href", "#/labs/ds/01-m/practice/importance_noise.py");
+  });
+});

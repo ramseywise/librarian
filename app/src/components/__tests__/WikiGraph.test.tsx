@@ -24,6 +24,7 @@ const DATA = {
   baseNodes: [page("rrf-fusion", "rag"), page("chunking", "rag"), page("react-loop", "patterns")],
   wikilinkEdges: [{ id: "e1", source: "rrf-fusion", target: "chunking", data: { type: "wikilink" } }],
   domains: ["patterns", "rag"],
+  areas: [],
   tagSharedEdges: [],
   semanticEdges: [],
   fetchSemanticEdges: vi.fn(),

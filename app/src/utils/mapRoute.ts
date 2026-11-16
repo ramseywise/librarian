@@ -1,8 +1,8 @@
 /**
  * The map's levels in the hash route, so a reload restores the level:
  *
- *   #/ , #/map/domain                  atlas by directory
- *   #/map/course                       atlas by course
+ *   #/ , #/map/domain                  atlas by domain (areas at the courses' grain)
+ *   #/map/wiki                         atlas by wiki directory
  *   #/map/<grouping>/<sector>          focused sector
  *   #/map/<grouping>/<sector>/<page>   focused page
  *   #/map/all?tags=a,b                 every page under the filter
@@ -11,7 +11,13 @@
  * parse gives null and the graph, which stays mounted under them, keeps its level.
  */
 
-export type Grouping = "domain" | "course";
+/**
+ * Domain: areas at the courses' grain, nested under three domains in the sidebar. Wiki: the
+ * directories of data/wiki/, with tags and glossary terms as filters.
+ */
+export type Grouping = "domain" | "wiki";
+/** Earlier names of the domain grouping; old links still parse. */
+const LEGACY_GROUPINGS = new Set(["course", "area"]);
 
 /**
  * Pages a focused view holds until asked for more: a sector opens on its hubs, and clicks grow it
@@ -52,11 +58,12 @@ export function parseMapRoute(route: string): MapView | null {
   if (path !== "/map" && !path.startsWith("/map/")) return ATLAS;
   const parts = path.split("/").slice(2).filter(Boolean).map(decode);
   if (parts.includes(null) || parts.length > 3) return ATLAS;
-  const [first, sector, page] = parts as string[];
-  if (first === "all" && !sector) {
+  const [head, sector, page] = parts as string[];
+  if (head === "all" && !sector) {
     return { level: "all", tags: (query.get("tags") ?? "").split(",").filter(Boolean) };
   }
-  if (first !== "domain" && first !== "course") return ATLAS;
+  const first = LEGACY_GROUPINGS.has(head) ? "domain" : head;
+  if (first !== "domain" && first !== "wiki") return ATLAS;
   if (page) return { level: "page", grouping: first, sector, page, cap: capOf(query, PAGE_CAP) };
   if (sector) return { level: "sector", grouping: first, sector, cap: capOf(query, DEFAULT_CAP) };
   return { level: "atlas", grouping: first };
