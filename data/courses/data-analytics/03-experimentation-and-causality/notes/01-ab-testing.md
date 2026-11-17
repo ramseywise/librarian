@@ -1,5 +1,5 @@
 ---
-imported_hash: f2a42e403c515ab3
+imported_hash: 7a189e905da07588
 title: 1 — A/B Testing
 summary: Larkspur's designers have rebuilt the checkout, and everyone who has seen it thinks it is better.
 order: 2
@@ -498,6 +498,7 @@ Kohavi and colleagues list limits that are worth repeating. A test tells you whi
 | Why run whole weeks? | Behaviour varies across the week, and short tests over-represent frequent users. |
 | What is an A/A test for? | To confirm the pipeline yields uniform p-values and 5% false positives. |
 | Can you stop when it reaches significance? | Not with a fixed-horizon test. Twenty looks gave a false-positive rate of 25% in the simulation. Use a sequential method. |
+| What is statistical power? | The chance of detecting an effect if it exists. Convention is 80%, so a real effect of exactly the MDE is missed one time in five. |
 
 ---
 

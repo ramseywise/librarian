@@ -1,5 +1,5 @@
 ---
-imported_hash: 5c9841b4b1950e8c
+imported_hash: b5b98411db7c6ce7
 title: 5 — Chunking, query parsing and reranking
 summary: A Tallybook customer asks how long a refund takes.
 order: 9
@@ -30,6 +30,8 @@ A Tallybook customer asks how long a refund takes. The answer is one sentence in
 Chunk size is a balance. Too large (chapters): too many topics per vector, context fills fast. Too small (words, short sentences): each chunk loses its surrounding context and relevance drops.
 
 Phoenix and Taylor name the "too large" effect: an embedding of a long, mixed chunk regresses toward the mean, drifting toward the centre of the vector space where it is moderately similar to everything (*Prompt Engineering for GenAI*, ch. 5). Huyen names the "too small" cost: halving the chunk size doubles the number of vectors to store and search, and a boundary can cut the meaning in two. Her example is "I left my wife a note", split so that the retrieved half reads "I left my wife" (*AI Engineering*, ch. 6). Her candidate units are characters (say 2,048), words (512), sentences (20) or paragraphs. Raieli and Iuculano report 100 or 256 tokens, or 500 characters, as common starting sizes (*Building AI Agents*, ch. 6).
+
+**The same question, twenty years earlier.** Structured (XML) retrieval met the chunk-size problem as "which element do I index and return?", and its principle still reads as the goal of chunking: "A system should always retrieve the most specific part of a document answering the query." (*IIR*, ch. 10, p. 201). The book lists four ways to choose the indexing unit, each with its failure. Non-overlapping pseudo-documents "may not make sense to the user because they are not coherent units". One large unit, searched and then post-processed for its best part, fails because "the relevance of a whole book is often not a good predictor of the relevance of small subelements within it". Searching the leaves and extending upward fails for the mirror-image reason. Indexing every element returns nested, redundant results (*IIR*, ch. 10, pp. 202–203). Fixed-size chunks, retrieve-the-parent, small-to-big expansion and multi-granularity indexes are those four again; that mapping is this note's reading, not the book's. The chapter's one measurement: using structure in the query lifted precision at 5 from 0.2000 to 0.3265 and at 10 from 0.1820 to 0.2531, but at 30 only from 0.1527 to 0.1531 (*IIR*, ch. 10, Table 10.4, from Kamps et al. 2006 on INEX 2003/2004). Structure helps the top of the list and little below it.
 
 ### Strategies
 

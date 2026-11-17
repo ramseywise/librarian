@@ -1,5 +1,5 @@
 ---
-imported_hash: 98bd2b9fe7697cbf
+imported_hash: 8d68d659ae8d06e9
 title: Neural network basics
 summary: The sklearn MLPClassifier in supervised learning hides all of this.
 order: 2
@@ -43,6 +43,8 @@ The Ng DL convention stores examples as **columns**: $X$ is $(n_x, m)$, $W^{[l]}
 
 Why a non-linear $g$ at all: a stack of linear layers multiplies out to one linear layer, so depth buys nothing without it.
 
+**Why sigmoid lost the hidden layers.** A sigmoid's slope $g(1-g)$ is at most 0.25, reached at $z=0$, and it falls towards zero as $|z|$ grows (the unit *saturates*). Backpropagation multiplies in one such factor per layer, so ten sigmoid layers scale a gradient by at most $0.25^{10} \approx 10^{-6}$ before the weights have their say, and the early layers barely learn. That is the vanishing gradient. A sigmoid's output is also always positive, so all the weights into the next unit get gradients of the same sign and have to zig-zag towards a solution. tanh fixes the centring and has slope 1 at zero, but it still saturates. ReLU has slope exactly 1 for every positive input, so depth does not shrink the gradient, and it costs one comparison. Its price is the dead unit: a unit whose input is negative for every example has zero gradient and never recovers, which Leaky ReLU's small negative slope avoids. Sigmoid and softmax keep the output layer, where a probability is wanted.
+
 Parameters are counted per layer as inputs times outputs plus one bias per output. Buduma's MNIST network (784 inputs, two hidden layers of 30, a 10-way softmax) has $784\cdot30+30 + 30\cdot30+30 + 30\cdot10+10 = 24{,}790$ parameters, which the book rounds to "nearly 25,000" (*Fundamentals of Deep Learning*, ch. 2). It prefers tanh to sigmoid because tanh is zero-centred, and calls ReLU the "restricted linear unit" where the name is *rectified* (ch. 1). The backward recursion of the section below is its ch. 2 derivation, written for a sigmoid network with squared error: $\partial E/\partial y_i = \sum_j w_{ij}\,y_j(1-y_j)\,\partial E/\partial y_j$.
 
 *ISLP* uses a larger MNIST network (two hidden layers of 256 and 128 units, 10 outputs) and counts it the same way: $(784\cdot256+256) + (256\cdot128+128) + (128\cdot10+10) = 200{,}960 + 32{,}896 + 1{,}290 = 235{,}146$ parameters (*ISLP*, ch. 10). Multinomial logistic regression on the same pixels needs 7,065 by the book's count ($785 \times 9$, one class as reference), so the network has more than 33 times as many, and almost four times as many parameters as the 60,000 training images. The lab's own softmax regression is written with a full 784-to-10 layer, which is 7,850.
@@ -61,7 +63,7 @@ $$dW^{[l]} = \tfrac{1}{m} dZ^{[l]} A^{[l-1]\top}, \quad db^{[l]} = \tfrac{1}{m}\
 
 The statisticians' phrasing of the same recursion is useful when debugging: after a forward pass, each node gets an error term $\delta$ measuring its responsibility for the miss. At the output it is the residual (or a generalised residual, depending on the loss); at an inner layer it is a weighted sum of the error terms of the nodes that use its activation, and the gradient for a layer's weights is the next layer's $\delta$ times this layer's activations (*Computer Age*, ch. 18). That is the $dZ$ and $dW$ lines above in words. The same chapter notes that a one-layer autoencoder with an identity activation recovers the leading principal components, so a nonlinear autoencoder is nonlinear PCA (it needs no labels, and was once used to warm-start the weights of a supervised net).
 
-Here `dW` is shorthand for $\partial L / \partial W$, the gradient of the loss with respect to that layer's weights; [Vectors, matrix products and the gradient](../../01-classical-ml/notes/02-supervised-learning.md#vectors-matrix-products-and-the-gradient) builds it up for one linear layer.
+Here `dW` is shorthand for $\partial L / \partial W$, the gradient of the loss with respect to that layer's weights; [Vectors, matrix products and the gradient](../../01-classical-ml/notes/02b-linear-models.md#vectors-matrix-products-and-the-gradient) builds it up for one linear layer.
 
 **Building your Deep Neural Network: Step by Step** (course 1, week 4) structures this as cached forward and backward functions. Here they are, cut down to the three the rest depend on:
 
@@ -191,6 +193,8 @@ planted bug, gradient off by 10%: 0.04761904761148488
 ```
 
 A relative difference below about $10^{-7}$ passes; your notebook uses the same threshold. ReLU's kink can raise it a little when a unit sits at zero. Turn the check off during training, because it costs one full forward pass per parameter, twice.
+
+Bishop's *Pattern Recognition and Machine Learning* (*PRML*) puts the two costs side by side: for $W$ weights, backpropagation gets every derivative in $O(W)$ operations, while central differences need two forward passes per weight, $O(W^2)$ in all (*PRML*, ch. 5, pp. 240 and 246–247). The symmetry you broke with random initial weights also means the answer is never unique. A hidden layer of $M$ tanh units has $M!\,2^M$ equivalent weight settings, from permuting the units and flipping signs (ch. 5, p. 232). And stopping early acts like weight decay: for a quadratic error surface, the product of the step count $\tau$ and the learning rate $\eta$ plays the role of $1/\lambda$ (ch. 5, pp. 260–261).
 
 ## The same network in PyTorch
 
@@ -364,6 +368,8 @@ The strongest case for that is the chapter's own MNIST run. A network with three
 
 The practical reading is that train and test curves stay your instruments, as in classical ML, and a network's parameter count alone tells you little about whether it will overfit. If reading those curves is new, [training and tuning](../../01-classical-ml/notes/09-training-and-tuning.md#reading-performance-during-training) is the place to learn it.
 
+**What a network is for, then.** The tasks are the supervised ones classical models already do: classification through a sigmoid or softmax output, regression through a linear one. The difference is who builds the features. A linear model or a tree works on columns somebody designed, and a network learns its intermediate features from raw pixels, audio samples or tokens, layer by layer. That pays where hand-made features are poor and data is plentiful, which means images, speech and text. On a table of meaningful columns, trees remain the first thing to try ([boosting in practice](../../01-classical-ml/notes/07-boosting-in-practice.md)).
+
 ## Reading
 
 Buduma, *Fundamentals of Deep Learning* ([PDF](../../sources/buduma-fundamentals-of-deep-learning.pdf)), ch. 1 (the neural network) and ch. 2 (training feed-forward networks) parallel this chapter. Its ch. 3 teaches the TensorFlow API rather than PyTorch, so use the translation table above with it.
@@ -425,6 +431,10 @@ All are your own Coursera submissions, kept untouched, and their outputs are not
 | What do `model.eval()` and `torch.no_grad()` each do? | `eval` switches layers such as dropout and batch norm to test behaviour. `no_grad` stops recording the graph. They are independent. |
 | What do you need to change for DDP? | Init the process group, wrap the model, use `DistributedSampler` with `shuffle=False`, and call `set_epoch` each epoch. |
 | Does having more parameters than rows mean a network must overfit? | No. Parameter count is a poor proxy for complexity, and flexible models with a preference for simple solutions generalise, as linear models with suitable regularisation can too (Wilson 2025). |
+| How does a feed-forward pass work? | Layer by layer. Each layer multiplies the previous activations by its weight matrix, adds a bias and applies an activation, starting from the input. |
+| What problems do neural networks solve? | The same supervised tasks as classical models, classification and regression. The difference is that the network learns its features from raw pixels, audio or tokens. On a table of meaningful columns, try trees first. |
+| What is wrong with sigmoid as a hidden activation? | Its slope is at most 0.25 and falls to zero when the unit saturates, so ten layers shrink a gradient by about a million. Its output is also always positive, which makes the weight updates zig-zag. |
+| Why ReLU over sigmoid or tanh? | Its slope is exactly 1 for positive inputs, so depth does not shrink the gradient, and it is cheap. The price is dead units, which Leaky ReLU avoids. tanh is zero-centred but still saturates. |
 
 ## Next
 

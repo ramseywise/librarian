@@ -1,5 +1,5 @@
 ---
-imported_hash: c5b9448ae6f3f02c
+imported_hash: aba0370d01820d4f
 title: '5 — A Data-Analysis Agent: Answers That Survive Recomputation'
 summary: Ask a data agent which day customers tip the most, and it may run a correct query, answer "Sunday, $3.26 per bill", and be wrong about what you meant.
 order: 6
@@ -46,7 +46,7 @@ flowchart LR
 
 ## The data
 
-The lab uses two files that the [Python for data analysis](../../../data-analytics/01-python-for-data-analysis/readme.md) pillar already teaches with. Nothing is synthetic, so the numbers below are ones you can check.
+The lab uses two files that the [processing data](../../../data-analytics/01-python-for-data-analysis/readme.md) pillar already teaches with. Nothing is synthetic, so the numbers below are ones you can check.
 
 | Table | Path from the repo root | Rows | Why it is here |
 |---|---|---|---|

@@ -1,8 +1,8 @@
 ---
-imported_hash: bbc40ab2189c4f5c
+imported_hash: df298174098e578b
 title: Applied analyses
 summary: Complete analyses, each going from a business question through a dataset to a recommendation someone could act on.
-order: 6
+order: 5
 group: advanced
 objectives:
 - Frame an analytical request as a decision, metric, baseline, and validation plan.

@@ -126,6 +126,9 @@ function buildComponents(
         const url = `/api/courses/sources/${served.split("/").map(encodeURIComponent).join("/")}${anchor}`;
         return <a href={url} target="_blank" rel="noreferrer">{children}</a>;
       }
+      // A deck file is not imported; the lecture it was built into is, under its module's id.
+      const deck = resolveRelative(lessonId, path).match(/^(.+)\/slides\/[^/]+\.(pptx|pdf)$/);
+      if (deck) return <a href={`#/slides/${deck[1]}`}>{children}</a>;
       if (path.endsWith(".md")) {
         const target = resolveRelative(lessonId, path).replace(/\.md$/, "");
         return (

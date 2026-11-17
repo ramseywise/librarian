@@ -1,5 +1,5 @@
 ---
-imported_hash: 9a0809efec6c3ce1
+imported_hash: a4dcb570d3827822
 title: Probability and statistics
 summary: 'The statistics an analyst uses in practice: looking at data before summarising it, the rules of probability, the distributions behind common metrics, estimates with intervals, hypothesis tests, and regression as an estimate with a standard…'
 order: 1
@@ -137,4 +137,4 @@ uv run --with numpy --with pandas --with scipy --with statsmodels python
 
 Everything else: [references.md](references.md).
 
-**Next:** [03 Experimentation and Causality](../03-experimentation-and-causality/readme.md). **References:** [references.md](references.md).
+**Next:** [Visualisation and Storytelling](../05-visualisation-and-storytelling/readme.md), the last core module. [Experimentation and Causality](../03-experimentation-and-causality/readme.md) follows it. **References:** [references.md](references.md).

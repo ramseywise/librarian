@@ -97,6 +97,43 @@ describe("CoursesView course page", () => {
     expect(screen.getByRole("link", { name: "References" })).toHaveAttribute("href", "#/courses/c1/00-start-here/references");
   });
 
+  it("opens a course on its readme, with each group's syllabus under its cards and no raw reading list", async () => {
+    const mod = (id: string, title: string, group: string) => ({ ...course.modules[0], id, title, group });
+    const grouped: Course = {
+      ...course,
+      outcomes: ["Estimate honestly"],
+      modules: [mod("m1", "Frames", "core"), mod("m3", "Bayes", "advanced")],
+      guide: [
+        { ...outline, id: "c1/00-start-here/readme", title: "Course One" },
+        { ...outline, id: "c1/00-start-here/references", title: "References" },
+      ],
+      readings: [{ title: "raw file name", source: "c1/sources/raw.pdf" }],
+      readingsCount: 1,
+    };
+    const readme = {
+      ...lesson, id: "c1/00-start-here/readme", title: "Course One",
+      body: "# Course One\n\nThe lead.\n\n## What it is\n\nAn analyst owes an answer.\n\n## Course outcomes\n\n1. Listed twice otherwise\n\n"
+        + "## Core modules\n\n| Module | Lecture |\n|---|---|\n| [Frames](../m1/readme.md) | [deck](../m1/slides/frames.pptx) |\n\n"
+        + "## Units\n\n### [Frames](../m1/readme.md)\n\nThe unit text.\n\n## Rules of thumb\n\nCount first.",
+    };
+    vi.stubGlobal("fetch", vi.fn(async (url: string) =>
+      new Response(JSON.stringify(url === "/api/courses" ? [grouped]
+        : url === "/api/courses/lessons/c1/00-start-here/readme" ? readme : []), { status: 200 })));
+    render(<CoursesView route="c1" navigate={vi.fn()} onOpenConcept={vi.fn()} onAsk={vi.fn()} />);
+    expect(await screen.findByText("An analyst owes an answer.")).toBeInTheDocument();
+    const headings = screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent);
+    expect(headings).toEqual(["By the end you can", "Core modules", "Advanced topics", "Rules of thumb", "References"]);
+    expect(screen.getByText("The lead.")).toBeInTheDocument();
+    // The syllabus row sits with its group, and its deck link opens the lecture.
+    const core = within(screen.getByRole("region", { name: "Core modules" }));
+    expect(core.getByRole("link", { name: "deck" })).toHaveAttribute("href", "#/slides/c1/m1");
+    expect(screen.queryByText("Listed twice otherwise")).toBeNull();
+    expect(screen.queryByText("The unit text.")).toBeNull();
+    expect(screen.queryByRole("link", { name: "Course guide" })).toBeNull();
+    expect(screen.queryByText("raw file name")).toBeNull();
+    expect(screen.getByRole("link", { name: "References" })).toHaveAttribute("href", "#/courses/c1/00-start-here/references");
+  });
+
   const studied: Course = {
     ...course,
     modules: [{
@@ -111,7 +148,7 @@ describe("CoursesView course page", () => {
       return new Response(JSON.stringify(body), { status: 200 });
     }));
 
-  it("lays the topic page out as test yourself, learn, hands-on, wiki, with nothing to open", async () => {
+  it("lays the topic page out as lecture, test yourself, notes, hands-on, wiki, with nothing to open", async () => {
     stub();
     render(<CoursesView route="c1/c1/m1" navigate={vi.fn()} onOpenConcept={vi.fn()} onAsk={vi.fn()} />);
     expect(await screen.findByRole("link", { name: "Level 1: multiple choice, 3 questions" })).toHaveAttribute("href", "#/quiz/c1/c1/m1?choice");
@@ -119,20 +156,78 @@ describe("CoursesView course page", () => {
     expect(screen.queryByRole("link", { name: /Level 3/ })).toBeNull();
     expect(screen.getByRole("link", { name: "Module deck" })).toHaveAttribute("href", "#/slides/c1/m1");
     const headings = screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent);
-    expect(headings.slice(0, 4)).toEqual(["Test yourself", "Learn", "Hands-on", "Wiki"]);
+    expect(headings.slice(0, 5)).toEqual(["Lecture", "Test yourself", "Notes", "Hands-on", "Wiki"]);
     expect(screen.getByRole("link", { name: "Intro" })).toHaveAttribute("href", "#/courses/c1/m1/intro");
     expect(await screen.findByRole("link", { name: "Probability puzzles" })).toHaveAttribute("href", "#/labs/c1/m1/practice/puzzles");
     expect(screen.queryByRole("button", { expanded: true })).toBeNull();
   });
 
-  it("says what the module teaches before anything else", async () => {
+  it("says what the module teaches straight after the lecture", async () => {
     const taught = { ...studied, modules: [{ ...studied.modules[0], objectives: ["Build a confidence interval", "Read a p-value"] }] };
     vi.stubGlobal("fetch", vi.fn(async (url: string) =>
       new Response(JSON.stringify(url === "/api/courses" ? [taught] : url === "/api/courses/labs" ? { labs: [], canRun: false } : {}), { status: 200 })));
     render(<CoursesView route="c1/c1/m1" navigate={vi.fn()} onOpenConcept={vi.fn()} onAsk={vi.fn()} />);
     expect(await screen.findByText("Build a confidence interval")).toBeInTheDocument();
     const headings = screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent);
-    expect(headings.slice(0, 2)).toEqual(["After this module you can", "Test yourself"]);
+    expect(headings.slice(0, 3)).toEqual(["Lecture", "After this module you can", "Test yourself"]);
+  });
+
+  it("opens on the module's readme and lists only the notes as notes", async () => {
+    const part = (id: string, title: string, kind = "reading") => ({ ...outline, id: `c1/c1/m1/${id}`, title, kind });
+    const full: Course = {
+      ...studied,
+      modules: [
+        {
+          ...studied.modules[0], objectives: ["Read a p-value"],
+          lessons: [part("readme", "Module"), part("notes/01-frames", "Frames"), part("practice/puzzles/one", "Puzzle one", "notebook"),
+            part("practice/extra", "Extra notebook", "notebook"), part("references", "References")],
+        },
+        { ...course.modules[0], id: "c1/m2", title: "What follows" },
+      ],
+    };
+    const readme = { ...lesson, id: "c1/c1/m1/readme", title: "Module", body: "# Module\n\nWhat it is for.\n\n## Lecture\n\nStart with the deck.\n\n## The core\n\nFive steps.\n\n## Syllabus\n\n| Submodule | Study |\n|---|---|\n| **1. Load:** a table | [Frames](notes/01-frames.md) |\n\n## Next\n\nGo on." };
+    vi.stubGlobal("fetch", vi.fn(async (url: string) => {
+      const body = url === "/api/courses" ? [full] : url === "/api/courses/labs" ? { labs: [lab], canRun: false }
+        : url === "/api/courses/lessons/c1/c1/m1/readme" ? readme : {};
+      return new Response(JSON.stringify(body), { status: 200 });
+    }));
+    // A link to the readme lands on the module's page.
+    render(<CoursesView route="c1/c1/m1/readme" navigate={vi.fn()} onOpenConcept={vi.fn()} onAsk={vi.fn()} />);
+    expect(await screen.findByText("Five steps.")).toBeInTheDocument();
+    // The syllabus carries the labs and sources, so the page ends on what to do next.
+    const headings = screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent);
+    expect(headings).toEqual(["Lecture", "The core", "Syllabus", "Test yourself", "Notes", "What's next"]);
+    expect(screen.getByText("What it is for.")).toBeInTheDocument();
+    expect(screen.queryByText("Start with the deck.")).toBeNull();
+    expect(screen.queryByText("Go on.")).toBeNull();
+    expect(screen.queryByText("Read a p-value")).toBeNull();
+    // Once in the syllabus row and once in the notes list.
+    expect(screen.getAllByRole("link", { name: "Frames" })).toHaveLength(2);
+    expect(screen.queryByRole("link", { name: "Module" })).toBeNull();
+    expect(screen.getByRole("link", { name: "Start: Frames" })).toHaveAttribute("href", "#/courses/c1/c1/m1/notes/01-frames");
+    expect(screen.getByText("Submodule 1. Load")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "What follows" })).toHaveAttribute("href", "#/courses/c1/c1/m2");
+  });
+
+  it("without a syllabus, lists a notebook once: as its lab, or under hands-on when no lab opens it", async () => {
+    const part = (id: string, title: string, kind = "reading") => ({ ...outline, id: `c1/c1/m1/${id}`, title, kind });
+    const full: Course = {
+      ...studied,
+      modules: [{
+        ...studied.modules[0],
+        lessons: [part("notes/01-frames", "Frames"), part("practice/puzzles/one", "Puzzle one", "notebook"),
+          part("practice/extra", "Extra notebook", "notebook"), part("references", "References")],
+      }],
+    };
+    vi.stubGlobal("fetch", vi.fn(async (url: string) => {
+      const body = url === "/api/courses" ? [full] : url === "/api/courses/labs" ? { labs: [{ ...lab, id: "c1/c1/m1/practice/puzzles" }], canRun: false } : {};
+      return new Response(JSON.stringify(body), { status: 200 });
+    }));
+    render(<CoursesView route="c1/c1/m1" navigate={vi.fn()} onOpenConcept={vi.fn()} onAsk={vi.fn()} />);
+    expect(await screen.findByRole("link", { name: "Probability puzzles" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Puzzle one" })).toBeNull();
+    expect(screen.getByRole("link", { name: "Extra notebook" })).toHaveAttribute("href", "#/courses/c1/c1/m1/practice/extra");
+    expect(screen.getByRole("link", { name: "References" })).toHaveAttribute("href", "#/courses/c1/c1/m1/references");
   });
 
   it("lists the wiki pages the lessons cite and links to them on the graph", async () => {

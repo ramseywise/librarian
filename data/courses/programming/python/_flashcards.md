@@ -227,4 +227,70 @@ cards:
 - front: What are the engineering rules?
   back: Treat names as labels, fail narrowly, validate at edges, choose concurrency by what you wait on, and compose before you inherit.
   lesson: programming/python/03-language-for-engineers/notes/01-data-model-and-idioms
+- front: Difference between `classmethod` and `staticmethod`?
+  back: A classmethod receives the class it was called on, so it suits alternative constructors that work for subclasses. A staticmethod receives nothing; it is a namespaced function.
+  lesson: programming/python/03-language-for-engineers/notes/08-objects-inheritance-and-mro
+- front: What is the MRO and how is it computed?
+  back: 'The ordered list of ancestors that attribute lookup walks, in `__mro__`. C3 linearisation: children before parents, parents in declared order, and monotonic across subclasses.'
+  lesson: programming/python/03-language-for-engineers/notes/08-objects-inheritance-and-mro
+- front: What does `super()` actually do?
+  back: Starts searching from the entry after the current class in the MRO of the instance's type. It can reach a sibling, not only a parent.
+  lesson: programming/python/03-language-for-engineers/notes/08-objects-inheritance-and-mro
+- front: How does the diamond problem get resolved?
+  back: C3 puts the shared ancestor after all its children, once. With every class calling `super()`, each `__init__` runs exactly once.
+  lesson: programming/python/03-language-for-engineers/notes/08-objects-inheritance-and-mro
+- front: Why might a class definition raise `TypeError`?
+  back: 'Inconsistent MRO among bases, or a metaclass conflict: no metaclass is a subclass of all the bases'' metaclasses.'
+  lesson: programming/python/03-language-for-engineers/notes/08-objects-inheritance-and-mro
+- front: What is a descriptor? Give examples.
+  back: An object with `__get__`, `__set__` or `__delete__`, stored on a class. Functions, `property`, `classmethod`, `staticmethod`, `cached_property` and slots.
+  lesson: programming/python/03-language-for-engineers/notes/08-objects-inheritance-and-mro
+- front: Data vs non-data descriptor?
+  back: A data descriptor defines `__set__` or `__delete__` and beats the instance `__dict__`. A non-data descriptor defines only `__get__` and loses to it.
+  lesson: programming/python/03-language-for-engineers/notes/08-objects-inheritance-and-mro
+- front: '`__getattr__` vs `__getattribute__`?'
+  back: '`__getattribute__` runs for every access. `__getattr__` runs only as a fallback when normal lookup raises `AttributeError`.'
+  lesson: programming/python/03-language-for-engineers/notes/08-objects-inheritance-and-mro
+- front: What is a metaclass? When would you write one?
+  back: 'The class of a class, `type` by default. Rarely: when you need to change how the class itself behaves or to prepare its namespace, usually in a library. Try a class decorator, then `__init_subclass__`, first.'
+  lesson: programming/python/03-language-for-engineers/notes/08-objects-inheritance-and-mro
+- front: Inheritance or composition?
+  back: Composition by default for reusing behaviour, since it depends only on a public interface. Inheritance when the "is a" relationship holds and the parent is designed for it, or a framework requires it.
+  lesson: programming/python/03-language-for-engineers/notes/08-objects-inheritance-and-mro
+- front: How does CPython manage memory?
+  back: Reference counting frees most objects immediately. A cycle collector handles reference cycles. Small objects come from the pymalloc allocator.
+  lesson: programming/python/03-language-for-engineers/notes/09-memory-and-the-runtime
+- front: Why does Python need a garbage collector if it has refcounts?
+  back: A reference cycle keeps all counts above zero even when nothing else can reach it.
+  lesson: programming/python/03-language-for-engineers/notes/09-memory-and-the-runtime
+- front: What's in the generational GC?
+  back: 'On the default build at 3.14.5+: three generations, a young threshold of 2000 net container allocations, and a 25% rule for full collections. The free-threaded build''s collector is non-generational.'
+  lesson: programming/python/03-language-for-engineers/notes/09-memory-and-the-runtime
+- front: What's a memory leak in Python?
+  back: 'Objects still reachable from a live root that you no longer want: an unbounded cache, a listener, a stored exception.'
+  lesson: programming/python/03-language-for-engineers/notes/09-memory-and-the-runtime
+- front: How would you find one?
+  back: Compare two `tracemalloc` snapshots taken after warm-up, by line, then with a longer traceback. Use `gc.get_referrers` to see what's holding on. Check RSS against the Python-level number.
+  lesson: programming/python/03-language-for-engineers/notes/09-memory-and-the-runtime
+- front: Why might RSS not fall after freeing?
+  back: Allocator arenas return to the OS only when empty, so a few survivors can pin them.
+  lesson: programming/python/03-language-for-engineers/notes/09-memory-and-the-runtime
+- front: What does `__slots__` do and cost?
+  back: Fixed slots instead of a per-instance dict. Saves memory, about 25% in the measurement here; loses dynamic attributes, weak references unless declared, and `cached_property`; complicates multiple inheritance.
+  lesson: programming/python/03-language-for-engineers/notes/09-memory-and-the-runtime
+- front: '`lru_cache` vs `cached_property` on a method?'
+  back: '`lru_cache` is class-level and bounded but keeps instances alive. `cached_property` is per-instance and has no reference problem, but takes no arguments and can''t be bounded.'
+  lesson: programming/python/03-language-for-engineers/notes/09-memory-and-the-runtime
+- front: Is `x += 1` atomic?
+  back: No. `dis` shows a separate load, operation and store.
+  lesson: programming/python/03-language-for-engineers/notes/09-memory-and-the-runtime
+- front: What is adaptive specialisation?
+  back: Since 3.11 the interpreter replaces general instructions with type-specialised ones as it observes running code.
+  lesson: programming/python/03-language-for-engineers/notes/09-memory-and-the-runtime
+- front: Does Python 3.14 still have a GIL?
+  back: The default build does. The free-threaded build is officially supported but optional, and can re-enable the GIL.
+  lesson: programming/python/03-language-for-engineers/notes/09-memory-and-the-runtime
+- front: Does removing the GIL make code thread-safe?
+  back: No. Compound operations can still interleave; use locks.
+  lesson: programming/python/03-language-for-engineers/notes/09-memory-and-the-runtime
 ---

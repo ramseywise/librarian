@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
-import type { Course, CourseModule, Lesson, SearchHit } from "./types";
+import type { Course, CourseModule, Deck, Lesson, LessonOutline, SearchHit, SlideDeck } from "./types";
+import { SlideFrame } from "./SlideFrame";
+import { courseColor } from "../../theme/domains";
 import { useCourseProgress } from "../../hooks/useCourseProgress";
 import { useCourses, useLabs, useStudyProgress } from "../../hooks/useCourses";
 import { Check } from "./Check";
-import { LessonView, type TocEntry } from "./LessonView";
+import { LessonView, stripDuplicateH1, type TocEntry } from "./LessonView";
+import { Markdown } from "./Markdown";
 import { StudyLevels } from "./StudyLevels";
 import { pageTitle, useDocumentTitle } from "./useDocumentTitle";
 import "./courses.css";
@@ -28,7 +31,8 @@ export function CoursesView({ route, navigate, onOpenConcept, onAsk }: Props) {
 
   const courseId = route.split("/")[0];
   const course = courses?.find((c) => c.id === courseId);
-  const module = course?.modules.find((m) => route === `${course.id}/${m.id}`);
+  // A module's readme is the body of its page, so a link to the readme opens the page.
+  const module = course?.modules.find((m) => route === `${course.id}/${m.id}` || route === `${course.id}/${m.id}/readme`);
   const isLesson = !!course && route.includes("/") && !module;
   // Lesson routes set their own title once the lesson has loaded.
   useDocumentTitle(isLesson ? null : module && course ? pageTitle(module.title, course.title) : course ? pageTitle(course.title) : pageTitle("Courses"));
@@ -50,7 +54,7 @@ export function CoursesView({ route, navigate, onOpenConcept, onAsk }: Props) {
     return <Catalog courses={courses} done={progress.done} onOpen={open} />;
   }
   if (!route.includes("/")) {
-    return <Overview course={course} done={progress.done} last={progress.last[course.id]} onOpen={open} />;
+    return <Overview course={course} done={progress.done} last={progress.last[course.id]} onOpen={open} onOpenConcept={onOpenConcept} />;
   }
   if (module) return <ModulePage course={course} module={module} done={progress.done} onOpen={open} onOpenConcept={onOpenConcept} />;
   return (
@@ -156,21 +160,51 @@ export function moduleGroups(modules: CourseModule[]): { key: string; title: str
   return groups.length > 1 || groups[0]?.key ? groups.map((g) => ({ ...g, title: g.title || "More" })) : groups;
 }
 
-/** One course, and where to start it: what you will be able to do, then a card per module in reading order
- * (core before advanced when the course sorts them), then the course guide and its references. */
-function Overview({ course, done, last, onOpen }: {
-  course: Course; done: Set<string>; last?: string; onOpen: (p: string) => void;
+/** A course readme as its page shows it: the lead and "What it is" above the modules, each module group's own
+ * section (its syllabus table) under that group's cards, and the rest below. The outcomes and the per-module
+ * units are dropped, because the page lists the outcomes itself and each module's page holds its unit. */
+function splitCourseReadme(lesson: Lesson): { intro: string; groups: Record<string, string>; rest: string } {
+  const [lead, ...sections] = stripDuplicateH1(lesson.body, lesson.title).split(/^(?=## )/m);
+  const groups: Record<string, string> = {};
+  let intro = lead;
+  let rest = "";
+  for (const section of sections) {
+    const heading = section.match(/^## (.*)/)?.[1].trim() ?? "";
+    const body = section.replace(/^## .*\n/, "");
+    const group = heading.match(/^(core|advanced)\b/i)?.[1].toLowerCase();
+    if (group) groups[group] = body;
+    else if (/^what it is$/i.test(heading)) intro += body;
+    else if (!/^(course outcomes|units)$/i.test(heading)) rest += section;
+  }
+  return { intro, groups, rest };
+}
+
+/** One course, opening on its readme: what the course is, what you will be able to do, then a card per module
+ * in reading order (core before advanced when the course sorts them) with that group's syllabus under it, the
+ * rest of the readme, and its references. */
+function Overview({ course, done, last, onOpen, onOpenConcept }: {
+  course: Course; done: Set<string>; last?: string; onOpen: (p: string) => void; onOpenConcept: (id: string) => void;
 }) {
   const { data: labsData } = useLabs();
   const first = lessonsOf(course)[0];
   const resume = last ?? first?.id;
-  const guide = course.guide ?? [];
+  const readme = (course.guide ?? []).find((l) => /\/readme$/.test(l.id));
+  const overview = useOverview(readme?.id ?? null);
+  const parts = overview ? splitCourseReadme(overview) : null;
+  // The readme is the page, so only the references are still a link to follow.
+  const guide = (course.guide ?? []).filter((l) => !parts || l !== readme);
+  const hasReferences = guide.some((l) => /references$/.test(l.id));
+  const prose = (body: string) => overview && !!body.trim() && (
+    <div className="lesson-prose course-module-overview">
+      <Markdown body={body} lessonId={overview.id} onOpenLesson={onOpen} onOpenConcept={onOpenConcept} sourceLinks={overview.sourceLinks} />
+    </div>
+  );
   return (
     <div className="course-scroll course-page">
       <div className="course-page-inner course-page-inner--wide">
         <button onClick={() => onOpen("")} className="link-btn">← All courses</button>
         <h1 className="course-page-title course-page-title--overview">{course.title}</h1>
-        <p className="course-overview-summary">{course.summary}</p>
+        {parts?.intro.trim() ? prose(parts.intro) : <p className="course-overview-summary">{course.summary}</p>}
         {course.outcomes?.length ? (
           <>
             <h2 className="section-label course-module-label">By the end you can</h2>
@@ -210,11 +244,13 @@ function Overview({ course, done, last, onOpen }: {
                 );
               })}
             </div>
+            {parts && prose(parts.groups[g.key] ?? "")}
           </section>
         ))}
+        {parts && prose(parts.rest)}
         {(guide.length > 0 || !!course.readings?.length || !!course.readingsCount || !!course.references?.length) && (
           <>
-            <h2 className="section-label course-module-label">Guide and references</h2>
+            <h2 className="section-label course-module-label">{parts ? "References" : "Guide and references"}</h2>
             {guide.length > 0 && (
               <div className="course-module-list">
                 {guide.map((l) => (
@@ -227,7 +263,8 @@ function Overview({ course, done, last, onOpen }: {
                 ))}
               </div>
             )}
-            <SourceList label="Readings" items={course.readings ?? []} count={course.readingsCount} />
+            {/* The references page names each source with what it is for and a link that opens; the raw file list repeats it without either. */}
+            {!hasReferences && <SourceList label="Readings" items={course.readings ?? []} count={course.readingsCount} />}
             <SourceList label="Reference material (not imported)" items={course.references ?? []} />
           </>
         )}
@@ -240,9 +277,69 @@ function Overview({ course, done, last, onOpen }: {
 // Module page: the topic page
 // ---------------------------------------------------------------------------
 
-/** One topic with everything it has, in the order it is used: test yourself (the three levels, with how far you
- * are), learn (the lecture decks, then the notes in reading order), hands-on (labs and drills), the wiki pages its
- * lessons cite, and its references. A part the module lacks says so. */
+/** The module's readme, which is the body of its page. Null while it loads and when the module has none. */
+function useOverview(lessonId: string | null): Lesson | null {
+  const [lesson, setLesson] = useState<Lesson | null>(null);
+  useEffect(() => {
+    if (!lessonId) return;
+    let cancelled = false;
+    apiFetch(`/api/courses/lessons/${lessonId}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((l: Lesson | null) => !cancelled && setLesson(l))
+      .catch(() => undefined);
+    return () => { cancelled = true; };
+  }, [lessonId]);
+  return lesson?.id === lessonId ? lesson : null;
+}
+
+/** A readme as the page shows it: the lead above the lecture, the rest below it. The readme's own "Lecture"
+ * and "Next" sections say what the page's lecture card and its closing "What's next" already say, so they are dropped. */
+function splitOverview(lesson: Lesson): { lead: string; rest: string } {
+  const body = stripDuplicateH1(lesson.body, lesson.title);
+  const at = body.search(/^## /m);
+  if (at < 0) return { lead: body, rest: "" };
+  return { lead: body.slice(0, at), rest: body.slice(at).replace(/^## (Lecture|Next)\s*\n[\s\S]*?(?=^## |(?![\s\S]))/gm, "") };
+}
+
+/** The syllabus row a note is studied in ("1. Load"), read off the readme's table. */
+function submoduleOf(body: string, noteId: string): string | null {
+  const slug = noteId.split("/").pop() ?? "";
+  const row = body.split("\n").find((line) => line.startsWith("| **") && new RegExp(`/${slug}(\\.md)?[)#]`).test(line));
+  return row?.match(/^\| \*\*(.+?):?\*\*/)?.[1] ?? null;
+}
+
+/** A lecture as a card: its first slide as a preview, and one button that opens it. */
+function DeckCard({ deck, course, whole }: { deck: Deck; course: string; whole: boolean }) {
+  const [slides, setSlides] = useState<SlideDeck | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    apiFetch(`/api/courses/slides/${deck.id}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d: SlideDeck | null) => !cancelled && setSlides(d))
+      .catch(() => undefined);
+    return () => { cancelled = true; };
+  }, [deck.id]);
+  const first = slides?.id === deck.id ? slides.frames?.[0] : undefined;
+  const count = slides?.id === deck.id ? (slides.frames?.length || slides.slides.length) : 0;
+  return (
+    <div className="deck-card">
+      <a href={`#/slides/${deck.id}`} className="deck-card-peek" aria-hidden="true" tabIndex={-1}>
+        {first && <SlideFrame frame={first} total={count} courseColor={courseColor(course)} />}
+      </a>
+      <div className="deck-card-text">
+        <span className="deck-card-kind">{whole ? "Overview lecture" : "Lecture"}{count ? ` · ${count} slides` : ""}</span>
+        <span className="deck-card-title">{deck.title}</span>
+        {deck.subtitle && <span className="deck-card-sub">{deck.subtitle}</span>}
+        <a href={`#/slides/${deck.id}`} className="btn-primary deck-card-open" aria-label={deck.title}>Open the lecture</a>
+      </div>
+    </div>
+  );
+}
+
+/** One topic, opening on its lecture and its readme (what the module teaches and its syllabus), then everything it
+ * has in the order it is used: test yourself (the three levels, with how far you are), the notes in reading order,
+ * hands-on (labs, practice files and drills), the wiki pages its lessons cite, its references, and the module
+ * that follows. A part the module lacks says so. */
 function ModulePage({ course, module: m, done, onOpen, onOpenConcept }: {
   course: Course; module: CourseModule; done: Set<string>; onOpen: (p: string) => void; onOpenConcept: (id: string) => void;
 }) {
@@ -250,9 +347,24 @@ function ModulePage({ course, module: m, done, onOpen, onOpenConcept }: {
   const { data: studyProgress } = useStudyProgress();
   const id = `${course.id}/${m.id}`;
   const labs = (labsData?.labs ?? []).filter((l) => l.course === course.id && l.module === m.id);
-  const notes = m.lessons.filter((l) => l.kind !== "drill");
+  const readme = m.lessons.find((l) => l.id === `${id}/readme`);
+  const overview = useOverview(readme?.id ?? null);
+  const references = m.lessons.find((l) => l.id === `${id}/references`);
+  const isPractice = (l: LessonOutline) => l.kind === "notebook" || l.id.startsWith(`${id}/practice/`);
+  const notes = m.lessons.filter((l) => l.kind !== "drill" && l !== readme && l !== references && !isPractice(l));
+  // A notebook or practice file a lab already opens is listed once, as the lab.
+  const practice = m.lessons.filter((l) => isPractice(l)
+    && !labs.some((lab) => lab.id.replace(/\.md$/, "") === l.id || l.id.startsWith(`${lab.id}/`)));
   const drills = m.lessons.filter((l) => l.kind === "drill");
+  const following = course.modules[course.modules.indexOf(m) + 1];
+  // A readme with a syllabus states the objectives row by row, so the module's own list would repeat it.
+  const { lead, rest } = overview ? splitOverview(overview) : { lead: "", rest: "" };
+  const prose = (body: string) => overview && (
+    <Markdown body={body} lessonId={overview.id} onOpenLesson={onOpen} onOpenConcept={onOpenConcept} sourceLinks={overview.sourceLinks} />
+  );
+  const hasSyllabus = overview ? /^## Syllabus\s*$/m.test(overview.body) : !!readme;
   const next = notes.find((l) => !done.has(l.id));
+  const step = overview && next ? submoduleOf(overview.body, next.id) : null;
   const wiki = m.wiki ?? [];
   const moreWiki = Math.max((m.wikiCount ?? wiki.length) - wiki.length, 0);
   const graph = `#${mapPath({ level: "all", tags: [moduleFacet(course.id, m.id)] })}`;
@@ -263,9 +375,17 @@ function ModulePage({ course, module: m, done, onOpen, onOpenConcept }: {
       <div className="course-page-inner course-page-inner--overview">
         <button onClick={() => onOpen(course.id)} className="link-btn">← {course.title}</button>
         <h1 className="course-page-title course-page-title--overview">{m.title}</h1>
-        {m.summary && <p className="course-overview-summary">{m.summary}</p>}
+        {lead.trim() ? <div className="lesson-prose course-module-lead">{prose(lead)}</div>
+          : m.summary && <p className="course-overview-summary">{m.summary}</p>}
 
-        {m.objectives?.length ? (
+        <h2 className="section-label course-module-label">Lecture</h2>
+        {m.decks?.length ? (
+          <div className="deck-cards">
+            {m.decks.map((d) => <DeckCard key={d.id} deck={d} course={course.id} whole={d.id === id} />)}
+          </div>
+        ) : <p className="course-none">No lecture deck yet.</p>}
+
+        {m.objectives?.length && !hasSyllabus ? (
           <>
             <h2 className="section-label course-module-label">After this module you can</h2>
             <ol className="course-objectives">
@@ -274,24 +394,16 @@ function ModulePage({ course, module: m, done, onOpen, onOpenConcept }: {
           </>
         ) : null}
 
+        {rest.trim() && <div className="lesson-prose course-module-overview">{prose(rest)}</div>}
+
         <h2 className="section-label course-module-label">Test yourself</h2>
         {(m.quizCount || m.flashcardCount || m.problemCount) ? (
           <StudyLevels id={id} quizCount={m.quizCount} flashcardCount={m.flashcardCount} problemCount={m.problemCount} progress={progress} />
         ) : <p className="course-none">No questions or flashcards yet.</p>}
 
-        <h2 className="section-label course-module-label">Learn</h2>
-        {m.decks?.length ? (
+        <h2 className="section-label course-module-label">Notes</h2>
+        {notes.length === 0 ? <p className="course-none">No notes yet.</p> : (
           <div className="course-module-list">
-            {m.decks.map((d) => (
-              <div key={d.id} className="course-row">
-                <a href={`#/slides/${d.id}`} className="course-row-title">{d.title}</a>
-                <span className="course-row-section">{d.subtitle || (d.id === id ? "The whole module" : "Lecture")}</span>
-              </div>
-            ))}
-          </div>
-        ) : <p className="course-none">No lecture deck yet.</p>}
-        {notes.length > 0 && (
-          <div className="course-module-list course-module-list--notes">
             {notes.map((l, i) => (
               <div key={l.id} className="course-row">
                 <Check on={done.has(l.id)} />
@@ -307,49 +419,83 @@ function ModulePage({ course, module: m, done, onOpen, onOpenConcept }: {
           </div>
         )}
 
-        <h2 className="section-label course-module-label">Hands-on</h2>
-        {labs.length > 0 || drills.length > 0 ? (
-          <div className="course-module-list">
-            {labs.map((lab) => (
-              <div key={lab.id} className="course-row course-row--stack">
-                <a href={`#/labs/${lab.id}`} className="course-row-title">{lab.title}</a>
-                <span className="course-row-section">{lab.purpose}</span>
-              </div>
-            ))}
-            {drills.map((d) => (
-              <div key={d.id} className="course-row">
-                <a href={`#/courses/${d.id}`} className="course-row-title">{d.title}</a>
-                <span className="course-row-section">Drill{d.drill?.difficulty ? ` · ${d.drill.difficulty}` : ""}</span>
-              </div>
-            ))}
-          </div>
-        ) : <p className="course-none">No labs or drills yet.</p>}
-
-        <h2 className="section-label course-module-label">Wiki</h2>
-        {wiki.length > 0 ? (
+        {/* A syllabus links each step's labs and sources, so the page does not list them again. */}
+        {!hasSyllabus && (
           <>
+          <h2 className="section-label course-module-label">Hands-on</h2>
+          {labs.length > 0 || practice.length > 0 || drills.length > 0 ? (
             <div className="course-module-list">
-              {wiki.map((p) => (
-                <div key={p.id} className="course-row course-row--stack">
-                  <button onClick={() => onOpenConcept(p.id)} className="course-row-title course-wiki-title" title="Open on the graph">{p.title}</button>
-                  {p.summary && <span className="course-row-section">{p.summary}</span>}
+              {labs.map((lab) => (
+                <div key={lab.id} className="course-row course-row--stack">
+                  <a href={`#/labs/${lab.id}`} className="course-row-title">{lab.title}</a>
+                  <span className="course-row-section">{lab.purpose}</span>
+                </div>
+              ))}
+              {practice.map((l) => (
+                <div key={l.id} className="course-row">
+                  <a href={`#/courses/${l.id}`} className="course-row-title">{l.title}</a>
+                  <span className="course-row-section">{l.kind === "notebook" ? "Notebook" : "Practice"}</span>
+                </div>
+              ))}
+              {drills.map((d) => (
+                <div key={d.id} className="course-row">
+                  <a href={`#/courses/${d.id}`} className="course-row-title">{d.title}</a>
+                  <span className="course-row-section">Drill{d.drill?.difficulty ? ` · ${d.drill.difficulty}` : ""}</span>
                 </div>
               ))}
             </div>
-            <p className="course-wiki-more">
-              {moreWiki > 0 && <>{moreWiki} more cited by these lessons. </>}
-              <a href={graph}>Show on the graph</a>
-            </p>
-          </>
-        ) : <p className="course-none">No wiki pages cover this yet.</p>}
+          ) : <p className="course-none">No labs or drills yet.</p>}
 
-        {(m.references?.length > 0 || m.readings?.length > 0 || !!m.readingsCount) && (
-          <>
-            <h2 className="section-label course-module-label">References</h2>
-            <SourceList label="Readings" items={m.readings} count={m.readingsCount} />
-            <SourceList label="Reference material (not imported)" items={m.references} />
+          <h2 className="section-label course-module-label">Wiki</h2>
+          {wiki.length > 0 ? (
+            <>
+              <div className="course-module-list">
+                {wiki.map((p) => (
+                  <div key={p.id} className="course-row course-row--stack">
+                    <button onClick={() => onOpenConcept(p.id)} className="course-row-title course-wiki-title" title="Open on the graph">{p.title}</button>
+                    {p.summary && <span className="course-row-section">{p.summary}</span>}
+                  </div>
+                ))}
+              </div>
+              <p className="course-wiki-more">
+                {moreWiki > 0 && <>{moreWiki} more cited by these lessons. </>}
+                <a href={graph}>Show on the graph</a>
+              </p>
+            </>
+          ) : <p className="course-none">No wiki pages cover this yet.</p>}
+
+          {(!!references || m.references?.length > 0 || m.readings?.length > 0 || !!m.readingsCount) && (
+            <>
+              <h2 className="section-label course-module-label">References</h2>
+              {references && (
+                <div className="course-module-list">
+                  <div className="course-row course-row--stack">
+                    <a href={`#/courses/${references.id}`} className="course-row-title">References</a>
+                    <span className="course-row-section">{references.summary || "The books, papers and courses behind this module"}</span>
+                  </div>
+                </div>
+              )}
+              <SourceList label="Readings" items={m.readings} count={m.readingsCount} />
+              <SourceList label="Reference material (not imported)" items={m.references} />
+            </>
+          )}
           </>
         )}
+
+        <h2 className="section-label course-module-label">What's next</h2>
+        <div className="course-next">
+          {next ? (
+            <a href={`#/courses/${next.id}`} className="btn-primary course-next-go">
+              {done.size && notes.some((l) => done.has(l.id)) ? "Continue" : "Start"}: {next.title}
+            </a>
+          ) : following ? (
+            <a href={`#/courses/${course.id}/${following.id}`} className="btn-primary course-next-go">Next module: {following.title}</a>
+          ) : null}
+          {next && step && <span className="course-next-step">Submodule {step}</span>}
+          {next && following && (
+            <span className="course-next-after">Then: <a href={`#/courses/${course.id}/${following.id}`}>{following.title}</a></span>
+          )}
+        </div>
       </div>
     </div>
   );

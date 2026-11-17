@@ -1,8 +1,8 @@
 ---
-imported_hash: 6f5c809279740d10
+imported_hash: ce11f9098be03d2e
 title: Bayesian analysis
 summary: 'Bayesian analysis writes down how the data could have been generated, puts a prior on the unknowns, and computes the posterior: what is plausible once the data is in.'
-order: 5
+order: 6
 group: advanced
 objectives:
 - Express an analytical question as a generative model and compute or simulate a posterior.

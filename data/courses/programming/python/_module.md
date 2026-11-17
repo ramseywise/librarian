@@ -1,7 +1,7 @@
 ---
-imported_hash: 45d2a1424ed8a38c
+imported_hash: 176dd27f3943f376
 title: Python
-summary: Worked answers are in each module's practice/solutions/.
+summary: Go from your first if to async, typed, tested code.
 order: 104
 objectives:
 - Write functions that return useful values, choose appropriate built-in collections, and handle ordinary control flow and files (Severance).

@@ -1,5 +1,5 @@
 ---
-imported_hash: 019ede10c337edec
+imported_hash: 28ecc6188b0cad4a
 title: 8 — Adaptive Inference
 summary: 'Stacked speedup tables make adaptive techniques look like free multipliers, and teams that turn them on from a blog post get a surprise: speculation that gains nothing on a small target or a saturated batch, or a 4-bit model that passes per…'
 order: 9
@@ -236,6 +236,7 @@ Their run used 1,000 Claude-generated Python prompts, 10 epochs, one A100-80 GB,
 | Speculation and quantization both speed things up. What's the difference for quality? | Speculative decoding with the standard rejection-sampling rule keeps the output distribution. Quantization changes outputs, so every format change needs an eval run, and perplexity alone isn't enough. |
 | Read the PyTorch stack: 25.5 → 107.0 → 157.4 → 202.1 → 244.7 tokens/s. | At batch 1 on Llama-7B and an A100, compile gives 4.2× because launch overhead dominates, then each step gains less: 1.5×, 1.3×, 1.2×. The total is 9.6×, but quality wasn't measured and it won't hold at large batch. |
 | Is SpeCache speculative decoding? | No. Despite the name and the book's figure title, it prefetches predicted KV blocks to hide the latency of offloaded cache tiers, so it is a KV-tiering technique. |
+| What is knowledge distillation? | Training a small student against a large teacher with a blended loss, `(1 - alpha) * task_loss + alpha * KL`, where the KL term compares their temperature-scaled outputs. |
 
 ## Next
 

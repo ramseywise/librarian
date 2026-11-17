@@ -1,8 +1,8 @@
 ---
-imported_hash: 1009bbfa055306de
+imported_hash: cc52643076d10b7d
 title: 7    | Time Series
 summary: ''
-order: 15
+order: 16
 kind: notebook
 section: Practice
 source: learn-ai-engineering/data-analytics/01-python-for-data-analysis/practice/7_Time_Series.ipynb

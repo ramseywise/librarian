@@ -1,5 +1,5 @@
 ---
-imported_hash: 206c0b027c181029
+imported_hash: 7cc3e17601d49675
 title: 'Forecasting: how many people does the warehouse need?'
 summary: It is the last Monday of September, and Fernhill's operations manager has to book temporary warehouse staff for the thirteen weeks that hold Black Friday and Christmas.
 order: 2
@@ -435,6 +435,8 @@ Exercises use `practice/ch01_forecasting.py`.
 | What is the critical ratio? | Cost of being short over the sum of short and over costs. Stock to that quantile of demand. |
 | How do you check a prediction interval? | Measure coverage across a backtest and compare it to the nominal level. |
 | What is forecast bias, and why report it? | The mean of actual minus forecast. A consistent shortfall has a different cost from scatter, and low error scores can hide it. |
+| Which models do you try on a single series? | The free benchmarks first: mean, naive, seasonal naive and drift. Then a real model, kept only if it beats the seasonal naive in a rolling-origin backtest. |
+| A series has a trend. How do you remove it, and why? | Difference it. A trending series fails the augmented Dickey-Fuller stationarity test, and models that cannot handle a trend need differencing first. |
 
 ## Next
 

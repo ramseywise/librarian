@@ -1,5 +1,5 @@
 ---
-imported_hash: ae35bb1432b02582
+imported_hash: 1beaec55b07662b7
 title: 3b — Metadata filters, hybrid search and evaluating a retriever
 summary: Keyword search and semantic search each fail where the other is strong, and neither knows which document a customer is allowed to see.
 order: 7
@@ -218,6 +218,8 @@ hybrid  {'recall@3': 0.95, 'mrr': 0.742, 'ndcg@3': 0.789}
 | MRR, MAP or nDCG? | MRR when one good document is enough. MAP when you want all relevant documents ranked high with binary labels. nDCG with graded labels. |
 | Do human relevance labels predict RAG quality? | Weakly in Salemi and Zamani's tests: tau around 0.18 for provenance MRR on NQ, against 0.50 for eRAG, which scores each document by what the system's LLM does with it. |
 | Why do filters not replace search? | A filter is a hard yes or no with no ranking. It enforces constraints but does not order what remains by relevance. |
+| What are precision and recall at k? | Precision is relevant retrieved over retrieved. Recall is relevant retrieved over total relevant. At k, both are counted on the top k only, which makes systems comparable. |
+| What is mean average precision (MAP)? | Average precision takes the precision at each relevant hit in one query's ranking. MAP is its mean over queries, and it is high when relevant documents rank near the top. |
 
 ---
 

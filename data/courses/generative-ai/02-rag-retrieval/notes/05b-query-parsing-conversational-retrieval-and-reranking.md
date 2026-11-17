@@ -1,5 +1,5 @@
 ---
-imported_hash: 3e762094c9c2869d
+imported_hash: 1131df262cad4d0c
 title: 5b — Query parsing, conversational retrieval and reranking
 summary: A Tallybook customer asks "how long will it take?" two turns into a chat.
 order: 10
@@ -381,6 +381,7 @@ The house version of the reranking stage, with production numbers, is note [08 �
 | Bi-encoder vs cross-encoder vs ColBERT? | Bi-encoder: one vector per text, precomputable and fast. Cross-encoder: scores each pair jointly, best and slowest, so reranking only. ColBERT: per-token vectors with MaxSim, near cross-encoder quality and heavy storage. |
 | Why rerank if recall is fine? | Zhao et al. found answer quality falls as the list grows even when the gold passage is present, and gold first beats gold last. Fewer and better chunks also cut cost. |
 | What is the standard reranking recipe? | Over-retrieve 20–50 with hybrid search, rerank the pairs, return the best 3–10. |
+| Can search be framed as a classification problem? | Yes, pointwise: a classifier scores each (query, passage) pair for relevance and you sort by score, as monoBERT does after BM25 retrieval. duoBERT then compares passages in pairs. |
 
 ---
 

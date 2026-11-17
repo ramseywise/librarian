@@ -93,4 +93,145 @@ cards:
 - front: What comes after the ML platform?
   back: 'Next is architecture and governance: from one model to an organisation of data products.'
   lesson: data-engineering/06-ml-platform/notes/06-ml-system-framing-to-monitoring
+- front: What is point-in-time correctness?
+  back: For each training row, use the feature value as it was knowable at that row's event time, by an as-of join on the time the value became available
+  lesson: data-engineering/06-ml-platform/notes/01-feature-stores
+- front: Why does a leak make the offline metric better?
+  back: The feature partly contains the label or the future. The model relies on it, and that information does not exist at serving
+  lesson: data-engineering/06-ml-platform/notes/01-feature-stores
+- front: What is the difference between leakage and skew?
+  back: Leakage is wrong information across time. Skew is the same input producing different features in two code paths
+  lesson: data-engineering/06-ml-platform/notes/01-feature-stores
+- front: What are the parts of a feature store?
+  back: Registry, offline store for history and point-in-time joins, online store for latest value by key, materialisation between them
+  lesson: data-engineering/06-ml-platform/notes/01-feature-stores
+- front: When do you not need one?
+  back: One model, batch scoring or features in the request. An as-of join and a shared function cover it
+  lesson: data-engineering/06-ml-platform/notes/01-feature-stores
+- front: What does TTL do in a point-in-time join?
+  back: Limits how far back the join looks for a feature. A row with nothing in that window gets no value, and may be dropped
+  lesson: data-engineering/06-ml-platform/notes/01-feature-stores
+- front: How do you detect skew in production?
+  back: Log features at serving, join them to what training would compute for those rows, and compare values and distributions
+  lesson: data-engineering/06-ml-platform/notes/01-feature-stores
+- front: What is the difference between a run and a registered model version?
+  back: A run records one training execution. A version is a named, numbered pointer to a run that someone decided matters
+  lesson: data-engineering/06-ml-platform/notes/02-experiment-tracking-and-model-registry
+- front: What must you log so that a run can be reproduced?
+  back: Code version, data version, parameters, metrics, the model artifact and its environment
+  lesson: data-engineering/06-ml-platform/notes/02-experiment-tracking-and-model-registry
+- front: Stage or alias?
+  back: Alias. Stages are one fixed lifecycle, deprecated since MLflow 2.9. Aliases are as many movable pointers as you need
+  lesson: data-engineering/06-ml-platform/notes/02-experiment-tracking-and-model-registry
+- front: Does moving `@champion` change production?
+  back: Only if something resolves it again. The registry labels; a pipeline or a restart deploys
+  lesson: data-engineering/06-ml-platform/notes/02-experiment-tracking-and-model-registry
+- front: Run ID or alias in the service?
+  back: Run ID pins exactly and promotion is a redeploy. Alias makes promotion a registry action, but you must log which version was resolved
+  lesson: data-engineering/06-ml-platform/notes/02-experiment-tracking-and-model-registry
+- front: What is passive retraining?
+  back: Retrain on a schedule, compare against production on a newer holdout, and promote only on a win
+  lesson: data-engineering/06-ml-platform/notes/02-experiment-tracking-and-model-registry
+- front: Why keep the versions that lost?
+  back: Rollback, audit, and a record of what was tried
+  lesson: data-engineering/06-ml-platform/notes/02-experiment-tracking-and-model-registry
+- front: How do you choose batch, stream or online?
+  back: By when the consumer needs the answer. Batch unless someone is waiting, stream if a system can wait seconds, online if a person or synchronous call waits
+  lesson: data-engineering/06-ml-platform/notes/03-batch-and-online-serving
+- front: Why is batch the default?
+  back: No service to keep up, failures are reruns, consumers read the last good table
+  lesson: data-engineering/06-ml-platform/notes/03-batch-and-online-serving
+- front: What makes batch scoring safe to rerun?
+  back: A deterministic output location replaced whole, with the version on each row
+  lesson: data-engineering/06-ml-platform/notes/03-batch-and-online-serving
+- front: When does precomputing fail?
+  back: When traffic is spread across many keys, or the inputs include session data not known in advance
+  lesson: data-engineering/06-ml-platform/notes/03-batch-and-online-serving
+- front: Where does online latency go?
+  back: Usually feature fetches, network and framework; rarely the model. Measure
+  lesson: data-engineering/06-ml-platform/notes/03-batch-and-online-serving
+- front: What is shadow deployment, and when can't you use it?
+  back: Both models see requests, only the champion answers. It breaks down when predictions affect future data, since the shadow never sees the results of its own decisions
+  lesson: data-engineering/06-ml-platform/notes/03-batch-and-online-serving
+- front: Why hash for a canary?
+  back: So a user stays on one side and the comparison stays clean
+  lesson: data-engineering/06-ml-platform/notes/03-batch-and-online-serving
+- front: Why return the model version?
+  back: To join predictions to the model that made them, for monitoring and for incidents
+  lesson: data-engineering/06-ml-platform/notes/03-batch-and-online-serving
+- front: What is the difference between concept and data drift?
+  back: Data drift moves $p(X)$. Concept drift moves $p(y \mid X)$. Only the second needs labels to see, and only changes affecting the decision need action
+  lesson: data-engineering/06-ml-platform/notes/04-drift
+- front: Why does a drift monitor fire on healthy data?
+  back: Many tests at a fixed α guarantee false alarms, and large samples make trivial shifts significant
+  lesson: data-engineering/06-ml-platform/notes/04-drift
+- front: How do you reduce false alarms?
+  back: Bonferroni or similar, restrict to important features, report magnitude, and calibrate thresholds on historical windows
+  lesson: data-engineering/06-ml-platform/notes/04-drift
+- front: What can univariate tests not see?
+  back: A change in how features relate. A domain classifier can
+  lesson: data-engineering/06-ml-platform/notes/04-drift
+- front: What did *Failing Loudly* find?
+  back: On images, aggregated univariate tests did as well as multivariate, testing the existing classifier's softmax outputs was best, and half the simulated shift types were identified as harmless
+  lesson: data-engineering/06-ml-platform/notes/04-drift
+- front: Can you detect concept drift without labels?
+  back: Generally not when inputs stay put. It needs performance feedback, or labels on a sample
+  lesson: data-engineering/06-ml-platform/notes/04-drift
+- front: What do you do on a drift alert?
+  back: Check for a pipeline fault, then measure cost with labels if possible, then retrain, gate and roll out
+  lesson: data-engineering/06-ml-platform/notes/04-drift
+- front: What are the Microsoft MLOps levels?
+  back: 0 no MLOps, 1 DevOps without MLOps, 2 automated training, 3 automated deployment, 4 full automated operations
+  lesson: data-engineering/06-ml-platform/notes/05-mlops-maturity-and-best-practices
+- front: What level should a model aim for?
+  back: Depends on the stakes. Business-critical usually 2 to 3. Level 4 needs strong monitoring and many models or fast drift
+  lesson: data-engineering/06-ml-platform/notes/05-mlops-maturity-and-best-practices
+- front: What is the difference between CT and CI/CD?
+  back: CT retrains when data or a schedule says so. CI/CD ships new pipeline code when code changes. Different triggers
+  lesson: data-engineering/06-ml-platform/notes/05-mlops-maturity-and-best-practices
+- front: What is the ML Test Score?
+  back: 28 tests in four sections, half a point manual, one automated, and the final score is the minimum across sections
+  lesson: data-engineering/06-ml-platform/notes/05-mlops-maturity-and-best-practices
+- front: Why the minimum?
+  back: So a weak section cannot hide behind a strong one
+  lesson: data-engineering/06-ml-platform/notes/05-mlops-maturity-and-best-practices
+- front: What should you test beyond code?
+  back: Data validity, model sanity such as overfitting a batch, and behaviour such as invariance and direction
+  lesson: data-engineering/06-ml-platform/notes/05-mlops-maturity-and-best-practices
+- front: Why inject callbacks?
+  back: So tests can run the handler with no cloud, and see what it would have written
+  lesson: data-engineering/06-ml-platform/notes/05-mlops-maturity-and-best-practices
+- front: Why does the overfit test matter?
+  back: A model that cannot memorise a tiny batch has a wiring bug, and tuning won't help
+  lesson: data-engineering/06-ml-platform/notes/05-mlops-maturity-and-best-practices
+- front: Walk me through designing an ML system
+  back: Decision and prices, then what's correct, then data and labels, baseline, per-sub-task model choice, offline gate, shadow and canary, monitoring, correction loop. Say what each hands to the next
+  lesson: data-engineering/06-ml-platform/notes/06-ml-system-framing-to-monitoring
+- front: How do you choose between rules, ML and an LLM?
+  back: Per sub-task. Start from a measured baseline, ask what the better route must beat and at what price, and keep checks that don't trust the model
+  lesson: data-engineering/06-ml-platform/notes/06-ml-system-framing-to-monitoring
+- front: What does "correct" mean for extraction?
+  back: Field, document or match, and decision. Each can pass while the next fails. The normalisation rule is part of the metric
+  lesson: data-engineering/06-ml-platform/notes/06-ml-system-framing-to-monitoring
+- front: A model improves offline. Why might the system get worse?
+  back: Downstream models were calibrated on the old signal, thresholds were fixed for the old scores, and slices can fall while the average rises
+  lesson: data-engineering/06-ml-platform/notes/06-ml-system-framing-to-monitoring
+- front: Why can't you just shadow a router?
+  back: It sees outcomes only where the champion produced them. It never sees what happens after its own choices, so it needs a canary with limits and an audit
+  lesson: data-engineering/06-ml-platform/notes/06-ml-system-framing-to-monitoring
+- front: How do you monitor when labels take months?
+  back: Operations and inputs for breakage, predictions for calibration when labels come, and a random audit that brings labels forward
+  lesson: data-engineering/06-ml-platform/notes/06-ml-system-framing-to-monitoring
+- front: Is a falling correction rate good?
+  back: Unknown. It can be a better model, a worse one or a tired clerk. Read an audit and seeded problems
+  lesson: data-engineering/06-ml-platform/notes/06-ml-system-framing-to-monitoring
+- front: Why not train on what reviewers corrected?
+  back: The model chose what they saw. In a simulation it stopped paying almost anything, and error on paid looked excellent
+  lesson: data-engineering/06-ml-platform/notes/06-ml-system-framing-to-monitoring
+- front: What's your fallback?
+  back: The baseline, kept working and sized for the load, with a rollback someone has rehearsed
+  lesson: data-engineering/06-ml-platform/notes/06-ml-system-framing-to-monitoring
+- front: What's a straight answer when asked about an LLM you haven't tested?
+  back: Say it's untested, give the break-even price, and state the measurement that would decide it
+  lesson: data-engineering/06-ml-platform/notes/06-ml-system-framing-to-monitoring
 ---

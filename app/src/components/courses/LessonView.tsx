@@ -32,7 +32,7 @@ const TABS = [
 type Tab = (typeof TABS)[number]["id"];
 
 /** Drop a leading `# Title` when it just repeats the lesson title shown in the header. */
-function stripDuplicateH1(body: string, title: string): string {
+export function stripDuplicateH1(body: string, title: string): string {
   const m = body.match(/^\s*#\s+(.+?)\s*\n/);
   if (!m) return body;
   const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "");

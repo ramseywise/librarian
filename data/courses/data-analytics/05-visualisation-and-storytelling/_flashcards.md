@@ -120,4 +120,127 @@ cards:
 - front: What are the rules of thumb for visualisation and storytelling?
   back: 'Form: name the question, then pick the encoding. Honesty: bars start at zero, no two y-axes. Style: remove, then emphasise. Interaction: keep essentials visible, export a static copy. Dashboards: take the lightest stack. Story: write the sentence first.'
   lesson: data-analytics/05-visualisation-and-storytelling/notes/05-dashboards-and-storytelling
+- front: What does the grammar of graphics give you that chart types do not?
+  back: A chart is a composition of data, marks, encodings, statistics, scales, coordinates and facets, so you can vary one decision at a time and describe charts no menu names.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/01-grammar-and-chart-choice
+- front: Which encodings are read most accurately?
+  back: Position on a common scale, then position on non-aligned scales, then length, angle and slope, then area, then volume, then shading and saturation (Cleveland and McGill, 1984).
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/01-grammar-and-chart-choice
+- front: Why avoid dual y axes?
+  back: The relative placement of two independent scales is arbitrary, so any crossing or correlation it suggests is the author's choice. Use aligned panels or index both series to one base.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/01-grammar-and-chart-choice
+- front: Must every y axis start at zero?
+  back: Bars and areas must, because length and area encode the value. Lines and dots encode by position and may zoom if the axis is plain about it.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/01-grammar-and-chart-choice
+- front: Is a pie chart ever right?
+  back: Yes, for a small number of parts where the message is a simple fraction of a whole. For comparing the parts, sorted bars are more accurate.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/01-grammar-and-chart-choice
+- front: What does Anscombe's quartet show?
+  back: Four datasets share means, variance, correlation and fitted line and look nothing alike. Summaries alone can hide curvature, outliers and leverage.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/01-grammar-and-chart-choice
+- front: Exploratory versus explanatory?
+  back: Exploratory charts are many and help you find out; explanatory charts are few and tell someone else one thing.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/01-grammar-and-chart-choice
+- front: What is the difference between a Figure and an Axes?
+  back: A Figure is the canvas and owns saving. An Axes is one plot with its own coordinates, and a Figure can hold many.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/02-matplotlib-and-seaborn
+- front: Why prefer `ax.plot` over `plt.plot`?
+  back: It names its target, so it stays correct with several panels and inside functions, rather than relying on a hidden current axes.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/02-matplotlib-and-seaborn
+- front: How do you apply a consistent style across charts?
+  back: Set `rcParams` once, in a shared module or a style file, and use a fixed colour mapping per entity.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/02-matplotlib-and-seaborn
+- front: Figure-level versus axes-level seaborn?
+  back: Figure-level (`relplot`, `displot`, `catplot`) builds its own figure with facets and returns a `FacetGrid`. Axes-level (`scatterplot`, `boxplot`) draws into an `ax` you give it.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/02-matplotlib-and-seaborn
+- front: When would you use small multiples?
+  back: When several groups would overlap on one chart and the comparison is of shape over a shared scale. They trade a little comparison accuracy for far less clutter.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/02-matplotlib-and-seaborn
+- front: Sequential or diverging for a heatmap?
+  back: Sequential for magnitude from low to high. Diverging for a change or anything with a meaningful midpoint, with the neutral colour pinned to it.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/02-matplotlib-and-seaborn
+- front: PNG or SVG?
+  back: PNG for fixed-size output and for many marks. SVG or PDF for sharp scaling when marks are few.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/02-matplotlib-and-seaborn
+- front: What is Shneiderman's mantra?
+  back: Overview first, zoom and filter, then details on demand.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/03-plotly-and-interactive
+- front: What is a plotly figure under the hood?
+  back: A JSON-serialisable structure of `data` traces and a `layout`, rendered by plotly.js in the browser.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/03-plotly-and-interactive
+- front: What is `include_plotlyjs` for?
+  back: It controls whether the library goes inside the HTML (about 4.7 MB here, works offline) or loads from a CDN (about 10 KB, needs network).
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/03-plotly-and-interactive
+- front: Why can plotly filter without a server, and what is the limit?
+  back: The data ships in the page and the control toggles trace visibility, so it is limited to what fits comfortably in a browser.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/03-plotly-and-interactive
+- front: How does Altair link two charts?
+  back: A selection parameter is declared on one chart and used as another's scale domain or filter, with no event-handling code.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/03-plotly-and-interactive
+- front: What accessibility issues come with hover?
+  back: It has no touch equivalent, may be unreachable by keyboard and cannot be printed. Anything essential must be visible without it, and a table should be available.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/03-plotly-and-interactive
+- front: Is D3 a charting library?
+  back: Not really. It is a toolkit for binding data to the DOM, with scales, shapes, axes and layouts. You assemble the chart yourself.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/04-javascript-d3-vega-lite-observable-plot
+- front: What is the data join?
+  back: Matching a list of data to a set of elements, creating, updating and removing elements so the page reflects the data.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/04-javascript-d3-vega-lite-observable-plot
+- front: What does Vega-Lite compile to?
+  back: A full Vega specification with the derived scales, axes and legends, which Vega then renders to SVG or Canvas.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/04-javascript-d3-vega-lite-observable-plot
+- front: How does Altair relate to Vega-Lite?
+  back: Altair is a Python API that generates Vega-Lite JSON. The browser or `vl-convert` does the rendering.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/04-javascript-d3-vega-lite-observable-plot
+- front: How can you test a chart without a browser?
+  back: Render in jsdom and assert on the DOM, including firing events. It has no layout, so anything that measures text needs a real browser.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/04-javascript-d3-vega-lite-observable-plot
+- front: What is the most common JavaScript date bug in charts?
+  back: Parsing dates as UTC and formatting them in local time, so that ticks and labels move by a day or a month.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/04-javascript-d3-vega-lite-observable-plot
+- front: What is the difference between exploratory and explanatory analysis?
+  back: Exploratory is you finding out what is interesting. Explanatory is telling a specific audience a specific thing you already found.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/05-dashboards-and-storytelling
+- front: What makes a metric on a dashboard useful?
+  back: It connects to a decision and has a comparison, such as prior period, target or threshold, and ideally a partner metric that exposes side effects.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/05-dashboards-and-storytelling
+- front: When would you choose Metabase or Looker Studio over Streamlit?
+  back: When non-developers need to edit reports and the content is standard reporting. Streamlit suits bespoke tools maintained by people who write Python.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/05-dashboards-and-storytelling
+- front: What are Knaflic's who, what and how?
+  back: Who is the specific audience and decision maker. What is what they need to know or do. How is the data that makes the point.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/05-dashboards-and-storytelling
+- front: What is the Big Idea?
+  back: One complete sentence that gives your point of view and what is at stake, from Duarte via Knaflic.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/05-dashboards-and-storytelling
+- front: What is horizontal logic?
+  back: Reading the slide titles alone in order tells the whole story.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/05-dashboards-and-storytelling
+- front: How do you decompose a change in an overall rate?
+  back: Apply the old segment rates to the new mix to get the mix effect. The remainder is the within-segment effect.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/05-dashboards-and-storytelling
+- front: A rate fell after a budget cut. Have you shown the cut caused it?
+  back: No. A before-and-after picks up anything else that changed. Propose a holdout, and say what would change your mind.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/05-dashboards-and-storytelling
+- front: What are the three layers of a dashboard?
+  back: Analysis produces results on a schedule, the application answers requests and enforces access, and presentation draws in the browser. Chart libraries are presentation only.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/06-dashboard-stacks-from-python-to-frontend
+- front: What is the difference between Plotly and Dash?
+  back: Plotly draws charts. Dash is an application framework that runs Python callbacks on a server and uses Plotly to draw.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/06-dashboard-stacks-from-python-to-frontend
+- front: How do you choose between a BI tool, a Python app and a full stack?
+  back: By audience, interaction, data volume and who maintains it. Take the lightest that fits, and move up only for a named requirement, such as outside users with per-person data.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/06-dashboard-stacks-from-python-to-frontend
+- front: What is wrong with an endpoint that returns the customer table?
+  back: No authentication, no per-object permission, every property exposed, and no limit. On our setup it also took about 534 ms and 11 MB, against 4 ms and 0.5 KB for a summary.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/06b-dashboard-data-path-points-colour-and-worked-example
+- front: Why not refit the model when a user filters?
+  back: 'Speed is often fine. The issue is meaning: ids are arbitrary, and in our test a filter on spend moved 15 to 25% of customers. Persist labels from a job and read them.'
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/06b-dashboard-data-path-points-colour-and-worked-example
+- front: Offset or keyset pagination?
+  back: 'Keyset for large exports: it filters on the last id seen, so skipped rows are not computed, but you cannot jump to an arbitrary page. It needs a unique sort order.'
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/06b-dashboard-data-path-points-colour-and-worked-example
+- front: When do you use WebGL, and when datashader?
+  back: WebGL from around 10,000 points, on our measurements, up to around a million by Plotly's documentation, with a limit on figures per page. Datashader beyond that, or when the whole set should stay on a server, accepting a running process and no point-level hover.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/06b-dashboard-data-path-points-colour-and-worked-example
 ---

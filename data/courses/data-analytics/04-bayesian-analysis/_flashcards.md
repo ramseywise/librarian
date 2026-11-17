@@ -102,4 +102,226 @@ cards:
 - front: What are most Bayesian failures, and what does each one have?
   back: 'Most failures are unchecked models and unpriced decisions, and each has a check you can run: simulate the prior, check r_hat, ESS and divergences, fix the stopping rule, and price the mistake with expected loss.'
   lesson: data-analytics/04-bayesian-analysis/notes/07-multilevel-models-and-partial-pooling
+- front: State Bayes' theorem in words
+  back: Posterior is proportional to likelihood times prior; the evidence P(X) only normalises it
+  lesson: data-analytics/04-bayesian-analysis/notes/01-bayesian-inference
+- front: Credible vs confidence interval?
+  back: 'Credible: probability the parameter lies inside, given model and data. Confidence: the procedure covers the true value 95% of the time across repeats'
+  lesson: data-analytics/04-bayesian-analysis/notes/01-bayesian-inference
+- front: What is a conjugate prior?
+  back: A prior whose posterior is in the same family, such as Beta for Binomial, so the update is closed-form
+  lesson: data-analytics/04-bayesian-analysis/notes/01-bayesian-inference
+- front: MLE vs MAP vs posterior mean?
+  back: MLE maximises the likelihood; MAP maximises the posterior; the mean averages over it. MAP equals MLE under a flat prior
+  lesson: data-analytics/04-bayesian-analysis/notes/01-bayesian-inference
+- front: When do Bayesian and frequentist answers agree?
+  back: 'Large N with a prior that does not exclude the truth: the likelihood dominates'
+  lesson: data-analytics/04-bayesian-analysis/notes/01-bayesian-inference
+- front: What is a posterior predictive check?
+  back: Simulate data from the fitted model and compare with real data on a quantity of interest
+  lesson: data-analytics/04-bayesian-analysis/notes/01-bayesian-inference
+- front: Why does the prior not make it all subjective?
+  back: It is stated and can be challenged, it fades with data, and any frequentist procedure also makes choices, less visibly
+  lesson: data-analytics/04-bayesian-analysis/notes/01-bayesian-inference
+- front: Why can't two marginals recreate a joint?
+  back: The dependence between the variables is lost; conditionals recover it
+  lesson: data-analytics/04-bayesian-analysis/notes/01b-grids-hypotheses-and-simulation
+- front: What does a grid cost in d dimensions?
+  back: n^d evaluations; a million hypotheses is 1,000 in 2-D, 100 in 3-D, 10 in 6-D
+  lesson: data-analytics/04-bayesian-analysis/notes/01b-grids-hypotheses-and-simulation
+- front: How is a Bayes factor for a composite hypothesis computed?
+  back: The prior-weighted average likelihood, which `Update` returns as its normalising constant
+  lesson: data-analytics/04-bayesian-analysis/notes/01b-grids-hypotheses-and-simulation
+- front: Why can a Bayes factor of 3 be a weak result?
+  back: 1:1 prior odds become 3:1, a move from 50% to 75%, small against modelling error
+  lesson: data-analytics/04-bayesian-analysis/notes/01b-grids-hypotheses-and-simulation
+- front: What is a nuisance parameter?
+  back: Something you must estimate to answer the question but do not care about; average it out
+  lesson: data-analytics/04-bayesian-analysis/notes/01b-grids-hypotheses-and-simulation
+- front: When do you simulate instead of writing a likelihood?
+  back: When the forward model is cheap and the likelihood is not; condition the simulated joint
+  lesson: data-analytics/04-bayesian-analysis/notes/01b-grids-hypotheses-and-simulation
+- front: Why a Dirichlet and not independent Betas?
+  back: Prevalences must sum to one, so the posterior means do too
+  lesson: data-analytics/04-bayesian-analysis/notes/01b-grids-hypotheses-and-simulation
+- front: What does MCMC produce?
+  back: Correlated samples whose long-run distribution is the posterior; summaries are averages over them
+  lesson: data-analytics/04-bayesian-analysis/notes/02-mcmc-and-pymc
+- front: Why does Metropolis not need the normalising constant?
+  back: Acceptance uses a ratio of densities, so P(X) cancels
+  lesson: data-analytics/04-bayesian-analysis/notes/02-mcmc-and-pymc
+- front: What is R-hat?
+  back: Compares between-chain and within-chain variance; near 1 means chains agree. It does not prove they found the whole posterior
+  lesson: data-analytics/04-bayesian-analysis/notes/02-mcmc-and-pymc
+- front: What is effective sample size?
+  back: The number of independent draws with the same information as your correlated ones
+  lesson: data-analytics/04-bayesian-analysis/notes/02-mcmc-and-pymc
+- front: Why NUTS over Metropolis?
+  back: Gradients give distant moves that are still accepted, so far less autocorrelation. It needs no hand-tuning, but cannot handle discrete variables directly
+  lesson: data-analytics/04-bayesian-analysis/notes/02-mcmc-and-pymc
+- front: What is a divergence?
+  back: The numerical integrator failed, usually on sharp curvature. The sampler cannot explore that region, so estimates can be biased
+  lesson: data-analytics/04-bayesian-analysis/notes/02-mcmc-and-pymc
+- front: What is a non-centred parameterisation?
+  back: Sampling a standard Normal and scaling it, which removes the funnel between a hierarchical scale and its group effects
+  lesson: data-analytics/04-bayesian-analysis/notes/02-mcmc-and-pymc
+- front: What is label switching?
+  back: Symmetric mixture components swap identities across chains; fix with an order constraint or informative priors
+  lesson: data-analytics/04-bayesian-analysis/notes/02-mcmc-and-pymc
+- front: Is a flat prior uninformative?
+  back: Only on the scale it is flat on. A uniform p is a bell shape on log-odds
+  lesson: data-analytics/04-bayesian-analysis/notes/03-priors-and-bandits
+- front: What is a weakly informative prior?
+  back: One that rules out absurd values and otherwise lets the data speak, such as Gelman's Cauchy(0, 2.5) on scaled inputs
+  lesson: data-analytics/04-bayesian-analysis/notes/03-priors-and-bandits
+- front: How do you check a prior?
+  back: 'Prior predictive simulation: generate outcomes and ask if they are believable'
+  lesson: data-analytics/04-bayesian-analysis/notes/03-priors-and-bandits
+- front: How does ridge relate to Bayes?
+  back: Ridge is the MAP under Normal priors; lasso is the MAP under Laplace priors. λ is the prior precision
+  lesson: data-analytics/04-bayesian-analysis/notes/03-priors-and-bandits
+- front: Does a Laplace prior give sparsity?
+  back: Only at the MAP. Posterior draws are not zero
+  lesson: data-analytics/04-bayesian-analysis/notes/03-priors-and-bandits
+- front: What is the winner's curse?
+  back: Selecting on significance inflates reported effects. Shrinking toward a prior fit across experiments removes most of it
+  lesson: data-analytics/04-bayesian-analysis/notes/03-priors-and-bandits
+- front: How does Thompson sampling work?
+  back: Draw from each arm's posterior, pull the highest draw, and update. Uncertainty drives exploration
+  lesson: data-analytics/04-bayesian-analysis/notes/03b-bandits-and-thompson-sampling
+- front: What is regret, and what is the bound?
+  back: The cumulative gap to the best arm. Lai and Robbins' lower bound is logarithmic in T
+  lesson: data-analytics/04-bayesian-analysis/notes/03b-bandits-and-thompson-sampling
+- front: Why not always use a bandit?
+  back: Adaptive allocation biases effect estimates, and it is poorly suited to long-term and guardrail metrics
+  lesson: data-analytics/04-bayesian-analysis/notes/03b-bandits-and-thompson-sampling
+- front: How do you compute P(B > A)?
+  back: Sample from each arm's Beta posterior and take the share of draws where B wins, or use the finite sum
+  lesson: data-analytics/04-bayesian-analysis/notes/04-bayesian-ab-testing
+- front: What is expected loss?
+  back: 'E[max(p_A − p_B, 0)]: the average you give up by shipping B, counting worlds where A was better'
+  lesson: data-analytics/04-bayesian-analysis/notes/04-bayesian-ab-testing
+- front: Is a Bayesian test safe to peek at?
+  back: Not with a probability threshold. An expected-loss rule stops for a different reason, and it still needs a minimum sample size
+  lesson: data-analytics/04-bayesian-analysis/notes/04-bayesian-ab-testing
+- front: Why does the expected-loss rule ship null changes often?
+  back: Shipping a no-effect change costs nothing, so the rule has no reason to resist. The harmful-change rate is the thing to check
+  lesson: data-analytics/04-bayesian-analysis/notes/04-bayesian-ab-testing
+- front: Do Bayesian and frequentist intervals disagree?
+  back: With large N and a flat prior they are numerically close. The difference is the interpretation
+  lesson: data-analytics/04-bayesian-analysis/notes/04-bayesian-ab-testing
+- front: How do priors matter in an A/B test?
+  back: Most at the start; they tame early noise and wash out with traffic. Use the same one on each arm
+  lesson: data-analytics/04-bayesian-analysis/notes/04-bayesian-ab-testing
+- front: How would you rank products with few ratings?
+  back: Sort by a lower credible bound of the posterior, not the raw mean
+  lesson: data-analytics/04-bayesian-analysis/notes/04-bayesian-ab-testing
+- front: How would you compare prompts on eval suites of different sizes?
+  back: Lower credible bound of the pass rate, or better, the same suite on both
+  lesson: data-analytics/04-bayesian-analysis/notes/04-bayesian-ab-testing
+- front: What is a Bayes action?
+  back: The action minimising posterior expected loss
+  lesson: data-analytics/04-bayesian-analysis/notes/05-loss-functions-and-decisions
+- front: Which loss gives the mean, median and mode?
+  back: Squared, absolute and zero-one in the limit
+  lesson: data-analytics/04-bayesian-analysis/notes/05-loss-functions-and-decisions
+- front: How do you find it for a custom loss?
+  back: Compute the loss over posterior samples, average, minimise, by grid if it is spiky
+  lesson: data-analytics/04-bayesian-analysis/notes/05-loss-functions-and-decisions
+- front: How do you set a classification threshold from costs?
+  back: Flag when P(positive) > cost_FP / (cost_FP + cost_FN)
+  lesson: data-analytics/04-bayesian-analysis/notes/05-loss-functions-and-decisions
+- front: What is the newsvendor quantile?
+  back: short / (short + over) of the predictive distribution
+  lesson: data-analytics/04-bayesian-analysis/notes/05-loss-functions-and-decisions
+- front: Why might a forecast be biased on purpose?
+  back: The forecaster minimises its own loss; Silver's Weather Channel example
+  lesson: data-analytics/04-bayesian-analysis/notes/05-loss-functions-and-decisions
+- front: What does `pm.Potential` do?
+  back: Adds any term to the model's log posterior
+  lesson: data-analytics/04-bayesian-analysis/notes/05-loss-functions-and-decisions
+- front: How would you state a ship decision?
+  back: Expected net value with its uncertainty, and the regret risk across plausible costs
+  lesson: data-analytics/04-bayesian-analysis/notes/05-loss-functions-and-decisions
+- front: What does EM do?
+  back: Alternates between computing responsibilities and re-fitting parameters; the likelihood never falls, but it finds a local optimum
+  lesson: data-analytics/04-bayesian-analysis/notes/06-bayesian-machine-learning
+- front: EM or MCMC for a mixture?
+  back: EM for a fast point estimate; MCMC when you need parameter uncertainty
+  lesson: data-analytics/04-bayesian-analysis/notes/06-bayesian-machine-learning
+- front: What is the ELBO?
+  back: 'A lower bound on log evidence: reconstruction minus KL from the prior. The gap to log evidence is the KL to the true posterior'
+  lesson: data-analytics/04-bayesian-analysis/notes/06-bayesian-machine-learning
+- front: Why the reparameterisation trick?
+  back: It moves the randomness out of the parameters so gradients can pass through sampling
+  lesson: data-analytics/04-bayesian-analysis/notes/06-bayesian-machine-learning
+- front: VI or MCMC?
+  back: VI scales and is fast, and it tends to underestimate variance. MCMC is slower and asymptotically exact
+  lesson: data-analytics/04-bayesian-analysis/notes/06-bayesian-machine-learning
+- front: What makes a VAE amortised?
+  back: One encoder network outputs a posterior for any input, rather than fitting one per data point
+  lesson: data-analytics/04-bayesian-analysis/notes/06-bayesian-machine-learning
+- front: What is a Gaussian process?
+  back: A distribution over functions where any finite set of values is jointly Normal; a kernel sets the covariance
+  lesson: data-analytics/04-bayesian-analysis/notes/06-bayesian-machine-learning
+- front: What does an acquisition function do?
+  back: Turns a surrogate's mean and uncertainty into the next point to try, trading exploration against exploitation
+  lesson: data-analytics/04-bayesian-analysis/notes/06-bayesian-machine-learning
+- front: What is partial pooling?
+  back: Each group's estimate is a weighted average of its own mean and the overall mean, with weights set by its noise and the estimated between-group spread
+  lesson: data-analytics/04-bayesian-analysis/notes/07-multilevel-models-and-partial-pooling
+- front: What is the weight?
+  back: τ² / (τ² + σ²/n). More users or more real spread means more weight on the group's own mean
+  lesson: data-analytics/04-bayesian-analysis/notes/07-multilevel-models-and-partial-pooling
+- front: What is the ICC?
+  back: The share of variance between groups, τ² / (τ² + σ²). It feeds the design effect 1 + (m − 1)ρ, so even a small ICC inflates variance a lot with large clusters
+  lesson: data-analytics/04-bayesian-analysis/notes/07-multilevel-models-and-partial-pooling
+- front: Clustered SEs, fixed effects or multilevel?
+  back: Clustered when groups are a nuisance and the effect is a population average, fixed effects when the group effect may correlate with the predictor, multilevel when group estimates are the question
+  lesson: data-analytics/04-bayesian-analysis/notes/07-multilevel-models-and-partial-pooling
+- front: Can random effects do what fixed effects do?
+  back: Yes, if you split the predictor into a group mean and a deviation. The within coefficient then equals fixed effects (Bell and Jones)
+  lesson: data-analytics/04-bayesian-analysis/notes/07-multilevel-models-and-partial-pooling
+- front: Why does a segment winner look too good?
+  back: It was selected for being high, so it holds positive noise. Pooling removes most of that, and in this chapter's simulation the overstatement fell from 2.93 to 0.09
+  lesson: data-analytics/04-bayesian-analysis/notes/07-multilevel-models-and-partial-pooling
+- front: Does partial pooling replace Bonferroni?
+  back: It moves estimates rather than widening intervals, and GHY argue for it. It still depends on the model, particularly with few or structured comparisons, and Gelman says so too
+  lesson: data-analytics/04-bayesian-analysis/notes/07-multilevel-models-and-partial-pooling
+- front: When does it not help?
+  back: Well-measured groups, a true outlier, groups known to differ with no predictor for that, and questions only about the overall average
+  lesson: data-analytics/04-bayesian-analysis/notes/07-multilevel-models-and-partial-pooling
+- front: What goes wrong with few groups?
+  back: τ is barely estimated, the REML fit can hit zero, and the prior decides the answer
+  lesson: data-analytics/04-bayesian-analysis/notes/07-multilevel-models-and-partial-pooling
+- front: Why not `MixedLM` for conversion?
+  back: It is linear only. Use a logit multilevel model in PyMC, and be clear whether you report a within-market or a population-averaged effect
+  lesson: data-analytics/04-bayesian-analysis/notes/07-multilevel-models-and-partial-pooling
+- front: What does "hierarchical regression" mean in psychology?
+  back: Often adding blocks of predictors in stages, which has nothing to do with nested data
+  lesson: data-analytics/04-bayesian-analysis/notes/07-multilevel-models-and-partial-pooling
+- front: Why does a multilevel model have fewer effective parameters than actual ones?
+  back: The varying effects share a learned sigma, so they are not free. pWAIC fell from 48.3 to 36.9 on 48 simulated tanks
+  lesson: data-analytics/04-bayesian-analysis/notes/07b-varying-slopes-measurement-error-and-missing-data
+- front: Why model intercepts and slopes together?
+  back: They can covary, and a shrunk slope shifts its intercept. Shrinkage then runs at an angle, not straight to the centre
+  lesson: data-analytics/04-bayesian-analysis/notes/07b-varying-slopes-measurement-error-and-missing-data
+- front: What is non-centring?
+  back: Draw standard-normal z and compute mu + L z, so the sampler explores z instead of a funnel
+  lesson: data-analytics/04-bayesian-analysis/notes/07b-varying-slopes-measurement-error-and-missing-data
+- front: Does it always fix divergences?
+  back: No. With thin data it cut 203 to 8 here, and the centred form is fine with plenty of data
+  lesson: data-analytics/04-bayesian-analysis/notes/07b-varying-slopes-measurement-error-and-missing-data
+- front: What does ignoring predictor error do?
+  back: Attenuates the slope. 0.81 against a true 1.0 here
+  lesson: data-analytics/04-bayesian-analysis/notes/07b-varying-slopes-measurement-error-and-missing-data
+- front: How do you handle a missing predictor?
+  back: Give it a prior and a model on the other covariates, and let the model impute. Complete-case analysis is the alternative, at the cost of rows
+  lesson: data-analytics/04-bayesian-analysis/notes/07b-varying-slopes-measurement-error-and-missing-data
+- front: What does imputation assume?
+  back: That values are missing at random given what the model sees. Not-at-random missingness needs a model of the missingness
+  lesson: data-analytics/04-bayesian-analysis/notes/07b-varying-slopes-measurement-error-and-missing-data
+- front: Why not compare WAIC for a beta-binomial and a binomial?
+  back: WAIC is pointwise and the beta-binomial's latent row-level parameter ties it to the aggregation
+  lesson: data-analytics/04-bayesian-analysis/notes/07b-varying-slopes-measurement-error-and-missing-data
 ---

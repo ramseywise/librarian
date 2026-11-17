@@ -1,8 +1,8 @@
 ---
-imported_hash: d77de9a131dd5160
+imported_hash: 684e9f48064e8972
 title: 1    | Introduction to Python
 summary: 'gen = squares() for x in gen: print(x, end='' '')'
-order: 9
+order: 10
 kind: notebook
 section: Practice
 source: learn-ai-engineering/data-analytics/01-python-for-data-analysis/practice/1_Overview.ipynb

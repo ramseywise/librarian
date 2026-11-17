@@ -1,5 +1,5 @@
 ---
-imported_hash: 0c90c9fa53211bcb
+imported_hash: 683d3f07da2127d8
 title: 'Time series ML: features, sequence models and backtesting'
 summary: A forecast is a promise about a future you cannot see, so the standard machine learning habit of shuffling rows and holding some out will report an accuracy you will never get in production.
 order: 2
@@ -504,6 +504,8 @@ Not much either way. Trailing 365 days gives MASE 0.789 and trailing 180 days gi
 | Why did LTSF-Linear embarrass Transformers? | On nine long-horizon datasets one linear layer beat them, and Zeng et al. argue that permutation-invariant attention loses temporal order. |
 | When reach for a deep forecaster? | When you have many related series, enough data for global training, and it beats trees in the same backtest. |
 | How do you get a prediction interval cheaply? | Quantile regression with pinball loss, then check coverage per fold on the future. |
+| How does a time series differ from an ordinary regression problem? | Rows are ordered and correlated with their neighbours, so they are not exchangeable. Features may use only what was known at issue time, and the level drifts. |
+| How do you forecast the next value from the series plus other features? | Turn the series into a table: one row per target time, with calendar fields and values of the series at safe lags as columns. Then fit gradient boosted trees. |
 
 ## Next
 

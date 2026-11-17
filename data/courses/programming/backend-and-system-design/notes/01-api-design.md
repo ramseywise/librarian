@@ -1,5 +1,5 @@
 ---
-imported_hash: 8e416bd1f3dd01b0
+imported_hash: ffbe668defe85872
 title: 1 — API design
 summary: An API is a contract between programs that fail independently.
 order: 2
@@ -17,6 +17,8 @@ source: learn-ai-engineering/programming/backend-and-system-design/notes/01-api-
 ## What each method promises
 
 An API is a contract between programs that fail independently. A mobile app sends `POST /payments`, the connection dies, and the app has to decide whether to send it again. The answer has to be in the contract, because nothing else can tell the client what happened.
+
+REST is the style most of this chapter works in. The API is a set of resources named by URLs. Clients act on them with the standard HTTP methods and exchange representations of them, usually JSON. And each request carries everything the server needs to answer it, so no session state lives on the server between calls. That last property is what lets any replica answer any request and lets caches sit in between.
 
 HTTP states the contract in its method semantics. [RFC 9110 §9.2.1](https://www.rfc-editor.org/rfc/rfc9110#section-9.2.1) calls GET, HEAD, OPTIONS and TRACE *safe*: the client asks for no change to server state. [§9.2.2](https://www.rfc-editor.org/rfc/rfc9110#section-9.2.2) adds PUT and DELETE to the *idempotent* methods: sending the request many times has the same intended effect as sending it once. POST is neither, and the same section says a client should not automatically retry a non-idempotent request without knowing it is safe to, and a proxy must not.
 
@@ -586,6 +588,7 @@ There are 100,000 pages. With offset, page *k* skips 100·(k − 1) rows, so the
 | REST or gRPC between services? | gRPC if you own both ends and want typed contracts, deadlines and streaming; REST when clients are many or unknown. |
 | What is deadline propagation? | One absolute deadline for the whole call tree; each hop passes on what remains so nobody works for a caller that has gone. |
 | 401 or 403? | 401 means not authenticated; 403 means authenticated and refused. See [chapter 2](02-auth-sessions-jwt-oauth.md). |
+| What is REST? | A style where the API is resources named by URLs, acted on with the standard HTTP methods through representations such as JSON, with every request self-contained. Statelessness lets any replica answer and caches sit in between. |
 
 ## Next
 

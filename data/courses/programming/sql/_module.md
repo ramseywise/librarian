@@ -1,7 +1,7 @@
 ---
-imported_hash: b8c7ff85e8b30c44
+imported_hash: 5b7aede9de0207ac
 title: SQL
-summary: Worked answers are in practice/solutions/.
+summary: Ask a relational database a question and know the answer is right, from a first SELECT to reading a query plan.
 order: 107
 objectives:
 - Write clear SELECT, filtering, ordering, expression, aggregation, and conditional-aggregation queries (Software Carpentry).

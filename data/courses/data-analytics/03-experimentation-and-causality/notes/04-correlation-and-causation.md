@@ -1,5 +1,5 @@
 ---
-imported_hash: a9722a32b0592a3d
+imported_hash: 76e9247f704df2be
 title: 4 — Correlation, Confounding and Causation
 summary: 'Larkspur''s marketing team has good news: customers who opted in to the loyalty email placed 1.21 more orders this year than those who did not.'
 order: 5
@@ -632,6 +632,7 @@ A regression coefficient is a conditional association: the change in Y per unit 
 | What does RD estimate? | The effect at the cutoff. Check for manipulation with a count around it. |
 | What does a propensity score do? | It balances observed covariates, and nothing about unobserved ones. |
 | When is synthetic control the right tool? | One treated unit, many donors, a long pre-period. Inference comes from placebo runs. |
+| What is selection bias? | The part of a naive comparison that comes from the groups already differing in the outcome they would have had untreated. Randomisation makes it zero. Opting in does not. |
 
 ---
 

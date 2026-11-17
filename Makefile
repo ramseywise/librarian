@@ -65,7 +65,7 @@ slides:  ## Build a deck: make slides PILLAR=<course>/<module> [LECTURE=<NN-slug
 		$(SLIDES_DIR)/slides/$(if $(LECTURE),lectures/$(LECTURE).yaml,deck.yaml) \
 		$(if $(PREVIEW),--preview $(SLIDES_DIR)/slides/$(if $(LECTURE),lectures/.preview/$(LECTURE),.preview)) $(if $(PDF),--pdf) $(if $(STRICT),--strict) $(if $(LEVEL),--level $(LEVEL))
 
-flashcards:  ## Build every module's _flashcards.md from its local deck specs [CHECK=1 to only check]
+flashcards:  ## Build every module's _flashcards.md from its deck specs and interview checklists [CHECK=1 to only check]
 	@uv run -q python src/librarian/tools/slides/flashcards.py $(if $(CHECK),--check)
 
 slides-all:  ## Build every deck in every course [PDF=1]
@@ -196,7 +196,7 @@ help:
 	@echo "index-rebuild    — force full rebuild of the wiki search index"
 	@echo "api              — start FastAPI backend directly (port 8000)"
 	@echo "ui               — start Vite dev server directly (port 5173)"
-	@echo "flashcards       — build each module's _flashcards.md from its local deck specs"
+	@echo "flashcards       — build each module's _flashcards.md from its deck specs and interview checklists"
 	@echo "install-ui       — npm install for app/"
 	@echo "install-api      — uv sync --extra api"
 	@echo "install-codemap  — uv sync --extra codemap"

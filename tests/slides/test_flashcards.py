@@ -180,6 +180,64 @@ def test_nested_track_decks_attach_relative_to_their_own_folder(tmp_path: Path) 
     assert meta["cards"][0]["lesson"] == "programming/python/01-foundations/notes/01-values"
 
 
+CHECKLIST_NOTE = """# Estimation
+
+Prose.
+
+## Interview checklist
+
+| Question | Answer |
+|---|---|
+| What is a [standard error](../wiki/se.md)? | The spread of an **estimate** across samples |
+| When is $P(A \\| B)$ equal to $P(A)$? | When A and B are independent |
+| The title | A deck card already asks this |
+| No answer | |
+
+## Next
+
+| Not | A card |
+|---|---|
+| Outside the checklist | Skipped |
+"""
+
+
+def test_checklist_rows_become_cards_after_the_deck_cards(courses: Path) -> None:
+    mod = courses / "data-analytics" / "02-statistics"
+    _write(mod / "notes" / "01-estimation.md", CHECKLIST_NOTE)
+    deck = mod / "slides" / "deck.yaml"
+    deck.write_text(
+        deck.read_text().replace('recall: "What does **MLE** do?"', "recall: The title")
+    )
+    fc.build(courses)
+    cards = _front(mod / "_flashcards.md")["cards"]
+    lesson = "data-analytics/02-statistics/notes/01-estimation"
+    assert cards[0]["front"] == "The title"  # the deck card, not the checklist row with its front
+    assert cards[-2:] == [
+        {
+            "front": "What is a standard error?",
+            "back": "The spread of an **estimate** across samples",
+            "lesson": lesson,
+        },
+        {
+            "front": "When is $P(A | B)$ equal to $P(A)$?",
+            "back": "When A and B are independent",
+            "lesson": lesson,
+        },
+    ]
+    assert [c["front"] for c in cards].count("The title") == 1
+
+
+def test_a_module_with_checklists_and_no_deck_gets_cards(tmp_path: Path) -> None:
+    root = tmp_path / "courses"
+    mod = root / "data-science" / "01-ml"
+    _write(mod / "notes" / "01-estimation.md", CHECKLIST_NOTE)
+    _write(mod / "notes" / "_draft.md", CHECKLIST_NOTE.replace("standard error", "draft"))
+    assert fc.build(root)["cards"] == 3
+    meta = _front(mod / "_flashcards.md")
+    assert meta["decks"] == []
+    assert {c["lesson"] for c in meta["cards"]} == {"data-science/01-ml/notes/01-estimation"}
+
+
 def test_real_courses_are_up_to_date() -> None:
     """The committed _flashcards.md files match their specs (run `make flashcards` if not)."""
     assert fc.build(fc.COURSES_DIR, check=True)["written"] == 0

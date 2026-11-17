@@ -1,5 +1,5 @@
 ---
-imported_hash: 5305cebcc34c5ab1
+imported_hash: 40b029829e2244f9
 title: Bayesian analysis
 summary: 'Bayesian analysis writes down how the data could have been generated, puts a prior on the unknowns, and computes the posterior: what is plausible once the data is in.'
 order: 1
@@ -136,4 +136,4 @@ Three legacy blocks in chapter 6 are marked `# illustrative`, because they show 
 
 Everything else: [references.md](references.md).
 
-**Next:** [05 Visualisation and Storytelling](../05-visualisation-and-storytelling/readme.md), for putting these answers in front of people. **References:** [references.md](references.md).
+**Next:** this is the last module of [data analytics](../00-start-here/readme.md#completion-standard-and-next-steps). **References:** [references.md](references.md).

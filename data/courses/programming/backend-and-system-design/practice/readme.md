@@ -1,5 +1,5 @@
 ---
-imported_hash: 92dbe94275fb02d6
+imported_hash: 4179a1fb71581564
 title: 'Lab: backend parts you can test without a data centre'
 summary: Each module goes with a chapter, so do it after reading that one.
 order: 12
@@ -13,6 +13,25 @@ source: learn-ai-engineering/programming/backend-and-system-design/practice/READ
 > Eleven small modules, each one the core of something from the chapters: a signed cursor, a JWT verifier, single flight, an outbox, rate limiters, a hash ring, Erlang C, a retry budget and breaker, a lease scheduler, a log-structured store, and a token budget. Plus a small service that goes through a real container build and a real SIGTERM.
 
 Each module goes with a chapter, so do it after reading that one. None of it is for production: use a maintained library for JWTs, and a real database for storage. The point is that you can see what each piece must get right.
+
+## Layout
+
+```
+backend-and-system-design/
+├── README.md
+├── references.md
+├── notes/                         01–10
+├── slides/                        deck.yaml and the built study deck
+└── practice/
+    ├── README.md                  the lab: what to build and how it's checked
+    ├── check.sh                   runs the lab's tests, every code block, and deploy/verify.sh
+    ├── run_notes.py               runs the notes' blocks, and compares output where it's fixed
+    ├── deploy/                    service, Dockerfile, Kubernetes manifest, CI workflow, verify.sh
+    ├── exercises/backend_lab/     stubs and their tests
+    └── solutions/backend_lab/     worked versions and the same tests
+```
+
+You need Python 3.14 and [uv](https://docs.astral.sh/uv/). Docker is optional, for chapter 6's example. The notes' code blocks are standalone apart from a few marked with a package they need, so you can copy one into a file and run it. Nothing needs a cloud account, and no block calls a model. Which part of the lab goes with which chapter is in the [syllabus](../readme.md#syllabus).
 
 ## Run it
 

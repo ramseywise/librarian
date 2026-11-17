@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build each module's flashcards from its local deck specs.
+"""Build each module's flashcards from its local deck specs and its lessons' interview checklists.
 
     uv run python src/librarian/tools/slides/flashcards.py            write every <course>/<module>/_flashcards.md
     uv run python src/librarian/tools/slides/flashcards.py --check    exit 1 if any file would change; write nothing
@@ -13,6 +13,11 @@ names a lesson file (relative to the folder that holds `slides/`) the card carri
 lesson's id, otherwise it belongs to the module. A card whose front already
 appeared in the module is dropped: the Leitner log keys a card on its module and front text,
 so two cards with one front would share a schedule.
+
+After the deck cards, every row of a lesson's `## Interview checklist` table is a card of that
+lesson: front is the first cell, back the second, with links reduced to their text. Lessons go
+in path order, and a row whose question a deck card (or an earlier row) already asks is dropped
+by the same repeated-front rule, so deck cards keep their place and their schedule.
 
 A spec that does not parse warns and yields no cards. A module with no cards has no file. The
 tool only deletes a file it wrote, which carries `generated_by` in its frontmatter.
@@ -34,6 +39,10 @@ FLASHCARD_FILE = "_flashcards.md"
 GENERATED_BY = "src/librarian/tools/slides/flashcards.py"
 SKIP_DIRS = {"node_modules", ".venv", "__pycache__", "assets"}
 _SLUG_RE = re.compile(r"[^a-z0-9]+")
+CHECKLIST_HEADING = "## Interview checklist"
+_CELL_SPLIT_RE = re.compile(r"(?<!\\)\|")
+_LINK_RE = re.compile(r"\[([^\]]+)\]\([^)]*\)")
+_SEPARATOR_RE = re.compile(r"^[\s:|-]+$")
 
 
 def _warn(message: str) -> None:
@@ -143,18 +152,72 @@ def spec_flashcards(spec: Path, courses: Path, index: dict[str, str]) -> list[di
     return cards
 
 
+def _cell_text(cell: str) -> str:
+    """A table cell as card text: escaped pipes restored, links reduced to their text (the card
+    view renders bold and code only)."""
+    return _card_text(_LINK_RE.sub(r"\1", cell.replace("\\|", "|")))
+
+
+def checklist_rows(text: str) -> list[tuple[str, str]]:
+    """(question, answer) for each row of the `## Interview checklist` table, header and
+    separator skipped. A pipe inside the answer that was not escaped stays part of the answer."""
+    rows: list[tuple[str, str]] = []
+    inside = False
+    header_seen = False
+    for line in text.splitlines():
+        stripped = line.strip()
+        if stripped == CHECKLIST_HEADING:
+            inside, header_seen = True, False
+            continue
+        if not inside:
+            continue
+        if stripped.startswith(("# ", "## ")):
+            break
+        if not stripped.startswith("|"):
+            continue
+        if not header_seen:  # the column titles
+            header_seen = True
+            continue
+        if _SEPARATOR_RE.match(stripped):
+            continue
+        cells = _CELL_SPLIT_RE.split(stripped.strip("|"))
+        question, answer = _cell_text(cells[0]), _cell_text("|".join(cells[1:]))
+        if question and answer:
+            rows.append((question, answer))
+    return rows
+
+
+def checklist_flashcards(module: Path, courses: Path) -> list[dict[str, str]]:
+    """One card per interview-checklist row of every lesson below the module, in path order."""
+    cards: list[dict[str, str]] = []
+    for dp, dns, fns in os.walk(module):
+        dns[:] = sorted(d for d in dns if not d.startswith(".") and d not in SKIP_DIRS)
+        for fn in sorted(fns):
+            path = Path(dp) / fn
+            if path.suffix != ".md" or fn.startswith("_"):
+                continue
+            try:
+                text = path.read_text(errors="replace")
+            except OSError as e:
+                _warn(f"{path}: unreadable ({e})")
+                continue
+            lesson = path.relative_to(courses).with_suffix("").as_posix()
+            cards += [{"front": q, "back": a, "lesson": lesson} for q, a in checklist_rows(text)]
+    return cards
+
+
 def module_flashcards(module: Path, courses: Path) -> tuple[list[Path], list[dict[str, str]]]:
-    """The module's specs and its cards, first card per front kept."""
+    """The module's specs and its cards, deck cards then checklist rows, first card per front kept."""
     specs = find_specs(module)
     index = lesson_index(module, courses)
     cards: list[dict[str, str]] = []
     seen: set[str] = set()
-    for spec in specs:
-        for card in spec_flashcards(spec, courses, index):
-            if card["front"] in seen:
-                continue
-            seen.add(card["front"])
-            cards.append(card)
+    found = [card for spec in specs for card in spec_flashcards(spec, courses, index)]
+    for card in found + checklist_flashcards(module, courses):
+        if card["front"] in seen:
+            continue
+        seen.add(card["front"])
+        cards.append(card)
     return specs, cards
 
 

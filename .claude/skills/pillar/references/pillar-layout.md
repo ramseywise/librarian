@@ -25,6 +25,31 @@ mental model, rules of thumb, the order to read the notes in, its **Primary text
 `references.md`. The README's groupings of the notes become the deck's parts. The reading order is
 the only chapter list in the repository: a subject syllabus never lists chapters or counts them.
 
+**Shape (since 2026-11-17).** The README is the body of the module's page in the app, so it reads as
+that page. Reference pillar: `data-analytics/01-python-for-data-analysis`; the other pillars move to it
+as they are next touched. In order:
+
+1. An opening line as a plain paragraph, not a blockquote: its first sentence becomes the module summary. Then
+   `**What you should already know.**` as a checklist (`- [ ]` items), one line per thing the reader can already
+   do, each linking the note that teaches it; group by track and mark a group "helps, not required" where that
+   is true. It is a self-check that points back, and it re-teaches nothing. Both show above the lecture.
+2. `## Lecture`: the overview deck, and what it walks through. The app shows its own lecture card and drops this section.
+3. `## The core`: the one question the module keeps asking and how many steps answer it, in two short paragraphs.
+   The steps themselves are the syllabus rows and the overview deck's parts, so they are not listed twice.
+4. `## Syllabus`: one row per submodule (a step, covering one or more notes), with the columns
+   `Submodule | Core concepts | Study | Labs | Sources`. A submodule is a step of the work, named for what is done
+   to the data and not for the library call. Core concepts are the few ideas that make the step go right in any
+   tool. Study links the notes (a section link where one note serves two steps), Labs the notebooks and practice
+   files, Sources names book chapters, courses and papers. Every note is linked from Study or from the paragraph
+   under the table.
+5. `## Rules of thumb`, `## Builds on and feeds into`, `## Primary texts`.
+6. `## Next`: the submodule and note to start with, then what you can do after the last one and the module that
+   follows. The app drops this section and ends on its own "What's next" button.
+
+With a `## Syllabus` the app's module page does not list labs, wiki pages or references again: the rows link them.
+
+How to set up and run the labs goes in `practice/README.md`, not here.
+
 **Primary texts.** A short section naming the books and sources the pillar is built on, each taken
 from a `references.md` row and never from memory, ending with a link to `references.md` for the rest.
 

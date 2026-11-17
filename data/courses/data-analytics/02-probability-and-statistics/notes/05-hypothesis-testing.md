@@ -1,5 +1,5 @@
 ---
-imported_hash: ff1c6a2eba2fbab0
+imported_hash: 28b2d1bbe650b73a
 title: 5 — Hypothesis Testing
 summary: Larkspur's analyst slices a flat experiment by twenty segments and reports that the new checkout works in one of them, at p = 0.04.
 order: 6
@@ -438,6 +438,7 @@ Reinhart's closing chapters collect the field evidence, all of it reported from 
 | 30 metrics, 3 significant? | Expect about 1.5 by chance. Correct with Holm or BH, and replicate. |
 | What is the winner's curse? | At low power, only inflated estimates cross the threshold, so significant results overstate the true effect. |
 | What does a permutation test do? | Shuffles group labels to build the null distribution from your data, needing only exchangeability under the null. |
+| How do Type I and Type II errors differ? | Type I is a false positive: you reject a true H₀, at rate α. Type II is a false negative: you miss a real effect, at rate β. |
 
 ---
 

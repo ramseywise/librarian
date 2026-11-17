@@ -1,7 +1,7 @@
 ---
-imported_hash: d770002a76485709
+imported_hash: 13730ff5e1ae1cf2
 title: TypeScript
-summary: The type challenges are in practice/type-challenges/challenges/.
+summary: Go from "JavaScript for Python developers" to typed LLM applications.
 order: 108
 objectives:
 - Translate Python habits into idiomatic JavaScript while avoiding coercion, sorting, and truthiness traps.

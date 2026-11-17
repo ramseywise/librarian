@@ -144,4 +144,214 @@ cards:
 - front: Which pillar covers the loops a harness runs?
   back: Loop engineering runs the harness again, against a goal, until a scorekeeper says stop.
   lesson: ai-engineering/03-harness-engineering/notes/10-scope-and-done
+- front: What is a harness?
+  back: 'Everything around the model that isn''t the model: `Agent = Model + Harness`, where the harness informs, constrains, verifies and corrects.'
+  lesson: ai-engineering/03-harness-engineering/notes/01-what-a-harness-is
+- front: Your agent is 90% reliable per step over five steps. What end-to-end success do you expect, and what changes it most?
+  back: About 59%, from 0.9^5. Harness structure changes it most, because it sets how many steps must succeed in a row and what happens when one doesn't; a better model only moves per-step accuracy a few points.
+  lesson: ai-engineering/03-harness-engineering/notes/01-what-a-harness-is
+- front: What are the four parts of a harness, and which do teams miss?
+  back: Acceptance baseline, execution boundary, feedback signals and rollback. Rollback is most often missing, and the baseline is most often faked with a "looks good".
+  lesson: ai-engineering/03-harness-engineering/notes/01-what-a-harness-is
+- front: Give evidence that the harness matters as much as the model.
+  back: LangChain DeepAgents went from 52.8% to 66.5% on Terminal Bench 2.0 with a fixed model. Agent S4 evolved only interfaces and took Qwen3.8-27B from 5.6% to 21.3% on OSWorld V2, above GPT-5.5 at 13.0% and Opus 4.8 at 20.6%.
+  lesson: ai-engineering/03-harness-engineering/notes/01-what-a-harness-is
+- front: An agent keeps failing and a stakeholder wants the newest model. What do you do?
+  back: Run, attribute the failure to one subsystem, fix only that one, and re-run the same task on the fixed model. Swapping first hides which part was missing, so the failure returns under the next model.
+  lesson: ai-engineering/03-harness-engineering/notes/01-what-a-harness-is
+- front: How do framework, runtime and harness differ?
+  back: 'A framework gives abstractions and integrations, a runtime gives durable execution, streaming, HITL and persistence, and a harness is batteries-included: predefined tools, prompts, a to-do planner, a virtual filesystem, subagents and history summarization.'
+  lesson: ai-engineering/03-harness-engineering/notes/01-what-a-harness-is
+- front: What are the five subsystems of a harness?
+  back: Instructions, tools, environment, state and feedback. Every failure can be attributed to one of them, which is why this cut is for diagnosis while the nine components describe what ships.
+  lesson: ai-engineering/03-harness-engineering/notes/02-harness-anatomy
+- front: What are the gulfs of execution and evaluation, and which do agents hit more?
+  back: Execution is knowing what to do but being unable to act, a tools or environment gap. Evaluation is acting but being unable to tell if it worked, a feedback gap; agents usually fail here, confidently wrong rather than stuck.
+  lesson: ai-engineering/03-harness-engineering/notes/02-harness-anatomy
+- front: Why does the filesystem matter so much in a harness?
+  back: 'It lets state outlive one context window, so the loop becomes re-entrant, and it gives large tool output a home: a 2,000-line log can leave only its head, tail and a path in the window.'
+  lesson: ai-engineering/03-harness-engineering/notes/02-harness-anatomy
+- front: Where do you put the current branch and recent commits, and why?
+  back: At the end of the context, before each inference. In the system prompt the changing values would break the KV cache.
+  lesson: ai-engineering/03-harness-engineering/notes/02-harness-anatomy
+- front: Bash or typed tools?
+  back: Start with bash, and promote when you need a gate, a rendered result, an audit record, parallelism or a retry policy. Bash is maximally capable and dangerous, so pair it with a sandbox and hooks.
+  lesson: ai-engineering/03-harness-engineering/notes/02-harness-anatomy
+- front: A requirement must hold on every run. Which layer does it go in?
+  back: The deterministic shell, because reliability requirements move outward. Otherwise use the innermost layer that can hold it, because a sentence is cheap and reversible while a subagent tier multiplies tokens and loses shared context.
+  lesson: ai-engineering/03-harness-engineering/notes/02-harness-anatomy
+- front: Give evidence that the interface matters independently of the model.
+  back: 'SWE-agent: the same GPT-4 Turbo resolved 18.0% of SWE-bench Lite through a purpose-built interface and 11.0% through a plain shell.'
+  lesson: ai-engineering/03-harness-engineering/notes/03-tool-design
+- front: Typed catalog or bash for a strong current model?
+  back: Mak et al. found bash alone beat a typed catalog by 21.8–24.5 pp on TheAgentCompany and 4.8–7.4 pp on APEX-Agents with Opus-4.8 and GPT-5.5, using fewer tokens. Keep typed tools for steps needing a gate, an audit record or a retry policy.
+  lesson: ai-engineering/03-harness-engineering/notes/03-tool-design
+- front: What are the four gating questions?
+  back: Reversible, idempotent, observable, parallel-safe. Failing them means, in order, a confirmation gate, no retry without an idempotency key, undebuggable, and serialized execution.
+  lesson: ai-engineering/03-harness-engineering/notes/03-tool-design
+- front: Why are negative boundaries in a description worth writing?
+  back: Positive descriptions leave the model to infer the boundary between similar tools. WHEN NOT TO USE and DO NOT USE FOR disambiguate `search`, `grep` and `read`, and each entry should come from observed misuse.
+  lesson: ai-engineering/03-harness-engineering/notes/03-tool-design
+- front: Your agent has about 100 tools and picks wrongly. What are your options?
+  back: Merge overlapping tools, namespace the rest, and stop loading every definition up front. Use progressive disclosure or discovery, keeping dynamic content out of the cached prefix.
+  lesson: ai-engineering/03-harness-engineering/notes/03-tool-design
+- front: Dedicated tool or Skill plus a general executor?
+  back: Use a Skill plus executor when parameters are complex, the procedure changes often, or the model is strong enough to compose it. Use a dedicated tool when the call is frequent, parameters are simple, or a smaller model must get it right every time.
+  lesson: ai-engineering/03-harness-engineering/notes/03-tool-design
+- front: How do you make tool parameters error-proof?
+  back: Prefer enums over free strings, absolute paths over relative ones, and required parameters over optional ones with surprising defaults, so the mistake is harder to make.
+  lesson: ai-engineering/03-harness-engineering/notes/03-tool-design
+- front: A payment tool timed out and the customer was charged three times. What went wrong?
+  back: A non-idempotent write was auto-retried. Tools without idempotency keys must not be auto-retried, and the fix is a key on the call plus a query-before-mutate check.
+  lesson: ai-engineering/03-harness-engineering/notes/03b-mcp-write-safety-and-async-tools
+- front: When do you choose MCP over an in-process tool?
+  back: When several callers need it, a security boundary must be crossed, it deploys independently, discovery matters or it holds its own state. Otherwise default to in-process.
+  lesson: ai-engineering/03-harness-engineering/notes/03b-mcp-write-safety-and-async-tools
+- front: How do you design a tool that takes minutes?
+  back: Name the initiation (`initiate_phone_call`), return a task ID at once, give it `get_status` and `cancel`, and deliver completion as a later event.
+  lesson: ai-engineering/03-harness-engineering/notes/03b-mcp-write-safety-and-async-tools
+- front: Rank the isolation options.
+  back: OS-level (Seatbelt, seccomp, Landlock), then container, then microVM such as Firecracker, each with quotas on CPU, memory, disk, network and wall-clock time. A `venv` isn't on the ladder.
+  lesson: ai-engineering/03-harness-engineering/notes/04-execution-boundaries
+- front: Why not just tell the model not to touch production?
+  back: Instructions change what the agent tries, not what it is allowed to do. Enforce the rule in the runtime; STOP saw GPT-4 remove its own sandbox flag in 0.42% of 10,000 attempts.
+  lesson: ai-engineering/03-harness-engineering/notes/04-execution-boundaries
+- front: Where do you place human approval, and what goes wrong otherwise?
+  back: On irreversible actions only, with a timeout and declared default. Gating reversible steps makes the agent useless and causes alert fatigue, so people click through the approval that matters.
+  lesson: ai-engineering/03-harness-engineering/notes/04-execution-boundaries
+- front: Why does `$(echo rm) -rf /` matter?
+  back: It shows shell composition defeats keyword blacklists. A production gate parses each command's flags and arguments to find its real effect.
+  lesson: ai-engineering/03-harness-engineering/notes/04-execution-boundaries
+- front: Proposer-Reviewer or Sidecar for a risky tool? Give the trade-off.
+  back: Proposer-Reviewer runs in series with the conversation, suits high-stakes, low-frequency actions and has higher injection exposure. Sidecar sees only structured call fields and runs in parallel at low latency, so it suits every call to a risky tool class. Either way, use a different model family and a circuit breaker.
+  lesson: ai-engineering/03-harness-engineering/notes/04-execution-boundaries
+- front: What makes autonomy affordable?
+  back: 'Rollback: git branch-per-agent, sandbox snapshots and editable memory. An agent that can act but not be undone forces a human gate on every action.'
+  lesson: ai-engineering/03-harness-engineering/notes/04-execution-boundaries
+- front: What does persistent memory add to the lethal triad?
+  back: 'It is a fourth amplifier: an injected instruction can lie dormant in `MEMORY.md` and fire sessions later. So content written to memory deserves the same trust review as external input.'
+  lesson: ai-engineering/03-harness-engineering/notes/04-execution-boundaries
+- front: Why not let the agent decide when it is done?
+  back: It finishes confidently on broken work. The harness intercepts the exit and forces a check, so the agent can only request done.
+  lesson: ai-engineering/03-harness-engineering/notes/05-verification-loops
+- front: Why are unit tests not enough?
+  back: 'Isolation and mocks make them blind to boundary defects: interface mismatch, state propagation, resource lifecycle and environment. The fix is the static, runtime and system layers.'
+  lesson: ai-engineering/03-harness-engineering/notes/05-verification-loops
+- front: Is a separate evaluator worth paying for?
+  back: 'Usually. Anthropic''s DAW run spent $10 of $124.70 on QA, and it caught core features that were presentational only. The cost argument is often whether you get a working result at all: $9 broken against $200 working.'
+  lesson: ai-engineering/03-harness-engineering/notes/05-verification-loops
+- front: Pass@k or Pass^k?
+  back: Pass@k asks whether it can ever do the task, and Pass^k whether it does so every time. Use the first for capability and ship on the second.
+  lesson: ai-engineering/03-harness-engineering/notes/05-verification-loops
+- front: A verifier is blocking good work. When do you delete it?
+  back: When its false positives cost more than the defects it catches. PRINCE deleted its LLM SQL reviewer because it kept flagging valid queries, adding cost and latency with no accuracy gain.
+  lesson: ai-engineering/03-harness-engineering/notes/05-verification-loops
+- front: Both the eval and the agent look broken. Which do you fix first?
+  back: The eval system. If it is broken, fix it before touching the agent, because you should never steer on a distorted signal.
+  lesson: ai-engineering/03-harness-engineering/notes/05-verification-loops
+- front: How do you stop an agent stuck on the same bug?
+  back: Track per-file edit counts or a `hash(tool, args)` fingerprint and prompt "reconsider your approach" after N. After two failed retries, assume a bad spec. A hard stop alone doesn't force re-planning.
+  lesson: ai-engineering/03-harness-engineering/notes/05b-recovery-and-termination
+- front: Why is a retry budget per invocation?
+  back: Otherwise five tools with three retries each become fifteen attempts. Add a circuit breaker after 5 consecutive failures, with a 60s cooldown, then fail fast.
+  lesson: ai-engineering/03-harness-engineering/notes/05b-recovery-and-termination
+- front: An agent edits the same file a dozen times. Is a hard stop the fix?
+  back: No. A hard stop ends the run without a new plan. Count edits per file and inject a "reconsider your approach" prompt, so the agent re-plans instead of repairing.
+  lesson: ai-engineering/03-harness-engineering/notes/05b-recovery-and-termination
+- front: What is context anxiety, and why is it hard to spot?
+  back: 'As the window nears its limit, models prematurely wrap up. It doesn''t fail loudly: the agent finishes early and confidently, so the fix is a harness mechanism to continue.'
+  lesson: ai-engineering/03-harness-engineering/notes/06-long-horizon-execution
+- front: What is lost at a session boundary?
+  back: The why behind decisions, which work is already done, which tests passed and failed, and the match between the agent's picture and the real repo, which drifts. That's why you measure rebuild cost and keep state in files.
+  lesson: ai-engineering/03-harness-engineering/notes/06-long-horizon-execution
+- front: Compaction or context reset?
+  back: Compaction summarizes in place, suits a single long session and risks summary drift. A reset clears the window and hands off through state, suits multi-day work and loses anything not written down.
+  lesson: ai-engineering/03-harness-engineering/notes/06-long-horizon-execution
+- front: What does Phase 0 do, and why separate it?
+  back: It sets up the repo, including `init.sh`, and writes no feature code. Implementation maximizes verified features and initialization maximizes the reliability of later sessions; combined, the agent drifts toward visible output.
+  lesson: ai-engineering/03-harness-engineering/notes/06-long-horizon-execution
+- front: What makes a session finished?
+  back: 'The task passes verification and the clean-state check passes: build, all tests including older ones, progress recorded, no stale artifacts, and a standard startup that works.'
+  lesson: ai-engineering/03-harness-engineering/notes/06-long-horizon-execution
+- front: Why does a handoff separate verified from assumed?
+  back: A generated summary blurs them, so the next session either trusts unverified work or redoes all of it.
+  lesson: ai-engineering/03-harness-engineering/notes/06-long-horizon-execution
+- front: A tool returns a 2,000-line log. What should the harness do?
+  back: Keep the head and tail tokens of any output above a threshold, offload the full result to the filesystem, and leave a path the model can read if it needs more. Cost stays bounded and nothing is destroyed.
+  lesson: ai-engineering/03-harness-engineering/notes/06-long-horizon-execution
+- front: What is a subagent's main value?
+  back: Context isolation, as a firewall. A search that reads 40 files and finds 3 returns the 3 in a summary of about 1,000–2,000 tokens, so the parent stays coherent longer.
+  lesson: ai-engineering/03-harness-engineering/notes/07-orchestration
+- front: Why define protocols before parallelism?
+  back: Parallelism on an undefined task structure produces collision, not speed. Use natural language inside tasks and protocols between them.
+  lesson: ai-engineering/03-harness-engineering/notes/07-orchestration
+- front: Name four orchestration failures and their fixes.
+  back: 'Loop oscillation: iteration counters. Context pollution: boundary schemas, returning summaries only. Concurrency collision: per-branch state ownership and JoinNode barriers. Consensus deadlock: a tie-break or arbiter.'
+  lesson: ai-engineering/03-harness-engineering/notes/07-orchestration
+- front: Why was Rothman's measured latency so far above the estimate?
+  back: The estimate was about 10.7 s and measured three-step runs took 148 s and 151 s with gpt-5 from Colab, with generation calls dominating. The levers are parallel independent calls, caching and smaller models.
+  lesson: ai-engineering/03-harness-engineering/notes/07-orchestration
+- front: Does the Minecraft run prove agents can self-coordinate?
+  back: 'It shows emergent coordination can hold for a day: 229 messages across 2,783 programs. It was one run, one game, on Easy, so don''t extrapolate to domains where a wrong note is costly.'
+  lesson: ai-engineering/03-harness-engineering/notes/07-orchestration
+- front: When do you stay with one agent?
+  back: When tasks don't need separate tools, trust levels or context isolation, because coordination overhead can exceed the parallel gain. Find the single-agent limit first.
+  lesson: ai-engineering/03-harness-engineering/notes/07-orchestration
+- front: One agent's invention reaches the final answer of a multi-agent run. How do you catch it and find the culprit?
+  back: 'Cross-validate claims that cross a handoff. Evaluate each component and the end-to-end result separately: if end-to-end fails while every component passes, the bug is in a handoff; if one component fails, you know which agent to fix.'
+  lesson: ai-engineering/03-harness-engineering/notes/07-orchestration
+- front: What are the maturity stages, and where does most production value land?
+  back: Ad-hoc, Basic, Verified, Observability-first and Self-healing, numbered 0 to 4, with value concentrated at 2→3. Stage 4 is still emerging, so treat it as direction rather than a target.
+  lesson: ai-engineering/03-harness-engineering/notes/08-maturity-and-failure-modes
+- front: Which pipeline stage do teams skip, and why does it pay?
+  back: Approve, the human gate on the plan in Preflight → Plan → Approve → Tasks → Verify → Finish. Reviewing a wrong plan takes minutes, while reviewing code from a wrong plan takes an hour.
+  lesson: ai-engineering/03-harness-engineering/notes/08-maturity-and-failure-modes
+- front: Do you cut cost or raise accuracy first?
+  back: Accuracy. PRINCE accepted high inference costs early, because a system not good enough to adopt has no usage worth optimizing and cheap-and-wrong burns adoption.
+  lesson: ai-engineering/03-harness-engineering/notes/08-maturity-and-failure-modes
+- front: Runtime or process observability?
+  back: Runtime answers what the system did, through logs and traces. Process answers why a change should be accepted, through contracts and rubrics. You need both, and the harness collects them, not the agent.
+  lesson: ai-engineering/03-harness-engineering/notes/08-maturity-and-failure-modes
+- front: A new model is out. What do you do to the harness?
+  back: List components with the weakness each mitigates, disable one, run the eval suite, then delete it if quality holds. Opus 4.6 allowed Anthropic to remove sprint decomposition.
+  lesson: ai-engineering/03-harness-engineering/notes/08-maturity-and-failure-modes
+- front: What is the meta-failure among the five?
+  back: 'Skipped harness: claiming Stage 2 while at Stage 0, which hides the other four. Ask for the code that runs verification on every task with no human remembering.'
+  lesson: ai-engineering/03-harness-engineering/notes/08-maturity-and-failure-modes
+- front: What can a coding agent actually see?
+  back: The system prompt and task, file contents in the repo, and tool output. Slack, Jira and whiteboard decisions don't exist for it.
+  lesson: ai-engineering/03-harness-engineering/notes/09-repo-as-system-of-record
+- front: What is the fresh session test?
+  back: Open a new session with no verbal context and ask what this is, how it's organized, how to run it, how to verify it and where things stand. Every miss is guessed again in every later session.
+  lesson: ai-engineering/03-harness-engineering/notes/09-repo-as-system-of-record
+- front: Why does a long `AGENTS.md` hurt?
+  back: 'Budget crowding, lost in the middle, flat priority, and decay with contradiction. The fix is progressive disclosure: an index, plus topic docs of 50–150 lines read on demand.'
+  lesson: ai-engineering/03-harness-engineering/notes/09-repo-as-system-of-record
+- front: How long should the entry file be?
+  back: 'Sources disagree: Osmani under ~60 lines, OpenAI about 100, *learn-harness-engineering* 50–200. They agree that everything there is read on every task, so each line has to earn it.'
+  lesson: ai-engineering/03-harness-engineering/notes/09-repo-as-system-of-record
+- front: An agent keeps importing across layers despite the docs. What do you do?
+  back: Add a lint rule, import-graph test or CI script for that boundary, with an error message saying how to fix it. Docs state rules, and a check makes them hold.
+  lesson: ai-engineering/03-harness-engineering/notes/09-repo-as-system-of-record
+- front: Why is a stale doc worse than none?
+  back: It sends the agent the wrong way while it believes it's on track. Update docs with the code and keep one truth.
+  lesson: ai-engineering/03-harness-engineering/notes/09-repo-as-system-of-record
+- front: What are overreach and under-finish?
+  back: Overreach is more tasks active than a session can finish, and under-finish is too few of them passing end-to-end verification. They feed each other, and the tell is lines written rising while verified features stay flat.
+  lesson: ai-engineering/03-harness-engineering/notes/10-scope-and-done
+- front: What is verified completion rate?
+  back: Verified features divided by activated features. Under WIP = 1 it sits at 1.0 between features, and a harness can refuse to activate a new one below that.
+  lesson: ai-engineering/03-harness-engineering/notes/10-scope-and-done
+- front: Why is a feature list a primitive rather than a memo?
+  back: 'Other parts of the harness read it: the scheduler, verifier, handoff reporter and progress tracker. A document can be ignored, while a primitive works like a database check.'
+  lesson: ai-engineering/03-harness-engineering/notes/10-scope-and-done
+- front: What's in a feature entry?
+  back: 'The triple: behavior as user-visible behavior, verification as executable steps or a command, and state. Evidence such as a commit or test output is added once it passes.'
+  lesson: ai-engineering/03-harness-engineering/notes/10-scope-and-done
+- front: How does a feature get to `passing`?
+  back: Only by a successful run of its own verification, ideally through a script that flips the state. The agent requests verification rather than editing the status.
+  lesson: ai-engineering/03-harness-engineering/notes/10-scope-and-done
+- front: Your team wants faster delivery and proposes WIP = 3 for the agent. What's your response?
+  back: The cost is half-done code that raises complexity and invites more overreach. Keep WIP = 1 per agent, and if you need parallelism, use isolated agents with their own worktrees and progress files.
+  lesson: ai-engineering/03-harness-engineering/notes/10-scope-and-done
 ---

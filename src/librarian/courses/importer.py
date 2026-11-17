@@ -117,8 +117,8 @@ SUBJECTS: dict[str, tuple[str, int, str]] = {
     "data-analytics": (
         "Data Analytics",
         2,
-        "Python for data analysis, probability and statistics, experimentation "
-        "and causality, Bayesian analysis, visualisation and storytelling, applied analyses.",
+        "Processing data, probability and statistics, visualisation and storytelling, "
+        "experimentation and causality, applied analyses, Bayesian analysis.",
     ),
     "data-science": (
         "Data Science",

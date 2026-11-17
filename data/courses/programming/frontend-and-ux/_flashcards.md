@@ -75,4 +75,127 @@ cards:
 - front: Where do you go after this track?
   back: Do the lab, read application patterns for which interface to build, and read the threat model for what output handling sits inside.
   lesson: programming/frontend-and-ux/notes/05-ai-interfaces
+- front: What does a browser build from a page?
+  back: A DOM from the HTML, a CSSOM from the CSS and an accessibility tree. Then style, layout, paint and composite.
+  lesson: programming/frontend-and-ux/notes/01-html-css-and-the-dom
+- front: Why choose `<button>` over `<div onclick>`?
+  back: Focus, Space and Enter, and form behaviour come built in, and a screen reader announces it as a button. A `div` has none, and you would have to write them all.
+  lesson: programming/frontend-and-ux/notes/01-html-css-and-the-dom
+- front: What does specificity compare?
+  back: IDs, then classes, then types, column by column. It only applies after origin, importance and layers, and source order breaks ties.
+  lesson: programming/frontend-and-ux/notes/01-html-css-and-the-dom
+- front: '`content-box` against `border-box`?'
+  back: Whether `width` excludes or includes padding and border.
+  lesson: programming/frontend-and-ux/notes/01-html-css-and-the-dom
+- front: Flexbox or grid?
+  back: 'One direction: flexbox. Rows and columns together: grid.'
+  lesson: programming/frontend-and-ux/notes/01-html-css-and-the-dom
+- front: What's wrong with `innerHTML`?
+  back: It parses a string as markup, so untrusted text can become elements. Use `textContent` for text.
+  lesson: programming/frontend-and-ux/notes/01-html-css-and-the-dom
+- front: What causes reflow?
+  back: Anything that changes geometry, such as added text or an image arriving with no declared size.
+  lesson: programming/frontend-and-ux/notes/01-html-css-and-the-dom
+- front: What triggers a render?
+  back: A state change in this component or a parent. Rendering means calling your function.
+  lesson: programming/frontend-and-ux/notes/02-react-and-state
+- front: Why doesn't a value update right after `setState`?
+  back: State is a snapshot for that render. The setter asks for the next one.
+  lesson: programming/frontend-and-ux/notes/02-react-and-state
+- front: How do you decide something is state?
+  back: It isn't state if it doesn't change, comes from props or can be computed.
+  lesson: programming/frontend-and-ux/notes/02-react-and-state
+- front: Why `useReducer` for a stream?
+  back: One place for every transition, testable with no browser, and it can drop events from old requests.
+  lesson: programming/frontend-and-ux/notes/02-react-and-state
+- front: What's an Effect for?
+  back: Keeping something outside React in step. Not for derived values, and not for reacting to a click.
+  lesson: programming/frontend-and-ux/notes/02-react-and-state
+- front: Why does Strict Mode run Effects twice?
+  back: To expose a missing cleanup during development.
+  lesson: programming/frontend-and-ux/notes/02-react-and-state
+- front: How do you handle out-of-order responses?
+  back: Ignore stale ones with a flag or request id, and abort them too.
+  lesson: programming/frontend-and-ux/notes/02-react-and-state
+- front: Why does `key` matter?
+  back: It's identity across renders, so state stays with the right row. A changed `key` resets a subtree.
+  lesson: programming/frontend-and-ux/notes/02-react-and-state
+- front: Which WCAG level should you aim for?
+  back: AA is the usual default, in our judgement, and the W3C calls the choice a policy decision. It advises against blanket AAA.
+  lesson: programming/frontend-and-ux/notes/03-accessibility
+- front: What's the first rule of ARIA?
+  back: Prefer native HTML. No ARIA is better than bad ARIA, because a role promises behaviour it doesn't supply.
+  lesson: programming/frontend-and-ux/notes/03-accessibility
+- front: What contrast does body text need?
+  back: 4.5:1, and 3:1 for large text.
+  lesson: programming/frontend-and-ux/notes/03-accessibility
+- front: What share of problems does axe find?
+  back: Its README says 57% of issues on average, which is the vendor's own figure. Whether a control works or a name is true is outside what it can check.
+  lesson: programming/frontend-and-ux/notes/03-accessibility
+- front: How do you announce a status change?
+  back: A `role="status"` element, present from page load, updated with text.
+  lesson: programming/frontend-and-ux/notes/03-accessibility
+- front: What should happen to focus when a button disappears?
+  back: Move it somewhere sensible first, or it falls to `<body>`.
+  lesson: programming/frontend-and-ux/notes/03-accessibility
+- front: What can't you learn from a screen reader test by a sighted developer?
+  back: How someone who uses one daily would experience it. Involve those users.
+  lesson: programming/frontend-and-ux/notes/03-accessibility
+- front: How do you test keyboard use automatically?
+  back: Drive real key events in a browser and assert on `document.activeElement` and the result, as the lab's tests do.
+  lesson: programming/frontend-and-ux/notes/03-accessibility
+- front: Name the three response time limits.
+  back: 0.1 s feels instant, 1 s keeps flow, 10 s is the limit of attention.
+  lesson: programming/frontend-and-ux/notes/04-ux-principles
+- front: What are the parts of usability?
+  back: Learnability, efficiency, memorability, errors, satisfaction.
+  lesson: programming/frontend-and-ux/notes/04-ux-principles
+- front: Why is recognition better than recall?
+  back: The interface supplies the cues, so memory has less to do.
+  lesson: programming/frontend-and-ux/notes/04-ux-principles
+- front: What's a mental model?
+  back: What the user believes the system does. It steers behaviour whether or not it's true.
+  lesson: programming/frontend-and-ux/notes/04-ux-principles
+- front: Why five users?
+  back: Nielsen's model has them finding about 85% of problems in one group. It's for finding problems in rounds, not for measurement.
+  lesson: programming/frontend-and-ux/notes/04-ux-principles
+- front: How would you review a screen fast?
+  back: Name the user and task, do it, force the bad states, time it, check the exits, read the errors, try the keyboard.
+  lesson: programming/frontend-and-ux/notes/04-ux-principles
+- front: How do you know a stream succeeded?
+  back: A terminal event. A 200 and a clean close prove nothing.
+  lesson: programming/frontend-and-ux/notes/05-ai-interfaces
+- front: Why `fetch` and not `EventSource` for chat?
+  back: '`EventSource` takes a URL and a credentials option, so no POST body or custom headers.'
+  lesson: programming/frontend-and-ux/notes/05-ai-interfaces
+- front: What's the framing bug in a stream parser?
+  back: Chunks don't align with events, so buffer until a boundary, and decode UTF-8 across chunks.
+  lesson: programming/frontend-and-ux/notes/05-ai-interfaces
+- front: How do you tell slow from dead?
+  back: A watchdog reset by any byte, including keep-alive comments.
+  lesson: programming/frontend-and-ux/notes/05-ai-interfaces
+- front: Should streaming text go in a live region?
+  back: There's no settled answer. It announces every change. Announcing state changes instead is reasonable, but test with real screen reader users.
+  lesson: programming/frontend-and-ux/notes/05-ai-interfaces
+- front: What does citation precision mean here?
+  back: The share of citations that support their sentence. Liu et al. averaged 74.5% across four 2023 engines, ranging from 63.6 to 89.5, with recall at 51.5%.
+  lesson: programming/frontend-and-ux/notes/05-ai-interfaces
+- front: Do users check citations?
+  back: NN/g's research says rarely, and their presence itself builds trust. So verify in code.
+  lesson: programming/frontend-and-ux/notes/05-ai-interfaces
+- front: Should an interface show confidence?
+  back: Only if it helps decisions. Prefer a reason and an action, using a signal from outside the model, evaluated on your own data.
+  lesson: programming/frontend-and-ux/notes/05-ai-interfaces
+- front: Do explanations reduce overreliance?
+  back: Not reliably. Bansal found no significant net accuracy gain over confidence alone. Buçinca found forcing helped when the AI was wrong, with no overall gain, on a low-stakes task.
+  lesson: programming/frontend-and-ux/notes/05-ai-interfaces
+- front: Name a Markdown attack on a chat UI.
+  back: An injected image URL holding conversation data. It's fetched on display, with no click.
+  lesson: programming/frontend-and-ux/notes/05-ai-interfaces
+- front: What must a handoff do?
+  back: Be reachable from any finished state, carry context, confirm what happened and survive its own failure.
+  lesson: programming/frontend-and-ux/notes/05-ai-interfaces
+- front: Why keep partial text?
+  back: The person may be mid-sentence and it can still be useful, so keep it and label it incomplete.
+  lesson: programming/frontend-and-ux/notes/05-ai-interfaces
 ---

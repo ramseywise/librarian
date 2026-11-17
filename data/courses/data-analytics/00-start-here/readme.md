@@ -1,5 +1,5 @@
 ---
-imported_hash: ef7c8b7079cda7c9
+imported_hash: 05bfcbbbdc1dde4c
 title: Data Analytics
 summary: 'Position in the path: programming/python modules 01 to 03 come first, and SQL helps alongside.'
 order: 1
@@ -48,23 +48,23 @@ By the end of the course, you can:
 
 ## Core modules
 
-The three every analyst needs, in this order: get the data into a table, reason about it with statistics, and show the result.
+The three every analyst needs, in this order: get the data into a table, reason about it with statistics, and show the result. Each row is one module: open it to study, **Lecture** is its deck, **Labs** is its practice, and **Sources** names what to read beside it. Every book, paper and course, with links: [references.md](references.md).
 
-| Module | The analyst's job | What you learn | Portfolio evidence |
-|---|---|---|---|
-| [Python for data analysis](../01-python-for-data-analysis/readme.md) | get data into a frame | Load, clean, select, join, summarise and plot data in pandas, assuming no earlier pandas. | Cleaned dataset and validated analysis |
-| [Probability and statistics](../02-probability-and-statistics/readme.md) | describe it, test a claim, model a relationship | Describe data, reason with probability, estimate with intervals, test and fit regressions, then say what a model claims. | Statistical analysis memo |
-| [Visualisation and storytelling](../05-visualisation-and-storytelling/readme.md) | explain it to someone | Choose a chart, draw it in Python and JavaScript, and use it to get a decision made. | Decision-ready visual narrative or dashboard |
+| Module | The analyst's job | Lecture | Labs | Sources |
+|---|---|---|---|---|
+| [Processing data](../01-python-for-data-analysis/readme.md) | get data into a table you can trust | [deck](../01-python-for-data-analysis/slides/python-for-data-analysis.pptx) | [notebooks and book code](../01-python-for-data-analysis/practice/readme.md) | McKinney, [*Python for Data Analysis*](https://wesmckinney.com/book/) · VanderPlas, [*Python Data Science Handbook*](https://jakevdp.github.io/PythonDataScienceHandbook/) · Wickham, [*Tidy Data*](https://doi.org/10.18637/jss.v059.i10) |
+| [Probability and statistics](../02-probability-and-statistics/readme.md) | describe it, test a claim, model a relationship | [deck](../02-probability-and-statistics/slides/probability-and-statistics.pptx) | [practice](../02-probability-and-statistics/readme.md#deck-and-practice) | Bruce & Bruce, *Practical Statistics for Data Scientists* · Downey, [*Think Stats*](https://allendowney.github.io/ThinkStats/) · James et al., [*An Introduction to Statistical Learning*](https://www.statlearning.com/) |
+| [Visualisation and storytelling](../05-visualisation-and-storytelling/readme.md) | explain it to someone | [deck](../05-visualisation-and-storytelling/slides/visualisation-and-storytelling.pptx) | [practice](../05-visualisation-and-storytelling/readme.md#deck-and-practice) | Knaflic, [*Storytelling with Data*](https://www.storytellingwithdata.com/books) · Wilke, [*Fundamentals of Data Visualization*](https://clauswilke.com/dataviz/) · Munzner, [*Visualization Analysis and Design*](https://www.cs.ubc.ca/~tmm/vadbook/) |
 
 ## Advanced topics
 
-Take these after the core. Experimentation comes before Bayesian analysis, which revisits inference and A/B testing as a decision problem. Applied analyses uses all of the others.
+Take these after the core, in this order. Experimentation comes first, because both of the others lean on it. Applied analyses puts the core and experimentation to work on business questions. Bayesian analysis comes last: it revisits inference and the same A/B test as a decision problem. The folder numbers are older than this order, so follow the table.
 
-| Module | The analyst's job | What you learn | Portfolio evidence |
-|---|---|---|---|
-| [Experimentation and causality](../03-experimentation-and-causality/readme.md) | test a claim about a change | Run A/B tests, run them at scale, and decide when a correlation can bear a causal reading, including by matching and weighting. | Experiment brief or causal-design critique |
-| [Bayesian analysis](../04-bayesian-analysis/readme.md) | decide under uncertainty | Answer the same questions with posteriors: PyMC, priors, Bayesian A/B tests, loss functions and multilevel models. | Diagnosed PyMC decision analysis |
-| [Applied analyses](../06-applied-analyses/readme.md) | forecast it, and do the real work | End-to-end analyses: forecasting, credit scoring, cohorts, funnels, segmentation, SQL, survival, journeys, marketing measurement, operations, metric trees and surveys. | End-to-end analysis portfolio |
+| Module | The analyst's job | Lecture | Labs | Sources |
+|---|---|---|---|---|
+| [Experimentation and causality](../03-experimentation-and-causality/readme.md) | test a claim about a change | [deck](../03-experimentation-and-causality/slides/experimentation-and-causality.pptx) | [practice](../03-experimentation-and-causality/readme.md#deck-and-practice) | Kohavi, Tang & Xu, [*Trustworthy Online Controlled Experiments*](https://experimentguide.com/) · Dmitriev et al., [*A Dirty Dozen*](https://doi.org/10.1145/3097983.3098024) · Cunningham, [*Causal Inference: The Mixtape*](https://mixtape.scunning.com/) |
+| [Applied analyses](../06-applied-analyses/readme.md) | forecast it, and do the real work | [deck](../06-applied-analyses/slides/applied-analyses.pptx) | [worked analyses](../06-applied-analyses/practice/readme.md) | Hyndman & Athanasopoulos, [*Forecasting: Principles and Practice*](https://otexts.com/fpp3/) · Fader & Hardie, [*How to Project Customer Retention*](https://doi.org/10.1002/dir.20074) · [Mode SQL tutorial](https://mode.com/sql-tutorial/) |
+| [Bayesian analysis](../04-bayesian-analysis/readme.md) | decide under uncertainty | [deck](../04-bayesian-analysis/slides/bayesian-analysis.pptx) | [practice](../04-bayesian-analysis/readme.md#deck-and-practice) | Davidson-Pilon, [*Bayesian Methods for Hackers*](https://github.com/CamDavidsonPilon/Probabilistic-Programming-and-Bayesian-Methods-for-Hackers) · Gelman et al., [*Bayesian Data Analysis*](https://sites.stat.columbia.edu/gelman/book/) · [PyMC examples](https://www.pymc.io/projects/examples/en/latest/gallery.html) |
 
 ## Two ways to answer the same question
 
@@ -81,7 +81,7 @@ Name the distribution, fix the sample size before you look, and report effect si
 
 ## Units
 
-### [Python for data analysis](../01-python-for-data-analysis/readme.md)
+### [Processing data](../01-python-for-data-analysis/readme.md)
 
 **Purpose:** Turn a raw export into a table you can safely analyse. Cleaning, joins, aggregation, time, and charts are correctness problems, not merely API calls ([McKinney](https://wesmckinney.com/book/); [Wickham](https://doi.org/10.18637/jss.v059.i10) on tidy shape).
 
@@ -92,7 +92,7 @@ Name the distribution, fix the sample size before you look, and report effect si
 3. Select, filter, and update data safely using label- and position-based indexing.
 4. Reshape and join tables while specifying join semantics, validating cardinality, and reconciling totals.
 5. Compute grouped summaries and rates correctly, including when groups or denominators are missing.
-6. Work safely with time-indexed data and answer a question with an appropriate chart.
+6. Treat dates as a type, and summarise over time with resampling and windows that look backward.
 
 **Review and practice:** [deck](../01-python-for-data-analysis/slides/python-for-data-analysis.pptx) · chapter `Try it` exercises · progressive [practice notebooks](../01-python-for-data-analysis/practice).
 
@@ -168,28 +168,6 @@ Name the distribution, fix the sample size before you look, and report effect si
 
 **Key sources:** Kohavi, Tang, and Xu, [*Trustworthy Online Controlled Experiments*](https://experimentguide.com/) · Kohavi et al., [*Controlled Experiments on the Web*](https://doi.org/10.1007/s10618-008-0114-1) · Dmitriev et al., [*A Dirty Dozen*](https://doi.org/10.1145/3097983.3098024) · Cunningham, [*Causal Inference: The Mixtape*](https://mixtape.scunning.com/) · [Brady Neal's course](https://www.bradyneal.com/causal-inference-course).
 
-### [Bayesian analysis](../04-bayesian-analysis/readme.md)
-
-**Purpose:** Revisit inference as a decision problem. Use prior information, posterior uncertainty, diagnostics, and losses to answer what should be done, not only whether a null hypothesis is surprising ([Davidson-Pilon](https://github.com/CamDavidsonPilon/Probabilistic-Programming-and-Bayesian-Methods-for-Hackers)).
-
-**Learning objectives.** After this unit, you can:
-
-1. Express an analytical question as a generative model and compute or simulate a posterior.
-2. Fit a basic Bayesian model in PyMC and interpret posterior probabilities and credible intervals.
-3. Diagnose sampling quality with R-hat, ESS, traces, and divergences, then improve an ill-behaved model.
-4. Select, justify, and pressure-test priors with prior-predictive simulation.
-5. Compare variants in a Bayesian A/B test using probability of superiority, lift uncertainty, and expected loss.
-6. Translate posterior uncertainty into a decision by defining an appropriate loss function.
-7. Fit a multilevel model, choose between clustering and modelling a group, and read many segment effects with partial pooling ([Multilevel models and partial pooling](../04-bayesian-analysis/notes/07-multilevel-models-and-partial-pooling.md)).
-
-**Review and practice:** [deck](../04-bayesian-analysis/slides/bayesian-analysis.pptx) · fixed-seed chapter examples · optional advanced [Bayesian ML coursework](../04-bayesian-analysis/practice/bayesianml/readme.md).
-
-**Mastery lab:** Reanalyse the checkout A/B case with a PyMC model. Run prior-predictive and sampler checks, quantify posterior uncertainty, define the cost of each mistake, and make a ship/no-ship recommendation.
-
-**Evidence:** Submit a reproducible model, diagnostic summary, posterior answer, loss-based recommendation, and a brief comparison with the fixed-horizon frequentist analysis. The advanced coursework is optional archival material, not required practice.
-
-**Key sources:** Davidson-Pilon, [*Bayesian Methods for Hackers*](https://github.com/CamDavidsonPilon/Probabilistic-Programming-and-Bayesian-Methods-for-Hackers) · [McElreath's lectures](https://www.youtube.com/playlist?list=PLDcUM9US4XdPz-KxHM4XHt7uUVGWWVSus) · Gelman et al., [*Bayesian Data Analysis*](https://sites.stat.columbia.edu/gelman/book/) · [Aalto Bayesian Data Analysis](https://avehtari.github.io/BDA_course_Aalto/) · [PyMC examples](https://www.pymc.io/projects/examples/en/latest/gallery.html).
-
 ### [Applied analyses](../06-applied-analyses/readme.md)
 
 **Purpose:** Do the complete job. Each case begins with a decision and ends with a recommendation, using earlier units to establish a baseline, validate results, and make value concrete.
@@ -215,6 +193,28 @@ Name the distribution, fix the sample size before you look, and report effect si
 **Evidence:** A reproducible analysis, decision memo, and clear visual. Reconcile reported totals to the source, distinguish prediction from a causal claim, and place uncertainty beside the recommendation.
 
 **Key sources:** Hyndman and Athanasopoulos, [*Forecasting: Principles and Practice*](https://otexts.com/fpp3/) · Grömping, [*South German Credit Data*](http://www1.beuth-hochschule.de/FB_II/reports/Report-2019-004.pdf) · Fader and Hardie, [*How to Project Customer Retention*](https://doi.org/10.1002/dir.20074) · Fader, Hardie, and Lee, [*RFM and CLV*](https://doi.org/10.1509/jmkr.2005.42.4.415) · [Mode SQL tutorial](https://mode.com/sql-tutorial/).
+
+### [Bayesian analysis](../04-bayesian-analysis/readme.md)
+
+**Purpose:** Revisit inference as a decision problem. Use prior information, posterior uncertainty, diagnostics, and losses to answer what should be done, not only whether a null hypothesis is surprising ([Davidson-Pilon](https://github.com/CamDavidsonPilon/Probabilistic-Programming-and-Bayesian-Methods-for-Hackers)).
+
+**Learning objectives.** After this unit, you can:
+
+1. Express an analytical question as a generative model and compute or simulate a posterior.
+2. Fit a basic Bayesian model in PyMC and interpret posterior probabilities and credible intervals.
+3. Diagnose sampling quality with R-hat, ESS, traces, and divergences, then improve an ill-behaved model.
+4. Select, justify, and pressure-test priors with prior-predictive simulation.
+5. Compare variants in a Bayesian A/B test using probability of superiority, lift uncertainty, and expected loss.
+6. Translate posterior uncertainty into a decision by defining an appropriate loss function.
+7. Fit a multilevel model, choose between clustering and modelling a group, and read many segment effects with partial pooling ([Multilevel models and partial pooling](../04-bayesian-analysis/notes/07-multilevel-models-and-partial-pooling.md)).
+
+**Review and practice:** [deck](../04-bayesian-analysis/slides/bayesian-analysis.pptx) · fixed-seed chapter examples · optional advanced [Bayesian ML coursework](../04-bayesian-analysis/practice/bayesianml/readme.md).
+
+**Mastery lab:** Reanalyse the checkout A/B case with a PyMC model. Run prior-predictive and sampler checks, quantify posterior uncertainty, define the cost of each mistake, and make a ship/no-ship recommendation.
+
+**Evidence:** Submit a reproducible model, diagnostic summary, posterior answer, loss-based recommendation, and a brief comparison with the fixed-horizon frequentist analysis. The advanced coursework is optional archival material, not required practice.
+
+**Key sources:** Davidson-Pilon, [*Bayesian Methods for Hackers*](https://github.com/CamDavidsonPilon/Probabilistic-Programming-and-Bayesian-Methods-for-Hackers) · [McElreath's lectures](https://www.youtube.com/playlist?list=PLDcUM9US4XdPz-KxHM4XHt7uUVGWWVSus) · Gelman et al., [*Bayesian Data Analysis*](https://sites.stat.columbia.edu/gelman/book/) · [Aalto Bayesian Data Analysis](https://avehtari.github.io/BDA_course_Aalto/) · [PyMC examples](https://www.pymc.io/projects/examples/en/latest/gallery.html).
 
 ## Rules of thumb
 

@@ -1,7 +1,7 @@
 ---
-imported_hash: 5efdf1df93c2f259
+imported_hash: 97a1e907e28d09b0
 title: Data Analytics
-summary: Python for data analysis, probability and statistics, experimentation and causality, Bayesian analysis, visualisation and storytelling, applied analyses.
+summary: Processing data, probability and statistics, visualisation and storytelling, experimentation and causality, applied analyses, Bayesian analysis.
 order: 2
 source: learn-ai-engineering/data-analytics
 outcomes:

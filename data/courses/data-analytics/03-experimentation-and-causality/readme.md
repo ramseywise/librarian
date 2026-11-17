@@ -1,5 +1,5 @@
 ---
-imported_hash: 1b135f33c1c4ea7f
+imported_hash: e854c855f03659a9
 title: Experimentation and causality
 summary: How to design and read an A/B test, choose the metric it decides on, run many tests safely on a platform, and reason about cause and effect from observational data when randomisation is not available.
 order: 1
@@ -115,4 +115,4 @@ Add `--with dowhy` for the DoWhy block in chapter 4. Chapter 5 is the exception:
 
 Everything else: [references.md](references.md).
 
-**Next:** [04 Bayesian Analysis](../04-bayesian-analysis/readme.md). **Online evaluation of LLM features** continues in [the Eval pillar](../../generative-ai/08-eval/readme.md). **References:** [references.md](references.md).
+**Next:** [Applied Analyses](../06-applied-analyses/readme.md), then [Bayesian Analysis](../04-bayesian-analysis/readme.md), which answers this module's checkout test again with posteriors. **Online evaluation of LLM features** continues in [the Eval pillar](../../generative-ai/08-eval/readme.md). **References:** [references.md](references.md).

@@ -75,4 +75,103 @@ cards:
 - front: What does beating GPT-2 on one benchmark confirm, and what not?
   back: Beating GPT-2 on one benchmark confirms that training works, and Karpathy himself says it proves no more.
   lesson: generative-ai/09-llms-from-scratch/notes/03-nanogpt
+- front: What does `backward()` do?
+  back: Topologically sorts the graph, then applies each node's local derivative from the output back, multiplying by the chain rule.
+  lesson: generative-ai/09-llms-from-scratch/notes/01-micrograd
+- front: Why reverse mode for neural networks?
+  back: 'One scalar loss and many parameters: one backward pass gives all the partials, at a cost comparable to a forward pass.'
+  lesson: generative-ai/09-llms-from-scratch/notes/01-micrograd
+- front: Why must gradients accumulate with `+=`?
+  back: A value used on several paths needs the sum, by the multivariate chain rule.
+  lesson: generative-ai/09-llms-from-scratch/notes/01-micrograd
+- front: Why zero gradients?
+  back: '`+=` also accumulates across calls, so old steps would leak into the new one.'
+  lesson: generative-ai/09-llms-from-scratch/notes/01-micrograd
+- front: What is the derivative of `tanh`?
+  back: '`1 − tanh²`, which goes to 0 at saturation, the seed of the vanishing gradient problem.'
+  lesson: generative-ai/09-llms-from-scratch/notes/01-micrograd
+- front: What is a gradient check?
+  back: Compare backprop with `(f(x+h) − f(x)) / h` per parameter. Too slow to train with, good for testing a new op.
+  lesson: generative-ai/09-llms-from-scratch/notes/01-micrograd
+- front: What is the gradient of cross-entropy with respect to logits?
+  back: '`p − y`.'
+  lesson: generative-ai/09-llms-from-scratch/notes/01-micrograd
+- front: How does PyTorch differ from micrograd?
+  back: Tensor ops as nodes, not scalars, plus fused ops, GPUs and optimizers. The algorithm is the same.
+  lesson: generative-ai/09-llms-from-scratch/notes/01-micrograd
+- front: What is the loss at init for a good classifier?
+  back: '`-log(1/C)`, here 3.30, because logits start near zero.'
+  lesson: generative-ai/09-llms-from-scratch/notes/02-makemore
+- front: Why does the neural bigram match the count table?
+  back: 'Same model family: softmax of a table of logits fitted by maximum likelihood.'
+  lesson: generative-ai/09-llms-from-scratch/notes/02-makemore
+- front: What does L2 on the table correspond to?
+  back: 'Smoothing: pulling logits to 0 pulls the distribution to uniform.'
+  lesson: generative-ai/09-llms-from-scratch/notes/02-makemore
+- front: What does saturation do to gradients?
+  back: '`1 − tanh²` → 0, so nothing flows back through that unit, and a unit saturated on every example is dead.'
+  lesson: generative-ai/09-llms-from-scratch/notes/02-makemore
+- front: What is Kaiming init for?
+  back: Keep activation variance constant across layers with std `gain / sqrt(fan_in)`.
+  lesson: generative-ai/09-llms-from-scratch/notes/02-makemore
+- front: What does BatchNorm do at train and at test?
+  back: 'Train: batch statistics, updating running averages. Test: the running or calibrated statistics.'
+  lesson: generative-ai/09-llms-from-scratch/notes/02-makemore
+- front: Why LayerNorm in transformers?
+  back: It does not depend on the batch, so it is the same at train and test, and works at batch size 1.
+  lesson: generative-ai/09-llms-from-scratch/notes/02-makemore
+- front: What is the healthy update-to-data ratio?
+  back: About `1e-3`, or -3 on a log10 scale.
+  lesson: generative-ai/09-llms-from-scratch/notes/02-makemore
+- front: What is the gradient of mean cross-entropy with respect to logits?
+  back: '`(softmax − one_hot) / n`.'
+  lesson: generative-ai/09-llms-from-scratch/notes/02-makemore
+- front: Why is the WaveNet-style tree useful?
+  back: It fuses context gradually instead of all at once, and dilated convolution reuses the shared computation across positions.
+  lesson: generative-ai/09-llms-from-scratch/notes/02-makemore
+- front: How did the BatchNorm 3-d bug hide?
+  back: It kept separate statistics per position with no shape error, costing a little loss.
+  lesson: generative-ai/09-llms-from-scratch/notes/02-makemore
+- front: What are query, key and value?
+  back: Three learned projections of each token. Query dotted with key gives a score, and softmaxed scores weight the values.
+  lesson: generative-ai/09-llms-from-scratch/notes/03-nanogpt
+- front: Why scale by `1/sqrt(d_k)`?
+  back: Dot products of unit-variance vectors have variance `d_k`. Unscaled, softmax goes close to one-hot at init.
+  lesson: generative-ai/09-llms-from-scratch/notes/03-nanogpt
+- front: What does the causal mask do?
+  back: It stops a position attending to later positions, so the target is not in the input.
+  lesson: generative-ai/09-llms-from-scratch/notes/03-nanogpt
+- front: Why do we need position embeddings?
+  back: Attention treats its inputs as a set and has no idea of order.
+  lesson: generative-ai/09-llms-from-scratch/notes/03-nanogpt
+- front: Why multiple heads?
+  back: Several independent kinds of relation at the same total width.
+  lesson: generative-ai/09-llms-from-scratch/notes/03-nanogpt
+- front: What does the feed-forward do?
+  back: Per-token computation on what attention gathered.
+  lesson: generative-ai/09-llms-from-scratch/notes/03-nanogpt
+- front: Why residual connections?
+  back: Addition routes gradients straight through, so deep stacks train, and blocks start near identity.
+  lesson: generative-ai/09-llms-from-scratch/notes/03-nanogpt
+- front: Pre-norm or post-norm?
+  back: GPT-2 moved LayerNorm inside the residual path. Xiong et al. show this gives well-behaved gradients at init, reducing the need for warm-up.
+  lesson: generative-ai/09-llms-from-scratch/notes/03-nanogpt
+- front: Why LayerNorm, not BatchNorm?
+  back: It does not depend on the batch, so train and inference match, and batch size 1 works.
+  lesson: generative-ai/09-llms-from-scratch/notes/03-nanogpt
+- front: What is weight tying and what does it save?
+  back: Sharing the input embedding and output projection. 38.6M parameters, about 31% of GPT-2 124M.
+  lesson: generative-ai/09-llms-from-scratch/notes/03-nanogpt
+- front: What is the expected first loss for GPT-2?
+  back: '`-ln(1/50257) ≈ 10.82`. Anything far off means a bad init.'
+  lesson: generative-ai/09-llms-from-scratch/notes/03-nanogpt
+- front: Why divide the loss in gradient accumulation?
+  back: Each micro-batch's loss is a mean, so an undivided sum scales the gradient by the number of micro-batches.
+  lesson: generative-ai/09-llms-from-scratch/notes/03-nanogpt
+- front: How does HellaSwag score an ending?
+  back: By the model's average per-token loss over the ending, with the lowest winning.
+  lesson: generative-ai/09-llms-from-scratch/notes/03-nanogpt
+- front: How do you prove a from-scratch model is right?
+  back: Load known weights and compare logits on a real input.
+  lesson: generative-ai/09-llms-from-scratch/notes/03-nanogpt
 ---

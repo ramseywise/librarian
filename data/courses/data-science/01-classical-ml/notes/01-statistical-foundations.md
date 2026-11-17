@@ -1,5 +1,5 @@
 ---
-imported_hash: 2388929d997b6bfd
+imported_hash: 11a3ed9383397672
 title: Statistical Foundations
 summary: Code blocks in this pillar run top to bottom within a note, as in a notebook, from the note's own notes/ folder (uv run --with scikit-learn --with pandas --with matplotlib python).
 order: 2
@@ -129,6 +129,8 @@ degree  bias^2  variance  test_mse
 
 The straight line is all bias. Degree 3 to 5 is the sweet spot. By degree 9 the average fit is still close to the truth but any single fit swings widely with the sample. `test_mse` is bias² + variance + 0.09, where 0.09 is the irreducible $\sigma^2$. See [Estimation](../../../data-analytics/02-probability-and-statistics/notes/04-estimation.md#estimators-bias-and-variance) in data analytics for the same split on a single estimator. [Shmueli (Statistical Science, 2010)](https://doi.org/10.1214/10-STS330) uses this decomposition to separate explaining from predicting: explanatory modelling focuses on minimising bias, predictive modelling on bias and variance together, so "the 'wrong' model can sometimes predict better than the correct one".
 
+Bishop's *Pattern Recognition and Machine Learning* (*PRML*) uses the same sine curve with the same noise (standard deviation 0.3, given in its appendix A) and prints what overfitting does to the weights. A degree-9 polynomial through 10 points has zero training error and coefficients from the hundreds of thousands up to about a million; a ridge penalty of $\ln\lambda=-18$ pulls one of them, $w_8$, from −557,682.99 to −91.53 (*PRML*, ch. 1, Table 1.2, one data set of 10 points). The book's rough heuristic is that the number of data points should be no less than some multiple, "say 5 or 10", of the number of adaptive parameters, and it adds at once that a parameter count is not always the right measure of complexity (ch. 1, p. 9). Its own version of the experiment above fits 24 Gaussian basis functions to 100 data sets of 25 points each, with the ridge penalty as the knob, and the sum of squared bias and variance is lowest near $\ln\lambda=-0.31$ (*PRML*, ch. 3, Figs. 3.5 and 3.6). Bishop then calls the decomposition "of limited practical value": it averages over many data sets, and you have one (ch. 3, p. 152).
+
 ![Training and test accuracy against model complexity: underfitting on the left, overfitting on the right, the sweet spot in between](../assets/sources/images/mueller-guido-overfitting-underfitting-cartoon.png)
 *Image source: Müller & Guido, Introduction to Machine Learning with Python, ch. 2 (companion repo `images/`)*
 
@@ -147,6 +149,8 @@ ISLP draws the same decomposition for three simulated truths, and the lesson is 
 
 **Regularisation** is the general name for any constraint that pulls the fit toward simplicity: an L2 penalty on weights (ridge), an L1 penalty (lasso, which also zeros features), a maximum tree depth, a minimum number of neighbours. Every model in [02](02-supervised-learning.md) has one main complexity knob, and its strengths-and-weaknesses table names it.
 
+**Inductive bias** is what a learner assumes beyond the data, and without it there is no generalising: many functions fit any finite training set equally well, and the method's assumptions pick one. A linear model assumes additive straight-line effects. k-nearest neighbours assumes nearby points share a label. A tree assumes thresholds on single features. A convolutional network assumes a pattern means the same wherever it appears. Regularisation is an inductive bias stated as a preference for simple fits. A bias that matches the problem needs less data, and one that does not is the bias term of the decomposition above.
+
 ---
 
 ## Probability as ML uses it
@@ -161,6 +165,8 @@ You need far less probability theory to *use* these models than the textbooks co
 | Conditional independence | Naive Bayes ([02](02-supervised-learning.md), [NLP text classification](../../03-nlp/notes/02-text-classification.md)) | Assume features are independent given the class; wrong, but the classifier is often still good |
 
 The Bayesian reading of the same models (priors as regularisers, posteriors instead of point estimates, MCMC) lives in the data-analytics subject: [`data-analytics/04-bayesian-analysis/`](../../../data-analytics/04-bayesian-analysis/readme.md). Ridge regression is the MAP estimate under a Gaussian prior on the weights; lasso is the MAP estimate under a Laplace prior. That is the bridge between the two subjects.
+
+*PRML* derives the bridge in one line: with a Gaussian prior of precision $\alpha$ on the weights and Gaussian noise of precision $\beta$, maximising the posterior is ridge regression with $\lambda=\alpha/\beta$ (ch. 1, p. 30). Two of its small examples show why a prior helps. Flip a coin 3 times and see 3 heads, and maximum likelihood says the probability of heads is 1; a Beta prior acts as an effective number of heads and tails already observed, so the estimate is no longer 1 (ch. 2, pp. 70 and 72; appendix B, p. 686). And the decision is a separate step from the probability. In its cancer-screening example a missed cancer costs 1,000 and a false alarm 1, so the decision that minimises expected loss does not sit at a threshold of 0.5 (that step is this note's, not Bishop's); and when 1 case in 1,000 is a cancer, a classifier that calls everyone healthy scores 99.9% accuracy (ch. 1, pp. 41 and 45, illustrative numbers, no data set). [Imbalance, errors and drift](10-imbalance-errors-and-drift.md) takes that up.
 
 Efron and Hastie give the same bridge with numbers. For $N$ independent $N(\theta_i, 1)$ observations with $N \ge 4$, the James-Stein rule, which shrinks every estimate toward the grand mean, has lower total squared error than the raw estimates for every $\theta$, with no prior assumed, so the unshrunk maximum-likelihood estimate is inadmissible. Under the matching Bayes model with $N=20$ and prior variance $A=1$, the risks are 20 for the raw estimates, 11.5 for James-Stein and 10 for the true Bayes rule. The guarantee assumes the variance is known and counts total error, so some individual estimates get worse. The baseball example that shows this, and the ridge numbers on the diabetes data, are in [DA 02/03](../../../data-analytics/02-probability-and-statistics/notes/03-distributions-and-sampling.md#shrinkage-the-fix-in-a-line). For ridge, a prior $\beta \sim N(0, (\sigma^2/\lambda) I)$ gives a posterior mean equal to the ridge estimate $(S + \lambda I)^{-1} S \hat\beta$. The authors add that the two effects, less variance and more bias, nearly offset each other for predicting the response, so the gain is in the coefficients, not necessarily the predictions (*Computer Age*, ch. 7).
 
@@ -313,6 +319,8 @@ Return to these after each later note: a technique you have just used makes the 
 | What is minimising cross-entropy equivalent to? | Maximum likelihood of the labels under the model |
 | What does scikit-learn's estimator API buy? | `fit`, `predict`, `transform` are uniform, so estimators chain in pipelines and plug into search |
 | Supervised or unsupervised learning? | Supervised learning learns $x \to y$ from labelled pairs, with a class or a number as the target. Unsupervised learning has no $y$ and finds structure in $x$ alone. |
+| Which regularisation techniques do you know? | Any constraint that pulls the fit toward simplicity: an L2 penalty on weights (ridge), an L1 penalty (lasso, which also zeros features), a maximum tree depth, a minimum number of neighbours. |
+| What is inductive bias? | What a learner assumes beyond the data: linearity, locality for kNN, axis-aligned thresholds for trees. Without it nothing generalises, since many functions fit any training set. A bias that matches the problem needs less data. |
 
 ## Next
 

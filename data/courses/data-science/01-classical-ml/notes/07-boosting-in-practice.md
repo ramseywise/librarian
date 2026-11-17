@@ -1,8 +1,8 @@
 ---
-imported_hash: b27d73430b843ed7
+imported_hash: 5b6cb8a9405e4fbd
 title: Boosting in Practice
 summary: The original benchmarks agree in shape. CatBoost's authors report their library ahead of LightGBM and XGBoost on all nine of their datasets, by about 2% in log-loss on Adult (0.270 against +2.4% and +2.2%), though by their paired t-test the…
-order: 10
+order: 11
 kind: reading
 section: Notes
 source: learn-ai-engineering/data-science/01-classical-ml/notes/07-boosting-in-practice.md
@@ -14,7 +14,7 @@ source: learn-ai-engineering/data-science/01-classical-ml/notes/07-boosting-in-p
 
 **In plain words.** Boosting comes in four popular software packages, rather like four brands of washing machine that get clothes about equally clean. The choice between them comes down to how fast they run, how they cope with text categories and blank cells, and which settings you have to adjust. At work this chapter saves you from arguing over libraries, so you can pick one, tune it in a sensible order and get back to the problem.
 
-[Ensembles](06-ensembles.md) gave the idea: add shallow trees, each fitted to the [gradient](02-supervised-learning.md#vectors-matrix-products-and-the-gradient) of the loss. This note is about the engineering that made that idea the default for tables. Blocks run top to bottom from this `notes/` folder with the packages in the command below; the numbers are from running them.
+[Ensembles](06-ensembles.md) gave the idea: add shallow trees, each fitted to the [gradient](02b-linear-models.md#vectors-matrix-products-and-the-gradient) of the loss. This note is about the engineering that made that idea the default for tables. Blocks run top to bottom from this `notes/` folder with the packages in the command below; the numbers are from running them.
 
 ```bash
 uv run --python 3.12 --with scikit-learn --with xgboost --with lightgbm --with catboost --with pandas python ...
@@ -87,6 +87,8 @@ leaf 2 rows 528 by hand 1.1729 in the model 1.1729
 The same paper shows two other things worth knowing. Its sparsity-aware algorithm learns a default direction for missing values at each split, and runs more than 50 times faster than a naive version on the Allstate-10K dataset, which is sparse mainly from one-hot encoding, because it only visits non-missing entries. That figure is speed alone: the paper doesn't test default directions against imputation. And it gives a benchmark of one era's libraries: on 1M Higgs rows, 500 trees of depth 8, XGBoost took 0.68 seconds per tree where scikit-learn took 28.5, for AUCs of 0.8304 and 0.8302. The runs used all available cores and the paper's own table lists scikit-learn as not parallel, so threading may explain part of that gap, and with one run per system there is no spread to judge the AUCs against. Neither of those is a modern sklearn: that is the gap `HistGradientBoosting` closed.
 
 Boosting is also sequential by nature, not just by habit. Karbasi and Larsen prove a lower bound in the model where an algorithm calls a weak learner in rounds: AdaBoost needs about $\gamma^{-2}\ln m$ sequential rounds for a $\gamma$-weak learner on $m$ samples, and matching its error in a constant number of rounds takes exponentially many weak-learner calls per round, $\exp(\Omega(d\gamma^{-2}\ln m))$ for hypothesis VC-dimension $d$. Without that blow-up the rounds can fall only to $\Omega(\gamma^{-1}\ln m)$, a factor $\gamma$ below AdaBoost ([arXiv:2301.09627](https://arxiv.org/abs/2301.09627), preprint, 2023). It is a worst-case result about a constructed weak learner, with no experiments, so it explains the direction of the design, not any library's speed. This is why every library here parallelises *inside* a tree, on split finding, and never across rounds.
+
+**Where AdaBoost fits.** AdaBoost, the first practical boosting algorithm, works by reweighting rows. Each round raises the weight of the examples the ensemble so far gets wrong, fits a weak learner (usually a one-split stump) to the reweighted data, and gives it a vote that grows with its accuracy. It turned out to be the special case of gradient boosting for exponential loss. Gradient boosting generalises it to any differentiable loss by fitting each tree to the gradient. XGBoost adds the second derivative, the explicit penalty on leaves above, row and column subsampling, and the engineering that makes it fast. AdaBoost has few knobs, but exponential loss punishes a confidently wrong row very hard, so mislabelled rows hurt it more.
 
 ## Where they differ
 
@@ -229,6 +231,8 @@ ISLP's textbook version of the recipe agrees on its shape: a small shrinkage suc
 
 The statisticians' text agrees and adds the reason shrinkage comes first: on the ALS data a rate of 0.5 overfits within about 20 trees while 0.02 reaches a lower validation error and is less sensitive to the stopping point, and the depth that suits it is around 4 (*Computer Age*, ch. 17). The two figures are in [Gradient boosting](06-ensembles.md#gradient-boosting).
 
+ESL, where the method was set out before any of these libraries existed, names the same four knobs: tree size $J$ (counted in leaves), rounds $M$, shrinkage $\nu$ and the row-sampling fraction $\eta$. Its advice is experience, not a benchmark: $4 \le J \le 8$ leaves works well and "it is unlikely that J > 10 will be required", since a $J$-leaf tree can model interactions among at most $J-1$ features; set $\nu$ "very small (ν < 0.1)" and choose $M$ by early stopping; sample half the rows without replacement for each tree, which cuts the computing by the same fraction; in its simulated example, run as both a classification and a regression problem, subsampling without shrinkage did poorly (*ESL*, ch. 10, secs. 10.11 and 10.12). The worked results give the scale of what tuning tree size buys. On the spam test set of 1,536 emails, gradient boosting with 5-leaf trees scores 4.5% error against 5.5% for an additive logistic model, 5.5% for MARS and 8.7% for a pruned CART tree, with a standard error of about 0.6% on each; stumps, which allow no interactions, score 4.7%, a gap ESL calls not significant. On California housing (8 predictors, 80/20 split, 6-leaf trees, $\nu=0.1$, Huber loss) the average absolute error is 0.31 after 800 rounds against 0.89 for predicting the median, in units of $100,000 (*ESL*, ch. 10, secs. 10.8 and 10.14, one split each).
+
 Untuned XGBoost overfits visibly. On the loan-default table (46,272 rows, balanced between paid off and default), 250 rounds with defaults reach 14.6% training error but 0.3715 error on 10,000 held-out rows. (The book's prose says 36.2% for the test error; the printed output is 0.3715, so the prose is the slip.) Refitting with `lambda=1000`, `eta=0.1` and `subsample=0.63` gives 33.2% training and 0.3483 test error, so the gap nearly closes and the test error improves by about 2.3 points. Because `eta` and `subsample` changed in the same run, the gain is not attributable to the L2 penalty alone, and it is one split with no repeat (*Practical Statistics*, ch. 6).
 
 Use a random or Bayesian search over steps 3 to 6 on a coarse learning rate. Don't report the score it finds as the final one: reserve a test set, or use [nested CV](04-model-evaluation.md#nested-cross-validation).
@@ -280,6 +284,7 @@ Use a random or Bayesian search over steps 3 to 6 on a coarse learning rate. Don
 | Why can't boosting be parallelised across rounds? | Each tree needs the last one's output, and theory says fewer rounds costs exponentially more work |
 | How do you tune it? | Fix learning rate, early stop for rounds, then tree size, leaf size, sampling, regularisation |
 | Trees or a neural net for a table? | Trees first: state of the art on medium-sized tabular data per Grinsztajn et al., and much cheaper |
+| How does AdaBoost differ from XGBoost? | AdaBoost reweights misclassified rows and adds weighted stumps, which is gradient boosting for exponential loss. XGBoost takes any differentiable loss, uses second derivatives, penalises leaves and subsamples. AdaBoost is more sensitive to label noise. |
 
 ## Next
 

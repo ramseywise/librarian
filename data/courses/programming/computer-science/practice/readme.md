@@ -1,5 +1,5 @@
 ---
-imported_hash: 614dde67e3cb7005
+imported_hash: b1fa3bd3cdf92123
 title: 'Lab: build the structures you''ve been trusting'
 summary: None of this is code you'd ship, since Python's own versions are faster and better tested.
 order: 8
@@ -13,6 +13,24 @@ source: learn-ai-engineering/programming/computer-science/practice/README.md
 > Six small pieces, each one the core of something you use daily: a dynamic array, a compact hash table, an LRU cache, compensated summation, a decoder for framed messages on a TCP stream, and TCP's retransmission timer. You'll write them from stubs against tests that pin the behaviour the chapters describe.
 
 None of this is code you'd ship, since Python's own versions are faster and better tested. The point is that a structure you've written holds no mystery about what it costs. Each piece goes with a chapter, so do it after reading that one.
+
+## Layout
+
+```
+computer-science/
+├── README.md
+├── references.md
+├── notes/                         01–06
+├── slides/                        deck.yaml and the built study deck
+└── practice/
+    ├── README.md                  the lab: what to build and how it's checked
+    ├── check.sh                   runs the lab's tests and every code block in the notes
+    ├── run_notes.py               runs the notes' blocks, and compares output where it's fixed
+    ├── exercises/foundations_lab/    stubs and their tests
+    └── solutions/foundations_lab/    worked versions and the same tests
+```
+
+You need Python 3.14 and [uv](https://docs.astral.sh/uv/). The notes' code blocks are standalone: copy one into a file and run it. A few are marked with a comment in the note's source. Those need NumPy, the free-threaded build (`uv run --python 3.14t`), OpenSSL's command line tool or the network, and `check.sh` handles all but the last by default. Your timings will differ from those printed, as they should: compare the ratios. Which step of the lab goes with which chapter is in the [syllabus](../readme.md#syllabus).
 
 ## Run it
 

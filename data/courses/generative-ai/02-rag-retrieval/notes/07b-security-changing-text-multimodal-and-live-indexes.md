@@ -1,5 +1,5 @@
 ---
-imported_hash: 792a2d7a30e80681
+imported_hash: 7787ef0204b88534
 title: 7b — Security, changing text, multimodal RAG and live indexes
 summary: Tallybook's bot leaked a runbook because nobody checked who could retrieve what, and the same support team will soon face a rulebook that changes every quarter, scanned invoices, and an index that must stay in step with a changing wiki.
 order: 14
@@ -181,6 +181,8 @@ while index.describe_index_stats().namespaces.get(ns, {"vector_count": 0})["vect
 ```
 
 The Handbook also stores two snapshots of each document in its feature store: one cleaned (for fine-tuning) and one chunked and embedded (for RAG). Then a new chunking or embedding choice doesn't mean re-crawling.
+
+**What web crawlers already learned about freshness.** A crawler is a live index with a politeness problem added, and three of its rules carry over. Permissions go stale in the queue: a URL can wait in the frontier "for days or even weeks", so robots.txt is checked "immediately before attempting to fetch a web page", not when the URL was queued (*IIR*, ch. 20, p. 447). An access-control list captured at ingestion has the same weakness; that parallel is this note's. Change rate alone is a poor priority signal, because "a large number of spam pages change completely on every fetch", so the frontier combines it with a quality estimate (p. 451). And corpus-wide statistics such as idf can't be computed on one shard of a document-partitioned index, so background processes recompute them and refresh each node periodically (p. 454). Scores therefore drift between refreshes. The chapter gives designs and one rule of thumb from the Mercator crawler, "a rough rule of three times as many back queues as crawler threads" (p. 453). It reports no measurements.
 
 ---
 

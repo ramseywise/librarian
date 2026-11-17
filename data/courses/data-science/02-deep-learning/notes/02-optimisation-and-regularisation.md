@@ -1,5 +1,5 @@
 ---
-imported_hash: 8791ae68b90717a9
+imported_hash: 69fb75e22a84c709
 title: Optimisation and regularisation
 summary: 'Three questions run through the chapter, in order: does the signal survive through the layers (initialisation and normalisation), does the optimiser make progress (optimisers and learning rates), and does what it learned generalise (regular…'
 order: 3
@@ -189,6 +189,8 @@ Plain gradient descent has one step size for every parameter and no memory. Each
 | Adam | Momentum + RMSprop + bias correction $\hat v = v / (1 - \beta_1^t)$, $\hat s = s / (1 - \beta_2^t)$ | Default; $\alpha = 10^{-3}$, $\beta_1 = 0.9$, $\beta_2 = 0.999$, $\epsilon = 10^{-8}$ ([arXiv:1412.6980](https://arxiv.org/abs/1412.6980) (Kingma and Ba, ICLR 2015)) |
 | AdamW | The Adam step, then $W \mathrel{-}= \alpha\lambda W$ applied outside the gradient | See below |
 | Lion | $W \mathrel{-}= \alpha\,(\operatorname{sign}(\beta_1 v + (1-\beta_1) dW) + \lambda W)$; then $v = \beta_2 v + (1-\beta_2) dW$ | Found by program search; less memory than Adam |
+
+**Batch, mini-batch or one example.** Full-batch gradient descent computes the exact gradient over all $m$ examples for each step, so one pass over the data buys one update. Stochastic gradient descent (SGD) steps on one example at a time: $m$ updates per pass, each from a noisy estimate that is right on average. Mini-batch sits between the two and is what "SGD" means in practice. The noise is cheap to accept. The standard error of a batch gradient falls only as $1/\sqrt{B}$, so a batch 100 times larger costs 100 times the compute for a gradient 10 times less noisy, and many rough steps usually beat a few exact ones. A batch of one wastes the hardware, though, since a GPU processes a few hundred examples in one vectorised call. Full batch is still reasonable when the whole dataset fits in one such call.
 
 Your **Optimization methods** notebook writes these in NumPy on "moons". After the same epochs: mini-batch GD 79.7%, momentum 79.7%, Adam 94%. Learning-rate decay completes that notebook. Here they are on digits after 10 epochs, over five seeds, with Lion written out to show how little it stores:
 
@@ -456,6 +458,12 @@ Every digits number in this chapter came from running the code shown, with `uv r
 | Dropout in an underfitting model? | It hurts. Standard dropout lowered accuracy here and on ViT-T in Liu et al. Early dropout can help or at least not harm. |
 | Regularising first, or learning rate first? | Learning rate. Regularisation is for a model that fits and doesn't generalise. |
 | How do you compare two optimisers fairly? | Several seeds, an equal tuning budget and more than one workload, measured by time to a target. That's the AlgoPerf design. |
+| Which regularisation techniques do you know? | Early stopping, weight decay, dropout and more data. Reach for them once training is good and test is poor, after the learning rate and optimiser are tuned. |
+| How do you set the learning rate? | Sweep it by factors of ten before touching anything else. Too low and the run has not finished. Too high and it never settles. |
+| Can you rank the adaptive optimisers from one run? | No. Momentum and per-parameter step sizes clearly matter on a short budget, but the gaps among the adaptive methods were within a standard deviation or two. |
+| Constant learning rate or a schedule? | A schedule gave a small gain here: cosine 0.970 ± 0.003 against constant 0.963 ± 0.006 test accuracy, and it was more consistent across seeds, since the step shrinks as training ends. |
+| When do you stop training? | Watch a validation curve and keep the best checkpoint, since the right epoch count is not known in advance. On digits with 30% label noise, stopping early beat dropout and weight decay. |
+| How does SGD differ from full-batch gradient descent? | Full batch takes one exact step per pass over the data. SGD takes many noisy steps per pass. Gradient noise falls only as 1/√B, so 100 times the batch buys 10 times less noise, and mini-batches win. |
 
 ## Next
 

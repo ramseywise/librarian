@@ -1,8 +1,8 @@
 ---
-imported_hash: f210c22f9e29c5c5
+imported_hash: 773d6a0a25cbfd6b
 title: References
 summary: Every source behind the notes in this pillar.
-order: 23
+order: 24
 kind: reading
 section: References
 source: learn-ai-engineering/data-analytics/01-python-for-data-analysis/references.md

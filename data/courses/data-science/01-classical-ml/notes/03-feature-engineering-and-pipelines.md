@@ -1,8 +1,8 @@
 ---
-imported_hash: dd8392f318e14fba
+imported_hash: 18fb6e667120e07d
 title: Feature Engineering and Pipelines
 summary: Blocks run top to bottom from this notes/ folder.
-order: 4
+order: 5
 kind: reading
 section: Notes
 source: learn-ai-engineering/data-science/01-classical-ml/notes/03-feature-engineering-and-pipelines.md
@@ -37,6 +37,8 @@ The adult census dataset (M&G ch. 4, [`adult.data`](../practice/intro-to-ml-in-p
 ### One-hot encoding
 
 Replace a column with $k$ categories by $k$ binary columns.
+
+Why not number the categories 0 to $k-1$ in one column? A linear model multiplies that number by one weight, so it would be told that the categories lie in that order and that the third is worth twice the second. A string such as `workclass` means neither. One column per category gives each its own weight. Trees are hurt less by integer codes, since they can split a range more than once, and a truly ordered category (small, medium, large) can keep one ordinal column.
 
 ```python
 import numpy as np
@@ -95,6 +97,8 @@ print(X_train_trans.shape, round(logreg.score(X_test_trans, y_test), 3))
 ```
 
 The base rate is 0.759, so these six columns add real signal. Missing values in `workclass` and `occupation` went through as their own all-zero pattern here; [the boosting note](07-boosting-in-practice.md) compares how libraries treat them natively.
+
+**Missing values in general.** Ask first why a value is missing, since a gap that depends on the target is itself a signal. Then there are four moves. Drop the rows or the column, when few are affected and the gaps look random. Impute from the training data: the median for a numeric column, the most frequent level or an explicit "missing" level for a categorical one (`SimpleImputer`). Add an indicator column (`add_indicator=True`) so the model can use the fact that the value was missing. Or use a model that takes `NaN` directly, as `HistGradientBoostingClassifier` and the boosting libraries do. An imputer is a fitted step, so it goes inside the pipeline and is refit in each fold ([leakage](#leakage-and-why-pipelines-exist)).
 
 `sparse=` was renamed `sparse_output=` in scikit-learn 1.2 and the old name removed in 1.4; see the migration map in [04](04-model-evaluation.md#scikit-learn-migration-map-020--14).
 
@@ -180,6 +184,8 @@ M&G see a stronger version of the same pattern on Boston housing: 13 MinMax-scal
 
 Ask for degrees of freedom and let the library place the knots at quantiles of the feature: `df=4` puts three interior knots at the 25th, 50th and 75th percentiles of age (33.75, 42 and 51), and ten-fold CV on the same data finds about 3 df enough for a natural spline and about 4 for a cubic one, with a straight line (1 df) inadequate (*ISLP*, ch. 7). Treat the number of degrees of freedom as a hyperparameter inside the pipeline. The same chapter's other devices are a smoothing spline (a roughness penalty replaces knots, effective df falls from $n$ to 2 as $\lambda$ grows; LOOCV chose 6.8 effective df here) and local regression, which the authors warn degrades once there are more than three or four predictors. For several features, a generalised additive model fits $y = \beta_0 + f_1(x_1) + \dots + f_p(x_p)$, one smooth shape per feature, so each effect stays readable but interactions must be added by hand (*ISLP*, ch. 7).
 
+ESL adds three things to that account (*ESL*, ch. 5). First, a basis can regularise as well as add flexibility. Its phoneme example classifies "aa" against "ao" from log-periodogram values at 256 frequencies (1,000 training samples). Forcing the 256 logistic coefficients to vary smoothly with frequency, by writing them as a combination of 12 natural-cubic-spline basis functions, raises training error from 0.080 to 0.185 and cuts test error from 0.255 to 0.158. In code that is filtering the inputs, $x^* = H^\top x$, and fitting a plain logistic model on the 12 filtered features. Second, more flexibility is not better: on simulated two-class data a logistic model with additive natural splines (4 df per coordinate) has test error 0.28, and the tensor-product version that adds every interaction has 0.282, against a Bayes error of 0.21 (Fig. 5.11). Third, the number of degrees of freedom has an interior optimum: on 100 points from a known wiggly curve, ESL finds 9 effective df "spot on" for a smoothing spline by expected prediction error, with 5 under-fitting and 15 "somewhat wiggly" (Fig. 5.9, one realisation). Because a smoothing spline is a linear smoother, $\hat y = S_\lambda y$, leave-one-out CV needs no refits: $\text{CV} = \frac{1}{N}\sum_i \big((y_i - \hat f_\lambda(x_i))/(1 - S_\lambda(i,i))\big)^2$. On real data the additive model's payoff is ESL's spam run, 5.3% test error against 7.6% for the linear logistic fit (*ESL*, ch. 9; details in [supervised learning](02-supervised-learning.md#decision-trees)).
+
 ---
 
 ## Univariate non-linear transforms
@@ -255,7 +261,11 @@ RFE to 40        0.986 real features kept: 29
 
 Every selector beats keeping the noise, and each kept most of the 30 real features. The book's split (breast cancer plus 50 noise columns, 80 features, 284 training rows, `test_size=.5`, logistic regression) gives 0.930 with everything, 0.940 univariate (50% of features kept) and 0.951 for model-based and RFE (forest of 100 trees, 40 features kept; *Introduction to ML with Python*, ch. 4, "Automatic feature selection"), so the order among selectors moves with the split and only the gain over no selection is stable. Selection only pays off when you suspect many features are noise; with a regularised model on clean data it rarely helps.
 
+Text is a case where it does help. On Reuters-RCV1 (trained on the first 100,000 documents, F1 on the next 100,000, averaged over five classes), keeping 10 to 100 terms chosen by mutual information instead of all 132,776 "increases F1 by about 0.1 for the multinomial model and by more than 0.2 for the Bernoulli model" of Naive Bayes. Keeping the most frequent terms is the cheap alternative, and here it "performs a lot worse than MI and χ2 and should not be used" (*IIR*, ch. 13, Fig. 13.8, pp. 274–278). The result is for Naive Bayes; the figure does not test a regularised linear model.
+
 The classical, model-aware version of the same idea is subset selection for linear models. Searching every subset costs $2^p$ fits (1,048,576 at $p=20$), forward stepwise costs $1 + p(p+1)/2$ (211 at $p=20$), and exhaustive search is infeasible beyond roughly $p=40$. Forward and best-subset choices can differ even at small size: on ISLP's Credit data they agree up to three predictors and diverge at four. The training error always falls as variables are added, so the size is chosen by an estimate of test error, and the criteria disagree: on Credit, $C_p$ picks six variables, adjusted $R^2$ seven and BIC four, because BIC's penalty $\log(n)\,d\,\hat\sigma^2$ exceeds $C_p$'s $2d\hat\sigma^2$ once $n>7$. Validation and 10-fold CV both pick six there, and the one-standard-error rule (the smallest model within one standard error of the best) picks three (*ISLP*, ch. 6, Credit data, 10 predictors). The criteria need an estimate of the noise variance, so they are not usable when $p \ge n$; there only a held-out or cross-validated error is honest (*ISLP*, ch. 6).
+
+Univariate screening is thousands of hypothesis tests run at once, and the count has to enter the threshold. ESL's example is a microarray study with 12,625 genes on 58 samples, one two-sample t-statistic per gene. 1,189 genes have $|t| \ge 2$, but about 631 would by chance alone if the genes were independent (12,625 × 0.05, standard deviation 24.5). Bonferroni at 0.05 needs $p < 3.9\times10^{-6}$ and no gene passes. Benjamini-Hochberg at a false discovery rate of 0.15 keeps the 11 genes with $|t| \ge 4.101$, and a plug-in estimate from 1,000 label permutations puts the false discovery rate of that cut at 1.518/11, about 14% (*ESL*, ch. 18, sec. 18.7). The procedures are in [multiple comparisons](../../../data-analytics/02-probability-and-statistics/notes/05-hypothesis-testing.md#multiple-comparisons).
 
 Feature selection is a fitted step. Selecting on all data and then cross-validating is the leakage bug below.
 
@@ -506,6 +516,9 @@ Every step except the last must have `fit` and `transform`. The last needs `fit`
 | Why log-transform counts? | Skewed inputs let a few huge values dominate a linear fit; log1p makes them more symmetric and handles zeros |
 | What does `handle_unknown="ignore"` do? | Encodes an unseen category as all zeros, so production data doesn't crash |
 | Which preprocessing steps must be refit inside each fold? | Any step with a `fit`: scaling, imputation, encoding, selection, PCA, target encoding, vectorising text. A `Pipeline` does that for you. |
+| Which feature selection techniques do you know? | Univariate statistics (`SelectKBest`), model-based (`SelectFromModel`, on importances or L1 coefficients) and iterative (`RFE`). Selection is a fitted step, so it belongs inside each CV fold. |
+| Why one-hot encode a categorical feature? | Integer codes tell a linear model that the categories are ordered and evenly spaced. One column per category gives each its own weight. Trees mind less, and a truly ordered category can stay ordinal. |
+| How do you handle missing values in predictors? | Ask why they are missing. Then drop, impute the median or most frequent level, add a missing indicator, or use a model that accepts `NaN`. The imputer is fitted, so it goes inside the pipeline. |
 
 ## Next
 

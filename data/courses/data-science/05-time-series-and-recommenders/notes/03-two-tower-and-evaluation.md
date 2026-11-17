@@ -1,5 +1,5 @@
 ---
-imported_hash: 50eecdf0a9f299da
+imported_hash: 753c07f3e20d11c3
 title: Two-tower retrieval and offline and online evaluation
 summary: Once a catalogue reaches millions of items and new ones arrive every hour, an item-item matrix no longer fits and a new item has no history to work from.
 order: 4
@@ -193,6 +193,12 @@ score 943 users against 1682 items by brute force: 0.001s
 The correction takes the tower from below popularity to close to EASE, and it is one line. The uncorrected model's coverage shows what the bias does: it spreads recommendations across most of the catalogue, because it has been taught that being popular is bad. Two honest caveats. EASE still wins here, on a small dataset with a small catalogue, which is its home ground, so the tower's advantage must come from what follows. And the tower has more knobs than anything in the last chapter, so it took more tuning to get this far.
 
 Scoring 943 users against 1,682 items takes a millisecond, so we do not need an index on this data. At millions of items you would use approximate nearest neighbours and report the recall you lose to it.
+
+### Where the training pairs come from
+
+The positives above are logged interactions. A ranker's labels can come from three places. Explicit judgements (ratings, or editors grading query-result pairs) are clean and graded but scarce and costly. Implicit feedback (clicks, plays, purchases, dwell time) is abundant and free, and it is what large systems train on. Randomised exposure, where a small share of traffic gets shuffled results, costs engagement and is what makes the other two interpretable.
+
+Clicks are biased labels in four ways. Position: people click what is ranked first, so the log rewards the old ranker's choices. Selection: nothing unshown can be clicked, so a missing click is not a negative. The snippet: a click measures the title or thumbnail and not satisfaction, which is why dwell time or completion makes a better positive. Feedback: a model trained on its own exposures narrows over time. The corrections are to weight each click by one over the probability that it was seen (the inverse propensity idea of [the counterfactual section below](#offline-evaluation-counterfactual-estimates)), to draw negatives from items that were shown and skipped, and to keep some randomised traffic.
 
 ## Cold start
 
@@ -429,6 +435,10 @@ The effective sample size drops from 3,237 to 332, and the largest weight rises 
 | What is IPS? | Reweight logged events matching the new policy by the inverse of the logging probability. It needs logged propensities and exploration, and high variance is its price. |
 | Why not trust offline results alone? | Logs only hold what the old system showed, so new behaviours get little credit. YouTube and Netflix both report that offline does not always predict live. |
 | How many users does an A/B test need? | About $2(z_\alpha + z_\beta)^2 \bar p(1 - \bar p)/\Delta^2$ per arm. A 1% lift on 5% takes roughly three million. |
+| How do you evaluate a new ranker online? | With a controlled A/B test, the only method where the counterfactual is real, on a long-term outcome such as retention. Offline experiments prune the candidates first. |
+| What is the cold start problem? | A new item has no interactions, so EASE, kNN and factorisation can only guess. A tower can still embed the item from its features. |
+| Where does training data for a ranker come from? | Explicit judgements (clean but scarce), implicit feedback such as clicks and purchases (abundant but biased), and randomised exposure on a small share of traffic, which makes the other two interpretable. |
+| Can you use clicks as ranking labels? | Yes, with corrections. Clicks follow position, exist only for what was shown, and measure the snippet. Weight by inverse propensity, take negatives from shown-and-skipped items, and keep some randomised traffic. |
 
 ## Next
 

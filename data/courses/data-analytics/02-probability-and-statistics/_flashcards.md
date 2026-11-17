@@ -81,4 +81,244 @@ cards:
 - front: Give one rule of thumb for each stage, from looking at data through to panels.
   back: 'Look and reason: count exclusions, remember P(A|B) is not P(B|A). Sample: n of 30 is no law, use Wilson, bootstrap the independent unit. Test: Welch by default. Regress: use pre-period covariates, cluster. Generate: simulate and grade by coverage. Repeat: fixed effects remove only what is fixed.'
   lesson: data-analytics/02-probability-and-statistics/notes/08-panel-data-and-fixed-effects
+- front: Mean or median for revenue?
+  back: Both, for different questions. The mean scales to totals and forecasts. The median describes a typical buyer. Report the ratio, since it reveals skew.
+  lesson: data-analytics/02-probability-and-statistics/notes/01-descriptive-statistics-and-eda
+- front: What do you do first with a new dataset?
+  back: Establish what one row is, then check types, missing values, impossible values and duplicates, before any summary.
+  lesson: data-analytics/02-probability-and-statistics/notes/01-descriptive-statistics-and-eda
+- front: How do you handle outliers?
+  back: Investigate before removing. Fix errors, keep real extremes, and use robust summaries or log scale. State how many rows you removed and why.
+  lesson: data-analytics/02-probability-and-statistics/notes/01-descriptive-statistics-and-eda
+- front: Pearson vs Spearman?
+  back: Pearson measures linear association and is sensitive to outliers. Spearman works on ranks, so it captures monotonic association and resists single values.
+  lesson: data-analytics/02-probability-and-statistics/notes/01-descriptive-statistics-and-eda
+- front: Why is the student-reported class size larger than the dean's?
+  back: Sampling by student weights each class by its size, so large classes are over-represented. The same happens with per-session and per-user metrics.
+  lesson: data-analytics/02-probability-and-statistics/notes/01-descriptive-statistics-and-eda
+- front: When is missing data dangerous?
+  back: When missingness relates to the outcome or to a segment. Compare the missing and non-missing groups before dropping.
+  lesson: data-analytics/02-probability-and-statistics/notes/01-descriptive-statistics-and-eda
+- front: How do you spot outliers in a column of numbers?
+  back: Compare the mean with the median, and the standard deviation with the IQR. When they disagree by a lot, the tail is running the summary, so look at the tail.
+  lesson: data-analytics/02-probability-and-statistics/notes/01-descriptive-statistics-and-eda
+- front: P(A | B) vs P(B | A)?
+  back: They share a numerator, P(A and B), and differ in denominator, with Bayes' rule converting between them through the base rates.
+  lesson: data-analytics/02-probability-and-statistics/notes/02-probability-foundations
+- front: Does linearity of expectation need independence?
+  back: No, it always holds. Variance additivity is the one that needs uncorrelated variables.
+  lesson: data-analytics/02-probability-and-statistics/notes/02-probability-foundations
+- front: A test is 99% accurate and the condition affects 1 in 1,000. P(condition | positive)?
+  back: 'About 9%: 0.99 × 0.001 / (0.99 × 0.001 + 0.01 × 0.999). False positives from the large healthy group dominate.'
+  lesson: data-analytics/02-probability-and-statistics/notes/02-probability-foundations
+- front: What is an indicator variable for?
+  back: It turns an event into a number with expectation equal to the event's probability, so counts split into sums.
+  lesson: data-analytics/02-probability-and-statistics/notes/02-probability-foundations
+- front: Why does a standard error shrink with √n?
+  back: Independent variances add to nσ², and dividing the sum by n leaves σ²/n. That independence is what breaks with repeated users.
+  lesson: data-analytics/02-probability-and-statistics/notes/02-probability-foundations
+- front: Law of total variance in one line?
+  back: Total variance is the mean within-group variance plus the variance of group means, which is why knowing groups can reduce noise.
+  lesson: data-analytics/02-probability-and-statistics/notes/02-probability-foundations
+- front: Independent vs conditionally independent?
+  back: Neither implies the other. A shared cause makes variables dependent overall but independent given the cause.
+  lesson: data-analytics/02-probability-and-statistics/notes/02-probability-foundations
+- front: Define variance.
+  back: Var(X) = E[(X − E[X])²], the mean squared distance of X from its mean. Its square root is the standard deviation.
+  lesson: data-analytics/02-probability-and-statistics/notes/02-probability-foundations
+- front: What is an expected value?
+  back: The long-run mean of a random variable, E[X]. A webinar attendee who buys a 300-dollar service with probability 5% and a 50-dollar one with 15% is worth 0.05 × 300 + 0.15 × 50 = 22.50 dollars a month.
+  lesson: data-analytics/02-probability-and-statistics/notes/02-probability-foundations
+- front: Which distribution for clicks out of impressions, and errors per hour?
+  back: Binomial for a count out of n trials. Poisson for a count in a window with no fixed ceiling.
+  lesson: data-analytics/02-probability-and-statistics/notes/03-distributions-and-sampling
+- front: What does the CLT actually say, and what does it require?
+  back: Means of many independent draws are approximately Normal with SE σ/√N. It needs independence, finite variance, and more N the heavier the tail.
+  lesson: data-analytics/02-probability-and-statistics/notes/03-distributions-and-sampling
+- front: Is N = 30 enough for a t-test on revenue?
+  back: Usually not. Simulations on zero-inflated lognormal spend show 95% intervals covering about 56% at n = 30 and about 83% at n = 300. Use more data or a bootstrap, and check by simulation.
+  lesson: data-analytics/02-probability-and-statistics/notes/03-distributions-and-sampling
+- front: Why are the best and worst schools (or stores) so often small?
+  back: Variance of a mean scales as 1/N, so small groups produce extremes in both directions without any real difference.
+  lesson: data-analytics/02-probability-and-statistics/notes/03-distributions-and-sampling
+- front: 'LLN or CLT: which tells you how wrong your mean is?'
+  back: LLN says it converges. CLT describes the distribution of the error, giving the interval.
+  lesson: data-analytics/02-probability-and-statistics/notes/03-distributions-and-sampling
+- front: How would you rank items with few ratings?
+  back: Use a lower confidence or credible bound, or shrink toward the overall mean with a Beta prior.
+  lesson: data-analytics/02-probability-and-statistics/notes/03-distributions-and-sampling
+- front: Can a larger sample fix a biased sample?
+  back: No. It gives a more precise estimate of the wrong number.
+  lesson: data-analytics/02-probability-and-statistics/notes/03-distributions-and-sampling
+- front: How do you check whether a variable is Normal?
+  back: 'With a probability plot: sort the data, sort a standard-normal sample of the same size and plot one against the other. A Kolmogorov-Smirnov test puts a number on the gap.'
+  lesson: data-analytics/02-probability-and-statistics/notes/03-distributions-and-sampling
+- front: Are prices and incomes Normal?
+  back: Usually not. Positive, multiplicative quantities such as order value and income are lognormal, so the log is roughly Normal and the tail is heavy.
+  lesson: data-analytics/02-probability-and-statistics/notes/03-distributions-and-sampling
+- front: What does a 95% confidence interval mean?
+  back: If you repeated the sampling and the calculation, 95% of the intervals built would contain the true value. It is a statement about the procedure, not about this interval's chance of being right.
+  lesson: data-analytics/02-probability-and-statistics/notes/04-estimation
+- front: Bootstrap vs analytical SE?
+  back: Analytical is instant and exact when its assumptions hold. Bootstrap works for any statistic, including medians and ratios. It needs independent units and enough data, and fails at the extremes. They should agree where both apply.
+  lesson: data-analytics/02-probability-and-statistics/notes/04-estimation
+- front: How do you get an interval for a ratio metric?
+  back: Treat the randomisation unit as independent. Use the delta method on numerator and denominator per user, or bootstrap users. Do not treat the denominator's rows as independent.
+  lesson: data-analytics/02-probability-and-statistics/notes/04-estimation
+- front: Why divide by n − 1?
+  back: The sample mean is fit to the data, so deviations from it are too small. Dividing by n − 1 makes the variance estimator unbiased. It does not minimise MSE.
+  lesson: data-analytics/02-probability-and-statistics/notes/04-estimation
+- front: What is an MLE, and where does its SE come from?
+  back: The parameter value that makes the data most probable. Its asymptotic SE comes from the curvature of the log-likelihood at the peak.
+  lesson: data-analytics/02-probability-and-statistics/notes/04-estimation
+- front: What do you do for a rate of 0 out of 50?
+  back: Use Wilson, which gives roughly [0, 0.07]. Wald gives [0, 0], which claims certainty.
+  lesson: data-analytics/02-probability-and-statistics/notes/04-estimation
+- front: What is an MDE?
+  back: The smallest effect you would detect with the chosen power and significance, given n and variance. Roughly n = 16σ²/δ² per arm at 5% and 80%.
+  lesson: data-analytics/02-probability-and-statistics/notes/04-estimation
+- front: Is an unbiased estimator always the one you want?
+  back: No. Dividing by n is biased, yet in the chapter's example it has a smaller mean squared error than n − 1. Accepting a little bias for less variance is what regularisation and shrinkage do.
+  lesson: data-analytics/02-probability-and-statistics/notes/04-estimation
+- front: Define a p-value.
+  back: The probability, assuming the null is true, of a statistic at least as extreme as the one observed. It is not the probability the null is true.
+  lesson: data-analytics/02-probability-and-statistics/notes/05-hypothesis-testing
+- front: t-test vs z-test?
+  back: z when σ is known or N is large (proportions); t when σ is estimated from a small sample.
+  lesson: data-analytics/02-probability-and-statistics/notes/05-hypothesis-testing
+- front: Why Welch?
+  back: It does not assume equal variances, and costs almost nothing when they are equal.
+  lesson: data-analytics/02-probability-and-statistics/notes/05-hypothesis-testing
+- front: Chi-square vs Fisher?
+  back: Fisher when any expected cell count is below 5.
+  lesson: data-analytics/02-probability-and-statistics/notes/05-hypothesis-testing
+- front: Data are skewed with outliers?
+  back: Mann-Whitney if you care about a tendency, or bootstrap the statistic you actually care about, such as the mean.
+  lesson: data-analytics/02-probability-and-statistics/notes/05-hypothesis-testing
+- front: 30 metrics, 3 significant?
+  back: Expect about 1.5 by chance. Correct with Holm or BH, and replicate.
+  lesson: data-analytics/02-probability-and-statistics/notes/05-hypothesis-testing
+- front: What is the winner's curse?
+  back: At low power, only inflated estimates cross the threshold, so significant results overstate the true effect.
+  lesson: data-analytics/02-probability-and-statistics/notes/05-hypothesis-testing
+- front: What does a permutation test do?
+  back: Shuffles group labels to build the null distribution from your data, needing only exchangeability under the null.
+  lesson: data-analytics/02-probability-and-statistics/notes/05-hypothesis-testing
+- front: How do Type I and Type II errors differ?
+  back: 'Type I is a false positive: you reject a true H₀, at rate α. Type II is a false negative: you miss a real effect, at rate β.'
+  lesson: data-analytics/02-probability-and-statistics/notes/05-hypothesis-testing
+- front: Why add pre-period covariates to an A/B regression?
+  back: They do not change the expected effect under randomisation. They explain outcome variance, so the standard error shrinks and power rises.
+  lesson: data-analytics/02-probability-and-statistics/notes/06-regression-and-glms
+- front: When do you need robust or clustered SEs?
+  back: Robust when variance is non-constant, typical of money. Clustered when rows repeat within a unit or the randomisation unit is coarser than the row.
+  lesson: data-analytics/02-probability-and-statistics/notes/06-regression-and-glms
+- front: Show that a t-test is a regression.
+  back: Regress the outcome on a 0/1 group. The coefficient is the difference in means, and its t matches the pooled t-test.
+  lesson: data-analytics/02-probability-and-statistics/notes/06-regression-and-glms
+- front: What does multicollinearity do?
+  back: Inflates coefficient SEs and makes individual coefficients unstable. It does not bias them and rarely hurts prediction.
+  lesson: data-analytics/02-probability-and-statistics/notes/06-regression-and-glms
+- front: What are the assumptions of linear regression?
+  back: 'In the order they usually matter: the sample represents what you claim, errors are independent, the relationship is additive and linear, error variance is constant, and errors are Normal (rarely important with large n).'
+  lesson: data-analytics/02-probability-and-statistics/notes/06-regression-and-glms
+- front: How do you read the intercept and a coefficient?
+  back: 'A coefficient is a conditional difference: comparing cases with the same other inputs. The intercept is the prediction when all regressors are zero.'
+  lesson: data-analytics/02-probability-and-statistics/notes/06-regression-and-glms
+- front: Interpret a logistic coefficient of 0.4.
+  back: 'Odds multiply by e^0.4 = 1.49, holding other variables fixed. The probability change depends on the base: about 1 point at 2%, 10 points at 50%.'
+  lesson: data-analytics/02-probability-and-statistics/notes/06b-logistic-regression-and-poisson-glms
+- front: What is a link function?
+  back: 'It connects the mean of the outcome to the linear predictor: identity for linear, logit for logistic, log for Poisson.'
+  lesson: data-analytics/02-probability-and-statistics/notes/06b-logistic-regression-and-poisson-glms
+- front: Your logistic coefficient is 28 with SE in the thousands. What now?
+  back: Separation. Check for a predictor that splits the outcome perfectly, then regularise or use a weakly informative prior.
+  lesson: data-analytics/02-probability-and-statistics/notes/06b-logistic-regression-and-poisson-glms
+- front: What is deviance?
+  back: 'Twice the log-likelihood gap from a model that fits every row exactly: a GLM''s version of the residual sum of squares. The drop from null to residual deviance is a likelihood-ratio test.'
+  lesson: data-analytics/02-probability-and-statistics/notes/06b-logistic-regression-and-poisson-glms
+- front: What is overdispersion?
+  back: Count variance above the mean. A Poisson fit then has SEs too small, so use robust SEs or a negative binomial.
+  lesson: data-analytics/02-probability-and-statistics/notes/06b-logistic-regression-and-poisson-glms
+- front: What is logistic regression, and is it a linear model?
+  back: A model for a yes/no outcome, where a straight line can predict outside 0 and 1. It is linear in the log-odds, and the logistic function then squashes the prediction into a probability.
+  lesson: data-analytics/02-probability-and-statistics/notes/06b-logistic-regression-and-poisson-glms
+- front: What is a data generating process?
+  back: 'The mechanism that produced the rows: selection, exposure, response and noise. A model is a claim about it'
+  lesson: data-analytics/02-probability-and-statistics/notes/07-data-generating-process
+- front: Estimand, estimator, estimate?
+  back: The quantity you want, the recipe, and the number it gave on these rows
+  lesson: data-analytics/02-probability-and-statistics/notes/07-data-generating-process
+- front: How would you test an estimator?
+  back: Simulate from a known DGP many times, then report bias, SD and coverage
+  lesson: data-analytics/02-probability-and-statistics/notes/07-data-generating-process
+- front: When do you log the outcome?
+  back: When you believe causes multiply. The coefficient is then a proportional change, and a pounds figure needs another step
+  lesson: data-analytics/02-probability-and-statistics/notes/07-data-generating-process
+- front: Polynomial or spline?
+  back: A spline to let the data show a shape, a polynomial when the shape is the claim
+  lesson: data-analytics/02-probability-and-statistics/notes/07-data-generating-process
+- front: Does a significant squared term mean a turning point?
+  back: No. A quadratic has to turn. In this chapter one found a peak at p ≈ 10⁻¹⁹ in a curve that never falls
+  lesson: data-analytics/02-probability-and-statistics/notes/07-data-generating-process
+- front: AIC or BIC?
+  back: AIC targets predictive accuracy and keeps a fixed rate of surplus terms. BIC's penalty grows with n, so it tends to settle on the true form when that form is among the candidates
+  lesson: data-analytics/02-probability-and-statistics/notes/07-data-generating-process
+- front: Is adjusted R² enough?
+  back: No. It keeps any term with F above 1, so it is a light penalty and overfits
+  lesson: data-analytics/02-probability-and-statistics/notes/07-data-generating-process
+- front: Explain or predict?
+  back: Explaining wants unbiased coefficients and theory-led forms. Predicting wants low held-out error, and can prefer a less true model
+  lesson: data-analytics/02-probability-and-statistics/notes/07-data-generating-process
+- front: Internal vs external validity?
+  back: Right for this sample, against right elsewhere. Randomisation buys only the first
+  lesson: data-analytics/02-probability-and-statistics/notes/07-data-generating-process
+- front: What is transportability?
+  back: A licence to carry an effect to a new population, justified by causal knowledge of where the two differ
+  lesson: data-analytics/02-probability-and-statistics/notes/07-data-generating-process
+- front: State Meng's identity
+  back: Error = data defect correlation × sqrt((1-f)/f) × sd of the variable
+  lesson: data-analytics/02-probability-and-statistics/notes/07-data-generating-process
+- front: Why does a large biased sample mislead?
+  back: The error stays while the standard error shrinks, so the interval tightens around the wrong value. A million rows at rho = 0.02 are worth 278 random ones
+  lesson: data-analytics/02-probability-and-statistics/notes/07-data-generating-process
+- front: What is panel data?
+  back: The same units observed over time, one row per unit per period
+  lesson: data-analytics/02-probability-and-statistics/notes/08-panel-data-and-fixed-effects
+- front: What is a fixed effect?
+  back: A separate intercept per unit. It absorbs everything constant about that unit, measured or not
+  lesson: data-analytics/02-probability-and-statistics/notes/08-panel-data-and-fixed-effects
+- front: Between against within variation?
+  back: Between is how unit averages differ. Within is how a unit moves around its own average. Fixed effects use only within
+  lesson: data-analytics/02-probability-and-statistics/notes/08-panel-data-and-fixed-effects
+- front: Why add time effects?
+  back: To remove shocks shared by all units in a period, such as seasons
+  lesson: data-analytics/02-probability-and-statistics/notes/08-panel-data-and-fixed-effects
+- front: Do clustered errors fix confounding?
+  back: No. They correct the standard error around the same estimate
+  lesson: data-analytics/02-probability-and-statistics/notes/08-panel-data-and-fixed-effects
+- front: When does clustering matter most?
+  back: When both the errors and the regressor persist over time. There, unadjusted intervals covered 69.7% and clustered ones 94.0%
+  lesson: data-analytics/02-probability-and-statistics/notes/08-panel-data-and-fixed-effects
+- front: What can fixed effects not handle?
+  back: Time-varying confounders, reverse causality, and the effects of anything constant within the unit
+  lesson: data-analytics/02-probability-and-statistics/notes/08-panel-data-and-fixed-effects
+- front: What does the coefficient weight?
+  back: Units with more within variation count for more
+  lesson: data-analytics/02-probability-and-statistics/notes/08-panel-data-and-fixed-effects
+- front: How is DiD related?
+  back: With one start date, two-way fixed effects and a treatment dummy gives exactly the difference of differences
+  lesson: data-analytics/02-probability-and-statistics/notes/08-panel-data-and-fixed-effects
+- front: What is an event study for?
+  back: Showing how an effect builds, and checking earlier divergence
+  lesson: data-analytics/02-probability-and-statistics/notes/08-panel-data-and-fixed-effects
+- front: Does a flat pre-period prove parallel trends?
+  back: No. It cannot be proved, and these checks have low power
+  lesson: data-analytics/02-probability-and-statistics/notes/08-panel-data-and-fixed-effects
+- front: What goes wrong with staggered adoption?
+  back: Already-treated units act as controls. If effects grow, the coefficient can be far off, even near zero
+  lesson: data-analytics/02-probability-and-statistics/notes/08-panel-data-and-fixed-effects
+- front: Fixed or random?
+  back: Plain random effects assume the group effect is unrelated to the regressors. A within-between model drops that assumption, and its within coefficient matches fixed effects. Pillar 04 has the decision table
+  lesson: data-analytics/02-probability-and-statistics/notes/08-panel-data-and-fixed-effects
 ---
