@@ -1,0 +1,74 @@
+{
+  "reviewed": false,
+  "note": "Hand-written 2026-11-17 from public wiki pages only (nothing under data/wiki/private/). Each answerable question names the one page that holds its answer; an unanswerable question has no expected page and the right behaviour is to say the wiki does not cover it and cite nothing. Set \"reviewed\": true once a human has checked the questions.",
+  "questions": [
+    {
+      "id": "ground-01",
+      "question": "How does stateless decision memory (DPM) build an agent's memory, and when did it beat incremental summarization?",
+      "expected_pages": ["stateless-decision-memory-dpm"]
+    },
+    {
+      "id": "ground-02",
+      "question": "In sample-and-select loops, what limits the gain: the sampler or the selector?",
+      "expected_pages": ["oracle-gap-recovery-by-selection"]
+    },
+    {
+      "id": "ground-03",
+      "question": "Why can a long-running open snapshot bloat tables under MVCC?",
+      "expected_pages": ["mvcc-row-versions-and-snapshots"]
+    },
+    {
+      "id": "ground-04",
+      "question": "What is Chain of Draft, and where does it stop working well?",
+      "expected_pages": ["chain-of-draft"]
+    },
+    {
+      "id": "ground-05",
+      "question": "How does SelfCheckGPT detect hallucinations without access to the model's internals?",
+      "expected_pages": ["selfcheckgpt"]
+    },
+    {
+      "id": "ground-06",
+      "question": "What do LangGraph state reducers do when parallel nodes write to the same field?",
+      "expected_pages": ["langgraph-state-reducers"]
+    },
+    {
+      "id": "ground-07",
+      "question": "How does GraphRAG answer global questions about a whole corpus?",
+      "expected_pages": ["graphrag-local-to-global-community-summaries"]
+    },
+    {
+      "id": "ground-08",
+      "question": "Why is write-behind caching risky for the system of record?",
+      "expected_pages": ["cache-vs-source-of-truth-write-through-and-write-behind"]
+    },
+    {
+      "id": "ground-09",
+      "question": "How can the fixed token overhead of a coding-agent session be measured from its transcript?",
+      "expected_pages": ["measuring-fixed-context-overhead"]
+    },
+    {
+      "id": "ground-10",
+      "question": "Why store embeddings in a side table rather than as a vector column on the enriched row?",
+      "expected_pages": ["embedding-side-table"]
+    },
+    {
+      "id": "ground-11",
+      "question": "What torque should a carbon bicycle stem bolt be tightened to?",
+      "expected_pages": [],
+      "why_unanswerable": "Off-domain: the wiki has no page on bicycles or torque."
+    },
+    {
+      "id": "ground-12",
+      "question": "How should a COBOL copybook be mapped to a Parquet schema?",
+      "expected_pages": [],
+      "why_unanswerable": "Near-domain (data engineering) but the wiki never mentions COBOL or copybooks."
+    },
+    {
+      "id": "ground-13",
+      "question": "What does the wiki say about the Fennelgraph reranker's licensing terms?",
+      "expected_pages": [],
+      "why_unanswerable": "False premise: Fennelgraph is a made-up name with no page."
+    }
+  ]
+}

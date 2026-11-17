@@ -12,6 +12,7 @@ from librarian.config import Settings
 from librarian.db import get_engine
 from librarian.feedback import prune
 from librarian.log_config import get_logger
+from librarian.ops.alert import ping_success
 from librarian.ops.backup import run_backup
 from librarian.ops.runner import run_with_alert
 
@@ -32,13 +33,15 @@ def loop(
     sleep: Callable[[float], None] = time.sleep,
     clock: Callable[[], datetime] = lambda: datetime.now(UTC),
 ) -> None:
-    """Sleep to the next slot, back up, repeat. A failed backup alerts and the loop carries on."""
+    """Sleep to the next slot, back up, repeat. A failed backup alerts and the loop carries on; one that
+    succeeded pings the dead-man monitor when `LIBRARIAN_BACKUP_PING_URL` is set."""
     while True:
         due = next_run(clock(), settings.backup_at)
         wait = (due - clock()).total_seconds()
         log.info("ops.schedule.wait", next=due.isoformat(), seconds=round(wait))
         sleep(max(wait, 0.0))
-        run_with_alert(settings, "backup", lambda: run_backup(settings))
+        if run_with_alert(settings, "backup", lambda: run_backup(settings)) is not None:
+            ping_success(settings)
         # Retention: feedback rows older than the window go after the day's backup has them.
         run_with_alert(
             settings,

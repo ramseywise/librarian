@@ -34,6 +34,8 @@ from __future__ import annotations
 import threading
 import time
 from collections import Counter
+from collections.abc import Callable
+from contextvars import ContextVar
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -236,6 +238,15 @@ _semantic_failed_at: float | None = None
 
 
 SEMANTIC_RETRY_S = 60.0
+RETRY_THREAD = "courses-semantic-retry"
+
+# How long the startup warm-up waits for another process to release the embeddings cache.
+# The API's workers start together and DuckDB allows one writer, so the second worker would
+# otherwise build a catalog without semantic links and rebuild it a minute later. Only the
+# warm-up waits (a build inside a request degrades at once, as before).
+WARM_CACHE_WAIT_S = 600.0
+CACHE_POLL_S = 2.0
+_cache_wait_s: ContextVar[float] = ContextVar("_cache_wait_s", default=0.0)
 
 # Wiki pages listed on a module's topic page; `wikiCount` says how many more there are.
 MODULE_WIKI_TOP = 12
@@ -262,11 +273,31 @@ def catalog() -> Catalog:
             and time.monotonic() - _semantic_failed_at > SEMANTIC_RETRY_S
         ):
             _semantic_failed_at = None
+            if prev is not None:
+                # The retry is a full build (tens of seconds): no request waits for it.
+                threading.Thread(
+                    target=_retry_semantic, args=(sig,), name=RETRY_THREAD, daemon=True
+                ).start()
+                return prev
             _load.cache_clear()
         _current = _load(COURSES_DIR, WIKI_DIR, sig, PUBLIC_MODE)
         return _current
     finally:
         _LOAD_LOCK.release()
+
+
+def _retry_semantic(sig: tuple[int, int]) -> None:
+    """Rebuild the catalog after a transient embedding failure, off the request path.
+
+    Requests keep getting the catalog without semantic links until this one replaces it.
+    """
+    global _current
+    with _LOAD_LOCK:
+        try:
+            _load.cache_clear()
+            _current = _load(COURSES_DIR, WIKI_DIR, sig, PUBLIC_MODE)
+        except Exception as e:  # the next request rebuilds and surfaces the real error
+            log.warning("courses.semantic.retry_failed", error=str(e))
 
 
 def warm_catalog() -> None:
@@ -276,11 +307,14 @@ def warm_catalog() -> None:
     will rebuild and surface the real error.
     """
     start = time.perf_counter()
+    waiting = _cache_wait_s.set(WARM_CACHE_WAIT_S)
     try:
         cat = catalog()
     except Exception as e:  # optimisation only; the route reports real errors
         log.warning("courses.warmup.failed", error=str(e))
         return
+    finally:
+        _cache_wait_s.reset(waiting)
     log.info(
         "courses.warmup.done",
         lessons=len(cat.lessons),
@@ -478,6 +512,18 @@ def _module_wiki(
     return len(ranked), top
 
 
+def _wiki_vectors[T](compute: Callable[[], T]) -> T:
+    """`compute()`, retried while another process holds the embeddings cache and this build may wait."""
+    deadline = time.monotonic() + _cache_wait_s.get()
+    while True:
+        try:
+            return compute()
+        except Exception as e:
+            if "lock" not in str(e).lower() or time.monotonic() >= deadline:
+                raise
+            time.sleep(CACHE_POLL_S)
+
+
 def _semantic_neighbours(texts: list[str], wiki_ids: list[str]) -> Neighbours | None:
     """Embedding neighbours among `wiki_ids` for each text, via librarian.retrieval.embeddings.
 
@@ -497,7 +543,7 @@ def _semantic_neighbours(texts: list[str], wiki_ids: list[str]) -> Neighbours | 
         return None
     global _semantic_failed_at
     try:
-        page_ids, page_vecs = compute_embeddings()
+        page_ids, page_vecs = _wiki_vectors(compute_embeddings)
         # compute_embeddings keys by file stem across all of data/wiki/, private/ included.
         # A stem that occurs twice (private/foo.md + rag/foo.md) can't be attributed to the
         # visible page, so it is left out rather than risk scoring private content.

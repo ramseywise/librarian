@@ -545,6 +545,7 @@
 }
 button.citation-chip { cursor: pointer; }
 .citation-chip--warn { border-color: #7a6214; background: #2a2310; color: #c9a227; }
+.citation-chip--missing { text-decoration: line-through; }
 .grounding { margin-top: var(--space-2); font-size: var(--fs-xs); color: var(--text-faint); }
 .grounding-warn { color: #c9a227; margin-top: 2px; }
 

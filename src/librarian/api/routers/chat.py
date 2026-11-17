@@ -1,4 +1,7 @@
-"""POST /api/chat/stream: the chat agent's events as server-sent events."""
+"""POST /api/chat/stream: the chat agent's events as server-sent events.
+
+POST /api/chat/citations/check: whether the pages an earlier answer cited have changed since.
+"""
 
 from __future__ import annotations
 
@@ -24,6 +27,7 @@ from librarian.db import get_engine
 from librarian.log_config import get_logger
 from librarian.observability import set_variant
 from librarian.pricing import TokenUsage
+from librarian.retrieval import citations
 
 log = get_logger(__name__)
 
@@ -35,6 +39,8 @@ router = APIRouter()
 # send its whole transcript and let the agent keep the tail.
 _MAX_MESSAGE_CHARS = 32_000
 _MAX_HISTORY_ITEMS = 200
+# Citations checked per request: far more than one answer cites.
+_MAX_CITATIONS = 50
 
 
 class ChatTurn(BaseModel):
@@ -175,3 +181,29 @@ async def chat_stream(req: ChatRequest, user: SignedIn, request: Request) -> Str
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
+
+
+class CitedPage(BaseModel):
+    """One citation as the `grounding` event gave it: the page id and its content hash then."""
+
+    id: str = Field(max_length=200, pattern=f"^{citations.PAGE_ID_PATTERN}$")
+    hash: str = Field(min_length=1, max_length=64)
+
+
+class CitationCheckRequest(BaseModel):
+    citations: list[CitedPage] = Field(max_length=_MAX_CITATIONS)
+
+
+@router.post("/api/chat/citations/check")
+async def check_citations(req: CitationCheckRequest, user: SignedIn) -> dict[str, list[dict]]:
+    """Per citation: `current`, `changed` (with `now` when the page was renamed) or `missing`.
+
+    A private page is `missing`, like one that never existed.
+    """
+    if not get_settings().chat_enabled:
+        raise HTTPException(status_code=404, detail="chat is disabled")
+
+    def run() -> list[dict]:
+        return [dict(citations.check(c.id, c.hash)) for c in req.citations]
+
+    return {"citations": await asyncio.to_thread(run)}

@@ -65,17 +65,19 @@ cookies are scrubbed before sending (`tests/api/test_observability.py`).
 
 ## 3. Failed backup email
 
-The nightly backup job (`librarian ops backup`, built by the D1 work) exits non-zero on failure and
-sends an email through Resend. This is the only alert whose code lives in the repo. Its absence is
-the failure mode, so also add a dead-man check.
+A failed backup sends an email through Resend (`src/librarian/ops/alert.py`). Run by hand,
+`./librarian backup` also exits 1. The nightly compose `backup` service (`librarian ops schedule`)
+emails and keeps running, so it can try again the next night; it does not exit. This is the only
+alert whose code lives in the repo. Its absence is the failure mode, so also add a dead-man check.
 
 - [ ] In the host's `.env`, set `RESEND_API_KEY` and `EMAIL_FROM` (already used for sign-in
-  links, so the sending domain with SPF and DKIM is verified once). Use the exact variable names
-  that the D1 backup job reads for the alert recipient (check `.env.example` once it lands).
+  links, so the sending domain with SPF and DKIM is verified once) and `LIBRARIAN_OWNER_EMAIL`,
+  the alert's recipient. With any of the three missing the job logs `ops.alert.skipped` and sends nothing.
 - [ ] Force a failure once (for example point the bucket variable at a name that does not exist),
   run the job by hand, and see the email arrive. Restore the setting.
 - [ ] Dead-man check: add a Healthchecks.io-style "ping on success" check for the nightly job,
-  with a grace period of 26 hours. A job that never starts (cron gone, host rebooted without the
+  with a grace period of 26 hours, and put its URL in `LIBRARIAN_BACKUP_PING_URL`: the nightly
+  service fetches it after each backup that succeeded. A job that never starts (cron gone, host rebooted without the
   timer) sends no failure email; this check alerts on the missing success.
 - [ ] Confirm the bucket lifecycle rule keeps 30 days and that the newest object is under 26 hours
   old (a manual look at the bucket is enough for the first week).
@@ -83,10 +85,9 @@ the failure mode, so also add a dead-man check.
 ## 4. When an alert fires
 
 1. Open `https://<domain>/healthz` and `/readyz` from your own machine.
-2. `./librarian status` and `./librarian logs` on the host once D4 lands; until then
-   `docker compose ps` and `docker compose logs --tail 100 librarian`.
+2. `./librarian status` and `./librarian logs librarian` on the host.
 3. `/readyz` 503 with `"index": "missing"` means the indexer did not run: `docker compose run
-   --rm indexer`.
+   --rm indexer` (or `./librarian start`, which runs it first).
 4. A bad release: roll the image back with `./librarian upgrade <previous-sha>` (D2) and pin the
    previous content release (`librarian release pin <sha>`, phase 4).
 

@@ -82,6 +82,77 @@ def test_upgrade_gates_on_a_backup_before_pulling_and_resolves_a_bare_tag() -> N
     assert lines[2].endswith("up -d --no-build")
 
 
+FAKE_DOCKER = """#!/bin/sh
+# Stands in for docker: logs the image and arguments; /readyz (compose exec) fails on a "bad" image.
+echo "$LIBRARIAN_IMAGE|$*" >> "$FAKE_DOCKER_LOG"
+case "$*" in *" exec "*) case "$LIBRARIAN_IMAGE" in *bad*) exit 1 ;; esac ;; esac
+exit 0
+"""
+
+
+def _real_upgrade(
+    tmp_path: Path, tag: str, image: str = ""
+) -> tuple[subprocess.CompletedProcess[str], list[str]]:
+    """Run `upgrade` for real (no dry run) on a copy of the wrapper, with a fake docker on PATH."""
+    import os
+    import shutil
+
+    wrapper = tmp_path / "librarian"
+    if not wrapper.exists():
+        shutil.copy(WRAPPER, wrapper)
+        (tmp_path / "bin").mkdir()
+        docker = tmp_path / "bin" / "docker"
+        docker.write_text(FAKE_DOCKER)
+        docker.chmod(0o755)
+    log = tmp_path / "docker.log"
+    log.unlink(missing_ok=True)
+    result = subprocess.run(
+        ["bash", str(wrapper), "upgrade", tag],
+        capture_output=True,
+        text=True,
+        check=False,
+        env={
+            **os.environ,
+            "PATH": f"{tmp_path / 'bin'}{os.pathsep}{os.environ['PATH']}",
+            "FAKE_DOCKER_LOG": str(log),
+            "LIBRARIAN_IMAGE": image,
+            "LIBRARIAN_READY_TIMEOUT": "0",
+            "LIBRARIAN_MODE": "host",
+            "LIBRARIAN_DRY_RUN": "0",
+            "LIBRARIAN_STACK": "",
+            "LIBRARIAN_BACKUP_URL": "",
+        },
+    )
+    return result, log.read_text().splitlines()
+
+
+def test_upgrade_to_an_image_that_never_gets_ready_goes_back_to_the_old_one(
+    tmp_path: Path,
+) -> None:
+    old, bad = "ghcr.io/me/librarian:sha-old", "ghcr.io/me/librarian:sha-bad"
+    r, log = _real_upgrade(tmp_path, "sha-bad", image=old)
+    assert r.returncode == 1
+    assert f"{old} is serving again" in r.stderr and "ROLLBACK FAILED" not in r.stderr
+    # The backup gate ran on the old image before anything was pulled.
+    assert log[0].startswith(f"{old}|") and f"ops upgrade {bad}" in log[0]
+    assert log[1].startswith(f"{bad}|") and log[1].endswith("pull librarian")
+    ups = [line.split("|")[0] for line in log if line.endswith("up -d --no-build")]
+    assert ups == [bad, old]  # the last `up` is the old image
+    assert log[-1].startswith(f"{old}|") and " exec " in log[-1]  # and it answered /readyz
+    assert not (tmp_path / ".ops" / "image").exists()  # the failed tag is never recorded
+
+
+def test_upgrade_records_the_two_previous_tags(tmp_path: Path) -> None:
+    repo = "ghcr.io/me/librarian"
+    for tag in ("sha-1", "sha-2", "sha-3"):
+        r, _ = _real_upgrade(tmp_path, f"{repo}:{tag}")
+        assert r.returncode == 0, r.stderr
+    state = tmp_path / ".ops"
+    assert (state / "image").read_text().strip() == f"{repo}:sha-3"
+    assert (state / "image.prev").read_text().strip() == f"{repo}:sha-2"
+    assert (state / "image.prev2").read_text().strip() == f"{repo}:sha-1"
+
+
 def test_upgrade_is_refused_locally_and_needs_a_tag() -> None:
     assert _run("--local", "--dry-run", "upgrade", "sha-1").returncode == 2
     assert _run("--dry-run", "upgrade").returncode == 2

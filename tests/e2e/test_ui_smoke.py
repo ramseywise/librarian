@@ -207,6 +207,9 @@ def _lesson_with_concepts() -> dict[str, Any]:
     for course in _get("/api/courses"):
         for module in course["modules"]:
             for outline in module["lessons"]:
+                # A module's readme opens the module's page, which lists no lesson concepts.
+                if outline["id"].endswith("/readme"):
+                    continue
                 lesson = _get(f"/api/courses/lessons/{outline['id']}")
                 if lesson["concepts"]:
                     return lesson

@@ -12,6 +12,7 @@ inject a fake neighbour function. The real MiniLM model is never loaded here.
 from __future__ import annotations
 
 import sys
+import threading
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
@@ -411,10 +412,36 @@ def test_semantic_failure_retries_after_backoff(
     monkeypatch.setattr(
         courses, "_semantic_failed_at", time.monotonic() - courses.SEMANTIC_RETRY_S - 1
     )
-    courses.catalog()  # window passed: the cache is dropped and the catalog rebuilt
+    stale = courses.catalog()  # window passed: served as it is, and rebuilt off the request
+    assert courses._semantic_failed_at is None
+    for thread in threading.enumerate():
+        if thread.name == courses.RETRY_THREAD:
+            thread.join(timeout=60)
     info = courses._load.cache_info()  # cache_clear() also resets the counters
     assert (info.hits, info.misses) == (0, 1)
-    assert courses._semantic_failed_at is None
+    assert courses.catalog() is not stale
+
+
+def test_the_warm_up_waits_for_a_locked_embeddings_cache(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Two workers start together: the second waits for the cache instead of building without links."""
+    calls: list[int] = []
+
+    def locked_once() -> str:
+        calls.append(1)
+        if len(calls) == 1:
+            raise OSError("IO Error: Could not set lock on file")
+        return "vectors"
+
+    monkeypatch.setattr(courses, "CACHE_POLL_S", 0.0)
+    with pytest.raises(OSError, match="lock"):  # a build inside a request does not wait
+        courses._wiki_vectors(locked_once)
+    calls.clear()
+    waiting = courses._cache_wait_s.set(5.0)
+    try:
+        assert courses._wiki_vectors(locked_once) == "vectors"
+    finally:
+        courses._cache_wait_s.reset(waiting)
+    assert len(calls) == 2
 
 
 def test_semantic_skips_ambiguous_page_stems(monkeypatch: pytest.MonkeyPatch) -> None:

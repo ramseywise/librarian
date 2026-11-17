@@ -1,5 +1,6 @@
 # Caddy terminates TLS on 80/443 and proxies to the API; the API publishes no host port.
-#   docker compose up -d --build     https://$LIBRARIAN_DOMAIN (default https://localhost)
+#   ./librarian start                https://$LIBRARIAN_DOMAIN (default https://localhost); a host pulls
+#                                    LIBRARIAN_IMAGE and never builds (docs/ops/deploy.md)
 # Single-user local flow, no TLS: `make app` adds docker-compose.local.yml (API on 127.0.0.1:8000).
 #   make app-build    (the private mountpoints must exist first: mkdir -p data/wiki/private data/courses/private)
 #

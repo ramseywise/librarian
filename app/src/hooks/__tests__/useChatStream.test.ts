@@ -152,7 +152,14 @@ describe("useChatStream", () => {
           frame({ type: "token", content: "Hello " }).slice(0, 10),
           frame({ type: "token", content: "Hello " }).slice(10),
           frame({ type: "token", content: "[page:rag]" }),
-          frame({ type: "grounding", cited: ["rag"], pages_read: ["rag"], ungrounded: [] }),
+          frame({
+            type: "grounding",
+            cited: ["rag"],
+            pages_read: ["rag"],
+            ungrounded: [],
+            unsupported: ["rag"],
+            sources: [{ id: "rag", hash: "abc" }],
+          }),
           frame({ type: "highlight", pages: ["rag"] }),
           'data: {"type":"done"}',
         ])
@@ -165,7 +172,13 @@ describe("useChatStream", () => {
     expect(a.content).toBe("Hello [page:rag]");
     expect(a.streaming).toBe(false);
     expect(a.error).toBeUndefined();
-    expect(a.grounding).toEqual({ cited: ["rag"], pagesRead: ["rag"], ungrounded: [] });
+    expect(a.grounding).toEqual({
+      cited: ["rag"],
+      pagesRead: ["rag"],
+      ungrounded: [],
+      unsupported: ["rag"],
+      sources: [{ id: "rag", hash: "abc" }],
+    });
     expect(onHighlight).toHaveBeenCalledWith(["rag"]);
     expect(result.current.streaming).toBe(false);
   });

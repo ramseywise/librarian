@@ -711,6 +711,10 @@ class DeckGraphTest(LectureBase):
     def test_covering_a_missing_note_is_named(self):
         self.assertIn("which does not exist", self.problems(self.lecture("99")))
 
+    def test_a_readme_edge_finds_the_mirror_s_lower_case_readme(self):
+        (self.pillar / "README.md").rename(self.pillar / "readme.md")
+        self.assertEqual(self.problems(self.lecture(requires=[f"{self.PILLAR}/README.md"])), "")
+
     def test_a_note_claimed_twice_is_named(self):
         self.assertIn(
             "already covered",

@@ -12,6 +12,7 @@ from typing import Any, cast
 
 import anthropic
 
+from librarian.agent import support
 from librarian.agent.tools import CHAT, INVALID_ARGS_PREFIX, Tool, ToolContext, tools_for
 from librarian.config import get_release, get_settings
 from librarian.log_config import get_logger
@@ -24,7 +25,7 @@ from librarian.observability import (
     trace_content_enabled,
 )
 from librarian.pricing import TokenUsage, cost_usd
-from librarian.retrieval import corpus
+from librarian.retrieval import citations, corpus
 
 log = get_logger(__name__)
 
@@ -280,7 +281,10 @@ async def run_agent_stream(
     """Run the tool-use loop and yield SSE-ready events.
 
     Events: token* → grounding → highlight? → done (with `answer_id`). Grounding is emitted even after an
-    error, over whatever was read. `history` is prior text-only user/assistant turns
+    error, over whatever was read; its `unsupported` lists cited pages that were read but whose
+    claim was not found in them (`agent.support`; a judge refines it only when
+    `Settings.claim_judge` is on, billed through `on_usage`); its `sources` hold each cited page's id and content hash
+    (`retrieval.citations`), which the telemetry line keeps too. `history` is prior text-only user/assistant turns
     (validated at the API boundary, trimmed here). `client` is injectable so tests and
     the eval harness can drive the loop without the env.
     `source` tags the telemetry line so eval traffic can be filtered from chat.
@@ -301,7 +305,8 @@ async def run_agent_stream(
     """
     answer_id = uuid.uuid4().hex
     variant = experiment() if variant is None else variant
-    model = model or default_model()
+    settings = get_settings()
+    model = model or settings.anthropic_model
     release = release or get_release()
     total = TokenUsage()
     tools: dict[str, Tool] = {t.name: t for t in tools_for(CHAT, tool_names)}
@@ -319,6 +324,8 @@ async def run_agent_stream(
     messages: list[dict[str, Any]] = [*prior, {"role": "user", "content": query}]
     referenced_pages: set[str] = set()
     pages_read: list[str] = []
+    page_texts: dict[str, str] = {}  # what read_page returned, for the claim-support check
+    pairs: list[support.Pair] = []
     tool_calls: list[dict[str, str]] = []
     answer_parts: list[str] = []
     turns = 0
@@ -330,14 +337,22 @@ async def run_agent_stream(
     model_span: Any = turn_span
 
     def grounding() -> dict[str, Any]:
-        cited = extract_citations("".join(answer_parts))
+        nonlocal pairs
+        answer = "".join(answer_parts)
+        cited = extract_citations(answer)
+        pairs = support.check(answer, page_texts, CITATION_RE, settings.claim_support_min_overlap)
         return {
             "cited": cited,
             "pages_read": pages_read,
             "ungrounded": [c for c in cited if c not in pages_read],
+            # Each cited page's content hash now, so a later check can tell it has changed.
+            "sources": citations.sources(cited),
+            # Cited and read, but the claim beside the citation was not found in the page.
+            **support.summary(pairs, judged=False),
         }
 
     answered = False  # the model loop is over (cleanly or on a handled error)
+    checked: dict[str, Any] | None = None  # the grounding sent to the client, once it is
     try:
         try:
             client = client or _get_client()
@@ -451,6 +466,7 @@ async def run_agent_stream(
                                 referenced_pages.add(page_id)
                                 if page_id not in pages_read:
                                     pages_read.append(page_id)
+                                    page_texts[page_id] = result
 
                         tool_result: dict[str, Any] = {
                             "type": "tool_result",
@@ -479,7 +495,31 @@ async def run_agent_stream(
 
         # Grounding is checked per answer: a citation counts only if that page was read in
         # this run. Before this, "never invent content" was a prompt line with no check.
-        yield {"type": "grounding", **grounding()}
+        checked = grounding()
+        failing = [p for p in pairs if not p.supported]
+        if settings.claim_judge and failing and not error:
+            # Behind a flag. A judge that fails or cannot be read leaves the check's result.
+            try:
+                async with asyncio.timeout(settings.claim_judge_timeout_s):
+                    verdicts, usage = await support.judge(
+                        client,
+                        model,
+                        failing,
+                        page_texts,
+                        page_chars=settings.claim_judge_page_chars,
+                    )
+                total = total + usage
+                if on_usage is not None:
+                    on_usage(usage)
+                if verdicts is not None:
+                    for pair, verdict in zip(failing, verdicts, strict=True):
+                        pair.supported = verdict
+                    checked.update(support.summary(pairs, judged=True))
+            except Exception as exc:
+                log.warning(
+                    "agent.claim_judge.failed", error=str(exc), error_type=type(exc).__name__
+                )
+        yield {"type": "grounding", **checked}
 
         # Highlight stays sourced from tool results only — a cited id is never added, so a
         # hallucinated citation cannot light up a graph node.
@@ -500,7 +540,8 @@ async def run_agent_stream(
             turn_span.set_attribute("gen_ai.completion", "".join(answer_parts))
         end_span(model_span)
         end_span(turn_span)
-        checked = grounding()
+        # The hashes logged are the ones the client was sent, not a second reading of the pages.
+        checked = checked or grounding()
         _log_answer(
             source=source,
             answer_id=answer_id,
@@ -517,6 +558,9 @@ async def run_agent_stream(
             pages_read=pages_read,
             cited=checked["cited"],
             ungrounded=checked["ungrounded"],
+            sources=checked["sources"],
+            unsupported=checked["unsupported"],
+            support=checked["support"],
             latency_ms=round((time.monotonic() - started) * 1000),
             stop_reason=stop_reason,
             error=error,

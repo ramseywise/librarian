@@ -2,7 +2,7 @@
 # repo targets below must keep working on a machine without ~/.claude set up.
 -include ~/.claude/Makefile.common
 
-.PHONY: slides slides-all flashcards deck-graph deck-graph-check deck-check app app-build dev deploy-content obsidian api ui mcp index-rebuild install-ui install-api setup-ollama test test-watch test-e2e install-browsers ingest scrape scrape-sessions scrape-docs scrape-repos lint lint-raw help codemap-reindex codemap-api install-codemap install-presenter eval eval-live eval-nofts eval-gate eval-chat eval-chat-dry e2e-container e2e-compose
+.PHONY: slides slides-all flashcards deck-graph deck-graph-check deck-check app app-build dev deploy-content obsidian api ui mcp index-rebuild install-ui install-api setup-ollama test test-watch test-e2e install-browsers ingest scrape scrape-sessions scrape-docs scrape-repos lint lint-raw help codemap-reindex codemap-api install-codemap install-presenter eval eval-live eval-nofts eval-gate eval-chat eval-chat-dry eval-grounding eval-grounding-dry e2e-container e2e-compose
 
 # The private tmpfs masks need their mountpoints on the host: the data mount is read-only.
 LOCAL_COMPOSE = docker compose -f docker-compose.yml -f docker-compose.local.yml
@@ -109,6 +109,15 @@ eval-chat:
 # Same questions, no API client: prints the plan and an estimated cost.
 eval-chat-dry:
 	uv run python -m evals.run_chat_eval --dry-run $(if $(LIMIT),--limit $(LIMIT),)
+
+# Grounding eval (assistant trust G3): the real agent on evals/golden_grounding.json, scored on
+# its citations only (no judge). BILLABLE; report-only until thresholds are set from a measured
+# baseline. Not part of eval-gate, which needs no API key. Ask the owner before the first paid run.
+eval-grounding:
+	uv run python -m evals.run_grounding_eval $(if $(LIMIT),--limit $(LIMIT),)
+
+eval-grounding-dry:
+	uv run python -m evals.run_grounding_eval --dry-run $(if $(LIMIT),--limit $(LIMIT),)
 
 eval-gate:
 	uv run python -m evals.run_eval --live --arm sem --verbose
@@ -227,6 +236,8 @@ help:
 	@echo "e2e-compose      — compose stack behind Caddy, 2 API replicas, e2e through TLS (tests/e2e/run_compose.sh)"
 	@echo "eval-chat        — BILLABLE: chat answers on evals/golden_chat.json, LLM-judged (WARN-only; LIMIT=N)"
 	@echo "eval-chat-dry    — the same, no API calls: plan and estimated cost"
+	@echo "eval-grounding   — BILLABLE: citation grounding on evals/golden_grounding.json (report-only; LIMIT=N)"
+	@echo "eval-grounding-dry — the same, no API calls: plan and estimated cost"
 	@echo "eval-gate        — run every gated live arm (sem, nofts, uniform, course, graph, multihop); no baseline written"
 
 # Course checks: stdlib ports of the learn-ai-engineering scripts, run over data/courses/.

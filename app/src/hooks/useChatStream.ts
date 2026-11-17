@@ -1,10 +1,20 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { apiFetch } from "../utils/api";
 
+/** A cited page and its content hash when the answer was written. */
+export interface CitedSource {
+  id: string;
+  hash: string;
+}
+
 export interface Grounding {
   cited: string[];
   pagesRead: string[];
   ungrounded: string[];
+  /** Cited and read, but the claim beside the citation was not found in the page. */
+  unsupported?: string[];
+  /** Kept with the message so a later check can tell a cited page has changed. */
+  sources?: CitedSource[];
 }
 
 export interface ChatMessage {
@@ -216,6 +226,8 @@ export function useChatStream(onHighlight: (pages: string[]) => void) {
             cited: (event.cited as string[]) ?? [],
             pagesRead: (event.pages_read as string[]) ?? [],
             ungrounded: (event.ungrounded as string[]) ?? [],
+            unsupported: (event.unsupported as string[]) ?? [],
+            sources: (event.sources as CitedSource[]) ?? [],
           };
           patch((m) => ({ ...m, grounding }));
         } else if (event.type === "highlight") {

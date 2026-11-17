@@ -1,4 +1,5 @@
-"""Tell the owner a job failed, through the Resend sender the sign-in mail already uses."""
+"""Tell the owner a job failed, through the Resend sender the sign-in mail already uses, and
+tell a dead-man monitor a job succeeded."""
 
 from __future__ import annotations
 
@@ -33,4 +34,22 @@ def send_alert(settings: Settings, subject: str, text: str) -> bool:
         log.error("ops.alert.failed", status=resp.status_code)
         return False
     log.info("ops.alert.sent", status=resp.status_code)
+    return True
+
+
+def ping_success(settings: Settings) -> bool:
+    """Fetch `LIBRARIAN_BACKUP_PING_URL`. False when it is unset or the monitor cannot be reached;
+    a failed ping never fails the job (the monitor alerts on the missing ping)."""
+    if not settings.backup_ping_url:
+        return False
+    try:
+        with httpx.Client(timeout=mailer.TIMEOUT_S, transport=mailer.transport) as client:
+            resp = client.get(settings.backup_ping_url)
+    except httpx.HTTPError as e:
+        log.warning("ops.ping.failed", error=str(e))
+        return False
+    if resp.status_code >= 300:
+        log.warning("ops.ping.failed", status=resp.status_code)
+        return False
+    log.info("ops.ping.sent", status=resp.status_code)
     return True

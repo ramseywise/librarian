@@ -284,6 +284,21 @@ class Settings(BaseSettings):
         default=1.0, validation_alias=_env("LIBRARIAN_CHAT_USER_DAILY_BUDGET_USD")
     )
     # The daily spend is estimated from the price table in librarian.pricing, keyed by model id.
+    # Claim support (librarian.agent.support): the share of a claim's content words its cited
+    # page must hold for the deterministic check to pass. Not yet tuned on a measured baseline.
+    claim_support_min_overlap: float = Field(
+        default=0.5, validation_alias=_env("LIBRARIAN_CLAIM_SUPPORT_MIN_OVERLAP")
+    )
+    # Off by default: one extra model call per answer, on the pairs the check failed. It runs
+    # on the chat model and its usage counts against the daily budgets above.
+    claim_judge: bool = Field(default=False, validation_alias=_env("LIBRARIAN_CLAIM_JUDGE"))
+    claim_judge_timeout_s: float = Field(
+        default=30.0, validation_alias=_env("LIBRARIAN_CLAIM_JUDGE_TIMEOUT_S")
+    )
+    # Most characters of a cited page the judge is shown.
+    claim_judge_page_chars: int = Field(
+        default=20_000, validation_alias=_env("LIBRARIAN_CLAIM_JUDGE_PAGE_CHARS")
+    )
 
     # Section split (librarian.retrieval.sections) and how much of the best section search returns.
     # Settings, not constants, so chunk size is chosen on the evals.
@@ -352,6 +367,9 @@ class Settings(BaseSettings):
     backup_max_age_min: int = Field(
         default=15, ge=0, validation_alias=_env("LIBRARIAN_BACKUP_MAX_AGE_MIN")
     )
+    # Dead-man check: a URL fetched after each nightly backup that succeeded (a Healthchecks-style
+    # "ping on success"), so a job that never runs is noticed. Unset: no ping.
+    backup_ping_url: str = Field(default="", validation_alias=_env("LIBRARIAN_BACKUP_PING_URL"))
     # Time of day (UTC, HH:MM) the compose `backup` service runs `ops backup`.
     backup_at: str = Field(
         default="03:30",

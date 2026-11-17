@@ -1,4 +1,4 @@
-# imported_hash: c0eec673ce1ae7ee
+# imported_hash: 3fd5f35d8e1a5278
 # Lecture on notes/05-cleaning.md and notes/06-dates-and-times.md, in the notes' order.
 # make slides PILLAR=data-analytics/01-python-for-data-analysis LECTURE=02-clean STRICT=1 PREVIEW=1
 deck:
@@ -252,7 +252,7 @@ parts:
           bullets: ["Stands for something that could not be measured", "Can safely be removed"]
         right:
           title: Observation
-          bullets: ["Should have been recorded, was not", "Needs keeping"]
+          bullets: ["Should be there, but is not", "Needs keeping"]
         takeaway: Ask why a value is missing before you fill or drop it, because pandas can count gaps but not say what they mean.
         answer: "A structural missing value stands for something that could not be measured, so it can safely be removed. A missing observation should have been recorded and was not, so it needs keeping."
         source: notes/05-cleaning.md

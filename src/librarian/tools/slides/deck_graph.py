@@ -78,6 +78,15 @@ def readme_of(pillar: Path) -> Path | None:
     return None
 
 
+def note_path(root: Path, note: str) -> Path:
+    """Where an edge's target is on disk. A spec written upstream names `README.md`, which the mirror keeps as
+    `readme.md`: a case-sensitive filesystem needs the name that is there."""
+    path = root / note
+    if path.name.lower() == "readme.md" and not path.is_file():
+        return readme_of(path.parent) or path
+    return path
+
+
 def _readme_name(pillar: Path) -> str:
     readme = readme_of(pillar)
     return readme.name if readme else "readme.md"
@@ -172,7 +181,7 @@ def label(note: str, lectures: list[Lecture], root: Path = ROOT, here: str = "")
     for lecture in lectures:
         if note in lecture.covers:
             return f"{lecture.title}{where}"
-    path = root / note
+    path = note_path(root, note)
     return f"{note_title(path) if path.is_file() else note}{where}, notes only"
 
 
@@ -183,7 +192,7 @@ def slide_label(note: str, lectures: list[Lecture], root: Path = ROOT, here: str
     for lecture in lectures:
         if note in lecture.covers:
             return f"{lecture.title}{where}"
-    path = root / note
+    path = note_path(root, note)
     return f"{note_title(path) if path.is_file() else Path(note).stem}{where}"
 
 
@@ -196,14 +205,14 @@ def problems(lectures: list[Lecture], root: Path = ROOT) -> list[str]:
         if not lecture.covers:
             found.append(f"{name}: covers nothing")
         for note in lecture.covers:
-            if not (root / note).is_file():
+            if not note_path(root, note).is_file():
                 found.append(f"{name}: covers {note}, which does not exist")
             if note in owner:
                 found.append(f"{name}: {note} is already covered by {owner[note]}")
             owner[note] = name
         for edge in EDGES:
             for note in getattr(lecture, edge):
-                if not (root / note).is_file():
+                if not note_path(root, note).is_file():
                     found.append(f"{name}: {edge} {note}, which does not exist")
     needs = {
         f"{lec.pillar}/{lec.stem}": {owner[n] for n in lec.requires if n in owner}

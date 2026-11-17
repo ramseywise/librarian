@@ -163,6 +163,38 @@ def test_schedule_loop_survives_a_failed_backup(
     assert n["runs"] == 1 and slept and slept[0] > 0
 
 
+def test_schedule_pings_the_dead_man_monitor_only_after_a_backup_that_succeeded(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    pinged: list[str] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        pinged.append(str(request.url))
+        return httpx.Response(200)
+
+    monkeypatch.setattr(mailer, "transport", httpx.MockTransport(handler))
+    monkeypatch.setattr(schedule, "prune", lambda *_a: 0)
+    monkeypatch.setattr(schedule, "get_engine", lambda: None)
+    monkeypatch.setenv("LIBRARIAN_BACKUP_PING_URL", "https://hc.example/ping/abc")
+
+    def run(backup) -> None:  # noqa: ANN001
+        monkeypatch.setattr(schedule, "run_backup", backup)
+        schedule.loop(Settings(), once=True, sleep=lambda _s: None, clock=lambda: NOW)
+
+    def boom(_s: Settings) -> None:
+        raise OpsError("bucket unreachable")
+
+    run(boom)
+    assert pinged == []
+    run(lambda _s: object())
+    assert pinged == ["https://hc.example/ping/abc"]
+
+    # Unset: no request at all.
+    monkeypatch.setenv("LIBRARIAN_BACKUP_PING_URL", "")
+    run(lambda _s: object())
+    assert len(pinged) == 1
+
+
 # ── storage ─────────────────────────────────────────────────────────────────
 
 

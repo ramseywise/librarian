@@ -89,9 +89,10 @@ current_image() {
     fi
 }
 
-save_image() {  # $1 = tag now serving; the one before it is kept in .ops/image.prev
+save_image() {  # $1 = tag now serving; the two before it are kept in .ops/image.prev and .prev2
     if [ "$DRY" = "1" ]; then echo "+ (record image $1 in $STATE_DIR/image)"; return 0; fi
     mkdir -p "$STATE_DIR"
+    if [ -f "$STATE_DIR/image.prev" ]; then cp "$STATE_DIR/image.prev" "$STATE_DIR/image.prev2"; fi
     if [ -f "$STATE_DIR/image" ]; then cp "$STATE_DIR/image" "$STATE_DIR/image.prev"; fi
     printf '%s\n' "$1" >"$STATE_DIR/image"
 }

@@ -1,5 +1,6 @@
-import { useRef, useEffect, useState, type KeyboardEvent } from "react";
+import { useRef, useEffect, useMemo, useState, type KeyboardEvent } from "react";
 import type { ChatMessage } from "../hooks/useChatStream";
+import { staleFor, useCitationStatus, type StaleMap } from "../hooks/useCitationStatus";
 import { ChatMarkdown } from "./chat/ChatMarkdown";
 import { AnswerRating } from "./feedback/AnswerRating";
 import { GroundingLine } from "./chat/GroundingLine";
@@ -28,6 +29,19 @@ export function ChatPanel({
 }: Props) {
   const [input, setInput] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
+  // Cited pages that changed after their answer, per message id. Rebuilt only when a check
+  // returns, so the memoised markdown does not re-render on every token.
+  const citationStates = useCitationStatus(messages);
+  const staleByMessage = useMemo(() => {
+    const byId: Record<string, StaleMap> = {};
+    for (const m of messages) {
+      const stale = staleFor(m.grounding?.sources, citationStates);
+      if (Object.keys(stale).length > 0) byId[m.id] = stale;
+    }
+    return byId;
+    // Sources arrive once, with the grounding event; the states are what change after that.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [citationStates]);
 
   useEffect(() => {
     // Instant while tokens arrive: smooth scrolling restarts on every token and lags.
@@ -97,6 +111,7 @@ export function ChatPanel({
                   <ChatMarkdown
                     content={m.content}
                     ungrounded={m.grounding?.ungrounded}
+                    stale={staleByMessage[m.id]}
                     onOpenPage={onOpenPage}
                   />
                 )}
@@ -112,7 +127,11 @@ export function ChatPanel({
               </div>
             )}
             {m.grounding && !m.streaming && (
-              <GroundingLine grounding={m.grounding} onOpenPage={onOpenPage} />
+              <GroundingLine
+                grounding={m.grounding}
+                stale={staleByMessage[m.id]}
+                onOpenPage={onOpenPage}
+              />
             )}
             {m.role === "assistant" && m.answerId && !m.streaming && !m.error && (
               <AnswerRating answerId={m.answerId} />

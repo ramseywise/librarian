@@ -109,8 +109,8 @@ cards:
 - front: What can you not yet say after processing data?
   back: You cannot yet say whether a difference in the table is real or luck, which is the next module.
   lesson: data-analytics/01-python-for-data-analysis/readme
-- front: Why did McKinney build pandas?
-  back: Statistical data tends to arrive as a two-dimensional list of observations with named fields, and the structures Python offered did not make that convenient compared with R's data.frame.
+- front: What does a DataFrame let you leave out of the loop?
+  back: 'The bookkeeping: naming the accumulator, handling a customer''s first appearance and spelling out the arithmetic per row. Three lines remain, and the groupby line is the question itself.'
   lesson: data-analytics/01-python-for-data-analysis/notes/01-series-and-dataframe
 - front: What are the parts of a Series?
   back: Values of one type, an index holding a label for each value, and a dtype for the values.
@@ -139,8 +139,8 @@ cards:
 - front: Which commands do you run first on a new frame?
   back: shape, head, dtypes and info, then describe and value_counts for what the values look like.
   lesson: data-analytics/01-python-for-data-analysis/notes/01-series-and-dataframe
-- front: How should you read the count row, and the mean against the median?
-  back: A count below the row total is the first sign of gaps, and a mean of 37.67 above a median of 35.00 shows the one 95.00 grinder pulling it up.
+- front: In describe, what do a low count and a mean above the median tell you?
+  back: A count below the number of rows means gaps. A mean above the median means a few large values pull it up, as the one 95.00 grinder does to unit_price (mean 37.67, median 35.00).
   lesson: data-analytics/01-python-for-data-analysis/notes/01-series-and-dataframe
 - front: What does sum do on numbers that were read as strings?
   back: 'It concatenates them: 3, 12 and 5 sum to 3125, and after pd.to_numeric they sum to 20.'
@@ -160,8 +160,8 @@ cards:
 - front: How do you change part of a frame in pandas 3?
   back: Use a single .loc call that makes the selection and the assignment together.
   lesson: data-analytics/01-python-for-data-analysis/notes/01-series-and-dataframe
-- front: Why can't you test for a missing value with ==?
-  back: NaN == NaN is false by the floating-point standard, so use isna().
+- front: Which six traps does the first chapter warn about?
+  back: Iterating row by row, reading .0 as harmless, trusting a dtype unseen, comparing with NaN using == (it is always false, so use isna()), following pre-3.0 advice on views and copies, and forgetting that methods return new objects.
   lesson: data-analytics/01-python-for-data-analysis/notes/01-series-and-dataframe
 - front: What are the steps of a careful load?
   back: Look at the raw file, read_csv with the decisions stated, check shape, dtypes and missing counts, then take only the rows and columns you need.
@@ -178,9 +178,6 @@ cards:
 - front: Which three options deal with the banner, the missing marker and the dates?
   back: 'comment="#", na_values={"region": ["-"]} and parse_dates=["date"].'
   lesson: data-analytics/01-python-for-data-analysis/notes/02-loading-data
-- front: How do you stop read_csv turning 01234 into 1234?
-  back: 'Pass dtype={"zip": "str"} for any identifier with a leading zero.'
-  lesson: data-analytics/01-python-for-data-analysis/notes/02-loading-data
 - front: Which function reads Excel, and what does it need?
   back: read_excel, which needs openpyxl, and sheet_name picks the sheet.
   lesson: data-analytics/01-python-for-data-analysis/notes/02-loading-data
@@ -190,23 +187,20 @@ cards:
 - front: How do you pass a value into a read_sql query safely?
   back: Through params, and never by pasting values into the query string.
   lesson: data-analytics/01-python-for-data-analysis/notes/02-loading-data
-- front: What do PROJECT 4/7 COLUMNS and SELECTION tell you about the scan?
-  back: The scan reads four of the seven columns (the three asked for plus region, which the filter needs), and the filter is applied inside the scan.
+- front: What does a lazy scan_csv push into the read?
+  back: The filter and the column choice. The plan read four of the seven columns (the three asked for plus region, which the filter needs) and applied the filter inside the scan.
   lesson: data-analytics/01-python-for-data-analysis/notes/02-loading-data
 - front: Which tool filters before the data is sent?
   back: SQL through read_sql filters in the database before anything is sent. pandas filters in memory after the whole file is read, and Polars filters inside the scan.
   lesson: data-analytics/01-python-for-data-analysis/notes/02-loading-data
-- front: Why is a database query not a safe way to build a filter from pasted values?
-  back: Pasting values into the query string lets an odd value change the query, so pass them through params.
+- front: Which eight mistakes make a load go quietly wrong?
+  back: Parsing before reading the raw text, trusting a parse that ran, letting read_csv guess identifiers, leaving the encoding to the default, judging types from a peek, loading a table to filter it, pasting values into a query string, and expecting two tools to guess alike.
   lesson: data-analytics/01-python-for-data-analysis/notes/02-loading-data
 - front: What forms of selection does a NumPy array give you?
   back: A position, a slice with the start included and the stop excluded, a boolean mask, and a list of positions.
   lesson: data-analytics/01-python-for-data-analysis/notes/03-indexing-and-selection
 - front: Which three NumPy behaviours carry into pandas?
   back: A slice is a view, boolean and list-of-positions selection always copies, and masks combine with & and | in parentheses.
-  lesson: data-analytics/01-python-for-data-analysis/notes/03-indexing-and-selection
-- front: What does the orders frame hold?
-  back: 11 clean orders with order_id, date, customer, product, qty, unit_price, region and revenue.
   lesson: data-analytics/01-python-for-data-analysis/notes/03-indexing-and-selection
 - front: What does each of [], loc and iloc select by?
   back: '[] picks columns by name and filters rows with a boolean Series, loc selects by label, and iloc selects by integer position.'
@@ -250,11 +244,8 @@ cards:
 - front: How do you find which rows a join could not match?
   back: 'Use indicator=True and read _merge: left_only rows had no customer record and right_only rows had no orders.'
   lesson: data-analytics/01-python-for-data-analysis/notes/04-reshaping-and-joins
-- front: How do you make a merge fail when the right keys repeat?
-  back: Pass validate="many_to_one"; pandas raises a MergeError when the right keys are not unique.
-  lesson: data-analytics/01-python-for-data-analysis/notes/04-reshaping-and-joins
-- front: What is the habit that makes a join checked?
-  back: State validate, compare the row count before and after, and compare one total.
+- front: Which three checks make a join safe?
+  back: State validate (validate="many_to_one" raises a MergeError when the right keys repeat), compare the row count before and after, and compare one total.
   lesson: data-analytics/01-python-for-data-analysis/notes/04-reshaping-and-joins
 - front: Which category keeps the larger share of its revenue as margin?
   back: Consumables keep about 62 of every 100 (60.0 of 97.5) against about 37 for brew gear (142.0 of 382.0), since a filter costs 2.50 and sells at 6.50.
@@ -262,11 +253,8 @@ cards:
 - front: What happens to a column that one frame lacks in concat?
   back: It is NaN for that frame's rows, not an error, and ignore_index=True gives fresh row labels.
   lesson: data-analytics/01-python-for-data-analysis/notes/04-reshaping-and-joins
-- front: When is a wide table untidy?
-  back: When its column headers are values of a variable, such as w1, w2 and w3 for week, and not variable names.
-  lesson: data-analytics/01-python-for-data-analysis/notes/04-reshaping-and-joins
-- front: How do you turn the week columns into rows?
-  back: Call wide.melt(id_vars="product", var_name="week", value_name="units").
+- front: When is a wide table untidy, and which function fixes it?
+  back: When its column headers are values of a variable (w1, w2 and w3 are weeks). melt turns them into rows.
   lesson: data-analytics/01-python-for-data-analysis/notes/04-reshaping-and-joins
 - front: What does unstack do, and when is fill_value=0 right?
   back: unstack moves an index level up into the columns, with missing combinations as NaN, and fill_value=0 is right when a missing combination means no units sold.
@@ -281,13 +269,13 @@ cards:
   back: Gaps in qty and region, south and South counted as two regions, keys such as Ana and ana with a trailing space that will not join, and unit_price still read as str.
   lesson: data-analytics/01-python-for-data-analysis/notes/04-reshaping-and-joins
 - front: Which half of the 80% claim is the useful half?
-  back: You will clean the same data again, so cleaning should be a script you can rerun and not edits you did once.
+  back: 'The second half: preparation is no one-off first step. It gets repeated as new problems surface, so write it as a script you can rerun.'
   lesson: data-analytics/01-python-for-data-analysis/notes/05-cleaning
 - front: What are the steps from the loaded frame to a saved one?
   back: Count, fix, decide, assert and save, and go back to counting whenever a new problem turns up.
   lesson: data-analytics/01-python-for-data-analysis/notes/05-cleaning
 - front: Which of the loaded columns is already the type it claims to be?
-  back: Read the dtypes as a list of jobs, because only date is already what it claims to be.
+  back: Only date is already the type it claims to be, so read the other dtypes as a list of jobs.
   lesson: data-analytics/01-python-for-data-analysis/notes/05-cleaning
 - front: Why does a groupby count two spellings of filter as separate things?
   back: A groupby counts different spellings of one value as separate things, and an invisible space is enough.
@@ -302,16 +290,16 @@ cards:
   back: Strip the sign with regex=False, convert with errors="coerce", and count the NaN it makes.
   lesson: data-analytics/01-python-for-data-analysis/notes/05-cleaning
 - front: What is the difference between map and replace?
-  back: Choose map when the dictionary should be complete and a miss should surface, and replace for a handful of corrections.
+  back: map applies the dictionary to every value, and a value absent from it becomes NaN. replace changes only the values you list and leaves the rest.
   lesson: data-analytics/01-python-for-data-analysis/notes/05-cleaning
 - front: Why check the column that should be unique and not only the whole row?
   back: Check duplicates on the column that should be unique, because a full-row comparison misses rows that differ elsewhere.
   lesson: data-analytics/01-python-for-data-analysis/notes/05-cleaning
 - front: What is the difference between a structural missing value and a missing observation?
-  back: Ask why a value is missing before you fill or drop it, because pandas can count gaps but not say what they mean.
+  back: A structural missing value stands for something that could not be measured, so it can safely be removed. A missing observation should have been recorded and was not, so it needs keeping.
   lesson: data-analytics/01-python-for-data-analysis/notes/05-cleaning
 - front: Which columns have gaps in the cleaned export, and in which orders?
-  back: Three orders have gaps, one in qty and two in region, and the two kinds need different treatment.
+  back: Orders 1005 and 1010 have no region and order 1006 has no qty, and the two kinds of gap need different treatment.
   lesson: data-analytics/01-python-for-data-analysis/notes/05-cleaning
 - front: What do you do with a missing region and a missing qty?
   back: Keep a row with a missing region, but find out a missing qty instead of filling it with the mean.
@@ -320,7 +308,7 @@ cards:
   back: Write a confirmed fact in with a single .loc and a comment, then cast qty to int64 now it has no gaps.
   lesson: data-analytics/01-python-for-data-analysis/notes/05-cleaning
 - front: When does ffill make sense, and what do sum and mean do with gaps?
-  back: Always read the count alongside the mean, because a summary can look fine when half the column is empty.
+  back: ffill fits a slowly changing reading such as a price list, not independent orders. sum and mean skip gaps, so the mean of 48, gap, gap, 52, gap is 50.0, over 2 values and not 5.
   lesson: data-analytics/01-python-for-data-analysis/notes/05-cleaning
 - front: Why set returns aside in their own frame and not delete them?
   back: Set impossible rows aside and keep them, because you can then report the loss and undo it.
@@ -340,11 +328,11 @@ cards:
 - front: How do you write the cleaning steps as one rerunnable function?
   back: One function that takes a path and returns a clean frame lets next month's export run through the same steps.
   lesson: data-analytics/01-python-for-data-analysis/notes/05-cleaning
-- front: What are the steps inside load_orders, and what does it print?
-  back: Read with decisions stated, drop duplicates on the key, normalise, record the decisions, assert and count. It prints loaded 13 rows, kept 11.
+- front: What does load_orders print, and which rows does that line account for?
+  back: It prints loaded 13 rows, kept 11. The two removed rows are the repeat of order 1006 and the return, order 1008.
   lesson: data-analytics/01-python-for-data-analysis/notes/05-cleaning
-- front: Which cleaning habits go quietly wrong, and what is the fix for each?
-  back: Keep the raw data, count what coerce and every drop remove, and assert meanings and not only dtypes.
+- front: Which habits keep a cleaning script from going quietly wrong?
+  back: Keep the raw data unchanged and fix in code. Count what coerce makes. Ask why a value is missing. Print row counts and keep what you removed. Check the column that should be unique. Use Parquet, not pickle, to archive. Assert the range and the allowed values.
   lesson: data-analytics/01-python-for-data-analysis/notes/05-cleaning
 - front: What are a timestamp, a timedelta and a period?
   back: A timestamp is a moment, a timedelta a length and a period a span, and most confusion goes once you know which.
@@ -383,13 +371,13 @@ cards:
   back: A daily or even monthly total by local date differs from one by UTC date, so choose the reporting zone before grouping.
   lesson: data-analytics/01-python-for-data-analysis/notes/06-dates-and-times
 - front: What are the traps in converting local times to UTC?
-  back: Convert local times with the zone, never a fixed hour, and let pandas raise on a time that never happened.
+  back: The offset changes with daylight saving, so a fixed hour is wrong half the year. A local time that never happened raises. `utc=True` converts text that carries its own offsets, so two strings that both say 10:00 come out an hour apart.
   lesson: data-analytics/01-python-for-data-analysis/notes/06-dates-and-times
-- front: Which parsing mistakes go quietly wrong, and what is the fix for each?
-  back: State the format, count the NaT, read min and max, and parse each source with its own format.
+- front: Which four habits keep a date parse from going quietly wrong?
+  back: Check `dtypes` and pass `parse_dates`. State `format=`. After `errors="coerce"`, count the NaT and read `min` and `max`. Parse each source with its own format.
   lesson: data-analytics/01-python-for-data-analysis/notes/06-dates-and-times
-- front: Which arithmetic and time zone mistakes go quietly wrong?
-  back: Use DateOffset or periods for months, localize each source on arrival, and store in UTC.
+- front: Which habits keep date arithmetic and time zones from going quietly wrong?
+  back: Add a month with DateOffset or work in periods. Label a whole month with a period. Localize each source on arrival. Store in UTC.
   lesson: data-analytics/01-python-for-data-analysis/notes/06-dates-and-times
 - front: Which rules of thumb keep a cleaning job honest?
   back: Keep the raw file and fix in code. Count what coerce makes. Ask why a value is missing. Assert meanings. State date formats. Store time in UTC.
@@ -404,7 +392,7 @@ cards:
   back: A GroupBy object computes nothing until you ask for an aggregation, and iterating over it gives each key with its piece.
   lesson: data-analytics/01-python-for-data-analysis/notes/07-groupby-and-aggregation
 - front: Which kind of calculation falls outside split, apply, combine?
-  back: The pattern assumes each piece is handled independently, so a running mean needs different tools.
+  back: One whose pieces overlap, such as a running mean, where each step overlaps the last. It needs different tools, the rolling windows later in this lecture.
   lesson: data-analytics/01-python-for-data-analysis/notes/07-groupby-and-aggregation
 - front: What can you pass as a groupby key?
   back: A key is a column, a list of columns, or any Series of the right length, and as_index=False keeps keys as columns.
@@ -413,10 +401,10 @@ cards:
   back: size counts rows including missing values, and count counts non-missing values per column, so they differ when a column has gaps.
   lesson: data-analytics/01-python-for-data-analysis/notes/07-groupby-and-aggregation
 - front: Why print a count beside every group mean?
-  back: Print a count beside every mean, because 5.0 rests on one value out of two and 4.0 on one out of three.
+  back: A mean can rest on very few values. Here 5.0 for n rests on one rating out of two rows and 4.0 for s on one out of three, and only the count shows it.
   lesson: data-analytics/01-python-for-data-analysis/notes/07-groupby-and-aggregation
 - front: Why does mean on a frame with text columns now raise an error?
-  back: Mean on a frame with text columns raises in current pandas, so select the numeric columns or pass numeric_only=True.
+  back: Current pandas raises a TypeError on text columns, where old versions silently dropped them. Select the numeric columns you mean or pass numeric_only=True.
   lesson: data-analytics/01-python-for-data-analysis/notes/07-groupby-and-aggregation
 - front: How does named aggregation name its output columns?
   back: Named aggregation takes a source column and a function for each output name, and built-in names beat your own function.
@@ -425,7 +413,7 @@ cards:
   back: Sum the numerator and the denominator per group, and only then divide.
   lesson: data-analytics/01-python-for-data-analysis/notes/07-groupby-and-aggregation
 - front: What changes between the mean of rates and the true rate by region?
-  back: East beats north on the mean of rates and north beats east on the true rate, so the wrong method changes the ranking.
+  back: East beats north on the mean of rates, but north wins on the true rate, so the method changes the ranking.
   lesson: data-analytics/01-python-for-data-analysis/notes/07-groupby-and-aggregation
 - front: Why does east show 0.492 when its true margin rate is 0.398?
   back: East averages two very different rates to 0.492, while the shop kept 43.0 of 108.0, or 0.398.
@@ -437,16 +425,16 @@ cards:
   back: transform answers questions a raw number cannot, such as whether a row is large for its group, and it beats apply for group statistics.
   lesson: data-analytics/01-python-for-data-analysis/notes/07-groupby-and-aggregation
 - front: Why fill a gap from its own group, and what comes first?
-  back: A group-wise fill uses the mean of the row's own group, though you should first ask why the value is missing.
+  back: The group's mean beats the global mean when regions differ. First ask why the value is missing.
   lesson: data-analytics/01-python-for-data-analysis/notes/07-groupby-and-aggregation
 - front: What does the function you pass to filter receive and return?
-  back: filter keeps or drops each whole group by a True or False function, such as orders from repeat customers.
+  back: It receives a whole group and returns True or False, and True keeps all of that group's rows.
   lesson: data-analytics/01-python-for-data-analysis/notes/07-groupby-and-aggregation
 - front: How do agg, transform, filter and apply differ in what they return?
-  back: To choose among the four, ask what shape comes back, which is one row per group, the same rows, a subset, or anything.
+  back: agg returns one row per group, transform the same rows as the input, filter a subset of the rows, and apply anything you stitch together.
   lesson: data-analytics/01-python-for-data-analysis/notes/07-groupby-and-aggregation
 - front: When is apply worth using, and what is faster for the top row per group?
-  back: Reach for apply last, since sort then head gives the top row per group faster and keeps the frame flat.
+  back: Use apply only when nothing more specific fits, since it is the slowest option. For the top row per group, sort_values then groupby(...).head(1) is faster and keeps the frame flat.
   lesson: data-analytics/01-python-for-data-analysis/notes/07-groupby-and-aggregation
 - front: What does the observed option do when a group key is categorical?
   back: Since pandas 3.0, observed defaults to True so empty categories vanish, and observed=False keeps them for a fixed report.
@@ -464,7 +452,7 @@ cards:
   back: normalize turns counts into shares, so east is half brew and half consumable whatever its size.
   lesson: data-analytics/01-python-for-data-analysis/notes/07-groupby-and-aggregation
 - front: Name the groupby pitfalls and the fix for each.
-  back: The groupby mistakes raise no error, so sum then divide, keep a count, check the groups add up, and use apply last.
+  back: Averaging averages (sum, then divide), lost NaN keys (dropna=False), size and count swapped, means without counts, the default aggfunc of pivot_table (the mean), old syntax (axis=1, text columns), and reaching for apply first (use agg or transform).
   lesson: data-analytics/01-python-for-data-analysis/notes/07-groupby-and-aggregation
 - front: Which four rules does time add to a grouping?
   back: Time adds order, unequal months, interval labels and absent rows, which is why it is more than another key.
@@ -476,7 +464,7 @@ cards:
   back: Conform the series with asfreq to see absent days as NaN, then decide what each gap means.
   lesson: data-analytics/01-python-for-data-analysis/notes/08-time-series
 - front: Which frequency aliases did pandas 3.0 replace, and why?
-  back: Pandas 3.0 replaced M, Q, Y, H and T with ME, QE, YE, h and min, so old notebooks fail on freq="M".
+  back: M, Q, Y, H and T became ME, QE, YE, h and min, because ME (month end) had to be told apart from MS (month start).
   lesson: data-analytics/01-python-for-data-analysis/notes/08-time-series
 - front: What does shift do to the index and to the values?
   back: shift slides values along the index so each row can see an earlier value, which is the tool behind every comparison to a previous period.
@@ -485,34 +473,34 @@ cards:
   back: Shifting by 7 compares the same weekday and cuts the typical change from 13% to about 9%.
   lesson: data-analytics/01-python-for-data-analysis/notes/08-time-series
 - front: What does resample do, and what does count add to the output?
-  back: resample bins by time like a groupby, so aggregate with sum, mean and count together.
+  back: resample is a groupby whose key is a time bin. The count shows how many observations each bin holds, here 31, 29 and 29 for January to March.
   lesson: data-analytics/01-python-for-data-analysis/notes/08-time-series
 - front: Why is a monthly sum not directly comparable, and what is fairer?
-  back: A monthly sum compares unequal lengths, so read count and mean beside it, as March has 29 observations once two outage days drop out.
+  back: A monthly sum compares unequal lengths, so read the count and the mean beside it.
   lesson: data-analytics/01-python-for-data-analysis/notes/08-time-series
 - front: What do closed and label control in a resample?
   back: closed says which edge belongs inside the bin and label says which edge names it, so choose both on purpose.
   lesson: data-analytics/01-python-for-data-analysis/notes/08-time-series
 - front: What does upsampling create, and what does carrying a value forward assume?
-  back: Carrying a value forward suits a monthly price list and misrepresents a monthly sales total.
+  back: Upsampling creates rows with nothing in them. Carrying a value forward assumes it held until the next one, which suits a price list and misrepresents a sales total.
   lesson: data-analytics/01-python-for-data-analysis/notes/08-time-series
 - front: Which calendar groupings does the note use on the daily series?
-  back: Group by a period or a weekday name for the seasonal view, and pick the reporting time zone before you do.
+  back: Group by a period for calendar months, and by the weekday name for the seasonal view.
   lesson: data-analytics/01-python-for-data-analysis/notes/08-time-series
 - front: How do rolling, expanding and ewm differ on the same days?
-  back: A rolling window slides a fixed span along the series, and a 7-day mean removes the weekly pattern because each window holds every weekday.
+  back: rolling slides a fixed window, seven rows for rolling(7) and seven calendar days for rolling("7D"). expanding averages everything so far, and ewm weights recent days more.
   lesson: data-analytics/01-python-for-data-analysis/notes/08-time-series
 - front: How do rolling(7), rolling("7D"), expanding and ewm differ?
   back: rolling(7) counts rows and rolling("7D") counts days, expanding uses all so far, and ewm weights recent days more.
   lesson: data-analytics/01-python-for-data-analysis/notes/08-time-series
 - front: How do trailing and centred windows differ, and which can feed a model?
-  back: A centred window reads the future and rises before the event, so keep it off anything you feed to a model.
+  back: A trailing window uses that date and earlier ones, and a centred one uses future values. Only the trailing window can feed a model.
   lesson: data-analytics/01-python-for-data-analysis/notes/08-time-series
 - front: Name the time-series pitfalls and the fix for each.
-  back: Show the gaps, use current aliases, compare per-day means, keep features backward, and sort and de-duplicate the index.
+  back: Absent rows (asfreq), old aliases (ME, QE, YE, h, min), raw monthly sums (per-day means), leakage (no negative shift or center=True), removed resample arguments, duplicate timestamps (index.is_unique), an unsorted index (sort_index) and totals in the wrong time zone.
   lesson: data-analytics/01-python-for-data-analysis/notes/08-time-series
 - front: Which checks do you run when you summarise by group and by time?
-  back: Group by shape, divide sums for rates, print counts, show gaps and keep model features looking backward.
+  back: Pick the method by shape, divide sums for rates, print counts, show gaps and keep features backward.
   lesson: data-analytics/01-python-for-data-analysis/notes/08-time-series
 - front: What can't the toolkit tell you about a difference between groups?
   back: Whether a difference in the table is real or luck, which probability and statistics answer next.

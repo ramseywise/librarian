@@ -1,6 +1,7 @@
 import { memo, useMemo } from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
+import type { StaleMap } from "../../hooks/useCitationStatus";
 import { CitationChip } from "./CitationChip";
 import { CITATION_ATTR, remarkCitations } from "./remarkCitations";
 
@@ -8,6 +9,8 @@ interface Props {
   content: string;
   /** Page ids cited but not read; their chips render as warnings. */
   ungrounded?: string[];
+  /** Cited pages that changed or went away after the answer; their chips say so. */
+  stale?: StaleMap;
   onOpenPage?: (id: string) => void;
 }
 
@@ -20,6 +23,7 @@ function withoutNode<T extends { node?: unknown }>(props: T): Omit<T, "node"> {
 
 const remarkPlugins = [remarkGfm, remarkCitations];
 const EMPTY: string[] = [];
+const NOT_STALE: StaleMap = {};
 
 // Assistant message body. No raw HTML (react-markdown escapes it by default) and no
 // math. Partial input while streaming is fine: an unclosed fence renders as a code block
@@ -27,6 +31,7 @@ const EMPTY: string[] = [];
 export const ChatMarkdown = memo(function ChatMarkdown({
   content,
   ungrounded = EMPTY,
+  stale = NOT_STALE,
   onOpenPage,
 }: Props) {
   const components = useMemo<Components>(() => {
@@ -37,7 +42,12 @@ export const ChatMarkdown = memo(function ChatMarkdown({
         const id = (props as Record<string, unknown>)[CITATION_ATTR];
         if (typeof id === "string") {
           return (
-            <CitationChip id={id} ungrounded={ungroundedSet.has(id)} onOpenPage={onOpenPage} />
+            <CitationChip
+              id={id}
+              ungrounded={ungroundedSet.has(id)}
+              stale={stale[id]}
+              onOpenPage={onOpenPage}
+            />
           );
         }
         return <span {...props} />;
@@ -64,7 +74,7 @@ export const ChatMarkdown = memo(function ChatMarkdown({
         );
       },
     };
-  }, [ungrounded, onOpenPage]);
+  }, [ungrounded, stale, onOpenPage]);
 
   return (
     <div className="chat-markdown">
