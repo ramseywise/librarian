@@ -133,6 +133,8 @@
 .course-module-title { color: var(--text-strong); font-size: 19px; margin: var(--space-1) 0; }
 .course-module-summary { color: var(--text-secondary); font-size: var(--fs-base); margin: 0 0 var(--space-3); }
 .course-module-list { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+.course-objectives { margin: 0 0 var(--space-6); padding-left: 1.4em; color: var(--text); font-size: var(--fs-base); line-height: 1.6; max-width: 72ch; }
+.course-objectives li { margin: 2px 0; }
 .course-module-label { margin: var(--space-7) 0 var(--space-2); }
 div.course-row { cursor: default; flex-wrap: wrap; }
 a.course-row-title { text-decoration: none; }
@@ -163,7 +165,9 @@ a.course-row-title:hover { color: var(--link); text-decoration: underline; }
 .lesson-toc-link--h3 { padding-left: var(--space-7); }
 .lesson-toc-link:hover { color: var(--text); }
 .lesson-toc-link[aria-current] { color: var(--accent-text); border-left-color: var(--accent); }
-@container (max-width: 1000px) { .lesson-toc { display: none; } }
+/* Beside the chat panel the page is about 840px: keep the contents, narrower, and drop it only on a phone-width pane. */
+@container (max-width: 1000px) { .lesson-toc { width: 176px; padding-right: var(--space-4); } }
+@container (max-width: 720px) { .lesson-toc { display: none; } }
 
 /* ---- Lesson ---- */
 .lesson { max-width: 780px; margin: 0 auto; padding: 28px 32px 60px; }
@@ -383,7 +387,8 @@ a.course-row-title:hover { color: var(--link); text-decoration: underline; }
 .quiz-option.is-right::after, .quiz-option.is-wrong::after { font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; }
 .quiz-option.is-right::after { content: "Answer"; color: var(--success); }
 .quiz-option.is-wrong::after { content: "Your guess"; color: var(--warn); }
-.quiz-worked { display: flex; gap: var(--space-3); margin-bottom: var(--space-4); }
+.quiz-worked { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-bottom: var(--space-4); }
+.quiz-hint { margin: 0 0 var(--space-4); max-width: 68ch; line-height: 1.6; color: var(--text-muted); }
 .quiz-worked input { flex: 0 1 14rem; padding: var(--space-3) var(--space-4); border: 1px solid var(--border); border-radius: 6px; background: transparent; color: var(--text-strong); font: inherit; }
 .quiz-worked input.is-right { border-color: var(--success); border-width: 2px; }
 .quiz-worked input.is-wrong { border-color: var(--warn); border-style: dashed; border-width: 2px; }
@@ -418,3 +423,24 @@ a.course-row-title:hover { color: var(--link); text-decoration: underline; }
   .study-cell:has(.study-none) { display: none; }
 }
 .study-meta { color: var(--text-soft); }
+
+/* ---- Topic page: test-yourself meters, notes list, wiki list (Phase 5) ---- */
+.study-meter { display: block; height: 6px; border-radius: 3px; background: var(--border); overflow: hidden; margin-top: var(--space-2); }
+.study-meter i { display: block; height: 100%; background: var(--success); }
+.study-tile-stat { font-size: var(--fs-md); color: var(--text-soft); font-variant-numeric: tabular-nums; }
+.study-tile-go { margin-top: var(--space-2); font-size: var(--fs-md); color: var(--link); }
+.course-module-list--notes { margin-top: var(--space-4); }
+.course-row-no { color: var(--text-faint); font-size: var(--fs-md); font-variant-numeric: tabular-nums; min-width: 1.5em; }
+.course-row-state { color: var(--text-faint); font-size: var(--fs-md); }
+.course-row-state--next { color: var(--link); font-weight: 600; }
+.course-wiki-title { background: none; border: none; padding: 0; font: inherit; text-align: left; cursor: pointer; }
+.course-wiki-title:hover { color: var(--link); text-decoration: underline; }
+.course-wiki-more { margin-top: var(--space-3); color: var(--text-muted); font-size: var(--fs-md); }
+.course-wiki-more a { color: var(--link); }
+.course-sources-label { font-size: var(--fs-md); color: var(--text-soft); font-weight: 400; margin: var(--space-3) 0 0; }
+.lesson-end { margin-top: 36px; }
+.lesson-end .lesson-lab { margin-top: var(--space-3); }
+.study-cell-progress { display: block; font-size: var(--fs-md); color: var(--text-soft); font-variant-numeric: tabular-nums; }
+.lab-group-link { color: inherit; text-decoration: none; }
+.lab-group-link:hover { color: var(--link); text-decoration: underline; }
+/* ---- end topic page ---- */

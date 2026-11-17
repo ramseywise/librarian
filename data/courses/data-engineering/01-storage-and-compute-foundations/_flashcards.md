@@ -3,17 +3,26 @@ generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - data-engineering/01-storage-and-compute-foundations/slides/deck.yaml
 cards:
+- front: In what order does this lecture add trouble to the one-machine system?
+  back: The lecture adds one kind of trouble at a time, so each later mechanism can be read as the answer to the failure before it.
+  lesson: data-engineering/01-storage-and-compute-foundations/readme
+- front: Name four things this lecture teaches you to do with a data system.
+  back: You will be able to say what a data system promises, which failure breaks that promise, and what it costs to keep it.
+  lesson: data-engineering/01-storage-and-compute-foundations/readme
 - front: Why does a slow backend hurt more as a request calls more of them?
   back: State latency as percentiles from the client, since the tail reaches most requests that fan out, and percentiles cannot be averaged.
   lesson: data-engineering/01-storage-and-compute-foundations/notes/01-data-systems-and-data-models
 - front: Which operation did the relational model make cheap, and which the document model?
   back: Normalised data keeps updates in one place, documents keep reads together, and declarative queries let the engine change the path later.
   lesson: data-engineering/01-storage-and-compute-foundations/notes/01-data-systems-and-data-models
-- front: What does read_parquet do with a column only the second file has?
-  back: Reading many Parquet files without union_by_name silently drops new columns, which is a stage trusting the one before it.
-  lesson: data-engineering/01-storage-and-compute-foundations/notes/02-encoding-and-files
+- front: Why do a mean latency, an averaged percentile and a closed-loop test all mislead?
+  back: A mean, an averaged percentile and a closed-loop test each report a number that describes no real user.
+  lesson: data-engineering/01-storage-and-compute-foundations/notes/01-data-systems-and-data-models
 - front: What can a reader skip using only the footer?
   back: Parquet's footer lets a reader skip columns and row groups, but min and max only help when the data's order matches the filter.
+  lesson: data-engineering/01-storage-and-compute-foundations/notes/02-encoding-and-files
+- front: What does read_parquet do with a column only the second file has?
+  back: Reading many Parquet files without union_by_name silently drops new columns, which is a stage trusting the one before it.
   lesson: data-engineering/01-storage-and-compute-foundations/notes/02-encoding-and-files
 - front: Why did SQLite's index fall behind on the busy zone?
   back: An index is a series of random lookups, so it loses to a compressed scan as selectivity falls, and warehouses mostly skip them.
@@ -45,11 +54,11 @@ cards:
 - front: What does a request id let the receiver do?
   back: Plain retries trade lost writes for duplicates, and only an id the receiver checks stops the duplicates.
   lesson: data-engineering/01-storage-and-compute-foundations/notes/06-when-distributed-systems-fail
-- front: What does ordering writes by wall clock risk?
-  back: Ordering by wall clock across machines silently drops acknowledged writes, so order by a sequence number from one source.
-  lesson: data-engineering/01-storage-and-compute-foundations/notes/06-when-distributed-systems-fail
 - front: Who rejects the stale writer, and why not the writer itself?
   back: A process can pause at any line and not know it, so the storage must reject stale work using a token that only goes up.
+  lesson: data-engineering/01-storage-and-compute-foundations/notes/06-when-distributed-systems-fail
+- front: What does ordering writes by wall clock risk?
+  back: Ordering by wall clock across machines silently drops acknowledged writes, so order by a sequence number from one source.
   lesson: data-engineering/01-storage-and-compute-foundations/notes/06-when-distributed-systems-fail
 - front: Why can't a prepared participant decide by itself?
   back: Two-phase commit is atomic only by blocking, since a prepared participant must hold its locks until the coordinator's decision arrives.
@@ -66,11 +75,17 @@ cards:
 - front: Why test one machine before a cluster?
   back: DuckDB and Polars plan queries like a cluster engine and can work beyond memory, so test one machine first.
   lesson: data-engineering/01-storage-and-compute-foundations/notes/08-distributed-compute
+- front: Why is a slow reducer usually not a slow machine?
+  back: Cluster jobs fail as wrong totals, duplicate writes or one slow task, so check the key, the output path and the bytes read before adding workers.
+  lesson: data-engineering/01-storage-and-compute-foundations/notes/08-distributed-compute
 - front: Which rung covers your own bad DELETE, and why not a replica?
   back: A replica copies your mistakes in milliseconds, so your own bad DELETE needs point-in-time recovery from a backup you have restored.
   lesson: data-engineering/01-storage-and-compute-foundations/notes/09-persistence
 - front: What does synchronous replication pay for losing nothing on failover?
   back: Synchronous replication lost nothing but acknowledged nothing during a 1 s standby stall, while asynchronous kept committing and lost 15,620 rows.
+  lesson: data-engineering/01-storage-and-compute-foundations/notes/09-persistence
+- front: Why does a replica or kill -9 not prove your data is safe?
+  back: Replicas cover hardware and backups cover people, so say which failure you tested and which one you survive.
   lesson: data-engineering/01-storage-and-compute-foundations/notes/09-persistence
 - front: Why did the same 2,000,000 rows favour SQLite on one query and DuckDB on another?
   back: A store is a bet on how data is read and written, so row-oriented SQLite won the lookup and columnar DuckDB won the scan, with neither the better database.

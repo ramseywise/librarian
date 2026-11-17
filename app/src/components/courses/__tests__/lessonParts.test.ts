@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { splitLesson } from "../lessonParts";
+import { openingRepeatsSummary, splitLesson } from "../lessonParts";
 
 const code = ["```python", "a = 1", "b = 2", "c = a + b", "print(c)", "```"];
 const note = [
@@ -45,5 +45,22 @@ describe("splitLesson", () => {
 
   it("returns empty parts for a note with only prose", () => {
     expect(splitLesson("## A\n\nText.")).toEqual({ lecture: "## A\n\nText.", review: "", exercises: "", code: "", codeCount: 0 });
+  });
+});
+
+describe("openingRepeatsSummary", () => {
+  const summary = "Larkspur's fraud filter is 99% accurate, it flagged an order.";
+  it("is true when the first paragraph opens with the summary, marks aside", () => {
+    expect(openingRepeatsSummary(`\n${summary} If one in a thousand is fraud, **it is wrong**.\n\n## Next`, summary)).toBe(true);
+    expect(openingRepeatsSummary(summary, summary)).toBe(true);
+  });
+  it("is false for a different opening, an empty summary or a note that opens on a heading", () => {
+    expect(openingRepeatsSummary("Something else entirely.\n\nMore.", summary)).toBe(false);
+    expect(openingRepeatsSummary("Anything.", "")).toBe(false);
+    expect(openingRepeatsSummary(`## Idea\n\n${summary}`, summary)).toBe(false);
+    expect(openingRepeatsSummary(`- ${summary}`, summary)).toBe(false);
+  });
+  it("only looks at the first paragraph", () => {
+    expect(openingRepeatsSummary(`Other.\n\n${summary}`, summary)).toBe(false);
   });
 });

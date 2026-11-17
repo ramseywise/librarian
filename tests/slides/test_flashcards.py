@@ -91,6 +91,30 @@ def test_deck_slides_become_cards(courses: Path) -> None:
     ]
 
 
+def test_an_answer_written_for_the_question_is_the_back(courses: Path) -> None:
+    deck = courses / "data-analytics" / "02-statistics" / "slides" / "deck.yaml"
+    recall = 'recall: "What does **MLE** do?"\n'
+    assert recall in deck.read_text()
+    deck.write_text(
+        deck.read_text().replace(
+            recall, recall + "        answer: Picks the most likely parameters.\n"
+        )
+    )
+    fc.build(courses)
+    cards = _front(courses / "data-analytics" / "02-statistics" / "_flashcards.md")["cards"]
+    assert cards[0]["back"] == "Picks the most likely parameters."
+    assert cards[1]["back"] == "Attaches to the module."
+
+
+def test_card_false_keeps_a_slide_out(courses: Path) -> None:
+    deck = courses / "data-analytics" / "02-statistics" / "slides" / "deck.yaml"
+    recall = '        recall: "What does **MLE** do?"\n'
+    deck.write_text(deck.read_text().replace(recall, "        card: false\n" + recall))
+    fc.build(courses)
+    cards = _front(courses / "data-analytics" / "02-statistics" / "_flashcards.md")["cards"]
+    assert "What does **MLE** do?" not in [c["front"] for c in cards]
+
+
 def test_lecture_specs_add_cards_and_repeated_fronts_are_dropped(courses: Path) -> None:
     mod = courses / "data-analytics" / "02-statistics"
     _write(mod / "slides" / "lectures" / "01-estimation.yaml", LECTURE)

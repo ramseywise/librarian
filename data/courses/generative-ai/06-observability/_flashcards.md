@@ -3,14 +3,20 @@ generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - generative-ai/06-observability/slides/deck.yaml
 cards:
+- front: Name the six uses of a trace that this lecture covers, in order.
+  back: One data model of trace, span and score, and of dataset and run, serves all six uses, and each use sees a different part of the fortnight.
+  lesson: generative-ai/06-observability/readme
+- front: Name four things this lecture teaches you to do with an agent's traces.
+  back: You will be able to say what an agent did, whether a release made it better, and what it cost, from the traces alone.
+  lesson: generative-ai/06-observability/readme
 - front: What changed on 11, 14 and 17 October?
   back: Three different failures overlap in one fortnight, and each is visible to a different tool, which is why no single chart will do.
   lesson: generative-ai/06-observability/notes/01-tracing-with-langfuse
-- front: What does the tree show that a log line can't?
-  back: Tracing turns one successful-looking request into a story of three failed retries, with the time and money each one cost.
-  lesson: generative-ai/06-observability/notes/01-tracing-with-langfuse
 - front: Which level does a score attach to?
   back: Session, trace, observation and score are enough to model an agent; one trace per turn and one child per call is the whole rule.
+  lesson: generative-ai/06-observability/notes/01-tracing-with-langfuse
+- front: What does the tree show that a log line can't?
+  back: Tracing turns one successful-looking request into a story of three failed retries, with the time and money each one cost.
   lesson: generative-ai/06-observability/notes/01-tracing-with-langfuse
 - front: Why must the reset sit in finally?
   back: When a framework schedules tools itself, implicit context can be lost, so hold the root in a ContextVar you own and reset it in finally.
@@ -51,6 +57,9 @@ cards:
 - front: Why refuse a tool the model can't see?
   back: Hide the tools from the model and refuse the call anyway, because a model can name a tool it read about in a trace.
   lesson: generative-ai/06-observability/notes/04-langfuse-mcp-server
+- front: Name three ways an MCP server over traces goes wrong, and the fix for each.
+  back: A trace server fails through its keys, the size of its output and its loops, so scope the key, summarise by default and cap the iterations.
+  lesson: generative-ai/06-observability/notes/04-langfuse-mcp-server
 - front: Where does the validator run?
   back: Run the validator in CI on a recorded turn from each framework, and run the same check as a daily coverage number on production.
   lesson: generative-ai/06-observability/notes/05-support-agent-observability
@@ -59,6 +68,9 @@ cards:
   lesson: generative-ai/06-observability/notes/05-support-agent-observability
 - front: Why measure precision per segment?
   back: Promote each check on measured per-segment precision, since blocking on language_consistency would send 61 healthy turns to a person.
+  lesson: generative-ai/06-observability/notes/05-support-agent-observability
+- front: Name three ways a trace contract and its checks fail, and the fix for each.
+  back: A contract decays unless it is validated, and a check misleads unless its precision is read per segment, so test both and keep a random slice.
   lesson: generative-ai/06-observability/notes/05-support-agent-observability
 - front: Why put traffic and system panels beside a spend chart?
   back: A spend chart says that something costs more, and only the panels beside it say whether traffic or the system caused it.

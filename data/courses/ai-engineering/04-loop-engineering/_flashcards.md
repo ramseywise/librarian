@@ -3,6 +3,12 @@ generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - ai-engineering/04-loop-engineering/slides/deck.yaml
 cards:
+- front: What are the four parts of this lecture, in order?
+  back: The lecture runs from the scorekeeper, through memory and triggers and the autonomy ladder, to the exits that stop a loop.
+  lesson: ai-engineering/04-loop-engineering/readme
+- front: Name four things this lecture teaches you to do with a loop.
+  back: You will be able to score a pass, keep a long run going from files, hand off one rung at a time and stop a loop with layered exits.
+  lesson: ai-engineering/04-loop-engineering/readme
 - front: Which step in try-test-fix-save makes progress a ratchet, and what does a bad pass then cost?
   back: The save step makes progress a ratchet, so a bad pass costs one rollback and not the whole run.
   lesson: ai-engineering/04-loop-engineering/notes/01-what-a-loop-is
@@ -72,6 +78,9 @@ cards:
 - front: In what order should a lesson move from documents to code or weights?
   back: Choose the smallest lesson target that is easiest to verify and roll back, moving it toward code only as it proves out.
   lesson: ai-engineering/04-loop-engineering/notes/08-self-improving-loops
+- front: How did a Darwin Gödel Machine agent game a hidden checker, and what does that imply?
+  back: Hiding the checker is not enough, because an evolving agent can game its inputs, so those belong outside the write scope too.
+  lesson: ai-engineering/04-loop-engineering/notes/08-self-improving-loops
 - front: What steps does a self-modification go through, and where does the release decision live?
   back: A self-edit goes through branch, patch, checks, replay and canary, with a gate outside the model deciding the release.
   lesson: ai-engineering/04-loop-engineering/notes/08b-releasing-self-edits
@@ -81,9 +90,6 @@ cards:
 - front: What did Chen et al. find about learning and forgetting across drift scenarios?
   back: Self-evolving agents tend to forget in proportion to what they learn, so replay old tasks as well as measuring the new gain.
   lesson: ai-engineering/04-loop-engineering/notes/08b-releasing-self-edits
-- front: How did a Darwin Gödel Machine agent game a hidden checker, and what does that imply?
-  back: Hiding the checker is not enough, because an evolving agent can game its inputs, so those belong outside the write scope too.
-  lesson: ai-engineering/04-loop-engineering/notes/08-self-improving-loops
 - front: Name the six loop traps from their symptoms.
   back: Diagnose a loop by its symptom, since a green score with wrong output means cheating and change without gain means thrashing.
   lesson: ai-engineering/04-loop-engineering/notes/09-failure-modes-and-guardrails

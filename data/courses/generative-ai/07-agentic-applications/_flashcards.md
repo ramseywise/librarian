@@ -3,6 +3,12 @@ generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - generative-ai/07-agentic-applications/slides/deck.yaml
 cards:
+- front: In what order does this lecture move from a bounded agent to the person who uses it?
+  back: The parts run from a bounded agent to the person who has to trust it, and each adds a stricter check on the answer.
+  lesson: generative-ai/07-agentic-applications/readme
+- front: Name four things this lecture teaches you to do when you build an agent.
+  back: You will be able to decide how much path the model owns, what limits hold, and what check could prove an answer wrong.
+  lesson: generative-ai/07-agentic-applications/readme
 - front: In the internet search agent, what does the workflow graph do, in order, and what bounds its cost?
   back: A router node and a fixed plan keep search bounded and debuggable, for one extra classifier call.
   lesson: generative-ai/07-agentic-applications/notes/01-internet-search-agent
@@ -26,6 +32,9 @@ cards:
   lesson: generative-ai/07-agentic-applications/notes/03-real-time-multimodal-agents
 - front: What did SeeAct show about grounding, and what did Agent S3 trade for its OSWorld score?
   back: Grounding was the early bottleneck for GUI agents, and later scores come from spending more tries and more time.
+  lesson: generative-ai/07-agentic-applications/notes/03-real-time-multimodal-agents
+- front: Which three mistakes does the real-time note warn about, and what hides each?
+  back: Track tail latency per stage, do not rely on one silence threshold to detect a turn, and report time per task beside any benchmark score.
   lesson: generative-ai/07-agentic-applications/notes/03-real-time-multimodal-agents
 - front: What arc did SWE-agent's trajectories show, and why is reproducing first valuable?
   back: Reproducing first gives the agent a verdict, and interface choices move results a lot on the same model.

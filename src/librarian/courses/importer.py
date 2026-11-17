@@ -652,6 +652,70 @@ def notebook_to_markdown(raw: str) -> str:
     return "\n\n".join(parts) + "\n"
 
 
+# A course README's own outline: `## Core ...` and `## Advanced ...` sections list the modules in
+# reading order, and each `### [Module](dir/README.md)` section carries its learning objectives.
+_GROUP_HEADING_RE = re.compile(r"^(core|advanced)\b", re.I)
+_MODULE_LINK_RE = re.compile(r"\]\(([^/)#\s]+)/README\.md\)")
+_NUMBERED_RE = re.compile(r"^\s*\d+[.)]\s+(.+)$")
+_TITLE_NUMBER_RE = re.compile(r"^\d+[a-z]?\s*[—–:.-]?\s+")
+
+
+def _plain_item(text: str) -> str:
+    """A list item as plain text: links keep their words, emphasis and code marks go."""
+    text = re.sub(r"\[([^\]]+)\]\([^)]*\)", r"\1", text)
+    return " ".join(re.sub(r"[*`]", "", text).split())
+
+
+def _numbered_after(lines: list[str], start: int) -> list[str]:
+    """The numbered list that begins at or after `start`, up to the first line that ends it."""
+    items: list[str] = []
+    for line in lines[start:]:
+        m = _NUMBERED_RE.match(line)
+        if m:
+            items.append(_plain_item(m.group(1)))
+        elif (items and line.strip()) or line.startswith("#"):
+            break
+    return items
+
+
+@dataclass
+class CourseOutline:
+    """What a course README says about the course as a whole. Empty when it says nothing."""
+
+    outcomes: list[str] = field(default_factory=list)
+    groups: dict[str, str] = field(default_factory=dict)  # source dir name → "core" | "advanced"
+    order: dict[str, int] = field(default_factory=dict)  # source dir name → 1-based reading order
+    objectives: dict[str, list[str]] = field(default_factory=dict)  # source dir name → objectives
+
+
+def course_outline(readme: str) -> CourseOutline:
+    """Outcomes under `## Course outcomes`; groups and reading order from the module links under
+    the `## Core ...` and `## Advanced ...` headings; objectives from the numbered list that
+    follows "Learning objectives" in a module's `### [Title](dir/README.md)` section."""
+    out = CourseOutline()
+    lines = readme.splitlines()
+    group = ""
+    module = ""
+    for i, line in enumerate(lines):
+        if line.startswith("## "):
+            heading = line[3:].strip()
+            m = _GROUP_HEADING_RE.match(heading)
+            group, module = (m.group(1).lower() if m else ""), ""
+            if heading.lower() == "course outcomes":
+                out.outcomes = _numbered_after(lines, i + 1)
+        elif line.startswith("### "):
+            m = _MODULE_LINK_RE.search(line)
+            module = m.group(1) if m else ""
+        elif group:
+            for name in _MODULE_LINK_RE.findall(line):
+                if name not in out.groups:
+                    out.groups[name] = group
+                    out.order[name] = len(out.order) + 1
+        elif module and "learning objectives" in line.lower() and module not in out.objectives:
+            out.objectives[module] = _numbered_after(lines, i + 1)
+    return out
+
+
 def _title_from(body: str, fallback: str) -> str:
     m = _H1_RE.search(body)
     if m:
@@ -966,15 +1030,23 @@ def build_plan(source: Path, subjects: list[str]) -> Plan:
             continue
         modules = discovered[subject]
         title, order, summary = SUBJECTS[subject]
+        course_readme = source / rel / "README.md"
+        outline = course_outline(
+            course_readme.read_text(errors="replace") if course_readme.is_file() else ""
+        )
         plan.files[COURSES_DIR / subject / "_course.md"] = render(
             {
                 "title": title,
                 "summary": summary,
                 "order": order,
                 "source": f"{repo}/{rel}",
+                **({"outcomes": outline.outcomes} if outline.outcomes else {}),
             }
         )
         for mod in modules:
+            src_name = mod.src_dir.name if mod.src_dir else ""
+            # The course README's reading order wins over the folder number.
+            mod.order = outline.order.get(src_name, mod.order)
             mod_summary = ""
             readme = mod.src_dir / "README.md" if mod.src_dir else None
             if readme and readme in {lesson.src for lesson in mod.lessons}:
@@ -983,8 +1055,13 @@ def build_plan(source: Path, subjects: list[str]) -> Plan:
                 heading = _title_from(mod_readme, "")
                 # A placeholder README's H1 is just the folder name; prettify beats that.
                 if heading and len(heading) < 60 and heading != readme.parent.name:
-                    mod.title = heading
+                    # "02 — Probability" → "Probability": the order is the course's, not the folder's.
+                    mod.title = _TITLE_NUMBER_RE.sub("", heading) or heading
             meta: dict = {"title": mod.title, "summary": mod_summary, "order": mod.order}
+            if src_name in outline.groups:
+                meta["group"] = outline.groups[src_name]
+            if outline.objectives.get(src_name):
+                meta["objectives"] = outline.objectives[src_name]
             if mod.src_dir:
                 meta["source"] = f"{repo}/{mod.src_dir.relative_to(source)}"
             if mod.readings:

@@ -116,13 +116,17 @@ def teaching_sections(path: Path) -> list[str]:
     return [s for s in note_sections(path) if s not in BACK_MATTER]
 
 
+SYLLABUS_HEADINGS = ("## Syllabus", "## Reading order")
+
+
 def syllabus_order(pillar: str, root: Path = ROOT) -> list[str]:
-    """The pillar's notes in reading order: as the README's syllabus links them, then any it doesn't."""
+    """The pillar's notes in reading order: as the README's syllabus links them, then any it doesn't.
+
+    The syllabus is the README's "## Syllabus" section, or its "## Reading order" where it has none.
+    """
     readme = readme_of(root / pillar)
     text = readme.read_text(encoding="utf-8") if readme else ""
-    start = text.find("## Syllabus")
-    if start < 0:
-        start = 0
+    start = next((at for h in SYLLABUS_HEADINGS if (at := text.find(f"\n{h}\n")) >= 0), -1) + 1
     end = text.find("\n## ", start + 1)
     linked = [
         f"{pillar}/{m}"

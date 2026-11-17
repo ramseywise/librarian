@@ -25,6 +25,10 @@ const answers: Record<string, { correct: boolean; answer: string; explanation: s
 
 function stub(over: Partial<Quiz> = {}, status = 200) {
   const fetchMock = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(async (_url, init) => {
+    if (init?.method === "POST" && _url.endsWith("/quiz-reveal")) {
+      const { what } = JSON.parse(String(init.body)) as { what: string };
+      return new Response(JSON.stringify(what === "hint" ? { hint: "Use p(1 - p).", logged: true } : { answer: "0.16", explanation: "0.2 × 0.8.", logged: true }));
+    }
     if (init?.method === "POST") {
       const { question } = JSON.parse(String(init.body)) as { question: string };
       return new Response(JSON.stringify(answers[question]));
@@ -66,7 +70,7 @@ describe("QuizView", () => {
     await user.click(screen.getByRole("button", { name: "b" }));
     expect(fetchMock).toHaveBeenCalledWith("/api/courses/quiz-results", expect.objectContaining({
       method: "POST",
-      body: JSON.stringify({ quiz: "c1/m1", question: "q1", choice: "b" }),
+      body: JSON.stringify({ quiz: "c1/m1", question: "q1", choice: "b", assisted: false }),
     }));
     expect(await screen.findByText("Correct.")).toBeInTheDocument();
     expect(screen.getByText("B is right.")).toBeInTheDocument();
@@ -135,10 +139,55 @@ describe("QuizView", () => {
     await user.clear(screen.getByRole("textbox"));
     await user.type(screen.getByRole("textbox"), "0.16{Enter}");
     expect(fetchMock).toHaveBeenLastCalledWith("/api/courses/quiz-results", expect.objectContaining({
-      body: JSON.stringify({ quiz: "c1/m1", question: "w1", choice: "0.16" }),
+      body: JSON.stringify({ quiz: "c1/m1", question: "w1", choice: "0.16", assisted: false }),
     }));
     expect(await screen.findByText("Correct.")).toBeInTheDocument();
     expect(screen.getByText("0.2 × 0.8.")).toBeInTheDocument();
+  });
+
+  it("a worked problem offers a hint only when it has one, and the solution always; help counts as missed", async () => {
+    const user = userEvent.setup();
+    const plain = { id: "w0", prompt: "No hint here", options: [], kind: "worked" as const, lesson: null, lessonTitle: null, status: "new" as const };
+    const hinted = { ...plain, id: "w1", prompt: "p(1 - p) at 0.2?", hasHint: true };
+    const fetchMock = stub({ questions: [plain, hinted] });
+    render(<QuizView quizId="c1/m1?worked" />);
+    await screen.findByText("No hint here");
+    expect(screen.queryByRole("button", { name: "Hint" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Show the solution" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Show the solution" }));
+    expect(fetchMock).toHaveBeenLastCalledWith("/api/courses/quiz-reveal", expect.objectContaining({
+      body: JSON.stringify({ quiz: "c1/m1", question: "w0", what: "solution" }),
+    }));
+    expect(await screen.findByText("Solution.")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("The answer is 0.16.");
+    expect(screen.getByText("Working")).toBeInTheDocument();
+    expect(screen.getByText("0.2 × 0.8.")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Next" }));
+
+    await user.click(screen.getByRole("button", { name: "Hint" }));
+    expect(await screen.findByRole("note")).toHaveTextContent("Use p(1 - p).");
+    // A right answer after a hint is told as right but sent as assisted, so the store keeps a miss.
+    answers.w1 = { correct: true, answer: "0.16", explanation: "0.2 × 0.8.", logged: true };
+    await user.type(screen.getByRole("textbox"), "0.16{Enter}");
+    expect(fetchMock).toHaveBeenLastCalledWith("/api/courses/quiz-results", expect.objectContaining({
+      body: JSON.stringify({ quiz: "c1/m1", question: "w1", choice: "0.16", assisted: true }),
+    }));
+    expect(await screen.findByText("Correct.")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("It counts as missed");
+    await user.click(screen.getByRole("button", { name: "Finish" }));
+    expect(screen.getByText("Done: 0 of 2 right.")).toBeInTheDocument();
+  });
+
+  it("a wrong typed answer is told why it was wrong", async () => {
+    const user = userEvent.setup();
+    const worked = { id: "w2", prompt: "Variance?", options: [], kind: "worked" as const, lesson: null, lessonTitle: null, status: "new" as const };
+    answers.w2 = { correct: false, answer: "0.16", explanation: "p(1 - p), not p.", logged: true };
+    stub({ questions: [worked] });
+    render(<QuizView quizId="c1/m1?worked" />);
+    await screen.findByText("Variance?");
+    await user.type(screen.getByRole("textbox"), "0.2{Enter}");
+    expect(await screen.findByText("Why your guess was wrong")).toBeInTheDocument();
+    expect(screen.getByText("p(1 - p), not p.")).toBeInTheDocument();
   });
 
   it("says so when there is no quiz", async () => {

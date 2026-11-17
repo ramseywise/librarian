@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import type { Course, LabsList, PracticeDrill } from "../components/courses/types";
+import type { Course, LabsList, PracticeDrill, StudyProgress } from "../components/courses/types";
 import { apiFetch } from "../utils/api";
 
 interface Resource<T> {
@@ -72,6 +72,7 @@ function createResource<T>(url: string) {
 const courses = createResource<Course[]>("/api/courses");
 const practice = createResource<PracticeDrill[]>("/api/courses/practice");
 const labs = createResource<LabsList>("/api/courses/labs");
+const studyProgress = createResource<StudyProgress>("/api/courses/study-progress");
 
 /** The course catalog (~290 KB), fetched once per page load. */
 export const useCourses = () => courses.useResource();
@@ -82,8 +83,12 @@ export const usePracticeDrills = () => practice.useResource({ revalidate: true }
 /** Every lab with the notes it backs, and whether this server runs them; fetched once per page load. */
 export const useLabs = () => labs.useResource();
 
+/** The caller's right and to-redo counts per module and level; refetched on mount, as answers change it. */
+export const useStudyProgress = () => studyProgress.useResource({ revalidate: true });
+
 export function resetCourseCachesForTests() {
   courses.reset();
   practice.reset();
   labs.reset();
+  studyProgress.reset();
 }

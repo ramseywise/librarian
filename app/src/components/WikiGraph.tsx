@@ -18,7 +18,7 @@ import { MapBar } from "./MapBar";
 import { MapSearch } from "./MapSearch";
 import { WikiNode, type WikiFlowNode } from "./WikiNode";
 import { EdgeTogglePanel } from "./EdgeTogglePanel";
-import { GraphSidebar } from "./GraphSidebar";
+import { FiltersPanel } from "./TagFilterPanel";
 import { LayoutSwitcher } from "./LayoutSwitcher";
 import { useCurriculum } from "../hooks/useCurriculum";
 import { useGlossary } from "../hooks/useGlossary";
@@ -157,10 +157,6 @@ function WikiGraphInner({
   const [layout, setLayout] = useState<LayoutMode>("umap-semantic");
   const onAll = mapView.level === "all";
   const grouping: Grouping = mapView.level === "all" ? "domain" : mapView.grouping;
-  // The sidebar's Domain / Wiki switch: follows the map's grouping, and on a focused level
-  // changes only which filters it lists (the atlas is where the grouping itself changes).
-  const [sideGrouping, setSideGrouping] = useState<Grouping>(grouping);
-  useEffect(() => setSideGrouping(grouping), [grouping]);
   const anchorId = mapView.level === "page" ? mapView.page : null;
   const [searchText, setSearchText] = useState("");
   const deferredSearch = useDeferredValue(searchText);
@@ -168,9 +164,6 @@ function WikiGraphInner({
   const [revealed, setRevealed] = useState<Set<string>>(() => new Set());
   const [focusNodeId, setFocusNodeId] = useState<string | null>(null);
   const [loadingSemantic, setLoadingSemantic] = useState(false);
-  // Narrow screens only: the control panels collapse behind one menu button.
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuBtnRef = useRef<HTMLButtonElement>(null);
   const { fitView } = useReactFlow();
 
   const hasNodes = baseNodes.length > 0;
@@ -259,14 +252,16 @@ function WikiGraphInner({
   // that the filter no longer makes small enough. Nothing here says which ids exist.
   const pagesInFilter = primaryIds?.size ?? baseNodes.length;
   const facetsPending = [...activeTags].some((t) => facetPending(t, curriculum, glossary));
+  // The link names a filter the panel has not taken up yet.
+  const restoringTags = mapView.level === "all" && mapView.tags.some((t) => !activeTags.has(t));
   useEffect(() => {
     if (!hasNodes || parsedView === null) return;
     const bad =
       (mapView.level === "sector" && !sector) ||
       (mapView.level === "page" && (!pageInfo.has(mapView.page) || !sector)) ||
-      (mapView.level === "all" && !facetsPending && !restoringTags.current && pagesInFilter >= ALL_NODES_LIMIT);
+      (mapView.level === "all" && !facetsPending && !restoringTags && pagesInFilter >= ALL_NODES_LIMIT);
     if (bad) replaceRoute("/");
-  }, [hasNodes, parsedView, mapView, sector, pageInfo, facetsPending, pagesInFilter]);
+  }, [hasNodes, parsedView, mapView, sector, pageInfo, facetsPending, restoringTags, pagesInFilter]);
 
   // --- Layout: base positions (UMAP or dagre), then the filter subgraph on top ----------
   const baseLayout = useMemo<Record<string, XY> | null>(() => {
@@ -469,18 +464,27 @@ function WikiGraphInner({
     }
   }, [mapView]);
 
-  // "All nodes" keeps its filter in the link: restore it once on load, then follow the panel.
-  const restoringTags = useRef(mapView.level === "all" && mapView.tags.length > 0);
+  // "All nodes" keeps its filter in the link. A link that changed under us (first load, or a link
+  // followed from a topic page) sets the filter; after that the link follows the panel.
+  const tagsInLink = useRef<string | null>(null);
   useEffect(() => {
-    if (mapView.level !== "all" || parsedView === null) return;
-    if (restoringTags.current) {
-      restoringTags.current = false;
-      onActiveTagsChange(new Set(mapView.tags));
+    if (mapView.level !== "all" || parsedView === null) {
+      tagsInLink.current = null;
       return;
     }
-    const tags = [...activeTags].sort();
-    const path = mapPath({ level: "all", tags });
-    if (path !== mapPath(mapView)) replaceRoute(path);
+    const linked = mapPath(mapView);
+    if (tagsInLink.current !== linked) {
+      tagsInLink.current = linked;
+      if (mapView.tags.length > 0) {
+        onActiveTagsChange(new Set(mapView.tags));
+        return;
+      }
+    }
+    const path = mapPath({ level: "all", tags: [...activeTags].sort() });
+    if (path !== linked) {
+      tagsInLink.current = path;
+      replaceRoute(path);
+    }
   }, [mapView, parsedView, activeTags, onActiveTagsChange]);
 
   // --- Handlers ------------------------------------------------------------------------
@@ -554,36 +558,24 @@ function WikiGraphInner({
     onNodeSelect?.(null);
   }, [onNodeSelect]);
 
-  // Esc goes back one level. Not while typing, and not when it's closing the narrow-screen menu.
+  // Esc goes back one level. Not while typing; a popover handles its own Esc first.
   const backTo = parentOf(mapView);
-  const escapeState = useRef({ backTo, menuOpen, onMap: parsedView !== null });
+  const escapeState = useRef({ backTo, onMap: parsedView !== null });
   useEffect(() => {
-    escapeState.current = { backTo, menuOpen, onMap: parsedView !== null };
+    escapeState.current = { backTo, onMap: parsedView !== null };
   });
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape" || e.defaultPrevented) return;
-      const { backTo: to, menuOpen: menu, onMap } = escapeState.current;
+      const { backTo: to, onMap } = escapeState.current;
       const target = e.target as HTMLElement | null;
-      if (!to || menu || !onMap || target?.matches?.("input, textarea")) return;
+      if (!to || !onMap || target?.matches?.("input, textarea")) return;
       e.preventDefault();
       navigate(mapPath(to));
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [navigate]);
-
-  useEffect(() => {
-    if (!menuOpen) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key !== "Escape") return;
-      e.preventDefault();
-      setMenuOpen(false);
-      menuBtnRef.current?.focus();
-    };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [menuOpen]);
 
   const miniMapColor = useCallback(
     (n: WikiFlowNode) => n.data.groupColor ?? domainColor(n.data.domain[0], theme),
@@ -623,6 +615,8 @@ function WikiGraphInner({
       navigate(mapPath({ ...mapView, cap: nextCap }));
     }
   }, [nextCap, mapView, navigate]);
+  // A sector's brief: a course area briefs on its first directory, a directory on itself.
+  const briefScope = sector ? (grouping === "domain" ? areas.find((a) => a.id === sector.id)?.domains[0] ?? sector.id : sector.id) : undefined;
   const clickedPage = focusNodeId && focusNodeId !== anchorId ? focusNodeId : null;
   const allNodesAllowed = pagesInFilter < ALL_NODES_LIMIT;
   const openAll = useCallback(
@@ -645,7 +639,7 @@ function WikiGraphInner({
   );
 
   // Connections, arrangement and the minimap act on the page canvas. The atlas draws no lines, so
-  // the sidebar has no Map section there rather than disabled controls.
+  // the bar has no Map popover there rather than disabled controls.
   const mapControls = !onAtlas && (
     <>
       <EdgeTogglePanel
@@ -680,27 +674,6 @@ function WikiGraphInner({
   );
   return (
     <div className="graph-root">
-      <GraphSidebar
-        id="graph-controls"
-        open={menuOpen}
-        grouping={sideGrouping}
-        onGrouping={(g) => {
-          setSideGrouping(g);
-          if (onAtlas) navigate(mapPath({ level: "atlas", grouping: g }));
-        }}
-        search={hasNodes ? <MapSearch value={searchText} onChange={setSearchText} result={search} onOpenPage={openPage} /> : undefined}
-        areas={areas}
-        curriculum={curriculum}
-        glossary={glossary}
-        facets={facets}
-        activeTags={activeTags}
-        onChange={onActiveTagsChange}
-        onBrief={onBrief}
-        titleOf={(id) => pageInfo.get(id)?.title ?? id}
-        onOpenPage={openPage}
-        map={mapControls || undefined}
-      />
-
       <div className="graph-canvas">
         {/* Connection status, shown only while it is not the normal live state */}
         {statusText !== "● live" && statusText !== "● ready" && (
@@ -720,21 +693,24 @@ function WikiGraphInner({
             nextCap={nextCap}
             onExpand={expandCap}
             refocus={clickedPage ? { title: `Focus on ${pageInfo.get(clickedPage)?.title ?? clickedPage}`, onClick: () => openPage(clickedPage) } : null}
+            onGrouping={(g) => g !== grouping && navigate(mapPath({ level: "atlas", grouping: g }))}
+            search={<MapSearch value={searchText} onChange={setSearchText} result={search} onOpenPage={openPage} />}
+            filters={
+              <FiltersPanel
+                areas={areas}
+                curriculum={curriculum}
+                glossary={glossary}
+                facets={facets}
+                activeTags={activeTags}
+                onChange={onActiveTagsChange}
+                onBrief={onBrief}
+              />
+            }
+            activeCount={activeTags.size}
+            map={mapControls || undefined}
+            onBriefSector={briefScope && onBrief ? () => onBrief(briefScope) : undefined}
           />
         )}
-
-        {/* Narrow screens: one button in place of the sidebar. */}
-        <button
-          ref={menuBtnRef}
-          type="button"
-          className="graph-menu-btn"
-          aria-label="Graph controls"
-          aria-expanded={menuOpen}
-          aria-controls="graph-controls"
-          onClick={() => setMenuOpen((o) => !o)}
-        >
-          ☰ Controls
-        </button>
 
         {allNodes}
 

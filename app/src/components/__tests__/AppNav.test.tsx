@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { resetProgressStoreForTests } from "../../hooks/useCourseProgress";
 import { resetCourseCachesForTests } from "../../hooks/useCourses";
@@ -29,35 +29,55 @@ afterEach(() => {
 });
 
 const renderNav = (route: string) => render(<AppNav id="nav" route={route} open={false} />);
-const current = () => screen.getAllByRole("link").filter((a) => a.getAttribute("aria-current") === "page").map((a) => a.textContent);
+const current = () => screen.getAllByRole("link").filter((a) => a.getAttribute("aria-current") === "page").map((a) => a.querySelector(".grow")?.textContent ?? a.textContent);
 
 describe("AppNav", () => {
-  it("lists the four sections and every course, with no module until a course is open", async () => {
+  it("lists the four sections, and under Courses every course as a group label over its modules", async () => {
     renderNav("/");
     expect(await screen.findByRole("link", { name: "Data Engineering" })).toHaveAttribute("href", "#/courses/de");
     for (const [name, href] of [["Graph", "#/"], ["Courses", "#/courses"], ["Study", "#/study"], ["Labs", "#/labs"]]) {
       expect(screen.getByRole("link", { name })).toHaveAttribute("href", href);
     }
-    expect(screen.queryByRole("link", { name: "Classical ML" })).toBeNull();
+    const group = within(screen.getByRole("group", { name: "Data Science" }));
+    expect(group.getByRole("link", { name: "Classical ML" })).toHaveAttribute("href", "#/courses/ds/01-ml");
+    expect(group.getByRole("link", { name: "Deep Learning" })).toHaveAttribute("href", "#/courses/ds/02-dl");
     expect(current()).toEqual(["Graph"]);
     expect(screen.queryByRole("button")).toBeNull();
   });
 
-  it("shows the open course's modules and the open module's lessons, marking the lesson being read", async () => {
-    renderNav("/courses/ds/01-ml/notes/trees");
-    expect(await screen.findByRole("link", { name: "Trees" })).toHaveAttribute("href", "#/courses/ds/01-ml/notes/trees");
-    expect(screen.getByRole("link", { name: "Deep Learning" })).toHaveAttribute("href", "#/courses/ds/02-dl");
-    expect(screen.queryByRole("link", { name: "CNNs" })).toBeNull();
-    expect(current()).toEqual(["Trees"]);
-    for (const name of ["Courses", "Data Science", "Classical ML"]) {
-      expect(screen.getByRole("link", { name })).toHaveClass("is-within");
-    }
+  it("heads a course's modules with Core and Advanced when the course sorts them", async () => {
+    const grouped = [{ ...courses[0], modules: [{ ...courses[0].modules[0], group: "core" }, { ...courses[0].modules[1], group: "advanced" }] }];
+    vi.stubGlobal("fetch", vi.fn(async (url: string) =>
+      new Response(JSON.stringify(url === "/api/courses" ? grouped : {}), { status: 200 })));
+    renderNav("/courses");
+    const group = await screen.findByRole("group", { name: "Data Science" });
+    expect(group.textContent).toMatch(/Core.*Classical ML.*Advanced.*Deep Learning/);
   });
 
-  it("keeps the module open while its deck is showing", async () => {
+  it("shows each module's lesson count and no lessons, even for the module being read", async () => {
+    const { container } = renderNav("/courses/ds/01-ml/notes/trees");
+    await screen.findByRole("link", { name: "Classical ML" });
+    expect(screen.queryByRole("link", { name: "Trees" })).toBeNull();
+    expect([...container.querySelectorAll(".sidenav-count")].map((n) => n.textContent)).toEqual(["1", "1"]);
+    expect(container.querySelector(".check")).toBeNull();
+  });
+
+  it("fills the current module's row, and marks it as the page only on the module page", async () => {
+    const { unmount } = renderNav("/courses/ds/01-ml/notes/trees");
+    expect(await screen.findByRole("link", { name: "Classical ML" })).toHaveClass("is-current");
+    expect(screen.getByRole("link", { name: "Deep Learning" })).not.toHaveClass("is-current");
+    expect(current()).toEqual([]);
+    unmount();
+    renderNav("/courses/ds/02-dl");
+    await screen.findByRole("link", { name: "Deep Learning" });
+    expect(current()).toEqual(["Deep Learning"]);
+    expect(screen.getByRole("link", { name: "Data Science" })).toHaveClass("is-within");
+    expect(screen.getByRole("link", { name: "Courses" })).toHaveClass("is-within");
+  });
+
+  it("keeps the module filled while its deck is showing", async () => {
     renderNav("/slides/ds/01-ml/lecture-1");
-    expect(await screen.findByRole("link", { name: "Trees" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Classical ML" })).toHaveClass("is-within");
+    expect(await screen.findByRole("link", { name: "Classical ML" })).toHaveClass("is-current");
   });
 
   it("marks Study for a quiz and Labs for a lab", async () => {

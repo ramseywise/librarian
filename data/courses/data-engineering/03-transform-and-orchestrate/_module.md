@@ -1,6 +1,6 @@
 ---
-imported_hash: 26f6787b405bb915
-title: 03 — Transform and orchestrate
+imported_hash: 74e1ea31fe619046
+title: Transform and orchestrate
 summary: How landed tables become tested models, and how those models get built on schedule, in the right order, for the right day.
 order: 3
 source: learn-ai-engineering/data-engineering/03-transform-and-orchestrate

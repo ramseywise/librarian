@@ -78,8 +78,17 @@ def test_the_catalog_loader_drops_bad_questions_and_unknown_lessons(tmp_path: Pa
 def test_the_payload_never_carries_the_answer_or_explanation(tmp_path: Path) -> None:
     (q,) = quiz.load(_file(tmp_path, GOOD), LESSONS)
     payload = quiz.public_payload(q, "Intro")
-    assert set(payload) == {"id", "prompt", "options", "kind", "lesson", "lessonTitle"}
+    assert set(payload) == {"id", "prompt", "options", "kind", "hasHint", "lesson", "lessonTitle"}
     assert payload["kind"] == "choice"
+
+
+def test_a_hint_is_kept_for_worked_problems_only_and_not_sent(tmp_path: Path) -> None:
+    raw = "- {id: w, prompt: p, answer: '1', hint: Think of p(1 - p).}\n"
+    raw += "- {id: c, prompt: p2, options: [a, b], answer: a, hint: ignored}\n"
+    w, c = quiz.load(_file(tmp_path, raw), LESSONS)
+    assert (w.hint, c.hint) == ("Think of p(1 - p).", "")
+    assert quiz.public_payload(w, None)["hasHint"] is True
+    assert "Think of" not in str(quiz.public_payload(w, None))
 
 
 WORKED = "- {id: w, prompt: Variance of Bernoulli(0.2)?, answer: '0.16', explanation: p(1 - p).}\n"

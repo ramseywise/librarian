@@ -3,6 +3,12 @@ generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - data-science/02-deep-learning/slides/deck.yaml
 cards:
+- front: Which five steps does this lecture take, from the loop to text?
+  back: The loop never changes, so each step changes what you check or what the network assumes about the data.
+  lesson: data-science/02-deep-learning/readme
+- front: Name four things this lecture teaches you to do with a neural network.
+  back: You will be able to train a network, tell why it fails, and say which architecture the data asks for.
+  lesson: data-science/02-deep-learning/readme
 - front: Which call does the chain-rule bookkeeping of backprop for you?
   back: Backprop is the chain rule with bookkeeping, and `backward()` does the bookkeeping.
   lesson: data-science/02-deep-learning/notes/01-neural-networks-fundamentals
@@ -12,6 +18,12 @@ cards:
 - front: What can the hidden layer draw that logistic regression cannot, and which PyTorch calls replace Ng's cost, backward and update functions?
   back: The same loop with one hidden layer draws a curve that logistic regression cannot.
   lesson: data-science/02-deep-learning/notes/01-neural-networks-fundamentals
+- front: Which symptoms in a training run point to a missing zero_grad, an extra softmax or a copied keep_prob?
+  back: Learn the symptom of each quiet bug, because the loop runs and the number only looks wrong.
+  lesson: data-science/02-deep-learning/notes/01-neural-networks-fundamentals
+- front: Why does only He initialisation train a 6-layer ReLU network on digits?
+  back: Each layer multiplies the signal by its weights, so only an initial scale that holds the activations steady lets a deep network start learning.
+  lesson: data-science/02-deep-learning/notes/02-optimisation-and-regularisation
 - front: Why can `weight_decay=0.1` destroy a run in Adam but not in AdamW?
   back: In Adam the penalty passes through the per-parameter scaling and can destroy the run, so use AdamW.
   lesson: data-science/02-deep-learning/notes/02-optimisation-and-regularisation
@@ -75,12 +87,18 @@ cards:
 - front: Why does a wider code rebuild better and detect worse, and how should you choose its size?
   back: A code wide enough to rebuild everything rebuilds the anomalies too, so choose its size on labelled anomalies if you have some.
   lesson: data-science/02-deep-learning/notes/05-sequence-models
+- front: Which position scheme lets an encoder tell upside-down digits from upright ones?
+  back: Self-attention is permutation-equivariant, so add position before the first block, and expect the upside-down score to fall once the model reads order.
+  lesson: data-science/02-deep-learning/notes/05b-transformer-encoders
 - front: Test accuracy falls from 0.966 to 0.658 when requests arrive one at a time. What should you suspect?
   back: The model still trains, so score the same examples at batch size 1 and 32 and check that the logits match.
   lesson: data-science/02-deep-learning/notes/05b-transformer-encoders
 - front: Why does the encoder lose to a linear model at 100 digit labels yet reach 0.973 at 1,257?
   back: An encoder assumes less than a CNN or an LSTM, so it has to learn more from examples. Ask which task you have before reaching for one.
   lesson: data-science/02-deep-learning/notes/05b-transformer-encoders
+- front: How do an embedding average, a TextCNN, a BiLSTM and TF-IDF each read a review?
+  back: Each learned model has over 160,000 parameters for 5,000 reviews, and all of them must come from those labels.
+  lesson: data-science/02-deep-learning/notes/06-neural-text-models
 - front: Which kind of model won on 5,000 reviews, and did it still lead on 25,000?
   back: The linear model wins here, and a notebook on 25,000 reviews saw 0.87 to 0.89 against about 0.90.
   lesson: data-science/02-deep-learning/notes/06-neural-text-models

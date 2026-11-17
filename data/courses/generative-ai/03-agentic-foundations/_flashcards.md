@@ -3,6 +3,12 @@ generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - generative-ai/03-agentic-foundations/slides/deck.yaml
 cards:
+- front: In what order does this lecture add things to the restock agent?
+  back: Each step fixes a failure of the one before it, and the last step is the one that keeps an agent that can spend money inside a limit.
+  lesson: generative-ai/03-agentic-foundations/readme
+- front: Name four things this lecture teaches you to do with an agent.
+  back: You will be able to say how an agent acts, remembers and works with others, and how to keep it inside a limit.
+  lesson: generative-ai/03-agentic-foundations/readme
 - front: What does a plain-code check of the restock order reveal?
   back: Code confirmed the item and found a stockout the model never mentioned, and per-step errors compound quickly over a long run.
   lesson: generative-ai/03-agentic-foundations/notes/01-agent-fundamentals
@@ -11,6 +17,9 @@ cards:
   lesson: generative-ai/03-agentic-foundations/notes/01-agent-fundamentals
 - front: What happens to an agent if you remove its tool results?
   back: An agent can only decide on what is in its context, so every part of the context is load-bearing.
+  lesson: generative-ai/03-agentic-foundations/notes/01-agent-fundamentals
+- front: What must a minimal agent loop contain besides the model call?
+  back: A minimal agent is a capped loop that runs tool calls and feeds back the results, ending in a wrap-up rather than a silent cutoff.
   lesson: generative-ai/03-agentic-foundations/notes/01-agent-fundamentals
 - front: When should you use a workflow rather than an autonomous agent?
   back: Prefer plain code, then a workflow, and use an autonomous agent only when the path depends on what it finds along the way.
@@ -30,9 +39,6 @@ cards:
 - front: What are the four steps of a tool call?
   back: Advertise, decide, execute and observe repeat until the model answers without a call or a step budget ends the run.
   lesson: generative-ai/03-agentic-foundations/notes/02-tool-use-and-react
-- front: What must a minimal agent loop contain besides the model call?
-  back: A minimal agent is a capped loop that runs tool calls and feeds back the results, ending in a wrap-up rather than a silent cutoff.
-  lesson: generative-ai/03-agentic-foundations/notes/01-agent-fundamentals
 - front: Which failures does chain of thought not fix?
   back: Reasoning helps a model apply a rule it knows, but missing facts and exact arithmetic need tools, so more thinking will not fix them.
   lesson: generative-ai/03-agentic-foundations/notes/02-tool-use-and-react

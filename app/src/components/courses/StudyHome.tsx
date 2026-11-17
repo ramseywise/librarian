@@ -1,5 +1,5 @@
-import { useCourses } from "../../hooks/useCourses";
-import type { CourseModule } from "./types";
+import { useCourses, useStudyProgress } from "../../hooks/useCourses";
+import type { CourseModule, StudyProgress } from "./types";
 import { pageTitle, useDocumentTitle } from "./useDocumentTitle";
 import "./courses.css";
 
@@ -7,22 +7,26 @@ type Counts = Pick<CourseModule, "quizCount" | "flashcardCount" | "problemCount"
 
 /** The three formats, easiest first; the same order and routes as StudyLevels. */
 const LEVELS = [
-  { name: "Multiple choice", does: "recognise", count: (c: Counts) => c.quizCount, unit: "questions", href: (id: string) => `#/quiz/${id}?choice` },
-  { name: "Flashcards", does: "recall", count: (c: Counts) => c.flashcardCount, unit: "cards", href: (id: string) => `#/flashcards/${id}` },
-  { name: "Worked problems", does: "calculate", count: (c: Counts) => c.problemCount, unit: "problems", href: (id: string) => `#/quiz/${id}?worked` },
+  { key: "choice", name: "Multiple choice", does: "recognise", count: (c: Counts) => c.quizCount, unit: "questions", href: (id: string) => `#/quiz/${id}?choice` },
+  { key: "cards", name: "Flashcards", does: "recall", count: (c: Counts) => c.flashcardCount, unit: "cards", href: (id: string) => `#/flashcards/${id}` },
+  { key: "worked", name: "Worked problems", does: "calculate", count: (c: Counts) => c.problemCount, unit: "problems", href: (id: string) => `#/quiz/${id}?worked` },
 ] as const;
 
 const hasStudy = (c: Counts) => LEVELS.some((l) => l.count(c));
 
-function LevelCells({ id, title, counts }: { id: string; title: string; counts: Counts }) {
+function LevelCells({ id, title, counts, progress }: { id: string; title: string; counts: Counts; progress?: StudyProgress[string] }) {
   return (
     <>
       {LEVELS.map((l) => {
         const n = l.count(counts);
+        const p = progress?.[l.key];
         return (
           <td key={l.name} className="study-cell">
             {n ? (
-              <a href={l.href(id)} aria-label={`${title}: ${l.name.toLowerCase()}, ${n} ${l.unit}`}>{n} {l.unit}</a>
+              <>
+                <a href={l.href(id)} aria-label={`${title}: ${l.name.toLowerCase()}, ${n} ${l.unit}`}>{n} {l.unit}</a>
+                {p && <span className="study-cell-progress">{p.right} right{p.redo ? ` · ${p.redo} to redo` : ""}</span>}
+              </>
             ) : (
               <span className="study-none" aria-label="none">–</span>
             )}
@@ -38,6 +42,7 @@ function LevelCells({ id, title, counts }: { id: string; title: string; counts: 
  * `#/quiz/<id>?worked`); the topic links to the module's page, which lists its lessons. */
 export function StudyHome() {
   const { data: courses, error } = useCourses();
+  const { data: progress } = useStudyProgress();
   useDocumentTitle(pageTitle("Study"));
 
   if (error) return <div className="course-centered"><div>Could not load the study topics: {error}</div></div>;
@@ -75,7 +80,7 @@ export function StudyHome() {
                     return (
                       <tr key={id} className="study-topic">
                         <th scope="row"><a href={`#/courses/${id}`}>{m.title}</a></th>
-                        <LevelCells id={id} title={m.title} counts={m} />
+                        <LevelCells id={id} title={m.title} counts={m} progress={progress && !Array.isArray(progress) ? progress[id] : undefined} />
                       </tr>
                     );
                   })}

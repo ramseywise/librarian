@@ -3,12 +3,30 @@ generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - generative-ai/05-rl/slides/deck.yaml
 cards:
+- front: Name the sources of reward this lecture goes through, in order.
+  back: The parts change the source of the reward, from humans to a constitution to a checker to an environment, while the question stays the same.
+  lesson: generative-ai/05-rl/readme
+- front: Name four things this lecture teaches you to do with a trained model.
+  back: You will be able to say what a model was actually asked to do, where its score came from and how it could be gamed.
+  lesson: generative-ai/05-rl/readme
 - front: What are the steps of the agent-environment loop?
   back: An agent sees a state, acts, and receives a reward and a new state, and training adjusts its policy to raise total reward.
   lesson: generative-ai/05-rl/notes/00-rl-in-plain-language
 - front: What happened to the bandit agent at epsilon 0, 0.1 and 0.5?
   back: Some exploration is necessary but too much is wasteful, as 0.1 beat both 0 and 0.5 in this bandit.
   lesson: generative-ai/05-rl/notes/00-rl-in-plain-language
+- front: In a language model, what plays the roles of state, action and policy?
+  back: The conversation is the state, the next token the action and the weights the policy, which leaves the reward as your design decision.
+  lesson: generative-ai/05-rl/notes/00-rl-in-plain-language
+- front: How do dynamic programming, Monte Carlo and TD differ?
+  back: TD learning updates from one step plus its own estimate, trading some bias for lower variance and online learning.
+  lesson: generative-ai/05-rl/notes/01-rl-foundations
+- front: What does the PPO clip do to the objective once the ratio passes 1 + epsilon?
+  back: PPO clips the objective so a batch can be reused safely, but this removes an incentive rather than enforcing a hard bound.
+  lesson: generative-ai/05-rl/notes/01-rl-foundations
+- front: Why do Q-learning and SARSA take different paths in the cliff world?
+  back: Q-learning learns the greedy policy off-policy, while SARSA learns the exploring policy on-policy and so avoids the cliff.
+  lesson: generative-ai/05-rl/notes/01b-algorithm-families-td-and-dqn
 - front: How fast does regret grow for explore-then-commit, UCB, MOSS and Exp3?
   back: With fixed gaps regret grows like log n, in the worst case like √n, and no policy beats √n on every instance.
   lesson: generative-ai/05-rl/notes/01c-bandit-algorithms
@@ -21,18 +39,6 @@ cards:
 - front: What does Bayesian regret hide?
   back: Bayesian regret is an average over a prior and does not bound any single instance.
   lesson: generative-ai/05-rl/notes/01c-bandit-algorithms
-- front: How do dynamic programming, Monte Carlo and TD differ?
-  back: TD learning updates from one step plus its own estimate, trading some bias for lower variance and online learning.
-  lesson: generative-ai/05-rl/notes/01-rl-foundations
-- front: Why do Q-learning and SARSA take different paths in the cliff world?
-  back: Q-learning learns the greedy policy off-policy, while SARSA learns the exploring policy on-policy and so avoids the cliff.
-  lesson: generative-ai/05-rl/notes/01b-algorithm-families-td-and-dqn
-- front: What does the PPO clip do to the objective once the ratio passes 1 + epsilon?
-  back: PPO clips the objective so a batch can be reused safely, but this removes an incentive rather than enforcing a hard bound.
-  lesson: generative-ai/05-rl/notes/01-rl-foundations
-- front: In a language model, what plays the roles of state, action and policy?
-  back: The conversation is the state, the next token the action and the weights the policy, which leaves the reward as your design decision.
-  lesson: generative-ai/05-rl/notes/00-rl-in-plain-language
 - front: What are the three stages of RLHF and why does SFT come first?
   back: RLHF runs SFT on demonstrations, trains a reward model on ranked pairs, then applies PPO with a KL penalty to the SFT model.
   lesson: generative-ai/05-rl/notes/02-rlhf-pipeline
@@ -48,24 +54,24 @@ cards:
 - front: What are the common forms of reward hacking, and what mitigates them?
   back: Verbosity, sycophancy and mode collapse are common reward hacks, and a tuned KL penalty is the first defence.
   lesson: generative-ai/05-rl/notes/12-rlhf-failure-modes
-- front: Which methods need a reward model, a critic or paired data?
-  back: Default to DPO with preference pairs and no verifier, and use GRPO when a checker can score new outputs online.
-  lesson: generative-ai/05-rl/notes/03b-grpo-and-gspo
-- front: Which DPO variant answers which practical problem?
-  back: DPO variants each change one thing, so choose by the problem you have, whether that's unpaired feedback, collapse, budget, length or missing labels.
-  lesson: generative-ai/05-rl/notes/13-preference-variants
 - front: What does the DPO loss do when both answers become more likely?
   back: DPO optimizes the gap in log-ratios against a frozen reference, needing no reward model or sampling but unable to explore beyond its pairs.
   lesson: generative-ai/05-rl/notes/03-preference-optimization
+- front: On math, how did offline DPO compare with semi-online DPO and GRPO in Lanchantin et al.?
+  back: Going online matters more than the specific loss on reasoning, since online DPO and GRPO both beat offline DPO on math.
+  lesson: generative-ai/05-rl/notes/03-preference-optimization
+- front: Which methods need a reward model, a critic or paired data?
+  back: Default to DPO with preference pairs and no verifier, and use GRPO when a checker can score new outputs online.
+  lesson: generative-ai/05-rl/notes/03b-grpo-and-gspo
 - front: Why does an all-correct or all-wrong group teach GRPO nothing?
   back: GRPO normalizes rewards within a group of samples, so it needs no critic but learns nothing from groups that all pass or all fail.
   lesson: generative-ai/05-rl/notes/03b-grpo-and-gspo
 - front: Why does GSPO use a sequence-level ratio rather than GRPO's token ratio?
   back: GSPO matches the ratio to the unit that earns the reward, using one sequence-level ratio in place of per-token ratios.
   lesson: generative-ai/05-rl/notes/03b-grpo-and-gspo
-- front: On math, how did offline DPO compare with semi-online DPO and GRPO in Lanchantin et al.?
-  back: Going online matters more than the specific loss on reasoning, since online DPO and GRPO both beat offline DPO on math.
-  lesson: generative-ai/05-rl/notes/03-preference-optimization
+- front: Which DPO variant answers which practical problem?
+  back: DPO variants each change one thing, so choose by the problem you have, whether that's unpaired feedback, collapse, budget, length or missing labels.
+  lesson: generative-ai/05-rl/notes/13-preference-variants
 - front: What two phases does Constitutional AI have?
   back: CAI critiques and revises answers for SFT in its first phase, then trains RL on AI preference labels in its second.
   lesson: generative-ai/05-rl/notes/04-constitutional-ai
@@ -87,12 +93,12 @@ cards:
 - front: Which post-training stage added the most for Phi-4-Mini-Reasoning?
   back: At 3.8B, bulk distillation has to come before a small curated SFT set or RL, and the stages together beat the 7B distilled baseline's 53.3.
   lesson: generative-ai/05-rl/notes/05b-choosing-sft-rl-or-no-training
-- front: How did quality and diversity affect LIMA's 7B fine-tune on 2,000 examples?
-  back: Data quality and diversity both raise results, so start with about 50 good examples and fix the setup if they show no gain.
-  lesson: generative-ai/05-rl/notes/06b-dataset-engineering-for-post-training
 - front: Why can a simulated environment hurt, and how do you limit that?
   back: A distorted environment teaches strategies that die on deployment, so mix simulated rollouts with real ones and recalibrate regularly.
   lesson: generative-ai/05-rl/notes/06-data-and-environments
+- front: How did quality and diversity affect LIMA's 7B fine-tune on 2,000 examples?
+  back: Data quality and diversity both raise results, so start with about 50 good examples and fix the setup if they show no gain.
+  lesson: generative-ai/05-rl/notes/06b-dataset-engineering-for-post-training
 - front: Which reward forms say where a failed call went wrong?
   back: A scalar reward says only how good a call was, while vector or generative rewards point to which phase went wrong.
   lesson: generative-ai/05-rl/notes/07-reward-design-and-tool-calling

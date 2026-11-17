@@ -3,6 +3,12 @@ generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - data-science/03-nlp/slides/deck.yaml
 cards:
+- front: How does this lecture move from raw text to pretrained encoders?
+  back: Each part adds one tool for text and measures it against the baseline that came before.
+  lesson: data-science/03-nlp/readme
+- front: Name four things this lecture teaches you to do with text.
+  back: You will be able to turn text into features, set a baseline and say whether anything else beats it.
+  lesson: data-science/03-nlp/readme
 - front: What does bag of words keep from a document, and what does it lose?
   back: Bag of words makes text tabular by keeping word counts and discarding their order.
   lesson: data-science/03-nlp/notes/01-text-representation
@@ -15,11 +21,11 @@ cards:
 - front: How do you choose among TF-IDF, word vectors, sequences and sentence embeddings?
   back: Pick the cheapest representation that keeps the signal your task depends on.
   lesson: data-science/03-nlp/notes/01-text-representation
-- front: Why keep the vectoriser inside the cross-validation pipeline?
-  back: Keeping the vectoriser inside the pipeline lets every fold build its own vocabulary, so the score is honest.
-  lesson: data-science/03-nlp/notes/02-text-classification
 - front: After tuning, why read the top weights of a text classifier?
   back: Tune the vectoriser and model together inside cross-validation, then read the weights to catch surprises.
+  lesson: data-science/03-nlp/notes/02-text-classification
+- front: Why keep the vectoriser inside the cross-validation pipeline?
+  back: Keeping the vectoriser inside the pipeline lets every fold build its own vocabulary, so the score is honest.
   lesson: data-science/03-nlp/notes/02-text-classification
 - front: What should decide your metric, and what goes wrong with accuracy on imbalanced text?
   back: Choose the metric from the costs of the errors, since accuracy on imbalanced text flatters a lazy model.
@@ -48,6 +54,9 @@ cards:
 - front: Why report entity-level F1 and not token accuracy for NER?
   back: Report entity-level F1, since token accuracy is dominated by the tag that means nothing.
   lesson: data-science/03-nlp/notes/05-semantic-analysis-and-ner
+- front: Why is a lexicon the baseline when you have no labels?
+  back: A lexicon scores words and adds them up, so it needs no labels and is the baseline when you have none.
+  lesson: data-science/03-nlp/notes/06-sentiment-analysis
 - front: Which is harder to beat on 25,000 labelled reviews, bigram TF-IDF or a small neural network?
   back: Twenty-five thousand labels and a bigram TF-IDF model set a bar that small neural networks here did not reach.
   lesson: data-science/03-nlp/notes/06-sentiment-analysis
@@ -57,6 +66,12 @@ cards:
 - front: Which three levels can you use to explain a sentiment model?
   back: Explanations move from global weights to single predictions to themes, and each answers a different why.
   lesson: data-science/03-nlp/notes/06-sentiment-analysis
+- front: What four mistakes spoil a sentiment comparison?
+  back: Tune a lexicon threshold on train, re-run LIME with another seed, and give every model the same amount of data.
+  lesson: data-science/03-nlp/notes/06-sentiment-analysis
+- front: What does an encoder like MiniLM do between raw text and one vector?
+  back: An encoder splits text into word pieces, sets each piece's vector in context, then averages and normalises them into one vector.
+  lesson: data-science/03-nlp/notes/07-llm-embeddings-as-features
 - front: What is the only slow step with a pretrained encoder, and what do you do about it?
   back: Encoding is the only slow step, so cache the matrix under the model's name and treat it as any other feature table.
   lesson: data-science/03-nlp/notes/07-llm-embeddings-as-features

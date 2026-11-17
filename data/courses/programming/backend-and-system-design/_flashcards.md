@@ -3,6 +3,12 @@ generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - programming/backend-and-system-design/slides/deck.yaml
 cards:
+- front: What are the four parts of this lecture, in order?
+  back: The lecture moves from what one request promises, to the parts that serve it, to the sums that size them, to whole designs.
+  lesson: programming/backend-and-system-design/readme
+- front: Name four things this lecture teaches you to do with a backend design.
+  back: You will be able to compute what a design needs and say what each box does when it is slow, down or running twice.
+  lesson: programming/backend-and-system-design/readme
 - front: What should a client do after a timeout?
   back: Retry only what is idempotent or carries a key. Otherwise read the state before acting.
   lesson: programming/backend-and-system-design/notes/01-api-design

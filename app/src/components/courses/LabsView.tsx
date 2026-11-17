@@ -78,7 +78,9 @@ export function LabsView({ onOpenLab, onOpenLesson, onOpenDrills }: Props) {
             {groups.map(([key, rows]) => (
               <section key={key} className="lab-group">
                 <h2 className="section-label">
-                  {rows[0].course} · {moduleLabel(rows[0].module)}
+                  <a href={`#/courses/${key}`} className="lab-group-link" title="Open the topic page">
+                    {rows[0].course} · {moduleLabel(rows[0].module)}
+                  </a>
                 </h2>
                 {rows.map((lab) => (
                   <div key={lab.id} className="course-nav-item practice-row">

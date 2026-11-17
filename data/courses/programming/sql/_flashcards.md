@@ -3,6 +3,12 @@ generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - programming/sql/slides/deck.yaml
 cards:
+- front: What are the three parts of the SQL track, in order?
+  back: The parts run from asking one table a question, to combining rows, to making the answer correct, fast and safe.
+  lesson: programming/sql/readme
+- front: Name four things the SQL track teaches you to do.
+  back: You will be able to write, combine and design queries, and to read the plan that says how fast they will run.
+  lesson: programming/sql/readme
 - front: In what order does SQL evaluate a query?
   back: FROM, WHERE, GROUP BY, HAVING, SELECT, DISTINCT, ORDER BY, LIMIT. Rows have no order unless you ask for one.
   lesson: programming/sql/notes/01-select-and-filter

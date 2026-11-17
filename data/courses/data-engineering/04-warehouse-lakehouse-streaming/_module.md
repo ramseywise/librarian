@@ -1,6 +1,6 @@
 ---
-imported_hash: 5d9feb4d7116a066
-title: 04 Warehouse, lakehouse and streaming
+imported_hash: 9ec6e74233785acb
+title: Warehouse, lakehouse and streaming
 summary: 'Everything else: references.md.'
 order: 4
 source: learn-ai-engineering/data-engineering/04-warehouse-lakehouse-streaming

@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
 import type { Course, CourseModule, Lesson, SearchHit } from "./types";
 import { useCourseProgress } from "../../hooks/useCourseProgress";
-import { useCourses, useLabs } from "../../hooks/useCourses";
+import { useCourses, useLabs, useStudyProgress } from "../../hooks/useCourses";
 import { Check } from "./Check";
 import { LessonView, type TocEntry } from "./LessonView";
 import { StudyLevels } from "./StudyLevels";
 import { pageTitle, useDocumentTitle } from "./useDocumentTitle";
 import "./courses.css";
 import { apiFetch } from "../../utils/api";
+import { moduleFacet } from "../../utils/curriculum";
+import { mapPath } from "../../utils/mapRoute";
 
 interface Props {
   /** Route path after `/courses` — "" (catalog), "<course>", or "<lesson id>". */
@@ -50,7 +52,7 @@ export function CoursesView({ route, navigate, onOpenConcept, onAsk }: Props) {
   if (!route.includes("/")) {
     return <Overview course={course} done={progress.done} last={progress.last[course.id]} onOpen={open} />;
   }
-  if (module) return <ModulePage course={course} module={module} done={progress.done} onOpen={open} />;
+  if (module) return <ModulePage course={course} module={module} done={progress.done} onOpen={open} onOpenConcept={onOpenConcept} />;
   return (
     <LessonLayout
       course={course}
@@ -139,101 +141,174 @@ function SearchResults({ query, onOpen }: { query: string; onOpen: (p: string) =
 // Course overview
 // ---------------------------------------------------------------------------
 
-/** One course: a card per module with what it holds. A card opens the module's page. */
+const GROUP_TITLES: Record<string, string> = { core: "Core modules", advanced: "Advanced topics" };
+
+/** The course's modules as the groups its README sorts them into, in order. A course with no groups is one
+ * unlabelled group. */
+export function moduleGroups(modules: CourseModule[]): { key: string; title: string; modules: CourseModule[] }[] {
+  const groups: { key: string; title: string; modules: CourseModule[] }[] = [];
+  for (const m of modules) {
+    const key = m.group ?? "";
+    const last = groups[groups.length - 1];
+    if (last && last.key === key) last.modules.push(m);
+    else groups.push({ key, title: GROUP_TITLES[key] ?? "", modules: [m] });
+  }
+  return groups.length > 1 || groups[0]?.key ? groups.map((g) => ({ ...g, title: g.title || "More" })) : groups;
+}
+
+/** One course, and where to start it: what you will be able to do, then a card per module in reading order
+ * (core before advanced when the course sorts them), then the course guide and its references. */
 function Overview({ course, done, last, onOpen }: {
   course: Course; done: Set<string>; last?: string; onOpen: (p: string) => void;
 }) {
   const { data: labsData } = useLabs();
   const first = lessonsOf(course)[0];
   const resume = last ?? first?.id;
+  const guide = course.guide ?? [];
   return (
     <div className="course-scroll course-page">
       <div className="course-page-inner course-page-inner--wide">
         <button onClick={() => onOpen("")} className="link-btn">← All courses</button>
         <h1 className="course-page-title course-page-title--overview">{course.title}</h1>
         <p className="course-overview-summary">{course.summary}</p>
+        {course.outcomes?.length ? (
+          <>
+            <h2 className="section-label course-module-label">By the end you can</h2>
+            <ol className="course-objectives">
+              {course.outcomes.map((o) => <li key={o}>{o}</li>)}
+            </ol>
+          </>
+        ) : null}
         {resume && (
           <button onClick={() => onOpen(resume)} className="btn-primary">
             {last ? "Continue where you left off" : "Start the course"} →
           </button>
         )}
-        <div className="course-grid">
-          {course.modules.map((m, i) => {
-            const labs = (labsData?.labs ?? []).filter((l) => l.course === course.id && l.module === m.id).length;
-            const n = m.lessons.filter((l) => done.has(l.id)).length;
-            const tests = [
-              m.quizCount && `${m.quizCount} questions`,
-              m.flashcardCount && `${m.flashcardCount} flashcards`,
-              m.problemCount && `${m.problemCount} problems`,
-            ].filter(Boolean);
-            return (
-              <button key={m.id} onClick={() => onOpen(`${course.id}/${m.id}`)} className="course-card">
-                <div className="course-module-kicker">Module {i + 1}</div>
-                <div className="course-card-title">{m.title}</div>
-                <div className="course-card-summary">{m.summary}</div>
-                <div className="course-card-meta">
-                  {m.lessons.length} lessons{labs > 0 && ` · ${labs} labs`}
-                  {n > 0 && <span className="text-success"> · {n} done</span>}
-                </div>
-                {tests.length > 0 && <div className="course-card-meta course-card-tests">Test yourself: {tests.join(" · ")}</div>}
-                <ProgressBar value={m.lessons.length ? n / m.lessons.length : 0} />
-              </button>
-            );
-          })}
-        </div>
+        {moduleGroups(course.modules).map((g) => (
+          <section key={g.key || "all"} aria-label={g.title || "Modules"}>
+            {g.title && <h2 className="section-label course-module-label">{g.title}</h2>}
+            <div className="course-grid">
+              {g.modules.map((m) => {
+                const labs = (labsData?.labs ?? []).filter((l) => l.course === course.id && l.module === m.id).length;
+                const n = m.lessons.filter((l) => done.has(l.id)).length;
+                const tests = [
+                  m.quizCount && `${m.quizCount} questions`,
+                  m.flashcardCount && `${m.flashcardCount} flashcards`,
+                  m.problemCount && `${m.problemCount} problems`,
+                ].filter(Boolean);
+                return (
+                  <button key={m.id} onClick={() => onOpen(`${course.id}/${m.id}`)} className="course-card">
+                    <div className="course-card-title">{m.title}</div>
+                    <div className="course-card-summary">{m.summary}</div>
+                    <div className="course-card-meta">
+                      {m.lessons.length} lessons{labs > 0 && ` · ${labs} labs`}
+                      {n > 0 && <span className="text-success"> · {n} done</span>}
+                    </div>
+                    {tests.length > 0 && <div className="course-card-meta course-card-tests">Test yourself: {tests.join(" · ")}</div>}
+                    <ProgressBar value={m.lessons.length ? n / m.lessons.length : 0} />
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        ))}
+        {(guide.length > 0 || !!course.readings?.length || !!course.readingsCount || !!course.references?.length) && (
+          <>
+            <h2 className="section-label course-module-label">Guide and references</h2>
+            {guide.length > 0 && (
+              <div className="course-module-list">
+                {guide.map((l) => (
+                  <div key={l.id} className="course-row course-row--stack">
+                    <a href={`#/courses/${l.id}`} className="course-row-title">{/references$/.test(l.id) ? "References" : "Course guide"}</a>
+                    <span className="course-row-section">
+                      {/references$/.test(l.id) ? "The books, papers and courses behind this course" : "How the course is built, what each module asks of you and its rules of thumb"}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+            <SourceList label="Readings" items={course.readings ?? []} count={course.readingsCount} />
+            <SourceList label="Reference material (not imported)" items={course.references ?? []} />
+          </>
+        )}
       </div>
     </div>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Module page
+// Module page: the topic page
 // ---------------------------------------------------------------------------
 
-/** One module with everything it has, all in view and in the order it is used: lectures (the decks), lessons,
- * study (the three levels) and labs, then the readings. A part the module lacks says so. */
-function ModulePage({ course, module: m, done, onOpen }: {
-  course: Course; module: CourseModule; done: Set<string>; onOpen: (p: string) => void;
+/** One topic with everything it has, in the order it is used: test yourself (the three levels, with how far you
+ * are), learn (the lecture decks, then the notes in reading order), hands-on (labs and drills), the wiki pages its
+ * lessons cite, and its references. A part the module lacks says so. */
+function ModulePage({ course, module: m, done, onOpen, onOpenConcept }: {
+  course: Course; module: CourseModule; done: Set<string>; onOpen: (p: string) => void; onOpenConcept: (id: string) => void;
 }) {
   const { data: labsData } = useLabs();
+  const { data: studyProgress } = useStudyProgress();
+  const id = `${course.id}/${m.id}`;
   const labs = (labsData?.labs ?? []).filter((l) => l.course === course.id && l.module === m.id);
+  const notes = m.lessons.filter((l) => l.kind !== "drill");
+  const drills = m.lessons.filter((l) => l.kind === "drill");
+  const next = notes.find((l) => !done.has(l.id));
+  const wiki = m.wiki ?? [];
+  const moreWiki = Math.max((m.wikiCount ?? wiki.length) - wiki.length, 0);
+  const graph = `#${mapPath({ level: "all", tags: [moduleFacet(course.id, m.id)] })}`;
+  // A non-object (an unsigned or failed request) means no progress, not a broken page.
+  const progress = studyProgress && !Array.isArray(studyProgress) ? studyProgress[id] : undefined;
   return (
     <div className="course-scroll course-page">
       <div className="course-page-inner course-page-inner--overview">
         <button onClick={() => onOpen(course.id)} className="link-btn">← {course.title}</button>
         <h1 className="course-page-title course-page-title--overview">{m.title}</h1>
         {m.summary && <p className="course-overview-summary">{m.summary}</p>}
-        <h2 className="section-label course-module-label">Lectures</h2>
+
+        {m.objectives?.length ? (
+          <>
+            <h2 className="section-label course-module-label">After this module you can</h2>
+            <ol className="course-objectives">
+              {m.objectives.map((o) => <li key={o}>{o}</li>)}
+            </ol>
+          </>
+        ) : null}
+
+        <h2 className="section-label course-module-label">Test yourself</h2>
+        {(m.quizCount || m.flashcardCount || m.problemCount) ? (
+          <StudyLevels id={id} quizCount={m.quizCount} flashcardCount={m.flashcardCount} problemCount={m.problemCount} progress={progress} />
+        ) : <p className="course-none">No questions or flashcards yet.</p>}
+
+        <h2 className="section-label course-module-label">Learn</h2>
         {m.decks?.length ? (
           <div className="course-module-list">
             {m.decks.map((d) => (
               <div key={d.id} className="course-row">
-                <a href={`#/slides/${d.id}`} className="course-row-title">▶ {d.title}</a>
-                <span className="course-row-section">{d.subtitle || (d.id === `${course.id}/${m.id}` ? "The whole module" : "Lecture")}</span>
+                <a href={`#/slides/${d.id}`} className="course-row-title">{d.title}</a>
+                <span className="course-row-section">{d.subtitle || (d.id === id ? "The whole module" : "Lecture")}</span>
               </div>
             ))}
           </div>
         ) : <p className="course-none">No lecture deck yet.</p>}
-        <h2 className="section-label course-module-label">Lessons</h2>
-        <div className="course-module-list">
-          {m.lessons.map((l) => (
-            <div key={l.id} className="course-row">
-              <Check on={done.has(l.id)} />
-              <a href={`#/courses/${l.id}`} className="course-row-title">{l.title}</a>
-              {l.quizCount ? <a href={`#/quiz/${l.id}?choice`} className="course-row-test">{l.quizCount} questions</a> : null}
-              {l.flashcardCount ? <a href={`#/flashcards/${l.id}`} className="course-row-test">{l.flashcardCount} flashcards</a> : null}
-              {l.problemCount ? <a href={`#/quiz/${l.id}?worked`} className="course-row-test">{l.problemCount} problems</a> : null}
-              {l.section && <span className="course-row-section">{l.section}</span>}
-              {l.kind === "notebook" && <span className="kind-badge">notebook</span>}
-            </div>
-          ))}
-        </div>
-        <h2 className="section-label course-module-label">Study</h2>
-        {(m.quizCount || m.flashcardCount || m.problemCount) ? (
-          <StudyLevels id={`${course.id}/${m.id}`} quizCount={m.quizCount} flashcardCount={m.flashcardCount} problemCount={m.problemCount} />
-        ) : <p className="course-none">No questions or flashcards yet.</p>}
-        <h2 className="section-label course-module-label">Labs</h2>
-        {labs.length > 0 ? (
+        {notes.length > 0 && (
+          <div className="course-module-list course-module-list--notes">
+            {notes.map((l, i) => (
+              <div key={l.id} className="course-row">
+                <Check on={done.has(l.id)} />
+                <span className="course-row-no">{i + 1}</span>
+                <a href={`#/courses/${l.id}`} className="course-row-title">{l.title}</a>
+                {l.quizCount ? <a href={`#/quiz/${l.id}?choice`} className="course-row-test">{l.quizCount} questions</a> : null}
+                {l.flashcardCount ? <a href={`#/flashcards/${l.id}`} className="course-row-test">{l.flashcardCount} flashcards</a> : null}
+                {l.problemCount ? <a href={`#/quiz/${l.id}?worked`} className="course-row-test">{l.problemCount} problems</a> : null}
+                {l.kind === "notebook" && <span className="kind-badge">notebook</span>}
+                {done.has(l.id) ? <span className="course-row-state">read</span> : l === next ? <span className="course-row-state course-row-state--next">next</span> : null}
+              </div>
+            ))}
+          </div>
+        )}
+
+        <h2 className="section-label course-module-label">Hands-on</h2>
+        {labs.length > 0 || drills.length > 0 ? (
           <div className="course-module-list">
             {labs.map((lab) => (
               <div key={lab.id} className="course-row course-row--stack">
@@ -241,10 +316,40 @@ function ModulePage({ course, module: m, done, onOpen }: {
                 <span className="course-row-section">{lab.purpose}</span>
               </div>
             ))}
+            {drills.map((d) => (
+              <div key={d.id} className="course-row">
+                <a href={`#/courses/${d.id}`} className="course-row-title">{d.title}</a>
+                <span className="course-row-section">Drill{d.drill?.difficulty ? ` · ${d.drill.difficulty}` : ""}</span>
+              </div>
+            ))}
           </div>
-        ) : <p className="course-none">No labs yet.</p>}
-        <SourceList label="Readings" items={m.readings} count={m.readingsCount} />
-        <SourceList label="Reference material (not imported)" items={m.references} />
+        ) : <p className="course-none">No labs or drills yet.</p>}
+
+        <h2 className="section-label course-module-label">Wiki</h2>
+        {wiki.length > 0 ? (
+          <>
+            <div className="course-module-list">
+              {wiki.map((p) => (
+                <div key={p.id} className="course-row course-row--stack">
+                  <button onClick={() => onOpenConcept(p.id)} className="course-row-title course-wiki-title" title="Open on the graph">{p.title}</button>
+                  {p.summary && <span className="course-row-section">{p.summary}</span>}
+                </div>
+              ))}
+            </div>
+            <p className="course-wiki-more">
+              {moreWiki > 0 && <>{moreWiki} more cited by these lessons. </>}
+              <a href={graph}>Show on the graph</a>
+            </p>
+          </>
+        ) : <p className="course-none">No wiki pages cover this yet.</p>}
+
+        {(m.references?.length > 0 || m.readings?.length > 0 || !!m.readingsCount) && (
+          <>
+            <h2 className="section-label course-module-label">References</h2>
+            <SourceList label="Readings" items={m.readings} count={m.readingsCount} />
+            <SourceList label="Reference material (not imported)" items={m.references} />
+          </>
+        )}
       </div>
     </div>
   );
@@ -259,7 +364,7 @@ function SourceList({ label, items, count }: {
   }
   return (
     <div className="course-sources">
-      <h2 className="section-label course-module-label">{label}</h2>
+      <h3 className="course-sources-label">{label}</h3>
       <ul>
         {items.map((it) => (
           <li key={it.source}>

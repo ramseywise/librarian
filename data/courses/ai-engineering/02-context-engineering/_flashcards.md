@@ -3,6 +3,12 @@ generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - ai-engineering/02-context-engineering/slides/deck.yaml
 cards:
+- front: What are the four parts of this lecture, in order?
+  back: The lecture runs from why the window fills, through what to select, shrink, keep and split, to how to diagnose a wrong answer.
+  lesson: ai-engineering/02-context-engineering/readme
+- front: Name four things this lecture teaches you to do with a context window.
+  back: You will be able to assemble a window, shrink it, keep what lasts and diagnose a wrong answer by looking in the window first.
+  lesson: ai-engineering/02-context-engineering/readme
 - front: Why does a larger context window not solve the attention problem?
   back: Added tokens do not expand the attention budget. They split the same budget across more claimants.
   lesson: ai-engineering/02-context-engineering/notes/01-why-context-is-finite
@@ -51,6 +57,21 @@ cards:
 - front: What does contextual retrieval do at index time, and what does it buy?
   back: Contextual retrieval adds meaning to chunks at index time, while contextual compression removes text at query time.
   lesson: ai-engineering/02-context-engineering/notes/04-retrieval
+- front: Why does the contextual-retrieval prompt put the whole document before the chunk?
+  back: Putting the whole document first in each call turns the cache into the cheap way to give every chunk its context.
+  lesson: ai-engineering/02-context-engineering/notes/04-retrieval
+- front: Why are recent turns kept verbatim, and why are phase boundaries the better trigger?
+  back: Compact at a phase boundary and keep recent turns verbatim, because the agent's working state lives in those turns.
+  lesson: ai-engineering/02-context-engineering/notes/05-compression-compaction
+- front: Which compression strategy finished the OpenAI co-founders task cheapest, and what did its prompt contain?
+  back: Compression is understanding, so the compressor needs the task and the known state in its prompt.
+  lesson: ai-engineering/02-context-engineering/notes/05-compression-compaction
+- front: How do you stop compaction from dropping constraints, and why is a deterministic check needed?
+  back: Pin constraints outside the summary and verify with a deterministic check, because compactors misreport what they kept.
+  lesson: ai-engineering/02-context-engineering/notes/05-compression-compaction
+- front: Rank what must survive compaction, and say why tool output comes last.
+  back: 40k tokens of test output compress to "17 passed, 2 failed", while a one-sentence rationale cannot compress at all.
+  lesson: ai-engineering/02-context-engineering/notes/05-compression-compaction
 - front: Why must a memory system update and delete, rather than only append?
   back: Append-only memory is slow-motion context poisoning, so new facts must update or delete the old ones.
   lesson: ai-engineering/02-context-engineering/notes/06-memory
@@ -66,18 +87,6 @@ cards:
 - front: Why must structured state be validated before it re-enters the window?
   back: A malformed state block that is re-injected compounds on every turn, so validate at the boundary.
   lesson: ai-engineering/02-context-engineering/notes/07-structured-context
-- front: Why are recent turns kept verbatim, and why are phase boundaries the better trigger?
-  back: Compact at a phase boundary and keep recent turns verbatim, because the agent's working state lives in those turns.
-  lesson: ai-engineering/02-context-engineering/notes/05-compression-compaction
-- front: Which compression strategy finished the OpenAI co-founders task cheapest, and what did its prompt contain?
-  back: Compression is understanding, so the compressor needs the task and the known state in its prompt.
-  lesson: ai-engineering/02-context-engineering/notes/05-compression-compaction
-- front: How do you stop compaction from dropping constraints, and why is a deterministic check needed?
-  back: Pin constraints outside the summary and verify with a deterministic check, because compactors misreport what they kept.
-  lesson: ai-engineering/02-context-engineering/notes/05-compression-compaction
-- front: Rank what must survive compaction, and say why tool output comes last.
-  back: 40k tokens of test output compress to "17 passed, 2 failed", while a one-sentence rationale cannot compress at all.
-  lesson: ai-engineering/02-context-engineering/notes/05-compression-compaction
 - front: What is the difference between cognitive prompting and cognitive tools, and what did the change buy?
   back: Cognitive tools apply context isolation to reasoning, because only each step's result returns to the main trace.
   lesson: ai-engineering/02-context-engineering/notes/08-cognitive-tools

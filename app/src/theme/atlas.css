@@ -111,13 +111,45 @@
   width: max-content;
   max-width: calc(100% - 300px);
 }
-.map-bar--focused {
+.map-bar--focused, .map-bar--atlas {
   background: var(--surface-raised);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-lg);
   padding: var(--space-1) var(--space-3);
 }
 .map-bar--focused .map-search-input { width: 160px; }
+.map-bar .seg-btn { padding: 3px var(--space-4); }
+.map-brief {
+  background: none; border: none; padding: 0 var(--space-2); cursor: pointer;
+  font: inherit; font-size: var(--fs-sm); color: var(--link);
+}
+.map-brief:hover { text-decoration: underline; }
+
+/* A button with a panel under it: Filters, Map. */
+.map-pop { position: relative; }
+.map-pop-btn[aria-expanded="true"] { background: var(--surface-active); color: var(--text); }
+.map-pop-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  width: 320px;
+  max-height: min(70vh, 600px);
+  overflow-y: auto;
+  padding: var(--space-4) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-overlay);
+  font-size: var(--fs-md);
+  z-index: calc(var(--z-panel) + 1);
+}
+.filters-panel { display: flex; flex-direction: column; gap: var(--space-4); }
+.filters-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.filters-count { color: var(--text-secondary); font-size: var(--fs-sm); }
+.pill-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .map-back { text-decoration: none; display: inline-block; }
 .map-crumbs { display: flex; align-items: center; gap: var(--space-2); min-width: 0; }
 .map-crumbs a { color: var(--link); text-decoration: none; }
@@ -203,6 +235,8 @@
   .map-bar { top: 44px; left: var(--space-5); right: var(--space-5); transform: none; width: auto; max-width: none; justify-content: flex-start; }
   .map-search-input { width: 150px; }
   .map-search-list { right: auto; left: 0; width: min(320px, calc(100vw - 48px)); }
+  .map-pop { position: static; }
+  .map-pop-panel { position: fixed; top: 96px; left: var(--space-5); right: var(--space-5); width: auto; max-height: calc(100vh - 120px); }
 }
 
 /* ---- Wiki health strip ------------------------------------------------------- */

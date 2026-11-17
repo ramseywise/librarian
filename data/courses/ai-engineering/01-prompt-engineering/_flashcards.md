@@ -3,6 +3,12 @@ generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - ai-engineering/01-prompt-engineering/slides/deck.yaml
 cards:
+- front: What four ways does the assistant fail, in the order this lecture takes them?
+  back: The assistant first misreads the request, then guesses at the answer, then cannot act on it, and finally breaks under real traffic.
+  lesson: ai-engineering/01-prompt-engineering/readme
+- front: Name four things this lecture teaches you to do with a prompt.
+  back: You will be able to write the prompt, pick the technique, shape the output and prove each change with an eval.
+  lesson: ai-engineering/01-prompt-engineering/readme
 - front: Why can nothing later in a prompt change how earlier text was read?
   back: Attention flows one way, so a model reasons further only by writing tokens, which is why chain-of-thought works.
   lesson: ai-engineering/01-prompt-engineering/notes/01-how-models-read-prompts
@@ -14,6 +20,9 @@ cards:
   lesson: ai-engineering/01-prompt-engineering/notes/01-how-models-read-prompts
 - front: What does a chat request become before the model sees it, and why must user content stay out of the system role?
   back: The API renders messages into one transcript, so roles shape behaviour but only reserved tokens separate speakers.
+  lesson: ai-engineering/01-prompt-engineering/notes/01-how-models-read-prompts
+- front: Which three mistakes follow from how the model reads, and what is the fix for each?
+  back: Do character work in code, ground and verify rather than telling the model not to hallucinate, and keep user text out of the system role.
   lesson: ai-engineering/01-prompt-engineering/notes/01-how-models-read-prompts
 - front: What four criteria must every prompt meet, and which one is never automatic?
   back: A prompt must resemble training data, carry all relevant information, lead to a solution and have a stopping point; only carrying the right information never comes free.
@@ -27,18 +36,18 @@ cards:
 - front: According to Min et al., what do few-shot examples actually teach?
   back: Few-shot examples mostly teach format and label space, so add them only when zero-shot fails in a way you can name.
   lesson: ai-engineering/01-prompt-engineering/notes/03-core-techniques
-- front: How much did chain-of-thought improve PaLM 540B on GSM8K, and how do you keep the reasoning away from the user?
-  back: Chain-of-thought lifted PaLM 540B on GSM8K from 17.9% to 56.9%; a parseable block lets the app show only the answer.
-  lesson: ai-engineering/01-prompt-engineering/notes/03b-chain-of-thought-and-reasoning
-- front: How do Tree of Thoughts and CoT compare on Game of 24, and what does ToT need that CoT does not?
-  back: Tree of Thoughts recovers from dead ends through generate, evaluate and backtrack (4% to 74% on Game of 24), at the cost of a code controller.
-  lesson: ai-engineering/01-prompt-engineering/notes/03b-chain-of-thought-and-reasoning
 - front: What does ReAct add to chain-of-thought, what are the ALFWorld results, and how does it fail?
   back: ReAct alternates reasoning with actions so answers rest on retrieved facts (71% vs 45% on ALFWorld), and a single bad search can derail it.
   lesson: ai-engineering/01-prompt-engineering/notes/03-core-techniques
 - front: When does Reflexion work, what result did it achieve on HumanEval, and when does it become dangerous?
   back: Reflexion retries with written feedback (91% vs 80% on HumanEval), so it needs reversible actions and an evaluator stronger than the actor.
   lesson: ai-engineering/01-prompt-engineering/notes/03-core-techniques
+- front: How much did chain-of-thought improve PaLM 540B on GSM8K, and how do you keep the reasoning away from the user?
+  back: Chain-of-thought lifted PaLM 540B on GSM8K from 17.9% to 56.9%; a parseable block lets the app show only the answer.
+  lesson: ai-engineering/01-prompt-engineering/notes/03b-chain-of-thought-and-reasoning
+- front: How do Tree of Thoughts and CoT compare on Game of 24, and what does ToT need that CoT does not?
+  back: Tree of Thoughts recovers from dead ends through generate, evaluate and backtrack (4% to 74% on Game of 24), at the cost of a code controller.
+  lesson: ai-engineering/01-prompt-engineering/notes/03b-chain-of-thought-and-reasoning
 - front: Given a task's failure, which prompting technique do you reach for, and what does it cost?
   back: Name how the output fails, then choose the cheapest technique that buys what is missing.
   lesson: ai-engineering/01-prompt-engineering/notes/03-core-techniques
@@ -71,6 +80,9 @@ cards:
   lesson: ai-engineering/01-prompt-engineering/notes/08-evaluating-prompts
 - front: What does the prompt modification case study show about F1, template adherence and methodology?
   back: Prompt wording can move F1 by 26 points and trade against format adherence, so change one thing and re-score.
+  lesson: ai-engineering/01-prompt-engineering/notes/08-evaluating-prompts
+- front: Which three mistakes make a prompt eval mislead you, and what is the fix for each?
+  back: An eval misleads when the judge's question is vague, when a model grades itself, or when you score the rows you patched, so split the question and hold out rows.
   lesson: ai-engineering/01-prompt-engineering/notes/08-evaluating-prompts
 - front: What is the rule for keeping a new prompt version?
   back: Version the template with its model and score, and keep a new version only when it beats the old on the eval.

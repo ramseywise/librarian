@@ -3,6 +3,12 @@ generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - data-engineering/05-quality-and-observability/slides/deck.yaml
 cards:
+- front: What are the five parts of this lecture, in order?
+  back: The first three parts find and repair wrong data, and the last two keep the running store and the delivery path safe.
+  lesson: data-engineering/05-quality-and-observability/readme
+- front: Name four things this lecture teaches you to do.
+  back: You will be able to catch a fault, bound its damage, repair it safely and keep the store and the pipeline running.
+  lesson: data-engineering/05-quality-and-observability/readme
 - front: Why plant synthetic faults in a feed?
   back: Synthetic faults let us score every check against what really happened.
   lesson: data-engineering/05-quality-and-observability/notes/01-quality-dimensions-and-tests
@@ -48,6 +54,9 @@ cards:
 - front: What is a playbook, and why keep it short?
   back: A playbook is the decision made in advance, when nobody is stressed, so keep it short.
   lesson: data-engineering/05-quality-and-observability/notes/03-incident-playbooks
+- front: What are four ways a repair goes wrong?
+  back: A repair is finished when the blast radius is walked to the end, any filled gap is labelled and the checks that fired are quiet.
+  lesson: data-engineering/05-quality-and-observability/notes/03-incident-playbooks
 - front: What is the only return on an incident?
   back: The only return on an incident is a check that catches the next one sooner.
   lesson: data-engineering/05-quality-and-observability/notes/03-incident-playbooks
@@ -71,6 +80,9 @@ cards:
   lesson: data-engineering/05-quality-and-observability/notes/06-dataops
 - front: What should page someone about late batches, and what should not?
   back: Page on actionable symptoms that threaten the SLO, and send task failures and scattered late batches to a ticket and the budget review.
+  lesson: data-engineering/05-quality-and-observability/notes/06-dataops
+- front: What are four ways DataOps checks become decorative?
+  back: A check that can be merged past, an SLO with no policy and an alert on a cause are all ignored in time, so require the check, agree the policy and page on the symptom.
   lesson: data-engineering/05-quality-and-observability/notes/06-dataops
 - front: What finds a data fault, what bounds it, and what repairs it?
   back: Tests and monitors find it, lineage bounds it, and an idempotent backfill repairs it.

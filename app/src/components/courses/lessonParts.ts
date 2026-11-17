@@ -106,3 +106,15 @@ export function splitLesson(body: string): LessonParts {
     codeCount,
   };
 }
+
+const plain = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, "");
+
+/** True when the note's first paragraph opens with its summary, so showing the summary as a lede says it twice.
+ * Markdown marks are ignored; a note that opens on a heading, a list or a fence never repeats it. */
+export function openingRepeatsSummary(body: string, summary: string): boolean {
+  const lede = plain(summary);
+  if (!lede) return false;
+  const first = body.trim().split(/\n\s*\n/)[0] ?? "";
+  if (/^\s*(#|[-*+]\s|\d+[.)]\s|>|`{3}|~{3}|<)/.test(first)) return false;
+  return plain(first).startsWith(lede);
+}

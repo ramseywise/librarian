@@ -3,6 +3,12 @@ generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - data-engineering/07-architecture-and-governance/slides/deck.yaml
 cards:
+- front: What are the six parts of this lecture, in order?
+  back: The first two parts decide where data lives and who owns it, and the last four decide who may see it, keep it, remove it and be told when it changes.
+  lesson: data-engineering/07-architecture-and-governance/readme
+- front: Name four things this lecture teaches you to do.
+  back: You will be able to place data, protect it, define it once and say who a change will break.
+  lesson: data-engineering/07-architecture-and-governance/readme
 - front: How do a modern data warehouse, a lakehouse and a data fabric differ?
   back: An MDW keeps a lake and a warehouse, a lakehouse drops the warehouse copy, and a fabric adds a governance layer on top.
   lesson: data-engineering/07-architecture-and-governance/notes/01-data-architectures-mesh-fabric-mdw
@@ -42,11 +48,17 @@ cards:
 - front: What does Article 33 ask for, by when, and what can supply it?
   back: Article 33 asks for categories and approximate numbers within 72 hours of awareness, which only a log kept in advance can supply.
   lesson: data-engineering/07-architecture-and-governance/notes/02-access-control-pii-gdpr
-- front: How should you pseudonymise an identifier, and what does sharing a key across domains mean?
-  back: Use a keyed hash with the key outside the lake, and treat sharing a key across domains as a deliberate decision to link people.
+- front: What are three gaps that survive good access control?
+  back: Access control leaves gaps in free text, in copies outside production and in a log that was never kept, so include each in the inventory and the coverage check.
   lesson: data-engineering/07-architecture-and-governance/notes/02-access-control-pii-gdpr
 - front: Why is removing names not anonymising?
   back: Removing names is not anonymising, since behaviour and demographics can single people out and be joined to public lists.
+  lesson: data-engineering/07-architecture-and-governance/notes/02-access-control-pii-gdpr
+- front: How should you pseudonymise an identifier, and what does sharing a key across domains mean?
+  back: Use a keyed hash with the key outside the lake, and treat sharing a key across domains as a deliberate decision to link people.
+  lesson: data-engineering/07-architecture-and-governance/notes/02-access-control-pii-gdpr
+- front: Why is k-anonymity alone not enough?
+  back: k-anonymity stops singling out but not inference, so check each group for several sensitive values and treat the result as personal data until the DPO argues it down.
   lesson: data-engineering/07-architecture-and-governance/notes/02-access-control-pii-gdpr
 - front: Why must the path from erasure request to verified deletion be scheduled in advance?
   back: The right to erasure has a one-month clock, so the path from request to verified deletion has to be scheduled in advance.
@@ -63,13 +75,16 @@ cards:
 - front: How does a semantic layer stop a fan-out, a mean of ratios and a summed balance?
   back: A semantic layer holds metrics and join keys as data and compiles each request at its grain, so nobody rewrites the join or the division.
   lesson: data-engineering/07-architecture-and-governance/notes/03-catalog-semantic-layer-and-contracts
+- front: What are four ways a catalog or metric layer looks finished and is not?
+  back: A catalog measured by coverage, a certification that never expires, a tier read as trust and metric logic left in BI tools all look finished while people still disagree.
+  lesson: data-engineering/07-architecture-and-governance/notes/03-catalog-semantic-layer-and-contracts
 - front: How do you work out who a change to a column will hurt?
   back: Follow the chain to named owners, check the log for unregistered readers, and give a new unit a new column name.
   lesson: data-engineering/07-architecture-and-governance/notes/03b-data-contracts-who-a-change-reaches
 - front: Where does governance actually exist?
   back: Decide ownership and enforcement before you need them, because governance only exists where a step can fail.
   lesson: data-engineering/07-architecture-and-governance/notes/01-data-architectures-mesh-fabric-mdw
-- front: Where next
+- front: What do you do with real erasure and breach cases?
   back: Run the chapters' code, then bring real erasure and breach cases to a data protection officer instead of deciding alone.
   lesson: data-engineering/07-architecture-and-governance/notes/02-access-control-pii-gdpr
 ---

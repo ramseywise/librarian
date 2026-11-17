@@ -3,6 +3,12 @@ generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - data-engineering/02-ingest-and-modelling/slides/deck.yaml
 cards:
+- front: In what order does this lecture take data from a source to a checked promise?
+  back: Each step turns something a later stage would trust silently into an agreement that can be checked.
+  lesson: data-engineering/02-ingest-and-modelling/readme
+- front: Name four things this lecture teaches you to do with a source of data.
+  back: You will be able to load data safely, say what a row means, and write down what the next stage may rely on.
+  lesson: data-engineering/02-ingest-and-modelling/readme
 - front: What happens without the BEGIN if the insert fails?
   back: Delete and insert one window in one transaction, so a re-run replaces data and a crash leaves it untouched.
   lesson: data-engineering/02-ingest-and-modelling/notes/01-ingest
@@ -59,6 +65,9 @@ cards:
   lesson: data-engineering/02-ingest-and-modelling/notes/04-data-contracts
 - front: Which step needs sign-off, and why is it then harmless?
   back: Add the new field and write both, move consumers before a deadline, and only then remove the old field in a new major version.
+  lesson: data-engineering/02-ingest-and-modelling/notes/04-data-contracts
+- front: Why is a schema that calls itself a contract only an automated DESCRIBE?
+  back: A contract needs meaning, an owner and a check at the boundary, or bad data still loads and nobody is responsible for it.
   lesson: data-engineering/02-ingest-and-modelling/notes/04-data-contracts
 - front: What should each stage state, so that failures become visible?
   back: Each stage should state what it will not trust, in keys, default rows, history and contracts, so that failures become visible.

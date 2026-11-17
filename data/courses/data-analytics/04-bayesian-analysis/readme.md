@@ -1,13 +1,13 @@
 ---
-imported_hash: 30ebd6d0b10d6817
-title: 04 — Bayesian Analysis
+imported_hash: 5305cebcc34c5ab1
+title: Bayesian analysis
 summary: 'Bayesian analysis writes down how the data could have been generated, puts a prior on the unknowns, and computes the posterior: what is plausible once the data is in.'
 order: 1
 kind: reading
 source: learn-ai-engineering/data-analytics/04-bayesian-analysis/README.md
 ---
 
-# 04 — Bayesian Analysis
+# Bayesian analysis
 
 > Treat unknowns as distributions, update them with data, and choose the action with the lowest expected cost.
 > Jump to: [Reading order](#reading-order) · [Rules of thumb](#rules-of-thumb) · [Deck and practice](#deck-and-practice) · [References](references.md)

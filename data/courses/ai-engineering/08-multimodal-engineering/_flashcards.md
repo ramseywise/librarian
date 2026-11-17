@@ -3,6 +3,12 @@ generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - ai-engineering/08-multimodal-engineering/slides/deck.yaml
 cards:
+- front: What are the six failures this lecture walks through, in order?
+  back: The parts follow the notes, from what the model receives, through retrieval and speech and generation, to the tests that keep all of it honest.
+  lesson: ai-engineering/08-multimodal-engineering/readme
+- front: Name four things this lecture teaches you to do with images, documents, audio and generated pictures.
+  back: You will be able to find the silent failure in each kind of input and name the check that catches it.
+  lesson: ai-engineering/08-multimodal-engineering/readme
 - front: How does an image spend context, and what makes it cost more?
   back: Images cost context as text does, and cost grows with area.
   lesson: ai-engineering/08-multimodal-engineering/notes/01-image-input
@@ -54,6 +60,9 @@ cards:
 - front: Why narrow to a few hundred pages before reranking with patches?
   back: Scanning every patch of every page is too costly, so narrow with a cheap first stage and rerank a few hundred pages with patches.
   lesson: ai-engineering/08-multimodal-engineering/notes/03-multimodal-rag
+- front: What are three mistakes that make a multimodal retrieval system miss the answer?
+  back: Check that gold answers survive parsing and that the eval set holds visual questions, because tuning cannot recover what was never indexed and text-only queries hide the gap.
+  lesson: ai-engineering/08-multimodal-engineering/notes/03-multimodal-rag
 - front: What usually decides for a cascade in a regulated use?
   back: For a regulated use such as disputing a charge, audit and tool calling usually decide for the cascade.
   lesson: ai-engineering/08-multimodal-engineering/notes/04-speech-and-voice-agents
@@ -66,11 +75,11 @@ cards:
 - front: How do you protect against a low WER hiding a wrong value you will act on?
   back: Read back any value you will act on, and confirm it before calling the tool.
   lesson: ai-engineering/08-multimodal-engineering/notes/04-speech-and-voice-agents
-- front: How does a sampler's error behave as you reduce the number of steps?
-  back: Error stays low across a wide range of steps, then rises sharply at very few.
-  lesson: ai-engineering/08-multimodal-engineering/notes/05-how-image-generators-work
 - front: Why test both generation and understanding after a model change?
   back: A change aimed at generation can harm understanding, so test both.
+  lesson: ai-engineering/08-multimodal-engineering/notes/05-how-image-generators-work
+- front: How does a sampler's error behave as you reduce the number of steps?
+  back: Error stays low across a wide range of steps, then rises sharply at very few.
   lesson: ai-engineering/08-multimodal-engineering/notes/05-how-image-generators-work
 - front: Why log every control with every generated image?
   back: Log every control with every image, because a hosted model can be withdrawn.
@@ -95,6 +104,9 @@ cards:
   lesson: ai-engineering/08-multimodal-engineering/notes/07-evaluating-multimodal-systems
 - front: What do separate scores per stage let a regression do?
   back: Separate scores let a regression point at the stage that caused it.
+  lesson: ai-engineering/08-multimodal-engineering/notes/07-evaluating-multimodal-systems
+- front: What are three mistakes that make a multimodal test flatter the model?
+  back: Keep the answer out of the question, report scores per skill and group, and let any judge see the image, or the test measures reading rather than seeing.
   lesson: ai-engineering/08-multimodal-engineering/notes/07-evaluating-multimodal-systems
 - front: Almost nothing in a multimodal system raises an error, so what must every stage have?
   back: Almost nothing here raises an error, so every chapter ends with a check you must add.

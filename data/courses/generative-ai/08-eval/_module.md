@@ -1,8 +1,8 @@
 ---
-imported_hash: 73cfed8a340d383e
-title: 08 — Eval Engineering
+imported_hash: e63cb6b5d8d3e137
+title: Eval Engineering
 summary: 'Eval engineering is the discipline of measuring non-deterministic AI systems: defining what "correct" means, building tasks that represent real use, choosing graders you can trust, running them repeatedly, reading the results with error bar…'
 order: 8
 source: learn-ai-engineering/generative-ai/08-eval
-readings_count: 217
+readings_count: 218
 ---

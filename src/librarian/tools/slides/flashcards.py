@@ -7,8 +7,10 @@
 A module is `data/courses/<course>/<module>`. Its specs are every `slides/deck.yaml` and
 `slides/lectures/*.yaml` below it, deck first, then lectures in name order. One card per slide
 that is not a `statement` and has a `takeaway`: front is `recall`, else `title`; back is
-`takeaway`. If `source:` names a lesson file (relative to the folder that holds `slides/`) the
-card carries that lesson's id, otherwise it belongs to the module. A card whose front already
+`answer` (what the question asks for, written for the card), else `takeaway`; `card: false`
+leaves the slide out. If `source:`
+names a lesson file (relative to the folder that holds `slides/`) the card carries that
+lesson's id, otherwise it belongs to the module. A card whose front already
 appeared in the module is dropped: the Leitner log keys a card on its module and front text,
 so two cards with one front would share a schedule.
 
@@ -120,8 +122,14 @@ def spec_flashcards(spec: Path, courses: Path, index: dict[str, str]) -> list[di
         for slide in slides if isinstance(slides, list) else []:
             if not isinstance(slide, dict) or slide.get("layout") == "statement":
                 continue
+            if (
+                slide.get("card") is False
+            ):  # about the lecture itself (agenda, objectives, what next)
+                continue
             front = _card_text(slide.get("recall")) or _card_text(slide.get("title"))
-            back = _card_text(slide.get("takeaway"))
+            if not slide.get("takeaway"):
+                continue
+            back = _card_text(slide.get("answer")) or _card_text(slide.get("takeaway"))
             if not front or not back:
                 continue
             card = {"front": front, "back": back}

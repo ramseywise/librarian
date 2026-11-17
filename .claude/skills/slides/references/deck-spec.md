@@ -44,10 +44,14 @@ An `overview: true` part is still an agenda part: it gets a number, a divider an
 | `lead` | one sentence under the breadcrumb, before the body |
 | `takeaway` | tinted strip at the bottom: the one line to remember, and the flashcard answer. Required on every content slide except `statement` |
 | `recall` | optional flashcard question when the title is not one. Not drawn on the slide |
+| `answer` | the flashcard back: one or two sentences that give exactly what `recall` (or the title) asks for, with the numbers or the list it names. Not drawn on the slide. Without it the card's back is the takeaway, which is right only when the takeaway answers the question |
+| `card` | `false` keeps the slide out of the flashcards. Use it where the question is about the lecture and not the subject: the agenda, the objectives, what comes next. |
 | `source` | note path, shown in the footer and appended to the speaker notes |
 | `notes` | speaker notes: what to say, context left off the slide |
+| `narration` | the script the study UI reads aloud while it shows the slide: 60 to 150 words, full sentences written to be heard, nothing that points at the screen ("as you can see"). Falls back to `notes`. Also allowed on `deck:` and on a part, for the title slide and the divider. Not drawn in the `.pptx` |
 | `level` | `core` (default), `practice` or `deep`: the audience this slide is for. See Levels below. Any other value stops the build |
 | `beat` | `problem`, `fundamentals`, `practice`, `pitfalls` or `wrap`: what this slide does in its part. See The story. Any other value stops the build |
+| `revisits` | `true` on a slide that deliberately returns to an earlier note. Exempt from the order check; at most two per deck. See The story |
 
 **Inline markup.** In any text, `**bold**` and `` `code` `` are supported, and nothing else.
 
@@ -190,22 +194,40 @@ stamped deck no longer matches its yaml, and reports decks with no stamp without
 - **Spine.** Every part runs problem, what breaks, principle, technique, evidence, what you do on
   Monday. The first slide of a part is a `statement` or `image` that poses the problem. The last
   one's `takeaway` closes the part.
-- **Beats.** A part runs fundamentals, then practice, then pitfalls, and `beat` on each slide says which it is
-  (`problem` and `wrap` mark the slides around them). The deck opens with an overview part (`overview: true`) that says
-  which problems exist, which model families answer them, and where this pillar sits in the course. These checks apply
-  only to a deck where at least one slide sets `beat`: the builder warns when an agenda part has no slide for one of
-  `fundamentals`, `practice` or `pitfalls` (it checks that they are there, not their order; an overview part is exempt),
-  and when the first agenda part is not marked `overview: true`.
+- **Beats.** A part says what you will be able to do (`problem`), states the principle (`fundamentals`), shows it used
+  on the running example (`practice`), then says where it goes wrong (`pitfalls`); `beat` on each slide says which it
+  is, and `wrap` marks the close. A part may take several topics in turn, each opened by its own `problem`. The deck
+  opens with an overview part (`overview: true`) that says which problems exist, which model families answer them, and
+  where this pillar sits in the course. These checks apply to every deck, whether or not it sets a beat yet: the builder
+  warns when an agenda part has no slide for one of `fundamentals`, `practice` or `pitfalls`, when a topic applies
+  (`practice`) before it states its principle (`fundamentals`), and when the first agenda part is not marked
+  `overview: true`. An overview part is exempt.
+- **Order.** Body slides follow the module's reading order (the README's `## Syllabus` section, else its `## Reading order`, else the note file names): the
+  builder warns (`order:`) when a slide's `source:` is a note that comes before the one the slide ahead of it cited.
+  Overview and closing parts are exempt. `revisits: true` on a slide marks a deliberate callback to an earlier note,
+  which is not a back-jump; a deck gets two, and a third warns, because a deck that needs many is in the wrong order.
 - **Layout mix.** No layout above 25% of the deck. No three consecutive slides with one layout.
   Each part has at least one `code` block or worked example and one `image` or `flow`. An `overview: true` part owes no code.
-- **Flashcard pairs.** `title` (or `recall`) is the prompt and `takeaway` is the answer. `make flashcards` builds
+- **Flashcard pairs.** `title` (or `recall`) is the prompt and `answer` (else `takeaway`) is the back. `make flashcards` builds
   one card per slide and attaches it to the lesson named in `source:`, so write a takeaway
   that stands alone. `source:` must name the note file, as in `notes/03-estimation.md`.
 - **Coverage.** Every note in the pillar has at least one slide with `source:` pointing at it.
+- **Narration.** Once any slide in a deck sets `narration`, the builder warns on every agenda-part slide whose
+  narration is missing or under 40 words. A deck with none is not judged yet.
 - **Size.** 30 to 45 content slides for a pillar of 10 or more notes, 15 to 30 for a smaller pillar,
   15 to 25 for a programming module. `deep` slides don't count towards these limits, because the talk is the deck without them.
 
 Closing parts (`agenda: false`) are exempt from takeaway and part-mix checks.
+
+## Two renderers, one sequence
+
+The study UI draws the same yaml as HTML slides (`app/src/components/courses/SlideFrame.tsx`), coloured by `beat`:
+yellow for `problem` and part dividers, blue for `fundamentals`, purple for `practice`, orange for `pitfalls`, green
+for `wrap`. Which slides a deck has, and their numbers, come from `walk` in `src/librarian/courses/deck_frames.py`,
+which both renderers read. A new layout key goes in `BODY_KEYS` there, or the app never sees it;
+`tests/slides/test_deck_frames.py` fails when the two disagree.
+
+`--out FILE` writes the `.pptx` somewhere other than beside the yaml, for a check that must not touch a tracked file.
 
 ## Lecture series
 

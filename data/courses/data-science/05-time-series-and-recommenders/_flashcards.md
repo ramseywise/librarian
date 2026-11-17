@@ -3,6 +3,12 @@ generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - data-science/05-time-series-and-recommenders/slides/deck.yaml
 cards:
+- front: How does this lecture move from forecasts to matching?
+  back: Each part scores a different decision, and each swaps a flattering test for one that matches the decision.
+  lesson: data-science/05-time-series-and-recommenders/readme
+- front: Name four things this lecture teaches you to do with forecasts and lists.
+  back: You will be able to set up a forecast or a ranking so that its score matches what the decision will see.
+  lesson: data-science/05-time-series-and-recommenders/readme
 - front: Which four choices define a forecasting problem, and what do they decide?
   back: A forecasting problem is defined by its issue time, horizon, information set and loss, and these decide which features are legal.
   lesson: data-science/05-time-series-and-recommenders/notes/01-time-series-ml

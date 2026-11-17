@@ -155,10 +155,12 @@ def test_without_the_overlay_only_the_count_remains(
 ) -> None:
     (env["root"] / "private" / "gen-ai" / "01-rag" / "_module.md").unlink()
     courses._load.cache_clear()
-    mods = {m["id"]: m for m in client.get("/api/courses").json()[0]["modules"]}
+    course = client.get("/api/courses").json()[0]
+    mods = {m["id"]: m for m in course["modules"]}
     assert mods["01-rag"]["readings"] == [] and mods["01-rag"]["readingsCount"] == 2
-    # A module that is only a reading list stays listed, with its count.
-    assert mods["sources"]["readingsCount"] == 1 and mods["sources"]["lessons"] == []
+    # The course's shared reading list is the course's own, with its count, not a module.
+    assert "sources" not in mods
+    assert course["readingsCount"] == 1 and course["readings"] == []
 
 
 def test_private_overlay_module_is_not_marked_private(client: TestClient) -> None:

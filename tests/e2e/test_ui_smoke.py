@@ -60,10 +60,36 @@ def _open_graph(page: Page) -> None:
     page.wait_for_selector(".atlas-label", timeout=20_000)
 
 
-def _largest_domain() -> tuple[str, int]:
-    nodes = _get("/api/graph")["nodes"]
-    counts = Counter(n["data"]["domain"][0] for n in nodes if n["data"]["domain"])
-    return counts.most_common(1)[0]
+def _graph() -> dict[str, Any]:
+    return _get("/api/graph")
+
+
+def _default_cap() -> int:
+    """`DEFAULT_CAP` in mapRoute.ts: the pages a sector opens on."""
+    src = (Path(__file__).parents[2] / "app/src/utils/mapRoute.ts").read_text()
+    match = re.search(r"export const DEFAULT_CAP = (\d+)", src)
+    assert match, "DEFAULT_CAP not found in mapRoute.ts"
+    return int(match[1])
+
+
+def _domain_sectors() -> dict[str, tuple[str, int]]:
+    """The domain atlas as the page draws it: sector id -> (label, pages).
+
+    One sector per course area that has pages, then each directory in no area on its own.
+    """
+    graph = _graph()
+    area_of = {d: a["id"] for a in graph["areas"] for d in a["domains"]}
+    title = {a["id"]: a["title"] for a in graph["areas"]}
+    counts: Counter[str] = Counter()
+    for n in graph["nodes"]:
+        if n["data"]["domain"]:
+            d = n["data"]["domain"][0]
+            counts[area_of.get(d, d)] += 1
+    return {sid: (title.get(sid, sid), n) for sid, n in counts.items()}
+
+
+def _wiki_sectors() -> Counter[str]:
+    return Counter(n["data"]["domain"][0] for n in _graph()["nodes"] if n["data"]["domain"])
 
 
 def test_graph_tab(page: Page) -> None:
@@ -73,38 +99,47 @@ def test_graph_tab(page: Page) -> None:
     expect(sections.get_by_role("link", name="Graph", exact=True)).to_have_attribute(
         "aria-current", "page"
     )
-    page.get_by_role("group", name="Browse by").get_by_role("button", name="Course").click()
-    filters = page.get_by_role("group", name="Filter by curriculum")
-    curriculum = _get("/api/graph/curriculum")
-    for course in curriculum["courses"]:
-        expect(
-            filters.get_by_role(
-                "button", name=f"{course['title']} {len(course['pageIds'])}", exact=True
-            )
-        ).to_be_visible()
-    outside = sum(len(b["pageIds"]) for b in curriculum["beyond"])
+    # The atlas opens by domain: one label per course area (and per directory in no area).
+    sectors = _domain_sectors()
+    expect(page.locator(".atlas-label")).to_have_count(len(sectors), timeout=20_000)
+    for label, _ in sectors.values():
+        expect(page.locator(".atlas-label", has_text=label).first).to_be_visible()
+
+    # The Filters popover lists every wiki directory with its page count, and nothing private.
+    page.get_by_role("button", name=re.compile(r"^Filters")).click()
+    dirs = page.get_by_role("group", name="Filter by directory")
+    per_dir = Counter(
+        (n["data"].get("path") or "").split("/")[0]
+        for n in _graph()["nodes"]
+        if n["data"].get("path")
+    )
+    assert per_dir, "the graph should have pages"
+    for name, count in per_dir.items():
+        expect(dirs.get_by_role("button", name=f"{name} {count}", exact=True)).to_be_visible()
+    expect(dirs.get_by_role("button", name=re.compile(r"^Brief me on"))).to_have_count(len(per_dir))
     expect(
-        filters.get_by_role("button", name=f"Not in a course {outside}", exact=True)
-    ).to_be_visible()
-    expect(filters.get_by_text("private", exact=True)).to_have_count(0)
+        page.get_by_role("group", name="Filters").get_by_text("private", exact=True)
+    ).to_have_count(0)
 
 
 def test_atlas_zooms_in_and_back(page: Page) -> None:
     """Sector, page, reload, Esc: every level is a link and the way back is one key a level."""
     _open_graph(page)
-    domain, size = _largest_domain()
-    assert size > 150, "the largest domain should exceed the cap this test checks"
+    cap = _default_cap()
+    sector, (label, size) = max(_domain_sectors().items(), key=lambda kv: kv[1][1])
+    assert size > 2 * cap, "the largest sector should exceed twice the cap this test checks"
 
-    page.locator(".atlas-label", has_text=domain).first.click()
-    expect(page).to_have_url(f"{UI_URL}/#/map/wiki/{domain}", timeout=5_000)
+    page.locator(".atlas-label", has_text=label).first.click()
+    expect(page).to_have_url(f"{UI_URL}/#/map/domain/{sector}", timeout=5_000)
     page.wait_for_selector(".react-flow__node", timeout=20_000)
-    expect(page.locator(".map-count")).to_have_text(f"showing 150 of {size}")
-    expect(page.get_by_role("button", name="Show 300")).to_be_visible()
+    expect(page.locator(".map-count")).to_have_text(f"showing {cap} of {size}")
+    expect(page.get_by_role("button", name=f"Show {cap * 2}")).to_be_visible()
 
     # A page is a level of its own, with its neighbourhood and its detail panel.
-    node = page.locator(".react-flow__node-wikiNode").first
-    node.dblclick()
-    expect(page).to_have_url(re.compile(rf"#/map/domain/{domain}/.+"), timeout=5_000)
+    # The event, not a pointer double-click: the first click opens the detail panel, which can
+    # land over the card before the second one.
+    page.locator(".react-flow__node-wikiNode").first.dispatch_event("dblclick")
+    expect(page).to_have_url(re.compile(rf"#/map/domain/{re.escape(sector)}/.+"), timeout=5_000)
     expect(page.get_by_role("button", name="Close")).to_be_visible(timeout=5_000)
     expect(page.get_by_role("navigation", name="Map level")).to_contain_text("Atlas")
     level = page.url
@@ -115,21 +150,26 @@ def test_atlas_zooms_in_and_back(page: Page) -> None:
     expect(page.locator(".map-crumb-page")).to_be_visible()
 
     page.keyboard.press("Escape")
-    expect(page).to_have_url(f"{UI_URL}/#/map/wiki/{domain}", timeout=5_000)
+    expect(page).to_have_url(f"{UI_URL}/#/map/domain/{sector}", timeout=5_000)
     expect(page.locator(".map-crumb-page")).to_have_count(0)  # the level has rendered
     page.keyboard.press("Escape")
-    expect(page).to_have_url(f"{UI_URL}/#/map/wiki", timeout=5_000)
+    expect(page).to_have_url(f"{UI_URL}/#/map/domain", timeout=5_000)
     page.wait_for_selector(".atlas-label", timeout=20_000)
 
 
-def test_atlas_arranges_by_course_and_search_finds_an_alias(page: Page) -> None:
+def test_atlas_switches_to_wiki_and_search_finds_an_alias(page: Page) -> None:
     _open_graph(page)
-    page.get_by_role("button", name="Course", exact=True).click()
-    expect(page).to_have_url(f"{UI_URL}/#/map/course", timeout=5_000)
-    curriculum = _get("/api/graph/curriculum")
-    expect(page.locator(".atlas-label")).to_have_count(
-        len([c for c in curriculum["courses"] if set(c["pageIds"])]) + 1, timeout=20_000
+    browse = page.get_by_role("group", name="Browse by")
+    browse.get_by_role("button", name="Wiki", exact=True).click()
+    expect(page).to_have_url(f"{UI_URL}/#/map/wiki", timeout=5_000)
+    expect(page.locator(".atlas-label")).to_have_count(len(_wiki_sectors()), timeout=20_000)
+
+    # A link from before the redesign lands on the domain atlas.
+    page.goto(f"{UI_URL}/#/map/course")
+    expect(browse.get_by_role("button", name="Domain", exact=True)).to_have_attribute(
+        "aria-pressed", "true", timeout=5_000
     )
+    expect(page.locator(".atlas-label")).to_have_count(len(_domain_sectors()), timeout=20_000)
 
     terms = _get("/api/glossary")["terms"]
     term = next(t for t in terms if t["aliases"] and t["page"])
@@ -145,22 +185,22 @@ def test_private_terms_stay_private() -> None:
 
 
 def test_module_filter_shows_its_pages(page: Page) -> None:
-    _open_graph(page)
+    """The topic page's "Show on the graph" link filters the map to that module's pages."""
     curriculum = _get("/api/graph/curriculum")
     course, module = next(
         (c, m) for c in curriculum["courses"] for m in c["modules"] if m["pageIds"]
     )
-    page.get_by_role("group", name="Browse by").get_by_role("button", name="Course").click()
-    filters = page.get_by_role("group", name="Filter by curriculum")
-    filters.get_by_role("button", name=f"Show modules in {course['title']}").click()
-    filters.get_by_role(
-        "button", name=f"{module['title']} {len(module['pageIds'])}", exact=True
-    ).click()
+    page.goto(f"{UI_URL}/#/courses/{course['id']}/{module['id']}", timeout=15_000)
+    page.get_by_role("link", name="Show on the graph").click()
+    expect(page).to_have_url(
+        re.compile(r"#/map/all\?tags=module(:|%3A)" + re.escape(course["id"]) + r"(/|%2F)"),
+        timeout=5_000,
+    )
     # React Flow drops off-screen cards, so count the status line, not the DOM.
-    pages = page.locator(".graph-status-count")
-    expect(pages).to_contain_text(f"of {len(_get('/api/graph')['nodes'])} pages")
-    shown = int(pages.inner_text().split()[1])
-    assert shown == len(module["pageIds"])
+    pages = page.locator(".map-count")
+    expect(pages).to_have_text(
+        f"showing {len(module['pageIds'])} of {len(_graph()['nodes'])}", timeout=20_000
+    )
 
 
 def _lesson_with_concepts() -> dict[str, Any]:
@@ -189,6 +229,25 @@ def test_courses_tab_and_concept_jump(page: Page) -> None:
     # Back on the graph with the concept's detail panel open (focusPage applied).
     expect(page).to_have_title("Graph · Librarian")
     expect(page.get_by_role("button", name="Close")).to_be_visible(timeout=15_000)
+
+
+def test_sidebar_lists_modules_and_the_topic_page_has_a_wiki_graph_link(page: Page) -> None:
+    course = next((c for c in _get("/api/courses") if c["modules"]), None)
+    if course is None:
+        pytest.skip("no course with modules")
+    module = course["modules"][0]
+    _open_graph(page)
+    nav = page.get_by_role("navigation", name="Sections")
+    # Modules sit under their course's label with a lesson count; no lessons are listed.
+    row = nav.get_by_role("link", name=re.compile("^" + re.escape(module["title"])))
+    expect(row.first).to_be_visible()
+    row.first.click()
+    expect(page).to_have_title(re.compile(re.escape(module["title"]) + r" · .+ · Librarian"))
+    expect(row.first).to_have_class(re.compile("is-current"))
+    expect(page.get_by_role("heading", name="Test yourself", level=2)).to_be_visible()
+    if module.get("wiki"):
+        link = page.get_by_role("link", name="Show on the graph")
+        expect(link).to_have_attribute("href", re.compile(r"^#/map/all\?tags=module%3A"))
 
 
 def test_practice_tab(page: Page) -> None:

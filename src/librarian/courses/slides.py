@@ -22,6 +22,10 @@ unchanged. The subprocess build runs only when `settings.dev_build_slides` is on
 (`LIBRARIAN_DEV_BUILD_SLIDES`, set by `make api`). With it off, `deck` never builds and `build_deck`
 only reads.
 
+The viewer draws slides itself from `frames` (`deck_frames.py`: the yaml as data, with the generated
+title and divider slides), so it needs none of the above; the images remain for a deck whose yaml
+gives no frames and for `deck-reviewer`.
+
 With the build on, a deck is rebuilt in a background thread when its stamp no longer matches the yaml;
 the request that finds it stale answers at once with the yaml text and `status: "building"`.
 `build_deck.py` also writes the .pptx beside the yaml (gitignored), as `make slides` does.
@@ -42,6 +46,7 @@ from typing import Any
 import yaml
 
 from librarian.config import get_settings
+from librarian.courses import deck_frames
 from librarian.log_config import get_logger
 
 log = get_logger(__name__)
@@ -386,6 +391,8 @@ def deck(deck_id: str, *, start: bool = False) -> dict[str, Any] | None:
         "needs": needs() if DEV_BUILD and status in ("text", "failed") else [],
         "error": error,
         "decks": module_decks(f"{course}/{module}"),
+        # The deck as data, read from the yaml: what the viewer draws. Needs no build.
+        "frames": deck_frames.frames(spec, _load_spec(spec), COURSES_DIR),
         "slides": [
             {
                 "n": i,

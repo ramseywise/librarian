@@ -1,13 +1,13 @@
 ---
-imported_hash: c5be1c93f4fd35ab
-title: 02 — Probability and Statistics
+imported_hash: 9a0809efec6c3ce1
+title: Probability and statistics
 summary: 'The statistics an analyst uses in practice: looking at data before summarising it, the rules of probability, the distributions behind common metrics, estimates with intervals, hypothesis tests, and regression as an estimate with a standard…'
 order: 1
 kind: reading
 source: learn-ai-engineering/data-analytics/02-probability-and-statistics/README.md
 ---
 
-# 02 — Probability and Statistics
+# Probability and statistics
 
 > Every analytics decision is a claim about data you have not seen. This pillar is how to make that claim honestly.
 > Jump to: [Reading order](#reading-order) · [Rules of thumb](#rules-of-thumb) · [Deck and practice](#deck-and-practice) · [References](references.md)

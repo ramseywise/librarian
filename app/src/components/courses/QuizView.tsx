@@ -43,6 +43,10 @@ export function QuizView({
   const [result, setResult] = useState<QuizAnswerResult | null>(null);
   const [right, setRight] = useState(0);
   const [saveFailed, setSaveFailed] = useState(false);
+  // Help on a worked problem: a hint, or the solution. Either counts as a miss in the store.
+  const [hint, setHint] = useState<string | null>(null);
+  const [assisted, setAssisted] = useState(false);
+  const [gaveUp, setGaveUp] = useState(false);
   useDocumentTitle(pageTitle(quiz?.id === quizId ? quiz.title : "Loading…", "Quiz"));
 
   useEffect(() => {
@@ -62,11 +66,17 @@ export function QuizView({
         setTyped("");
         setResult(null);
         setRight(0);
+        clearHelp();
       })
       .catch((e: Error) => !cancelled && setError(e.message));
     return () => { cancelled = true; };
   }, [quizId, level, dueOnly]);
 
+  const clearHelp = () => {
+    setHint(null);
+    setAssisted(false);
+    setGaveUp(false);
+  };
   const question: QuizQuestion | undefined = queue[pos];
   // Options are shuffled once per question; the answer is an option's text, so order carries nothing.
   const options = useMemo(() => (question ? shuffled(question.options) : []), [question]);
@@ -93,7 +103,7 @@ export function QuizView({
       const r = await apiFetch("/api/courses/quiz-results", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ quiz: quiz.id, question: question.id, choice }),
+        body: JSON.stringify({ quiz: quiz.id, question: question.id, choice, assisted }),
       });
       if (r.status === 422) {
         setPicked(null);
@@ -103,10 +113,33 @@ export function QuizView({
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       const graded = (await r.json()) as QuizAnswerResult;
       setResult(graded);
-      if (graded.correct) setRight((n) => n + 1);
+      if (graded.correct && !assisted) setRight((n) => n + 1);
       if (!graded.logged) setSaveFailed(true);
     } catch {
       setPicked(null);
+      setSaveFailed(true);
+    }
+  };
+  const reveal = async (what: "hint" | "solution") => {
+    if (!question || result) return;
+    setSaveFailed(false);
+    try {
+      const r = await apiFetch("/api/courses/quiz-reveal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ quiz: quiz.id, question: question.id, what }),
+      });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const shown = (await r.json()) as { hint?: string; answer?: string; explanation?: string; logged: boolean };
+      setAssisted(true);
+      if (!shown.logged) setSaveFailed(true);
+      if (what === "hint") {
+        setHint(shown.hint ?? "");
+      } else {
+        setGaveUp(true);
+        setResult({ correct: false, answer: shown.answer ?? "", explanation: shown.explanation ?? "", logged: shown.logged });
+      }
+    } catch {
       setSaveFailed(true);
     }
   };
@@ -115,6 +148,7 @@ export function QuizView({
     setPicked(null);
     setTyped("");
     setResult(null);
+    clearHelp();
   };
   const restart = (dueOnly: boolean) => {
     setQueue(quizOrder(quiz.questions, dueOnly));
@@ -123,7 +157,12 @@ export function QuizView({
     setTyped("");
     setResult(null);
     setRight(0);
+    clearHelp();
   };
+
+  const worked = question?.kind === "worked";
+  const verdict = gaveUp ? "Solution." : result?.correct ? "Correct." : "Not quite.";
+  const whyLabel = gaveUp ? "Working" : worked && !result?.correct ? "Why your guess was wrong" : worked ? "Working" : "Why";
 
   return (
     <div className="course-scroll course-page">
@@ -159,6 +198,10 @@ export function QuizView({
                   className={!result ? "" : result.correct ? "is-right" : "is-wrong"}
                 />
                 {!result && <button type="submit" disabled={!typed.trim() || !!picked} className="btn-primary">Check</button>}
+                {!result && question.hasHint && !hint && (
+                  <button type="button" onClick={() => void reveal("hint")} className="round-btn">Hint</button>
+                )}
+                {!result && <button type="button" onClick={() => void reveal("solution")} className="round-btn">Show the solution</button>}
               </form>
             ) : (
             <div className="quiz-options" role="group" aria-label="Answers">
@@ -178,16 +221,20 @@ export function QuizView({
               })}
             </div>
             )}
+            {hint && !result && (
+              <p className="quiz-hint" role="note"><strong>Hint.</strong> <InlineMarkup text={hint} /></p>
+            )}
             {notANumber && <p className="slides-status" role="alert">Type a number, such as 0.16, 18.7 or 1/6.</p>}
             {result && (
               <div className={`quiz-feedback ${result.correct ? "is-right" : "is-wrong"}`} role="status">
                 <p className="quiz-verdict">
-                  <strong>{result.correct ? "Correct." : "Not quite."}</strong>
+                  <strong>{verdict}</strong>
                   {!result.correct && <> The answer is <InlineMarkup text={result.answer} />.</>}
+                  {result.correct && assisted && <> It counts as missed, as you used help.</>}
                 </p>
                 {result.explanation && (
                   <>
-                    <div className="quiz-why-label">Why</div>
+                    <div className="quiz-why-label">{whyLabel}</div>
                     <p className="quiz-why"><InlineMarkup text={result.explanation} /></p>
                   </>
                 )}

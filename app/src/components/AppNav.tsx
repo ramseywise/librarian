@@ -1,7 +1,4 @@
-import { useEffect } from "react";
-import { useCourseProgress } from "../hooks/useCourseProgress";
 import { useCourses } from "../hooks/useCourses";
-import { Check } from "./courses/Check";
 import type { CourseModule } from "./courses/types";
 
 type Section = "graph" | "courses" | "study" | "labs" | null;
@@ -14,9 +11,11 @@ function sectionOf(route: string): Section {
   return null;
 }
 
-/** The one navigation for the whole app: Graph, Courses, Study and Labs, with the courses listed under Courses.
- * Nothing in it opens or closes by hand: the course being read shows its modules, and the module being read
- * shows its lessons. */
+/** The one navigation for the whole app: Graph, Study, Labs and Courses. Courses comes last because each
+ * course follows it as a group label over its modules, with the lesson count beside each; the module being
+ * read is the filled row, and "Core" and "Advanced" head the modules of a course that sorts them. A module with
+ * no lessons is left out. Lessons are not listed here, they are on the
+ * module's page. */
 export function AppNav({ route, open, id }: { route: string; open: boolean; id: string }) {
   const { data: courses } = useCourses();
   const section = sectionOf(route);
@@ -41,63 +40,34 @@ export function AppNav({ route, open, id }: { route: string; open: boolean; id: 
   return (
     <nav id={id} className={`app-sidenav${open ? " is-open" : ""}`} aria-label="Sections">
       {top("graph", "#/", "Graph", true)}
+      {top("study", "#/study", "Study", route === "/study")}
+      {top("labs", "#/labs", "Labs", route === "/labs")}
       {top("courses", "#/courses", "Courses", route === "/courses")}
       {courses?.map((c) => (
-        <div key={c.id}>
+        <div key={c.id} className="sidenav-group" role="group" aria-label={c.title}>
           <a
             href={`#/courses/${c.id}`}
-            className={`sidenav-item sidenav-item--course${c === course && path !== c.id ? " is-within" : ""}`}
+            className={`sidenav-label${c === course && path !== c.id ? " is-within" : ""}`}
             aria-current={path === c.id ? "page" : undefined}
           >
             {c.title}
           </a>
-          {c === course && c.modules.map((m) => (
-            <div key={m.id}>
-              <a
-                href={`#/courses/${c.id}/${m.id}`}
-                className={`sidenav-item sidenav-item--module${m === module && path !== moduleOf(m) ? " is-within" : ""}`}
-                aria-current={path === moduleOf(m) ? "page" : undefined}
-              >
-                {m.title}
-              </a>
-              {m === module && <NavLessons module={m} activeId={path} />}
-            </div>
-          ))}
+          {c.modules.filter((m) => m.lessons.length > 0 || m === module).map((m, i, shown) => [
+            m.group && m.group !== shown[i - 1]?.group
+              ? <div key={`${m.id}-group`} className="sidenav-sublabel">{m.group === "core" ? "Core" : m.group === "advanced" ? "Advanced" : m.group}</div>
+              : null,
+            <a
+              key={m.id}
+              href={`#/courses/${c.id}/${m.id}`}
+              className={`sidenav-item sidenav-item--module${c === course && m === module ? " is-current" : ""}`}
+              aria-current={c === course && path === moduleOf(m) ? "page" : undefined}
+            >
+              <span className="grow">{m.title}</span>
+              <span className="sidenav-count" title={`${m.lessons.length} lessons`} aria-hidden="true">{m.lessons.length}</span>
+            </a>,
+          ])}
         </div>
       ))}
-      {top("study", "#/study", "Study", route === "/study")}
-      {top("labs", "#/labs", "Labs", route === "/labs")}
     </nav>
-  );
-}
-
-/** The lessons of the module being read, under their section headings, with what is done ticked. */
-function NavLessons({ module: m, activeId }: { module: CourseModule; activeId: string }) {
-  const { done } = useCourseProgress();
-  useEffect(() => {
-    document.getElementById(`nav-${activeId}`)?.scrollIntoView?.({ block: "nearest" });
-  }, [activeId]);
-  let prevSection = "";
-  return (
-    <>
-      {m.lessons.map((l) => {
-        const header = l.section && l.section !== prevSection ? l.section : null;
-        prevSection = l.section;
-        return (
-          <div key={l.id}>
-            {header && <div className="sidenav-section">{header}</div>}
-            <a
-              id={`nav-${l.id}`}
-              href={`#/courses/${l.id}`}
-              className="sidenav-item sidenav-item--lesson"
-              aria-current={l.id === activeId ? "page" : undefined}
-            >
-              <Check on={done.has(l.id)} small />
-              <span className="grow">{l.title}</span>
-            </a>
-          </div>
-        );
-      })}
-    </>
   );
 }

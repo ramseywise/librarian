@@ -592,7 +592,71 @@ def test_placeholder_readme_heading_does_not_become_the_module_title(
         "title: Probability and statistics"
         in (dest / "programming" / "02-probability-and-statistics" / "_module.md").read_text()
     )
-    assert "03 — Real Title" in (dest / "programming" / "03-real" / "_module.md").read_text()
+    # The folder number orders the module; it is not part of its name.
+    assert "title: Real Title" in (dest / "programming" / "03-real" / "_module.md").read_text()
+
+
+COURSE_README = """# Data Analytics
+
+## Course outcomes
+
+By the end you can:
+
+1. Estimate a quantity **honestly**.
+2. Draw a chart.
+
+## Core modules
+
+| Module | What it covers |
+|---|---|
+| [Charts](05-charts/README.md) | Drawing. |
+| [Statistics](02-statistics/README.md) | Estimating. |
+
+## Advanced topics
+
+| Module | What it covers |
+|---|---|
+| [Causality](03-causality/README.md) | Why. |
+
+## Units
+
+### [Statistics](02-statistics/README.md)
+
+**Learning objectives.** After this unit, you can:
+
+1. Build a confidence interval.
+2. Say what a p-value is not.
+
+Some prose.
+
+1. Not an objective.
+"""
+
+
+def test_course_outline_reads_outcomes_groups_order_and_objectives() -> None:
+    outline = ic.course_outline(COURSE_README)
+    assert outline.outcomes == ["Estimate a quantity honestly.", "Draw a chart."]
+    assert outline.groups == {
+        "05-charts": "core",
+        "02-statistics": "core",
+        "03-causality": "advanced",
+    }
+    assert outline.order == {"05-charts": 1, "02-statistics": 2, "03-causality": 3}
+    assert outline.objectives == {
+        "02-statistics": ["Build a confidence interval.", "Say what a p-value is not."]
+    }
+
+
+def test_course_readme_sets_the_module_order_group_and_objectives(
+    pillar: tuple[Path, Path],
+) -> None:
+    source, dest = pillar
+    (source / "data-analytics" / "README.md").write_text(COURSE_README)
+    _sync_analytics(source)
+    module = _front(dest / "data-analytics" / "02-statistics" / "_module.md")
+    assert (module["order"], module["group"]) == (2, "core")
+    assert module["objectives"][0] == "Build a confidence interval."
+    assert _front(dest / "data-analytics" / "_course.md")["outcomes"][1] == "Draw a chart."
 
 
 # ── mirroring: home figures, decks, manifests, adoption ─────────────────────

@@ -3,6 +3,12 @@ generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - programming/typescript/slides/deck.yaml
 cards:
+- front: What are the three parts of the TypeScript track, in order?
+  back: The parts run from what the checker sees, to deriving types from types, to async work and untrusted data.
+  lesson: programming/typescript/readme
+- front: Name four things the TypeScript track teaches you to do.
+  back: You will be able to write typed code that the checker can verify and that parses what the checker cannot see.
+  lesson: programming/typescript/readme
 - front: Which command checks types, and which runs code?
   back: '`node file.ts` strips types without checking them, so `tsc --noEmit` is a separate step you must run.'
   lesson: programming/typescript/notes/01-js-for-python-devs
@@ -35,6 +41,9 @@ cards:
   lesson: programming/typescript/notes/05-type-transformations
 - front: What do infer and distribution do in a conditional type?
   back: '`infer` captures part of a type. A bare type parameter distributes over a union, unless both sides are in brackets.'
+  lesson: programming/typescript/notes/05-type-transformations
+- front: When should you stop building types?
+  back: Use utility types freely, mapped types sometimes, and deep conditional recursion only in libraries.
   lesson: programming/typescript/notes/05-type-transformations
 - front: In what order do sync code, promises and timers run?
   back: Sync code finishes first, then all microtasks, then the next timer or I/O callback, so a timer of 0 still waits.

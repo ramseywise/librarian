@@ -3,6 +3,12 @@ generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - generative-ai/04-agentic-frameworks/slides/deck.yaml
 cards:
+- front: In what order does this lecture build and judge the research agent?
+  back: Each step adds one capability to the same agent, and the choice comes after three working builds exist to measure.
+  lesson: generative-ai/04-agentic-frameworks/readme
+- front: Name four things this lecture teaches you to do with an agent framework.
+  back: You will be able to build the same agent on two frameworks, watch it run, and choose between them with measurements.
+  lesson: generative-ai/04-agentic-frameworks/readme
 - front: Who does what in a ReAct loop?
   back: The model never runs anything itself; it proposes an action and the code around it runs the action and returns the observation.
   lesson: generative-ai/04-agentic-frameworks/notes/01-react-from-scratch-to-langgraph
@@ -33,6 +39,9 @@ cards:
 - front: What did semantic memory save in the lab?
   back: Semantic memory took a repeat question from 749 to 184 stub tokens for the same user, and namespacing keeps one user's memory away from another's.
   lesson: generative-ai/04-agentic-frameworks/notes/03-long-term-memory-with-langgraph
+- front: What goes wrong when an agent trusts its long-term memory unchecked?
+  back: Store a source and date with every memory, take the user id from run config, and treat memory writes as untrusted input.
+  lesson: generative-ai/04-agentic-frameworks/notes/03-long-term-memory-with-langgraph
 - front: How do LangGraph's concepts map onto ADK's?
   back: LangGraph and ADK solve the same problems, but ADK runs an agent tree and event stream where LangGraph runs an explicit graph over typed state.
   lesson: generative-ai/04-agentic-frameworks/notes/04-google-adk
@@ -41,6 +50,9 @@ cards:
   lesson: generative-ai/04-agentic-frameworks/notes/04-google-adk
 - front: How does ADK model a pending approval?
   back: ADK turns a pending approval into a long-running function call your application answers, and plugins apply guardrails at the runner across all agents.
+  lesson: generative-ai/04-agentic-frameworks/notes/04-google-adk
+- front: Which ADK habits from older tutorials or other frameworks cause failures?
+  back: Check tutorials against the installed version, answer every approval request from your own code, and retry around the loop that consumes the events.
   lesson: generative-ai/04-agentic-frameworks/notes/04-google-adk
 - front: What does a trace contain?
   back: A trace records each model and tool step as a run in a tree, and framework nesting shows up there too, 19 runs in LangGraph against 9 in ADK for the same work.

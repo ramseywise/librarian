@@ -3,6 +3,12 @@ generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - data-engineering/04-warehouse-lakehouse-streaming/slides/deck.yaml
 cards:
+- front: In what order does this lecture take the trips from storage to cost?
+  back: The lecture moves from how one table is laid out, through a log and the lake against the warehouse, to streams and then the bill.
+  lesson: data-engineering/04-warehouse-lakehouse-streaming/readme
+- front: Name four things this lecture teaches you to do with stored and streamed data.
+  back: You will be able to lay data out, trust a table, choose a system of record and price it before the invoice arrives.
+  lesson: data-engineering/04-warehouse-lakehouse-streaming/readme
 - front: Why does a column store make SELECT star expensive?
   back: A column store reads only the columns you name, so your column list is your first cost control.
   lesson: data-engineering/04-warehouse-lakehouse-streaming/notes/01-warehouse-and-store
@@ -65,6 +71,9 @@ cards:
   lesson: data-engineering/04-warehouse-lakehouse-streaming/notes/05-cost
 - front: What does a byte limit in CI change about finding expensive queries?
   back: A byte limit in CI finds the expensive query at review, so the invoice stops being the alarm.
+  lesson: data-engineering/04-warehouse-lakehouse-streaming/notes/05-cost
+- front: Which common cost controls do not do what they appear to?
+  back: Each of these looks like a control and is not, so check bytes scanned and set a cap before you trust one.
   lesson: data-engineering/04-warehouse-lakehouse-streaming/notes/05-cost
 - front: Why tune the query before buying capacity?
   back: Each fix changes what the next should be, so tune the query before you buy capacity.

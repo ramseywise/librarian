@@ -140,6 +140,38 @@ def test_lesson_links_concepts_and_excludes_private_and_tombstones(client: TestC
     assert rerank["concepts"] == []  # wiki: frontmatter naming private/tombstoned pages
 
 
+def test_a_modules_wiki_is_public_pages_ranked_by_lessons_citing_them(client: TestClient) -> None:
+    rag = client.get("/api/courses").json()[1]["modules"][0]
+    # Intro cites Context Engineering and Hybrid Search; Reranking cites only a private and a
+    # tombstoned page. Neither of those can be listed, by id, title or summary.
+    assert {p["id"] for p in rag["wiki"]} == {"context-engineering", "hybrid-search"}
+    assert rag["wikiCount"] == 2
+    listed = repr(rag["wiki"]).lower()
+    for hidden in ("client-secret", "client secret", "old-page", "old retired"):
+        assert hidden not in listed
+    assert set(rag["wiki"][0]) == {"id", "title", "summary"}
+
+
+def test_a_modules_wiki_is_capped_and_most_cited_first(client: TestClient, tmp_path: Path) -> None:
+    top = courses.MODULE_WIKI_TOP
+    for i in range(top + 3):
+        _write(
+            tmp_path / "wiki" / "rag" / f"page-{i:02d}.md",
+            WIKI_PAGE.format(title=f"Page {i:02d}", tags="rag, concept"),
+        )
+    cite = lambda ids: " ".join(f"[[Page {i:02d}]]" for i in ids)  # noqa: E731
+    lessons = tmp_path / "courses" / "gen-ai" / "01-rag"
+    _write(lessons / "intro.md", f"---\ntitle: Intro\n---\n\n{cite(range(top))}\n")
+    _write(lessons / "deep" / "rerank.md", f"---\ntitle: Reranking\n---\n\n{cite([top + 2, 0])}\n")
+    courses._load.cache_clear()
+    rag = client.get("/api/courses").json()[1]["modules"][0]
+    assert (
+        rag["wikiCount"] == top + 1
+    )  # the 12 the first lesson cites, and the one only the second does
+    assert len(rag["wiki"]) == top
+    assert rag["wiki"][0]["title"] == "Page 00"  # cited by both lessons
+
+
 def test_lesson_links_pages_compiled_from_it() -> None:
     raw = "data/raw/repos/learn-ai-engineering/basics--01-m--notes--stats.md"
     wiki = {
@@ -605,8 +637,31 @@ def test_flashcards_file_is_not_a_lesson_and_missing_deck_is_404(client: TestCli
 
 
 def test_module_with_order_zero_sorts_first(client: TestClient) -> None:
-    module = courses.COURSES_DIR / "gen-ai" / "00-start-here"
-    _write(module / "_module.md", "---\ntitle: Start Here\norder: 0\n---\n")
+    module = courses.COURSES_DIR / "gen-ai" / "00-basics"
+    _write(module / "_module.md", "---\ntitle: Basics\norder: 0\n---\n")
     _write(module / "welcome.md", "---\ntitle: Welcome\norder: 1\n---\nBody.\n")
     gen_ai = next(c for c in client.get("/api/courses").json() if c["id"] == "gen-ai")
-    assert gen_ai["modules"][0]["id"] == "00-start-here"
+    assert gen_ai["modules"][0]["id"] == "00-basics"
+
+
+def test_course_front_pages_belong_to_the_course_not_a_module(client: TestClient) -> None:
+    """The course README and references are the course page's own, and still open as lessons."""
+    _write(
+        courses.COURSES_DIR / "gen-ai" / "_course.md",
+        "---\ntitle: Gen AI\norder: 1\noutcomes:\n  - Build a retriever\n---\n",
+    )
+    front = courses.COURSES_DIR / "gen-ai" / "00-start-here"
+    _write(front / "_module.md", "---\ntitle: Start here\norder: 0\n---\n")
+    _write(front / "readme.md", "---\ntitle: Gen AI\norder: 1\n---\nBody.\n")
+    _write(
+        courses.COURSES_DIR / "gen-ai" / "01-rag" / "_module.md",
+        "---\ntitle: RAG\norder: 1\ngroup: core\nobjectives:\n  - Chunk a document\n---\n",
+    )
+    courses._load.cache_clear()
+    gen_ai = next(c for c in client.get("/api/courses").json() if c["id"] == "gen-ai")
+    assert "00-start-here" not in [m["id"] for m in gen_ai["modules"]]
+    assert [lesson["id"] for lesson in gen_ai["guide"]] == ["gen-ai/00-start-here/readme"]
+    assert gen_ai["outcomes"] == ["Build a retriever"]
+    rag = next(m for m in gen_ai["modules"] if m["id"] == "01-rag")
+    assert rag["group"] == "core" and rag["objectives"] == ["Chunk a document"]
+    assert client.get("/api/courses/lessons/gen-ai/00-start-here/readme").status_code == 200

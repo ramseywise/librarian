@@ -217,6 +217,123 @@ class TestUnknownValues(Base):
         self.assertIn("invalid choice", err.getvalue())
 
 
+class TestOrder(Base):
+    def setUp(self):
+        super().setUp()
+        notes = self.dir.parent / "notes"
+        notes.mkdir()
+        for name in ("01-a.md", "02-b.md", "03-c.md"):
+            (notes / name).write_text("# Note\n", encoding="utf-8")
+
+    def order(self, *parts):
+        return [w for w in self.story(*parts) if w.startswith("order:")]
+
+    def test_notes_in_reading_order_are_clean(self):
+        body = part(
+            "Body",
+            slide("a", source="notes/01-a.md"),
+            slide("no source"),
+            slide("a again", source="notes/01-a.md#section"),
+            slide("b", source="notes/02-b.md"),
+        )
+        self.assertEqual(self.order(body, part("Next", slide("c", source="notes/03-c.md"))), [])
+
+    def test_a_back_jump_warns_and_names_both_notes(self):
+        body = part("Body", slide("b", source="notes/02-b.md"), slide("a", source="notes/01-a.md"))
+        self.assertEqual(
+            self.order(body),
+            [
+                "order: slide 'a' cites 01-a.md after 02-b.md, which comes later in the "
+                "reading order (move it, or set revisits: true)"
+            ],
+        )
+
+    def test_a_back_jump_across_parts_warns(self):
+        warnings = self.order(
+            part("One", slide("c", source="notes/03-c.md")),
+            part("Two", slide("b", source="notes/02-b.md")),
+        )
+        self.assertEqual(len(warnings), 1)
+
+    def test_a_revisit_is_not_a_back_jump_and_does_not_move_the_place(self):
+        body = part(
+            "Body",
+            slide("b", source="notes/02-b.md"),
+            slide("callback", source="notes/01-a.md", revisits=True),
+            slide("b again", source="notes/02-b.md"),
+        )
+        self.assertEqual(self.order(body), [])
+
+    def test_a_third_revisit_warns(self):
+        body = part(
+            "Body",
+            slide("c", source="notes/03-c.md"),
+            *(slide(f"back {i}", source="notes/01-a.md", revisits=True) for i in (1, 2, 3)),
+        )
+        self.assertEqual(
+            self.order(body),
+            ["order: slide 'back 3' is revisit 3 (limit 2): reorder the deck instead"],
+        )
+
+    def test_overview_and_closing_parts_are_exempt(self):
+        warnings = self.order(
+            part("Intro", slide("c", source="notes/03-c.md"), overview=True),
+            part("Body", slide("a", source="notes/01-a.md"), slide("b", source="notes/02-b.md")),
+            closing(slide("recap", source="notes/01-a.md")),
+        )
+        self.assertEqual(warnings, [])
+
+    def test_the_readme_syllabus_sets_the_order_not_the_file_names(self):
+        (self.dir.parent / "README.md").write_text(
+            "# Topic\n\n## Syllabus\n\n- [B](notes/02-b.md)\n- [A](notes/01-a.md)\n",
+            encoding="utf-8",
+        )
+        body = part("Body", slide("b", source="notes/02-b.md"), slide("a", source="notes/01-a.md"))
+        self.assertEqual(self.order(body), [])
+
+    def test_a_reading_order_section_sets_the_order_where_there_is_no_syllabus(self):
+        (self.dir.parent / "README.md").write_text(
+            "# Topic\n\nSee [A](notes/01-a.md).\n\n## Reading order\n\n| 1 | [B](notes/02-b.md) |\n| 2 | [A](notes/01-a.md) |\n",
+            encoding="utf-8",
+        )
+        body = part("Body", slide("b", source="notes/02-b.md"), slide("a", source="notes/01-a.md"))
+        self.assertEqual(self.order(body), [])
+
+
+class TestNarration(Base):
+    @staticmethod
+    def narration_warnings(warnings):
+        return [w for w in warnings if "narration" in w]
+
+    def test_a_deck_with_no_narration_is_not_judged(self):
+        self.assertEqual(self.narration_warnings(self.story(part("Body", slide("a")))), [])
+
+    def test_once_one_slide_has_it_a_short_or_missing_one_warns(self):
+        spoken = " ".join(["word"] * bd.NARRATION_MIN_WORDS)
+        warnings = self.story(
+            part("Body", slide("full", narration=spoken), slide("short", narration="Too short.")),
+            part("More", slide("none")),
+            closing(slide("recap")),
+        )
+        self.assertEqual(
+            self.narration_warnings(warnings),
+            [
+                "'short': narration is 2 words (write 40 or more, to be heard)",
+                "'none': narration is 0 words (write 40 or more, to be heard)",
+            ],
+        )
+
+
+class TestOut(Base):
+    def test_out_writes_the_deck_there_and_not_beside_the_yaml(self):
+        self.write(part("Body", slide("a")), closing(slide("recap")))
+        out = self.dir.parent / "elsewhere" / "talk.pptx"
+        out.parent.mkdir()
+        self.assertEqual(bd.build(self.spec, None, out), out)
+        self.assertTrue(out.exists())
+        self.assertEqual(list(self.dir.glob("*.pptx")), [])
+
+
 class TestBeats(Base):
     @staticmethod
     def beats(title="Part", **over):
@@ -232,14 +349,56 @@ class TestBeats(Base):
     def beat_warnings(warnings):
         return [w for w in warnings if "beat" in w or "overview" in w]
 
-    def test_deck_with_no_beat_gets_no_new_warnings(self):
+    def test_deck_with_no_beat_is_checked_too(self):
         warnings = self.story(
             part("Thin", slide("a")), part("Other", slide("b")), closing(slide("c"))
         )
-        self.assertEqual(self.beat_warnings(warnings), [])
+        self.assertEqual(
+            self.beat_warnings(warnings),
+            [
+                "part 'Thin': the first agenda part should be marked overview: true",
+                "part 'Thin': no slide with beat: fundamentals, practice, pitfalls",
+                "part 'Other': no slide with beat: fundamentals, practice, pitfalls",
+            ],
+        )
 
-    def test_complete_deck_is_clean(self):
-        warnings = self.story(self.beats("Intro", overview=True), self.beats())
+    def test_practice_before_its_principle_warns_once_per_part(self):
+        warnings = self.story(
+            self.beats("Intro", overview=True),
+            part(
+                "Mixed",
+                slide("pr", beat="practice"),
+                slide("f", beat="fundamentals"),
+                slide("pi", beat="pitfalls"),
+                slide("p", beat="problem"),
+                slide("pr2", beat="practice"),
+                slide("f2", beat="fundamentals"),
+            ),
+        )
+        self.assertEqual(
+            self.beat_warnings(warnings),
+            [
+                "part 'Mixed': beat 'practice' comes before 'fundamentals' "
+                "(state the principle, then apply it)"
+            ],
+        )
+
+    def test_a_new_problem_starts_a_new_topic_and_a_principle_may_follow_practice(self):
+        warnings = self.story(
+            self.beats("Intro", overview=True),
+            part(
+                "Body",
+                slide("p", beat="problem"),
+                slide("f1", beat="fundamentals"),
+                slide("plain"),
+                slide("pr", beat="practice"),
+                slide("f2", beat="fundamentals"),
+                slide("pi", beat="pitfalls"),
+                slide("p2", beat="problem"),
+                slide("f3", beat="fundamentals"),
+                slide("pr2", beat="practice"),
+            ),
+        )
         self.assertEqual(self.beat_warnings(warnings), [])
 
     def test_part_missing_beats_warns_and_names_them(self):
@@ -260,7 +419,7 @@ class TestBeats(Base):
             ["part 'Thin': no slide with beat: fundamentals, practice, pitfalls"],
         )
 
-    def test_one_slide_with_beat_turns_the_check_on_even_in_a_closing_part(self):
+    def test_a_beat_in_a_closing_part_does_not_cover_a_body_part(self):
         warnings = self.story(part("Thin", slide("a")), closing(slide("c", beat="wrap")))
         self.assertIn("part 'Thin': no slide with beat: fundamentals, practice, pitfalls", warnings)
 
@@ -559,3 +718,9 @@ class DeckGraphTest(LectureBase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_a_written_answer_excuses_a_one_line_takeaway_under_a_list_question() -> None:
+    slide = {"title": "Bias", "recall": "Name three sources of bias?", "takeaway": "Bias hides."}
+    assert any("asks for a list" in p for p in bd.flashcard_problems(slide))
+    assert bd.flashcard_problems({**slide, "answer": "Selection, measurement, confounding."}) == []

@@ -3,6 +3,12 @@ generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - ai-engineering/03-harness-engineering/slides/deck.yaml
 cards:
+- front: What are the six parts of this lecture, in order?
+  back: The lecture runs from why a demo fails, through tools, boundaries, checks, long runs and more agents, to the repo a fresh session reads.
+  lesson: ai-engineering/03-harness-engineering/readme
+- front: Name four things this lecture teaches you to do with an agent.
+  back: You will be able to restate a failure as harness, constrain tools, make done checkable and keep an agent going across sessions and agents.
+  lesson: ai-engineering/03-harness-engineering/readme
 - front: What separates a production harness from a demo?
   back: Context plus tools is the demo, while constrain, verify and correct make up the production harness.
   lesson: ai-engineering/03-harness-engineering/notes/01-what-a-harness-is
@@ -75,9 +81,9 @@ cards:
 - front: What goes in a sprint contract, and what does it prevent on each side?
   back: Agreeing scope, verification and exclusions before work starts stops both the builder and the judge from moving the goalposts.
   lesson: ai-engineering/03-harness-engineering/notes/05-verification-loops
-- front: How do WIP = 1 and script-owned feature states stop overreach and under-finishing?
-  back: With one active feature and a script that flips the state, an agent cannot overreach or mark its own work as passing.
-  lesson: ai-engineering/03-harness-engineering/notes/10-scope-and-done
+- front: Name four ways a verification step quietly fails.
+  back: A check fails when the agent can bypass it, when it sees too little, when it flags good work, or when it measures capability and not reliability.
+  lesson: ai-engineering/03-harness-engineering/notes/05-verification-loops
 - front: Which failures should be retried and which never?
   back: Classify a failure before retrying, because a model refusal repeats itself while a transient error deserves backoff.
   lesson: ai-engineering/03-harness-engineering/notes/05b-recovery-and-termination
@@ -96,12 +102,9 @@ cards:
 - front: What let the Minecraft agents keep making progress through 605 deaths and 6 restarts?
   back: A 27-hour unattended run worked because what the team knew lived outside any single agent's context window.
   lesson: ai-engineering/03-harness-engineering/notes/06-long-horizon-execution
-- front: What happens to each question a fresh session cannot answer?
-  back: Every question a fresh session cannot answer gets guessed, and every new session guesses again.
-  lesson: ai-engineering/03-harness-engineering/notes/09-repo-as-system-of-record
-- front: What goes in AGENTS.md, and where do the hard constraints go?
-  back: The entry file should route to topic docs and keep hard constraints at its edges, so dead rules can be audited and deleted.
-  lesson: ai-engineering/03-harness-engineering/notes/09-repo-as-system-of-record
+- front: Name four mistakes that make a long-running agent drift.
+  back: Long runs drift when a session's start, its reasons and its mess go unrecorded, so each gets its own artifact.
+  lesson: ai-engineering/03-harness-engineering/notes/06-long-horizon-execution
 - front: What is the main reason to use a subagent, and what should it return?
   back: The best reason for a subagent is to absorb exploration, returning a condensed result and not the exploration itself.
   lesson: ai-engineering/03-harness-engineering/notes/07-orchestration
@@ -123,6 +126,18 @@ cards:
 - front: How do you decide which harness components to delete after a model upgrade?
   back: Harness components encode assumptions about model weakness, so disable each in turn on every upgrade and delete what no longer pays.
   lesson: ai-engineering/03-harness-engineering/notes/08-maturity-and-failure-modes
+- front: What happens to each question a fresh session cannot answer?
+  back: Every question a fresh session cannot answer gets guessed, and every new session guesses again.
+  lesson: ai-engineering/03-harness-engineering/notes/09-repo-as-system-of-record
+- front: What goes in AGENTS.md, and where do the hard constraints go?
+  back: The entry file should route to topic docs and keep hard constraints at its edges, so dead rules can be audited and deleted.
+  lesson: ai-engineering/03-harness-engineering/notes/09-repo-as-system-of-record
+- front: How do WIP = 1 and script-owned feature states stop overreach and under-finishing?
+  back: With one active feature and a script that flips the state, an agent cannot overreach or mark its own work as passing.
+  lesson: ai-engineering/03-harness-engineering/notes/10-scope-and-done
+- front: Name four ways a feature list stops being a gate.
+  back: A feature list gates completion only when the harness reads it, the agent cannot edit the check, it names behaviour a user sees, and each item fits one session.
+  lesson: ai-engineering/03-harness-engineering/notes/10-scope-and-done
 - front: What do you do when an agent fails?
   back: When an agent fails, change the system around it, then make sure that failure cannot recur.
   lesson: ai-engineering/03-harness-engineering/notes/08-maturity-and-failure-modes

@@ -1,6 +1,6 @@
 ---
-imported_hash: 359c4cd4a30ea0fc
-title: 01 — LLM Fundamentals
+imported_hash: 90073a3a884957dc
+title: LLM Fundamentals
 summary: What a large language model is, how it is trained and adapted, and how to instruct, call and run it.
 order: 1
 source: learn-ai-engineering/generative-ai/01-llm-fundamentals

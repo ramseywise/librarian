@@ -3,6 +3,12 @@ generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - generative-ai/01-llm-fundamentals/slides/deck.yaml
 cards:
+- front: What are the three parts of this lecture, in order?
+  back: The lecture runs from how a model predicts, through how its weights are trained and adapted, to how you prompt, call and run it.
+  lesson: generative-ai/01-llm-fundamentals/readme
+- front: Name four things this lecture teaches you to do with a model.
+  back: You will be able to say why the model answered as it did, which lever to pull, and how to call and run it safely.
+  lesson: generative-ai/01-llm-fundamentals/readme
 - front: How does a model get from a customer's text to the next token?
   back: The model turns tokens into vectors, mixes them with attention, and samples one next token at a time.
   lesson: generative-ai/01-llm-fundamentals/notes/01-tokens-and-embeddings

@@ -3,6 +3,12 @@ generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - ai-engineering/07-inference-engineering/slides/deck.yaml
 cards:
+- front: What are the four parts of this lecture, in order?
+  back: We measure first, then look inside one machine, then share a fleet, and last spend the compute that decode leaves idle.
+  lesson: ai-engineering/07-inference-engineering/readme
+- front: Name four things this lecture teaches you to do with a model that is slow or costly.
+  back: You will be able to measure a serving system, name its limit and pick the change that answers it.
+  lesson: ai-engineering/07-inference-engineering/readme
 - front: What bounds prefill and decode, and which latency does each set?
   back: Prefill is compute-bound and sets TTFT; decode is memory-bandwidth-bound and sets TPOT.
   lesson: ai-engineering/07-inference-engineering/notes/01-why-inference-is-its-own-discipline
@@ -39,15 +45,18 @@ cards:
 - front: In what order should you work on a performance problem, and how do you keep the gain?
   back: Profile the host before the device, and gate merges on a sustained 5% regression so the gain survives upgrades.
   lesson: ai-engineering/07-inference-engineering/notes/05-compilers-and-frameworks
-- front: How does continuous batching differ from static batching, and what makes it possible?
-  back: Continuous batching swaps sequences in at every decode step, and paged KV memory is what makes that safe.
-  lesson: ai-engineering/07-inference-engineering/notes/07-prefill-decode-kv-cache
 - front: Why is round-robin a poor default for routing LLM requests?
   back: Route on load and cache affinity, not round-robin, because requests and replicas are not interchangeable.
   lesson: ai-engineering/07-inference-engineering/notes/06-serving-at-scale
 - front: Which parallelism strategy buys what, and in what order do you compose them?
   back: Compose TP inside one NVLink domain, add PP only for capacity, add EP for MoE, then replicate with DP.
   lesson: ai-engineering/07-inference-engineering/notes/06-serving-at-scale
+- front: Which signals should drive LLM autoscaling, and why is warm capacity needed?
+  back: Autoscale on queue depth, KV use or TTFT, and keep warm capacity because cold starts outlast most spikes.
+  lesson: ai-engineering/07-inference-engineering/notes/06-serving-at-scale
+- front: How does continuous batching differ from static batching, and what makes it possible?
+  back: Continuous batching swaps sequences in at every decode step, and paged KV memory is what makes that safe.
+  lesson: ai-engineering/07-inference-engineering/notes/07-prefill-decode-kv-cache
 - front: How do you compute KV cache bytes per token, and which head count do you use?
   back: KV bytes per token use KV heads, and free memory divided by that figure usually caps decode batch size.
   lesson: ai-engineering/07-inference-engineering/notes/07-prefill-decode-kv-cache
@@ -57,18 +66,15 @@ cards:
 - front: What does prefix-cache hit rate depend on, and what breaks it in agent sessions?
   back: Lay prompts out stable-first and route on prefix affinity, since the cached prefix must match exactly from token one.
   lesson: ai-engineering/07-inference-engineering/notes/07-prefill-decode-kv-cache
-- front: Which signals should drive LLM autoscaling, and why is warm capacity needed?
-  back: Autoscale on queue depth, KV use or TTFT, and keep warm capacity because cold starts outlast most spikes.
-  lesson: ai-engineering/07-inference-engineering/notes/06-serving-at-scale
 - front: Why does speculative decoding preserve the target model's output distribution, and what speedup should you plan on?
   back: Speculative decoding is lossless by construction; plan on about 2× and measure acceptance per traffic type.
+  lesson: ai-engineering/07-inference-engineering/notes/08-adaptive-inference
+- front: What did compile, INT8, INT4 and speculation each add on Llama-7B, and why did gains shrink?
+  back: Gains multiply but shrink because each step attacks a smaller remaining bottleneck, and order matters.
   lesson: ai-engineering/07-inference-engineering/notes/08-adaptive-inference
 - front: How does absmax quantization work, and what problem do the serious methods all address?
   back: Serious quantization methods work around outliers, and every format change needs an eval run, not just perplexity.
   lesson: ai-engineering/07-inference-engineering/notes/08c-quantization-and-low-precision
-- front: What did compile, INT8, INT4 and speculation each add on Llama-7B, and why did gains shrink?
-  back: Gains multiply but shrink because each step attacks a smaller remaining bottleneck, and order matters.
-  lesson: ai-engineering/07-inference-engineering/notes/08-adaptive-inference
 - front: Why does sorting texts by length speed up an encoder, and what does a token budget give you instead?
   back: Every text is padded to the longest in its batch, so measure padding share and sort; a token budget caps memory, not time.
   lesson: ai-engineering/07-inference-engineering/notes/08b-serving-encoders-and-vision-models

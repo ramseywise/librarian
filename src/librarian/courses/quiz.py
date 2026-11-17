@@ -10,6 +10,8 @@ are keyed on.
 A question with no `options` is a worked problem: `answer` is a number, the learner types one,
 and it is right within `tolerance` (default: half a unit of the answer's last decimal place, so
 `0.16` accepts 0.155 to 0.165 and a whole number must be exact). `explanation` is the working.
+A worked problem may carry an optional `hint`; the viewer offers a hint only when it is there.
+Using a hint or showing the solution counts as a miss in the attempts store.
 The three formats are the levels of one topic: multiple choice (1, recognise), flashcards
 (2, recall) and worked problems (3, calculate).
 
@@ -48,6 +50,7 @@ class Question:
     explanation: str = ""
     lesson: str | None = None
     tolerance: float | None = None  # worked problems only
+    hint: str = ""  # worked problems only; withheld from the payload until asked for
 
     @property
     def worked(self) -> bool:
@@ -143,7 +146,8 @@ def parse_question(
     if problems:
         return None, problems
     explanation = _text(raw.get("explanation"))
-    return Question(qid, prompt, tuple(options), answer, explanation, lesson, tolerance), []
+    hint = _text(raw.get("hint")) if options_raw is None else ""
+    return Question(qid, prompt, tuple(options), answer, explanation, lesson, tolerance, hint), []
 
 
 def _raw_questions(path: Path) -> list[object]:
@@ -193,12 +197,13 @@ def problems_in(path: Path, lessons: set[str]) -> list[str]:
 
 
 def public_payload(q: Question, lesson_title: str | None) -> dict[str, Any]:
-    """What a quiz sends the client: the question, never the key or the explanation."""
+    """What a quiz sends the client: the question, never the key, the explanation or the hint."""
     return {
         "id": q.id,
         "prompt": q.prompt,
         "options": list(q.options),
         "kind": "worked" if q.worked else "choice",
+        "hasHint": bool(q.hint),
         "lesson": q.lesson,
         "lessonTitle": lesson_title,
     }

@@ -59,6 +59,19 @@
   --error-note: #d0756a;
   --warn-soft: #ffb74d;
 
+  /* Lecture slides: one hue per beat, as ink (text and marks on the slide) and as a fill.
+     Yellow is the idea, blue the principle, purple the application, orange a pitfall, green the wrap-up.
+     Yellow needs a darker ink than its fill in the light theme; the others use one value for both. */
+  --slide-bg: #171717;
+  --beat-idea: #ffd54f;
+  --beat-idea-fill: #ffd54f;
+  --beat-idea-on: #1c1700;   /* text on the yellow fill, both themes */
+  --beat-principle: #7fb0ff;
+  --beat-applied: #c19bff;
+  --beat-pitfall: #ffb070;
+  --beat-keep: #74d6b0;
+  --beat-on: #111111;        /* text on the other four fills */
+
   /* Reading views */
   --prose-text: #d4d4d4;
   --prose-heading: #f0f0f0;
@@ -112,7 +125,7 @@
   /* Layout */
   --header-h: 40px;
   --chat-w: 360px;
-  --sidebar-w: 290px;
+  --sidebar-w: 240px;
   --shadow-overlay: 0 8px 40px rgba(0, 0, 0, 0.7);
   --z-panel: 10;
   --z-detail: 20;
@@ -174,6 +187,16 @@
   --stop: #8a3a3a;
   --error-note: #9c3528;
   --warn-soft: #7c5200;
+
+  --slide-bg: #ffffff;
+  --beat-idea: #7a5c00;
+  --beat-idea-fill: #ffd54f;
+  --beat-idea-on: #1c1700;
+  --beat-principle: #1f55c4;
+  --beat-applied: #6a35b8;
+  --beat-pitfall: #b5560a;
+  --beat-keep: #1d7f63;
+  --beat-on: #ffffff;
 
   /* Reading views */
   --prose-text: #26241f;

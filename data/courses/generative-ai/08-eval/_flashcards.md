@@ -3,6 +3,12 @@ generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - generative-ai/08-eval/slides/deck.yaml
 cards:
+- front: In what order does this lecture move from a definition of better to a system in production?
+  back: The parts follow the README's four questions, and a fifth covers what happens once the system is live.
+  lesson: generative-ai/08-eval/readme
+- front: Name four things this lecture teaches you to do with an eval.
+  back: You will be able to say whether a one-point gain is real, which grader to trust, and what should block a release.
+  lesson: generative-ai/08-eval/readme
 - front: Name the five steps of the core eval flow in order.
   back: An eval runs tasks through k trials, captures what happened, grades each dimension and aggregates with an error bar.
   lesson: generative-ai/08-eval/notes/01-what-an-eval-is
@@ -24,12 +30,12 @@ cards:
 - front: What failure does a suite of only positive cases hide?
   back: Without negative cases, a change that calls tools more often looks like better recall while precision quietly breaks.
   lesson: generative-ai/08-eval/notes/02-defining-correct
-- front: Name the five tactics a public benchmark uses against memorization.
-  back: 'Five tactics: unique answers, parameterized templates, fresh tasks, canaries and a closed test set. A canary only catches a leak and prevents nothing.'
-  lesson: generative-ai/08-eval/notes/03b-splits-contamination-and-public-benchmarks
 - front: Why does a row carry labels and eligibility as well as a reference?
   back: A golden row carries a reference, labels for slicing, eligibility per gate, provenance and the graders that apply to it.
   lesson: generative-ai/08-eval/notes/03-eval-datasets
+- front: Name the five tactics a public benchmark uses against memorization.
+  back: 'Five tactics: unique answers, parameterized templates, fresh tasks, canaries and a closed test set. A canary only catches a leak and prevents nothing.'
+  lesson: generative-ai/08-eval/notes/03b-splits-contamination-and-public-benchmarks
 - front: In what order do you stack the grader kinds?
   back: 'Graders are layers rather than alternatives: run code first and stop early, so judge budget goes where judgment is needed.'
   lesson: generative-ai/08-eval/notes/04-graders
@@ -104,6 +110,9 @@ cards:
   lesson: generative-ai/08-eval/notes/10-evals-in-ci
 - front: Why does blocking when the delta is below zero fail as a gate?
   back: Block when the upper bound of the difference is below −3, since a rule of blocking on any drop fires on noise half the time.
+  lesson: generative-ai/08-eval/notes/10-evals-in-ci
+- front: Which three ways can an eval gate fail even when its statistics are right?
+  back: Treat inconclusive as its own answer, keep infrastructure errors visible, and give evals a key of their own, or the gate fails for reasons the agent did not cause.
   lesson: generative-ai/08-eval/notes/10-evals-in-ci
 - front: Which rung does production need, and which gives the highest return per effort?
   back: Production needs at least level 3, failure evals with tracing, and deterministic gates give the highest return on the way there.

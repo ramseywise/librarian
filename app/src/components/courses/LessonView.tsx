@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
-import type { Lesson, Deck } from "./types";
+import { useEffect, useMemo, useRef, useState, type ComponentProps, type MouseEvent } from "react";
+import type { Lesson, Deck, LabOutline } from "./types";
 import { useGlossary } from "../../hooks/useGlossary";
 import { ReportButton } from "../feedback/ReportButton";
 import { DrillTimer } from "./DrillTimer";
 import { Markdown } from "./Markdown";
-import { splitLesson } from "./lessonParts";
+import { openingRepeatsSummary, splitLesson } from "./lessonParts";
 import { CLOBBER_PREFIX, splitSolution } from "./markdownUtils";
 import { StudyLevels } from "./StudyLevels";
 
@@ -138,7 +138,7 @@ export function LessonView({ lesson, courseTitle, decks = [], done, onMarkDone, 
               {lesson.drill.timebox_min ? <DrillTimer lessonId={lesson.id} timeboxMin={lesson.drill.timebox_min} /> : null}
             </div>
           )}
-          {lesson.summary && <p className="lesson-summary">{lesson.summary}</p>}
+          {lesson.summary && !openingRepeatsSummary(body, lesson.summary) && <p className="lesson-summary">{lesson.summary}</p>}
           {tabbed ? (
             <div className="lab-tabs lesson-tabs" role="tablist" aria-label="Parts of this lesson">
               {TABS.map((t) => (
@@ -231,6 +231,8 @@ export function LessonView({ lesson, courseTitle, decks = [], done, onMarkDone, 
             </div>
           )}
 
+          {tabbed && <LessonStudyEnd levels={levels} labs={lesson.labs} showLevels={tab !== "study"} showLabs={tab !== "labs"} />}
+
           <div className="lesson-actions">
             <button onClick={onMarkDone} disabled={done} className={`round-btn${done ? " round-btn--done" : ""}`}>
               {done ? "✓ Completed" : "Mark as complete"}
@@ -250,6 +252,40 @@ export function LessonView({ lesson, courseTitle, decks = [], done, onMarkDone, 
           </div>
         </article>
     </div>
+  );
+}
+
+/** The end of a note: its own questions, flashcards and worked problems, then the labs that back it. A part the
+ * open tab already shows is left out; with nothing to show the block is not drawn. */
+function LessonStudyEnd({ levels, labs, showLevels, showLabs }: {
+  levels: ComponentProps<typeof StudyLevels>;
+  labs?: LabOutline[];
+  showLevels: boolean;
+  showLabs: boolean;
+}) {
+  const hasLevels = showLevels && !!(levels.quizCount || levels.flashcardCount || levels.problemCount);
+  const hasLabs = showLabs && !!labs?.length;
+  if (!hasLevels && !hasLabs) return null;
+  return (
+    <section className="lesson-end" aria-label="Test yourself and practise">
+      {hasLevels && (
+        <>
+          <h2 className="section-label">Test yourself on this note</h2>
+          <StudyLevels {...levels} />
+        </>
+      )}
+      {hasLabs && (
+        <>
+          <h2 className="section-label">Labs for this note</h2>
+          {labs!.map((lab) => (
+            <a key={lab.id} href={`#/labs/${lab.id}`} className="lesson-lab" title={lab.path}>
+              <span className="lesson-lab-title">▶ {lab.title}</span>
+              {lab.purpose && <span className="lesson-lab-purpose">{lab.purpose}</span>}
+            </a>
+          ))}
+        </>
+      )}
+    </section>
   );
 }
 

@@ -68,7 +68,8 @@ function CodeBlock({ children }: { children?: ReactNode }) {
   return (
     <div className="lp-code">
       <button className="lp-copy" onClick={copy}>{copied ? "Copied" : "Copy"}</button>
-      <pre ref={ref}>{children}</pre>
+      {/* Focusable so a wide block can be scrolled from the keyboard. */}
+      <pre ref={ref} tabIndex={0}>{children}</pre>
     </div>
   );
 }

@@ -3,6 +3,12 @@ generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - programming/computer-science/slides/deck.yaml
 cards:
+- front: What are the four parts of this lecture, in order?
+  back: The lecture moves from reasoning about code to the machine underneath it, and ends on the cost of waiting.
+  lesson: programming/computer-science/readme
+- front: Name four things this lecture teaches you to do with code.
+  back: You will be able to predict what a piece of code costs, check the prediction against a clock, and fix the part that matters.
+  lesson: programming/computer-science/readme
 - front: How do you estimate an exponent without any theory?
   back: Double `n` and take `log2` of the time ratio, which estimates the exponent. A slope that misses your prediction is telling you something about the machine or the code.
   lesson: programming/computer-science/notes/01-cost-models-and-big-o

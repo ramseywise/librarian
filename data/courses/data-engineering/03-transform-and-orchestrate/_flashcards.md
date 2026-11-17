@@ -3,6 +3,12 @@ generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - data-engineering/03-transform-and-orchestrate/slides/deck.yaml
 cards:
+- front: In what order does this lecture build a pipeline that is safe to run twice?
+  back: The lecture moves from one correct model to a schedule, then to re-runs and backfills, and ends by running the same pipeline in two tools.
+  lesson: data-engineering/03-transform-and-orchestrate/readme
+- front: Name four things this lecture teaches you to do with a pipeline.
+  back: You will be able to make a pipeline traceable, tied to the right day, and boring to run twice.
+  lesson: data-engineering/03-transform-and-orchestrate/readme
 - front: Which layer is allowed to hold business logic?
   back: Staging is mechanical, core holds the joins and rules, and marts answer questions, so every number has an obvious place to look.
   lesson: data-engineering/03-transform-and-orchestrate/notes/01-transform
@@ -17,6 +23,9 @@ cards:
   lesson: data-engineering/03-transform-and-orchestrate/notes/02-orchestrate
 - front: What breaks when a task reads the clock?
   back: Each task receives the day it is for and writes to a path derived from it, which is what makes re-running one day possible.
+  lesson: data-engineering/03-transform-and-orchestrate/notes/02-orchestrate
+- front: Why can an orchestrator not tell a dead worker from a paused one?
+  back: An orchestrator cannot tell a dead worker from a paused one, or a finished run from correct data, so make writes safe and put a test in the graph.
   lesson: data-engineering/03-transform-and-orchestrate/notes/02-orchestrate
 - front: Which one runs before the model builds?
   back: Data tests check today's data after a build, unit tests check logic against mocks before one, and you need both.

@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Node } from "@xyflow/react";
 import type { WikiNodeData } from "../../types";
@@ -56,6 +56,10 @@ describe("WikiGraph", () => {
     render(<WikiGraph activeTags={new Set()} onActiveTagsChange={vi.fn()} />);
     expect(await screen.findByRole("application", { name: /^Atlas of 3 wiki pages in 2 sectors/ })).toBeInTheDocument();
     expect(screen.queryByText(/of 3 pages/)).not.toBeInTheDocument();
+    expect(screen.getByRole("group", { name: "Browse by" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Map" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Filters" }));
+    expect(screen.getByRole("group", { name: "Filter by directory" })).toBeInTheDocument();
   });
 
   it("draws every page as a node on the all-pages level", async () => {
@@ -64,6 +68,10 @@ describe("WikiGraph", () => {
     const { container } = render(<WikiGraph activeTags={new Set()} onActiveTagsChange={vi.fn()} />);
     expect(container.querySelector(".react-flow")).not.toBeNull();
     expect(screen.queryByRole("application", { name: /^Atlas/ })).toBeNull();
-    expect(screen.getByRole("button", { name: "Graph controls" })).toBeInTheDocument();
+    // No graph column of its own: the switch, search, Filters and Map are on the map bar.
+    expect(screen.queryByRole("button", { name: "Graph controls" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Filters" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Map" })).toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: "Search the map" })).toBeInTheDocument();
   });
 });

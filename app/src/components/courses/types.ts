@@ -39,6 +39,10 @@ export interface CourseModule {
   title: string;
   summary: string;
   order: number;
+  /** "core" or "advanced", when the course README sorts its modules that way. */
+  group?: string;
+  /** What you can do after the module, from the course README. Absent when it lists none. */
+  objectives?: string[];
   readings: SourceRef[];
   /** How many readings the module lists; the list itself is only present with the local private overlay. */
   readingsCount?: number;
@@ -52,9 +56,20 @@ export interface CourseModule {
   quizCount?: number;
   /** Worked problems; absent when the module has none. */
   problemCount?: number;
+  /** Public wiki pages the module's lessons cite, most-cited first, at most 12 (`wikiCount` is how many in all). */
+  wiki?: WikiPageRef[];
+  wikiCount?: number;
   /** True when only private lessons make up the module. */
   private?: boolean;
 }
+
+/** A wiki page as the topic page lists it. */
+export interface WikiPageRef { id: string; title: string; summary: string }
+
+/** One level of a module's study: items, those whose latest attempt was right, and those whose was not. */
+export interface LevelProgress { total: number; right: number; redo: number }
+/** The caller's progress per module id (`<course>/<module>`) and level; `GET /api/courses/study-progress`. */
+export type StudyProgress = Record<string, Partial<Record<"choice" | "cards" | "worked", LevelProgress>>>;
 
 export interface Course {
   id: string;
@@ -63,6 +78,14 @@ export interface Course {
   order: number;
   lessonCount: number;
   modules: CourseModule[];
+  /** The course's own pages (its guide and references), shown on the course page and not as a module. */
+  guide?: LessonOutline[];
+  /** What you can do by the end of the course. Absent when its README lists none. */
+  outcomes?: string[];
+  /** The course's shared reading list; only the count without the local private overlay. */
+  readings?: SourceRef[];
+  readingsCount?: number;
+  references?: SourceRef[];
   /** True when only private modules make up the course. */
   private?: boolean;
 }
@@ -187,6 +210,24 @@ export interface SlideEntry {
   image: string | null;
 }
 
+export type SlideBeat = "problem" | "fundamentals" | "practice" | "pitfalls" | "wrap";
+
+/** Where a slide sits: its part's number (null in a closing part), title, and how many numbered parts there are. */
+export interface SlidePart {
+  n: number | null;
+  title: string;
+  of: number;
+}
+
+/** A deck's slide as data, drawn by `SlideFrame`. `body` holds the layout's own yaml keys, as written. */
+export type SlideFrameData =
+  | { n: number; kind: "title"; title: string; subtitle: string; tagline: string; byline: string; reference: string;
+      agenda: { n: number; title: string; summary: string }[]; notes: string; narration: string }
+  | { n: number; kind: "divider"; title: string; summary: string; part: SlidePart; notes: string; narration: string }
+  | { n: number; kind: "slide"; layout: string; beat: SlideBeat | null; level: string; title: string; kicker: string;
+      lead: string; takeaway: string; source: string; part: SlidePart; body: Record<string, unknown>;
+      notes: string; narration: string };
+
 export interface SlideDeck {
   id: string;
   title: string;
@@ -203,6 +244,8 @@ export interface SlideDeck {
   error: string;
   decks: { id: string; title: string }[];
   slides: SlideEntry[];
+  /** The deck as data, read from the yaml: what the viewer draws. Absent or empty: fall back to `slides`. */
+  frames?: SlideFrameData[];
 }
 
 export interface QuizQuestion {
@@ -212,6 +255,8 @@ export interface QuizQuestion {
   options: string[];
   /** `worked`: no options, the learner types a number. Absent means `choice`. */
   kind?: "choice" | "worked";
+  /** A worked problem with a hint to ask for; the hint itself is not sent ahead. */
+  hasHint?: boolean;
   lesson: string | null;
   lessonTitle: string | null;
   box?: number | null;

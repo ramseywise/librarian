@@ -142,6 +142,22 @@ def test_a_wrong_answer_is_due_tomorrow_like_a_missed_card(client: TestClient, o
     assert body["dueCount"] == 1
 
 
+def test_level_progress_counts_the_latest_attempt_per_item(client: TestClient, owner: User) -> None:
+    url = "/api/courses/quiz-results"
+    assert client.get("/api/courses/study-progress").json()[MOD] == {
+        "choice": {"total": 2, "right": 0, "redo": 0},
+        "cards": {"total": 1, "right": 0, "redo": 0},
+    }
+    client.post(url, json={"quiz": MOD, "question": "q1", "choice": "a"})  # wrong, then right
+    client.post(url, json={"quiz": MOD, "question": "q1", "choice": "b"})
+    client.post(url, json={"quiz": MOD, "question": "q2", "choice": "y"})
+    attempts.record(owner.id, "flashcard", leitner.card_key(MOD, "F"), MOD, "knew")
+    assert client.get("/api/courses/study-progress").json()[MOD] == {
+        "choice": {"total": 2, "right": 1, "redo": 1},
+        "cards": {"total": 1, "right": 1, "redo": 0},
+    }
+
+
 # ── drills ─────────────────────────────────────────────────────────────────
 
 
@@ -365,3 +381,56 @@ def test_build_of_an_unknown_deck_is_404(client: TestClient) -> None:
 def test_search_limit_is_bounded(client: TestClient) -> None:
     assert client.get("/api/courses/search", params={"q": "x", "limit": 51}).status_code == 422
     assert client.get("/api/courses/search", params={"q": "x", "limit": 0}).status_code == 422
+
+
+# ── hint and solution on a worked problem ──────────────────────────────────
+
+
+def _worked_quiz(tmp_path: Path, hint: str = "Use p(1 - p).") -> None:
+    worked = (
+        "- {id: w1, prompt: 'p(1 - p) at 0.2?', answer: '0.16', explanation: 'Working.', "
+        f"hint: '{hint}'}}\n"
+        "- {id: w2, prompt: 'No hint here', answer: '3', explanation: 'Three.'}\n"
+    )
+    _write(
+        tmp_path / "courses" / "gen-ai" / "01-rag" / "_quiz.md",
+        QUIZ.removesuffix("---\n") + worked + "---\n",
+    )
+    courses._load.cache_clear()
+
+
+def test_a_hint_is_withheld_until_asked_for_and_counts_as_a_miss(
+    client: TestClient, tmp_path: Path, owner: User
+) -> None:
+    _worked_quiz(tmp_path)
+    qs = {q["id"]: q for q in client.get(f"/api/courses/quiz/{MOD}").json()["questions"]}
+    assert (qs["w1"]["hasHint"], qs["w2"]["hasHint"]) == (True, False)
+    assert "hint" not in qs["w1"]
+    shown = client.post(
+        "/api/courses/quiz-reveal", json={"quiz": MOD, "question": "w1", "what": "hint"}
+    ).json()
+    assert shown == {"hint": "Use p(1 - p).", "logged": True}
+    assert [a.result for a in attempts.attempts(owner.id, ["mcq"])] == ["wrong"]
+    none = client.post(
+        "/api/courses/quiz-reveal", json={"quiz": MOD, "question": "w2", "what": "hint"}
+    )
+    assert none.status_code == 404
+
+
+def test_showing_the_solution_counts_as_a_miss_and_help_taints_a_right_answer(
+    client: TestClient, tmp_path: Path, owner: User
+) -> None:
+    _worked_quiz(tmp_path)
+    reveal = "/api/courses/quiz-reveal"
+    shown = client.post(reveal, json={"quiz": MOD, "question": "w1", "what": "solution"}).json()
+    assert shown == {"answer": "0.16", "explanation": "Working.", "logged": True}
+    assert leitner.load_states(owner)[f"{MOD}:q:w1"].box == 1
+    body = {"quiz": MOD, "question": "w2", "choice": "3", "assisted": True}
+    graded = client.post("/api/courses/quiz-results", json=body).json()
+    assert graded["correct"] is True  # the feedback is honest; the store is not
+    assert [a.result for a in attempts.attempts(owner.id, ["mcq"])] == ["wrong", "wrong"]
+    choice = client.post(reveal, json={"quiz": MOD, "question": "q1", "what": "solution"})
+    assert choice.status_code == 422
+    assert (
+        client.post(reveal, json={"quiz": MOD, "question": "zz", "what": "hint"}).status_code == 404
+    )

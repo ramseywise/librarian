@@ -57,11 +57,14 @@ def quiz_deck(user: User, quiz_id: str) -> dict[str, Any] | None:
     return _scheduled_quiz(qz, leitner.load_states(user), leitner.today(user))
 
 
-def answer_question(user: User, quiz_id: str, qid: str, choice: str) -> dict[str, Any] | None:
+def answer_question(
+    user: User, quiz_id: str, qid: str, choice: str, *, assisted: bool = False
+) -> dict[str, Any] | None:
     """Grade one answer and store it. None for an unknown quiz or question.
 
-    Raises ValueError when `choice` is not one of the question's options, or not a number for a
-    worked problem.
+    `assisted` (a hint or the solution was used first) stores a miss whatever the answer; the
+    reply still says whether the answer was right. Raises ValueError when `choice` is not one of
+    the question's options, or not a number for a worked problem.
     """
     qz = catalog.catalog().quizzes.get(quiz_id)
     question = next((q for q in qz["questions"] if q.id == qid), None) if qz else None
@@ -73,8 +76,9 @@ def answer_question(user: User, quiz_id: str, qid: str, choice: str) -> dict[str
         "mcq",
         quiz.question_key(quiz_id, question.id),
         quiz_id,
-        "correct" if correct else "wrong",
-        payload={"choice": choice, "lesson": question.lesson},
+        "correct" if correct and not assisted else "wrong",
+        payload={"choice": choice, "lesson": question.lesson}
+        | ({"assisted": True} if assisted else {}),
     )
     return {
         "correct": correct,
@@ -82,6 +86,41 @@ def answer_question(user: User, quiz_id: str, qid: str, choice: str) -> dict[str
         "explanation": question.explanation,
         "logged": logged,
     }
+
+
+def reveal_question(user: User, quiz_id: str, qid: str, what: str) -> dict[str, Any] | None:
+    """Give a worked problem's `hint` or its `solution`, and store a miss: help counts as not knowing it.
+
+    None for an unknown quiz or question, or a hint the question does not have. Raises ValueError for
+    anything but a hint or the solution, and for a question that is not a worked problem.
+    """
+    if what not in ("hint", "solution"):
+        raise ValueError("what must be 'hint' or 'solution'")
+    qz = catalog.catalog().quizzes.get(quiz_id)
+    question = next((q for q in qz["questions"] if q.id == qid), None) if qz else None
+    if question is None:
+        return None
+    if not question.worked:
+        raise ValueError("only a worked problem has a hint or a solution to show")
+    if what == "hint" and not question.hint:
+        return None
+    logged = attempts.record(
+        user.id,
+        "mcq",
+        quiz.question_key(quiz_id, question.id),
+        quiz_id,
+        "wrong",
+        payload={"revealed": what, "lesson": question.lesson},
+    )
+    body = (
+        {"hint": question.hint}
+        if what == "hint"
+        else {
+            "answer": question.answer,
+            "explanation": question.explanation,
+        }
+    )
+    return body | {"logged": logged}
 
 
 def quizzes_due(user: User) -> list[dict[str, Any]]:
@@ -102,6 +141,42 @@ def quizzes_due(user: User) -> list[dict[str, Any]]:
                 }
             )
     out.sort(key=lambda m: (-m["due"], m["quiz"]))
+    return out
+
+
+def level_progress(user: User) -> dict[str, dict[str, dict[str, int]]]:
+    """`user`'s progress on each module's three levels, from the attempts store.
+
+    `{<course>/<module>: {choice|cards|worked: {total, right, redo}}}`, only for levels the module
+    has. An item counts as right when its latest attempt was good and as to redo when its latest was
+    not; never attempted is neither, so `right + redo <= total`.
+    """
+    cat = catalog.catalog()
+    good: dict[str, bool] = {}
+    for a in attempts.attempts(
+        user.id, leitner.SCHEDULED_KINDS
+    ):  # oldest first, so the latest wins
+        good[a.item] = a.good
+
+    def level(keys: list[str]) -> dict[str, int]:
+        seen = [good[k] for k in keys if k in good]
+        return {"total": len(keys), "right": sum(seen), "redo": len(seen) - sum(seen)}
+
+    out: dict[str, dict[str, dict[str, int]]] = {}
+    for module_id, qz in cat.quizzes.items():
+        if module_id.count("/") != 1:
+            continue
+        keys = lambda worked, qz=qz, module_id=module_id: [  # noqa: E731
+            quiz.question_key(module_id, q.id) for q in qz["questions"] if q.worked == worked
+        ]
+        for name, worked in (("choice", False), ("worked", True)):
+            if ks := keys(worked):
+                out.setdefault(module_id, {})[name] = level(ks)
+    for module_id, deck in cat.decks.items():
+        if module_id.count("/") == 1 and deck["cards"]:
+            out.setdefault(module_id, {})["cards"] = level(
+                [leitner.card_key(module_id, c["front"]) for c in deck["cards"]]
+            )
     return out
 
 

@@ -43,6 +43,8 @@ const ACCENT_TEXT = [
 const PANELS = ["--bg", "--surface", "--surface-sidebar", "--surface-raised", "--surface-card", "--surface-pager"];
 /** Filled controls with white text. */
 const FILLS = ["--accent-fill", "--send", "--stop"];
+/** Lecture slides: each beat's ink sits on the slide, and its fill sits behind --beat-on (yellow: --beat-idea-on). */
+const BEAT_INKS = ["--beat-idea", "--beat-principle", "--beat-applied", "--beat-pitfall", "--beat-keep"];
 const AA = 4.5;
 const DARK_ONLY_EXCEPTIONS = new Set([
   // Pre-existing: the dark ladder's dimmest greys were only ever set against panels.
@@ -67,6 +69,13 @@ describe.each(themes)("%s theme tokens", (name, t) => {
     for (const s of PANELS) {
       expect(contrastRatio(hex(t[token]), hex(t[s])), `${token} on ${s}`).toBeGreaterThanOrEqual(AA);
     }
+  });
+
+  it.each(BEAT_INKS)("%s reaches 4.5:1 on a slide, and its fill carries its text", (token) => {
+    expect(contrastRatio(hex(t[token]), hex(t["--slide-bg"])), `${token} on a slide`).toBeGreaterThanOrEqual(AA);
+    const idea = token === "--beat-idea";
+    const fill = hex(t[idea ? "--beat-idea-fill" : token]);
+    expect(contrastRatio(hex(t[idea ? "--beat-idea-on" : "--beat-on"]), fill), `text on ${token}'s fill`).toBeGreaterThanOrEqual(AA);
   });
 
   it.each(FILLS)("white text stays readable on %s", (token) => {

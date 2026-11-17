@@ -5,6 +5,10 @@ decks:
 - programming/python/02-informatics/slides/deck.yaml
 - programming/python/03-language-for-engineers/slides/deck.yaml
 cards:
+- front: What are the three parts of Python Foundations, in order?
+  back: The parts run from single values and functions, to loops over text and files, to the three collections.
+- front: Name four things Python Foundations teaches you to do.
+  back: You will be able to write small, testable functions that loop over text and files and collect the results.
 - front: What do Python's arithmetic operators return?
   back: '`/` always returns a float, and `//` floors toward negative infinity rather than zero.'
   lesson: programming/python/01-foundations/notes/01-values-and-conditionals
@@ -44,14 +48,17 @@ cards:
 - front: How do you read a file safely, line by line?
   back: Use `with open(path, encoding="utf-8")` and iterate over lines, so memory stays constant and the file closes.
   lesson: programming/python/01-foundations/notes/04-strings-and-files
+- front: Where do loops, strings and files go wrong?
+  back: Prefer `for` to a `while` counter, start "largest" from `None`, and remember that string methods return new strings.
+  lesson: programming/python/01-foundations/notes/04-strings-and-files
+- front: Which collection should you pick?
+  back: Only hashable values can be dict keys, so a tuple can be one and a list cannot.
+  lesson: programming/python/01-foundations/notes/05-collections
 - front: Does b = a copy a list?
   back: '`b = a` makes a second name for the same list. Copy with `a.copy()`, and remember functions can mutate arguments.'
   lesson: programming/python/01-foundations/notes/05-collections
 - front: What is the counting idiom?
   back: '`counts[k] = counts.get(k, 0) + 1` counts anything. `Counter` and `defaultdict` are the library versions.'
-  lesson: programming/python/01-foundations/notes/05-collections
-- front: Which collection should you pick?
-  back: Only hashable values can be dict keys, so a tuple can be one and a list cannot.
   lesson: programming/python/01-foundations/notes/05-collections
 - front: How do you sort by count, breaking ties by name?
   back: Have `key=` return a tuple such as `(-count, word)`, because tuples compare element by element.
@@ -62,6 +69,10 @@ cards:
 - front: Where do you go after foundations?
   back: Next is Python 02 informatics, with SQL 01 alongside. If an exercise file passes first try, move on.
   lesson: programming/python/01-foundations/notes/05-collections
+- front: What are the three parts of Python Informatics, in order?
+  back: The parts run from raw text and HTTP, to parsed data and APIs, to objects and a database that keeps the results between runs.
+- front: Name four things Python Informatics teaches you to do.
+  back: You will be able to fetch text, parse it into data, and keep the result in a database.
 - front: Which regex syntax covers most needs?
   back: Learn classes, repeats, anchors and groups, and always write patterns as raw strings like `r"\d+"`.
   lesson: programming/python/02-informatics/notes/01-regular-expressions
@@ -113,6 +124,10 @@ cards:
 - front: Where do you go after informatics?
   back: Next is SQL 01 for queries and Python 03 for the language features that engineering code relies on.
   lesson: programming/python/02-informatics/notes/05-databases
+- front: What are the five parts of Python for Engineers, in order?
+  back: The parts run from how the language works, to code that holds up, to concurrency, to what classes do, to what memory costs.
+- front: Name four things Python for Engineers teaches you to do.
+  back: You will be able to explain what the language does for you, and measure what it costs in a running service.
 - front: What is the difference between mutating and rebinding?
   back: Mutating changes the object, so every name sees it. Rebinding moves one label, so nothing else changes.
   lesson: programming/python/03-language-for-engineers/notes/01-data-model-and-idioms
@@ -143,6 +158,9 @@ cards:
 - front: How do you write your own context manager?
   back: With `@contextmanager`, code before `yield` is setup and code after is teardown. Use `try/finally` so teardown runs on error.
   lesson: programming/python/03-language-for-engineers/notes/04-errors-and-context-managers
+- front: Which error-handling habits hide bugs?
+  back: Catch the narrowest exception, keep the `try` block small, and log the error instead of passing.
+  lesson: programming/python/03-language-for-engineers/notes/04-errors-and-context-managers
 - front: Who checks Python's type hints?
   back: Python ignores hints at runtime, so run a checker. `X | None` forces callers to handle the missing case.
   lesson: programming/python/03-language-for-engineers/notes/05-types-and-dataclasses
@@ -167,6 +185,9 @@ cards:
 - front: How should you retry a failed call?
   back: Back off exponentially with jitter, and retry only errors that can succeed next time, such as timeouts, 429 and 5xx.
   lesson: programming/python/03-language-for-engineers/notes/07-concurrency
+- front: In what order does obj.x look for x?
+  back: A data descriptor beats the instance dict and a non-data one loses to it. So a method can be shadowed and a property can't.
+  lesson: programming/python/03-language-for-engineers/notes/08-objects-inheritance-and-mro
 - front: Why can tenant B read tenant A's message?
   back: Per-instance state belongs in `__init__`, never in a mutable class attribute. In a service, the shared list is a data leak.
   lesson: programming/python/03-language-for-engineers/notes/08-objects-inheritance-and-mro
@@ -175,9 +196,6 @@ cards:
   lesson: programming/python/03-language-for-engineers/notes/08-objects-inheritance-and-mro
 - front: In `class ProdClient(Retrying, Logged)`, with both parents inheriting `BaseClient`, what does `super()` inside `Retrying` reach, and why?
   back: 'It reaches `Logged`: `super()` continues from the entry after the current class in the MRO of the instance''s type, so it can reach a sibling, not only a parent.'
-  lesson: programming/python/03-language-for-engineers/notes/08-objects-inheritance-and-mro
-- front: In what order does obj.x look for x?
-  back: A data descriptor beats the instance dict and a non-data one loses to it. So a method can be shadowed and a property can't.
   lesson: programming/python/03-language-for-engineers/notes/08-objects-inheritance-and-mro
 - front: How do you validate the same field on many classes?
   back: A descriptor reuses attribute logic across fields. Store the value on the instance, and measure before you worry about its cost.

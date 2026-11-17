@@ -237,6 +237,9 @@ _semantic_failed_at: float | None = None
 
 SEMANTIC_RETRY_S = 60.0
 
+# Wiki pages listed on a module's topic page; `wikiCount` says how many more there are.
+MODULE_WIKI_TOP = 12
+
 
 # The last catalog built. While another thread rebuilds (a wiki edit or ingest changed
 # the signature), requests get this one instead of queueing behind a multi-second build.
@@ -284,6 +287,14 @@ def warm_catalog() -> None:
         with_concepts=sum(1 for r in cat.lessons.values() if r.concepts),
         seconds=round(time.perf_counter() - start, 2),
     )
+
+
+COURSE_FRONT = "00-start-here"  # the importer's home for a course's root files
+COURSE_SHELF = "sources"  # a course's shared readings, a module only if it has lessons
+
+
+def _is_course_front(module: dict[str, Any]) -> bool:
+    return module["id"] == COURSE_FRONT or (module["id"] == COURSE_SHELF and not module["lessons"])
 
 
 @lru_cache(maxsize=2)
@@ -382,6 +393,12 @@ def _load(
                     "title": module_title,
                     "summary": str(mmeta.get("summary") or ""),
                     "order": _order(mmeta.get("order"), module_name),
+                    **({"group": str(mmeta["group"])} if mmeta.get("group") else {}),
+                    **(
+                        {"objectives": [str(o) for o in mmeta["objectives"]]}
+                        if isinstance(mmeta.get("objectives"), list)
+                        else {}
+                    ),
                     # Public: only the count. The list itself is in the private overlay.
                     "readings": readings,
                     "readingsCount": readings_count,
@@ -399,6 +416,11 @@ def _load(
                 }
             )
         modules.sort(key=lambda m: (m["order"], m["id"]))
+        # The course's own files (its README and references) and its shared source shelf are
+        # the course page's, not modules of their own.
+        front = [m for m in modules if _is_course_front(m)]
+        modules = [m for m in modules if not _is_course_front(m)]
+        outcomes = cmeta.get("outcomes")
         courses.append(
             {
                 "id": course_name,
@@ -407,25 +429,53 @@ def _load(
                 "order": _order(cmeta.get("order"), course_name),
                 "lessonCount": sum(len(m["lessons"]) for m in modules),
                 "modules": modules,
+                "guide": [lesson for m in front for lesson in m["lessons"]],
+                "readings": [r for m in front for r in m["readings"]],
+                "readingsCount": sum(m["readingsCount"] for m in front),
+                "references": [r for m in front for r in m["references"]],
+                **({"outcomes": [str(o) for o in outcomes]} if isinstance(outcomes, list) else {}),
                 **({"private": True} if modules and all(m.get("private") for m in modules) else {}),
             }
         )
     courses.sort(key=lambda c: (c["order"], c["id"]))
 
     _attach_semantic(lessons, embed_texts, wiki)
+    for course in courses:
+        for module in course["modules"]:
+            module["wikiCount"], module["wiki"] = _module_wiki(module, lessons, wiki)
 
     # Re-key lessons in reading order so prev/next follows the sidebar.
     ordered = {
         lesson["id"]: lessons[lesson["id"]]
         for c in courses
-        for m in c["modules"]
-        for lesson in m["lessons"]
+        for lesson in [*c["guide"], *(x for m in c["modules"] for x in m["lessons"])]
     }
     by_concept: dict[str, list[str]] = {}
     for lesson in ordered.values():
         for cid in lesson.concepts:
             by_concept.setdefault(cid, []).append(lesson.id)
     return Catalog(courses, ordered, wiki, by_concept, decks, quizzes)
+
+
+def _module_wiki(
+    module: dict[str, Any], lessons: dict[str, LessonRec], wiki: dict[str, WikiRef]
+) -> tuple[int, list[dict[str, str]]]:
+    """The wiki pages a module's lessons cite, most-cited first: (how many in all, the top MODULE_WIKI_TOP).
+
+    `wiki` holds public, non-tombstoned pages only, so nothing else can be listed. Private lessons
+    add nothing, as in the curriculum facet: a module only they make up would otherwise show a page list.
+    """
+    cited: Counter[str] = Counter()
+    for entry in module["lessons"]:
+        rec = lessons[entry["id"]]
+        if not rec.private:
+            cited.update(pid for pid in rec.concepts if pid in wiki)
+    ranked = sorted(cited, key=lambda pid: (-cited[pid], wiki[pid].title.lower(), pid))
+    top = [
+        {"id": pid, "title": wiki[pid].title, "summary": wiki[pid].summary}
+        for pid in ranked[:MODULE_WIKI_TOP]
+    ]
+    return len(ranked), top
 
 
 def _semantic_neighbours(texts: list[str], wiki_ids: list[str]) -> Neighbours | None:

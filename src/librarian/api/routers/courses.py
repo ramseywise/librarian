@@ -154,18 +154,39 @@ class QuizAnswer(BaseModel):
     quiz: str
     question: str
     choice: str
+    assisted: bool = False
 
 
 @router.post("/quiz-results")
 def quiz_result(user: SignedIn, body: QuizAnswer) -> dict[str, Any]:
     """Grade one answer on the server. A failed write returns logged=false, never an error."""
     try:
-        graded = study.answer_question(user, body.quiz, body.question, body.choice)
+        graded = study.answer_question(
+            user, body.quiz, body.question, body.choice, assisted=body.assisted
+        )
     except ValueError as e:
         raise HTTPException(status_code=422, detail=str(e)) from e
     if graded is None:
         raise HTTPException(status_code=404, detail="no such question")
     return graded
+
+
+class QuizReveal(BaseModel):
+    quiz: str
+    question: str
+    what: Literal["hint", "solution"]
+
+
+@router.post("/quiz-reveal")
+def quiz_reveal(user: SignedIn, body: QuizReveal) -> dict[str, Any]:
+    """A worked problem's hint or solution. It stores a miss, as the learner gave up on the question."""
+    try:
+        shown = study.reveal_question(user, body.quiz, body.question, body.what)
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e)) from e
+    if shown is None:
+        raise HTTPException(status_code=404, detail="nothing to show")
+    return shown
 
 
 class DrillResult(BaseModel):
@@ -185,6 +206,12 @@ def drill_result(user: SignedIn, body: DrillResult) -> dict[str, bool]:
 def study_home(user: SignedIn) -> dict[str, Any]:
     """The study queue: cards and questions due, the next drill, the current module's lecture."""
     return study.home(user)
+
+
+@router.get("/study-progress")
+def study_progress(user: SignedIn) -> dict[str, Any]:
+    """The caller's right and to-redo counts per module and level (choice, cards, worked)."""
+    return study.level_progress(user)
 
 
 @router.get("/progress")

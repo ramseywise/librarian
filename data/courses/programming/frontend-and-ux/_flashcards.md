@@ -3,6 +3,12 @@ generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - programming/frontend-and-ux/slides/deck.yaml
 cards:
+- front: What are the three parts of this lecture, in order?
+  back: The lecture moves from how a page holds state, to how people receive it, to an answer that arrives a word at a time.
+  lesson: programming/frontend-and-ux/readme
+- front: Name three things this lecture teaches you to do with an interface.
+  back: You will be able to say what state an interface is in, check that people can tell, and handle an answer that may be wrong.
+  lesson: programming/frontend-and-ux/readme
 - front: What does a browser build from your page?
   back: A DOM from the HTML, a CSSOM from the CSS and an accessibility tree, then style, layout, paint and composite.
   lesson: programming/frontend-and-ux/notes/01-html-css-and-the-dom

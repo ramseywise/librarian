@@ -279,7 +279,7 @@ export default function App() {
                 ) : inStudy ? (
                   <StudyHome />
                 ) : inSlides ? (
-                  <SlidesView deckId={route.slice("/slides/".length)} />
+                  <SlidesView deckId={route.slice("/slides/".length)} onAsk={askAbout} />
                 ) : inQuiz ? (
                   <QuizView quizId={route.slice("/quiz/".length)} onChatContext={setStudyContext} />
                 ) : labId ? (

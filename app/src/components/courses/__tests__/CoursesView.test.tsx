@@ -1,4 +1,4 @@
-import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Course, Lesson } from "../types";
@@ -72,22 +72,86 @@ describe("CoursesView course page", () => {
     expect(navigate).toHaveBeenCalledWith("/courses/c1/c1/m1");
   });
 
-  it("shows a module's study levels, lessons and labs together, with nothing to open", async () => {
-    const studied: Course = {
+  it("is where the course starts: outcomes, core then advanced modules, the guide and references last", async () => {
+    const mod = (id: string, title: string, group: string) => ({ ...course.modules[0], id, title, group });
+    const grouped: Course = {
       ...course,
-      modules: [{ ...course.modules[0], quizCount: 3, flashcardCount: 5, decks: [{ id: "c1/m1", title: "Module deck" }] }],
+      outcomes: ["Estimate honestly"],
+      modules: [mod("c1/m1", "Frames", "core"), mod("c1/m2", "Stats", "core"), mod("c1/m3", "Bayes", "advanced")],
+      guide: [
+        { ...outline, id: "c1/00-start-here/readme", title: "Course One" },
+        { ...outline, id: "c1/00-start-here/references", title: "References" },
+      ],
+      readingsCount: 12,
     };
     vi.stubGlobal("fetch", vi.fn(async (url: string) =>
-      new Response(JSON.stringify(url === "/api/courses" ? [studied] : { labs: [lab], canRun: false }), { status: 200 })));
+      new Response(JSON.stringify(url === "/api/courses" ? [grouped] : []), { status: 200 })));
+    render(<CoursesView route="c1" navigate={vi.fn()} onOpenConcept={vi.fn()} onAsk={vi.fn()} />);
+    expect(await screen.findByText("Estimate honestly")).toBeInTheDocument();
+    const headings = screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent);
+    expect(headings).toEqual(["By the end you can", "Core modules", "Advanced topics", "Guide and references"]);
+    expect(within(screen.getByRole("region", { name: "Core modules" })).getAllByRole("button")).toHaveLength(2);
+    expect(within(screen.getByRole("region", { name: "Advanced topics" })).getByRole("button")).toHaveTextContent("Bayes");
+    expect(screen.queryByText(/Module \d/)).toBeNull();
+    expect(screen.getByRole("link", { name: "Course guide" })).toHaveAttribute("href", "#/courses/c1/00-start-here/readme");
+    expect(screen.getByRole("link", { name: "References" })).toHaveAttribute("href", "#/courses/c1/00-start-here/references");
+  });
+
+  const studied: Course = {
+    ...course,
+    modules: [{
+      ...course.modules[0], quizCount: 3, flashcardCount: 5, decks: [{ id: "c1/m1", title: "Module deck" }],
+      wikiCount: 14,
+      wiki: [{ id: "agents", title: "Agent Loops", summary: "How an agent loops." }],
+    }],
+  };
+  const stub = (progress: unknown = {}) =>
+    vi.stubGlobal("fetch", vi.fn(async (url: string) => {
+      const body = url === "/api/courses" ? [studied] : url === "/api/courses/study-progress" ? progress : { labs: [lab], canRun: false };
+      return new Response(JSON.stringify(body), { status: 200 });
+    }));
+
+  it("lays the topic page out as test yourself, learn, hands-on, wiki, with nothing to open", async () => {
+    stub();
     render(<CoursesView route="c1/c1/m1" navigate={vi.fn()} onOpenConcept={vi.fn()} onAsk={vi.fn()} />);
     expect(await screen.findByRole("link", { name: "Level 1: multiple choice, 3 questions" })).toHaveAttribute("href", "#/quiz/c1/c1/m1?choice");
     expect(screen.getByRole("link", { name: "Level 2: flashcards, 5 cards" })).toHaveAttribute("href", "#/flashcards/c1/c1/m1");
     expect(screen.queryByRole("link", { name: /Level 3/ })).toBeNull();
-    expect(screen.getByRole("link", { name: /Module deck/ })).toHaveAttribute("href", "#/slides/c1/m1");
-    expect(screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent).slice(0, 4)).toEqual(["Lectures", "Lessons", "Study", "Labs"]);
+    expect(screen.getByRole("link", { name: "Module deck" })).toHaveAttribute("href", "#/slides/c1/m1");
+    const headings = screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent);
+    expect(headings.slice(0, 4)).toEqual(["Test yourself", "Learn", "Hands-on", "Wiki"]);
     expect(screen.getByRole("link", { name: "Intro" })).toHaveAttribute("href", "#/courses/c1/m1/intro");
     expect(await screen.findByRole("link", { name: "Probability puzzles" })).toHaveAttribute("href", "#/labs/c1/m1/practice/puzzles");
     expect(screen.queryByRole("button", { expanded: true })).toBeNull();
+  });
+
+  it("says what the module teaches before anything else", async () => {
+    const taught = { ...studied, modules: [{ ...studied.modules[0], objectives: ["Build a confidence interval", "Read a p-value"] }] };
+    vi.stubGlobal("fetch", vi.fn(async (url: string) =>
+      new Response(JSON.stringify(url === "/api/courses" ? [taught] : url === "/api/courses/labs" ? { labs: [], canRun: false } : {}), { status: 200 })));
+    render(<CoursesView route="c1/c1/m1" navigate={vi.fn()} onOpenConcept={vi.fn()} onAsk={vi.fn()} />);
+    expect(await screen.findByText("Build a confidence interval")).toBeInTheDocument();
+    const headings = screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent);
+    expect(headings.slice(0, 2)).toEqual(["After this module you can", "Test yourself"]);
+  });
+
+  it("lists the wiki pages the lessons cite and links to them on the graph", async () => {
+    stub();
+    const onOpenConcept = vi.fn();
+    render(<CoursesView route="c1/c1/m1" navigate={vi.fn()} onOpenConcept={onOpenConcept} onAsk={vi.fn()} />);
+    await userEvent.click(await screen.findByRole("button", { name: /Agent Loops/ }));
+    expect(onOpenConcept).toHaveBeenCalledWith("agents");
+    expect(screen.getByText("How an agent loops.")).toBeInTheDocument();
+    expect(screen.getByText(/13 more cited by these lessons/)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Show on the graph" })).toHaveAttribute("href", "#/map/all?tags=module%3Ac1%2Fc1%2Fm1");
+  });
+
+  it("shows progress on each level from the attempts store", async () => {
+    stub({ "c1/c1/m1": { choice: { total: 32, right: 20, redo: 4 }, cards: { total: 71, right: 25, redo: 0 } } });
+    render(<CoursesView route="c1/c1/m1" navigate={vi.fn()} onOpenConcept={vi.fn()} onAsk={vi.fn()} />);
+    expect(await screen.findByText("20 of 32 right · 4 to redo")).toBeInTheDocument();
+    expect(screen.getByText("25 of 71 known")).toBeInTheDocument();
+    expect(screen.getAllByRole("meter").length).toBeGreaterThan(0);
   });
 });
 

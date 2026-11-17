@@ -3,6 +3,12 @@ generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - programming/software-design/slides/deck.yaml
 cards:
+- front: What are the three parts of this lecture, in order?
+  back: The lecture moves from writing code that can change, to knowing that it works, to keeping the reasons behind it.
+  lesson: programming/software-design/readme
+- front: Name three things this lecture teaches you to do with a codebase.
+  back: You will be able to change code in small safe steps, show that it still works, and leave the reasons where the team can find them.
+  lesson: programming/software-design/readme
 - front: What do you do when you spot a code smell?
   back: A smell is a reason to look, never a verdict. Refactor a file because you keep having to change it, not because it smells.
   lesson: programming/software-design/notes/01-readable-code-and-smells
@@ -62,6 +68,9 @@ cards:
   lesson: programming/software-design/notes/07-git-code-review-and-design-docs
 - front: Which record do you write, and when?
   back: Write a design doc when the solution is ambiguous, and an ADR at a significant decision, with its bad consequences and what would change your mind.
+  lesson: programming/software-design/notes/07-git-code-review-and-design-docs
+- front: Name four Git habits that go wrong, with the symptom of each.
+  back: Stage explicit paths, rebase only what nobody has built on, and keep a bisect check reliable and outside the repository.
   lesson: programming/software-design/notes/07-git-code-review-and-design-docs
 - front: When should you refactor, and what do you do first?
   back: Refactor when you're about to change the code, and pin behaviour with tests before you change structure.

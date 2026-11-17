@@ -50,15 +50,21 @@
 }
 .sidenav-item:hover { color: var(--text); }
 .sidenav-item--top { color: var(--text); font-size: var(--fs-base); font-weight: 600; padding-top: var(--space-3); padding-bottom: var(--space-3); }
-.sidenav-item--course { padding-left: 28px; }
-.sidenav-item--module { padding-left: 40px; }
-.sidenav-item--lesson { padding-left: 52px; }
+.sidenav-item--module { font-size: var(--fs-xl); color: var(--text); padding: 5px var(--space-5) 5px var(--space-6); margin: 0 var(--space-3); border-left: 0; border-radius: var(--radius-md, 6px); }
+.sidenav-item--module:hover { background: var(--surface-raised); }
 .sidenav-item.is-within { color: var(--text); font-weight: 600; }
-.sidenav-item[aria-current="page"] { background: var(--surface-selected); border-left-color: var(--accent); color: var(--accent-text); }
-.sidenav-section {
-  font-size: var(--fs-xs); color: var(--text-ghost); text-transform: uppercase; letter-spacing: 0.06em;
-  padding: var(--space-3) var(--space-6) 2px 52px;
+.sidenav-item[aria-current="page"], .sidenav-item.is-current { background: var(--surface-selected); border-left-color: var(--accent); color: var(--accent-text); }
+.sidenav-item--module.is-current, .sidenav-item--module[aria-current="page"] { font-weight: 600; }
+/* A course: an uppercase group label, a link to the course's page. */
+.sidenav-group { margin-top: var(--space-6); }
+.sidenav-label {
+  display: block; padding: 2px var(--space-6) var(--space-2) var(--space-8); font-size: var(--fs-md); letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--text-faint); text-decoration: none;
 }
+.sidenav-label:hover, .sidenav-label.is-within, .sidenav-label[aria-current="page"] { color: var(--text); }
+/* "Core" and "Advanced" inside a course that sorts its modules. */
+.sidenav-sublabel { padding: var(--space-2) var(--space-6) 1px var(--space-8); font-size: var(--fs-sm); color: var(--text-faint); }
+.sidenav-count { margin-left: auto; color: var(--text-faint); font-size: var(--fs-md); font-variant-numeric: tabular-nums; }
 .app-menu-btn, .app-sidenav-backdrop { display: none; }
 .app-menu-btn { margin-right: var(--space-4); }
 .check {
@@ -92,27 +98,7 @@
 .graph-root { width: 100%; height: 100%; position: relative; display: flex; }
 .graph-canvas { flex: 1; min-width: 0; height: 100%; position: relative; }
 
-/* ---- Map sidebar: curriculum, tags, layers, minimap, from under the header down ---- */
-.graph-sidebar {
-  flex: none;
-  width: 284px;
-  height: 100%;
-  overflow-y: auto;
-  background: var(--surface-sidebar);
-  border-right: 1px solid var(--border);
-  padding: var(--space-4) var(--space-5) var(--space-6);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  z-index: var(--z-panel);
-}
-.side-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
-.side-head .seg { flex: 1; }
-.side-head .seg-btn { flex: 1; padding: 5px var(--space-3); }
-/* Search in the column: full width, results in the flow rather than over the canvas. */
-.side-search-row { font-size: var(--fs-sm); }
-.side-search-row .map-search-input { width: 100%; height: 28px; }
-.side-search-row .map-search-list { position: static; width: auto; margin-top: var(--space-1); }
+/* ---- Map filters and controls: they sit in popovers on the map bar (atlas.css) ---- */
 .side-section { border-top: 1px solid var(--border); padding-top: var(--space-3); }
 .side-section > summary {
   cursor: pointer;
@@ -181,8 +167,6 @@
   margin-bottom: 2px;
 }
 .panel-label--spaced { margin-bottom: var(--space-3); }
-
-.graph-menu-btn { display: none; }
 
 .graph-edge-panel { display: flex; flex-direction: column; gap: var(--space-2); }
 .edge-row { display: flex; align-items: center; cursor: pointer; }
@@ -577,38 +561,8 @@ button.citation-chip { cursor: pointer; }
   }
 }
 
-/* ---- Breakpoint: below 760px the graph controls collapse into one menu -------- */
+/* ---- Breakpoint: below 760px the app nav is the only menu; the map's popovers stay ---- */
 @media (max-width: 759px) {
-  .graph-menu-btn {
-    display: block;
-    position: absolute;
-    top: var(--space-5);
-    left: var(--space-5);
-    z-index: calc(var(--z-panel) + 1);
-    background: var(--surface-raised);
-    border: 1px solid var(--border-strong);
-    border-radius: var(--radius-lg);
-    color: var(--text);
-    font-size: var(--fs-md);
-    padding: var(--space-2) var(--space-5);
-    cursor: pointer;
-    font-family: inherit;
-  }
-  .graph-menu-btn[aria-expanded="true"] { background: var(--surface-active); border-color: var(--border-pressed); }
-  .graph-sidebar { display: none; }
-  .graph-sidebar.is-open {
-    display: flex;
-    position: absolute;
-    top: 52px;
-    left: var(--space-5);
-    right: var(--space-5);
-    width: auto;
-    height: auto;
-    max-height: calc(100% - 64px);
-    border: 1px solid var(--border-strong);
-    border-radius: var(--radius-lg);
-    z-index: calc(var(--z-panel) + 1);
-  }
   .detail-panel { left: 50%; width: calc(100% - var(--space-9)); max-height: 60vh; }
 }
 

@@ -3,6 +3,12 @@ generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - ai-engineering/09-safety-and-security/slides/deck.yaml
 cards:
+- front: What are the six parts of this lecture, in order?
+  back: The parts follow the notes, from what can go wrong, through the defences and the tests of them, to what to do when one is breached.
+  lesson: ai-engineering/09-safety-and-security/readme
+- front: Name four things this lecture teaches you to do with an agent's security.
+  back: You will be able to map an agent's paths, enforce limits outside the model, test them honestly and respond when they fail.
+  lesson: ai-engineering/09-safety-and-security/readme
 - front: Which combination of capabilities can make an agent leak?
   back: An agent with untrusted input, private data and external communication can be made to leak.
   lesson: ai-engineering/09-safety-and-security/notes/01-threat-model
@@ -36,11 +42,11 @@ cards:
 - front: What should you track that never shows up in a single reply?
   back: Track false refusals and paired fairness gaps, because neither one shows up in a single reply.
   lesson: ai-engineering/09-safety-and-security/notes/03-guardrail-models
-- front: What can a short policy function check before a tool runs, and where does identity come from?
-  back: A short function can check tool choice, ownership and amount with identity taken from the session.
-  lesson: ai-engineering/09-safety-and-security/notes/04-tool-and-execution-sandboxing
 - front: What gives layered defences real depth?
   back: Layers with different blind spots give real depth, and a stack of similar filters doesn't.
+  lesson: ai-engineering/09-safety-and-security/notes/04-tool-and-execution-sandboxing
+- front: What can a short policy function check before a tool runs, and where does identity come from?
+  back: A short function can check tool choice, ownership and amount with identity taken from the session.
   lesson: ai-engineering/09-safety-and-security/notes/04-tool-and-execution-sandboxing
 - front: What do process limits stop, and what needs a stronger boundary?
   back: Process limits stop runaway work, and only a stronger boundary stops reads outside the directory.

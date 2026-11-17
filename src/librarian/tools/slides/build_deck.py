@@ -37,7 +37,7 @@ from pptx.oxml.ns import qn
 from pptx.util import Inches, Pt
 
 from librarian.config import get_settings
-from librarian.courses import overlay
+from librarian.courses import deck_frames, overlay
 from librarian.tools.slides import deck_graph, deck_stamp
 
 # ---------------------------------------------------------------------------
@@ -68,7 +68,7 @@ BORDER = "D5DEEA"
 
 # Per-slide keys in deck-spec.md. LEVELS is ordered: a build at one level keeps that level and those before it.
 LEVELS = ("core", "practice", "deep")
-BEATS = ("problem", "fundamentals", "practice", "pitfalls", "wrap")
+BEATS = deck_frames.BEATS
 PART_BEATS = ("fundamentals", "practice", "pitfalls")
 
 PART_ACCENTS = [ORANGE, NAVY, TEAL_DARK, PURPLE, TEAL, GREEN]
@@ -90,6 +90,10 @@ WARNINGS: list[str] = []
 WORDS_PER_SLIDE = 150
 LECTURE_MIN = 20
 LECTURE_MAX = 60
+# Deliberate callbacks to an earlier note that one deck may mark with `revisits: true`.
+REVISITS_MAX = 2
+# A slide's `narration` is the script the viewer reads aloud; under this it is a prompt, not a script.
+NARRATION_MIN_WORDS = 40
 LECTURE_OVERVIEW_MIN = 15
 
 
@@ -1302,7 +1306,7 @@ def filter_parts(parts: list[dict], level: str) -> list[dict]:
     return kept
 
 
-def build(spec_path: Path, level: str | None = None) -> Path:
+def build(spec_path: Path, level: str | None = None, out: Path | None = None) -> Path:
     spec = yaml.safe_load(spec_path.read_text())
     deck, all_parts = spec["deck"], spec["parts"]
     base = spec_path.parent
@@ -1317,47 +1321,44 @@ def build(spec_path: Path, level: str | None = None) -> Path:
     prs = Presentation()
     prs.slide_width, prs.slide_height = Inches(SLIDE_W), Inches(SLIDE_H)
 
-    title_slide(prs, deck, [p for p in parts if p.get("agenda", True)])
-    number = 1
-    agenda_idx = 0
-    for part in parts:
-        in_agenda = part.get("agenda", True)
-        idx = agenda_idx if in_agenda else len(PART_ACCENTS) - 1
-        if in_agenda and part.get("divider", True):
-            number += 1
+    title_slide(prs, deck, deck_frames.agenda_parts(parts))
+    for step in deck_frames.walk(parts):
+        part, number = step.part, step.number
+        idx = len(PART_ACCENTS) - 1 if step.agenda_idx is None else step.agenda_idx
+        if step.slide is None:
             section_slide(prs, part, idx, number)
+            continue
+        sl = step.slide
         accent = PART_ACCENTS[idx % len(PART_ACCENTS)]
-        for sl in part.get("slides", []):
-            number += 1
-            layout = sl.get("layout", "bullets")
-            ctx = f"slide {number} '{plain(sl.get('title', ''))}'"
-            if layout not in LAYOUTS:
-                warn(ctx, f"unknown layout '{layout}'")
-                continue
-            s = prs.slides.add_slide(prs.slide_layouts[6])
-            crumb = f"Part {agenda_idx + 1} · {part['title']}" if in_agenda else part["title"]
-            src = sl.get("source")
-            info = {
-                "accent": accent if accent != NAVY else ORANGE,
-                "kicker_color": ORANGE if accent in (NAVY, ORANGE) else TEAL,
-                "crumb": crumb,
-                "number": number,
-                "source": f"Source: {src}" if src else "",
-                "ctx": ctx,
-                "base": base,
-            }
-            top, bottom = chrome(s, sl, info)
-            LAYOUTS[layout](s, sl, top, bottom, ctx, info)
-            notes = sl.get("notes", "")
-            if src:
-                notes = f"{notes}\n\nSource: {src}".strip()
-            s.notes_slide.notes_text_frame.text = notes  # pyright: ignore[reportOptionalMemberAccess]
-        if in_agenda:
-            agenda_idx += 1
+        layout = sl.get("layout", deck_frames.DEFAULT_LAYOUT)
+        ctx = f"slide {number} '{plain(sl.get('title', ''))}'"
+        if layout not in LAYOUTS:
+            warn(ctx, f"unknown layout '{layout}'")
+            continue
+        s = prs.slides.add_slide(prs.slide_layouts[6])
+        src = sl.get("source")
+        info = {
+            "accent": accent if accent != NAVY else ORANGE,
+            "kicker_color": ORANGE if accent in (NAVY, ORANGE) else TEAL,
+            "crumb": deck_frames.crumb(step),
+            "number": number,
+            "source": f"Source: {src}" if src else "",
+            "ctx": ctx,
+            "base": base,
+        }
+        top, bottom = chrome(s, sl, info)
+        LAYOUTS[layout](s, sl, top, bottom, ctx, info)
+        notes = sl.get("notes", "")
+        if src:
+            notes = f"{notes}\n\nSource: {src}".strip()
+        s.notes_slide.notes_text_frame.text = notes  # pyright: ignore[reportOptionalMemberAccess]
 
     # The story rules judge the deck as written, so a filtered build reports what the full one does.
     check_story(all_parts, base, lecture)
-    out = base / deck.get("output", f"{spec_path.stem if lecture else base.parent.name}.pptx")
+    if out is None:
+        out = base / deck.get("output", f"{spec_path.stem if lecture else base.parent.name}.pptx")
+    else:
+        out.parent.mkdir(parents=True, exist_ok=True)
     if level:
         # deck_stamp.py only looks at the unsuffixed name, so this file is never read as the deck.
         out = out.with_name(f"{out.stem}-{level}{out.suffix}")
@@ -1376,7 +1377,7 @@ LIST_QUESTION = re.compile(
 def flashcard_problems(sl: dict) -> list[str]:
     """What the flashcard this slide imports as gets wrong. A slide with no takeaway imports no card."""
     takeaway = sl.get("takeaway")
-    if not takeaway or sl.get("layout", "bullets") == "statement":
+    if not takeaway or sl.get("layout", "bullets") == "statement" or sl.get("card") is False:
         return []
     title = plain(sl.get("title", "")).strip()
     recall = plain(sl.get("recall", "")).strip()
@@ -1386,6 +1387,10 @@ def flashcard_problems(sl: dict) -> list[str]:
             "no recall, and the title is not a question, so the flashcard front is not a question"
         )
     question = recall or title
+    if sl.get(
+        "answer"
+    ):  # the card's back is written for the question, not borrowed from the takeaway
+        return problems
     if (
         question.endswith("?")
         and LIST_QUESTION.search(question)
@@ -1502,6 +1507,50 @@ def check_lecture(parts: list[dict], lecture: deck_graph.Lecture, root: Path) ->
             break
 
 
+def cited_note(sl: dict) -> str:
+    """The file name of the note a slide's `source:` points at, or '' when it cites none."""
+    src = sl.get("source")
+    if isinstance(src, list):
+        src = src[0] if src else None
+    return Path(str(src).split("#")[0]).name if src else ""
+
+
+def check_order(parts: list[dict], base: Path) -> None:
+    """Warn where a body slide cites a note that comes before the one the slide ahead of it cited.
+
+    The order is the module's reading order (deck_graph.syllabus_order). Overview and closing parts are exempt.
+    `revisits: true` marks a deliberate callback: it is not a back-jump and does not move the deck's place,
+    but a deck gets REVISITS_MAX of them.
+    """
+    pillar = base.parent
+    order = [Path(n).name for n in deck_graph.syllabus_order(pillar.name, pillar.parent)]
+    place, revisits = -1, 0
+    for part in parts:
+        if not part.get("agenda", True) or part.get("overview"):
+            continue
+        for sl in part.get("slides", []):
+            note = cited_note(sl)
+            if note not in order:
+                continue
+            here = order.index(note)
+            if sl.get("revisits"):
+                revisits += 1
+                if revisits > REVISITS_MAX:
+                    warn(
+                        "order",
+                        f"slide '{plain(sl.get('title', ''))}' is revisit {revisits} "
+                        f"(limit {REVISITS_MAX}): reorder the deck instead",
+                    )
+                continue
+            if here < place:
+                warn(
+                    "order",
+                    f"slide '{plain(sl.get('title', ''))}' cites {note} after {order[place]}, "
+                    "which comes later in the reading order (move it, or set revisits: true)",
+                )
+            place = here
+
+
 def check_story(parts: list[dict], base: Path, lecture: deck_graph.Lecture | None = None) -> None:
     """Warn where the deck breaks the story rules in deck-spec.md (spine, mix, flashcards, coverage).
 
@@ -1510,6 +1559,15 @@ def check_story(parts: list[dict], base: Path, lecture: deck_graph.Lecture | Non
     slides = [(p, sl) for p in parts for sl in p.get("slides", [])]
     if not slides:
         return
+    # Narration is judged only in a deck that has started writing it, as beats first were.
+    if any("narration" in sl for _, sl in slides):
+        for p, sl in slides:
+            words = len(str(sl.get("narration", "")).split())
+            if p.get("agenda", True) and words < NARRATION_MIN_WORDS:
+                warn(
+                    f"'{plain(sl.get('title', ''))}'",
+                    f"narration is {words} words (write {NARRATION_MIN_WORDS} or more, to be heard)",
+                )
     layouts = [sl.get("layout", "bullets") for _, sl in slides]
     for name in sorted(set(layouts)):
         share = layouts.count(name) / len(layouts)
@@ -1549,20 +1607,36 @@ def check_story(parts: list[dict], base: Path, lecture: deck_graph.Lecture | Non
                 f"part '{part['title']}'",
                 "should open on a statement or image that poses the problem",
             )
-    if any("beat" in sl for _, sl in slides):
-        agenda = [p for p in parts if p.get("agenda", True)]
-        if agenda and not agenda[0].get("overview"):
+    # Every deck owes the spine, whether or not it has started to set beats.
+    agenda = [p for p in parts if p.get("agenda", True)]
+    if agenda and not agenda[0].get("overview"):
+        warn(
+            f"part '{agenda[0]['title']}'",
+            "the first agenda part should be marked overview: true",
+        )
+    for part in agenda:
+        if part.get("overview"):
+            continue
+        given = [sl["beat"] for sl in part.get("slides", []) if sl.get("beat") in BEATS]
+        missing = [b for b in PART_BEATS if b not in given]
+        if missing:
+            warn(f"part '{part['title']}'", f"no slide with beat: {', '.join(missing)}")
+        # A part may take several topics in turn, each opened by a `problem`. Within one topic the
+        # principle is stated before it is applied.
+        topics = [
+            list(g) for is_p, g in itertools.groupby(given, lambda b: b == "problem") if not is_p
+        ]
+        if any(
+            "fundamentals" in t
+            and "practice" in t
+            and t.index("practice") < t.index("fundamentals")
+            for t in topics
+        ):
             warn(
-                f"part '{agenda[0]['title']}'",
-                "the first agenda part should be marked overview: true",
+                f"part '{part['title']}'",
+                "beat 'practice' comes before 'fundamentals' (state the principle, then apply it)",
             )
-        for part in agenda:
-            if part.get("overview"):
-                continue
-            beats = {sl.get("beat") for sl in part.get("slides", [])}
-            missing = [b for b in PART_BEATS if b not in beats]
-            if missing:
-                warn(f"part '{part['title']}'", f"no slide with beat: {', '.join(missing)}")
+    check_order(parts, base)
     notes_dir = base.parent / "notes"
     cited = " ".join(str(sl.get("source", "")) for _, sl in slides)
     for note in sorted(notes_dir.glob("*.md")) if notes_dir.is_dir() else []:
@@ -1802,6 +1876,9 @@ def main() -> None:
         "--outline", type=Path, metavar="FILE", help="write per-slide text and notes here as JSON"
     )
     ap.add_argument(
+        "--out", type=Path, metavar="FILE", help="write the .pptx here, not beside the yaml"
+    )
+    ap.add_argument(
         "--pdf", action="store_true", help="also write <output>.pdf next to the .pptx (macOS)"
     )
     ap.add_argument(
@@ -1828,7 +1905,7 @@ def main() -> None:
         sys.exit(1 if deck_stamp.check(args.spec or deck_stamp.all_specs()) else 0)
     if len(args.spec) != 1:
         ap.error("give exactly one deck.yaml to build")
-    out = build(args.spec[0], args.level)
+    out = build(args.spec[0], args.level, args.out)
     print(f"deck: {out}  ({len(Presentation(str(out)).slides)} slides)")
     if args.outline:
         args.outline.parent.mkdir(parents=True, exist_ok=True)

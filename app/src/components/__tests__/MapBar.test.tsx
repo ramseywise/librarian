@@ -10,12 +10,71 @@ const base: ComponentProps<typeof MapBar> = {
   nextCap: null,
   onExpand: () => {},
   refocus: null,
+  onGrouping: () => {},
 };
 
 describe("MapBar", () => {
-  it("draws nothing on the atlas: the switch and search are in the sidebar", () => {
-    const { container } = render(<MapBar {...base} />);
-    expect(container).toBeEmptyDOMElement();
+  it("has the switch, search and filters on the atlas, and no crumbs, count or Map popover", () => {
+    const onGrouping = vi.fn();
+    render(
+      <MapBar {...base} onGrouping={onGrouping} search={<input aria-label="Search the map" />} filters={<p>the filters</p>} />,
+    );
+    expect(screen.getByRole("button", { name: "Wiki" })).toHaveAttribute("aria-pressed", "true");
+    fireEvent.click(screen.getByRole("button", { name: "Domain" }));
+    expect(onGrouping).toHaveBeenCalledWith("domain");
+    expect(screen.getByLabelText("Search the map")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Filters" })).toBeInTheDocument();
+    expect(screen.queryByRole("navigation", { name: "Map level" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Map" })).toBeNull();
+  });
+
+  it("opens Filters with the active count on its button, and Escape closes just the popover", () => {
+    const onKey = vi.fn();
+    document.addEventListener("keydown", onKey);
+    render(<MapBar {...base} filters={<p>the filters</p>} activeCount={2} />);
+    expect(screen.queryByText("the filters")).toBeNull();
+    const button = screen.getByRole("button", { name: "Filters (2)" });
+    fireEvent.click(button);
+    expect(button).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("group", { name: "Filters" })).toHaveTextContent("the filters");
+    fireEvent.keyDown(button, { key: "Escape" });
+    expect(screen.queryByText("the filters")).toBeNull();
+    expect(onKey.mock.calls[0][0].defaultPrevented).toBe(true);
+    document.removeEventListener("keydown", onKey);
+  });
+
+  it("closes a popover on a click outside it", () => {
+    render(<MapBar {...base} filters={<p>the filters</p>} />);
+    fireEvent.click(screen.getByRole("button", { name: "Filters" }));
+    fireEvent.mouseDown(document.body);
+    expect(screen.queryByText("the filters")).toBeNull();
+  });
+
+  it("offers the Map popover on focused levels only when it has controls", () => {
+    const sector = { level: "sector", grouping: "wiki", sector: "rag", cap: 15 } as const;
+    const { rerender } = render(<MapBar {...base} view={sector} />);
+    expect(screen.queryByRole("button", { name: "Map" })).toBeNull();
+    rerender(<MapBar {...base} view={sector} map={<p>connections</p>} />);
+    fireEvent.click(screen.getByRole("button", { name: "Map" }));
+    expect(screen.getByText("connections")).toBeInTheDocument();
+  });
+
+  it("briefs on the sector from its crumb, and the switch goes to the other atlas", () => {
+    const onBriefSector = vi.fn();
+    const onGrouping = vi.fn();
+    render(
+      <MapBar
+        {...base}
+        view={{ level: "sector", grouping: "domain", sector: "generative-ai", cap: 15 }}
+        sectorLabel="Generative AI"
+        onBriefSector={onBriefSector}
+        onGrouping={onGrouping}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Brief me on Generative AI" }));
+    expect(onBriefSector).toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: "Wiki" }));
+    expect(onGrouping).toHaveBeenCalledWith("wiki");
   });
 
   it("shows the breadcrumb, the count and the way out at page level", () => {

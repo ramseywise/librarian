@@ -3,6 +3,24 @@ generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - generative-ai/02-rag-retrieval/slides/deck.yaml
 cards:
+- front: What are the five parts of this lecture, in order?
+  back: The lecture follows one wrong answer from the pipeline's map, through search and generation and real stacks, to deciding which fix to build.
+  lesson: generative-ai/02-rag-retrieval/readme
+- front: Name four things this lecture teaches you to do with a RAG system.
+  back: You will be able to say which stage let the wrong page through, fix it, and show on your own queries that the fix worked.
+  lesson: generative-ai/02-rag-retrieval/readme
+- front: Name Gao's three RAG paradigms.
+  back: Naive, advanced and modular name how much machinery surrounds retrieval, so start naive and add what the eval justifies.
+  lesson: generative-ai/02-rag-retrieval/notes/01-rag-pipeline
+- front: Why rerank against the original question after expansion?
+  back: Order stages so each narrows the set for the next, and always rerank against what the user actually asked.
+  lesson: generative-ai/02-rag-retrieval/notes/01-rag-pipeline
+- front: Why does ingestion set the ceiling?
+  back: Inspect what the parser produced first, because no retriever or reranker can recover text that ingestion lost.
+  lesson: generative-ai/02-rag-retrieval/notes/01-rag-pipeline
+- front: What is the difference between Self-RAG and FLARE?
+  back: Route aggregates to SQL, add agent loops only for questions that decompose, and treat retrieval timing as a design choice.
+  lesson: generative-ai/02-rag-retrieval/notes/01b-index-structures-and-agentic-rag
 - front: What three costs does RAG add?
   back: RAG gives the model facts at inference time, in exchange for latency, an index to maintain and a new way to fail.
   lesson: generative-ai/02-rag-retrieval/notes/02-why-rag-and-the-augmented-prompt
@@ -18,18 +36,6 @@ cards:
 - front: What goes wrong when you train a retriever and reader together?
   back: Keep the index fresh while a retriever trains, read language-modelling multipliers as such, and leave near-duplicates of the answer out of the prompt.
   lesson: generative-ai/02-rag-retrieval/notes/02b-training-the-retriever-and-the-reader
-- front: Name Gao's three RAG paradigms.
-  back: Naive, advanced and modular name how much machinery surrounds retrieval, so start naive and add what the eval justifies.
-  lesson: generative-ai/02-rag-retrieval/notes/01-rag-pipeline
-- front: Why rerank against the original question after expansion?
-  back: Order stages so each narrows the set for the next, and always rerank against what the user actually asked.
-  lesson: generative-ai/02-rag-retrieval/notes/01-rag-pipeline
-- front: Why does ingestion set the ceiling?
-  back: Inspect what the parser produced first, because no retriever or reranker can recover text that ingestion lost.
-  lesson: generative-ai/02-rag-retrieval/notes/01-rag-pipeline
-- front: What is the difference between Self-RAG and FLARE?
-  back: Route aggregates to SQL, add agent loops only for questions that decompose, and treat retrieval timing as a design choice.
-  lesson: generative-ai/02-rag-retrieval/notes/01b-index-structures-and-agentic-rag
 - front: Which query kind does BM25 miss, and which does dense miss?
   back: BM25 misses paraphrases and dense misses exact codes, so hybrid raises recall even if it doesn't improve every metric.
   lesson: generative-ai/02-rag-retrieval/notes/03-keyword-semantic-and-hybrid-search

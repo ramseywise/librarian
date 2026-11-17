@@ -1,6 +1,6 @@
 ---
-imported_hash: 544e9baf331e04f6
-title: 06 ML platform
+imported_hash: d5f3cd627127ba9e
+title: ML platform
 summary: 'Everything else: references.md.'
 order: 6
 source: learn-ai-engineering/data-engineering/06-ml-platform

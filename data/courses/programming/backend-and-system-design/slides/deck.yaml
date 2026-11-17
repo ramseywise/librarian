@@ -1,4 +1,4 @@
-# imported_hash: 614db8d8bbe3c846
+# imported_hash: 7aa53b22323a9c6d
 # Lecture deck for programming/backend-and-system-design. Covers notes/01-10.
 # Build: make slides PILLAR=programming/backend-and-system-design [PREVIEW=1]
 # Spec: .claude/skills/slides/references/deck-spec.md
@@ -16,11 +16,61 @@ deck:
     holds under. Scale figures in the walkthroughs are hypothetical.
 
 parts:
+  - title: What this module asks of a box
+    overview: true
+    summary: The question · Four steps · What you will be able to do
+    notes: >-
+      Before any component, here is the one question the module asks of every box on a diagram, and the four steps we take to answer it.
+    slides:
+      - layout: statement
+        beat: problem
+        title: What happens to this request?
+        recall: What question does this lecture ask of every box on a diagram?
+        kicker: The idea
+        statement: What happens to this request if the box is slow, down, or running twice?
+        attribution: Every part of this lecture is an answer to it
+        takeaway: A design looks fine until you ask what each box does when it is slow, down or running twice.
+        source: README.md
+        notes: >-
+          The usual weakness of system design material is a list of components with arrows, where every design looks fine. This module attacks that by making you compute, and by asking the same question of each box.
+
+      - layout: flow
+        beat: fundamentals
+        title: Four steps from a contract to a whole design
+        recall: What are the four parts of this lecture, in order?
+        steps:
+          - {label: Contract, sub: "retries, tokens, access"}
+          - {label: Blocks, sub: "caches, queues, limits"}
+          - {label: Sums, sub: "capacity, shipping, load"}
+          - {label: Designs, sub: "five walkthroughs", accent: "D4621A"}
+        bullets:
+          - "Each part opens with **the idea**, states **the principle**, then **applies** it."
+          - "Each part ends on the mistake it usually produces."
+        takeaway: The lecture moves from what one request promises, to the parts that serve it, to the sums that size them, to whole designs.
+        source: README.md
+        notes: >-
+          Chapters 1 and 2 are the contract and who may use it. Chapters 3 and 4 are the building blocks. Chapters 5 to 7 are estimation, deployment and reliability under load. Chapters 8 to 10 are whole designs, ending on an AI system.
+
+      - layout: cards
+        beat: wrap
+        title: By the end you will be able to
+        recall: Name four things this lecture teaches you to do with a backend design.
+        cards:
+          - {title: Contract, body: "Make a write survive a retry, paginate with a cursor, verify a JWT strictly and check access per object."}
+          - {title: Blocks, body: "Predict a hit rate, stop a stampede, handle at-least-once delivery and compare rate limiters."}
+          - {title: Sums, body: "Write an estimate as a program, size a pool, drain on SIGTERM and stop a retry storm."}
+          - {title: Designs, accent: "D4621A", body: "Run a design from requirements to failure modes, fence a stale worker and build a gateway with a token budget."}
+        takeaway: You will be able to compute what a design needs and say what each box does when it is slow, down or running twice.
+        source: README.md
+        notes: >-
+          These are the abilities the reading-order table promises. Each chapter takes about an hour with its exercises.
+
   - title: The contract and who may use it
     summary: Retries · Pagination · Tokens · Object-level checks
     notes: Two chapters. What an API promises when the network fails, and who is allowed to make the call.
     slides:
       - layout: statement
+        beat: problem
         title: The fact behind a good API
         kicker: The problem
         statement: A client that times out does not know whether its request worked.
@@ -33,6 +83,7 @@ parts:
           can't tell these apart. Idempotent writes, conditional updates, stable pagination and deadlines all answer this.
 
       - layout: flow
+        beat: fundamentals
         title: What should a client do after a timeout?
         kicker: Retry decision
         steps:
@@ -52,6 +103,7 @@ parts:
           write, 428 when the precondition is missing.
 
       - layout: table
+        beat: practice
         title: Why does a cursor beat an offset on a deep page?
         kicker: Measured
         lead: "Time per page: 1M rows, covering index, in-memory SQLite, Apple M4 Pro, best of 20."
@@ -71,6 +123,7 @@ parts:
           as a tie-breaker. The cursor is an encoding, not a secret.
 
       - layout: code
+        beat: practice
         title: What makes a JWT check strict?
         kicker: PyJWT
         lang: python
@@ -101,6 +154,7 @@ parts:
           is the API.
 
       - layout: compare
+        beat: pitfalls
         title: Is a logged-in user allowed this object?
         kicker: OWASP API Top 10, ranked first
         lead: "Broken object level authorisation: the request is authenticated and the row belongs to someone else."
@@ -130,6 +184,7 @@ parts:
     notes: Each block is worth having once you design for how it fails.
     slides:
       - layout: statement
+        beat: problem
         title: The dependency a cache creates
         kicker: The problem
         statement: A cache makes the system depend on a machine it was supposed to be able to lose.
@@ -143,6 +198,7 @@ parts:
           metastable failures paper gives the case of a 300 QPS database serving 3,000 QPS through a 90% cache.
 
       - layout: cards
+        beat: fundamentals
         title: How do you stop a hot key's expiry hitting the database?
         kicker: Stampedes
         cards:
@@ -161,6 +217,7 @@ parts:
           Leases are that system's design, not a default feature of a cache server.
 
       - layout: flow
+        beat: fundamentals
         title: How do a database write and a message stay together?
         kicker: The outbox
         steps:
@@ -180,6 +237,7 @@ parts:
           with read_committed.
 
       - layout: table
+        beat: practice
         title: Which balancing policy keeps the tail down?
         kicker: Simulated p99
         lead: "50 servers, Poisson arrivals, exponential service with mean 1, a queue per server. Invented workload."
@@ -200,6 +258,7 @@ parts:
           9.1%), where the busiest node carries 1.05x.
 
       - layout: code
+        beat: pitfalls
         title: Why must a rate-limit check be one atomic step?
         kicker: Measured race
         lang: sql
@@ -230,6 +289,7 @@ parts:
     notes: Estimate the system, deploy it without dropping requests, and keep it up when load turns on you.
     slides:
       - layout: statement
+        beat: problem
         title: The curve behind capacity planning
         kicker: The problem
         statement: At 95% utilisation requests wait about ten times as long as at 80%.
@@ -244,6 +304,7 @@ parts:
           shared failures.
 
       - layout: table
+        beat: fundamentals
         title: How hot should you run a server pool?
         kicker: Wait versus load
         lead: "16 workers, 10 ms mean service, M/M/c formula. The wait is on top of the 10 ms of work."
@@ -265,6 +326,7 @@ parts:
           carrying 5% of traffic limits 256 shards of 10,000 ops/s each to 186,182 ops/s, where an even spread would allow 2,560,000.
 
       - layout: flow
+        beat: practice
         title: How does a process stop without dropping requests?
         kicker: Graceful shutdown
         steps:
@@ -285,6 +347,7 @@ parts:
           default settings may run with 30 available. Rename a column with expand, migrate, contract, since old and new code overlap.
 
       - layout: table
+        beat: fundamentals
         title: Which probe may check the database?
         kicker: Kubernetes probes
         lead: A probe is a question, and each failure has a different consequence.
@@ -304,6 +367,7 @@ parts:
           carry, because saturated CPU hides demand.
 
       - layout: code
+        beat: pitfalls
         title: How can a 10 second blip take a service down for good?
         kicker: Bronson et al., HotOS 2021
         lang: text
@@ -332,6 +396,7 @@ parts:
           more requests, for idempotent calls only.
 
       - layout: table
+        beat: pitfalls
         title: Why can a server at full throughput be in total outage?
         kicker: Goodput
         lead: "Capacity 1,000/s, clients wait 1 s, 1,500/s offered for two minutes. A model."
@@ -356,6 +421,7 @@ parts:
     notes: Every requirement and scale figure in these walkthroughs is hypothetical. None describes a real company.
     slides:
       - layout: statement
+        beat: problem
         title: Each design turns on a small fact
         kicker: The problem
         statement: Two gateways reading a counter, then both writing it, admitted 10 requests against a limit of 5, on every run.
@@ -368,6 +434,7 @@ parts:
           it is fairness between kinds of traffic, and for the scheduler it is two workers believing they own one job.
 
       - layout: steps
+        beat: fundamentals
         title: What order does a design discussion follow?
         kicker: A method to repeat
         steps:
@@ -386,6 +453,7 @@ parts:
           500/s, and hashing them into the day gives 12.9/s at the busiest minute.
 
       - layout: code
+        beat: practice
         title: What stops a paused worker overwriting its successor?
         kicker: Lease and fencing token
         lang: text
@@ -409,6 +477,7 @@ parts:
           depends on the job, and the SRE chapter's default is to prefer skipping a launch, since a double send may be impossible to undo.
 
       - layout: table
+        beat: practice
         title: When should a feed do its fan-out work?
         kicker: Hypothetical model
         lead: "1M users, invented skewed follows, 0.5 posts and 20 reads a user a day, 10,000 writes/s."
@@ -427,6 +496,7 @@ parts:
           and follows. IDs only, so an edit or delete doesn't have to touch every copy.
 
       - layout: flow
+        beat: fundamentals
         title: How does a log-structured store survive a crash?
         kicker: One node of a KV store
         steps:
@@ -449,6 +519,7 @@ parts:
           drops one silently.
 
       - layout: cards
+        beat: practice
         title: What does a model gateway do differently?
         kicker: Stub providers, no model called
         cards:
@@ -471,6 +542,7 @@ parts:
           proposes and what runs. A 200 can carry a wrong answer.
 
       - layout: code
+        beat: pitfalls
         title: Why checkpoint a long agent run?
         kicker: Mean of 20,000 simulated runs
         lang: text
@@ -498,6 +570,7 @@ parts:
     divider: false
     slides:
       - layout: cards
+        beat: wrap
         title: Rules of thumb
         cards:
           - title: Retries
@@ -515,6 +588,7 @@ parts:
             body: Name the requirement that drives the design first. For AI, limit tokens and fall back before the first token.
 
       - layout: bullets
+        beat: wrap
         title: Where next
         bullets:
           - "**Do a design from a blank page**: pick a walkthrough from chapters 8 and 9, then compare"

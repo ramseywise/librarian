@@ -3,6 +3,12 @@ generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - generative-ai/09-llms-from-scratch/slides/deck.yaml
 cards:
+- front: In what order does this lecture build from the chain rule to GPT-2?
+  back: The parts follow the README's three chapters, and each builds only on what the one before it wrote.
+  lesson: generative-ai/09-llms-from-scratch/readme
+- front: Name four checks this lecture teaches you to make when you build a model.
+  back: You will be able to find the failures that raise no error, by checking numbers you can predict before you train.
+  lesson: generative-ai/09-llms-from-scratch/readme
 - front: What does each micrograd operation store, and why is that enough?
   back: Each operation stores its inputs and one local rule, which is all that the backward pass needs.
   lesson: generative-ai/09-llms-from-scratch/notes/01-micrograd
@@ -24,11 +30,14 @@ cards:
 - front: What does more context buy, and how do you check it?
   back: Each step in context buys a lower loss and better names, which you can check by reading the samples.
   lesson: generative-ai/09-llms-from-scratch/notes/02-makemore
-- front: On this shallow network, which fixes win and when does BatchNorm help?
-  back: Init fixes win on this shallow network, and BatchNorm adds nothing until the model gets deep.
+- front: Which three quiet mistakes does the makemore note warn about?
+  back: A shape bug raises no error, a falling training loss is not progress, and only dev decides between models, with test used once.
   lesson: generative-ai/09-llms-from-scratch/notes/02-makemore
 - front: What do you plot per layer, and why isn't the loss curve enough?
   back: Plot saturation, gradient scale and update ratio per layer, since a loss curve cannot explain any failure.
+  lesson: generative-ai/09-llms-from-scratch/notes/02-makemore
+- front: On this shallow network, which fixes win and when does BatchNorm help?
+  back: Init fixes win on this shallow network, and BatchNorm adds nothing until the model gets deep.
   lesson: generative-ai/09-llms-from-scratch/notes/02-makemore
 - front: What does writing backward by hand give you, and what do you check it against?
   back: Writing backward by hand is checkable against autograd, and it makes gradient bugs legible for good.

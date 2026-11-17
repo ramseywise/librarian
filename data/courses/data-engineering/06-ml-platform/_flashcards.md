@@ -3,6 +3,12 @@ generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - data-engineering/06-ml-platform/slides/deck.yaml
 cards:
+- front: What are the parts of this lecture, in order?
+  back: Each part answers one silent failure in order, and the last part shows the whole chain on a second problem.
+  lesson: data-engineering/06-ml-platform/readme
+- front: Name four things this lecture teaches you to do.
+  back: You will be able to keep a model honest offline, traceable in the registry, safe in serving and watched in production.
+  lesson: data-engineering/06-ml-platform/readme
 - front: What does a point-in-time join do to your score, and why take it?
   back: A point-in-time join gives a worse score that is true, which is the only score you can act on.
   lesson: data-engineering/06-ml-platform/notes/01-feature-stores
@@ -21,6 +27,9 @@ cards:
 - front: Why do services load an alias, and why do predictions store the version?
   back: Services load an alias, so rollback is one registry call, and predictions store the version because it never moves.
   lesson: data-engineering/06-ml-platform/notes/02-experiment-tracking-and-model-registry
+- front: What are four ways a retrain gate misleads?
+  back: Score both models on the same current holdout, require a gain you would defend, and know how the service picks up the alias.
+  lesson: data-engineering/06-ml-platform/notes/02-experiment-tracking-and-model-registry
 - front: Why default to batch serving?
   back: Default to batch, because a failed job is a rerun and consumers keep reading the last good table.
   lesson: data-engineering/06-ml-platform/notes/03-batch-and-online-serving
@@ -35,6 +44,9 @@ cards:
   lesson: data-engineering/06-ml-platform/notes/03-batch-and-online-serving
 - front: What does each rollout stage trade, and what does that protect?
   back: Each stage risks more traffic for better evidence, so a bad model gets stopped where it harms the fewest people.
+  lesson: data-engineering/06-ml-platform/notes/03-batch-and-online-serving
+- front: What are three ways serving goes wrong without an error?
+  back: Serving fails quietly on reruns, on out-of-range answers and on retries, so replace the partition, decide the fallback early and make the consumer idempotent.
   lesson: data-engineering/06-ml-platform/notes/03-batch-and-online-serving
 - front: Why is a p-value poor for big windows and PSI poor for small ones, and what do you do?
   back: With enough rows every shift is significant, and with few rows PSI measures noise, so report magnitude and calibrate.
@@ -78,7 +90,7 @@ cards:
 - front: What does each ML platform rule do to a silent failure?
   back: Each rule makes a silent failure visible or reversible, and that is the job of the platform.
   lesson: data-engineering/06-ml-platform/notes/05-mlops-maturity-and-best-practices
-- front: Where next
+- front: What comes after the ML platform?
   back: 'Next is architecture and governance: from one model to an organisation of data products.'
   lesson: data-engineering/06-ml-platform/notes/06-ml-system-framing-to-monitoring
 ---

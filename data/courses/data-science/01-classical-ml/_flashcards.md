@@ -20,12 +20,12 @@ cards:
 - front: How do you tell which side of the complexity curve a model is on?
   back: Read train and test together, since both low is underfitting and a wide gap is overfitting.
   lesson: data-science/01-classical-ml/notes/01-statistical-foundations
-- front: Which model family do you start with to learn the data?
-  back: Start with a linear model or kNN to learn the data, and learn one knob per family.
-  lesson: data-science/01-classical-ml/notes/02-supervised-learning
 - front: Why do scikit-learn estimators chain in pipelines and plug into search?
   back: 'Choose, fit, predict, score: the same four calls for every family, so swapping a model is one line.'
   lesson: data-science/01-classical-ml/notes/01-statistical-foundations
+- front: Which model family do you start with to learn the data?
+  back: Start with a linear model or kNN to learn the data, and learn one knob per family.
+  lesson: data-science/01-classical-ml/notes/02-supervised-learning
 - front: How do gradient descent and the normal equation differ?
   back: Gradient descent walks towards the answer and needs a learning rate, while the normal equation solves for it directly.
   lesson: data-science/01-classical-ml/notes/02-supervised-learning
@@ -53,11 +53,11 @@ cards:
 - front: How must any encoding that reads the target be fitted?
   back: Any encoding that reads the target has to be fitted out of fold, whichever library you use.
   lesson: data-science/01-classical-ml/notes/07-boosting-in-practice
-- front: Does a small train-validation gap mean a good model?
-  back: 'A small gap isn''t enough: on adult census a depth-2 tree has a gap of 0.001 and sits nearly 0.1 AUC below boosting.'
-  lesson: data-science/01-classical-ml/notes/09-training-and-tuning
 - front: How do you set a regularisation knob?
   back: Set every knob with a validation curve, because a knob is only a hypothesis until the curve agrees.
+  lesson: data-science/01-classical-ml/notes/09-training-and-tuning
+- front: Does a small train-validation gap mean a good model?
+  back: 'A small gap isn''t enough: on adult census a depth-2 tree has a gap of 0.001 and sits nearly 0.1 AUC below boosting.'
   lesson: data-science/01-classical-ml/notes/09-training-and-tuning
 - front: When do you stop the training loop and ship?
   back: If a later step moves the score less than the spread, stop and ship.
@@ -80,6 +80,9 @@ cards:
 - front: How do you fit a density anomaly detector and choose its cut-off?
   back: Fit on unlabelled normal data, choose the cut on a small labelled set, and score with F1.
   lesson: data-science/01-classical-ml/notes/05-unsupervised-learning
+- front: With no labels, how do you test whether clusters are useful?
+  back: 'Test them on a later task: added to one music ranker, cluster features did not raise AUC.'
+  lesson: data-science/01-classical-ml/notes/05-unsupervised-learning
 - front: Why does k-means on one-hot columns ignore the categories?
   back: In k-means a column's say is its variance, so one-hot dummies are drowned out by z-scored numbers, and FAMD reweights them.
   lesson: data-science/01-classical-ml/notes/05b-clustering-categorical-and-mixed-data
@@ -89,15 +92,9 @@ cards:
 - front: How do you use silhouette, CH and DB on mixed-data clusters?
   back: Read the gap to a shuffled-column control and not the peak, because stability and surrogate accuracy don't validate segments either.
   lesson: data-science/01-classical-ml/notes/05b-clustering-categorical-and-mixed-data
-- front: With no labels, how do you test whether clusters are useful?
-  back: 'Test them on a later task: added to one music ranker, cluster features did not raise AUC.'
-  lesson: data-science/01-classical-ml/notes/05-unsupervised-learning
 - front: Which decline threshold do the costs of Type I and Type II errors imply?
   back: Decline when P(default) reaches the lost-customer cost over both costs, 1/6 at 5:1, if the probabilities are real.
   lesson: data-science/01-classical-ml/notes/10-imbalance-errors-and-drift
-- front: What are you really choosing when you choose a metric?
-  back: Choosing a metric chooses the quantity you forecast, and a metric you tune against also chooses a threshold.
-  lesson: data-science/01-classical-ml/notes/11-choosing-a-metric
 - front: Once the threshold is tuned, how much does the choice of resampling method change the cost?
   back: Tune the threshold and leave the data alone, since on the 3% credit file tuned costs span 142.4 to 144.5 per 1,000 applicants and the seed moves them by 5.9.
   lesson: data-science/01-classical-ml/notes/10-imbalance-errors-and-drift
@@ -107,6 +104,9 @@ cards:
 - front: Which kind of drift stays invisible to PSI?
   back: Concept shift leaves every PSI at the noise floor while AUC falls, so only fresh labels can show it.
   lesson: data-science/01-classical-ml/notes/10-imbalance-errors-and-drift
+- front: What are you really choosing when you choose a metric?
+  back: Choosing a metric chooses the quantity you forecast, and a metric you tune against also chooses a threshold.
+  lesson: data-science/01-classical-ml/notes/11-choosing-a-metric
 - front: What do you do with a finding from reading errors?
   back: Every finding from reading errors is a hypothesis until it holds on rows you did not read.
   lesson: data-science/01-classical-ml/notes/12-reading-the-errors
