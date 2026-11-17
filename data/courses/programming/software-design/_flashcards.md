@@ -85,7 +85,7 @@ cards:
   back: Sjøberg et al. found no significant effect for 12 smells after adjusting for file size and changes, in a controlled study of six developers and four Java systems. One study, but it argues for prioritising by change frequency.
   lesson: programming/software-design/notes/01-readable-code-and-smells
 - front: How long should a function be?
-  back: 'There''s no consensus. Google: think hard past about 40 lines. Martin: very short. Ousterhout: as long as the interface stays much simpler than the implementation. What matters is whether a reader can skip the body.'
+  back: 'There''s no consensus. Google: think hard past about 40 lines. Martin: hardly ever 20, by his own account without research behind it. Ousterhout: as long as the interface stays much simpler than the implementation. What matters is whether a reader can skip the body.'
   lesson: programming/software-design/notes/01-readable-code-and-smells
 - front: What is a deep module?
   back: 'Ousterhout''s term: lots of functionality behind a simple interface. A shallow one exposes nearly as much as it hides.'

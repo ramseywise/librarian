@@ -1,8 +1,8 @@
 ---
-imported_hash: 0857d6025d1d3b60
+imported_hash: 619f8b1b713db35d
 title: Model Interpretability
 summary: '"Interpretable" is not one property. Lipton''s survey separates transparency (a person can step through the model, each part means something, the training is understood) from post-hoc explanation (text, visualisations, local explanations, ex…'
-order: 11
+order: 12
 kind: reading
 section: Notes
 source: learn-ai-engineering/data-science/01-classical-ml/notes/08-model-interpretability.md
@@ -318,6 +318,7 @@ So: test your explanation on the person it is for. Answer the contrastive questi
 | SHAP vs LIME? | Both are local additive attributions. LIME fits a surrogate with heuristic weights; Kernel SHAP's weights are derived from the Shapley axioms |
 | Is SHAP causal? | No. It explains the model's behaviour and not the world's |
 | What do people want from an explanation? | Contrastive, selected, causal, social answers. User studies find explanation benefits depend on task and expertise |
+| How do you find which features a model relies on? | Permutation importance on held-out data. Built-in tree importance is computed on training data, so it credits whatever the model overfit. |
 
 ## Next
 

@@ -1,4 +1,4 @@
-# imported_hash: 1d42ca6fb0f08487
+# imported_hash: e96dcbe97af88ffe
 # Classical ML lecture deck. Covers notes 01 to 15 including 04b and 05b, in the README's reading order (01, 02, 03, 04, 04b, 06, 07, 09, 08, 05, 05b, 10 to 15), opened by an overview part.
 # Levels: LEVEL=core is the talk for any audience, practice adds how it is done, and the full deck adds code and maths.
 # Build: make slides PILLAR=data-science/01-classical-ml STRICT=1 PREVIEW=1
@@ -235,7 +235,7 @@ parts:
           - {title: Step, text: "η = 0.1: 20 steps recover (1.99, −1.00, 0.47), loss 0.0086."}
           - {title: Too far, n: "!", accent: "D4621A", text: "η = 1.1: loss **1.4 × 10⁹**. Above 2 / 2.40 = **0.83** it diverges."}
         takeaway: Check a derived gradient against a central difference, and keep the learning rate below 2 over the largest eigenvalue or the loss explodes.
-        source: notes/02-supervised-learning.md
+        source: notes/02b-linear-models.md
         notes: >-
           The same loop as the last slide, written so the shapes show. Stack the rows into X, and one matrix product gives
           every prediction; the transpose turns the residuals into one number per feature, which is why X transpose appears in

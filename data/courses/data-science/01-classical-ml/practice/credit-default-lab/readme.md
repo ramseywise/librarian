@@ -1,8 +1,8 @@
 ---
-imported_hash: e3c5622572c9e78f
+imported_hash: 42bf464de861d4a2
 title: Credit default lab
 summary: Predicts credit card default when defaulters are rare, and measures what each way of handling the imbalance costs.
-order: 21
+order: 22
 kind: reading
 section: Practice / Credit default lab
 source: learn-ai-engineering/data-science/01-classical-ml/practice/credit-default-lab/README.md

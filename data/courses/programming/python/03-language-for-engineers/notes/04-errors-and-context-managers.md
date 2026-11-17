@@ -1,5 +1,5 @@
 ---
-imported_hash: 0cb95024b31ec24f
+imported_hash: b8d552f2d0660328
 title: 4 — Errors and context managers
 summary: 'Wilson shows how a bare except: pass turns a caller''s mistake into a plausible-looking result (Machine Learning Engineering in Action, ch.'
 order: 15
@@ -52,6 +52,17 @@ class SchemaError(PipelineError):
 One base class per package lets callers write `except PipelineError` without catching everything else. Add fields for anything a caller might branch on, instead of making them parse the message.
 
 `ExceptionGroup` and `except*` (3.11+) handle several failures at once, e.g. from `asyncio.TaskGroup` ([note 07](07-concurrency.md)).
+
+### What the error should say, and what to return instead
+
+Michael Feathers's chapter in *Clean Code* is written for Java and argues from examples, with no measurements, but most of it carries over.
+
+- **Say what was being attempted.** "A stack trace can't tell you the intent of the operation that failed" (*Clean Code*, ch. 7, p. 107). The message should name the operation and the kind of failure, which is what the `ValueError` naming the path does in the first example.
+- **Define exception classes by how callers catch them.** If every handler for a vendor library does the same thing, wrap the library and raise one type of your own. He calls wrapping third-party APIs "a best practice" (pp. 108-109) and says one class is often enough. In Python that's `raise PipelineError(...) from err` at the wrapper, and the [gateway](../../../software-design/notes/04-patterns-worth-knowing.md#adapter-and-gateway-confine-a-foreign-api) is where it goes.
+- **Return a special case instead of making the caller branch.** His example returns an empty list where the code used to return null, so the loop needs no check (pp. 110-111). The Python version is returning `[]` or `{}` instead of `None` from a function whose callers iterate.
+- **His "don't return null" and "don't pass null" rules** (pp. 110-112) carry over only in part. `None` for "absent" is ordinary Python (`dict.get`, `re.match`). The part to keep is to raise when absence is an error, and to write `X | None` in the signature when it isn't, so a type checker makes the caller handle it.
+
+The chapter's case against checked exceptions needs no translation. Python has none, and Feathers cites that as evidence they aren't needed: "Neither do Python or Ruby. Yet it is possible to write robust software in all of these languages" (p. 106).
 
 ## Context managers
 

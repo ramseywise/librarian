@@ -1,8 +1,8 @@
 ---
-imported_hash: a926807bfb1af003
+imported_hash: c658adfa59ca22a7
 title: stats
 summary: An advanced statistics library with an awesome documentation.
-order: 13
+order: 14
 kind: reading
 section: Practice / Typescript exercises / 12 / Vendor / Stats
 source: learn-ai-engineering/programming/typescript/practice/typescript-exercises/12/vendor/stats/README.md

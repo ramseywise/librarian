@@ -1,8 +1,8 @@
 ---
-imported_hash: 22805a4f8114fb12
+imported_hash: 6fad0f978112b1d4
 title: Run the SVM training (with C = 1) using SVM software.
 summary: u, v = np.meshgrid( xvals, yvals ) mycontour = plt.contour( xvals, yvals, zvals, [0]) plt.title("Decision Boundary")
-order: 37
+order: 38
 kind: notebook
 section: Practice / Ng machine learning / Ex6
 source: learn-ai-engineering/data-science/01-classical-ml/practice/ng-machine-learning/ex6/ex6.ipynb

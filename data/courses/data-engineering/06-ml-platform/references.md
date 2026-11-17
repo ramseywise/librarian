@@ -1,5 +1,5 @@
 ---
-imported_hash: 41dc85126fa85975
+imported_hash: f6dd76ca7c25992b
 title: References
 summary: ★ marks a reading that changed a claim in the notes.
 order: 8
@@ -63,3 +63,4 @@ source: learn-ai-engineering/data-engineering/06-ml-platform/references.md
 | [Module 05: monitoring](https://github.com/DataTalksClub/mlops-zoomcamp/tree/e34bf8f540b75dfd712ffcc97d3c000ae1c2e3e7/05-monitoring) | GitHub, DataTalks.Club | Free | Evidently, Postgres, Grafana; treated in [the monitors chapter](../05-quality-and-observability/notes/02-monitors-and-lineage.md) and used by [04](notes/04-drift.md) | 1 |
 | [Module 06: best practices](https://github.com/DataTalksClub/mlops-zoomcamp/tree/e34bf8f540b75dfd712ffcc97d3c000ae1c2e3e7/06-best-practices) | GitHub, DataTalks.Club | Free | Tests, LocalStack, Terraform, CI/CD; [05](notes/05-mlops-maturity-and-best-practices.md) | 1 |
 | [Module 07: project](https://github.com/DataTalksClub/mlops-zoomcamp/tree/e34bf8f540b75dfd712ffcc97d3c000ae1c2e3e7/07-project) | GitHub, DataTalks.Club | Free | The capstone rubric; [05](notes/05-mlops-maturity-and-best-practices.md) | 2 |
+| [Machine Learning in Production](https://www.deeplearning.ai/courses/machine-learning-in-production) (Ng, DeepLearning.AI) | [Coursera](https://www.coursera.org/learn/introduction-to-machine-learning-in-production) | Certificate and graded work paid; a free audit was not confirmed | The surviving first course of the MLOps Specialization, which closed to new enrolment on 8 May 2024. Lifecycle and deployment, error analysis, data definition and scoping; [06](notes/06-ml-system-framing-to-monitoring.md). No feature stores, registries or serving platforms. Syllabus read on 2026-11-17, not the lectures | 3 |

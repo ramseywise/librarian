@@ -1,5 +1,5 @@
 ---
-imported_hash: 1beaec55b07662b7
+imported_hash: 62dcf967a6634313
 title: 3b — Metadata filters, hybrid search and evaluating a retriever
 summary: Keyword search and semantic search each fail where the other is strong, and neither knows which document a customer is allowed to see.
 order: 7
@@ -119,6 +119,8 @@ M3-Embedding puts the three scorers in one model. An XLM-RoBERTa-large extended 
 ## Evaluating a retriever
 
 You need a labelled set: for each query, which documents are relevant. The metric definitions and a framework comparison live in [GA 08 note 7](../../08-eval/notes/07-evaluating-rag-and-grounding.md#retrieval-metrics); this section keeps the worked numbers and code.
+
+Four rules of thumb from the classical evaluation literature bound how far to trust a retriever benchmark (*IIR*, ch. 8). Size: "As a rule of thumb, 50 information needs has usually been found to be a sufficient minimum." (p. 152). Variance: MAP for one system varies widely across queries, "for instance, between 0.1 and 0.7", so a small query set mostly measures which queries were drawn (p. 161). Labels: for agreement between judges, "a kappa value above 0.8 is taken as good agreement, a kappa value between 0.67 and 0.8 is taken as fair agreement" (p. 166). And disagreement moves absolute scores more than rankings: Voorhees found that "although the numbers change, the rankings are quite stable" (p. 174). Accuracy is not on the list, because "normally over 99.9% of the documents are in the nonrelevant category" (p. 155).
 
 | Metric | Formula | Question it answers |
 |---|---|---|

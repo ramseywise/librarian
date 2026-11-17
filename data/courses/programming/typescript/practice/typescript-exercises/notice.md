@@ -1,8 +1,8 @@
 ---
-imported_hash: 4b4623309f74f371
+imported_hash: ae34cda3421fffed
 title: typescript-exercises (vendored)
 summary: Exercises 1–15 from mdevils/typescript-exercises by Marat Dulin, MIT (see LICENSE).
-order: 11
+order: 12
 kind: reading
 section: Practice / Typescript exercises
 source: learn-ai-engineering/programming/typescript/practice/typescript-exercises/NOTICE.md

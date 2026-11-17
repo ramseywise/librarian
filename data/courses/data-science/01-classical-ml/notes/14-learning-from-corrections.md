@@ -1,8 +1,8 @@
 ---
-imported_hash: 72d2d2b6916cd5a0
+imported_hash: fec885f95acaf608
 title: 'Learning from Corrections: What People Teach a Model, and What They Can''t'
 summary: Most of it runs on the generated invoices from note 13, because a simulation is the only place where we know the truth about invoices nobody checked.
-order: 17
+order: 18
 kind: reading
 section: Notes
 source: learn-ai-engineering/data-science/01-classical-ml/notes/14-learning-from-corrections.md

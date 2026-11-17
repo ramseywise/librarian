@@ -1,8 +1,8 @@
 ---
-imported_hash: dfc5dfa89bc69bbd
+imported_hash: ede39855f6cfa990
 title: Clustering categorical and mixed data
 summary: Tallybook's marketing lead wants customer segments.
-order: 8
+order: 9
 kind: reading
 section: Notes
 source: learn-ai-engineering/data-science/01-classical-ml/notes/05b-clustering-categorical-and-mixed-data.md
@@ -172,6 +172,8 @@ variance ratios [0.562 0.201 0.198 0.02  0.019]
 
 Picking axes by the elbow, the point where the scree plot flattens, keeps one, at 56% of the variance, and that axis has no groups in it at all. Keep four and you only tie with the raw columns (0.23), where the loud block also drowns the groups. Only the two quiet columns on their own do well (0.964). Column choice beat the reduction here, and no reduction method can make that choice for you.
 
+The theory says to expect this. PCA minimises reconstruction error, and the error left after keeping $M$ axes "is simply the sum of the eigenvalues" of the discarded ones (Bishop, *Pattern Recognition and Machine Learning*, *PRML*, ch. 12, p. 565). Nothing in that objective knows about groups, and Bishop makes the point by setting PCA beside Fisher's discriminant, which uses the labels: in his two-class example PCA's maximum-variance direction gives strong class overlap and Fisher's gives much better separation (ch. 12, pp. 568–569, Fig. 12.7). Probabilistic PCA turns the reduction into a likelihood model, where the fitted noise variance is the average variance of the discarded dimensions, EM copes with missing values, and a prior can prune surplus axes: on 300 synthetic points in 10 dimensions with 3 high-variance directions, the Bayesian fit suppressed the 6 surplus axes (ch. 12, pp. 575, 577 and 584, one synthetic data set).
+
 The evidence for categorical data is more mixed than the warning suggests. Joint methods that fit the reduction and the clusters together exist: reduced k-means, factorial k-means, MCA k-means and cluster correspondence analysis, [all in R's `clustrd`](https://www.jstatsoft.org/article/view/v091i10) (Markos and colleagues, *Journal of Statistical Software*, 2019). That paper's review reports that reduced and factorial k-means, on continuous data, recover well-separated clusters masked by random variables where tandem fails, on evidence I know only through this summary. [A 2014 working paper](https://repub.eur.nl/pub/77010/EI2014-24.pdf) with uniform noise columns found tandem about level with the joint methods (ARI 0.85 against 0.82 to 0.86, for 20 variables of 5 categories plus 8 noise columns, 4 balanced groups, n = 1,000). [Its published 2017 abstract](https://repub.eur.nl/pub/93479) (*Psychometrika*) reports tandem doing worse once unrelated variables are added; I couldn't read those tables, so don't treat one as settling the other. In practice: keep more axes than the elbow says, and rerun with a joint method if the columns may include noise.
 
 ## Gower: define the distance directly
@@ -179,6 +181,8 @@ The evidence for categorical data is more mixed than the warning suggests. Joint
 [Gower's 1971 coefficient](https://doi.org/10.2307/2528823) (*Biometrics*) skips coordinates. For each pair of customers, each number scores absolute difference over the column's range, each category scores 0 for a match and 1 otherwise, and the distance is the average. A column missing for either customer just drops out of that pair's average, which is the method's most useful property and one the coordinate methods don't have. Adding weights is easy, Gower writes, but "how to decide on a rational set of weights is more difficult".
 
 There are no coordinates, so k-means is out. You need a method that takes a distance matrix: **PAM** (k-medoids), whose centres are real customers, or agglomerative clustering with average link. HDBSCAN [also accepts precomputed distances](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.HDBSCAN.html), but I found no benchmark of the pairing.
+
+ESL makes the choice of distance the main decision: "Specifying an appropriate dissimilarity measure is far more important in obtaining success with clustering than choice of clustering algorithm." Its example of data that exists only as distances is a survey in which political science students rated pairwise dissimilarity for 12 countries. It is clustered with 3 medoids, because "K-means clustering could not be applied because we have only distances rather than raw observations" (*ESL*, ch. 14, sec. 14.3.10, from Kaufman and Rousseeuw 1990). The same chapter warns against scaling by reflex: on its simulated two-group data, standardising the features before K-means "has obscured the two well-separated groups" (*ESL*, ch. 14, Fig. 14.5).
 
 Equal weights don't mean equal say:
 
@@ -247,6 +251,8 @@ Seed 0. Each world wants a different $\gamma$, and you don't know which world yo
 Every method so far minimises a distance. **Latent class analysis (LCA)** instead assumes a recipe: each customer belongs to a hidden class, each class has its own mean for each number and its own level shares for each category, and within a class the columns are independent. That last assumption is called **local independence**.
 
 The fit is expectation-maximisation (EM), the same loop as the [Gaussian mixture in note 05](05-unsupervised-learning.md#clustering), and easy to say in words. Start with guessed recipes. **E step:** for each customer, compute the probability of each class given their row. **M step:** re-estimate each recipe using those probabilities as weights. Repeat until it settles, from several random starts because it can stop at a poor optimum.
+
+*PRML* makes the kinship with k-means exact. Give every Gaussian component the same spherical covariance $\epsilon I$ and let $\epsilon \to 0$: the soft responsibilities harden into assignments and EM becomes k-means (ch. 9, pp. 443–444). Two habits follow from that chapter. Start a mixture from a k-means run, because EM takes many more iterations and each costs more (p. 438). And expect maximum likelihood to break when a Gaussian component collapses onto one point and its density goes to infinity, which a prior over the parameters removes (p. 441) and which resetting a collapsing component's mean and covariance avoids (p. 434). K-medoids, the PAM used above, is the same alternation with any dissimilarity in place of squared distance, at $O(N_k^2)$ evaluations per cluster for the medoid step (p. 428).
 
 Because it's a likelihood model, you can compare numbers of classes with the Bayesian information criterion (BIC), including one class, which means no groups:
 
@@ -357,6 +363,8 @@ The shuffled-column control from [note 05](05-unsupervised-learning.md#choosing-
 | Gower, PAM | 0.802 | 0.304 |
 
 Gower with PAM is *stable* at 0.802 while recovering the truth at 0.263 on that same table (seed 0; the five-seed mean is 0.289). Stability says you'd get the same answer again, which isn't the same as the right answer.
+
+**When a sample does have labels.** External measures score a clustering against known classes, and they disagree with each other. On IIR's 17-point, three-cluster example purity is 0.71, normalised mutual information 0.36, the Rand index 0.68 and pairwise F1 0.48 (*IIR*, ch. 16, Table 16.2 and p. 360). Purity can't choose $k$, because "purity is 1 if each document gets its own cluster"; NMI normalises for the number of clusters and can. On cost, hierarchical clustering sets the ceiling. The naive algorithm is $\Theta(N^3)$, a priority queue brings it to $\Theta(N^2 \log N)$ and single-link to $\Theta(N^2)$, which IIR calls "infeasible for large sets of 1,000,000 or more documents". Its suggestion is to run the hierarchical algorithm on a sample of $\sqrt{N}$ documents and use the result to seed k-means (*IIR*, ch. 17, pp. 385–387, 398).
 
 ## Explaining segments: useful, but not proof
 

@@ -1,8 +1,8 @@
 ---
-imported_hash: 9751153279274af5
+imported_hash: 2c3ae6d94d268224
 title: str-utils
 summary: Professional string decoration functions.
-order: 12
+order: 13
 kind: reading
 section: Practice / Typescript exercises / 11 / Vendor / Str utils
 source: learn-ai-engineering/programming/typescript/practice/typescript-exercises/11/vendor/str-utils/README.md

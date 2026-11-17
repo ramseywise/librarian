@@ -1,8 +1,8 @@
 ---
-imported_hash: e5dadeab03fc38d9
+imported_hash: b31c5908b2ef497d
 title: Visualize the data
 summary: 'norm = 1./(np.power((2np.pi), n/2)np.sqrt(np.linalg.det(mysig2))) myinv = np.linalg.inv(mysig2) myexp = np.zeros((m,1)) for irow in xrange(m): xrow = myX[irow] myexp[irow] = np.exp(-0.5((xrow-mymu).T).dot(myinv).dot(xrow-mymu)) return normm…'
-order: 40
+order: 41
 kind: notebook
 section: Practice / Ng machine learning / Ex8
 source: learn-ai-engineering/data-science/01-classical-ml/practice/ng-machine-learning/ex8/ex8.ipynb

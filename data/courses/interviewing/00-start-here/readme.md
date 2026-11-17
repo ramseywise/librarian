@@ -1,5 +1,5 @@
 ---
-imported_hash: 0914826c8c9391f8
+imported_hash: 9ce3636c00ce3cc9
 title: Interviewing
 summary: Interview prep for AI, ML, data science, analytics, data engineering and forward-deployed roles.
 order: 1
@@ -53,7 +53,7 @@ scientist predicts on unseen data, and the engineer makes both possible.
 | After the shared start | [Experimentation](../../data-analytics/03-experimentation-and-causality/readme.md), [storytelling](../../data-analytics/05-visualisation-and-storytelling/readme.md), [applied analyses](../../data-analytics/06-applied-analyses/readme.md) | [Classical ML](../../data-science/01-classical-ml/readme.md), [structuring ML projects](../../data-science/02-deep-learning/notes/03-structuring-ml-projects.md), [Bayesian analysis](../../data-analytics/04-bayesian-analysis/readme.md) | [Data engineering](../../data-engineering/00-start-here/readme.md), from [data systems and data models](../../data-engineering/01-storage-and-compute-foundations/notes/01-data-systems-and-data-models.md) onward |
 
 The shared start is [Python](../../programming/python/readme.md) with
-[Python for data analysis](../../data-analytics/01-python-for-data-analysis/readme.md), then
+[Processing data](../../data-analytics/01-python-for-data-analysis/readme.md), then
 [SQL for analytics](../../data-analytics/06-applied-analyses/notes/06-sql-for-analytics.md), then
 [probability and statistics](../../data-analytics/02-probability-and-statistics/readme.md).
 

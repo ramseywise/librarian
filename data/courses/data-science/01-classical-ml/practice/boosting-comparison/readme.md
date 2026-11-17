@@ -1,8 +1,8 @@
 ---
-imported_hash: 442a0d9d92b7c362
+imported_hash: ca7db54ac61abfb2
 title: Boosting comparison
 summary: Trains four gradient-boosting libraries and two baselines on the adult census data, with the same split, learning rate (0.05) and early-stopping patience (50 rounds) where the library supports it.
-order: 20
+order: 21
 kind: reading
 section: Practice / Boosting comparison
 source: learn-ai-engineering/data-science/01-classical-ml/practice/boosting-comparison/README.md

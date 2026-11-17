@@ -1,8 +1,8 @@
 ---
-imported_hash: 72ce1a5d97fe06de
+imported_hash: 188106554ddcbf21
 title: This creates a three-dimensional matrix A whose first two indices
 summary: '""" Fucntion to plot the data and color it accordingly.'
-order: 39
+order: 40
 kind: notebook
 section: Practice / Ng machine learning / Ex7
 source: learn-ai-engineering/data-science/01-classical-ml/practice/ng-machine-learning/ex7/ex7.ipynb

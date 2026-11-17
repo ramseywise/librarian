@@ -1,5 +1,5 @@
 ---
-imported_hash: 02190aebc4303340
+imported_hash: d42ac9c20f591724
 title: Collaborative filtering and matrix factorisation
 summary: A recommender has to rank a large catalogue for each person from a table that is almost entirely empty, using only the traces other people left behind.
 order: 3
@@ -106,7 +106,7 @@ $$\hat r_{ui} = \mu + b_u + b_i + p_u^\top q_i$$
  Fit only on the observed cells, with L2 on everything, or the factors memorise them.
 ```
 
-Fit on observed cells only, by stochastic [gradient descent](../../01-classical-ml/notes/02-supervised-learning.md#vectors-matrix-products-and-the-gradient). The loop below is the whole algorithm, deliberately in plain NumPy.
+Fit on observed cells only, by stochastic [gradient descent](../../01-classical-ml/notes/02b-linear-models.md#vectors-matrix-products-and-the-gradient). The loop below is the whole algorithm, deliberately in plain NumPy.
 
 ```python
 def rmse(a, b): return float(np.sqrt(np.mean((np.asarray(a) - np.asarray(b)) ** 2)))
@@ -439,6 +439,9 @@ Light users gain more: NDCG goes from 0.061 with popularity to 0.131 with EASE. 
 | Item-based or user-based kNN? | Usually item-based: item relationships change slowly enough to precompute, so it scales, and Sarwar et al. (2001) also measured better quality on MovieLens. |
 | What did Dacrema et al. find? | Of 18 algorithms, 7 reproducible; 6 of those often lost to simple heuristics, and the remaining one did not consistently beat a tuned linear method. |
 | How should you split interaction data? | By time. A global cut is closest to production. A per-user chronological split is a compromise when users have short active periods. |
+| What is a recommender system? | It ranks a large catalogue for each person from a table that is almost entirely empty, using the traces other people left behind. |
+| What are good baselines for a recommender? | Popularity and random first, then item kNN and EASE, tuned with the same care as your favourite model. |
+| What is collaborative filtering? | Recommending from other people's behaviour in the user-item table: people who liked this also liked that. Item kNN, matrix factorisation and EASE are examples. |
 
 ## Next
 
