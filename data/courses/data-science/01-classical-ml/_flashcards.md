@@ -32,6 +32,9 @@ cards:
 - front: How do you check a hand-derived gradient before you trust it?
   back: Check a derived gradient against a central difference, and keep the learning rate below 2 over the largest eigenvalue or the loss explodes.
   lesson: data-science/01-classical-ml/notes/02b-linear-models
+- front: What do ridge and lasso do when features nearly outnumber rows?
+  back: Both penalise the weights and rescue test R² (OLS -9.32, ridge 0.37, lasso 0.36). Ridge keeps all 285 weights small, and lasso keeps 7.
+  lesson: data-science/01-classical-ml/notes/02b-linear-models
 - front: What do you check before you trust a first score?
   back: Check the base rate, keep the test set back, and scale for distance models before you trust a first score.
   lesson: data-science/01-classical-ml/notes/01-statistical-foundations

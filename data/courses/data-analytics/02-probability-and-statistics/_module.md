@@ -1,7 +1,7 @@
 ---
-imported_hash: 333b82acd0ad5c18
+imported_hash: d2af9fb67ee67862
 title: Probability and statistics
-summary: 'The statistics an analyst uses in practice: looking at data before summarising it, the rules of probability, the distributions behind common metrics, estimates with intervals, hypothesis tests, and regression as an estimate with a standard…'
+summary: Say how far a claim about data you have not seen can be trusted.
 order: 2
 group: core
 objectives:

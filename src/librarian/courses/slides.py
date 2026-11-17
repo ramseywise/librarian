@@ -111,7 +111,7 @@ def resolve(deck_id: str) -> tuple[str, Path] | None:
     return None
 
 
-def module_decks(module_id: str) -> list[dict[str, str]]:
+def module_decks(module_id: str) -> list[dict[str, Any]]:
     """The decks of one module: its own deck first, then its lectures. [] when it has none."""
     split = _split(module_id)
     if split is None or split[2] is not None:
@@ -120,16 +120,22 @@ def module_decks(module_id: str) -> list[dict[str, str]]:
     return decks_in(_slides_dir(course, module), course, module)
 
 
-def decks_in(slides_dir: Path, course: str, module: str) -> list[dict[str, str]]:
+def decks_in(slides_dir: Path, course: str, module: str) -> list[dict[str, Any]]:
     """`module_decks` for a given `slides/` folder, so the catalog can list them for the tree it is building."""
-    out = []
+    out: list[dict[str, Any]] = []
     if (slides_dir / "deck.yaml").is_file():
         out.append({"id": f"{course}/{module}", **_deck_names(slides_dir / "deck.yaml")})
     lectures = slides_dir / "lectures"
     for spec in sorted(lectures.glob("*.yaml")) if lectures.is_dir() else []:
         names = _deck_names(spec)
         out.append(
-            {"id": f"{course}/{module}/{spec.stem}", **names, "title": names["title"] or spec.stem}
+            {
+                "id": f"{course}/{module}/{spec.stem}",
+                **names,
+                "title": names["title"] or spec.stem,
+                # the lecture that introduces a series, so the page can name it as the overview
+                **({"overview": True} if _is_overview(spec) else {}),
+            }
         )
     return out
 
@@ -141,6 +147,11 @@ def _load_spec(spec: Path) -> dict[str, Any]:
         log.warning("slides.spec_unreadable", spec=spec.name, error=str(e))
         return {}
     return data if isinstance(data, dict) else {}
+
+
+def _is_overview(spec: Path) -> bool:
+    block = _load_spec(spec).get("lecture")
+    return isinstance(block, dict) and bool(block.get("overview"))
 
 
 def _deck_title(spec: Path) -> str:

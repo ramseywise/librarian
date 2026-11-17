@@ -9,6 +9,9 @@ cards:
 - front: Name three things this lecture teaches you to do with a codebase.
   back: You will be able to change code in small safe steps, show that it still works, and leave the reasons where the team can find them.
   lesson: programming/software-design/readme
+- front: What tests can you apply to a name?
+  back: A good name needs no comment, claims no type it lacks, differs from its neighbours in meaning, and can be searched for.
+  lesson: programming/software-design/notes/01-readable-code-and-smells
 - front: What do you do when you spot a code smell?
   back: A smell is a reason to look, never a verdict. Refactor a file because you keep having to change it, not because it smells.
   lesson: programming/software-design/notes/01-readable-code-and-smells

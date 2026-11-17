@@ -21,6 +21,9 @@ cards:
 - front: What wastes draws in step size, and what do you read to judge a chain?
   back: A step that is too small (0.002, ESS 11) or too large (3.0, ESS 278) wastes draws, while 0.1 gave ESS 3594. Read effective sample size, never the raw draw count or acceptance rate.
   lesson: data-analytics/04-bayesian-analysis/notes/02-mcmc-and-pymc
+- front: What does rejection sampling cost in 1,000 dimensions, and what do random-walk Metropolis and Gibbs pay?
+  back: For a 1,000-dimensional Gaussian and a proposal with sd 1% larger, rejection sampling accepts about 1 proposal in 20,000. Random-walk Metropolis draws are about (sigma max / sigma min) squared steps apart, and Gibbs on a correlated Gaussian pays a similar squared cost.
+  lesson: data-analytics/04-bayesian-analysis/notes/02-mcmc-and-pymc
 - front: What does the non-centred form change, and what does it remove?
   back: 'It changes only the parameterisation, sampling raw and setting theta = mu + tau * raw, so the model is unchanged. It removes the funnel between theta and tau: divergences fell from 88 to 2 and tau ESS rose from 64 to 2143.'
   lesson: data-analytics/04-bayesian-analysis/notes/02-mcmc-and-pymc
@@ -68,6 +71,9 @@ cards:
   lesson: data-analytics/04-bayesian-analysis/notes/06-bayesian-machine-learning
 - front: What is the ELBO's gap to the log evidence, and what does raising it do?
   back: The gap is the KL divergence from the true posterior, so raising the ELBO improves the approximation. With q at the prior the gap is 1.1544; with q at the exact posterior it is 0.0005, which is sampling noise.
+  lesson: data-analytics/04-bayesian-analysis/notes/06-bayesian-machine-learning
+- front: How many components of a 6-component variational mixture survive under different priors on the mixing weights?
+  back: 'A variational mixture switches off components it does not need, and how many survive depends on the prior on the mixing weights: 2 with alpha 0 of 0.001, 3 with 1, and all 6 with 10. So the count is not read off the data alone.'
   lesson: data-analytics/04-bayesian-analysis/notes/06-bayesian-machine-learning
 - front: What does mean-field variational inference misstate, and how do you check it?
   back: Correlated uncertainty. ADVI gave a correlation of a and b of -0.01 against -0.96 for NUTS, getting both spreads wrong. Check it against NUTS on a small version of the model.

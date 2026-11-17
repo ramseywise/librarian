@@ -1,5 +1,5 @@
 ---
-imported_hash: b7843546161214aa
+imported_hash: d5abbe8b04a0ecd8
 title: 4 — Reshaping and Joins
 summary: The shop's orders say that dev bought a kettle.
 order: 5
@@ -183,7 +183,7 @@ except pd.errors.MergeError as e:
 MergeError: Merge keys are not unique in right dataset; not a many-to-one m
 ```
 
-Make it a habit: state `validate`, compare the row count before and after, and compare one total. Then the join is checked. The same idea scales to any SQL you write in pillar 06.
+Make it a habit: state `validate`, compare the row count before and after, and compare one total. Then the join is checked. The same idea scales to any SQL you write.
 
 With the checks in place, a two-step join gives a frame that can answer a question none of the three tables could answer alone, namely gross margin by product category.
 
@@ -323,7 +323,7 @@ kettle    4   5   3
 ['product', 'w1', 'w2', 'w3']
 ```
 
-`pivot` needs each combination of row and column to occur once. If it occurs twice, pandas cannot know which value to place in the cell, so it raises an error. Chapter 5's `pivot_table` handles that case by aggregating.
+`pivot` needs each combination of row and column to occur once. If it occurs twice, pandas cannot know which value to place in the cell, so it raises an error. Chapter 7's `pivot_table` handles that case by aggregating.
 
 ```python
 dupes = pd.DataFrame({"product": ["kettle", "kettle"], "week": ["w1", "w1"], "units": [4, 1]})
@@ -470,4 +470,4 @@ fay            0        0       0      1
 
 ## Next
 
-The answer you want is usually one number per group: revenue per region, margin per category. You have already called `groupby` several times on trust. Next: [Groupby and aggregation](05-groupby-and-aggregation.md).
+That is the first step, extract: you can load a table, pick out the rows and columns you mean, and bring several tables together. Every example since chapter 3 has used orders that were already clean. The export from chapter 2 is not, and the second step is to make it so. Next: [Cleaning](05-cleaning.md).

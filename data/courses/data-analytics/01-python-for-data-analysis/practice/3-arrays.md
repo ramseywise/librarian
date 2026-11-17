@@ -1,8 +1,8 @@
 ---
-imported_hash: 9b9b15558f7b9a27
+imported_hash: 7f989fa221ae827e
 title: 3 | Arrays and Vectorization (NumPy)
 summary: 'Some basic topics we cover here include: - Array indexing, slicing - Boolean array - Array operations'
-order: 12
+order: 13
 kind: notebook
 section: Practice
 source: learn-ai-engineering/data-analytics/01-python-for-data-analysis/practice/3_Arrays.ipynb

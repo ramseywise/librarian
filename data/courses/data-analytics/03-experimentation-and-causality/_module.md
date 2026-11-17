@@ -1,7 +1,7 @@
 ---
-imported_hash: 694c06f6eb0fa24c
+imported_hash: 6e7f005392b01a4c
 title: Experimentation and causality
-summary: How to design and read an A/B test, choose the metric it decides on, run many tests safely on a platform, and reason about cause and effect from observational data when randomisation is not available.
+summary: Answer whether a change caused a result, with an experiment when you can run one and with a design you can defend when you cannot.
 order: 4
 group: advanced
 objectives:

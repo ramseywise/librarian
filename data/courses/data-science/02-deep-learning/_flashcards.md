@@ -12,6 +12,9 @@ cards:
 - front: Which call does the chain-rule bookkeeping of backprop for you?
   back: Backprop is the chain rule with bookkeeping, and `backward()` does the bookkeeping.
   lesson: data-science/02-deep-learning/notes/01-neural-networks-fundamentals
+- front: Why did ReLU replace sigmoid in hidden layers, and what does it cost?
+  back: Its slope is 1 for positive inputs, so depth doesn't shrink the gradient, and it is cheap. The cost is dead units, which Leaky ReLU avoids.
+  lesson: data-science/02-deep-learning/notes/01-neural-networks-fundamentals
 - front: Why must every line of the PyTorch loop stay, when the code still runs without it?
   back: The loop never changes, and each line exists because leaving it out fails quietly.
   lesson: data-science/02-deep-learning/notes/01-neural-networks-fundamentals
@@ -66,6 +69,9 @@ cards:
 - front: Why does a frozen backbone still change during training, and what fixes it?
   back: Predict through the same transform you tested with, and keep a frozen backbone in eval mode.
   lesson: data-science/02-deep-learning/notes/04b-vision-in-practice
+- front: Why did vector-valued hidden states take over from the hidden Markov model?
+  back: 'A single symbol is a poor memory: 10 bits of context cost 1,024 states, where 10 binary units do.'
+  lesson: data-science/02-deep-learning/notes/05-sequence-models
 - front: What sets how much gradient reaches the first step of an LSTM?
   back: Ten orders of magnitude separate these lines at the first step, set entirely by initialisation.
   lesson: data-science/02-deep-learning/notes/05-sequence-models
@@ -79,7 +85,7 @@ cards:
   back: On the same data and budget, the only change takes whole-date accuracy from 3% to 100%.
   lesson: data-science/02-deep-learning/notes/05-sequence-models
 - front: Where did the autoencoder beat PCA on reconstruction, and what should you compute first?
-  back: Compute PCA first, since at a code of 32 it is ahead with far less variation between runs and no training.
+  back: At small codes (2, 4 and 8), where it beat PCA. At 16 and 32 PCA is ahead, so compute PCA first.
   lesson: data-science/02-deep-learning/notes/05-sequence-models
 - front: What replaces the bottleneck in a denoising autoencoder, and what does it cost on clean images?
   back: The plain network copies the holes and the denoising one repairs them, paying with a worse rebuild of clean images, 0.545 against 0.077.

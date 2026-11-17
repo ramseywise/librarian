@@ -1251,6 +1251,10 @@ def section_slide(prs, part, idx, number):
         size = 17
         while size > 11 and list_h(size) > avail:
             size -= 1
+        # a part with more slides than fit even at the smallest size lists the first ones and counts the rest
+        full = len(titles)
+        while len(titles) > 2 and list_h(size) > avail:
+            titles = [*titles[: len(titles) - 2], f"and {full - len(titles) + 2} more"]
         total = list_h(size)
         y0 = (SLIDE_H - total) / 2
         line(s, x - 0.35, y0, x - 0.35, y0 + total, "3B5A80", 1.5)
@@ -1356,15 +1360,17 @@ def build(spec_path: Path, level: str | None = None, out: Path | None = None) ->
     # The story rules judge the deck as written, so a filtered build reports what the full one does.
     check_story(all_parts, base, lecture)
     if out is None:
-        out = base / deck.get("output", f"{spec_path.stem if lecture else base.parent.name}.pptx")
+        name = deck.get("output", f"{spec_path.stem if lecture else base.parent.name}.pptx")
+        target = base / str(name)
     else:
-        out.parent.mkdir(parents=True, exist_ok=True)
+        target = out
+        target.parent.mkdir(parents=True, exist_ok=True)
     if level:
         # deck_stamp.py only looks at the unsuffixed name, so this file is never read as the deck.
-        out = out.with_name(f"{out.stem}-{level}{out.suffix}")
+        target = target.with_name(f"{target.stem}-{level}{target.suffix}")
     prs.core_properties.keywords = deck_stamp.stamp_value(spec_path)
-    prs.save(out)
-    return out
+    prs.save(str(target))
+    return target
 
 
 # A question that asks for a list: its answer needs more than a sentence.
@@ -1411,9 +1417,11 @@ def framed(parts: list[dict], lecture: deck_graph.Lecture, deck: dict) -> list[d
         lectures = [*lectures, lecture]
 
     def names(notes: list[str]) -> list[str]:
-        return [deck_graph.slide_label(n, lectures, root, lecture.pillar) for n in notes]
+        # two notes one lecture covers share its label, so name it once
+        labels = [deck_graph.slide_label(n, lectures, root, lecture.pillar) for n in notes]
+        return list(dict.fromkeys(labels))
 
-    place, total = deck_graph.position(lecture, root)
+    place, total = deck_graph.position(lecture, root, lectures)
     series = f"Lecture {place} of {total}"
     opening = {
         "layout": "cards",
@@ -1428,7 +1436,9 @@ def framed(parts: list[dict], lecture: deck_graph.Lecture, deck: dict) -> list[d
             {
                 "title": "This lecture",
                 "accent": "D4621A",
-                "body": deck.get("subtitle", lecture.title),
+                "body": f"{lecture.title}: {deck['subtitle']}"
+                if deck.get("subtitle")
+                else lecture.title,
             },
             {"title": "After this", "bullets": names(lecture.next) or ["The end of this series"]},
         ],
@@ -1486,23 +1496,34 @@ def check_lecture(parts: list[dict], lecture: deck_graph.Lecture, root: Path) ->
         missing = [b for b in PART_BEATS if b not in {sl.get("beat") for sl in slides}]
         if missing:
             warn("lecture", f"no slide with beat: {', '.join(missing)}")
-    owed = [s for n in notes for s in deck_graph.teaching_sections(n)]
-    named = [sl["section"] for sl in slides if "section" in sl]
-    for section in dict.fromkeys(named):
-        if notes and section not in owed:
-            warn("lecture", f"section '{section}' is not a heading in the note")
+    # A lecture over several notes meets the same heading more than once (every note has Pitfalls), so a
+    # section is a heading in a note, and the slide's `source:` says which note.
+    several = len(notes) > 1
+    owed = [(n.name, s) for n in notes for s in deck_graph.teaching_sections(n)]
+    headings = {s for _, s in owed}
+
+    def shown(key: tuple[str, str]) -> str:
+        return f"'{key[1]}' ({key[0]})" if several else f"'{key[1]}'"
+
+    def key_of(sl: dict) -> tuple[str, str]:
+        return (cited_note(sl) if several else notes[0].name if notes else "", sl["section"])
+
+    named = [key_of(sl) for sl in slides if "section" in sl]
+    for key in dict.fromkeys(named):
+        if notes and key not in owed:
+            warn("lecture", f"section {shown(key)} is not a heading in the note")
     for section in lecture.omits:
-        if section not in owed:
+        if section not in headings:
             warn("lecture", f"omits '{section}', which is not a heading in the note")
-    for section in owed:
-        if section not in named and section not in lecture.omits:
-            warn("lecture", f"note section '{section}' has no slide and no line in omits")
-    order = [owed.index(s) for s in named if s in owed]
+    for key in owed:
+        if key not in named and key[1] not in lecture.omits:
+            warn("lecture", f"note section {shown(key)} has no slide and no line in omits")
+    order = [owed.index(key) for key in named if key in owed]
     for here, after in itertools.pairwise(order):
         if after < here:
             warn(
                 "lecture",
-                f"section '{owed[after]}' comes after '{owed[here]}', against the note's order",
+                f"section {shown(owed[after])} comes after {shown(owed[here])}, against the note's order",
             )
             break
 

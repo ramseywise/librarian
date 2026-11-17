@@ -18,6 +18,15 @@ cards:
 - front: How do dual-axis charts and truncated bars each mislead, and what is the fix?
   back: Dual axes get crossing points from two arbitrary scales, and truncated bars make a bar's length exaggerate the gap (about 13% looks like about 460%). Use two panels or an index, and start bars at zero.
   lesson: data-analytics/05-visualisation-and-storytelling/notes/01-grammar-and-chart-choice
+- front: Why should you try several bin counts on a histogram?
+  back: Too few bins hide structure and too many show only noise, so try several. A mean above the median (507 against 477 here) is the same fact as a long right tail.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/01b-plotting-your-own-data
+- front: How do you put two pandas plots side by side, and which order should each axis use?
+  back: Create fig, axes with plt.subplots, then pass ax=axes[0] and ax=axes[1] to each pandas plot call. Keep months in calendar order, sort the categories, and use the mean per day so month length does not distort the bars.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/01b-plotting-your-own-data
+- front: Name the plotting mistakes that mislead even when the numbers are right.
+  back: Unsorted dates on a line, a line across categories, side-by-side panels without sharey=True, and opaque dots that hide density (use alpha or hexbin).
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/01b-plotting-your-own-data
 - front: What is wrong with a default matplotlib chart even though the data is right?
   back: Its box, ticks and legend compete with the data and the key event is not marked, so every decision about emphasis is left to the reader.
   lesson: data-analytics/05-visualisation-and-storytelling/notes/02-matplotlib-and-seaborn
@@ -142,8 +151,32 @@ cards:
   back: Exploratory charts are many and help you find out; explanatory charts are few and tell someone else one thing.
   lesson: data-analytics/05-visualisation-and-storytelling/notes/01-grammar-and-chart-choice
 - front: What is the difference between a Figure and an Axes?
-  back: A Figure is the canvas and owns saving. An Axes is one plot with its own coordinates, and a Figure can hold many.
-  lesson: data-analytics/05-visualisation-and-storytelling/notes/02-matplotlib-and-seaborn
+  back: The Figure is the canvas you save, and an Axes is one plot on it with its own coordinates. A Figure holds one or more Axes.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/01b-plotting-your-own-data
+- front: Why prefer `fig, ax = plt.subplots()` to `plt.plot`?
+  back: The explicit interface says which Axes you mean, while `plt.` draws on an implicit "current" one, which gets confusing with several plots.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/01b-plotting-your-own-data
+- front: Axes-level or figure-level seaborn?
+  back: Axes-level (`boxplot`) draws on an Axes you pass. Figure-level (`catplot`) makes its own Figure so it can facet with `col=` and `row=`, and returns a `FacetGrid`.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/01b-plotting-your-own-data
+- front: Why does seaborn want tidy data?
+  back: You map columns to roles such as x, hue and col, so each variable needs its own column and each observation its own row.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/01b-plotting-your-own-data
+- front: Which chart for a change over time, a comparison, a distribution, or a relationship?
+  back: Line, sorted bars, histogram or box, and scatter.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/01b-plotting-your-own-data
+- front: Why must bars start at zero when lines need not?
+  back: A bar encodes the value by its length, so cutting the axis misstates ratios. A line encodes change by position.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/01b-plotting-your-own-data
+- front: What is wrong with a dual-axis chart?
+  back: The two scales are arbitrary, so any apparent relationship between the lines depends on how they were chosen. Use two panels or index both to a common base.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/01b-plotting-your-own-data
+- front: What does a box plot show?
+  back: The median, the middle 50% of the data, whiskers, and outliers. It compares spread as well as centre across groups.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/01b-plotting-your-own-data
+- front: How do you handle overplotting?
+  back: Lower the opacity, shrink the marks, use `hexbin` or a 2D histogram, or sample.
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/01b-plotting-your-own-data
 - front: Why prefer `ax.plot` over `plt.plot`?
   back: It names its target, so it stays correct with several panels and inside functions, rather than relying on a hidden current axes.
   lesson: data-analytics/05-visualisation-and-storytelling/notes/02-matplotlib-and-seaborn

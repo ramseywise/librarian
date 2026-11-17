@@ -1,5 +1,5 @@
 ---
-imported_hash: 2eeb023be7adc3d7
+imported_hash: a06f256593c78af3
 title: 07 — Agentic Applications
 summary: 'Models get swapped out every few months, and the application decisions stay: how much autonomy to grant, what limits to enforce, what counts as done and who checks it.'
 order: 1
@@ -57,8 +57,8 @@ Note 06 is the synthesis, so read it after the agents, or first if you are desig
 |---|---|
 | [DE 07/03 Catalog, semantic layer and contracts](../../data-engineering/07-architecture-and-governance/notes/03-catalog-semantic-layer-and-contracts.md) | Optional background: the production version of the agent's required metric definitions |
 | [DA 01 practice data](../../data-analytics/01-python-for-data-analysis/practice/) | Required for the note 05 lab only: it reads `tips.csv` and `titanic/train.csv` from there |
-| [DA 01/02 Loading and cleaning](../../data-analytics/01-python-for-data-analysis/notes/02-loading-and-cleaning.md) | Optional background: the checks a data-analysis agent should run |
-| [DA 01/05 Group-by and aggregation](../../data-analytics/01-python-for-data-analysis/notes/05-groupby-and-aggregation.md) | Optional background: rates and group sizes |
+| [DA 01/05 Cleaning](../../data-analytics/01-python-for-data-analysis/notes/05-cleaning.md) | Optional background: the checks a data-analysis agent should run |
+| [DA 01/07 Group-by and aggregation](../../data-analytics/01-python-for-data-analysis/notes/07-groupby-and-aggregation.md) | Optional background: rates and group sizes |
 | [DA 02/04 Estimation](../../data-analytics/02-probability-and-statistics/notes/04-estimation.md) | Optional background: whether a lead is within noise |
 | [DA 03/04 Correlation and causation](../../data-analytics/03-experimentation-and-causality/notes/04-correlation-and-causation.md) | Optional background: A correlation written up as a cause |
 | [Data analytics](../../data-analytics/00-start-here/readme.md#rules-of-thumb) | Optional background: A data-analysis agent does the analyst's job, and the rules of thumb are the checks it should run |

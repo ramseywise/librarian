@@ -1,5 +1,5 @@
 ---
-imported_hash: dc439a62d55659d8
+imported_hash: 1e59cc7c73b348c1
 title: 5b — Query parsing, conversational retrieval and reranking
 summary: A Tallybook customer asks "how long will it take?" two turns into a chat.
 order: 10
@@ -47,7 +47,7 @@ HyDE changes what is being matched: normally prompt-to-document, with HyDE docum
 
 GLiNER example: *"I read The Great Gatsby by F. Scott Fitzgerald last summer while visiting New York…"* → BOOK, PERSON, DATE, LOCATION. The DATE and LOCATION can become metadata filters.
 
-Spelling correction is the oldest query-parsing step, and its classical design has two stages. A k-gram index shortlists terms that share enough character k-grams with the query term, scored by the Jaccard coefficient: *bord* against *boardroom* share 2 bigrams, which gives 2/(8 + 3 − 2). Edit distance, computed by dynamic programming in O(|s1| × |s2|), then ranks the shortlist. Correcting each term alone misses errors that are real words, as in "flew form Heathrow", which needs the other query terms as context (*IIR*, ch. 3, pp. 58–61).
+Spelling correction is the oldest query-parsing step, and its classical design has two stages. A k-gram index shortlists terms that share enough character k-grams with the query term, scored by the Jaccard coefficient: *bord* against *boardroom* share 2 bigrams, which gives 2/(8 + 3 − 2). Edit distance, computed by dynamic programming in O(|s1| × |s2|), then ranks the shortlist. Correcting each term alone misses errors that are real words, as in "flew form Heathrow", which needs the other query terms as context (*IIR*, ch. 3, pp. 58–62).
 
 The HyDE paper itself averages the embeddings of several sampled answers, optionally with the query's own ([arXiv:2212.10496](https://arxiv.org/abs/2212.10496), Gao et al., ACL 2023). Averaging also means one odd generation doesn't steer the search. Raieli and Iuculano's example uses five (*Building AI Agents*, ch. 6).
 

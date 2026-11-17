@@ -21,6 +21,9 @@ cards:
 - front: What is the difference between count(*) and count(col)?
   back: '`count(*)` counts rows and `count(col)` skips `NULL`. In a grouped query, every column is a key or an aggregate.'
   lesson: programming/sql/notes/03-aggregation
+- front: How do you compute a rate per group per month?
+  back: Group by the group and the month and take `avg` of a 0/1 `CASE` flag. Write 1.0, and aggregate before joining tables.
+  lesson: programming/sql/notes/03-aggregation
 - front: When do you filter with WHERE, and when with HAVING?
   back: '`WHERE` filters rows before grouping and `HAVING` filters groups after. Push all you can into `WHERE`.'
   lesson: programming/sql/notes/03-aggregation
@@ -60,6 +63,9 @@ cards:
 - front: What makes a predicate sargable?
   back: Wrapping an indexed column in a function usually hides it from the index, so compare the bare column.
   lesson: programming/sql/notes/08-indexes-and-query-plans
+- front: Why can a join on a subquery be slow?
+  back: A correlated subquery may run once per outer row, a stored derived table has no index, and an aggregate runs before the outer filter. Filter inside, index the base tables, or pre-aggregate and join once.
+  lesson: programming/sql/notes/08-indexes-and-query-plans
 - front: How do values get from Python into SQL safely?
   back: The driver sends SQL and values separately. Parameters work only for values, so check table names against an allow-list.
   lesson: programming/sql/notes/09-sql-from-python
@@ -71,9 +77,6 @@ cards:
   lesson: programming/sql/notes/10-capstone-murder-mystery
 - front: '`WHERE` or `HAVING`?'
   back: '`WHERE` filters rows before grouping and cannot see aggregates. `HAVING` filters groups after it.'
-  lesson: programming/sql/notes/03-aggregation
-- front: How do you compute a rate per group per month?
-  back: Group by the group and the month, and take `avg` of a 0/1 `CASE` flag. Write 1.0 to avoid integer division, and aggregate before joining tables.
   lesson: programming/sql/notes/03-aggregation
 - front: What are the join types, and how do they differ?
   back: Inner keeps matched pairs only. Left keeps every left row, with `NULL` where nothing matches, and right is its mirror. Full outer keeps unmatched rows from both sides.
@@ -87,7 +90,4 @@ cards:
 - front: Primary key or foreign key?
   back: 'A primary key identifies a row in its own table: unique, not `NULL`, one per table. A foreign key is a column whose value must exist in the parent table.'
   lesson: programming/sql/notes/07-modeling-and-ddl
-- front: Why can a join on a subquery be slow?
-  back: A correlated subquery may run once per outer row, a stored derived table has no index, and an aggregate runs before the outer filter. Filter inside, index the base tables, or pre-aggregate and join once.
-  lesson: programming/sql/notes/08-indexes-and-query-plans
 ---

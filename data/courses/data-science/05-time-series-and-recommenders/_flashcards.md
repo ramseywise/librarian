@@ -66,6 +66,9 @@ cards:
 - front: What did the logQ correction do to the two-tower model, and what did the plain model do?
   back: The logQ correction lifted our tower from below popularity to close to EASE, while the uncorrected model scattered over the catalogue.
   lesson: data-science/05-time-series-and-recommenders/notes/03-two-tower-and-evaluation
+- front: In what four ways are clicks biased as ranking labels, and what corrects them?
+  back: Position, selection, snippet and feedback bias. Weight clicks by inverse propensity, draw negatives from shown-and-skipped items, and keep some randomised traffic.
+  lesson: data-science/05-time-series-and-recommenders/notes/03-two-tower-and-evaluation
 - front: What can ranking against sampled negatives do to the order of two models?
   back: Sampled metrics are inconsistent with exact ones and can reverse model order, so rank the whole catalogue whenever you can.
   lesson: data-science/05-time-series-and-recommenders/notes/03-two-tower-and-evaluation

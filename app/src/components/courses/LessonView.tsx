@@ -4,7 +4,7 @@ import { useGlossary } from "../../hooks/useGlossary";
 import { ReportButton } from "../feedback/ReportButton";
 import { DrillTimer } from "./DrillTimer";
 import { Markdown } from "./Markdown";
-import { openingRepeatsSummary, splitLesson } from "./lessonParts";
+import { openingRepeatsSummary, splitLesson, stripDuplicateH1 } from "./lessonParts";
 import { CLOBBER_PREFIX, splitSolution } from "./markdownUtils";
 import { StudyLevels } from "./StudyLevels";
 
@@ -30,14 +30,6 @@ const TABS = [
   { id: "labs", label: "Labs" },
 ] as const;
 type Tab = (typeof TABS)[number]["id"];
-
-/** Drop a leading `# Title` when it just repeats the lesson title shown in the header. */
-export function stripDuplicateH1(body: string, title: string): string {
-  const m = body.match(/^\s*#\s+(.+?)\s*\n/);
-  if (!m) return body;
-  const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "");
-  return norm(m[1]) === norm(title) ? body.slice(m[0].length) : body;
-}
 
 
 export function DrillBadges({ drill }: { drill: NonNullable<Lesson["drill"]> }) {

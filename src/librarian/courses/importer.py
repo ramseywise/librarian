@@ -885,8 +885,8 @@ def _mirror_path(
     """Where a non-lesson file of the sources repo sits in the mirror, or None if outside
     every subject. Below the subject root the layout is the same in both, apart from the
     lesson folders the import renamed."""
-    for folder in (target, *target.parents) if renamed else ():
-        if folder in renamed:
+    for folder in (target, *target.parents):
+        if renamed and folder in renamed:
             return renamed[folder] / target.relative_to(folder)
     best: tuple[int, Path] | None = None
     for subject in SUBJECTS:

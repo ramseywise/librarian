@@ -122,11 +122,11 @@ def check(wiki_dir: Path, src_dir: Path, app_src: Path) -> tuple[dict[str, int],
         ]
     out += [
         Finding("NOTE", d, "in no atlas area (wiki/areas.py): drawn as its own sector")
-        for d in unmapped(domains)
+        for d in unmapped(set(domains))
     ]
     out += [
         Finding("NOTE", d, "ghost area directory in wiki/areas.py (no data/wiki/ directory)")
-        for d in ghost_area_domains(domains)
+        for d in ghost_area_domains(set(domains))
     ]
     if app_src.is_dir():
         for path in sorted([*app_src.rglob("*.ts"), *app_src.rglob("*.tsx")]):

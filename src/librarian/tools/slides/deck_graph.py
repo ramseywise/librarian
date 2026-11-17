@@ -122,29 +122,47 @@ SYLLABUS_HEADINGS = ("## Syllabus", "## Reading order")
 def syllabus_order(pillar: str, root: Path = ROOT) -> list[str]:
     """The pillar's notes in reading order: as the README's syllabus links them, then any it doesn't.
 
-    The syllabus is the README's "## Syllabus" section, or its "## Reading order" where it has none.
+    The syllabus is the README's "## Syllabus" section, or its "## Reading order" where it has none. Where
+    the section holds a table, only the table's links count.
     """
     readme = readme_of(root / pillar)
     text = readme.read_text(encoding="utf-8") if readme else ""
     start = next((at for h in SYLLABUS_HEADINGS if (at := text.find(f"\n{h}\n")) >= 0), -1) + 1
     end = text.find("\n## ", start + 1)
+    section = text[start : end if end > 0 else None]
+    # a syllabus table sets the order by its rows, so a note the prose around it mentions does not
+    rows = [line for line in section.splitlines() if line.startswith("|")]
     linked = [
         f"{pillar}/{m}"
-        for m in LINK.findall(text[start : end if end > 0 else None])
+        for m in LINK.findall("\n".join(rows) if rows else section)
         if m.startswith("notes/")
     ]
     every = [p.relative_to(root).as_posix() for p in sorted((root / pillar / "notes").glob("*.md"))]
     return [p for p in dict.fromkeys(linked) if p in every] + [p for p in every if p not in linked]
 
 
-def position(lecture: Lecture, root: Path = ROOT) -> tuple[int, int]:
-    """(this lecture's place, the lectures the series will have): one per note, plus the overview."""
+def position(
+    lecture: Lecture, root: Path = ROOT, lectures: list[Lecture] | None = None
+) -> tuple[int, int]:
+    """(this lecture's place, the lectures the series will have): the overview, then one per unit.
+
+    A unit is a lecture and the notes it covers, or a note no lecture covers yet, so a lecture over a whole
+    submodule counts once.
+    """
     order = syllabus_order(lecture.pillar, root)
-    total = len(order) + 1
+    series = [*(load_lectures(root) if lectures is None else lectures), lecture]
+    owner = {
+        note: lec.spec.resolve()
+        for lec in series
+        if lec.pillar == lecture.pillar and not lec.overview
+        for note in lec.covers
+    }
+    units = list(dict.fromkeys(owner.get(note, note) for note in order))
+    total = len(units) + 1
     if lecture.overview:
         return 1, total
-    indices = [order.index(c) for c in lecture.covers if c in order]
-    return (min(indices) + 2 if indices else total), total
+    here = lecture.spec.resolve()
+    return (units.index(here) + 2 if here in units else total), total
 
 
 def label(note: str, lectures: list[Lecture], root: Path = ROOT, here: str = "") -> str:

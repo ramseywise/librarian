@@ -24,11 +24,17 @@ cards:
 - front: Which distribution fits conversions, errors per hour, waiting time, order value and an unknown rate?
   back: 'Conversions: binomial. Errors per hour: Poisson. Gap between events (waiting time): exponential. Order value: lognormal. A rate you are unsure of: beta.'
   lesson: data-analytics/02-probability-and-statistics/notes/03-distributions-and-sampling
+- front: What does a distribution's ppf do to uniform draws, and what does its cdf do to its own draws?
+  back: Applying a distribution's inverse CDF (ppf) to uniform draws gives draws from it, which is inverse transform sampling. A continuous variable pushed through its own CDF comes out uniform.
+  lesson: data-analytics/02-probability-and-statistics/notes/03-distributions-and-sampling
 - front: How often does a nominal 95% Normal interval cover Larkspur's revenue mean at n = 30, 300, 3,000 and 30,000?
   back: Coverage is 0.563 at n = 30, 0.832 at 300, 0.928 at 3,000 and 0.948 at 30,000. Skewed, zero-inflated spend needs tens of thousands of users before the interval's 95% means 95%.
   lesson: data-analytics/02-probability-and-statistics/notes/03-distributions-and-sampling
 - front: What does Wald give for 0 of 50, and how do Wald and Wilson coverage compare at p = 0.02 and n = 50?
   back: Wald gives [0, 0], claiming certainty from 50 users, while Wilson gives [0, 0.0714]. At p = 0.02 and n = 50, Wald covers the truth only 63.3% of the time and Wilson 92.0%.
+  lesson: data-analytics/02-probability-and-statistics/notes/04-estimation
+- front: How does the method of moments compare with maximum likelihood for a lognormal σ?
+  back: Set the model's mean and variance equal to the sample's and solve. It is quick and needs no optimiser, but over 2,000 samples of 180 its σ varied about twice as much as the MLE's (1.044 ± 0.123 against 1.096 ± 0.056) and sat a little low.
   lesson: data-analytics/02-probability-and-statistics/notes/04-estimation
 - front: How does the bootstrap get a standard error, and which unit do you resample for a ratio metric?
   back: 'Resample the sample with replacement, recompute the statistic thousands of times, and read the spread as the standard error. Resample the independent unit (users, not sessions): bootstrapping sessions gave 0.027 where the true SE was 0.049.'
@@ -102,6 +108,9 @@ cards:
 - front: How do you spot outliers in a column of numbers?
   back: Compare the mean with the median, and the standard deviation with the IQR. When they disagree by a lot, the tail is running the summary, so look at the tail.
   lesson: data-analytics/02-probability-and-statistics/notes/01-descriptive-statistics-and-eda
+- front: Box plot or histogram?
+  back: A histogram to learn one column's shape, including two peaks and gaps. Box plots to compare many groups side by side, since each is five numbers plus outliers. A box plot hides shape between the quartiles.
+  lesson: data-analytics/02-probability-and-statistics/notes/01-descriptive-statistics-and-eda
 - front: P(A | B) vs P(B | A)?
   back: They share a numerator, P(A and B), and differ in denominator, with Bayes' rule converting between them through the base rates.
   lesson: data-analytics/02-probability-and-statistics/notes/02-probability-foundations
@@ -128,6 +137,9 @@ cards:
   lesson: data-analytics/02-probability-and-statistics/notes/02-probability-foundations
 - front: What is an expected value?
   back: The long-run mean of a random variable, E[X]. A webinar attendee who buys a 300-dollar service with probability 5% and a 50-dollar one with 15% is worth 0.05 × 300 + 0.15 × 50 = 22.50 dollars a month.
+  lesson: data-analytics/02-probability-and-statistics/notes/02-probability-foundations
+- front: How do you get a fair coin from a biased one?
+  back: Flip twice. Heads-tails and tails-heads are equally likely whatever the bias, so call one heads and the other tails, and flip again on a matching pair. A fair bit costs 1/(p(1 − p)) flips on average.
   lesson: data-analytics/02-probability-and-statistics/notes/02-probability-foundations
 - front: Which distribution for clicks out of impressions, and errors per hour?
   back: Binomial for a count out of n trials. Poisson for a count in a window with no fixed ceiling.
@@ -156,6 +168,9 @@ cards:
 - front: Are prices and incomes Normal?
   back: Usually not. Positive, multiplicative quantities such as order value and income are lognormal, so the log is roughly Normal and the tail is heavy.
   lesson: data-analytics/02-probability-and-statistics/notes/03-distributions-and-sampling
+- front: How do you turn uniform draws into another distribution, and back?
+  back: Apply the target's inverse CDF (`ppf`) to uniform draws. In reverse, a continuous variable pushed through its own CDF is uniform, which is why p-values are uniform under the null.
+  lesson: data-analytics/02-probability-and-statistics/notes/03-distributions-and-sampling
 - front: What does a 95% confidence interval mean?
   back: If you repeated the sampling and the calculation, 95% of the intervals built would contain the true value. It is a statement about the procedure, not about this interval's chance of being right.
   lesson: data-analytics/02-probability-and-statistics/notes/04-estimation
@@ -179,6 +194,9 @@ cards:
   lesson: data-analytics/02-probability-and-statistics/notes/04-estimation
 - front: Is an unbiased estimator always the one you want?
   back: No. Dividing by n is biased, yet in the chapter's example it has a smaller mean squared error than n − 1. Accepting a little bias for less variance is what regularisation and shrinkage do.
+  lesson: data-analytics/02-probability-and-statistics/notes/04-estimation
+- front: What is the method of moments, and how does it compare with maximum likelihood?
+  back: 'Set the model''s moments equal to the sample''s and solve for the parameters. It is quick and needs no optimiser, but is usually noisier: for the lognormal σ here its spread was about twice the MLE''s.'
   lesson: data-analytics/02-probability-and-statistics/notes/04-estimation
 - front: Define a p-value.
   back: The probability, assuming the null is true, of a statistic at least as extreme as the one observed. It is not the probability the null is true.

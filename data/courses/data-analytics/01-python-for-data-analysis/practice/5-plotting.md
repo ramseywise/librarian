@@ -1,8 +1,8 @@
 ---
-imported_hash: 0d6e221ea5ed73a8
+imported_hash: ee83deb64ebb7783
 title: 5    | Basic Plotting and Visualization
 summary: plot(randn(30).cumsum(), color='k', linestyle='dashed', marker='o')
-order: 14
+order: 15
 kind: notebook
 section: Practice
 source: learn-ai-engineering/data-analytics/01-python-for-data-analysis/practice/5_Plotting.ipynb

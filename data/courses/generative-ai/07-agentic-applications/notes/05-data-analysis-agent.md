@@ -1,5 +1,5 @@
 ---
-imported_hash: aba0370d01820d4f
+imported_hash: 0a3b6109e33a874b
 title: '5 — A Data-Analysis Agent: Answers That Survive Recomputation'
 summary: Ask a data agent which day customers tip the most, and it may run a correct query, answer "Sunday, $3.26 per bill", and be wrong about what you meant.
 order: 6
@@ -57,7 +57,7 @@ Blocks in this note read them by relative path, so run them from the repository 
 
 ## Profile before you query
 
-An agent that queries blind guesses at column names and values, then learns from the errors, and it may never learn about missing data at all. A profile is cheap, compact and answers both. It is the same idea as the OpenAgents profiling tool, and it is what [loading and cleaning](../../../data-analytics/01-python-for-data-analysis/notes/02-loading-and-cleaning.md) teaches a human analyst to do first.
+An agent that queries blind guesses at column names and values, then learns from the errors, and it may never learn about missing data at all. A profile is cheap, compact and answers both. It is the same idea as the OpenAgents profiling tool, and it is what [cleaning](../../../data-analytics/01-python-for-data-analysis/notes/05-cleaning.md) teaches a human analyst to do first.
 
 ```python
 import pandas as pd
@@ -191,7 +191,7 @@ The agent can run any SELECT to explore. Claims it submits must name an agreed m
       - 'tip_dollars' is not an agreed metric. Use one of ['age', 'survived', 'tip_share'].
 ```
 
-The difference between the two share columns is itself worth teaching. Mean of shares treats each bill as equal, while share of totals weights by the size of the bill. Group-level averages like these are covered in [groupby and aggregation](../../../data-analytics/01-python-for-data-analysis/notes/05-groupby-and-aggregation.md).
+The difference between the two share columns is itself worth teaching. Mean of shares treats each bill as equal, while share of totals weights by the size of the bill. Group-level averages like these are covered in [groupby and aggregation](../../../data-analytics/01-python-for-data-analysis/notes/07-groupby-and-aggregation.md).
 
 ## The validator recomputes
 

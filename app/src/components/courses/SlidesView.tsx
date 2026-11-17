@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { SlideFrame, beatClass } from "./SlideFrame";
+import { SlideFrame } from "./SlideFrame";
+import { beatClass } from "./slideBeats";
 import type { SlideDeck, SlideFrameData } from "./types";
 import { pageTitle, useDocumentTitle } from "./useDocumentTitle";
 import { canSpeak, sentences, useNarration } from "./useNarration";

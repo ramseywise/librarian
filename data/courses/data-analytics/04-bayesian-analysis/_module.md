@@ -1,7 +1,7 @@
 ---
-imported_hash: ce11f9098be03d2e
+imported_hash: e19700c7e6ecf9d9
 title: Bayesian analysis
-summary: 'Bayesian analysis writes down how the data could have been generated, puts a prior on the unknowns, and computes the posterior: what is plausible once the data is in.'
+summary: Treat unknowns as distributions, update them with data, and choose the action with the lowest expected cost.
 order: 6
 group: advanced
 objectives:

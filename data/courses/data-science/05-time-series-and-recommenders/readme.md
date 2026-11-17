@@ -1,5 +1,5 @@
 ---
-imported_hash: 6a60db0d577b3133
+imported_hash: b7e5dbd752e104ee
 title: 05 — Time series and recommenders
 summary: Time series ML turns a history into a forecast using feature tables, gradient boosting and sequence models, tested with backtests.
 order: 1
@@ -41,7 +41,7 @@ Comes after [classical ML](../01-classical-ml/readme.md) and [deep learning](../
 
 | Chapter | Why |
 |---|---|
-| [DA 01/06 Time series](../../data-analytics/01-python-for-data-analysis/notes/06-time-series.md) | Resampling and shifting |
+| [DA 01/08 Time series](../../data-analytics/01-python-for-data-analysis/notes/08-time-series.md) | Resampling and shifting |
 | [DA 03/01 A/B testing](../../data-analytics/03-experimentation-and-causality/notes/01-ab-testing.md) | Online evaluation and its arithmetic |
 | [DA 03/03 Experimentation at scale](../../data-analytics/03-experimentation-and-causality/notes/03-experimentation-at-scale.md) | Peeking and sequential methods |
 | [DA 06/01 Forecasting](../../data-analytics/06-applied-analyses/notes/01-forecasting.md) | Baselines, and a forecast taken through to a decision |

@@ -32,7 +32,7 @@ export interface SourceRef {
 }
 
 /** A lecture deck as the catalog lists it; `subtitle` tells apart decks that share a title. */
-export interface Deck { id: string; title: string; subtitle?: string }
+export interface Deck { id: string; title: string; subtitle?: string; /** The lecture that introduces a lecture series. */ overview?: boolean }
 
 export interface CourseModule {
   id: string;

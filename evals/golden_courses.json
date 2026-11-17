@@ -1075,7 +1075,7 @@
     "query": "I have a year of daily revenue in a pandas DataFrame and want to see the trend and weekly pattern. How do matplotlib figures and axes work, and when do I use pandas or seaborn shortcuts?",
     "expected_answer": "The plotting chapter: matplotlib figures and axes, line charts over time, pandas plot shortcuts, histograms, seaborn from a table, choosing which chart answers which question, and saving figures.",
     "source_pages": [
-      "data/courses/data-analytics/01-python-for-data-analysis/notes/07-plotting.md"
+      "data/courses/data-analytics/05-visualisation-and-storytelling/notes/01b-plotting-your-own-data.md"
     ],
     "difficulty": "easy"
   },

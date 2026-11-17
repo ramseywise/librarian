@@ -36,6 +36,9 @@ cards:
 - front: How do you know a greedy rule is correct?
   back: An exchange argument, or at the least agreement with brute force on many small random cases. Only earliest finish was optimal in all 300 random booking cases.
   lesson: programming/computer-science/notes/03-algorithm-patterns
+- front: How do you sample k items from a stream of unknown length?
+  back: Keep the first k, then let item i replace a random slot with probability k/(i + 1). Every item is kept with probability k/n, in one pass and O(k) memory.
+  lesson: programming/computer-science/notes/03-algorithm-patterns
 - front: How can two different vectors have distance exactly zero?
   back: Subtracting nearly equal numbers cancels the good digits, so rearrange the formula. To threshold near-duplicates at very small distances on unit vectors, compute the Euclidean form.
   lesson: programming/computer-science/notes/04-numbers-and-memory
@@ -176,9 +179,6 @@ cards:
   lesson: programming/computer-science/notes/03-algorithm-patterns
 - front: How do you get a percentile from a large list?
   back: Quickselect gives expected linear time; a sort is simple and, in Python, often close enough.
-  lesson: programming/computer-science/notes/03-algorithm-patterns
-- front: How do you sample k items from a stream of unknown length?
-  back: Reservoir sampling. Keep the first k, then let item i (0-based) replace a random slot with probability k/(i + 1). Every item ends up kept with probability k/n, in one pass and O(k) memory.
   lesson: programming/computer-science/notes/03-algorithm-patterns
 - front: How do you compute a square root without a library?
   back: 'Binary search on the answer: the largest x with x·x ≤ n, in log n steps. Or Newton''s method: replace the guess x with (x + a/x)/2, which doubles the correct digits each step once close.'

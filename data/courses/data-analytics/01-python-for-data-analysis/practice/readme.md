@@ -1,8 +1,8 @@
 ---
-imported_hash: d684355b0645e9b6
+imported_hash: 290bb6bb5806d4d4
 title: 'Practice: Python for data analysis'
 summary: The labs for processing data. Its syllabus says which notebook goes with which step.
-order: 9
+order: 10
 kind: reading
 section: Practice
 source: learn-ai-engineering/data-analytics/01-python-for-data-analysis/practice/README.md

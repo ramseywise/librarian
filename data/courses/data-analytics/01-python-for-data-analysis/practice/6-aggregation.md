@@ -1,8 +1,8 @@
 ---
-imported_hash: 2d149b0812de3129
+imported_hash: 4c490e02e7270a74
 title: 6    | Data Aggregation and Group Operations
 summary: ''
-order: 15
+order: 16
 kind: notebook
 section: Practice
 source: learn-ai-engineering/data-analytics/01-python-for-data-analysis/practice/6_Aggregation.ipynb

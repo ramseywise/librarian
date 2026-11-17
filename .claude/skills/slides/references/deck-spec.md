@@ -254,14 +254,20 @@ naming the lecture the day one is written. `make deck-graph-check`, also run by 
 path that does not exist, a note two lectures claim, and a cycle in `requires`. `make deck-graph` regenerates `_decks.md`,
 the curriculum-wide map.
 
+**One lecture per submodule.** When the README's syllabus groups the notes into steps, a lecture can cover a whole
+step: list every note of the step in `covers`, in reading order, and name the file after the step (`01-extract.yaml`),
+numbered by the step's place in the series. The series then counts one lecture per step. The worked example is
+`data-analytics/01-python-for-data-analysis/slides/lectures/`.
+
 **Generated slides.** "Where this lecture sits" follows the title slide, and "Where this leads" closes the lecture. Both
 come from the `lecture:` block, so don't write them in the YAML. The story rules don't judge them.
 
 **`section`.** Each slide names the exact `##` heading it teaches. The builder warns when a heading has no slide and no
 line in `omits`, when a section or an omit isn't in the note, and when sections run against the note's order. Practice,
-Try it, Interview checklist, Next, References and Further reading aren't owed slides.
+Try it, Interview checklist, Next, References and Further reading aren't owed slides. In a lecture that covers several
+notes, a heading is looked up in the note the slide's `source` names, so two notes can each have a `Pitfalls` section.
 
-**Size.** A lecture owes one content slide per 150 words of its note, at least 20 and at most 60. An overview owes at
+**Size.** A lecture owes one content slide per 150 words of the notes it covers, at least 20 and at most 60. An overview owes at
 least 15. `deep` slides count here, because a lecture is the whole note.
 
 **Story.** The spine is checked once per lecture, not per part: open on a `statement` or `image`, include an `image` or

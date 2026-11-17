@@ -1,8 +1,8 @@
 ---
-imported_hash: 77e0cf1090635a74
+imported_hash: 60e98247c79751c4
 title: Matplotlib and seaborn
 summary: Almost every static chart in the Python world is drawn by matplotlib, even when the code says seaborn or pandas.
-order: 3
+order: 4
 kind: reading
 section: Notes
 source: learn-ai-engineering/data-analytics/05-visualisation-and-storytelling/notes/02-matplotlib-and-seaborn.md

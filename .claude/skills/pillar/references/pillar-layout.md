@@ -34,6 +34,8 @@ as they are next touched. In order:
    do, each linking the note that teaches it; group by track and mark a group "helps, not required" where that
    is true. It is a self-check that points back, and it re-teaches nothing. Both show above the lecture.
 2. `## Lecture`: the overview deck, and what it walks through. The app shows its own lecture card and drops this section.
+   A module taught as a lecture series (`slides/lectures/`, see "Lecture series" in the slides skill's `deck-spec.md`)
+   names the overview lecture here and then one lecture per submodule, in syllabus order.
 3. `## The core`: the one question the module keeps asking and how many steps answer it, in two short paragraphs.
    The steps themselves are the syllabus rows and the overview deck's parts, so they are not listed twice.
 4. `## Syllabus`: one row per submodule (a step, covering one or more notes), with the columns

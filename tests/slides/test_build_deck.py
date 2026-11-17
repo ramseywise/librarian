@@ -594,6 +594,19 @@ class LectureSectionTest(LectureBase):
             "'Alpha' comes after 'Beta'", self.warnings(self.full("Beta", "Alpha"), self.lecture())
         )
 
+    def test_a_heading_two_notes_share_is_found_by_the_slides_source(self):
+        self.note("02-b", "# 02 — Second note\n\n## Alpha\n")
+        step = self.lecture("01-step", covers=[self.path("01-a"), self.path("02-b")])
+        first = [slide("s1", section="Alpha", source="notes/01-a.md")]
+        found = self.warnings([*first, slide("s2", section="Beta", source="notes/01-a.md")], step)
+        self.assertIn("note section 'Alpha' (02-b.md) has no slide", found)
+        self.assertNotIn("(01-a.md)", found)
+        bd.WARNINGS.clear()
+        both = [*first, slide("s2", section="Alpha", source="notes/02-b.md")]
+        self.assertNotIn(
+            "'Alpha'", self.warnings(both, self.lecture("01-step", covers=step.covers))
+        )
+
 
 class LectureSpineTest(LectureBase):
     def test_the_spine_is_checked_across_the_lecture_not_each_part(self):
@@ -714,6 +727,22 @@ class DeckGraphTest(LectureBase):
             bd.deck_graph.syllabus_order(self.PILLAR, self.root),
             [self.path("02-b"), self.path("01-a")],
         )
+
+    def test_prose_above_a_syllabus_table_does_not_set_the_order(self):
+        (self.pillar / "README.md").write_text(
+            "# Topic\n\n## Syllabus\n\nSee [one](notes/01-a.md#case) first.\n\n"
+            "| Step | Study |\n|---|---|\n| **1.** | [two](notes/02-b.md) |\n| **2.** | [one](notes/01-a.md) |\n",
+            encoding="utf-8",
+        )
+        self.assertEqual(
+            bd.deck_graph.syllabus_order(self.PILLAR, self.root),
+            [self.path("02-b"), self.path("01-a")],
+        )
+
+    def test_a_lecture_over_several_notes_counts_once_in_the_series(self):
+        step = self.lecture("01-step", covers=[self.path("02-b"), self.path("01-a")])
+        self.assertEqual(bd.deck_graph.position(step, self.root, []), (2, 2))
+        self.assertEqual(bd.deck_graph.position(self.lecture(), self.root, []), (3, 3))
 
 
 if __name__ == "__main__":

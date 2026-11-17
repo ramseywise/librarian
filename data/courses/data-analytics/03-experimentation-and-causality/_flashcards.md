@@ -39,6 +39,9 @@ cards:
 - front: How do you let people look early without inflating false positives?
   back: Use group-sequential boundaries such as O'Brien-Fleming (5.2% false positives over 5 looks) or always-valid p-values such as mSPRT (4.1%), in place of a fixed 1.96 at every look (24.5% over 20 looks).
   lesson: data-analytics/03-experimentation-and-causality/notes/03-experimentation-at-scale
+- front: How do you measure what latency costs engagement when nobody has a faster version to test?
+  back: Run a slowdown experiment. Add artificial server delay in several small arms (for example +100 ms and +250 ms against control), randomise by user, confirm the delay landed, keep guardrails, and fit engagement per 100 ms. The slope holds near today's speed, and valuing a speed-up assumes it continues.
+  lesson: data-analytics/03-experimentation-and-causality/notes/03-experimentation-at-scale
 - front: What do interference and the winner's curse do to measured lifts?
   back: Both inflate them. With interference the A/B lift was +30.1% against a real +19.0%; with the winner's curse the platform measured a total of 18.6 for shipped wins against a true 9.2.
   lesson: data-analytics/03-experimentation-and-causality/notes/03-experimentation-at-scale
@@ -179,6 +182,9 @@ cards:
   lesson: data-analytics/03-experimentation-and-causality/notes/03-experimentation-at-scale
 - front: How do you pick a winner among many variants?
   back: With a pure-exploration design, not a regret-tuned bandit, which plays losers so rarely that it can name the wrong arm. Sequential halving gives every arm equal samples, drops the bottom half and repeats.
+  lesson: data-analytics/03-experimentation-and-causality/notes/03-experimentation-at-scale
+- front: How do you measure the effect of latency on engagement?
+  back: 'Run a slowdown experiment: add artificial delay in several small arms, randomised by user, and fit engagement against delay. Confirm the delay landed, keep guardrails, and read the effect by week.'
   lesson: data-analytics/03-experimentation-and-causality/notes/03-experimentation-at-scale
 - front: What is a confounder?
   back: A variable that causes both treatment and outcome, creating an association between them.

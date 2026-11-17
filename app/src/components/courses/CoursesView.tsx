@@ -5,7 +5,8 @@ import { courseColor } from "../../theme/domains";
 import { useCourseProgress } from "../../hooks/useCourseProgress";
 import { useCourses, useLabs, useStudyProgress } from "../../hooks/useCourses";
 import { Check } from "./Check";
-import { LessonView, stripDuplicateH1, type TocEntry } from "./LessonView";
+import { LessonView, type TocEntry } from "./LessonView";
+import { stripDuplicateH1 } from "./lessonParts";
 import { Markdown } from "./Markdown";
 import { StudyLevels } from "./StudyLevels";
 import { pageTitle, useDocumentTitle } from "./useDocumentTitle";
@@ -149,7 +150,7 @@ const GROUP_TITLES: Record<string, string> = { core: "Core modules", advanced: "
 
 /** The course's modules as the groups its README sorts them into, in order. A course with no groups is one
  * unlabelled group. */
-export function moduleGroups(modules: CourseModule[]): { key: string; title: string; modules: CourseModule[] }[] {
+function moduleGroups(modules: CourseModule[]): { key: string; title: string; modules: CourseModule[] }[] {
   const groups: { key: string; title: string; modules: CourseModule[] }[] = [];
   for (const m of modules) {
     const key = m.group ?? "";
@@ -309,7 +310,7 @@ function submoduleOf(body: string, noteId: string): string | null {
 }
 
 /** A lecture as a card: its first slide as a preview, and one button that opens it. */
-function DeckCard({ deck, course, whole }: { deck: Deck; course: string; whole: boolean }) {
+function DeckCard({ deck, course, kind }: { deck: Deck; course: string; kind: string }) {
   const [slides, setSlides] = useState<SlideDeck | null>(null);
   useEffect(() => {
     let cancelled = false;
@@ -327,7 +328,7 @@ function DeckCard({ deck, course, whole }: { deck: Deck; course: string; whole: 
         {first && <SlideFrame frame={first} total={count} courseColor={courseColor(course)} />}
       </a>
       <div className="deck-card-text">
-        <span className="deck-card-kind">{whole ? "Overview lecture" : "Lecture"}{count ? ` · ${count} slides` : ""}</span>
+        <span className="deck-card-kind">{kind}{count ? ` · ${count} slides` : ""}</span>
         <span className="deck-card-title">{deck.title}</span>
         {deck.subtitle && <span className="deck-card-sub">{deck.subtitle}</span>}
         <a href={`#/slides/${deck.id}`} className="btn-primary deck-card-open" aria-label={deck.title}>Open the lecture</a>
@@ -370,6 +371,11 @@ function ModulePage({ course, module: m, done, onOpen, onOpenConcept }: {
   const graph = `#${mapPath({ level: "all", tags: [moduleFacet(course.id, m.id)] })}`;
   // A non-object (an unsigned or failed request) means no progress, not a broken page.
   const progress = studyProgress && !Array.isArray(studyProgress) ? studyProgress[id] : undefined;
+  // A lecture series names its own overview, so the module's single deck follows it as the short version.
+  const series = (m.decks ?? []).some((d) => d.overview);
+  const decks = series ? [...(m.decks ?? [])].sort((a, b) => Number(a.id === id) - Number(b.id === id)) : m.decks ?? [];
+  const deckKind = (d: Deck) => d.overview || (d.id === id && !series) ? "Overview lecture"
+    : d.id === id ? "Whole module in one deck" : "Lecture";
   return (
     <div className="course-scroll course-page">
       <div className="course-page-inner course-page-inner--overview">
@@ -381,7 +387,7 @@ function ModulePage({ course, module: m, done, onOpen, onOpenConcept }: {
         <h2 className="section-label course-module-label">Lecture</h2>
         {m.decks?.length ? (
           <div className="deck-cards">
-            {m.decks.map((d) => <DeckCard key={d.id} deck={d} course={course.id} whole={d.id === id} />)}
+            {decks.map((d) => <DeckCard key={d.id} deck={d} course={course.id} kind={deckKind(d)} />)}
           </div>
         ) : <p className="course-none">No lecture deck yet.</p>}
 

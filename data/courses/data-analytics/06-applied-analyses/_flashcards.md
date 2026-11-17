@@ -36,6 +36,9 @@ cards:
 - front: Was the fall in repeat rate from 31.6% to 20.2% a matter of rate or of mix, and was either team right alone?
   back: 'About half each: a rate effect of −6.2 points (every channel''s repeat rate fell) and a mix effect of −5.2 points (more customers from paid social). So neither team''s explanation alone was right.'
   lesson: data-analytics/06-applied-analyses/notes/03-cohort-and-retention
+- front: What must you state with any churn figure?
+  back: The denominator (customers at the start, without those acquired during the period), the period (2% a month is 21.5% a year, not 24%) and the unit (customers or revenue). Where nobody cancels, also the rule that counts a loss, such as no order in 90 days.
+  lesson: data-analytics/06-applied-analyses/notes/03-cohort-and-retention
 - front: Fitted on six months, how did the sBG compare with an exponential at month 24, and why?
   back: 'At month 24 the actual was 23.8%: sBG forecast 25.1% and the exponential 8.7%. The sBG models customers who differ in churn, so the likely leavers go first and the rate eases.'
   lesson: data-analytics/06-applied-analyses/notes/03-cohort-and-retention
@@ -245,6 +248,9 @@ cards:
   lesson: data-analytics/06-applied-analyses/notes/03-cohort-and-retention
 - front: What is an LTV to CAC ratio?
   back: Margin per customer over some horizon, divided by acquisition cost. State the horizon and the margin, and don't quote a ratio without them.
+  lesson: data-analytics/06-applied-analyses/notes/03-cohort-and-retention
+- front: How do you define and calculate churn?
+  back: Customers lost in a period divided by customers at its start. Contractual businesses count cancellations. Others need a rule, such as no order in 90 days. State the denominator, the period and whether it counts customers or revenue.
   lesson: data-analytics/06-applied-analyses/notes/03-cohort-and-retention
 - front: Why use conditional step rates?
   back: They isolate each step, so a problem early in the funnel doesn't leak into every later figure.

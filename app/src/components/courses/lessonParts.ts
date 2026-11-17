@@ -118,3 +118,11 @@ export function openingRepeatsSummary(body: string, summary: string): boolean {
   if (/^\s*(#|[-*+]\s|\d+[.)]\s|>|`{3}|~{3}|<)/.test(first)) return false;
   return plain(first).startsWith(lede);
 }
+
+/** Drop a leading `# Title` when it just repeats the lesson title shown in the header. */
+export function stripDuplicateH1(body: string, title: string): string {
+  const m = body.match(/^\s*#\s+(.+?)\s*\n/);
+  if (!m) return body;
+  const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "");
+  return norm(m[1]) === norm(title) ? body.slice(m[0].length) : body;
+}

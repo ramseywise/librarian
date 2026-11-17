@@ -1,5 +1,5 @@
 ---
-imported_hash: 9d4613255abca276
+imported_hash: 5e4a6d260faaed50
 title: 1 — Series and DataFrame
 summary: 'Most of the data an analyst touches arrives as a table: a row per order, a column per fact about the order.'
 order: 2
@@ -10,7 +10,7 @@ source: learn-ai-engineering/data-analytics/01-python-for-data-analysis/notes/01
 
 # 1 — Series and DataFrame
 
-Most of the data an analyst touches arrives as a table: a row per order, a column per fact about the order. Python's own lists and dictionaries can hold such a table, but every question you ask of it turns into a loop, and every loop is a place to get the bookkeeping wrong. pandas gives you two objects that hold the table directly, the Series for one column and the DataFrame for many, and lets you ask the question in one line. This chapter builds both from nothing, using the orders of a small online shop that sells coffee gear. The same shop runs through all seven chapters of this pillar. By the end you can build a frame, read what it tells you about itself, compute a new column, and explain why two Series with different labels add up the way they do.
+Most of the data an analyst touches arrives as a table: a row per order, a column per fact about the order. Python's own lists and dictionaries can hold such a table, but every question you ask of it turns into a loop, and every loop is a place to get the bookkeeping wrong. pandas gives you two objects that hold the table directly, the Series for one column and the DataFrame for many, and lets you ask the question in one line. This chapter builds both from nothing, using the orders of a small online shop that sells coffee gear. The same shop runs through all eight chapters of this pillar. By the end you can build a frame, read what it tells you about itself, compute a new column, and explain why two Series with different labels add up the way they do.
 
 Everything here was run on pandas 3.1.0 with Python 3.13. That matters more than usual, because pandas 3.0 changed behaviour that older books and most blog posts still describe. The chapter points those places out as they come up.
 
@@ -40,7 +40,7 @@ print(spend)
 
 That works, and for six rows it is fine. Look at what the loop makes you manage, though. You name the accumulator, you handle the first time a customer appears, and you spell out the arithmetic per row. The intent, "total spend by customer", is buried in the book-keeping. Wickham makes this argument about loops in general: the objection is seldom speed, it is that loops do not express intent, since the important details are mixed in with the unimportant ones ([Wickham, JSS 2011](https://doi.org/10.18637/jss.v040.i01)).
 
-Here is the same question asked of a DataFrame. Do not worry about the syntax yet; chapter 5 is devoted to it.
+Here is the same question asked of a DataFrame. Do not worry about the syntax yet; chapter 7 is devoted to it.
 
 ```python
 import pandas as pd
@@ -187,7 +187,7 @@ scale       6.0
 dtype: float64
 ```
 
-The book's own example is the same shape: `s1 + s2` over overlapping labels gives `NaN` for every label found on only one side, and `df1.add(df2, fill_value=0)` treats a missing label as 0 (*Python for Data Analysis*, ch. 5). Whether a gap means zero or means unknown is a question about the data and not about the code, and pandas leaves that decision with you. Chapter 2 returns to it.
+The book's own example is the same shape: `s1 + s2` over overlapping labels gives `NaN` for every label found on only one side, and `df1.add(df2, fill_value=0)` treats a missing label as 0 (*Python for Data Analysis*, ch. 5). Whether a gap means zero or means unknown is a question about the data and not about the code, and pandas leaves that decision with you. Chapter 5 returns to it.
 
 ## A DataFrame is a dictionary of aligned columns
 
@@ -435,7 +435,7 @@ The first attempt changed nothing and pandas warned about it. The second made th
 
 ## Pitfalls
 
-- **Iterating a frame row by row.** `for` loops and `iterrows` work, but they are slow and hide intent. If you are writing one, look first for a vectorised column expression, or wait until chapter 5 and use `groupby`.
+- **Iterating a frame row by row.** `for` loops and `iterrows` work, but they are slow and hide intent. If you are writing one, look first for a vectorised column expression, or wait until chapter 7 and use `groupby`.
 - **Reading `.0` as harmless.** A column of whole numbers printing as floats usually means a missing value is hiding in it. Check `isna().sum()`.
 - **Trusting the dtype without looking.** A numeric column with one bad value reads as `str`, and `sum` then concatenates rather than adds. Always run `dtypes` on a new frame.
 - **Comparing with `NaN` using `==`.** `NaN == NaN` is false by the floating-point standard. Use `isna()`.
@@ -509,4 +509,4 @@ It prints 2. `u` behaves as a copy under Copy-on-Write, so writing to it does no
 
 ## Next
 
-The frames here were typed in by hand, and real ones never are. Real data comes from files, and files are messy. Next: [Loading and cleaning](02-loading-and-cleaning.md).
+The frames here were typed in by hand, and real ones never are. Real data comes from files, databases and exports, and the load is where it first goes wrong. Next: [Loading data](02-loading-data.md).

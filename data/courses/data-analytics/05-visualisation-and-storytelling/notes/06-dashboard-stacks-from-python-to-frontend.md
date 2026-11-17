@@ -1,8 +1,8 @@
 ---
-imported_hash: 12308c5e41b14354
+imported_hash: 3ea8ee3a565e9844
 title: 'Dashboard stacks: from Python results to a browser'
 summary: Fernhill's analysts have given every customer a segment, and the CRM team wants to see them on a dashboard by Friday.
-order: 7
+order: 8
 kind: reading
 section: Notes
 source: learn-ai-engineering/data-analytics/05-visualisation-and-storytelling/notes/06-dashboard-stacks-from-python-to-frontend.md

@@ -1,6 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { SlideFrame, beatClass } from "../SlideFrame";
+import { SlideFrame } from "../SlideFrame";
+import { beatClass } from "../slideBeats";
 import type { SlideFrameData } from "../types";
 
 type Slide = Extract<SlideFrameData, { kind: "slide" }>;

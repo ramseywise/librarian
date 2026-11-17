@@ -6,7 +6,10 @@ import inspect
 import re
 from pathlib import Path
 
+import pytest
 import yaml
+
+pytest.importorskip("pptx")
 from pptx import Presentation
 
 from librarian.courses import deck_frames

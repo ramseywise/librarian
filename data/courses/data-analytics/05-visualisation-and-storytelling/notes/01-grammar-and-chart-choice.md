@@ -1,5 +1,5 @@
 ---
-imported_hash: 04e848f090d8c04a
+imported_hash: f228107e0017fa53
 title: Grammar of graphics and chart choice
 summary: A chart is an argument made with geometry, and a reader believes geometry faster than they believe prose.
 order: 2
@@ -383,4 +383,4 @@ Colour is near the bottom of the accuracy list, so spend it on identity, not qua
 
 ## Next
 
-The grammar tells you what to draw. Next we do it by hand in Python, where you control every pixel: [Matplotlib and seaborn](02-matplotlib-and-seaborn.md).
+The grammar tells you what to draw. Next we draw it quickly, for our own eyes, on a table we already have: [Plotting your own data](01b-plotting-your-own-data.md).

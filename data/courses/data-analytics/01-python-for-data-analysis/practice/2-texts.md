@@ -1,8 +1,8 @@
 ---
-imported_hash: 575b917f2c273b2d
+imported_hash: 8cdb31cef9c6de82
 title: 2 | Working with Text Data Files
 summary: 'This notebook covers specific text file topics: - Loading and writing text files - Parsing texts'
-order: 11
+order: 12
 kind: notebook
 section: Practice
 source: learn-ai-engineering/data-analytics/01-python-for-data-analysis/practice/2_Texts.ipynb

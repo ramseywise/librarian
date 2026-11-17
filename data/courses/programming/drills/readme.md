@@ -1,4 +1,5 @@
 ---
+imported_hash: f09b492c0740f8e3
 title: 'Drills: the gym'
 summary: Practice by language and topic, not a sequence.
 order: 1
@@ -14,11 +15,11 @@ material lives in the [curriculum](https://github.com/ramseywise/learn-ai-engine
 practice links to chapters, chapters never depend on practice. [`practice/CROSSWALK.md`](https://github.com/ramseywise/learn-ai-engineering/blob/main/practice/CROSSWALK.md)
 maps each curriculum unit to the drills and guides that test it.
 
-This folder is the **drills** module of the Programming course: every tracked `.md` here is a
-lesson, each track folder a section. A
-file with `track:` in its frontmatter feeds Practice mode. The `.py`, `.sql` and `.ts` files that go with a drill live beside it in this
+This folder is the **drills** module of librarian's Programming course (`make import-courses`): every
+tracked `.md` here is a lesson, each track folder a section. A file with `track:` in its frontmatter
+feeds Practice mode. The `.py`, `.sql` and `.ts` files that go with a drill live beside it in this
 tree, so relative links to them resolve. Notebooks are converted to lessons separately. Licensed third-party
-material keeps its `LICENSE` and is listed in [`THIRD_PARTY.md`](../../THIRD_PARTY.md); material without a clear licence
+material keeps its `LICENSE` and is listed in [`THIRD_PARTY.md`](https://github.com/ramseywise/learn-ai-engineering/blob/main/THIRD_PARTY.md); material without a clear licence
 stays in the gitignored `private/` mirror.
 
 ## Tracks
@@ -43,7 +44,7 @@ Then the four skills it grades: [planning the approach](coding/notes/approach.md
 Unlike `practice/`, this folder has no allowlist: the root `.gitignore` names what stays local. That is
 solutions to site problems (`python/leetcode/` and the `hackerrank/` folders), personal attempts
 (`coding/scratch/`) and the drill log. Check a new file's licence and contents before adding it.
-[`THIRD_PARTY.md`](../../THIRD_PARTY.md) lists the tracked material whose licence is still not cleared.
+[`THIRD_PARTY.md`](https://github.com/ramseywise/learn-ai-engineering/blob/main/THIRD_PARTY.md) lists the tracked material whose licence is still not cleared.
 
 ## Drill schema
 
@@ -92,4 +93,4 @@ into librarian) to show attempt counts per drill.
 
 [`coding/dsa/`](coding/dsa/readme.md) is "Hello, Interview!" by Dileep Pandey, MIT licence, kept
 in [`coding/dsa/LICENSE`](coding/dsa/LICENSE). Other upstreams are recorded in
-[`THIRD_PARTY.md`](../../THIRD_PARTY.md).
+[`THIRD_PARTY.md`](https://github.com/ramseywise/learn-ai-engineering/blob/main/THIRD_PARTY.md).

@@ -124,6 +124,7 @@ flowchart LR
   data_science_01_classical_ml --> generative_ai_09_llms_from_scratch
   data_science_02_deep_learning --> generative_ai_09_llms_from_scratch
   data_science_03_nlp --> generative_ai_09_llms_from_scratch
+  programming_sql --> data_analytics_01_python_for_data_analysis
   data_analytics_01_python_for_data_analysis --> data_analytics_02_probability_and_statistics
   data_analytics_02_probability_and_statistics --> data_analytics_03_experimentation_and_causality
   data_analytics_02_probability_and_statistics --> data_analytics_04_bayesian_analysis
@@ -183,13 +184,13 @@ flowchart LR
 | [generative-ai/07-agentic-applications](generative-ai/07-agentic-applications/readme.md) | 0 of 8 | 7 | yes |
 | [generative-ai/08-eval](generative-ai/08-eval/readme.md) | 0 of 20 | 19 | yes |
 | [generative-ai/09-llms-from-scratch](generative-ai/09-llms-from-scratch/readme.md) | 0 of 4 | 3 | yes |
-| [data-analytics/01-python-for-data-analysis](data-analytics/01-python-for-data-analysis/readme.md) | 0 of 8 | 7 | yes |
+| [data-analytics/01-python-for-data-analysis](data-analytics/01-python-for-data-analysis/readme.md) | 4 of 9 | 8 | yes |
 | [data-analytics/02-probability-and-statistics](data-analytics/02-probability-and-statistics/readme.md) | 0 of 10 | 9 | yes |
 | [data-analytics/03-experimentation-and-causality](data-analytics/03-experimentation-and-causality/readme.md) | 0 of 6 | 5 | yes |
 | [data-analytics/04-bayesian-analysis](data-analytics/04-bayesian-analysis/readme.md) | 0 of 11 | 10 | yes |
-| [data-analytics/05-visualisation-and-storytelling](data-analytics/05-visualisation-and-storytelling/readme.md) | 0 of 8 | 7 | yes |
+| [data-analytics/05-visualisation-and-storytelling](data-analytics/05-visualisation-and-storytelling/readme.md) | 0 of 9 | 8 | yes |
 | [data-analytics/06-applied-analyses](data-analytics/06-applied-analyses/readme.md) | 0 of 16 | 15 | yes |
-| [data-science/01-classical-ml](data-science/01-classical-ml/readme.md) | 2 of 18 | 17 | yes |
+| [data-science/01-classical-ml](data-science/01-classical-ml/readme.md) | 2 of 19 | 18 | yes |
 | [data-science/02-deep-learning](data-science/02-deep-learning/readme.md) | 0 of 9 | 8 | yes |
 | [data-science/03-nlp](data-science/03-nlp/readme.md) | 0 of 8 | 7 | yes |
 | [data-science/05-time-series-and-recommenders](data-science/05-time-series-and-recommenders/readme.md) | 0 of 6 | 5 | yes |
@@ -206,6 +207,15 @@ flowchart LR
 | [programming/software-design](programming/software-design/readme.md) | 0 of 8 | 7 | yes |
 | [programming/sql](programming/sql/readme.md) | 0 of 11 | 10 | yes |
 | [programming/typescript](programming/typescript/readme.md) | 0 of 10 | 9 | yes |
+
+## data-analytics/01-python-for-data-analysis
+
+| # | Lecture | Before it | After it |
+|---|---|---|---|
+| 1 | [Processing Data](data-analytics/01-python-for-data-analysis/slides/lectures/00-overview.yaml) | nothing | Extract |
+| 2 | [Extract](data-analytics/01-python-for-data-analysis/slides/lectures/01-extract.yaml) | Processing Data | Clean |
+| 3 | [Clean](data-analytics/01-python-for-data-analysis/slides/lectures/02-clean.yaml) | Extract, Extract | Summarise |
+| 4 | [Summarise](data-analytics/01-python-for-data-analysis/slides/lectures/03-summarise.yaml) | Clean, Clean | Probability and statistics (data-analytics/02-probability-and-statistics), notes only |
 
 ## data-science/01-classical-ml
 
