@@ -8,6 +8,10 @@ sources:
   - data/raw/claude-docs/learn-ai-engineering/docs/research/2026-07-22_rl_landscape.md
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--post-training-for-agents.md
   - data/raw/papers/2026-11-06-kumar-2025-llm-post-training.md
+  - data/raw/papers/2026-11-06-tie-2025-survey-post-training-large-language.md
+  - data/raw/papers/2026-11-07-rafailov-2023-dpo.md
+  - data/raw/papers/2026-11-07-lambert-2024-tulu-3.md
+  - data/raw/papers/2026-11-07-meng-2024-simpo.md
 ---
 
 # Preference Optimization Algorithms
@@ -177,9 +181,29 @@ aligned with what you actually want is the hard half.
 Kumar et al. (arXiv 2502.21321, preprint, March 2025) survey post-training as fine-tuning, RL and test-time scaling, citing other work and running no experiments. Claims worth keeping: generation is an MDP (state is tokens so far, action is the next token), and RL for LLMs differs from classic RL by a very large action space, sparse and delayed feedback, difficult credit assignment and several competing objectives. Reward models learn relative preferences (Bradley-Terry or Plackett-Luce), not calibrated scores. GRPO drops the critic and normalises rewards within a sampled group, with an outcome mode and a process mode. DPO loses per-step credit assignment because it treats whole trajectories uniformly. The survey's future-directions section says current RL methods for LLMs need heavy compute and often underperform distillation, and names reward misgeneralisation, overthinking and catastrophic forgetting as open problems.
 
 
+## A second 2025 survey (Tie et al.)
+
+Tie et al. (arXiv 2503.06072v3, preprint, cutoff about March 2025) is a breadth survey with no experiments. Points worth keeping:
+
+- The advantage is Q minus V, and PPO limits the probability ratio to a clipped band around 1; the value function is fit by mean-squared error to the realised return.
+- DPO's derivation takes five steps: the optimum under a KL penalty reweights the reference policy Boltzmann-style; solving for the reward gives a beta-weighted log-ratio plus a beta log Z(x) offset; that offset cancels in pairwise Bradley-Terry comparisons; what remains is a logistic loss over beta-scaled differences of log-ratios, so no explicit reward model is needed.
+- GRPO has no critic and takes its baseline from a group of sampled outputs; RLOO is REINFORCE without a value model and treats the whole response as one action. The survey's alignment grid (its Table 2) compares methods on explicit versus implicit reward model, point versus preference data, response versus token level, on- versus off-policy and online versus offline.
+- Reasoning is cast as an MDP whose state is the query plus prior steps, with four reward kinds: binary correctness (simple, high-variance), step-wise accuracy (denser), self-consistency and preference-based. It cites RLAIF as comparable to or better than RLHF by human raters (second-hand, from Lee et al.).
+- The survey's account of DeepSeek-R1 is descriptive: R1-Zero is GRPO from the base model without SFT, and R1 adds a cold-start SFT stage and a second RL stage.
+
+## Head-to-head evidence for DPO, PPO and SimPO
+
+- Rafailov et al. (self-reported; GPT-J 6B SFT model, TL;DR test split, GPT-4 judging against reference summaries): DPO reaches about a 61% win rate and PPO 57% at its best sampling temperature.
+- Lambert et al., the Tulu 3 report (self-reported; Table 18 ablation, one early SFT checkpoint, UltraFeedback only, one run each): length-normalised DPO was the only preference algorithm to beat the SFT base overall. Plain DPO (55.2), PPO (55.5) and SimPO (best 52.9) stayed under the base at 55.7.
+- Meng et al. (self-reported; Llama-3-Instruct v0.2): with ArmoRM as the preference labeller, DPO ties SimPO on raw win rate (47.5 each), so the gaps between algorithms shrink.
+
 ## Limits
 
 - Kumar et al. (survey): many of its numbers carry a citation and no setup (22% wasted computation, 29% forgetting, 94% on MATH, r=0.34), so do not cite them from here. The extraction found citation errors (the DPO reference points at a different paper), a description of ORPO that does not match the ORPO paper, a DPO loss printed without its log and minus sign, and dubious rows in its model table. It covers R1, o1 and Kimi K1.5 only in outline and predates later GRPO variants.
+- Tie et al. (survey): the survey never writes out the GRPO advantage formula and does not separate PPO's KL penalty from its clip. Its R1 detail contradicts itself (a critic and a stepwise reward model are described next to a rule-based reward figure) and the entropy and dual-attention mechanisms are unsourced, so do not cite them. Table 1 parameter sizes are dubious (GPT-3 at 17.5B, for instance), the text gives "30-bit floating point", RLHF is dated to 2021 against InstructGPT's 2022, and it predates DAPO-style and later RLVR work.
+- Rafailov et al.: models up to 6B only; GPT-4 win rates depend on the judge prompt; DPO's beta was barely tuned, the PPO baselines lean on the authors' tuning and a public checkpoint, and there are no seeds or significance tests.
+- Lambert et al.: the Table 18 comparison is a single run per row with no variance, on an early checkpoint with one dataset; the authors call the PPO setup untuned (reward model trained once), so PPO might improve with more tuning.
+- Meng et al.: no PPO comparison, offline training only, GPT-4 judges, and seeds and run counts are not stated; the authors note the gains get smaller when the SFT model is stronger or the labels better.
 
 ## See Also
 - [[RLHF Pipeline]] — prerequisite-for (PPO is its Stage 3; every method here is a removal from it)
@@ -191,4 +215,12 @@ Kumar et al. (arXiv 2502.21321, preprint, March 2025) survey post-training as fi
 - [[RL Training Frameworks for LLMs]] — extends (the backbones these algorithms run on)
 - [[DAPO]] — extends (four fixes to GRPO for long reasoning)
 - [[RLVP — Verifiable Path Penalties]] — extends (restores variance to uniform groups)
+- [[Phi-4 Training Recipe and Pivotal Token Search]] — extends (a DPO round built from token-level pairs)
 - [[Post-Training for Agents]] — extends (how these algorithms apply to tool-using agents)
+- [[REINFORCE with a Baseline]] — related (the baseline idea in its original form)
+- [[Trust Region and Clipped Surrogate Policy Optimization]] — prerequisite-for (PPO's clipped objective)
+- [[RULER and ART Hybrid Reward Agent Training]] — extends (GRPO-based agent training with an LLM judge)
+- [[GRPO Group Relative Policy Optimization]] — extends (the GRPO section's source paper, with reported results)
+- [[DPO Loss and Implicit Reward]] — extends (the DPO objective, implicit reward and measured results)
+- [[SimPO and PRO Reference-Free Preference Optimization]] — extends (length-normalised and ranking-based reference-free variants)
+- [[Tulu 3 Post-Training Recipe and RLVR]] — related (ablation of DPO, SimPO and PPO on one SFT checkpoint)

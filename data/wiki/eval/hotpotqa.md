@@ -40,3 +40,4 @@ Setup: dev set, baseline trained with supporting-fact supervision unless noted.
 - [[Math Word Problem Benchmarks]] — related
 - [[RAG Evaluation]] — prerequisite-for
 - [[FRAMES Benchmark]] — related (multi-document retrieval and reasoning questions)
+- [[MuSiQue Multihop QA]] — alternative-to

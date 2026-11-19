@@ -2,7 +2,7 @@
 title: VERA Co-Evolving Model and Harness
 tags: [harness, llm, pattern]
 summary: "VERA alternates RL on the model with verified edits to its harness, using thousands of environments with rubric stage rewards; at 9B the full loop beat either axis alone, and at 27B it came within a point or two of frontier models on the benchmarks' default runners (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-liu-2026-vera.md
 ---
@@ -38,3 +38,4 @@ Setup: Qwen3.5-9B on the authors' coworker and medical benchmarks (Overall avera
 - [[Harness Continual Learning]] — prerequisite-for
 - [[AutoHarness Synthesized Code Harness]] — alternative-to
 - [[Agent Lightning v1.0 Harnessed Agentic RL]] — related
+- [[On-Policy Correction for Harness-Model Co-Evolution]] — alternative-to

@@ -2,7 +2,7 @@
 title: Agentless Localize-Repair-Validate
 tags: [harness, pattern]
 summary: "Agentless solves repository issues with a fixed three-phase pipeline of hierarchical localization, sampled patch repair and test-based selection, with no agent loop, and reports 32.00% on SWE-bench Lite at $0.70 per issue."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-xia-2024-agentless.md
 ---
@@ -34,3 +34,4 @@ Agentless (Xia et al., 2024) is a counterweight to autonomous coding agents: the
 - [[Repository-Level Coding Benchmarks]] — related
 - [[Verification Loops]] — related
 - [[InfCode Adversarial Test-Patch Refinement]] — related
+- [[Kimi-Dev Agentless Skill Prior]] — extends

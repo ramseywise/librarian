@@ -43,3 +43,4 @@ Self-reported, on KILT test sets, single runs.
 - [[LAMA Knowledge Probe]] — prerequisite-for
 - [[RA-DIT Dual Instruction Tuning]] — related
 - [[2WikiMultiHopQA]] — related
+- [[MuSiQue Multihop QA]] — related

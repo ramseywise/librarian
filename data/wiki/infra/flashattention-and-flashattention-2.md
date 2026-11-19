@@ -2,7 +2,7 @@
 title: FlashAttention and FlashAttention-2
 tags: [infra, concept]
 summary: "FlashAttention computes exact attention block by block in on-chip memory with a running softmax, avoiding the full score matrix in HBM; FlashAttention-2 reworks work partitioning to approach matmul-level GPU utilisation."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-dao-2022-flashattention.md
   - data/raw/papers/2026-11-07-dao-2023-flashattention-2.md
@@ -46,3 +46,4 @@ The hypothesis is that the first version's inefficiency comes from work partitio
 - [[Star Attention]] — related (uses FlashAttention per host for local attention)
 - [[GPU Kernel Tuning Workflow]] — related
 - [[Torch Compile and Triton Stack]] — related
+- [[PagedAttention and vLLM KV Cache Paging]] — related

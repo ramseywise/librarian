@@ -2,7 +2,7 @@
 title: Scaling Laws for Precision
 tags: [infra, concept]
 summary: "Kumar et al. fit loss as a function of parameters, data and numeric precision: post-training quantization hurts more as data grows, compute-optimal training precision is about 7-8 bits, and weights lose effective parameters below roughly 6-7 bits."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-kumar-2024-scaling-laws-precision.md
 ---
@@ -32,3 +32,4 @@ Setup: OLMo-style models of 30M to 220M parameters trained on Dolma, with GPTQ p
 - [[BitNet b1.58 Ternary Weights]] — related (training at very low precision)
 - [[MoE Expert Offloading]] — related (hard quantization of expert weights in practice)
 - [[FP8-LM Mixed-Precision FP8 Training]] — related
+- [[QLoRA 4-Bit Quantized Finetuning]] — related (4-bit finetuning in practice)

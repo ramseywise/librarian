@@ -48,3 +48,4 @@ Because later models did not lose more, the authors read the gap as mostly distr
 - [[Train, Validation and Test Discipline]] — prerequisite-for
 - [[ImageNet-A and ImageNet-O Natural Adversarial Examples]] — related (a harder shift built by filtering against a model)
 - [[Hyperparameter Search Budgets and Selection Optimism]] — related
+- [[Test-Time Training with a Rotation Auxiliary Task]] — related

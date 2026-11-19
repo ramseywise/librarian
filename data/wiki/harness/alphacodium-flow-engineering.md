@@ -2,7 +2,7 @@
 title: AlphaCodium Flow Engineering
 tags: [harness, pattern]
 summary: A multi-stage code-generation flow for competitive programming that iterates on public tests, then on model-written tests guarded by test anchors; raised GPT-4 pass@5 on CodeContests validation from 19% to 44%.
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-ridnik-2024-code-generation-alphacodium.md
 ---
@@ -36,3 +36,4 @@ Stages: reflect on the problem, reason about public tests, propose 2 or 3 soluti
 - [[Verification Loops]] — prerequisite-for
 - [[Three-Layer Termination Check]] — related
 - [[TestGen-LLM Filter Cascade]] — related
+- [[AlphaCode Sample, Filter and Cluster]] — prerequisite-for

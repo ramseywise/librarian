@@ -37,3 +37,4 @@ All numbers are the paper's own (self-reported). Setup: open-ended auto-scorable
 - [[Math Word Problem Benchmarks]] — related (older, easier arithmetic datasets)
 - [[IMO-Bench]] — related
 - [[GPQA]] — related
+- [[MATH Dataset]] — related

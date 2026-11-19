@@ -42,3 +42,7 @@ Autodata (Kulikov et al., FAIR at Meta, July 2026) turns synthetic data generati
 - [[DreamGym Synthetic Experience RL]] — related
 - [[Multi-Agent Evolve Self-Play]] — related
 - [[AdaptEvolve Confidence-Routed Evolution]] — related (weak versus strong model roles)
+- [[Interpreter-Verified Self-Generated Programming Puzzles]] — related
+- [[Self-Instruct and Unnatural Instructions]] — related (the original model-written instruction data)
+- [[Dr. Zero Self-Evolving Search Agents]] — related
+- [[AutoEnvScaling Terminal Environment Design]] — extends

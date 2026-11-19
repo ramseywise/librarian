@@ -45,3 +45,4 @@ Efron and Hastie (*Computer Age Statistical Inference*, ch. 2) call a statistic 
 - [[Permutation Test]] — related
 - [[Minimum Detectable Effect and Sample Size]] — related
 - [[Robust Summaries for Skewed Metrics]] — related
+- [[Operational Reinforcement Learning]] — related (seed counts and Welch's test for comparing RL policies)

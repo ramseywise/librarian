@@ -117,3 +117,4 @@ UI agents from screenshots, video from sampled frames — each with its own cali
 - [[Chain-of-Thought Unfaithfulness Under Biased Context]] — related
 - [[ChatEval Multi-Agent Debate Judges]] — related (diverse judge personas)
 - [[Arena-Hard-Auto and BenchBuilder]] — related (measures self-preference and style effects)
+- [[MT-Bench and Chatbot Arena Judge Agreement]] — extends

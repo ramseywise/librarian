@@ -36,3 +36,4 @@ The lower bound favours old items with many votes. Ranking by a posterior sample
 - [[Confidence Interval Coverage and Wilson]] — alternative-to (the frequentist lower bound)
 - [[Bayesian A/B Testing with Expected Loss]] — related
 - [[Beta-Binomial Updating and Credible Intervals]] — prerequisite-for
+- [[TopRank and Click Models for Ranking Bandits]] — alternative-to (ranking with exploration from click feedback)

@@ -7,6 +7,7 @@ sources:
   - data/raw/papers/2026-11-05-le-2025-swe-evo.md
   - data/raw/papers/2026-11-05-rashid-2025-swe-polybench.md
   - data/raw/papers/2026-11-05-feng-2026-longcli-bench.md
+  - data/raw/papers/2026-11-07-glm-5-team-2026-glm-5.md
 ---
 
 # Repository-Level Coding Benchmarks
@@ -49,6 +50,10 @@ A pass needs a 100% step score on both the fail-to-pass and must-keep-passing se
 - Injecting a plan lifted Claude Opus-4.6 from 16.7% to 58.3%, and self-correction with test feedback to 55.0%.
   Plan took 15.4 minutes against 43.8 for self-correction. Run counts for this table are not stated.
 
+## SWE-bench Verified and SWE-rebench scores in the GLM-5 report
+
+The GLM-5 technical report gives two repository-level scores for GLM-5 (self-reported). On SWE-bench Verified it reports 77.8%, from an OpenHands run (tailored instruction prompt) sampled at temperature 0.7 with top_p 0.95, allowing up to 16384 new tokens and a 200K context; the run count is not stated. On the decontaminated SWE-rebench (January 2026 leaderboard) it resolves 42.1%, close to GLM-4.7 (41.3%), while Claude Opus 4.6 is well ahead at 52.9%; the leaderboard's SEM is 1.21% and Pass@5 is 50.0%, and the paper does not describe the harness for that benchmark.
+
 ## Limits
 
 SWE-EVO covers Python libraries only, has no repeated runs, and its failure labels come from an unvalidated
@@ -71,3 +76,5 @@ The models date from 2024-2026.
 - [[Agentless Localize-Repair-Validate]] — related
 - [[CodeRL Unit-Test Actor-Critic]] — related
 - [[RepoCoder Iterative Retrieval-Generation]] — related (introduces RepoEval)
+- [[Kimi-Dev Agentless Skill Prior]] — related
+- [[Self-Play SWE-RL (SSR)]] — related (evaluated on SWE-bench Verified and SWE-Bench Pro)

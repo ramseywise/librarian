@@ -2,7 +2,7 @@
 title: Harness Anatomy
 tags: [llm, agents, infra, concept]
 summary: "The nine harness components and the five subsystems they serve, why the filesystem is the foundational primitive (including state for sessionless agents), code as a meta-capability, the layered mental model, and the causal build order."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--02-harness-anatomy.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--02-harness-anatomy.md
@@ -245,3 +245,5 @@ Six items. Everything else here is elaboration on those.
 - [[Stagewise Recoverability Harness Granularity]] — related
 - [[Stochastic-Deterministic Boundary Runtime Patterns]] — related
 - [[Runtime-Independent Persistent Agents (RIPA)]] — related
+- [[ClawGym II Black-Box Harness RL]] — related (training through an unmodified harness)
+- [[Harness-Zero Harness Distillation]] — related (what a harness provides versus what weights can hold)

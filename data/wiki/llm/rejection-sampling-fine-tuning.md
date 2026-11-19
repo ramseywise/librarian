@@ -47,3 +47,7 @@ FireAct (a 2023 preprint) is the clearest agent example: GPT-4 few-shot ReAct tr
 - [[RISE Recursive Introspection]] — related (best-of-N relabelling of rollouts as training targets)
 - [[Post-Training Reasoning Data Primer]] — related
 - [[Agent-FLAN Agent Tuning Data Design]] — related (mixture design for agent SFT data)
+- [[AlphaCode Sample, Filter and Cluster]] — related
+- [[Interpreter-Verified Self-Generated Programming Puzzles]] — instance-of
+- [[Synthetic Instruction Data: Curation and Verification]] — related
+- [[STaR Self-Taught Reasoner]] — instance-of (the loop with rationalization of failures)

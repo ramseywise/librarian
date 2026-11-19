@@ -65,3 +65,6 @@ See [[Varying Slopes and the LKJ Correlation Prior]] for the chapter's first hal
 - [[Prior Choice and Prior Predictive Checks]] — related
 - [[Tree-Structured Parzen Estimator (TPE)]] — alternative-to
 - [[Varying Slopes and the LKJ Correlation Prior]] — related
+- [[LinUCB and Linear Bandit Confidence Ellipsoids]] — related (optimism over a confidence set for linear rewards)
+- [[NeuralLinear Thompson Sampling]] — related (approximate posteriors for Thompson sampling)
+- [[Upper Confidence Bound Bandit Algorithms]] — related (an optimism-based acquisition rule for bandits)

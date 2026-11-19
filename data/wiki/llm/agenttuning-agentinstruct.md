@@ -5,6 +5,7 @@ summary: Supervised fine-tuning of Llama-2-chat on 1,866 filtered GPT-4 agent tr
 updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-zeng-2024-agenttuning.md
+  - data/raw/papers/2026-11-06-yin-2023-agent-lumos.md
 ---
 
 # AgentTuning and AgentInstruct
@@ -23,6 +24,19 @@ Six held-in and six held-out tasks, greedy decoding, scores normalised across th
 - A single-task ablation mainly boosts that task, and the single-round Mind2Web data gives little cross-task benefit. A rule-based error analysis finds fewer basic errors (invalid action, repetition, refusal).
 - Contamination: ALFWorld has 6 dirty examples and WebShop 1, with a WebShop token contamination rate of 47.18%, which the authors argue is benign.
 
+## Lumos: separate planning and grounding modules
+
+Agent Lumos (Yin et al., ACL 2024) is another SFT-only agent recipe. It trains two modules, a planner that writes subgoals and a grounder that turns each subgoal into executable actions, using roughly 55K annotations for each module (55,382 planning, 55,499 grounding). The annotations are not generated from scratch: GPT-4 converts the ground-truth reasoning steps of existing benchmarks (math, QA, web, multimodal) into the unified chat format, because GPT-4 itself reaches only about 20% step success on Mind2Web. Loss is on assistant tokens only. Two variants exist: Lumos-O plans in one pass, and Lumos-I plans iteratively with execution feedback after each subgoal.
+
+Reported results (self-reported; LLaMA-2-7B unless noted, same base and data across variants):
+
+- Planning and grounding split vs one integrated module vs chain-of-thought training: StrategyQA / HotpotQA 65.7 / 45.9 for Lumos-I, 62.3 / 39.6 integrated, 58.3 / 22.1 CoT; GSM8K 50.5 for Lumos-O, 45.5 integrated, 40.4 CoT; Mind2Web 27.6 vs 25.3. Gains on the multimodal sets are small, and Lumos-O falls below the integrated module on ScienceQA and StrategyQA. Chain-of-thought training was never run on the web tasks.
+- Mind2Web step success: 27.6 (7B) and 31.3 (13B) against GPT-4 at 22.6 and GPT-3.5-turbo at 15.7 (the GPT figures are taken from AgentBench); the Mind2Web-trained Lumos-I is not held out there. On HotpotQA, with GPT-3.5-turbo serving as the QA tool, it scores 45.9 where ReAct gets 40.8 and ReWOO 42.4.
+- High-level subgoals beat low-level ones (65.7 / 45.9 vs 63.3 / 44.3); Lumos data beat the earlier ReWOO-open data on 2,000 sampled examples.
+- Lumos-O is faster but weaker on QA: 100 GSM8K instances take 102 s against 851 s for Lumos-I, and HotpotQA 556 s against 1,007 s; on math Lumos-O scores higher (50.5 vs 47.1).
+- Unseen tasks (WebShop, InterCodeSQL) work only when the module inputs carry two or three few-shot examples; WebShop reward is about 46-47 against 23.9 for Vicuna-v1.3-33B, but Claude-instant (49.7) scores about the same or higher, and InterCodeSQL success stays at 3.5-7.3.
+- Mixing in Alpaca data keeps general instruction following (ROUGE-L of 39.3, compared with Alpaca alone at 39.8).
+
 ## Limits
 
 - Only six held-in and six held-out tasks, and the held-out ones resemble the held-in (web, household).
@@ -30,8 +44,12 @@ Six held-in and six held-out tasks, greedy decoding, scores normalised across th
 - Each setting was run once, with no seeds or significance tests, and compute and training details are not stated; eta was chosen on 13B and applied to all sizes.
 - Not reinforcement learning: pure SFT on successful trajectories, with no learning from failures.
 - Llama 2 and GPT-3.5/4 are 2023 models.
+- Lumos (above): only four task types, no backtracking or replanning, and QA still uses GPT models as tools; SFT only, with annotations that depend on GPT-4 conversion; its "unseen" tasks need few-shot prompts; the baselines are 2023 models; the appendix puts the math decline from unified training at 0.7% and 1.4%, but the figures in Table 7 are 1.4 and 0.5.
 
 ## See Also
 - [[Agent-FLAN Agent Tuning Data Design]] — alternative-to
 - [[AgentBench]] — prerequisite-for
 - [[Rejection Sampling Fine-Tuning]] — related
+- [[Agent Data Protocol (ADP)]] — extends (unifies agent SFT datasets, including AgentInstruct)
+- [[Web Agent Benchmarks (WebShop and Mind2Web)]] — related
+- [[Self-Instruct and Unnatural Instructions]] — related (general instruction data written by a model from seeds)

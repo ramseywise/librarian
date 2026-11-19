@@ -78,3 +78,4 @@ saw only a subsample of each task, and could search the internet.
 - [[Benchmark Prompt Format Sensitivity]] — related (option-in-query and decoding effects)
 - [[bAbI Toy Tasks]] — related (synthetic task suite lineage)
 - [[CLUE Chinese Benchmark]] — related (multi-task benchmark in another language setting)
+- [[Multitask Prompted Instruction Tuning (FLAN, T0, Super-NaturalInstructions, MetaICL)]] — related (T0 evaluated on 14 BIG-bench tasks)

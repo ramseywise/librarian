@@ -2,7 +2,7 @@
 title: Harness Continual Learning
 tags: [harness, pattern]
 summary: Keep the model frozen and evolve the harness (interface, memory, capability map, router), committing a candidate only if it gains on the current task and loses little on held-out anchors from earlier tasks.
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-kang-2026-harness-continual-learning.md
 ---
@@ -54,3 +54,4 @@ All numbers are self-reported by the authors, and baselines (Static Harness, RAG
 - [[JIT-Agent Just-in-Time Harness Evolution]] — related
 - [[Harness-of-Harness Cross-Loop Development]] — related
 - [[Confucius Code Agent]] — related
+- [[On-Policy Correction for Harness-Model Co-Evolution]] — related

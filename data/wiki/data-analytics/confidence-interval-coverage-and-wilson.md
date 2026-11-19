@@ -41,3 +41,4 @@ Coverage assumes independent rows ([[Pseudoreplication and Intraclass Correlatio
 - [[Difference in Significance and Error Bar Overlap]] — related
 - [[BCa Bootstrap Confidence Intervals]] — alternative-to
 - [[Jackknife Standard Error]] — related
+- [[Sub-Gaussian Tail Bounds and Confidence Radii]] — related

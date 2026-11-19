@@ -30,3 +30,4 @@ All figures are (self-reported); the metric is the best speedup over eight sampl
 ## See Also
 - [[Code Generation Prompting]] — prerequisite-for
 - [[Best-of-k Headline Inflation]] — related (Best@8 reports the best sample)
+- [[EvalPlus and HumanEval+]] — related

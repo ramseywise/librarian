@@ -41,3 +41,4 @@ Setup for all rows: 30 subtasks, unseen test variations, zero-shot, scores avera
 - [[World Knowledge Model for Agent Planning]] — related (reports ScienceWorld results)
 - [[Reinforcement Learning Foundations]] — prerequisite-for
 - [[AgentBench]] — related
+- [[AgentGym-RL and ScalingInter-RL]] — related (RL training on SciWorld)

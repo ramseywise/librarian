@@ -44,3 +44,4 @@ Coding run setup: a Qwen3.5-9B policy trained with GRPO for about 200 steps on t
 - [[Training-Agent Disaggregation]] — related (same idea of training a running harness through a proxy)
 - [[DAPO]] — related (token-mean loss it compares against)
 - [[VERA Co-Evolving Model and Harness]] — related
+- [[ClawGym II Black-Box Harness RL]] — alternative-to (black-box RL through an existing harness)

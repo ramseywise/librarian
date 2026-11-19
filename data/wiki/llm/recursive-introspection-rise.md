@@ -37,3 +37,4 @@ At inference there are two modes: with an oracle the loop stops on a correct ans
 - [[Recursive Self-Improvement]] — related
 - [[Post-Training for Agents]] — prerequisite-for
 - [[Outcome vs Process Reward Models]] — related (sparse outcome reward)
+- [[STaR Self-Taught Reasoner]] — related

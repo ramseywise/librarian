@@ -2,7 +2,7 @@
 title: "RAFT Retrieval-Augmented Fine-Tuning"
 tags: [rag, pattern]
 summary: "RAFT fine-tunes a model on questions paired with one golden document plus distractors, and with no golden document for a fraction of examples, with chain-of-thought answers that quote the source; LLaMA2-7B beat domain fine-tuning and RAG baselines on four of five in-domain sets (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-zhang-2024-raft.md
 ---
@@ -35,3 +35,5 @@ LLaMA2-7B-chat base. Scores are listed per dataset as PubMed, HotPot, HuggingFac
 - [[RankRAG]] — related
 - [[RAG Architecture Selection]] — prerequisite-for
 - [[Agentic RAG — Advanced Patterns]] — prerequisite-for
+- [[Parameter-Efficient Fine-Tuning Methods]] — related (finetune-versus-RAG guidance)
+- [[Continued Pretraining for Domain Adaptation]] — alternative-to (domain adaptation by continued pretraining)

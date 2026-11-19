@@ -2,7 +2,7 @@
 title: AutoHarness Synthesized Code Harness
 tags: [harness, pattern]
 summary: An LLM writes and refines a code harness (a legality verifier or a whole policy) from environment feedback, using tree search; tested on text games, where the verifier removed illegal moves and the policy variant ran with no model call at test time.
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-lou-2026-autoharness.md
 ---
@@ -49,3 +49,4 @@ All numbers below are self-reported by the authors.
 - [[VERA Co-Evolving Model and Harness]] — alternative-to
 - [[ADAS Meta Agent Search]] — related
 - [[Harness-R1 Learned Harness Editing]] — related
+- [[Harness-Zero Harness Distillation]] — related

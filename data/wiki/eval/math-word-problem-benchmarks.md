@@ -42,3 +42,4 @@ The paper first shows shallow heuristics suffice: with the question deleted, Gra
 - [[Functional Benchmarks and the Reasoning Gap]] — related
 - [[LILA Math Reasoning Benchmark]] — instance-of
 - [[SciBench]] — instance-of
+- [[MATH Dataset]] — related (competition-level problems with boxed answers)

@@ -22,6 +22,8 @@ sources:
   - data/raw/papers/2026-11-05-li-2026-jev-as-judge.md
   - data/raw/papers/2026-11-08-chiang-2023-can-large-language-models-be.md
   - data/raw/papers/2026-11-08-gu-2024-survey-llm-as-judge.md
+  - data/raw/papers/2026-11-07-yuan-2024-self-rewarding-language-models.md
+  - data/raw/papers/2026-11-08-cui-2023-ultrafeedback.md
 ---
 
 # LLM-as-Judge Evaluation
@@ -144,6 +146,16 @@ Gu et al. (arXiv 2411.15594, a survey) frame a judge as E <- P_LLM(x (+) C) and 
 
 Judges that score by token probability instead of a generated verdict are [[GPTScore]]; prompted translation scoring is [[GEMBA Translation Quality Prompting]]. Trained open judges are [[PandaLM]], [[Self-Taught Evaluators]] and [[TIR-Judge]] (a judge that runs code). Running a judge in production is [[Judge Lifecycle with RART and a Drift Band]], and the calibration for order flips is [[Position Bias Calibration (MEC, BPC, HITLC)]].
 
+## Judges used as reward and annotator (preference tuning)
+
+Yuan et al. (Llama 2 70B, three rounds of iterative DPO in which the model judges its own samples, held-out Open Assistant set, self-reported) measured the judge's pairwise agreement with human rankings at 65.1% for the SFT model and 81.7% for the third-round model; most of the rise came from adding judging examples to the training data (65.1% to 78.7%). See [[Self-Rewarding Language Models]].
+
+Cui et al. (400 pairs, 3 student annotators, ties counted, chance level 33%, self-reported) found GPT-4 agrees with an individual human rater 59.7% of the time and with the human majority 68.6%, close to humans' agreement with each other. See [[UltraFeedback Scaled AI Feedback Dataset]].
+
+## Limits
+
+- The two preference-tuning figures above come from single papers, each with its own setup and no variance reported; they are not comparable with each other.
+
 ## See Also
 - [[Generative Search Engine Verifiability Audit]] — related (human audit of citation support)
 - [[PaperBench]] — related (a judge validated against human leaf labels)
@@ -201,3 +213,6 @@ Judges that score by token probability instead of a generated verdict are [[GPTS
 - [[Arena-Hard-Auto and BenchBuilder]] — instance-of (an automatic pairwise judge with confidence intervals)
 - [[MAG-V Trajectory Verification]] — alternative-to (classifiers on trajectory similarity instead of a judge)
 - [[LMSYS-Chat-1M]] — related (LLM-scored prompt difficulty)
+- [[MT-Bench and Chatbot Arena Judge Agreement]] — extends
+- [[IFEval Verifiable Instruction Following]] — alternative-to
+- [[Self-Rewarding Language Models]] — related (the judge reused as the reward in iterative DPO)

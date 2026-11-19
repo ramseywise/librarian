@@ -33,3 +33,4 @@ Setup: the agent sees the accessibility tree and a 2-shot prompt, with temperatu
 - [[Web Agent Benchmarks (WebShop and Mind2Web)]] — alternative-to
 - [[AgentBench]] — alternative-to
 - [[Tool Design as Harness Surface]] — related
+- [[AgentGym-RL and ScalingInter-RL]] — related (RL training on WebArena)

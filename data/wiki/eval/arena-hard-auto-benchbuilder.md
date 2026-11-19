@@ -46,3 +46,4 @@ Setup unless noted: top-20 Chatbot Arena models (13 April 2024 snapshot), Chatbo
 - [[Eval Error Bars and Sample Size]] — related (bootstrap intervals as the basis of separability)
 - [[Dynabench]] — related (another way to keep benchmarks informative)
 - [[LMSYS-Chat-1M]] — prerequisite-for (conversation data from the same arena)
+- [[MT-Bench and Chatbot Arena Judge Agreement]] — prerequisite-for

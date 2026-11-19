@@ -38,3 +38,5 @@ Consistency drops as trials are required to all pass: on tau2-Bench the 30B mode
 - [[APIGen]] — prerequisite-for (execution-verified function-calling data; AgentScaler adds generated environments)
 - [[Salesforce Koa]] — related
 - [[AutoGym Blueprint-First Verifiable Gyms]] — alternative-to
+- [[AutoEnvScaling Terminal Environment Design]] — alternative-to
+- [[AgentSkiller Cross-Domain Trajectory Synthesis]] — alternative-to

@@ -34,3 +34,4 @@ Reinforcement-Learned Teachers (RLTs; Cetin et al., Sakana AI, NeurIPS 2025, arX
 - [[DualDistill Agentic-R1]] — related (also builds a small student's training traces from teachers)
 - [[Preference Optimization Algorithms]] — prerequisite-for
 - [[DAPO]] — related (both use GRPO-style RL)
+- [[Distilling Step-by-Step]] — related (rationales from a prompted LLM teacher)

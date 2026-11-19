@@ -5,6 +5,7 @@ summary: "A benchmark of 89 manually verified command-line tasks (version 2.0) r
 updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-merrill-2026-terminal-bench.md
+  - data/raw/papers/2026-11-07-glm-5-team-2026-glm-5.md
 ---
 
 # Terminal-Bench
@@ -27,6 +28,8 @@ Setup: Terminal-Bench 2.0 (89 tasks), six agents over 16 frontier models, 32,155
 - In Terminus 2 trials, average turns show essentially no correlation with success and average output tokens a weak negative one.
 - Authors' difficulty predictions correlate positively with empirical difficulty (Easy: resolved by at least 66.7% of selected frontier models; Hard: under 33.3%).
 
+- A separate model report, the GLM-5 technical report, lists GLM-5 at 56.2 on Terminal-Bench 2.0 in Terminus-2 and 60.7 on a verified version of the benchmark (self-reported). Its setup differs from the runs above: a 2-hour timeout, temperature 0.7, top_p 1.0, up to 8192 new tokens, 128K context, and 16 CPUs with 32 GB per task. It is one reported score per version, with no run count given.
+
 ## Failure analysis
 
 Failed Terminus 2 trials (two per model per task) were labelled by a GPT-5 judge at high reasoning effort, which agreed with human labels on 120 traces. Command-level failures were scored with GPT-5 at medium reasoning, which agreed 92.4% with the majority of three annotators on 66 pairs. The most frequent command failure was an executable that was not installed or not on the path, among 3,800 sampled failures classified at 82.0% agreement with 50 author annotations. The taxonomy simplifies MAST into Execution, Coherence and Verification.
@@ -43,3 +46,5 @@ Because agents are online they could find public oracle solutions, though the au
 - [[AutoLab]] — extends (reuses its harness and agent for long-horizon optimisation tasks)
 - [[DataSpace]] — related (the agent harness moved accuracy with the backbone fixed)
 - [[SkillGym]] — related (used as a held-out benchmark for skill-trained agents)
+- [[PivotRL Pivot-Turn Agentic RL]] — related
+- [[AutoEnvScaling Terminal Environment Design]] — related

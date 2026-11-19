@@ -35,3 +35,8 @@ Li et al. (Peking University, Tsinghua and Qiyuan Tech; arXiv 2606.02113, prepri
 - [[Outcome vs Process Reward Models]] — related
 - [[Rejection Sampling Fine-Tuning]] — related (verifier turned into SFT data)
 - [[Reward Hacking and Overoptimization]] — related
+- [[LIMA: Small Curated Instruction Data]] — related
+- [[Continued Pretraining for Domain Adaptation]] — related (continued pretraining on maths data, as Llemma)
+- [[Phi-4 Training Recipe and Pivotal Token Search]] — related (synthetic-heavy data recipe)
+- [[s1 Budget Forcing]] — related (1,000-example and 800-example reasoning SFT)
+- [[Cognitive Behaviors for Self-Improving Reasoners]] — related

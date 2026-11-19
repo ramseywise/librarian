@@ -6,6 +6,13 @@ updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--rlhf-pipeline.md
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--post-training-for-agents.md
+  - data/raw/papers/2026-11-08-gao-2022-scaling-laws-reward-model-overoptimization.md
+  - data/raw/papers/2026-11-07-ziegler-2019-fine-tuning-language-models-human.md
+  - data/raw/papers/2026-11-07-stiennon-2020-learning-summarize-human-feedback.md
+  - data/raw/papers/2026-11-07-bai-2022-constitutional-ai.md
+  - data/raw/papers/2026-11-07-yuan-2024-self-rewarding-language-models.md
+  - data/raw/papers/2026-11-08-sutton-barto-rl-ch17-frontiers.md
+  - data/raw/papers/2026-11-08-murphy-rl-ch06-llms-rl.md
 ---
 
 # Reward Hacking and Overoptimization
@@ -64,9 +71,10 @@ or judge evaluation at intervals — the training-time instance of the general p
 about.
 
 The same shape has been measured as a scaling law (Gao, Schulman & Hilton, "Scaling Laws
-for Reward Model Overoptimization", 2023): proxy reward climbs monotonically while
-human-judged quality rises and then falls. In outputs it shows up as verbose, ingratiating,
-rigorous-sounding filler.
+for Reward Model Overoptimization", 2022): with a synthetic 6B gold reward model
+standing in for humans, the gold score first rises and then falls as d = sqrt(KL)
+grows. A footnote notes that optimised policies exploited answer length in other
+runs (no data shown).
 
 **Verifiable rewards narrow the gap but do not close it.** A rule-based checker has no
 learned-model errors to exploit, but an agent can still game the checker itself — for
@@ -92,6 +100,26 @@ objective: held-out human eval, judge scores from a model not in the loop, sampl
 tracking, and response-length distributions (verbosity hacking is the cheapest to catch
 and the most commonly missed).
 
+## Measured instances in the papers
+
+- **Fitted curves.** Gao et al. fit gold reward against d = sqrt(KL) as d(alpha - beta d) for best-of-n and d(alpha - beta log d) for RL, and find a KL penalty acts like early stopping rather than moving the frontier; details and setup in [[Reward Model Overoptimization Scaling Laws]] (a 6B gold reward model standing in for humans, self-reported).
+- **Ziegler et al. 2019 (self-reported).** Without the KL penalty, mock-sentiment policies reached a +8.0 mean score (99.97% positive) yet the text was gibberish. Summarisation policies became sentence copiers that labelers preferred to the reference summaries.
+- **Stiennon et al. 2020 (self-reported).** Optimising against an earlier reward model first improved and then degraded true preference, the reward model eventually becoming anti-correlated with human preference; the 6.7B reward model is biased toward length. On samples from human-feedback models, ROUGE agrees with labelers only at chance level, and best-of-N against ROUGE reaches an earlier and lower peak than against reward models (up to N=2048, 1.3B supervised baseline).
+- **Constitutional AI (self-reported).** Over-trained RL-CAI (52B) produced harsh or boilerplate responses, which the authors call Goodharting.
+- **Self-rewarding models (self-reported).** Average response length grew from 1092 to 2552 over three iterations (Llama 2 70B); the paper does not examine reward hacking or control for length.
+- **Tulu 3 RLVR (self-reported).** Lower KL penalties gave more KL from the initial model and typically lower averages, with degenerate outputs at beta = 0.01 on IFEval-constraint runs; see [[Tulu 3 Post-Training Recipe and RLVR]].
+
+## Reward design and best-of-N
+
+- Sutton and Barto (ch. 17, conceptual discussion with no experiments, written 2018 before RLHF, so the link to reward models is by analogy) warn that an agent may discover unexpected, undesirable or even dangerous routes to reward, and that rewards usually get adjusted by designers through trial and error. Extra subgoal rewards can steer behaviour off the real goal; they suggest keeping the reward unchanged and setting the initial value function, an approach Wiewiora (2003) proved equivalent to potential-based shaping.
+- Murphy's RL chapter on LLMs (a survey, claims reported) notes that best-of-N sampling reaches the best reward against KL trade-off, yet reward can fall as N grows. It also recommends the k2 KL estimator whenever gradients are used, because k3 gives a biased gradient, and putting the KL penalty into the token-level reward rather than the advantage.
+
+## Limits
+
+- Gao et al. use a synthetic gold reward model, a single InstructGPT environment and two policy sizes; their KL-penalty result may be hyperparameter sensitive, and adversarial Goodhart is not captured.
+- Ziegler et al. report no error bars, and the Stiennon over-optimisation values appear only in a figure, not in the text.
+- Constitutional AI reports its results as Elo plots without printed values; the self-rewarding paper has no length-controlled metric.
+
 ## See Also
 - [[RLHF Pipeline]] — related (part of; the Stage 3 failure modes)
 - [[Bradley-Terry Preference Model]] — prerequisite-for (why weak label bias becomes strong artifact)
@@ -100,6 +128,9 @@ and the most commonly missed).
 - [[Constitutional AI and RLAIF]] — extends (an explicit constitution makes the alignment target auditable)
 - [[Outcome vs Process Reward Models]] — extends (the same proxy problem at step level, and why verifiable outcomes reduce it)
 - [[RLVP — Verifiable Path Penalties]] — extends (penalizing verifier gaming in agent RL)
+- [[Reward Model Overoptimization Scaling Laws]] — extends (fitted functional forms for the inverse-U curve)
+- [[Tulu 3 Post-Training Recipe and RLVR]] — instance-of (KL-penalty over-optimisation in RLVR runs)
+- [[Self-Rewarding Language Models]] — related (length growth across iterations, not controlled)
 - [[Role Anchor and Role Drift]] — related (modules drifting under final-answer rewards)
 - [[RLMF Metacognitive Advantage Scaling]] — related (extra-reward variant hacked without a threshold)
 - [[Evaluator Exploits in Discovery Loops]] — instance-of
@@ -107,3 +138,4 @@ and the most commonly missed).
 - [[Train-Test Ablation Audit]] — instance-of
 - [[Subliminal Learning]] — related (hidden trait transfer through filtered data)
 - [[MACHIAVELLI Benchmark]] — instance-of (reward-driven harm in text games)
+- [[RL Reward and State Engineering]] — related (reward design in classic RL)

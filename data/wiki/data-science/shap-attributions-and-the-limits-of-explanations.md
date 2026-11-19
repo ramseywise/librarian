@@ -65,3 +65,4 @@ Limits the authors state: sentiment and word attribution only, one model, no hum
 - [[Weight-of-Evidence Logistic Scorecard]] — alternative-to
 - [[Error Analysis by Confusion-Matrix Cell]] — related
 - [[EK-FAC Influence Functions for LLMs]] — related (attributing outputs to training data rather than features)
+- [[Lipton's Notions of Interpretability]] — prerequisite-for

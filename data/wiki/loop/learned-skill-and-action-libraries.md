@@ -2,7 +2,7 @@
 title: Learned Skill and Action Libraries
 tags: [loop, concept]
 summary: "Four papers grow a library the agent writes for itself (Voyager code skills, LearnAct Python actions, COS-PLAY protocols, WikiSkill text skills); each gates entries on a check, and each reports the library helping, with controls that differ in strength."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-wang-2023-voyager.md
   - data/raw/papers/2026-11-08-zhao-2024-empowering-large-language-model-agents.md
@@ -36,3 +36,4 @@ The common idea is that an agent improves with frozen or lightly trained weights
 - [[SkillWeaver Compositional Skill Routing]] — related
 - [[Recursive Self-Improvement]] — prerequisite-for
 - [[Reflexion]] — prerequisite-for
+- [[SkillRL Hierarchical Skill Bank]] — instance-of

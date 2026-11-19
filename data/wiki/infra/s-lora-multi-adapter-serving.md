@@ -2,7 +2,7 @@
 title: S-LoRA Multi-Adapter Serving
 tags: [infra, concept]
 summary: "S-LoRA serves thousands of LoRA adapters from one base model by batching the base computation, keeping adapters in host memory, and paging adapter weights and KV cache from one shared GPU pool; it held 7.61 req/s at 2,000 adapters on one A100 (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-sheng-2023-s-lora.md
 ---
@@ -35,3 +35,4 @@ One memory pool serves both KV cache and adapter weights, with a page holding on
 - [[Prefix Caching]] — related (another way of sharing GPU memory across requests)
 - [[KV Cache Reduction Methods]] — related (KV memory pressure that shares the pool)
 - [[Doc-to-LoRA]] — related (adapters generated per document)
+- [[Parameter-Efficient Fine-Tuning Methods]] — prerequisite-for (the adapter methods being served)

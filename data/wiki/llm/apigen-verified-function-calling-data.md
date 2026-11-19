@@ -32,3 +32,4 @@ Liu et al. (Salesforce AI Research, a 2024 preprint) build synthetic function-ca
 - [[Salesforce Koa]] — extends (Koa's SFT baseline uses APIGen and APIGen-MT data)
 - [[AgentScaler Environment Scaling]] — related
 - [[Agent-FLAN Agent Tuning Data Design]] — alternative-to
+- [[AgentSkiller Cross-Domain Trajectory Synthesis]] — extends (cross-domain tasks verified by execution)

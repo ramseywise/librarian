@@ -43,3 +43,6 @@ Multi-Agent Evolve (MAE; Chen et al., a 2025 preprint from UIUC, PKU and NVIDIA)
 - [[Recursive Self-Improvement]] — prerequisite-for
 - [[MASS Multi-Agent Self-Supervision]] — alternative-to
 - [[Autodata Agentic Self-Instruct]] — related
+- [[Interpreter-Verified Self-Generated Programming Puzzles]] — related
+- [[Dr. Zero Self-Evolving Search Agents]] — alternative-to
+- [[Self-Play SWE-RL (SSR)]] — related

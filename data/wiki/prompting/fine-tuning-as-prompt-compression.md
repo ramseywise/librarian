@@ -2,7 +2,7 @@
 title: Fine-Tuning as Prompt Compression
 tags: [prompting, foundations, concept]
 summary: Fine-tuning is prompt engineering by other means — full fine-tuning teaches facts, LoRA teaches which existing behaviours and priors to use, soft prompting learns a vector-valued prompt; reach for it when the static prompt is long, stable and still not followed, then make prompts look like the fine-tuning documents.
-updated: 2026-10-30
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--04-controlling-output.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--08-prompt-optimization.md
@@ -45,3 +45,4 @@ Riding Hood principle, [[Four Prompt Criteria]]).
 - [[Prompt Optimization]] — alternative-to
 - [[Four Prompt Criteria]] — extends
 - [[RLHF Pipeline]] — prerequisite-for
+- [[Parameter-Efficient Fine-Tuning Methods]] — related (finetuning methods compared)

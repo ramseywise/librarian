@@ -34,3 +34,5 @@ Setup: eight commonsense reasoning tasks, average accuracy against LoRA at the s
 - [[PCA, NMF and Low-Rank Factorisation]] — prerequisite-for (the low-rank idea underneath)
 - [[CALM Composition to Augment LLMs]] — alternative-to (added cross-attention to a second model instead of low-rank updates)
 - [[Intrinsic Dimension of Objective Landscapes]] — related (why few trainable parameters can suffice)
+- [[Parameter-Efficient Fine-Tuning Methods]] — prerequisite-for (the PEFT family DoRA sits in)
+- [[LoReFT Representation Finetuning]] — alternative-to (edits hidden states instead of weights; compared against DoRA)

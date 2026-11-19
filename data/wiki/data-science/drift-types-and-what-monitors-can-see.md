@@ -2,7 +2,7 @@
 title: "Drift Types and What Monitors Can See"
 tags: [data-science, pattern]
 summary: "Covariate shift is loud and harmless, prior and concept shift are silent to input monitors, and feature skew can break a model while the score monitor barely moves; bin coded columns by level."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--10-imbalance-errors-and-drift.md
 ---
@@ -37,3 +37,4 @@ Score monitoring alone misses most of this; watch inputs too. **Bin coded column
 - [[Drift Seen and Unseen in an Automated Router]] — instance-of
 - [[Monitoring Layers and What Each Can See]] — related
 - [[Concept-Drift Detector Families and Prequential Evaluation]] — extends (label-based detectors and stream evaluation)
+- [[Test-Time Training with a Rotation Auxiliary Task]] — related

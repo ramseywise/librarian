@@ -37,3 +37,4 @@ Setup: Llama2-7B, full SFT, one epoch on 24,703 samples mixed 1:1 with ShareGPT,
 - [[Rejection Sampling Fine-Tuning]] — alternative-to (FireAct-style filtered trajectories versus mixture design)
 - [[APIGen Verified Function-Calling Data]] — alternative-to
 - [[AgentTuning and AgentInstruct]] — alternative-to
+- [[Agent Data Protocol (ADP)]] — related (schema that unifies agent datasets)

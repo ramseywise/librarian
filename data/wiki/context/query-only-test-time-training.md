@@ -2,7 +2,7 @@
 title: Query-Only Test-Time Training (qTTT)
 tags: [context, concept]
 summary: qTTT caches the key/value states of a long prompt and then takes a few gradient steps on the query projection alone, on the model's own context, to counter score dilution in softmax attention; with Qwen3-4B it beats a FLOP-matched thinking budget on LongBench-v2 and ZeroScrolls (self-reported).
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-bansal-2025-let-s-not-just-put.md
 ---
@@ -45,3 +45,4 @@ Because keys and values stay fixed, the cache is reused and the cost is dominate
 - [[Context Failure Modes]] — related (the failure it targets)
 - [[Doc-to-LoRA]] — alternative-to (both move context information into weights at inference)
 - [[Why Context Is Finite]] — related
+- [[Test-Time Training with a Rotation Auxiliary Task]] — prerequisite-for

@@ -54,3 +54,4 @@ On cost, explaining a 1000-tree random forest with 5,000 perturbations took unde
 - [[SHAP Attributions and the Limits of Explanations]] — extends (Kernel SHAP is linear LIME with a different kernel)
 - [[What Drives Sentiment: LIME, Per-Class Topics and Log-Odds]] — instance-of
 - [[Tree Ensemble Interpretation Beyond Impurity Importance]] — alternative-to (global importance versus a local surrogate)
+- [[Lipton's Notions of Interpretability]] — related

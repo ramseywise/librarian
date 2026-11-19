@@ -2,7 +2,7 @@
 title: Sequence-Level Knowledge Distillation
 tags: [infra, pattern]
 summary: "Seq-KD trains a small student on the teacher's beam-search outputs instead of its word distributions; Kim and Rush (2016) report students about 10x faster than the teacher with little BLEU loss on English-German translation."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-kim-2016-sequence-level-knowledge-distillation.md
 ---
@@ -46,3 +46,4 @@ On English-German test data, the 2x500 Seq-KD student puts 16.9% of its probabil
 - [[LLM Inference Economics]] — prerequisite-for
 - [[Straight-Through Estimator]] — related
 - [[Model Compression with MUNGE Mimic Nets]] — related (ensemble compression into a small net)
+- [[Knowledge Distillation with Soft Targets]] — prerequisite-for (the word-level soft-target loss it builds on)

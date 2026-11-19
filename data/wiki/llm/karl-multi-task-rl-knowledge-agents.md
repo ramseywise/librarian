@@ -40,3 +40,4 @@ Setup: KARLBench total, no seeds or intervals, authors' own harness with the bes
 - [[Deep Research Agent Systems]] — related
 - [[Harness-1 State-Externalizing Search Agent]] — alternative-to
 - [[DAPO]] — alternative-to (a different way of stabilising policy-gradient RL)
+- [[Search-R1 Reasoning with Search RL]] — related

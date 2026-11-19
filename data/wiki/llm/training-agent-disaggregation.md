@@ -65,3 +65,4 @@ evaluation while smaller models serve the trained roles.
 - [[Reward Hacking and Overoptimization]] — prerequisite-for (what a weak reward does to the trained role)
 - [[Post-Training for Agents]] — related
 - [[Agent Lightning v1.0 Harnessed Agentic RL]] — instance-of
+- [[ClawGym II Black-Box Harness RL]] — related

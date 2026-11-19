@@ -2,7 +2,7 @@
 title: Diversity Seeding for Synthetic Data
 tags: [prompting, eval, pattern]
 summary: Temperature alone does not make synthetic data diverse — inject the randomness into the prompt by sampling combinations of dimension values (TinyStories), generating hierarchically, varying target audience (phi-1), or few-shot query generation for retrievers (Promptagator); a seeded label is a free label.
-updated: 2026-10-30
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--11-applications.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--09-evaluating-prompts.md
@@ -58,3 +58,4 @@ model trained on comparable human labels. See [[Synthetic Dataset Generation for
 - [[Synthetic Dataset Generation for RAG Eval]] — extends
 - [[Evaluating Prompts]] — prerequisite-for
 - [[Few-Shot Prompting]] — extends
+- [[Impossible Distillation]] — related (filtering sampled pairs for diversity)

@@ -36,3 +36,4 @@ Ge et al. (ECNU and Shanghai AI Lab, a 2026 preprint) build task environments fr
 - [[Terminal-Bench]] — related
 - [[APIGen]] — related (verifier-gated synthetic agent data)
 - [[Salesforce Koa]] — related (RL post-training of a tool-use model, SFT against RL comparison)
+- [[SkillRL Hierarchical Skill Bank]] — related

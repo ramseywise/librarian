@@ -40,3 +40,4 @@ Partial dependence sets one column to each grid value for every row, predicts an
 - [[Gradient Boosting Mechanics and Library Choice]] — related
 - [[Explain vs Predict Modelling]] — related
 - [[LIME Local Surrogate Explanations and Submodular Pick]] — alternative-to (local surrogate instead of global importance)
+- [[Lipton's Notions of Interpretability]] — related

@@ -2,7 +2,7 @@
 title: Inverse Scaling in Test-Time Compute
 tags: [prompting, concept]
 summary: "Gema et al. find tasks where giving a reasoning model a longer budget lowers accuracy, with distractor, spurious-feature and constraint-tracking failure modes, so test-time compute is not monotone."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-gema-2025-inverse-scaling-test-time-compute.md
 ---
@@ -33,3 +33,4 @@ The result sits beside [[Overthinking and Concise Reasoning]]: both say longer t
 - [[Adaptive Branching MCTS]] — related (spending budget wider rather than longer)
 - [[Few-Shot Prompting]] — related (examples fixed the regression task)
 - [[Price Reversal in Reasoning-Model Costs]] — related
+- [[s1 Budget Forcing]] — related (budget forcing and extended thinking)

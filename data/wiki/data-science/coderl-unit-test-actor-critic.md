@@ -2,7 +2,7 @@
 title: CodeRL Unit-Test Actor-Critic
 tags: [data-science, pattern]
 summary: "CodeRL finetunes a pretrained code model (CodeT5-770M) with an actor-critic loop that uses unit-test outcomes as rewards, then at inference refines passing programs and repairs failing ones from error messages (Critic Sampling); it set new APPS pass@k results in 2022 (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-le-2022-coderl.md
 ---
@@ -34,3 +34,4 @@ The extraction lost most pass@k values, so these are given by direction and by t
 - [[Reinforcement Learning Foundations]] — prerequisite-for
 - [[Code Generation Prompting]] — related
 - [[Repository-Level Coding Benchmarks]] — related
+- [[AlphaCode Sample, Filter and Cluster]] — alternative-to

@@ -33,3 +33,6 @@ Ablations, all at small margins and single runs:
 - [[Salesforce Koa]] — related
 - [[Toolformer Self-Supervised Tool Use]] — related
 - [[RL Training Frameworks for LLMs]] — related
+- [[PivotRL Pivot-Turn Agentic RL]] — related
+- [[GDPO Decoupled Reward Normalization]] — related
+- [[rStar2-Agent GRPO-RoC]] — alternative-to (binary answer-only reward, rollout filtering instead of reward shaping)

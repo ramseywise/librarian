@@ -12,6 +12,7 @@ sources:
   - data/raw/papers/2026-11-06-li-2025-rethinking-mixture-agents.md
   - data/raw/papers/2026-11-08-hu-2024-rankprompt.md
   - data/raw/papers/2026-11-08-prabhu-2024-pedal.md
+  - data/raw/papers/2026-11-07-wang-2022-self-consistency-improves-chain-thought.md
 ---
 
 # Self-Consistency
@@ -51,13 +52,30 @@ Hu et al. (2024) sample 5 few-shot chains (temperature 0.7) and ask the same mod
 
 Prabhu (2024) builds several prompts from differently seeded exemplars, takes one greedy answer per prompt, then has the model pick the most consistent one. On SVAMP with Llama-3-8B-Instruct it scores 74.11 against 70.22 greedy and 72.99 for universal self-consistency, using 197.72 output tokens against 923.56; on Qwen2-7B-Instruct universal self-consistency is more accurate (self-reported). Limits: two small datasets (300 and 345 items), gains within seed noise on some cells (ARC Qwen2 +0.39), the cost count covers output tokens only and PEDAL uses more input tokens, and the comparison with single-chain CoT is interpolated, not run.
 
+## Results in the original paper (Wang et al.)
+
+Wang et al. (ICLR 2023, arXiv v4) draw m reasoning paths from an unmodified model prompted with few-shot CoT exemplars (using temperature and top-k sampling), extract each path's final answer and output the most common one; the paper's hypothesis is that correct reasoning processes, even diverse ones, agree more on their final answer than incorrect ones. Numbers are the paper's own (self-reported), 40 sampled paths unless noted:
+
+- PaLM-540B on GSM8K (8 exemplars, T=0.7, k=40, averaged over 10 runs): 56.5 greedy CoT to 74.4. code-davinci-002: GSM8K 60.1 to 78.0, with AQuA +12.2, SVAMP +11.0, StrategyQA +6.4 and ARC-challenge +3.9.
+- Small models gain less: UL2-20B GSM8K 4.1 to 7.3; LaMDA-137B 17.1 to 27.7.
+- Unweighted majority vote (74.4) matches a length-normalised probability-weighted sum (74.1); unnormalised weighting (59.9) and a weighted average (22.1) are worse (PaLM-540B GSM8K).
+- Sample-and-rank gains much less at equal samples (code-davinci-001, read from a figure). On UL2-20B AQuA, beam search falls from 23.6 to 10.2 as beams grow from 1 to 40 while sampled self-consistency reaches 26.9.
+- On LaMDA-137B GSM8K, self-consistency 27.7 beats 40 prompt permutations (19.2) and 3 prompt sets (18.6); the best multi-model ensemble (LaMDA plus PaLM, 36.9) is far below PaLM-540B self-consistency (74.4).
+- On NLP tasks where CoT hurt, it recovers the loss (PaLM-540B): e-SNLI goes from 81.0 to 88.4, RTE from 79.1 to 86.3 and ANLI-R1 from 68.8 to 78.5. Zero-shot CoT with 40 paths on GSM8K: 43.0 to 69.2. With numbers in rationales randomised, LaMDA-137B drops to 14.9 and self-consistency recovers to 23.4.
+- Gains are stable across three manually written prompt sets on PaLM-540B GSM8K (+17.9, +17.5, +16.4). Because performance saturates fast, the authors suggest starting with 5 or 10 paths. They also observe that how many decodes agree with the aggregate answer tracks accuracy, so that share can act as an uncertainty estimate.
+
+For the sequential alternative to parallel voting see [[s1 Budget Forcing]], which compares budget forcing against majority voting on AIME24.
+
 ## Limits
 
-Small question sets, three small models, and several internal count inconsistencies noted in the extraction; do not extend the result to frontier models.
+- Original paper (Wang et al.): extra compute (40 samples per question); only where final answers come from a comparable fixed set; models can still produce incorrect reasoning paths when the answer is right; small gains at small scale; LaMDA and PaLM are not public; the engines are 2022-era and no longer served.
+- Mirzaei et al. study: small question sets, three small models, and several internal count inconsistencies noted in the extraction; do not extend the result to frontier models.
 
 ## See Also
 - [[Chain-of-Verification]] — related (the model checks its own draft with isolated questions)
 - [[Prompting Technique Selection]] — instance-of
+- [[s1 Budget Forcing]] — alternative-to (extends one chain's thinking instead of voting across samples)
+- [[STaR Self-Taught Reasoner]] — related (the STaR paper proposes majority vote for question-only data)
 - [[Tree of Thoughts]] — prerequisite-for
 - [[Prompting Reasoning Models]] — alternative-to
 - [[SelfCheckGPT]] — related (uses agreement across samples to flag hallucinated sentences)

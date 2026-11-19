@@ -2,7 +2,7 @@
 title: GEPA Reflective Prompt Evolution
 tags: [prompting, pattern]
 summary: "GEPA is a prompt optimizer for multi-module LLM systems that has a reflection model read run traces and textual feedback, rewrite one module's prompt, and keep candidates on a per-instance Pareto frontier; the paper reports it beating GRPO on five of six tasks with far fewer rollouts (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-agrawal-2025-gepa.md
 ---
@@ -53,3 +53,4 @@ All numbers are the paper's own (self-reported) and come from single runs.
 - [[Reflexion]] — related (reflection on trajectories in language)
 - [[SkillOpt Agent Skill Optimization]] — alternative-to (gated, bounded-edit optimizer for skills)
 - [[Harness-R1 Learned Harness Editing]] — related
+- [[On-Policy Correction for Harness-Model Co-Evolution]] — extends

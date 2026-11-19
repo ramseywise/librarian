@@ -2,7 +2,7 @@
 title: Chunked Prefill and Adaptive Batching
 tags: [infra, pattern]
 summary: "Chunked prefill splits a long prompt into pieces so decode steps can interleave, and adaptive batching tunes batch size and delay to load; the source rules of thumb are mostly unmeasured."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-ai-systems-performance-engineering-ch16-profiling-debugging-tuning-inference-sca.md
   - data/raw/papers/2026-11-08-ai-systems-performance-engineering-ch19-dynamic-adaptive-inference-engine-optimi.md
@@ -42,3 +42,4 @@ Quantizing KV from INT8 to INT4 halves KV memory (arithmetic); quantized KV give
 - [[Prefix Caching]] — related
 - [[FlashAttention and FlashAttention-2]] — related
 - [[TurboTransformers Variable-Length Serving]] — related
+- [[PagedAttention and vLLM KV Cache Paging]] — related

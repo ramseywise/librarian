@@ -5,6 +5,7 @@ summary: ACM gives the agent two tools, one to summarise everything since the la
 updated: 2026-11-08
 sources:
   - data/raw/papers/2026-11-06-li-2026-acm.md
+  - data/raw/papers/2026-11-07-glm-5-team-2026-glm-5.md
 ---
 
 # Agentic Context Management (ACM)
@@ -24,6 +25,10 @@ BrowseComp-Plus Pass@1 (150 test and 680 training questions): ReAct scores 0.570
 - DeepSearchQA rose from 0.367 to 0.425 while peak tokens went from 46K down to 41K. SWE-Bench Verified rose from 0.489 to 0.530 with peak tokens from 59k down to 50K.
 - Untrained GPT-5.5 makes almost no calls to the tools. Pass^4 rose from 34.1 to 59.3 and Pass@4 from 73.5 to 82.0 for the trained model.
 - Ablation: distillation alone 0.623, ACM data alone 0.727, both 0.734.
+
+## A fixed-rule contrast: GLM-5 context folding
+
+The GLM-5 report (self-reported, BrowseComp, o3-mini judge with the official OpenAI prompt) uses rules rather than a learned trigger. Keep-recent-k folds away any tool observation from before the latest k rounds; with k=5 it lifted BrowseComp from 55.3% to 62.0%. A hierarchical variant adds a discard-all step at T=32k (chosen by parameter search), giving 75.9. Neither figure has a stated run count.
 
 ## Limits
 

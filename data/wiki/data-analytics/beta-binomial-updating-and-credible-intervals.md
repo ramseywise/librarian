@@ -64,3 +64,4 @@ Downey's *Think Bayes* (ch. 4) spins a Belgian one-euro coin 250 times and sees 
 - [[Predicting from a Posterior as a Mixture]] — extends
 - [[Locomotive Problem: Estimators and Losses]] — related (credible interval from a grid posterior)
 - [[Grid and Quadratic Approximation and Posterior Samples]] — extends
+- [[Gittins Index and Bayesian Optimal Bandits]] — extends (conjugate updates inside bandit policies)

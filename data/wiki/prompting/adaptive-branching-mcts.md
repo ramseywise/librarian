@@ -2,7 +2,7 @@
 title: Adaptive Branching MCTS
 tags: [prompting, pattern]
 summary: "AB-MCTS decides at each node whether to sample a new answer (wider) or refine an existing one using external feedback (deeper), via Thompson sampling; it had the best average rank in the paper, with margins often inside the error bars (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-inoue-2025-wider-or-deeper.md
 ---
@@ -32,3 +32,4 @@ AB-MCTS (Inoue et al.) frames inference-time search as a choice between width (a
 - [[Best-of-k Headline Inflation]] — related (Pass@k depends on the budget k)
 - [[Verification Loops]] — related (the external evaluator)
 - [[CoAT Associative-Memory MCTS]] — related
+- [[DeepSearch MCTS in RLVR Training]] — related (tree search inside RL training)

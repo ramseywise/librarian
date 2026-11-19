@@ -2,7 +2,7 @@
 title: Few-Shot Prompting
 tags: [prompting, llm, concept]
 summary: Providing worked examples before the task — the most reliable lever for steering output format, tone and structure without fine-tuning, but examples teach more than intended (distribution, order, range), so use them only for what is genuinely non-obvious.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt--prompt-engineering.md
   - data/raw/papers/2026-11-07-huyen-ai-engineering-ch05-prompt-engineering.md
@@ -163,3 +163,4 @@ Limits of this section:
 - [[Context-Faithful Prompting]] — related
 - [[RAG+ Application-Aware Retrieval]] — related
 - [[HiAR-ICL Thought Cards]] — extends
+- [[Multitask Prompted Instruction Tuning (FLAN, T0, Super-NaturalInstructions, MetaICL)]] — related (MetaICL meta-trains for few-shot in-context learning)

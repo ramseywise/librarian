@@ -2,7 +2,7 @@
 title: Chain-of-Thought Prompting
 tags: [prompting, concept]
 summary: Few-shot exemplars that include written-out intermediate reasoning steps; a prompting technique with scale-dependent gains and a contested account of why it works.
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-wei-2022-chain-thought-prompting-elicits-reasoning.md
   - data/raw/papers/2026-11-08-wang-2022-towards-understanding-chain-thought-prompting.md
@@ -71,3 +71,6 @@ Sevinc and Gumus (2024) have GPT-4-1106-preview write sub-question traces for ea
 - [[Plan-and-Solve Prompting]] — extends
 - [[LILA Math Reasoning Benchmark]] — related (program output versus direct answers)
 - [[SciBench]] — related (chain-of-thought and tool prompting compared)
+- [[Flan-PaLM Instruction Finetuning Scaling]] — related (CoT data in instruction finetuning)
+- [[Distilling Step-by-Step]] — instance-of (CoT rationales used as training supervision for a small model)
+- [[STaR Self-Taught Reasoner]] — extends (fine-tunes on self-generated rationales)

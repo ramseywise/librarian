@@ -2,7 +2,7 @@
 title: KV Cache Reduction Methods
 tags: [infra, concept]
 summary: "The KV cache grows with batch, sequence length, hidden size and layers, so reduction methods cut it along different axes (tokens, precision, channels, layers, sparsity); this page maps the axes and records the survey's reported numbers and its caution that sparse attention does not by itself shrink KV memory."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-xu-2024-survey-resource-efficient-llm-multimodal.md
   - data/raw/papers/2026-11-07-ai-agents-definitive-guide-ch04-models-behind-agents-capabilities-optimization.md
@@ -45,3 +45,4 @@ Koenigstein (ch. 4) reads the config of Qwen2.5-7B-Instruct-1M: 28 query heads s
 - [[Lookahead Sparse Attention]] — instance-of
 - [[Declarative Attention]] — instance-of
 - [[Speculative Decoding]] — related (the survey's other decode-side lever)
+- [[PagedAttention and vLLM KV Cache Paging]] — extends

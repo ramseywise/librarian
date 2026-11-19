@@ -2,7 +2,7 @@
 title: Intrinsic Dimension of Objective Landscapes
 tags: [multimodal, concept]
 summary: "Training only a d-dimensional random projection of a network's parameters and finding the smallest d that reaches 90% of normal performance (d_int90) gave about 750 for an MNIST fully connected net of 199,210 parameters, nearly constant across model sizes (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-li-2018-measuring-intrinsic-dimension-objective-landscapes.md
 ---
@@ -35,3 +35,4 @@ Parameters are written theta(D) = theta0(D) + P theta(d). Both the starting vect
 
 ## See Also
 - [[DoRA Weight-Decomposed Low-Rank Adaptation]] — related (low-dimensional adaptation of large models; this paper does not study it)
+- [[Black-Box Tuning for Language-Model-as-a-Service]] — instance-of (uses a low-dimensional random subspace for prompt search)

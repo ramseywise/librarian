@@ -6,6 +6,8 @@ updated: 2026-11-19
 sources:
   - data/raw/claude-docs/learn-ai-engineering/docs/research/2026-07-22_rl_landscape.md
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--post-training-for-agents.md
+  - data/raw/papers/2026-11-07-lightman-2023-let-s-verify-step-step.md
+  - data/raw/papers/2026-11-07-lambert-2024-tulu-3.md
 ---
 
 # Outcome vs Process Reward Models
@@ -61,6 +63,26 @@ rule-based ORM; other reward forms for agents are summarized in [[Post-Training 
 [[RLVP — Verifiable Path Penalties]] sits between ORM and PRM: it keeps an outcome reward
 and adds deterministic penalties for path violations, without a learned step scorer.
 
+## Let's Verify Step by Step (PRM800K)
+
+Lightman et al. (2023, preprint) compare process supervision (feedback per reasoning step) with outcome supervision (feedback on the final answer) as ways to train reward models on hard math. One frozen GPT-4 generator writes MATH solutions split into steps, and human labelers rate every step as positive, negative or neutral; the resulting labels are the PRM800K dataset. Both PRMs and ORMs start from GPT-4 plus an extra math pretraining stage, and are judged on best-of-N selection accuracy. For ablations, a small-scale regime has the large PRM stand in as a labelling oracle. Their numbers (self-reported):
+
+- On a 500-problem MATH test subset, selecting from 1860 samples, the large PRM outperforms both the ORM and majority voting and solves 78.2%. The PRM was trained on PRM800K; the ORM on 100 uniformly drawn samples per problem, a different and larger set; neutral steps count as positive and step scores are multiplied. On out-of-distribution STEM tests (AP Calculus, Chemistry, Physics, AMC10/12; 100 samples per problem) the PRM also wins in aggregate.
+- Choosing which solutions to label by active learning is about 2.6 times as data-efficient as labelling uniformly, in the small-scale setting at best-of-500.
+- At small scale, process supervision outperforms each outcome-supervision variant at every data size (1 to 200 solutions per problem), and outcome supervision via the large PRM beats simply checking the final answer.
+- After active learning the labelled data is mostly incorrect solutions (85.1% in phase 1, 13.2% in phase 2). Labelers had to answer 30 quality-control questions and were admitted at 75% agreement with gold labels. A convincing wrong-answer solution is one the current best PRM rates highly that ends in a wrong answer.
+
+The DeepSeekMath paper's curves also favour process over outcome supervision for GRPO ([[GRPO Group Relative Policy Optimization]]), and a pass@k study questions what RLVR adds beyond the base model ([[RLVR Pass@k Reasoning Boundary]]). The problems come from the [[MATH Dataset]].
+
+## Tulu 3's verifiable reward (Lambert et al.)
+
+Tulu 3 (Lambert et al., 2024) runs PPO with a binary verifiable reward after preference tuning (RLVR): the verifier returns alpha for a verifiably correct answer and 0 otherwise, with alpha set to 10 from pilot experiments and not tuned (self-reported, all RLVR runs). In a GSM8K RLVR sweep of the KL coefficient beta from 0.1 down to 0.001, a variant that also added reward-model scores to the verifiable reward scored below the verifiable reward alone (self-reported; Figure 22).
+
+## Limits
+
+- Lightman et al.: the large-scale ORM and PRM training sets cannot be compared directly, since the PRM set is biased by active learning and an order of magnitude smaller. No RL is applied to the generator; only the reward models are evaluated, via best-of-N. Whether this carries beyond math is unknown. Retraining the selector iteratively was unstable and brought no gain. MATH test contamination is possible, though the authors expect relative comparisons to hold. The optimizer, learning rate, batch size and hardware go unreported.
+- Lambert et al.: the RLVR stage handles just math and checkable instruction following, and its targets overlap with evaluation benchmarks; alpha was not tuned; the reward-model comparison is a GSM8K-only sweep, one run per configuration.
+
 ## See Also
 - [[Preference Optimization Algorithms]] — prerequisite-for (GRPO and DAPO, the reasoning methods that consume these rewards)
 - [[Reward Hacking and Overoptimization]] — extends (the proxy problem, at step level rather than response level)
@@ -74,3 +96,9 @@ and adds deterministic penalties for path violations, without a learned step sco
 - [[Post-Training Reasoning Data Primer]] — related
 - [[SelfCheck Step Verification]] — alternative-to (prompted step checks with no trained scorer)
 - [[Olympiad Proof Agents and Verifier Loops]] — related
+- [[Phi-4 Training Recipe and Pivotal Token Search]] — instance-of (token-level process supervision for DPO pairs)
+- [[PAPO Process Rewards for Diffusion LLMs]] — related (step reward from a one-step denoised completion)
+- [[DeepSearch MCTS in RLVR Training]] — related
+- [[SDPO Self-Distillation Policy Optimization]] — related
+- [[GRPO Group Relative Policy Optimization]] — related
+- [[Tulu 3 Post-Training Recipe and RLVR]] — related (verifiable outcome reward with PPO)

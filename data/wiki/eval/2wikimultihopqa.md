@@ -45,3 +45,4 @@ Self-reported by the paper.
 - [[RAG Evaluation]] — prerequisite-for
 - [[FRAMES Benchmark]] — related (a later multi-hop retrieval benchmark)
 - [[HotpotQA]] — prerequisite-for (the earlier multi-hop set it is compared with)
+- [[MuSiQue Multihop QA]] — alternative-to

@@ -279,3 +279,4 @@ Zhang et al.: the human and model question sets come from different contexts (Ho
 - [[Promptagator Few-Shot Synthetic Retrieval Data]] — related
 - [[ARES Automated RAG Evaluation]] — related
 - [[Model-Written Evaluations]] — related (another model-generated test set pipeline)
+- [[Impossible Distillation]] — instance-of (synthetic paraphrase data from a small model plus critic filtering)

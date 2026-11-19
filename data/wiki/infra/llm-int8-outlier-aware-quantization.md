@@ -2,7 +2,7 @@
 title: LLM.int8 Outlier-Aware Quantization
 tags: [infra, concept]
 summary: "LLM.int8() quantizes transformer matrix multiplications to 8 bits with per-vector scaling and routes the rare large-magnitude outlier feature dimensions through 16-bit, which the paper reports preserves quality up to 175B parameters."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-dettmers-2022-llm-int8.md
 ---
@@ -32,3 +32,4 @@ Dettmers et al. ask why standard 8-bit quantization fails on large transformers 
 - [[SparseGPT and Wanda Post-Training Pruning]] — related
 - [[Model Compression Landscape]] — related
 - [[LLM Inference Economics]] — related
+- [[QLoRA 4-Bit Quantized Finetuning]] — related (quantised base model finetuned with adapters)

@@ -6,6 +6,7 @@ updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--post-training-for-agents.md
   - data/raw/papers/2026-11-06-liao-2026-multi-turn-policy-distillation-prefix.md
+  - data/raw/papers/2026-11-06-shen-2026-geometry-policy-distillation.md
 ---
 
 # On-Policy Distillation
@@ -39,6 +40,17 @@ SFT by 23–47 points. The lesson drawn: what stalls post-training is usually **
 density, not reward cleverness**. The inference-time analogue is feeding the model a
 runtime state line, as in [[Agent Status Bar]].
 
+## What it does to the weights (Shen et al. 2026)
+
+Shen et al. (arXiv 2606.07082v3, preprint) measure parameter-space geometry, not accuracy or sample efficiency, so they neither support nor contradict the step-count claims above. Setup (self-reported): Qwen3-8B on math prompts (dapo-math-17k); OPD uses a Qwen3-32B teacher and RLVR is GRPO, both starting from the same SFT anchor; "unchanged" means |dW| <= 1e-3 * max|w| in bf16.
+
+- Update sparsity sits between SFT and RLVR, nearer RLVR: 8.1% of weights unchanged for SFT (base to SFT), 51.6% for OPD, 77.2% for RLVR. Across teacher scale (8B, 14B, 32B), student scale, a code variant and a MoE teacher, OPD stays within 48.6% to 57.1%.
+- Update density is 92.73%, 46.28% and 27.76% for SFT, OPD and RLVR, and overlap with low-magnitude weights is 31.88%, 53.59% and 73.48%. The spectral drift is at the 1e-3, 1e-4 and 1e-5 level respectively.
+- Subspace locking: OPD's cumulative update stays in a narrow low-rank band throughout training (stable rank averaged over 144 attention matrices), while SFT expands and RLVR contracts. Its top-16 update subspace matches its final one from the first measured checkpoint.
+- Restricting gradients to the early rank-16 subspace (taken at about 20% of training) left OPD essentially unchanged on AIME 2024 and degraded SFT; no accuracy numbers are printed, only curves.
+- The lock survives keeping only 25% or 50% of tokens and off-policy teacher rollouts, but not a weak OPD share when OPD and RLVR advantages are mixed (A = alpha A_OPD + (1 - alpha) A_RLVR): OPD-dominant mixtures keep the OPD-like trajectory. The authors recommend viewing OPD as a way to control geometry, where the main lever is how the objectives are composed, rather than only as denser token-level supervision.
+- In this paper's implementation OPD is a reverse KL realised as a GRPO-style advantage, A_OPD = log pi_T minus log pi_theta at the sampled token, so the coefficient varies per token where RLVR shares one sequence-level value. Recipe: 300 prompts with 8 samples each, sampling temperature 1.0, 299 steps, learning rate 1e-6, KL loss disabled.
+
 ## Self-distillation (OPSD)
 
 On-policy self-distillation (Zhao et al. 2026) is for when no stronger teacher exists. One
@@ -62,7 +74,7 @@ ReOPD (Microsoft Research and Amsterdam, a July 2026 preprint) adapts on-policy 
 - Rollout time per step fell from 169 s to 40 s (math) and 64 s to 7 s (search), with zero tool calls in training; the extraction notes these readings come from figure labels.
 - Prefixes from the teacher's own model beat prefixes from a smaller or larger generator.
 
-**Limits.** One fixed kappa, Qwen3 models only, students up to 8B, tool-call caps of 16 and 4, no seeds or intervals, and gains of a tenth or two are called "on par". The bound in the paper uses teacher support as a stand-in for unmeasured reliability.
+**Limits.** The geometry study covers only controlled Qwen3-family reasoning settings, one main run per method and no error bars; SFT ran about 5K steps from base against 299 for OPD and 1,023 for RLVR, each from a different origin, so the comparison mixes stage and scale; the sparsity measure depends on bf16 precision; and the extraction flags an unresolved mismatch between a 30% random baseline and alpha=0.5 in the mask definition. For ReOPD: one fixed kappa, Qwen3 models only, students up to 8B, tool-call caps of 16 and 4, no seeds or intervals, and gains of a tenth or two are called "on par". The bound in the paper uses teacher support as a stand-in for unmeasured reliability.
 
 ## See Also
 - [[Post-Training for Agents]] — instance-of (the dense-signal option in the post-training toolkit)
@@ -75,5 +87,7 @@ ReOPD (Microsoft Research and Amsterdam, a July 2026 preprint) adapts on-policy 
 - [[Reinforcement-Learned Teachers]] — related (teacher trained with RL for explanations, then used to distil)
 - [[Compiling Workflows into Weights]] — related (SFT on teacher dialogues along a workflow, no on-policy step)
 - [[Subliminal Learning]] — related (traits can pass through distillation data)
+- [[Knowledge Distillation with Soft Targets]] — prerequisite-for (the original soft-target teacher-student loss)
 - [[Sequence-Level Knowledge Distillation]] — related (teacher-generated rather than student-generated sequences)
 - [[Model Compression with MUNGE Mimic Nets]] — related (early ensemble-to-net compression)
+- [[SDPO Self-Distillation Policy Optimization]] — extends (self-teacher conditioned on feedback, no external teacher)

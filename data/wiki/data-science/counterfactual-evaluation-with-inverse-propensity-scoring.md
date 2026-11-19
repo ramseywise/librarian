@@ -2,7 +2,7 @@
 title: "Counterfactual Evaluation with Inverse Propensity Scoring"
 tags: [data-science, pattern]
 summary: "Logs only record what the old system showed; inverse propensity scoring reweights logged events by one over the logging probability to estimate an unshipped policy's value, at the price of variance, so log propensities, keep some randomisation and report effective sample size."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--05-time-series-and-recommenders--notes--03-two-tower-and-evaluation.md
 ---
@@ -43,3 +43,6 @@ Full-catalogue offline metrics (cheap, biased by logs), then counterfactual esti
 - [[Minimum Detectable Effect and Sample Size]] — related
 - [[Peeking and Sequential Testing]] — related
 - [[Thompson Sampling and Bandit Regret]] — related
+- [[LinUCB and Linear Bandit Confidence Ellipsoids]] — related (its news-recommendation section applies the replay evaluation)
+- [[Exp4 and Oracle-Based Contextual Bandits]] — related (inverse-propensity estimates inside contextual bandit learners)
+- [[Exp3 Adversarial Bandit Algorithms]] — related

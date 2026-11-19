@@ -5,6 +5,7 @@ summary: "Expectations always add, even for dependent variables, while variances
 updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--02-probability-foundations.md
+  - data/raw/papers/2026-11-08-bandit-algorithms-ch02-foundations-probability.md
 ---
 
 # Expectation and Variance Rules
@@ -32,6 +33,10 @@ Total variance is the average within-group spread plus the spread between group 
 
 The second identity is why stratification and covariate adjustment ([[Regression Covariate Adjustment]]) reduce noise: if you already know a user's group or prior spend, that part of the variance was never about the treatment. A simple comparison stays unbiased only if the mix is balanced across arms.
 
+## Measure-theoretic statement
+
+Lattimore and Szepesvari's chapter 2 (measure-theoretic background for the bandit book) states the same two facts formally. Dependent terms still have additive expectations, provided E of the sum of absolute values exists; a product rule E[XY] = E[X]E[Y] is available only for independent integrable variables. The identity E[X] = E[E[X | B]] above is the tower rule: if G1 is a sub-sigma-algebra of G2, then E[X | G1] = E[E[X | G2] | G1] almost surely. Conditioning is defined through sub-sigma-algebras since an event of probability zero cannot be conditioned on directly. The chapter is background with no bandit setting, and the authors say much of the book can be read without it.
+
 ## Failure modes
 
 - Adding variances without checking covariance.
@@ -42,3 +47,4 @@ The second identity is why stratification and covariate adjustment ([[Regression
 - [[Regression Covariate Adjustment]] — related (applies the between-group term)
 - [[Independence Pitfalls]] — related
 - [[CLT on Heavy-Tailed Metrics]] — prerequisite-for (the s/sqrt(n) rule)
+- [[Sub-Gaussian Tail Bounds and Confidence Radii]] — extends (turns the mean's variance into an exponential tail)

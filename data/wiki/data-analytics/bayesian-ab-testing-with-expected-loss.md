@@ -49,3 +49,5 @@ Beta(1, 1) is fine after a few hundred visitors per arm; a weakly informative hi
 - [[Peeking Under Bayesian Stopping Rules]] — extends
 - [[Thompson Sampling and Bandit Regret]] — alternative-to (adaptive allocation)
 - [[Ranking by Lower Credible Bound]] — related
+- [[G-Optimal Design and Phased Elimination]] — related (exploration allocated by design)
+- [[Explore-Then-Commit Bandit Policy]] — related

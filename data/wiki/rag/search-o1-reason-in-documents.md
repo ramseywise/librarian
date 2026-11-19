@@ -2,7 +2,7 @@
 title: Search-o1 Reason-in-Documents
 tags: [rag, pattern]
 summary: "Search-o1 wraps a large reasoning model with on-demand web search inside its chain of thought and condenses retrieved pages with a separate Reason-in-Documents pass before injection; gains are clearest on GPQA and multi-hop QA and absent on some code and math sets (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-li-2025-search-o1.md
 ---
@@ -44,3 +44,4 @@ Self-reported, QwQ-32B-Preview backbone, Pass@1, Bing top-10.
 - [[GPQA]] — related (main science benchmark)
 - [[RL for Retrieval Policies]] — related
 - [[RAG Retrieval Strategies]] — prerequisite-for
+- [[Search-R1 Reasoning with Search RL]] — alternative-to

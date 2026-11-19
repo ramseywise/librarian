@@ -2,7 +2,7 @@
 title: Model Compression with MUNGE Mimic Nets
 tags: [infra, concept]
 summary: "Bucila, Caruana and Niculescu-Mizil (KDD 2006) compress a large ensemble into a small neural net trained on ensemble-labelled synthetic data from MUNGE; on eight binary problems the net matched ensemble RMSE (0.264 against 0.263) at about 1000x smaller and faster, and failed on one (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-bucilua-2006-model-compression.md
 ---
@@ -31,3 +31,4 @@ Eight binary tabular problems, 4000 training points, RMSE against 0/1 targets on
 - [[Sequence-Level Knowledge Distillation]] — related (distillation of sequence models)
 - [[On-Policy Distillation]] — related
 - [[Nemotron Puzzle Hybrid MoE Compression]] — related
+- [[Knowledge Distillation with Soft Targets]] — related (soft targets from an ensemble, the later formulation)

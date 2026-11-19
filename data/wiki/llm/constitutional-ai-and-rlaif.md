@@ -5,6 +5,7 @@ summary: "Anthropic's two-phase replacement for human preference labels — crit
 updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--constitutional-ai.md
+  - data/raw/papers/2026-11-07-bai-2022-constitutional-ai.md
 ---
 
 # Constitutional AI and RLAIF
@@ -126,6 +127,26 @@ its own judgment has no external reference to drift *against*.
 | Coverage | Bounded by human availability | Scales with compute |
 | Auditability | Hard (rater decisions unlogged) | Easy (critique chains logged) |
 
+## What the paper reports
+
+The Constitutional AI paper (Bai et al. 2022) asks if a helpful and harmless assistant can be built without any human harmlessness labels, relying on a brief list of written principles. In the RL-CAI stage a feedback model picks the more harmless of two responses by multiple choice, giving either soft log-probability labels or chain-of-thought labels clamped to 40-60 percent; the preference model blends these AI harmlessness labels with human helpfulness labels. All findings are (self-reported); the model size is 52B unless stated.
+
+- The SL-CAI critique-and-revision data are 4 revisions for each of 182,831 red-team prompts (no model size given).
+- Clamping chain-of-thought probabilities to 40-60 percent did best (20-80 helped slightly, while leaving them unclamped gave extreme responses). For RL-CAI without chain of thought, soft labels did much better than hard ones.
+- By crowdworker Elo, RL-CAI models are clearly more harmless than both RLHF and SL-CAI; the chain-of-thought variant is slightly less helpful and slightly more harmless. No Elo values are printed.
+- By preference-model score, critiqued revisions outperform direct ones on small models while the two are close on large ones (sizes unstated; 52B was inspected), and the critiques were frequently wrong. Varying the principle count N from 1 to 16 does not shift the harmlessness preference-model score.
+- RL-CAI trained too long Goodharts, producing harsh or boilerplate replies (one example: "you are valid, valued, and cared for").
+- Absolute harmfulness (0-4 scale, 64 held-out red-team prompts with 256 responses each): helpful RLHF grows more harmful over RL, whereas HH RLHF, RL-CAI and RL-CAI with chain of thought grow less harmful.
+- Elo gaps for HH RLHF are far smaller than in earlier work, because workers were instructed to favour answers that do not evade.
+
+## Limits
+
+- The principles were picked ad hoc for research, and the authors want a wider set of stakeholders to refine them.
+- The approach still needs human labels for helpfulness and an RLHF model trained to be helpful.
+- The main results are Elo plots without printed values, seeds or significance tests; RL hyperparameters are deferred to an earlier paper.
+- Preference-model scores are less well calibrated at the high end, and absolute harmfulness scores may be miscalibrated across workers.
+- The HH RLHF comparisons depend on a modified worker instruction that penalises evasion, and on older preference data gathered under other instructions (Upwork and MTurk against Surge).
+
 ## See Also
 - [[RLHF Pipeline]] — extends (replaces the Stage 2 label source, leaves Stage 3 intact)
 - [[Bradley-Terry Preference Model]] — prerequisite-for (the preference-model objective, unchanged)
@@ -138,3 +159,6 @@ its own judgment has no external reference to drift *against*.
 - [[ETHICS Benchmark]] — related (a dataset for testing predicted human moral judgments)
 - [[LM Red Teaming]] — related (automated red-team prompt generation)
 - [[Self-Critiquing Models for Human Evaluators]] — related
+- [[Self-Rewarding Language Models]] — alternative-to (the judge is the policy itself rather than a fixed feedback model)
+- [[UltraFeedback Scaled AI Feedback Dataset]] — related (GPT-4 feedback data at scale)
+- [[BeaverTails Decoupled Safety Preference Dataset]] — related (separate harmlessness and helpfulness annotation)

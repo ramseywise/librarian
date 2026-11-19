@@ -29,3 +29,4 @@ FollowIR builds on Robust04, News21 and Core17. Instructions run 40 to 75 words 
 - [[RAG Reranking]] — related
 - [[RAG Evaluation]] — prerequisite-for
 - [[AgentIR Reasoning-Aware Retrieval]] — related
+- [[IFEval Verifiable Instruction Following]] — related

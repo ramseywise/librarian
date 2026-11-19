@@ -2,7 +2,7 @@
 title: Harness-R1 Learned Harness Editing
 tags: [harness, pattern]
 summary: A small trained model writes Python hook patches around a frozen agent from that agent's failure trajectories, with reward equal to the measured success change when the patch is installed.
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-shao-2026-harness-r1.md
 ---
@@ -54,3 +54,4 @@ A case study shows the risk: a Gemini-3.5-Flash editor's broad force-action rule
 - [[Harness Continual Learning]] — related (other systems that update a harness over time)
 - [[AutoHarness Synthesized Code Harness]] — alternative-to (an LLM writes the harness as code, without a trained editor)
 - [[Meta-Harness End-to-End Optimization]] — alternative-to
+- [[Harness-Zero Harness Distillation]] — alternative-to (moves harness content into weights)

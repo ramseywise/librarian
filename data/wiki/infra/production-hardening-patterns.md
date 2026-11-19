@@ -2,7 +2,7 @@
 title: Production Hardening Patterns
 tags: [infra, rag, langgraph, pattern]
 summary: Checklist of production hardening fixes for the Librarian service — P0/P1/P2 issues, async I/O safety, SQL injection prevention, CORS, and Docker packaging.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/playground/docs/archived/librarian-prod-hardening/plan.md
   - data/raw/claude-docs/playground/docs/archived/retrieval-pipeline-prod/plan.md
@@ -302,3 +302,4 @@ Use `checkpointer=False` when the subgraph needs neither; `None` for interrupt s
 - [[Silent Failure Catalogue]] — extends
 - [[Service Surface Defect Checklist]] — extends (ten concrete surface defects)
 - [[SQL from Python]] — prerequisite-for (parameters cover values only; identifiers need an allow-list)
+- [[Operational Reinforcement Learning]] — related (canary and shadow rollout of RL policies)
