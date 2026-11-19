@@ -40,7 +40,7 @@ Xiao and Zhu present least-to-most as the detailed example of problem decomposit
 - Strong last-letter and SCAN results are attributed by the authors to decomposition being easy there.
 - Performance depends on the model: code-davinci-001 was far weaker (19.6 against 96 on four-word last-letter, 4-shot). No open models, decoding settings, seeds or intervals; GPT-3 variant sizes and the DROP test size for code-davinci-002 are not stated.
 - Per-split SCAN numbers other than the length split are not printed.
-- Xiao and Zhu state these limits for chain-of-thought prompting, which they treat as the base of decomposition: it needs multi-step demonstrations, there is no standard way to decompose, and intermediate errors propagate. Their chapter reports no experiments.
+- Xiao and Zhu state these limits for chain-of-thought prompting: it needs multi-step demonstrations, there is no standard way to decompose, and intermediate errors propagate. Their chapter reports no experiments.
 
 
 ## See Also

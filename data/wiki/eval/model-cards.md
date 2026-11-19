@@ -43,3 +43,4 @@ Bommasani et al. (2021) recommend that an adapted derivative carry a label namin
 - [[LLM Bias and Fairness Survey]] — related
 - [[LLM Trustworthiness Taxonomy]] — related
 - [[HELM Holistic Evaluation]] — related
+- [[Hugging Face Transformers Library and Model Hub]] — instance-of (the hub attaches model cards to shared models)

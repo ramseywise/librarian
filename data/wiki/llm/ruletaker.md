@@ -30,7 +30,7 @@ All numbers are the paper's own (self-reported); the extraction records only pro
 
 ## Follow-up figures in the Islam survey
 
-Islam et al.'s survey of transformer applications reports 98% on the RuleTaker test set for a RoBERTa-large reasoner. Trained on that data, T5 scored just 57.7 and RoBERTa 59.6 on the harder SAT-derived instances of Richardson and Sabharwal (2022). The survey gives both figures without a setup (reported).
+Islam et al.'s survey of transformer applications reports 98% on the RuleTaker test set for a RoBERTa-large reasoner. Trained on that data, T5 scored just 57.7 and RoBERTa 59.6 on the harder SAT-derived instances of Richardson and Sabharwal (2022). The survey names the datasets and the RoBERTa-large reasoner but details no setup beyond that (reported).
 
 ## Limits
 
@@ -38,7 +38,7 @@ Islam et al.'s survey of transformer applications reports 98% on the RuleTaker t
 - The authors leave open whether the transformer reasons or emulates input-output behaviour.
 - Closed-world semantics clash with natural language inference intuitions; the perturbation analysis excludes negation.
 - Training hyperparameters, compute and seeds are not stated, and the work predates few-shot prompting of language models.
-- The Islam survey gives 98% on the RuleTaker test set, while this page's abstract-level figure is about 99% on the synthetic data; the survey gives no model or setup detail, so the two are not reconciled.
+- The Islam survey gives 98% on the RuleTaker test set, while this page's abstract-level figure is about 99% on the synthetic data; the setup is not detailed beyond the datasets named, so the two are not reconciled. The extraction also warns that several of the survey's model summaries are wrong or garbled and that it should not serve as a primary source.
 
 ## See Also
 - [[Selection-Inference]] — related (prompted alternative on rule-based deduction tasks)

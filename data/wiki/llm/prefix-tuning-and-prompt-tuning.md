@@ -7,6 +7,9 @@ sources:
   - data/raw/papers/2026-11-07-li-2021-prefix-tuning.md
   - data/raw/papers/2026-11-07-lester-2021-power-scale-parameter-efficient-prompt.md
   - data/raw/papers/2026-11-08-xiao-foundations-llms-ch03-prompting.md
+  - data/raw/papers/2026-11-08-liu-2023-gpt-understands-too.md
+  - data/raw/papers/2026-11-08-hambardzumyan-2021-warp.md
+  - data/raw/papers/2026-11-08-qin-2021-learning-how-ask.md
 ---
 
 # Prefix-Tuning and Prompt Tuning
@@ -39,10 +42,17 @@ A p-by-embedding-size prompt matrix is prepended to the embedded input fed to a 
 
 Xiao and Zhu contrast hard prompts (explicit text) with soft prompts (continuous vectors in the model's hidden space). Prefix fine-tuning adds trainable vectors in front of the input at every Transformer layer while base weights stay frozen, adding L x n x d trainable parameters for L layers, n prefixes and dimension d (no counts given); prompt tuning adds trainable pseudo embeddings only at the embedding layer. They also cover context distillation, where a student shown a simplified instruction is trained toward a teacher shown the full context, with loss `KL(Pt || Ps_theta)`, and the compression of soft prompts.
 
+## How later prompt papers place them
+
+The P-tuning, WARP and soft-prompt-mixture papers each list prefix-tuning as concurrent work. P-tuning's extraction describes it as continuous prompts at each layer for generation, and the one on soft-prompt mixtures describes it as soft tokens at all layers. WARP's lists it as parallel work that also uses a reparameterisation trick. Those methods are on [[Continuous Prompts: P-Tuning, WARP and Soft-Prompt Mixtures]].
+
+One head-to-head number involves prompt tuning (self-reported, from the P-tuning paper): on few-shot SuperGLUE (FewGLUE, ALBERT-xxLarge, mean of 4 runs that each use a different data split) prompt tuning averages 58.56, against 71.81 for P-tuning and 70.74 for PET-FT.
+
 ## Limits
 
 - Prefix-tuning was evaluated only on GPT-2 (largest 774M) and BART Large; larger models are proposed as future work, not tested. The paper calls the reason for its better extrapolation an open question. Low-data and extrapolation numbers are small-sample averages without significance tests, and seed counts for full-data runs are not given.
 - Prompt-tuning curves come from figures, not tables; only T5 1.1 encoder-decoders and English classification or extractive QA were used, with no generation benchmark; the domain-shift section does not state the model size.
+- The 58.56 above comes from a competitor's paper on ALBERT, a small encoder; that paper's own limits note that Lester et al. say prompt tuning works with large models.
 - Prompt-tuning hyperparameters were tuned manually on the same SuperGLUE dev score that is reported. The authors admit the learned prompts can mostly not be interpreted.
 
 ## See Also

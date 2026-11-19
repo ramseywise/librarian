@@ -62,7 +62,7 @@ Huang and Chang's survey (no new experiments) reports, from work by Wei et al. a
 - The ablation study covers only arithmetic and multi-hop QA, uses hand-written invalid rationales, a single greedy run and no variance; its authors believe but do not test that results carry to CoT variants.
 - The survey extraction reports internal inconsistencies on GSM-IC.
 - Xiao and Zhu list their own stated limits for chain-of-thought: it needs multi-step demonstrations, there is no standard decomposition, and intermediate errors propagate. Their prompting chapter has no measured numbers, and its toy demos include deliberately wrong or unexplained answers.
-- Huang and Chang's survey has no quantitative result tables and loose scale thresholds, and it predates reasoning-trained models, so its capability-ceiling argument is untested against them.
+- Huang and Chang's survey has no quantitative result tables and loose scale thresholds, and the extraction observes (its own note, not the paper's) that its capability-ceiling argument has dated against reasoning-trained models.
 
 
 ## See Also

@@ -19,7 +19,7 @@ The candidates are prompts (for LAMA, RTE, CB and WiC) or ADAPET hyperparameters
 
 - Prompt selection on LAMA-UHN, using 9 LMs between 82M and 175B parameters, 5-shot, over 5 runs: on average CV and MDL land 5-7% absolute below the prompt picked using held-out data, closing only 20-40% of the distance from the average prompt to the best one.
 - With GPT-3 175B, CV finds the best prompt 21% of the time against 9% by chance. For models from 0.1B to 6.7B, the prompt CV picks beats the average prompt about 56% of the time (MDL about 55%).
-- Selection has roughly a 27% chance of costing about 13% accuracy. A more conservative variant does not help: plain CV beats the average prompt 50% of the time, against 51% for alpha=2 (GPT-3 175B).
+- Selection has roughly a 27% chance of costing about 13% accuracy. A more conservative variant does not help: with plain CV the chosen prompt is better than the average one in half the cases (50%), against 51% for alpha=2 (GPT-3 175B).
 - Raising N from 5 to 40 gives no consistent improvement (models up to 6.7B), and more compute does not help. Bayesian CV, MDL variants and joint log-probability also land near the random average.
 - Hyperparameter selection for ADAPET (32-shot, four training sets, 16 combinations): SuperGLUE average 73.0 with CV and 73.4 with MDL, against a mean of 73.9, a best of 77.2 and iPET at 76.8, so the average falls below PET/iPET. On WiC and MultiRC, CV needs over 2-3k examples before it chooses ADAPET hyperparameters that beat the average.
 - The GPT-3 experiments cost $2826.73 through the API.

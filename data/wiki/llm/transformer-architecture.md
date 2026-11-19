@@ -6,6 +6,10 @@ updated: 2026-11-19
 sources:
   - data/raw/pdfs/2017-06-12-attention-is-all-you-need.md
   - data/raw/papers/2026-11-07-vaswani-2017-attention-all-you-need.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch02-generative-models.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch01-pre-training.md
+  - data/raw/papers/2026-11-07-build-a-large-language-model-from-scratch-ch03-coding-attention-mechanisms.md
+  - data/raw/papers/2026-11-07-build-a-large-language-model-from-scratch-ch04-implementing-a-gpt-model.md
 ---
 
 # Transformer Architecture
@@ -82,6 +86,17 @@ All numbers are the paper's own (self-reported).
 - **English constituency parsing** (WSJ section 23): a 4-layer Transformer gets 91.3 F1 from WSJ data alone and 92.7 F1 semi-supervised on roughly 17M sentences, with little task-specific tuning.
 - The sqrt(d_k) scaling is argued, not ablated: assuming independent q and k components of mean 0 and variance 1, dot-product variance rises with d_k.
 
+## The decoder-only block in two textbooks
+
+Xiao and Zhu (*Foundations of Large Language Models*, ch. 2) describe a decoder-only Transformer as a stack of L blocks, each a self-attention sub-layer plus an FFN sub-layer, with a causal mask and a softmax over the vocabulary on top. Raschka's from-scratch LLM book (ch. 3 and 4) codes the same block. Xiao and Zhu run no experiments of their own on these design choices; Raschka's numbers below are his own worked examples.
+
+- **Attention**: Xiao and Zhu write it as softmax(QK^T / sqrt(d) + Mask) V. Raschka scales the scores down by the root of the key dimension so the softmax gradients do not vanish, and masks future positions with -inf before the softmax; on his six-token example this gives the same renormalised weights as zeroing after the softmax and renormalising. He applies dropout to the attention weights after the softmax, in training only, and rescales the survivors by 1/(1-p). In ch. 1 Xiao and Zhu say practical systems set the number of heads to at least 4. See [[Self-Attention Mechanism]].
+- **Normalisation placement**: Xiao and Zhu say most LLMs use pre-norm, output = F(LNorm(input)) + input, because it trains deep Transformers more stably than post-norm, which is LNorm(F(input) + input). Raschka likewise uses Pre-LayerNorm and says the original Post-LayerNorm often gives worse training dynamics. Neither shows an experiment; one is in [[Pre-Norm vs Post-Norm and Warm-Up]]. Xiao and Zhu also name RMSNorm as in Llama, which only rescales by the root mean square with no re-centring (see [[Layer Normalization]]).
+- **Feed-forward activation**: Raschka uses GELU (tanh approximation, as GPT-2 did) and expands the hidden size 4 times, 768 to 3,072, then contracts it. Xiao and Zhu advise SwiGLU or GeGLU over ReLU in wide FFNs and note that PaLM and Llama use SwiGLU ([[GLU Variants and GELU]]). They add that removing bias terms helps training stability, as in Llama and Gemma.
+- **Shortcuts**: in Raschka's five-layer GELU demonstration (layer widths 3,3,3,3,3,1, one input vector [1,0,-1], a target of 0, mean-squared-error loss and seed 123) the mean absolute gradient without shortcuts is 0.00505 at layers.4 and only 0.000202 by layers.0; with shortcuts it is 1.3259 at layers.4 and still 0.2217 at layers.0 (self-reported).
+- **Position**: For length generalisation Xiao and Zhu favour relative or rotary schemes over learned absolute embeddings, suggest fine-tuning on longer sequences after pre-training, and describe interpolation or NTK-aware base scaling for stretching RoPE models ([[Position Encodings — Relative, Rotary, ALiBi and CAPE]], [[Position Interpolation]]).
+- **Sizes**: Raschka's GPT-2 small configuration has a 50,257 vocabulary, 1,024 context, 768 embedding size, 12 attention heads and 12 layers, dropout 0.1 and no QKV bias; the largest GPT-2 has 25 heads and embedding size 1,600. Xiao and Zhu's model table lists GPT-3 175B with 96 layers, width 12,288 and 96 query heads and 96 KV heads, and Llama3.1 405B with 126 layers, width 16,384, 128 query heads and 8 KV heads (grouped-query attention, see [[Multi-Query and Grouped-Query Attention]]).
+
 ## Why It Matters for Agent Engineering
 
 The Transformer is the foundation of every LLM used in agent systems. Understanding its attention mechanism, context window constraints, and computational scaling properties is essential for:
@@ -96,6 +111,8 @@ The Transformer is the foundation of every LLM used in agent systems. Understand
 - For the EN-FR big model the abstract and Table 2 print 41.8 BLEU while section 6.1 prints 41.0; the paper never reconciles them, and this page quotes 41.8.
 - FLOPs come from GPU time and nominal capacity rather than measurement, and perplexities are per wordpiece, so they cannot be set beside per-word numbers.
 - The interpretability evidence for attention consists of hand-picked examples.
+- Xiao and Zhu's chapter has almost no experiments of its own; its figures are borrowed from other work or illustrative, and its model table (Table 2.2) is a late-2024 to early-2025 snapshot. The extraction flags, from an outside-knowledge check it marks as unverified in the text, that the table lists Gemma2 as 37B and gives Llama2-70B, Falcon and Mistral-7B equal query and key-value head counts. Its pre-norm and bias-removal statements carry no experiment.
+- Raschka's examples use toy sizes, a fixed seed and a single input, his pre-norm statement is made with no experiment, and the extraction notes a figure-number slip in the text (4.18 for 4.8).
 
 ## See Also
 - [[Self-Attention Mechanism]] — extends
@@ -139,3 +156,4 @@ The Transformer is the foundation of every LLM used in agent systems. Understand
 - [[Tied Input and Output Embeddings]] — extends
 - [[Back-Translation at Scale]] — related
 - [[Vision Transformer ViT Patch Tokens and Scaling]] — extends
+- [[Hugging Face Transformers Library and Model Hub]] — extends (a library implementing the Transformer behind one tokenizer, model and head API)

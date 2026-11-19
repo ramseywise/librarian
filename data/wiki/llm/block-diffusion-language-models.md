@@ -34,6 +34,7 @@ Arriola and colleagues ask whether a language model that sits between autoregres
 - Training costs more than regular diffusion training; the vectorised algorithm keeps it under 2x diffusion training speed.
 - Because blocks come out one after another, small blocks may inherit AR's limits on speed and controllability; the right block size depends on the task.
 - Perplexity remains behind AR (OWT 20.73 against 17.54 at best).
+- The extraction gives the AR LM1B perplexity as 22.88 (L' = 1, 16B tokens) and as 22.83 (65B tokens) and does not reconcile the two.
 - Only 110M-parameter models were trained, with no seeds or run-to-run variance and no wall-clock inference benchmark.
 
 ## See Also

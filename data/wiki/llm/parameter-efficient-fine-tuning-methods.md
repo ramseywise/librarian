@@ -14,6 +14,11 @@ sources:
   - data/raw/papers/2026-11-07-dettmers-2023-qlora.md
   - data/raw/papers/2026-11-07-building-ai-agents-llms-rag-kgs-ch03-exploring-llms-as-powerful-ai-engine.md
   - data/raw/papers/2026-11-08-llm-engineers-handbook-ch05-supervised-fine-tuning.md
+  - data/raw/papers/2026-11-07-hu-2021-lora.md
+  - data/raw/papers/2026-11-07-liu-2022-few-shot-parameter-efficient-fine.md
+  - data/raw/papers/2026-11-08-guo-2021-parameter-efficient-transfer-learning-diff.md
+  - data/raw/papers/2026-11-08-ruckle-2021-adapterdrop.md
+  - data/raw/papers/2026-11-08-aghajanyan-2021-intrinsic-dimensionality-explains-effectiveness-language.md
 ---
 
 # Parameter-Efficient Fine-Tuning Methods
@@ -23,13 +28,16 @@ Huyen (*AI Engineering*, chapter 7, a 2024 text) defines PEFT as getting close t
 | Method | What is trained | Page |
 |---|---|---|
 | Adapters | Two small modules per transformer block (Houlsby et al., as cited by Huyen) | this page |
-| LoRA | Two small matrices A and B whose product is the weight update; W stays frozen and the product is merged back after training | this page |
+| LoRA | W stays frozen; the update is the product of two small matrices A and B, merged into W once training ends | [[LoRA Low-Rank Adaptation]] |
 | QLoRA | LoRA adapters on a 4-bit quantised, frozen base | [[QLoRA 4-Bit Quantized Finetuning]] |
 | DoRA | Another low-rank adapter method (see its page) | [[DoRA Weight-Decomposed Low-Rank Adaptation]] |
 | Prefix-tuning, prompt tuning | Continuous vectors prepended to the input (prefix-tuning at every layer, prompt tuning at the embedding layer) | [[Prefix-Tuning and Prompt Tuning]] |
 | BitFit | Only the bias terms (plus a classifier) | [[BitFit Bias-Term Fine-Tuning]] |
 | LLaMA-Adapter | Prompts in the top layers behind a zero-initialised gate | [[LLaMA-Adapter Zero-Initialized Attention]] |
 | ReFT | A learned edit of hidden states at chosen positions | [[LoReFT Representation Finetuning]] |
+| (IA)3, T-Few | Learned vectors that rescale keys, values and the inner activations of the feed-forward blocks; T-Few is a fixed recipe on T0 built around them | [[T-Few and (IA)3 Few-Shot PEFT]] |
+| Diff pruning | W stays frozen and a sparse difference vector is added to it, with a relaxed L0 penalty setting the mask | [[Diff Pruning Sparse Task Difference Vectors]] |
+| AdapterDrop | Houlsby or Pfeiffer adapters with those in the first n layers removed | [[AdapterDrop Efficient Adapters]] |
 | Black-box tuning | A low-dimensional vector, found with no gradients | [[Black-Box Tuning for Language-Model-as-a-Service]] |
 
 ## Numbers Huyen reproduces from the papers
@@ -38,6 +46,19 @@ Huyen (*AI Engineering*, chapter 7, a 2024 text) defines PEFT as getting close t
 - Hu et al. report LoRA on GPT-3 175B equalling or exceeding full finetuning on several tasks with about 4.7M trained parameters (0.0027% of the full count). With a fixed 18M budget (0.01%), spreading rank 2 over all four attention matrices scored best on WikiSQL and MultiNLI, ahead of putting r=8 on one matrix or r=4 on two.
 - LoRA adapter memory is small: 37.7 MB for GPT-3 175B at r=2 on query and key, against 350 GB of weights (16-bit, 18.87M parameters).
 - Serving 100 per-customer models: with W of 4096 x 4096 (16.8M parameters) and rank 8, each adapter has 65,536 parameters, so 100 kept separate take 23.3M parameters against 1.68B merged. Huyen advises keeping adapters separate for multi-LoRA serving and merging for a single LoRA model.
+
+## Numbers from the method papers
+
+Each figure is the authors' own (self-reported) and keeps its setup; the setups differ, so the rows are not comparable with each other.
+
+- LoRA, GPT-3 175B, WikiSQL, single runs with about +/-0.5% fluctuation: 4.7M trainable parameters reach 73.4 and 37.7M reach 74.0, against 73.8 for full fine-tuning. Under an 18M budget on the same model, adapting both query and value projections (r=4) scored 73.7 on WikiSQL and 91.3 on MultiNLI, against 70.4 and 91.0 for the query projection alone (r=8). The trained checkpoint shrinks to 35MB (r=4, query and value) from 350GB, but serving still needs the full 350GB base model.
+- (IA)3, T0-3B: 540K added parameters against 9.1M for LoRA, and it is the only PEFT method in that comparison to beat full-model fine-tuning (nine held-out datasets, with the unlikelihood and length-normalised losses). T-Few on T0 11B beat few-shot GPT-3 175B in-context learning on those held-out tasks (median over 5 few-shot subsets; the GPT-3 figures are copied from Brown et al.).
+- Diff pruning, BERT-large, evaluated on the GLUE test server at 0.5% target sparsity (one hyperparameter-searched run per task): structured diff pruning matches fully fine-tuned BERT-large, adding 0.5% parameters per task. Storage per task in a basic Python estimate (float32 weights, int32 positions): 13.6 MB, against 51.7 MB for adapters and 1297.0 MB for full fine-tuning. Each minibatch takes between 1.5x and 2x as long to train as in ordinary fine-tuning.
+- AdapterDrop, RoBERTa-base, 8 GLUE tasks: specialised AdapterDrop with the first five layers' adapters dropped retains 97.1% of what the standard adapter averages on GLUE, while a standard adapter with five layers removed only at test time drops to 89.0%. Timing, BERT-base configuration: Pfeiffer-adapter training steps are as much as 60% quicker than full fine-tuning (sequence length 128, batch 32), and inference is 4-6% slower.
+
+## Why few parameters can suffice
+
+Aghajanyan et al. fine-tune inside a d-dimensional random subspace and record the smallest d that gets to 90% of full fine-tuning accuracy (d90). RoBERTa-Large gets there on MRPC with about 200 trainable parameters (structure-aware variant). The authors treat d90 as an upper bound, and across 18 public models MRPC d90 falls as parameter count rises. Hu et al. cite this work as the motivation for LoRA's hypothesis that the weight update has a low intrinsic rank. See [[Intrinsic Dimension of Fine-Tuning]].
 
 ## Memory arithmetic (worked examples)
 
@@ -70,6 +91,9 @@ The authors suggest starting LoRA at a moderate rank with alpha set to twice the
 - Method pages cite single-paper results on different models and tasks, so the rows above are not a controlled comparison.
 - LLM Engineer's Handbook ch05: the 50-minute run shows only loss curves (one run, seed 0, no ablations), the authors state that the run is a quick check and not a proper evaluation, and its hyperparameter ranges are rules of thumb without sources.
 - Raieli and Iuculano ch03: figures are relayed from other work with no experiments.
+- The LoRA extraction's GPT-3 settings differ from those quoted from Huyen above: it gives a 35MB checkpoint for r=4 on query and value, 37.7M trainable parameters as a WikiSQL configuration, and an 18M-budget comparison of r=4 on query and value against r=8 on query alone. Huyen's 37.7 MB (r=2, query and key) and rank-2-over-four-matrices result are not in that extraction.
+- Houlsby adapters appear as 3% of parameters above (Huyen) but as 3.6% per task (80.4 GLUE average, BERT-large) and 2.1% for the 64-unit variant in the diff pruning extraction, which copies them from Houlsby et al.
+- Method-paper limits: LoRA's GPT-3 results are single runs and its WikiSQL run-to-run fluctuation is about the size of the gap to full fine-tuning; T-Few's experiments are classification or multiple choice only and its design was tuned on the same nine datasets used for evaluation; diff pruning and AdapterDrop were tested only on small encoders (BERT, RoBERTa); in AdapterDrop, CoLA drops sharply when layers are dropped; the intrinsic-dimension study covers sentence classification only and reports no seeds or variance.
 
 ## See Also
 - [[DoRA Weight-Decomposed Low-Rank Adaptation]] — instance-of (a LoRA variant)

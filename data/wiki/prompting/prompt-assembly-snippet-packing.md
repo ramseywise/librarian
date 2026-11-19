@@ -2,9 +2,10 @@
 title: Prompt Assembly as Snippet Packing
 tags: [prompting, context-management, pattern]
 summary: The feedforward pass of an LLM app (retrieve → snippetize → score → assemble) ends in a packing problem — pick snippets by priority under a token budget, honouring elastic versions and mutual exclusion, then emit the winners in document order.
-updated: 2026-10-30
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--02-prompt-anatomy.md
+  - data/raw/papers/2026-11-08-prompt-engineering-for-generative-ai-ch02-intro-to-llms-for-text-generation.md
 ---
 
 # Prompt Assembly as Snippet Packing
@@ -61,6 +62,14 @@ the largest version that fits. **Score by priority, emit in document order.**
 Where to place the packed material is governed by the Valley of Meh
 ([[Long-Context Prompting]]). Window-level composition, budgets and cache-stable ordering
 are [[Context Anatomy]].
+
+## Budgeting in tokens
+
+The Prompt Engineering for Generative AI chapter on text generation models advises measuring a model's processing limits in token counts rather than word counts. It gives a rule of thumb that 100 tokens is roughly 75 words, with no tokenizer or language named.
+
+## Limits
+
+- The token rule of thumb is a general statement from an introductory chapter whose authors are not named in the extraction; it names no tokenizer or language.
 
 ## See Also
 - [[Four Prompt Criteria]] — extends

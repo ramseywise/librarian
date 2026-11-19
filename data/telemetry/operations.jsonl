@@ -13,3 +13,5 @@
 {"date": "2026-11-19", "op": "ingest", "detail": "papers batch A (data-science, programming; 67 sources) -> 74 new, 139 updated, 530 links, 0 conflicts"}
 {"date": "2026-11-19", "op": "ingest", "detail": "papers batch B (data-analytics; 118 sources) -> 74 new, 139 updated, 530 links, 0 conflicts"}
 {"date": "2026-11-19", "op": "ingest", "detail": "generative-ai 05-RL batch (179 of 180 sources) -> 102 new, 94 updated"}
+{"date": "2026-11-19", "op": "ingest", "detail": "generative-ai llm-fundamentals batch (385 sources) -> 213 new, 109 updated; 7 sources no pages"}
+{"date": "2026-11-19", "op": "ingest", "detail": "llm-fundamentals follow-up (C1-C3): 26 sources -> 1 new, 26 updated; 4 GenAI for Dummies chapters not ingested"}

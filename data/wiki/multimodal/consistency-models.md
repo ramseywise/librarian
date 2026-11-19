@@ -9,7 +9,7 @@ sources:
 
 # Consistency Models
 
-Song, Dhariwal, Chen and Sutskever ask for a generative model that turns noise into data in a single step yet keeps diffusion's trade of compute for quality, and its zero-shot editing. Their hypothesis: a consistency requirement along probability-flow ODE trajectories gives generators that work well in one or a few steps. Numbers are self-reported.
+Song, Dhariwal, Chen and colleagues ask for a generative model that turns noise into data in a single step yet keeps diffusion's trade of compute for quality, and its zero-shot editing. Their hypothesis: a consistency requirement along probability-flow ODE trajectories gives generators that work well in one or a few steps. Numbers are self-reported.
 
 ## Mechanism
 
@@ -17,7 +17,7 @@ Song, Dhariwal, Chen and Sutskever ask for a generative model that turns noise i
 - Parameterisation: a c_skip(t)-weighted copy of x plus a c_out(t)-weighted network output F(x,t), which builds in the boundary condition.
 - **Consistency distillation (CD)** minimises the distance between f at t_{n+1} and an EMA target network's f at t_n, where the earlier point comes from taking one Heun step with a pretrained EDM score model.
 - **Consistency training (CT)** replaces the ODE step with noise pairs x + t z and grows the number of time steps and the EMA rate on a schedule, with no pretrained diffusion model.
-- Multistep sampling alternates: apply f, add noise to a lower level, apply f again. It gives zero-shot editing (inpainting, colourisation, super-resolution, SDEdit-style stroke guidance).
+- Multistep sampling alternates: apply f, add noise to a lower level, apply f again. It gives zero-shot editing (inpainting, colourisation, super-resolution, SDEdit).
 
 ## Findings
 

@@ -10,6 +10,7 @@ sources:
   - data/raw/papers/2026-11-07-ziegler-2019-fine-tuning-language-models-human.md
   - data/raw/papers/2026-11-07-stiennon-2020-learning-summarize-human-feedback.md
   - data/raw/papers/2026-11-07-bai-2022-constitutional-ai.md
+  - data/raw/papers/2026-11-07-ouyang-2022-training-language-models-follow-instructions.md
   - data/raw/papers/2026-11-07-yuan-2024-self-rewarding-language-models.md
   - data/raw/papers/2026-11-08-sutton-barto-rl-ch17-frontiers.md
   - data/raw/papers/2026-11-08-murphy-rl-ch06-llms-rl.md
@@ -92,6 +93,8 @@ The standard mitigation is mixing pretraining gradients back into the RL objecti
 `γ · L_pretrain` term in PPO-ptx). It is worth being explicit that this is a **trade**,
 not a defect to be eliminated: a benchmark measuring raw completion quality is measuring
 something the aligned model was deliberately trained away from.
+
+In InstructGPT, Ouyang et al. define the alignment tax as the lower performance on some tasks that comes with an alignment procedure, and report that plain PPO regresses on public NLP datasets (zero-shot DROP at 175B against GPT-3). PPO-ptx mixes pretraining gradients in and mitigates the DROP and SQuAD regressions; a pretraining coefficient gamma of 20 or more recovers them in a 1.3B sweep. Raising the KL coefficient 100x (1.3B, gamma=0, default beta 0.02) does not fix them. At 175B, PPO-ptx recovers DROP only partly and stays behind GPT-3 on DROP, SQuADv2 and translation, while on zero-shot HellaSwag it surpasses GPT-3 (all self-reported).
 
 ## Detection
 

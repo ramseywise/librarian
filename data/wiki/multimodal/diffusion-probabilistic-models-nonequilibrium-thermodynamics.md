@@ -44,7 +44,7 @@ Table 1 also lists swiss roll at 2.35 bits, bark at -0.55 bits/pixel and dead le
 ## See Also
 
 - [[Denoising Diffusion Probabilistic Models]] — related
-- [[Score-Based Generative Modeling Through SDEs]] — prerequisite-for
+- [[Score-Based Generative Modeling Through SDEs]] — extends
 - [[Auto-Encoding Variational Bayes]] — related
 - [[Generative Adversarial Nets Minimax Game]] — related
 - [[Diffusion and GAN Image Generation]] — prerequisite-for

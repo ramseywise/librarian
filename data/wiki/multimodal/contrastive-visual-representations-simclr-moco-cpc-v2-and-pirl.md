@@ -16,7 +16,7 @@ These four papers learn image representations without labels and evaluate them m
 
 ## SimCLR
 
-Each image gets two random augmentations; a single shared ResNet encoder f and a small MLP projection head g (two layers) map both views to z. The NT-Xent loss (normalised temperature-scaled cross entropy) for a positive pair (i,j) is the negative log of exp(sim(z_i,z_j)/tau) divided by the sum of exp(sim(z_i,z_k)/tau) over every k other than i, so the other 2(N-1) views in the batch serve as negatives. Once pretraining ends g is discarded and the encoder output h is evaluated.
+Each image gets two random augmentations; a single shared ResNet encoder f and a small MLP projection head g (two layers) map both views to z. The NT-Xent loss (normalised temperature-scaled cross entropy) treats the other 2(N-1) views in the batch as negatives for each positive pair. Once pretraining ends g is discarded and the encoder output h is evaluated.
 
 - ResNet-50 at 4x width, 1000 epochs, batch 4096: 76.5% top-1 linear, equal to a supervised ResNet-50. Fine-tuning with 1% of the labels gives 85.8% top-5 (supervised 48.4), and with 10% gives 92.6% top-5 (supervised 80.4). With all labels and broader pretraining augmentation, fine-tuning gets 80.4% top-1 against 78.4% from scratch.
 - Ablations at 100 epochs on ResNet-50: a nonlinear head improves on a linear one by about 3% and on none by over 10%; the representation h is more than 10% better than g(h), because h keeps transformation information that g(h) discards (a rotation probe gets 67.6% from h but 25.6% from g(h), where chance is 25%). NT-Xent at 63.9 outperforms margin, logistic and semi-hard-negative losses, whose best is 57.9. Temperature 0.1 with l2 normalisation gives 64.4, against 57.2 or 57.0 without the normalisation.
@@ -25,7 +25,7 @@ Each image gets two random augmentations; a single shared ResNet encoder f and a
 
 ## MoCo
 
-A query encoder is trained by SGD on an instance-discrimination task with the InfoNCE loss (a (K+1)-way softmax classifier that picks the positive key). Keys come from a queue of K past keys encoded by a key encoder that is a moving average of the query encoder, theta_k = m*theta_k + (1-m)*theta_q, so dictionary size is decoupled from mini-batch size. Shuffling BN shuffles the key mini-batch across GPUs before the key encoder, so query and positive key use batch statistics from different subsets; without it pretext accuracy rises above 99.9% and k-NN validation accuracy drops.
+A query encoder is trained by SGD on an instance-discrimination task with the InfoNCE loss (a (K+1)-way softmax classifier that picks the positive key). Keys come from a queue of K past keys encoded by a key encoder that is a moving average of the query encoder (each step keeps most of the old key weights and mixes in a small share of the query weights), so dictionary size is decoupled from mini-batch size. Shuffling BN shuffles the key mini-batch across GPUs before the key encoder, so query and positive key use batch statistics from different subsets; without it pretext accuracy rises above 99.9% and k-NN validation accuracy drops.
 
 - Momentum m=0.999 yields 59.0% linear accuracy with K=4096; m=0.9 yields 55.2%, and m=0 fails to converge (ResNet-50, IN-1M).
 - ResNet-50 with K=65536 reaches 60.6% linear, and R50w4x (375M parameters) 68.6%. A memory bank is 2.6% worse at the same K (58.0 against 60.6). MoCo v2 (smaller augmentation and projection head changes, reported as an extension) reaches 71.1%.

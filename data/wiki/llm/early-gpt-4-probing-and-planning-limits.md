@@ -1,7 +1,7 @@
 ---
 title: Early GPT-4 Probing and Planning Limits (Sparks of AGI)
 tags: [llm, reasoning-and-planning, concept]
-summary: "Bubeck et al. probe a pre-release GPT-4 with hand-made tasks and argue its failures at arithmetic, counting and planning come from next-word prediction giving no scratchpad or backtracking; the paper is informal, mostly qualitative, and its AGI framing is the authors' own."
+summary: "Bubeck et al. probe a pre-release GPT-4 with hand-made tasks and argue its planning failures come from next-word prediction giving no scratchpad or backtracking, and that it also errs at arithmetic and counting; the paper is informal, mostly qualitative, and its AGI framing is the authors' own."
 updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-bubeck-2023-sparks-artificial-general-intelligence.md

@@ -28,7 +28,7 @@ Frozen VGGNet fc7 image features and an LSTM question embedding are fused by ele
 ## Limits
 
 - Optimiser, learning rate, batch size, epochs and hardware are not stated.
-- The language-only result shows the benchmark rewards question priors, which later motivated balanced versions; exact string matching ignores synonyms and plurals and depresses "other" agreement below 76%.
+- The language-only result shows the benchmark rewards question priors; exact string matching ignores synonyms and plurals and depresses "other" agreement below 76%.
 - Age and commonsense estimates reflect crowd perception. Answers are short, so the task is short-answer only. The models are 2015-era and scores are superseded.
 
 ## See Also

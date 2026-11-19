@@ -430,7 +430,7 @@ The cited Vaswani source itself hedges: sinusoids "may allow" the model to extra
 **Claim B** (from new sources `data/raw/papers/2026-11-07-press-2021-train-short-test-long.md` and `data/raw/papers/2026-11-07-su-2023-roformer.md`, recorded in `[[Position Encodings — Relative, Rotary, ALiBi and CAPE]]`):
 > A sinusoidal model trained on 512 tokens does not extrapolate: its validation score improves only up to k=20, holds to k=50 and then worsens (WikiText-103, Baevski and Auli model). The RoFormer extraction states the paper has no test of extrapolation beyond the trained length.
 
-Claim A states extrapolation as a property of the design; Press et al. measured no extrapolation for sinusoidal encodings (trained at L=512) and poor or slow extrapolation for rotary (test perplexity 19.28 against ALiBi 18.30 at length 3072); the RoFormer paper itself has no extrapolation test.
+Claim A states extrapolation as a property of the design; Press et al. measured no extrapolation for sinusoidal encodings (trained at L=512) and states, without a number, that rotary extrapolates poorly or slowly; the RoFormer paper itself has no extrapolation test.
 
 **Status:** Unresolved
 **Impact:** Whether [[Positional Encoding]] should present extrapolation as a benefit of sinusoidal encodings and RoPE; [[Position Interpolation]], [[Position Encodings — Relative, Rotary, ALiBi and CAPE]].

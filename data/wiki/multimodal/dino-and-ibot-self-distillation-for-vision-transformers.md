@@ -6,6 +6,7 @@ updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-caron-2021-emerging-properties-self-supervised-vision.md
   - data/raw/papers/2026-11-07-zhou-2021-ibot.md
+  - data/raw/papers/2026-11-07-darcet-2023-vision-transformers-need-registers.md
 ---
 
 # DINO and iBOT Self-Distillation for Vision Transformers
@@ -17,9 +18,9 @@ Both methods train a Vision Transformer without labels by distilling a teacher, 
 A student (a ViT or ResNet) is trained to match a momentum teacher's K-dimensional softmax outputs with cross-entropy. Multi-crop supplies local-to-global correspondence: the student sees every crop, the teacher only the global views. Collapse is prevented by centering and sharpening the teacher outputs, with the centre updated as C = m*C + (1-m)*mean of teacher outputs.
 
 Results (self-reported, ImageNet val unless noted):
-- ViT-B/8 scores 80.1% linear and 77.4% k-NN top-1. At 800 epochs ViT-S/16 scores 77.0 linear (a supervised ViT-S gets 79.8) and 74.5 k-NN, and ResNet-50 gets 75.3 linear and 67.5 k-NN. On ViT-S, DINO leads BYOL, MoCo v2 and SwAV (all run by the authors) by 3.5% in linear and 7.9% in k-NN accuracy.
+- ViT-B/8 scores 80.1% linear and 77.4% k-NN top-1 (800 epochs, inferred from the paper's appendix). At 800 epochs ViT-S/16 scores 77.0 linear (a supervised ViT-S gets 79.8) and 74.5 k-NN, and ResNet-50 gets 75.3 linear and 67.5 k-NN. On ViT-S, DINO leads BYOL, MoCo v2 and SwAV (all run by the authors) by 3.5% in linear and 7.9% in k-NN accuracy.
 - Ablations on ViT-S/16 at 300 epochs: with no momentum encoder the framework collapses; omitting centering or sharpening drives the KL to zero; using the previous epoch's teacher gives 66.6 k-NN, whereas copying the student or using the previous iteration fails to converge; MSE in place of cross-entropy lowers k-NN; a student-side predictor barely matters. Multi-crop helps DINO the most (+3.4% linear) and harms BYOL.
-- Multi-crop exchanges memory for time: two 224 crops plus ten 96 crops give 74.6 in 24 hours, against 72.5 in 46 hours for two 224 crops alone (ViT-S/16). Smaller patches help without extra parameters but lower throughput.
+- Multi-crop exchanges memory for time: two 224 crops plus ten 96 crops give 74.6 in 24 hours at 100 epochs, against 72.5 in 46 hours at 300 epochs for two 224 crops alone (ViT-S/16). Smaller patches help without extra parameters but lower throughput.
 - Thresholding the [CLS] token's best attention head and scoring against PASCAL VOC12 by Jaccard gives comparable figures for several self-supervised ViT-S/16 models (SwAV 46.8, MoCo-v2 46.3, BYOL 47.8; DINO lacking multi-crop 45.1), so the property is shared across self-supervised training and not unique to DINO.
 - Fine-tuning on ImageNet with the DeiT procedure from DINO ViT-B/16 weights beats starting from supervised pretraining (81.9) or random initialisation (81.8). A DINO ViT-S/16 trained for 300 epochs on two 8-GPU servers over 3 days (72.6 hours) reaches 76.1% linear.
 
@@ -32,6 +33,8 @@ Results (self-reported):
 - In a 300-epoch ViT-S/16 ablation, masked modelling without any [CLS] distillation reaches only 9.5 on k-NN and 29.8 on linear; BEiT using the DALL-E tokenizer reaches 6.9 k-NN, 23.5 linear and 81.4 fine-tuned; taking DINO as a fixed tokenizer yields 44.3 k-NN versus 69.1 for iBOT. Soft token distributions beat hard labels.
 - Dense tasks: with ViT-B/16, COCO box AP 51.2 and mask AP 44.2 (DINO 50.1 and 43.4) with Cascade Mask R-CNN, and ADE20K mIoU 50.0 with UperNet, 3.2 over DINO. Part-wise probing on ViT-S/16 at 800 epochs: top-56 patch tokens give iBOT 5.9 points over DINO.
 - With multi-crop, iBOT needs 25% more memory and takes 7.4% longer to train than DINO (ViT-S/16, batch 1024 on two 8-GPU V100 machines).
+
+Darcet et al. note that DINO's attention maps are free of the high-norm artifact tokens that they find in larger ViTs such as DINOv2 ViT-g/14; their register retrains (on DINOv2 ViT-L/14, among others) remove them; see [[Vision Transformer Registers and High-Norm Tokens]].
 
 ## Limits
 

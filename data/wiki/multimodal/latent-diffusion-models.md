@@ -24,7 +24,7 @@ Rombach and colleagues ask whether running diffusion inside the latent space of 
 - Class-conditional ImageNet 256x256, LDM-4 with classifier-free guidance: FID 3.60 at 400M parameters against ADM-G 4.59 at 608M (250 DDIM steps, scale 1.5).
 - On class-conditional ImageNet at equal compute, LDM-8 is ahead of pixel-based LDM-1 by 38 FID points after 2M steps. LDM-4 and LDM-8 strike the best balance; LDM-1 and LDM-2 are slow to train, and LDM-32 stalls because compression is too strong (single A100, f from 1 to 32).
 - Unconditional CelebA-HQ 256x256, LDM-4: FID 5.11 with 500 DDIM steps, which the authors report as a new best over likelihood-based models and GANs.
-- Places inpainting: sampling is at least 2.7x faster and FID at least 1.6x better than for pixel-space diffusion with the same parameters; the large inpainting LDM-4 with 512 fine-tuning gets FID 1.50 against LaMa 2.23 (recomputed).
+- Places inpainting: a speed-up of at least 2.7x and FID at least 1.6x better than for pixel-space diffusion with the same parameters; the large inpainting LDM-4 with 512 fine-tuning gets FID 1.50 against LaMa 2.23 (recomputed).
 - Text-to-image, 1.45B model on LAION-400M: zero-shot MS-COCO FID of 12.63 with guidance scale 1.5, versus 23.31 without guidance (30,000 samples, 250 DDIM steps).
 - Reconstructing ImageNet-val, the f = 4 autoencoder gets 0.58 R-FID with PSNR at 27.43, against DALL-E f = 8 at 32.01 and VQGAN f = 16 at 4.98.
 - 4x super-resolution (ImageNet-Val 64 to 256): FID 2.8 (val features) or 4.8 (train features) against 5.2 for SR3, but with lower PSNR (24.4 against 26.4) and IS (166.3 against 180.1).

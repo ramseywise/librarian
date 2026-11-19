@@ -6,6 +6,7 @@ updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-dosovitskiy-2020-image-worth-16x16-words.md
   - data/raw/papers/2026-11-07-zhai-2022-scaling-vision-transformers.md
+  - data/raw/papers/2026-11-07-darcet-2023-vision-transformers-need-registers.md
 ---
 
 # Vision Transformer ViT Patch Tokens and Scaling
@@ -34,6 +35,8 @@ Zhai et al. train ViTs from 5M to roughly 2B parameters on ImageNet-21k and on J
 - Larger models use data more efficiently: matching L/16's 10-shot result takes Ti/16 about 100 times more images, and about 20 times more when fine-tuning (JFT-3B, ImageNet 10-shot). L/16 trained on only 30M images stalls near 27% error against 19% with more data. The authors conclude that given enough data, a bigger model trained for fewer steps is preferable.
 - Recipe changes: a larger, decoupled weight decay on the head (it helps few-shot transfer but reduces upstream accuracy in a ViT-B/32 JFT-300M test); a global-average-pool or MAP head instead of the [class] token (with 257 tokens for ViT-H/14 at 224, rounding the token count up to a multiple of 128 on TPU can cost up to half again in memory); an Adafactor variant that cuts optimiser state to half the parameter count; bfloat16 for the first Adam moment, with no effect on outcomes; and a reciprocal-square-root schedule ending in a cooldown.
 - Moving from JFT-300M to JFT-3B lifts ImageNet transfer by about 1% for both B/32 and L/16.
+
+Darcet et al. later report that large ViTs trained long enough produce a small share of high-norm outlier patch tokens, in DINOv2 ViT-g/14 roughly 2% of patch tokens, measured on a small set of images (self-reported), and that appending learnable register tokens to the input, discarded at the output, removes them in a DeiT-III ViT-B, an OpenCLIP ViT-B/16 and a DINOv2 ViT-L/14. Details are on [[Vision Transformer Registers and High-Norm Tokens]].
 
 ## Limits
 

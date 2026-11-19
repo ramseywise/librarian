@@ -11,6 +11,7 @@ sources:
   - data/raw/papers/2026-11-06-zhang-2023-unifying-perspectives-nlp-software-engineering.md
   - data/raw/papers/2026-11-08-fan-2023-large-language-models-software-engineering.md
   - data/raw/papers/2026-11-08-xiao-foundations-llms-ch06-reasoning.md
+  - data/raw/papers/2026-11-08-xu-2022-systematic-evaluation-large-language-models.md
 ---
 
 # HumanEval and pass@k
@@ -37,6 +38,7 @@ Setup: HumanEval pass@1 unless stated; sampling settings differ by paper.
 | GPT-J-6B | 11.6% | Codex paper, best over temperatures 0.2 and 0.8 (its headline bullet says 11.4%) |
 | Codex-12B | 28.8% | Codex paper; pass@10 46.81, pass@100 72.31 (Table 1) |
 | Codex-S-12B | 37.7% | Codex paper |
+| PolyCoder 2.7B | 5.59% | Xu et al.; the best of four temperatures (0.2 to 0.8), with top-p 0.95 and 100 samples drawn per prompt; that paper reports 6.41% for GPT-Neo 2.7B and 11.62% for GPT-J 6B |
 | CodeGen-Mono 16.1B | 29.28 | n=200, best of three temperatures, top-p 0.95 |
 | StarCoderBase 15.5B | 30.4% | n=200, temperature 0.2 |
 | StarCoder 15.5B | 33.6% | n=200, temperature 0.2; 40.8% with a file-name prefix prompt at temperature 0.1 |
@@ -51,7 +53,7 @@ The EvalPlus variant of HumanEval is covered at [[EvalPlus and HumanEval+]]. One
 
 Zhang et al.'s survey of code language models calls HumanEval near-saturated, adding that its leaderboard has been gamed almost to the maximum. Its benchmark tables size HumanEval at 164 Python problems, MBPP at 974 and SWE-bench at 2,294. In the survey, the SWE-agent system resolves only 12.5% of real GitHub issues in SWE-bench (citing Yang et al. 2024b). The Fan et al. software-engineering survey reports that Claude 2 and GPT-4 solve 4.8% and 1.7% of the 2,294 SWE-bench tasks, and that GPT-4's zero-shot HumanEval pass@1 was 67% in the GPT-4 report but about 80% on a leaderboard accessed 24 Aug 2023, so rankings date quickly. Both are secondary reports of other papers' numbers.
 
-Xiao and Zhu's chapter on reasoning writes the estimator as the mean over N items of one minus C(Ns-Ci, k) over C(Ns, k), and pair it with Cons@k, which scores the answer that wins a majority vote across k sampled reasoning paths ([[Self-Consistency]]).
+Xiao and Zhu's chapter on reasoning writes the estimator as the mean over N items of one minus C(Ns-Ci, k) over C(Ns, k), and pairs it with Cons@k, which scores the majority answer among N sampled reasoning paths against the ground truth ([[Self-Consistency]]).
 
 ## Limits
 
@@ -61,6 +63,7 @@ Xiao and Zhu's chapter on reasoning writes the estimator as the mean over N item
 - The Codex extraction gives GPT-J-6B as 11.4% in its headline bullet and 11.6% for the best-of-temperatures setup.
 - CodeGen picks the best of three temperatures per k; StarCoder's own prompt-format result shows the score depends on the prompt (the file-name prefix hurts CodeGen-16B-Mono, 28.10%).
 - StarCoder and Qwen2.5-Coder report single runs without seeds or variance.
+- PolyCoder's paper picks the best temperature per metric on HumanEval itself, runs each result once with no seeds or variance, and says HumanEval covers Python only.
 
 ## See Also
 

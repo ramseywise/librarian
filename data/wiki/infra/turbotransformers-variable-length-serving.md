@@ -2,7 +2,7 @@
 title: TurboTransformers Variable-Length Serving
 tags: [infra, pattern]
 summary: "TurboTransformers (PPoPP 2021) serves encoder transformers on GPUs with fused kernels, a sequence-length-aware memory allocator and a dynamic-programming batch scheduler; the paper reports gains on variable-length BERT but parity or losses against tuned fixed-length runtimes."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-fang-2021-turbotransformers.md
 ---
@@ -40,3 +40,4 @@ Setup: BERT on a consumer RTX 2060 unless stated.
 - [[Clipper Prediction Serving]] — related (adaptive batching and response cache)
 - [[LLM Inference Economics]] — prerequisite-for
 - [[Chunked Prefill and Adaptive Batching]] — related (batching under variable length, for LLM serving)
+- [[Hugging Face Transformers Library and Model Hub]] — related (another Transformer library)

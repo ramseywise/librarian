@@ -42,4 +42,4 @@ Phoenix and Taylor (*Prompt Engineering for Generative AI*, chapter 9) advise ma
 - [[Make-A-Scene Scene-Based Text-to-Image Generation]] — related (segmentation tokens as a control mechanism)
 - [[InstructPix2Pix Instruction-Based Image Editing]] — related (both condition Stable Diffusion on an image)
 - [[GLIGEN Grounded Text-to-Image]] — related
-- [[Image Prompting Practices for Diffusion Models]] — extends
+- [[Image Prompting Practices for Diffusion Models]] — related

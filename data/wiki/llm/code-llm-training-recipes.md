@@ -12,6 +12,7 @@ sources:
   - data/raw/papers/2026-11-08-svyatkovskiy-2020-intellicode-compose.md
   - data/raw/papers/2026-11-07-fried-2022-incoder.md
   - data/raw/papers/2026-11-06-zhang-2023-unifying-perspectives-nlp-software-engineering.md
+  - data/raw/papers/2026-11-08-xu-2022-systematic-evaluation-large-language-models.md
 ---
 
 # Code LLM Training Recipes
@@ -28,6 +29,7 @@ The decoder-only code models differ mainly in where the weights start, what the 
 | StarCoderBase / StarCoder (Li et al., TMLR 2023), 15.5B | Not stated | 86 languages from The Stack v1.2, with GitHub issues, Git commits and Jupyter notebooks added; near-deduplicated and PII-redacted; 1T tokens trained | 8K context, multi-query attention, FIM; StarCoder = base fine-tuned about 2 epochs (35B tokens) on Python |
 | Code Llama (Rozière et al.), 7B to 70B | Llama 2 | 500B code-heavy tokens (1T for 70B) | Optional FIM, then long-context fine-tuning on 16,384-token sequences with the RoPE base period increased a hundredfold, to one million; optional 100B Python tokens or about 5B instruction tokens |
 | Qwen2.5-Coder (Hui et al.), 0.5B to 32B | Qwen2.5 checkpoints | continued pretraining on 5.2T tokens of files (8K context), then roughly 300B repo-level tokens (32K context); the mixture covers code, text-code grounding, synthetic, math and plain text | SFT in two stages (tens of millions of low-quality samples first, then millions of high-quality ones chosen with rejection sampling), followed by offline DPO whose feedback comes from execution and an LLM judge |
+| PolyCoder (Xu et al.), 160M, 400M, 2.7B | Trained from scratch (stated) | 253.6G of filtered GitHub code in 12 languages (24,082,681 files; 631.4G raw); files over 1MB or under 100 tokens dropped, then exact-hash dedup removed 38% of files and 61% of bytes | GPT-2 architecture trained with the GPT-NeoX toolkit; the 2.7B model took about six weeks on 8 RTX 8000 GPUs. Details on [[PolyCoder Open Multilingual Code Model]] |
 | GPT-C in IntelliCode Compose (Svyatkovskiy et al., FSE 2020) | Trained from scratch (stated) | 1.2B lines of Python, C#, JavaScript, TypeScript | GPT-2 variant with tied embeddings; built for under-100 ms completion |
 
 The StarCoder paper builds on SantaCoder (same architecture, tokenizer design, dedup pipeline) and The Stack. Efficient inference uses multi-query attention ([[Multi-Query and Grouped-Query Attention]]) and the 8K window uses FlashAttention ([[FlashAttention and FlashAttention-2]]). Qwen2.5-Coder's offline DPO follows [[Direct Preference Optimization]], and its instruction data uses rejection sampling ([[Evol-Instruct (WizardLM and WizardCoder)]] and [[OSS-Instruct (Magicoder)]] cover other code instruction-data recipes).
@@ -42,6 +44,7 @@ The StarCoder paper builds on SantaCoder (same architecture, tokenizer design, d
 - **Prompt format**: at temperature 0.1 a file-name prefix prompt lifts StarCoder's HumanEval pass@1 (33.6% to 40.8%) but barely moves StarCoderBase.
 - **Language share**: in StarCoderBase, pass@1 improves between 800B and 1000B tokens only for languages with more than about 1 GB of data, and R drops.
 - **Instruction data**: Code Llama's self-instruct data (question, test and solution triplets kept only if the tests pass) improves HumanEval for the 7B instruct model; separately, the 34B Instruct model's TruthfulQA score (true and informative) goes from 34.64 to 47.37.
+- **Python share (PolyCoder)**: PolyCoder 2.7B scores 5.59% on HumanEval pass@1 against 6.41% for GPT-Neo 2.7B (best of four temperatures, top-p 0.95, 100 samples drawn per prompt); it saw 2.5B Python tokens against 4.3B for GPT-Neo 2.7B and 26B for CodeParrot, which the authors give as part of the reason.
 - **Cost**: StarCoderBase took 320,256 GPU hours on 512 A100 80GB (16.68 tCO2eq); InCoder-6.7B used 248 V100 GPUs for one epoch.
 - **Responsible release (StarCoder)**: OpenRAIL-M licence, an attribution tool that pairs a Bloom-filter membership check with a BM25 index, and a PII detector (NER with pseudo-labels reaches key F1 70.41% against 6.74% for regex; a better email regex lifted that detector's F1 from 81.8% to 96.83%).
 - **Latency (IntelliCode)**: on Python, monolingual GPT-C scores 86.7% edit similarity (perplexity 1.82) while the best n-gram model, a 5-gram, scores 59.7%. Cutting 26 layers to 12 makes inference 2.7x faster at a 6% edit-similarity cost (8 layers: 4.5x faster, 8% cost), and batched beam search with key/value caching cuts latency from 7500 ms to 2700 ms. A multilingual model with control codes helps JS/TS (87.6 against 84.1) but lowers C# (74.6 against 76.8). Online, surfacing rate was 9.2% and click-through rate 10% over more than 150 thousand internal requests. The distillation step is the layer-reduction approach of DistilBERT; for the general method see [[Knowledge Distillation with Soft Targets]].
@@ -50,7 +53,7 @@ The StarCoder paper builds on SantaCoder (same architecture, tokenizer design, d
 
 Zhang et al.'s survey of code language models gives these code corpus sizes (its Table 2, sizes in GB, counting just the code portion for The Pile and ROOTS): CodeSearchNet 20, The Pile code 95 (of an 800 GB raw dataset), ROOTS code 163 (13 languages, of 1.6 TB), CodeParrot 1K, The Stack 3,136, The Stack v2 32K. Code is already part of general pretraining mixes: the survey gives LaMDA as 12.5% code and PaLM as 5%.
 
-It treats the Codex, PaLM-Coder and Code Llama steps as continual pretraining on code, which it says is still self-supervised rather than fine-tuning: Codex adds 100B code tokens to GPT-3, PaLM-Coder adds 7.8B code tokens to PaLM, and Code Llama adds more than 500B code tokens to Llama 2. On fill-in-the-middle, it notes that infilling models outscore the next-token-only CodeGen in its Table 4 but calls the real benefit of infilling training controversial (confounded by model size and data).
+It treats the Codex, PaLM-Coder and Code Llama steps as continual pretraining on code, which it says is still self-supervised rather than fine-tuning: Codex adds 100B code tokens to GPT-3, PaLM-Coder adds 7.8B code tokens to PaLM, and Code Llama adds more than 500B code tokens to Llama 2. On fill-in-the-middle, it notes that infilling models outscore the next-token-only CodeGen in its Table 4 but calls the real benefit of infilling training controversial.
 
 For code instruction tuning it gives sizes: InstructCodeT5+ uses 20K samples generated with InstructGPT, WizardCoder grows 20K Code Alpaca samples to 78K through Evol-Instruct and tunes StarCoder on them, Pangu-Coder 2 derives 68K from 20K, and CommitPackFT, built from commit histories, is 2 GB with 742K samples.
 
@@ -63,6 +66,7 @@ For code instruction tuning it gives sizes: InstructCodeT5+ uses 20K samples gen
 - IntelliCode: internal inconsistencies (batch size 128 against 160; multilingual 26 against 24 layers; the 355M GPT-2 baseline was not code-trained); its offline metrics measure string similarity rather than whether code works; the model is GPT-2 scale and predates Codex; the model and code are not released.
 - Zhang et al.'s prose gives CodeParrot as 50GB and The Stack as 3TB while its Table 2 says 1K GB for CodeParrot; its numbers are self-reported by each cited paper.
 - Codex needs a very large amount of code to train (hundreds of millions of lines), and the Codex numbers are for research models, not production Copilot. CodeGen is pretraining only, with no instruction tuning, and its multi-turn setting is prompt concatenation, not trained dialogue.
+- PolyCoder: no hyperparameter search because of cost, the 2.7B model is under-trained (150K steps with the decay schedule cut from 320K), the best temperature is chosen per metric on the test benchmark, and each result is a single run.
 - InCoder's Table 11 notes that its cross-paper comparisons are not rigorous; Zhang et al. say the same of the numbers they collect from each model's paper.
 
 ## See Also

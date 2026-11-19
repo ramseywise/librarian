@@ -14,7 +14,7 @@ Szegedy, Vanhoucke, Ioffe and colleagues ask how to scale a convnet so added com
 ## Mechanisms
 
 - **Factorized convolutions.** Replacing a 5x5 by two 3x3 convolutions saves 28% of computation and parameters (equal filters). An n x n becomes 1 x n then n x 1; a 3x1 followed by 1x3 costs a third less than 3x3, whereas two 2x2 convolutions save 11%. In a control, ReLU after both factorized layers did better than a linear layer first.
-- **Efficient grid reduction** module to downsample without a bottleneck.
+- **Efficient grid reduction** module, a dedicated block for shrinking the feature-map grid.
 - **Auxiliary classifier as regulariser.** The paper reports that removing the lower auxiliary head had no adverse effect, so the heads act as regularisers, not as help for early convergence (this contradicts the GoogLeNet hypothesis); batch-normalising the auxiliary head gave 0.4% absolute top-1.
 - **Label-smoothing regularisation.** Instead of a one-hot target, the label distribution mixes the true class with a uniform distribution u over the 1000 classes (u = 1/1000), weighting the true class by 1 - eps and u by eps, with eps = 0.1. Cross entropy against the mixture splits into the same two weighted terms: the ordinary loss and a loss against u. The gain was about 0.2% absolute on top-1 and top-5 alike.
 

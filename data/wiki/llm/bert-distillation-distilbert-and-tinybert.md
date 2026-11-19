@@ -6,6 +6,8 @@ updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-sanh-2019-distilbert-distilled-version-bert.md
   - data/raw/papers/2026-11-08-jiao-2020-tinybert.md
+  - data/raw/papers/2026-11-08-qiu-2020-pre-trained-models-natural-language.md
+  - data/raw/papers/2026-11-08-zhou-2024-comprehensive-survey-pretrained-foundation-models.md
 ---
 
 # BERT Distillation: DistilBERT and TinyBERT
@@ -27,6 +29,10 @@ Claims (self-reported):
 Jiao et al. train a 4-layer or 6-layer student with four losses: embeddings, per-layer attention matrices (MSE, averaged over heads), hidden states through a learned projection (MSE), and prediction-layer cross-entropy with temperature. It runs in two stages. The first stage, general distillation, uses Wikipedia text with pretrained BERT as teacher and gives the student its starting weights. The second stage, task-specific distillation, uses the fine-tuned BERT as teacher on a task set augmented by word replacement (GloVe is used for the augmentation).
 
 Claims (self-reported, GLUE official test unless noted): TinyBERT4 (14.5M parameters) keeps over 96.8% of BERT-base's accuracy while 7.5x smaller and 9.4x faster (K80 GPU inference), outperforms the 4-layer baselines BERT4-PKD and DistilBERT4 by 4.4% or more, using roughly 28% of their parameters, and reaches the average of the 24-layer MobileBERT-TINY at 38.7% of the FLOPs (the authors flag that comparison as possibly unfair). TinyBERT6 (67M) matches BERT-base on the test average and beats same-architecture baselines by 2.6%. Dev ablations: removing general distillation, task-specific distillation or data augmentation each lowers the average (the last two by similar amounts, more than the first); removing Transformer-layer distillation collapses performance; dropping the attention loss hurts more than dropping the hidden-state loss (72.9 without the latter); uniform layer mapping beats top (70.9) and bottom (71.3) mappings.
+
+## Figures quoted by two surveys
+
+Neither survey ran experiments here; both quote figures from the cited work, so each is second-hand and (self-reported) by the original authors. Qiu et al. list TinyBERT with 4 layers and 14.5M parameters at a 9.4x speed-up against a BERT-base teacher, which matches the TinyBERT figures above. They add that BERT-of-Theseus runs 1.94x faster and keeps over 98% of the source model's performance. Zhou et al. quote DistilBERT as 40% smaller than BERT with 97% of its language comprehension retained, the same headline as above, and Q8BERT as quantising parameters from 32-bit to 8-bit, a fourfold compression with little impact on performance. Q8BERT is a quantisation method, not a distillation one; Zhou et al. group it with the compressed models.
 
 ## Limits
 

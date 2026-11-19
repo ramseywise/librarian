@@ -9,7 +9,7 @@ sources:
 
 # CogView Text-to-Image Transformer
 
-Ding and colleagues ask if one big autoregressive Transformer over a joint sequence of text tokens and VQ-VAE image tokens can generate images from open-domain text, and how its fp16 training can be kept stable. Numbers are self-reported.
+Ding and colleagues ask if one big autoregressive Transformer over a joint sequence of text tokens and VQ-VAE image tokens can generate images in the general domain from text, and how its fp16 training can be kept stable. Numbers are self-reported.
 
 ## Mechanism
 

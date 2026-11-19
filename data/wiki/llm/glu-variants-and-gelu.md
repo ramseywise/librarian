@@ -7,6 +7,8 @@ sources:
   - data/raw/papers/2026-11-07-hendrycks-2016-bridging-nonlinearities-stochastic-regularizers-gaussian.md
   - data/raw/papers/2026-11-07-shazeer-2020-glu-variants-improve-transformer.md
   - data/raw/papers/2026-11-08-gehring-2017-convolutional-sequence-sequence-learning.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch02-generative-models.md
+  - data/raw/papers/2026-11-07-build-a-large-language-model-from-scratch-ch04-implementing-a-gpt-model.md
 ---
 
 # GLU Variants and GELU
@@ -34,10 +36,15 @@ Setup: T5-base (12 encoder and 12 decoder layers, d_model 768), pretrained on C4
 - ReGLU is slightly above ReLU on SQuAD v1.1 F1 and on GLUE average; SwiGLU is above ReLU on SuperGLUE average.
 - The author offers no explanation for why the gated variants work.
 
+## In textbook GPT and Llama recipes
+
+Xiao and Zhu define GLU as sigma(hW1+b1) times (hW2+b2), with GeGLU using GeLU as the gate and SwiGLU using Swish; they say PaLM and Llama use SwiGLU and advise SwiGLU or GeGLU over ReLU in wide feed-forward layers. Raschka's GPT-2 small build keeps a plain GELU feed-forward layer (tanh approximation, as GPT-2 did) that expands 768 to 3,072 and contracts back. Neither chapter reports an experiment on the choice.
+
 ## Limits
 
 - GELU: only 3-5 runs behind each median, no variance or significance tests, and gaps of 0.1 to 1 point; small models and datasets only, with no transformer or language-model runs; ReLU and ELU are the sole comparators and the learning rate the sole tuned setting. The SiLU claim has no numbers, and Appendix B is the authors' own account of priority disputes over SiLU and swish.
 - GLU variants: each architecture was pretrained once for 524,288 steps (spread measured only at 65,536), fine-tuning was a single noisy run per model with checkpoints picked on dev sets, only T5-base scale was used, and some tasks (for example CoLA and CB) favour GELU or ReLU. The Raffel et al. baseline with the same architecture does notably worse, which the author puts down to pretraining dropout that he removed, so that comparison is confounded.
+- Xiao and Zhu and Raschka give these activation choices as advice or description, with no experiment; Xiao and Zhu's chapter has almost no experiments of its own.
 - ConvS2S: the GLU is its design choice; the extraction reports no ablation of the GLU itself.
 
 ## See Also

@@ -6,6 +6,8 @@ updated: 2026-11-19
 sources:
   - data/raw/pdfs/2017-06-12-attention-is-all-you-need.md
   - data/raw/pdfs/2020-10-01-rasa-dialogue-transformers.md
+  - data/raw/papers/2026-11-07-build-a-large-language-model-from-scratch-ch03-coding-attention-mechanisms.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch02-generative-models.md
 ---
 
 # Self-Attention Mechanism
@@ -48,6 +50,16 @@ This is more suitable than RNNs for multi-turn dialogue because conversations co
 - **Cross-attention**: queries from one sequence, keys/values from another (encoder-decoder attention)
 - **Sparse attention**: restricts attention to local neighborhoods to reduce quadratic cost
 - **Relative position attention**: encodes relative rather than absolute positions (used in DIET, TED)
+
+## Causal attention in code and efficient variants
+
+Raschka's from-scratch LLM book (ch. 3) builds causal attention in PyTorch from simplified attention up to multi-head. Masking future positions with -inf before the softmax gives the same masked, renormalised weights as zeroing them afterwards and renormalising, with no leakage from future tokens (six-token example, d_in=3, d_out=2; self-reported worked example). Dropout is applied to the attention weights after the softmax during training only, and the weights that survive are multiplied by 1/(1-p) so average influence is unchanged at inference; the demonstration uses 50%, and the chapter says GPT training uses 0.1 or 0.2 later. In the two-head wrapper with d_out=2, each token's context vector is the concatenation of both heads' outputs, four values long. The weight-split multi-head class is called more efficient by argument, with no timing or memory measurement.
+
+Xiao and Zhu (*Foundations of Large Language Models*, ch. 2) define three efficient variants in their terms list: sparse attention attends only to a subset G of positions, with weights renormalised over G; linear attention replaces the softmax with a kernel feature map, giving recurrent summaries and constant cost per step; and attention sinks keep the first few tokens (global tokens) attended throughout, soaking up surplus attention scores and steadying long contexts. For the cache of keys and values they give O(L*tau*dh*m) for multi-head, O(L*dh*m) for multi-query and O(L*ng*dh*m) for grouped-query attention, where L is layers, tau heads, dh the per-head dimension and m cached tokens.
+
+## Limits
+
+- The Raschka and Xiao and Zhu passages are textbook material: toy sizes with a fixed seed in the first, almost no experiments of its own in the second (its figures are borrowed or illustrative).
 
 ## See Also
 - [[Transformer Architecture]] — prerequisite-for

@@ -9,6 +9,9 @@ sources:
   - data/raw/papers/2026-11-07-wang-2022-super-naturalinstructions.md
   - data/raw/papers/2026-11-07-min-2022-metaicl.md
   - data/raw/papers/2026-11-08-xiao-foundations-llms-ch04-alignment.md
+  - data/raw/papers/2026-11-08-mishra-2022-cross-task-generalization-natural-language.md
+  - data/raw/papers/2026-11-08-ye-2021-crossfit.md
+  - data/raw/papers/2026-11-07-bach-2022-promptsource.md
 ---
 
 # Multitask Prompted Instruction Tuning (FLAN, T0, Super-NaturalInstructions, MetaICL)
@@ -63,6 +66,16 @@ GPT-2 Large (770M) is meta-trained by drawing a task, drawing k+1 examples, conc
 - Size: FLAN saw instruction tuning hurt at 8B and below; the T0 extraction records T0 finding gains at 3B; MetaICL saw plain multitask zero-shot fail to help at 770M. The extractions say direct comparison is hard because model type, size and splits differ.
 - Super-NaturalInstructions reports a log-linear size effect against ZeroPrompt's claim.
 
+## Small-model multitask studies
+
+Two papers run the same seen-versus-unseen test on BART-Base, far below the model sizes above (all figures self-reported).
+
+- Mishra et al. (Natural Instructions): BART-base trained for 3 epochs on the seen tasks, with the instruction text placed in front of each input, scores ROUGE-L 32 on unseen tasks under the random split, against 13 with no instructions; non-fine-tuned GPT-3 (175B, full instructions) scores 24. With instructions, more seen tasks help; without them there is no tangible gain. A model trained per task scores 66.
+- Ye et al. (CrossFit): on BART-Base, multitask upstream learning on the random partition (120 training, 20 development, 20 test tasks) gives an average relative gain of 35.06% over fine-tuning BART-Base directly on 16 to 32 few-shot examples; MAML scores 28.50%, first-order MAML 22.69% and Reptile 25.90%. On the held-out multiple-choice partition the multitask gain is 12.20% and MAML's 4.69%. Enlarging the upstream data per task up to 8 times adds only about 4%.
+- PromptSource (Bach et al.) as of January 2022 collects more than 2,000 prompts across roughly 170 datasets (the Public Pool of Prompts, P3); per its extraction, a subset of P3 was used to fine-tune the T0 models.
+
+These sit with [[Natural Instructions and PromptSource Prompt Collections]] and [[CrossFit NLP Few-Shot Gym]].
+
 ## Xiao and Zhu's dataset figures
 
 Xiao and Zhu cite the FLAN instruction-tuning collection (Longpre et al. 2023) as built from 1,836 tasks and holding 15 million samples, and describe earlier academic-task instruction datasets as spanning more than 100 NLP tasks and over a million samples, all in one format.
@@ -72,6 +85,9 @@ Xiao and Zhu cite the FLAN instruction-tuning collection (Longpre et al. 2023) a
 - FLAN: assigning tasks to clusters is subjective; only short, usually one-sentence instructions were tried; the scaling ablation used one cluster split; context was 1024 tokens and data mostly English; tasks phrased as language modeling (commonsense, coreference) did not benefit; zero-shot DROP and SQuADv2 numbers for GPT-3 use same-passage exemplars and are not comparable.
 - T0: zero-shot still trails models finetuned per task; the task taxonomy is heuristic and some held-out tasks may overlap the QA training data; the authors stay agnostic on why prompts help; differences from FLAN are untested hypotheses; contamination against C4 reaches 9.12% for HellaSwag and 5.2% for RTE hypotheses; steps, schedule and seeds are unstated, with one run and no significance tests.
 - Super-NaturalInstructions: English-heavy with short responses; ROUGE-L is a weak proxy where copying the input scores high (rewriting, error correction); InstructGPT data may overlap the evaluation tasks; scaling analyses use T5-3B on the English track, one run; InstructGPT and GPT-3 were scored on just 20 instances per task.
+- Mishra et al.: only BART-base (140m) is fine-tuned while GPT-3 is used as-is, so the BART against GPT-3 comparison mixes size, tuning and prompt format; no seeds or significance tests; ROUGE-L only; the task set is 61 tasks from 9 datasets, with the scaling trend shown to about 50 seen tasks.
+- Ye et al.: main analysis uses only BART-Base (139M); meta-learning used one inner-loop update and is sensitive to hyperparameters and seeds, so its weaker results may not be intrinsic; upstream hyperparameters are not reported and no significance tests were run.
+- PromptSource: no experiments or user study; English prompts only.
 - MetaICL: long contexts are needed; only a 770M causal LM and only classification or multiple-choice tasks were tried; meta-training plus fine-tuning still wins; choice of meta-training tasks causes non-negligible variance; random label words do relatively poorly.
 
 ## See Also

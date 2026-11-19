@@ -17,6 +17,7 @@ sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--prompt-library.md
   - data/raw/papers/2026-11-08-xiao-foundations-llms-ch03-prompting.md
   - data/raw/papers/2026-11-08-genai-for-dummies-ch03-llm-app-project-lifecycle.md
+  - data/raw/papers/2026-11-07-prompt-engineering-for-generative-ai-ch01-five-principles-of-prompting.md
 ---
 
 # Prompt Engineering
@@ -128,12 +129,24 @@ is the primary security concern for any system with external inputs. See
 
 ## Textbook and primer notes
 
-Xiao and Zhu advise describing the task clearly and specifically with audience and length limits, giving reference information and allowing a "no answer" reply when it is insufficient, and attending to format (fields, XML tags, delimiters), and noting that minor edits or reordered sentences may alter outputs. They close that simple prompts may suffice for stronger models while smaller models need careful design and often fine-tuning. A vendor primer (Snowflake special edition) lists an adaptation ladder in the order prompt engineering, in-context learning, retrieval-augmented generation, fine-tuning, RLHF; its extraction notes the primer is promotional and loose in places, for example it describes in-context learning as a way of training a model on a data set.
+Xiao and Zhu advise describing the task clearly and specifically with audience and length limits, giving reference information and allowing a "no answer" reply when it is insufficient, and attending to format (fields, XML tags, delimiters), and noting that minor edits or reordered sentences may alter outputs. They close that simple prompts may suffice for stronger models while smaller models need careful design and often fine-tuning. A vendor primer (Snowflake special edition) lists an adaptation ladder in the order prompt engineering, in-context learning, retrieval-augmented generation, fine-tuning, RLHF; its extraction notes the primer is vendor-sponsored and loose in places, for example it describes in-context learning as a way of training a model on a data set.
+
+## The five principles (Phoenix and Taylor)
+
+Phoenix and Taylor (*Prompt Engineering for Generative AI*, ch. 1) organise prompting around five model-agnostic principles. They advise, in their order:
+- **Give Direction:** spell out the style wanted or name a persona, and picture what context a human would need. If direction conflicts with other prompt elements, they advise keeping whichever matters more.
+- **Specify Format:** name the output format first (JSON or YAML), parse the reply, and retry when parsing fails.
+- **Provide Examples:** a prompt with no examples is the weakest, while one to three nearly always help; beyond that they suggest varying the count and diversity, because uniform examples constrain the output. Examples are harder to collect, so try direction first.
+- **Evaluate Quality:** replace blind trial and error with randomised, blind thumbs-up or thumbs-down ratings across several runs of each variant, plus programmatic checks wherever ground truth exists.
+- **Divide Labor:** split a complex task into chained calls, such as generating names and then rating them in a second call.
+
+Their one measured test is a zero-shot against a few-shot product-name prompt on gpt-3.5-turbo, 5 blind-rated responses each, where the few-shot variant scored higher (single run, one rater, no significance test).
 
 ## Limits
 
 - Xiao and Zhu's chapter 3 reports no experiments and concedes that suitable prompts vary by LLM.
-- The Snowflake primer is promotional and loose in places (see the textbook and primer notes above); it gives no measurements.
+- Phoenix and Taylor's chapter 1 uses GPT-4, gpt-3.5-turbo, Midjourney v6 and SDXL (Stable Diffusion XL), and the authors concede these may be out of date within months and that templates rarely transfer between models. Its claims about example counts and about how few test runs expose a deviation rest on author experience with no data.
+- The Snowflake primer is vendor-sponsored and loose in places: it calls RLHF near-real-time, which is wrong, and it is dated (Bard, GPT-3).
 
 ## See Also
 - [[Context Engineering]] — extends

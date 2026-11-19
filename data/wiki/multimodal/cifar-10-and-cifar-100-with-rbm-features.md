@@ -31,6 +31,7 @@ RBMs are fitted with contrastive divergence (CD-1: the hidden units are sampled 
 - Accuracies exist only as bar-chart labels, with no table, variance or repeats. Only CIFAR-10 is used because CIFAR-100 had just been finished.
 - Most hyperparameters and compute are not stated. The author concedes that reconstruction error measures fit poorly. The biggest net (near 2x10^8 parameters) overfit and was left untuned.
 - Parallel benchmarks use random data, and on binarised MNIST parallelism stopped paying after two machines.
+- The source ledger dates the item 2024, but the report itself is dated 8 April 2009.
 - RBM pretraining was later displaced by supervised convnets; the lasting contribution is the pair of datasets.
 
 ## See Also

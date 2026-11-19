@@ -4,6 +4,7 @@ tags: [llm, pretraining-and-data, concept]
 summary: "BERT pretrains a bidirectional Transformer encoder by masked-token prediction and fine-tunes it with one added output layer; RoBERTa, SpanBERT and ALBERT each change one part of the recipe (training scale, masking unit, or parameter and loss design)."
 updated: 2026-11-19
 sources:
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch01-pre-training.md
   - data/raw/papers/2026-11-07-devlin-2018-bert.md
   - data/raw/papers/2026-11-07-liu-2019-roberta.md
   - data/raw/papers/2026-11-08-joshi-2020-spanbert.md
@@ -38,8 +39,13 @@ Joshi et al. (self-reported results) mask contiguous spans of geometric length (
 
 Lan et al. (self-reported results) factorise the vocabulary embedding into a V x E table and an E x H projection, share all parameters across layers by default, and replace NSP with sentence-order prediction (SOP). SOP positives pair consecutive segments in order; negatives swap their order. Masking is n-gram MLM. ALBERT-large has 18M parameters against 334M for BERT-large and iterates through data about 1.7x faster, while ALBERT-xxlarge (235M) is about 3x slower. In ablations (ALBERT-base, 125k steps) all-shared parameters cost average score at E=128 while sharing only attention parameters does not; an NSP-trained model is at chance on the SOP task while an SOP-trained model solves it, and SOP improves the downstream average over NSP. Removing dropout helps ALBERT-xxlarge at about 1M steps.
 
+## Xiao and Zhu's textbook account
+
+Xiao and Zhu (*Foundations of Large Language Models*, ch. 1) use BERT as their worked example of encoder pre-training, with figures reported from the original papers. In their account, 15% of tokens are picked for masking; of those, 80% become [MASK], 10% are swapped for a random token and 10% stay as they are, the unchanged share being there to narrow the gap between pre-training and fine-tuning inputs. They give BERT-base as 12 layers, hidden size 768 and 12 heads (110M parameters) and BERT-large as 24 layers, hidden size 1,024 and 16 heads (340M). As a practical efficiency trick, stated without data, they suggest training on short sequences for most steps and switching to full length for the rest. For multilingual models they describe the curse of multilinguality: with capacity fixed, adding languages degrades high-resource languages. For fine-tuning they offer two options, updating every parameter or freezing the encoder and training only the classifier, and against catastrophic forgetting they suggest replaying earlier training data or using EWC.
+
 ## Limits
 
+- Xiao and Zhu's chapter 1 is introductory and runs no experiments: its numbers are reported from the BERT, RoBERTa, Megatron and XLM-R papers, it is encoder-centric, and it does not cover scaling laws, data mixes, tokenizers or optimizers.
 - BERT: English only, no multitask fine-tuning; the [MASK] mismatch is mitigated by 80/10/10 but not removed; BERT-LARGE fine-tuning is unstable on small datasets and the best restart on dev was chosen; the ablation uses BERT-BASE size only and differs from GPT in more than directionality; seeds, FLOPs and the Wikipedia snapshot are not given. SQuAD comparisons are dated Dec 10, 2018.
 - RoBERTa: data size and diversity are conflated; even the 500K-step model shows no sign of overfitting and would probably benefit from longer training; the byte-level BPE comparison is from early experiments; the GLUE test results use task-specific tricks and are not comparable to BERT's.
 - SpanBERT: single runs with no significance tests; ablations use 1.2M-step dev results; the explanation for why NSP hurts is a hypothesis not isolated by experiment; the authors note XLNet and RoBERTa use more data and tuning.

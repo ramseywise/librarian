@@ -22,8 +22,8 @@ A register is an extra learnable token placed after the patch embedding, as [CLS
 - Registers eliminate the outliers in all three models, and with registers the high-norm values sit wholly inside the register tokens.
 - DeiT-III ViT-B (ImageNet-22k) is about unchanged on ImageNet, ADE20k and NYUd. OpenCLIP ViT-B/16 (Shutterstock corpus) improves on NYUd rmse with zero-shot ImageNet unchanged. DINOv2 ViT-L is evaluated by frozen-feature linear probing on ADE20k, ImageNet and NYUd with 4 registers.
 - LOST object discovery on VOC2007 uses DINOv2 with registers (keys) and DeiT-III with registers (values); OpenCLIP gets slightly worse.
-- Four registers cost under 2% extra FLOPs, sixteen up to 6%. Sweeping 0, 1, 2, 4, 8 and 16 registers on DINOv2 ViT-L/14, a single register already removes the artifacts, additional ones improve ImageNet, dense tasks peak at an intermediate count, and 4 were adopted.
-- A linear probe on a register (DINOv2, one register) gives [CLS] 85.2 against 84.6 for an outlier patch with no registers (Aircraft).
+- Four registers cost under 2% extra FLOPs, sixteen up to 6% (self-reported). Sweeping 0, 1, 2, 4, 8 and 16 registers on DINOv2 ViT-L/14, a single register already removes the artifacts, additional ones improve ImageNet, dense tasks peak at an intermediate count, and 4 were adopted (self-reported).
+- Register linear probe on Aircraft, comparing DINOv2 with a single register to an outlier patch in a model without registers, the [CLS] scores are 85.2 and 84.6 respectively (the extraction's pairing is ambiguous; self-reported).
 
 ## Limits
 

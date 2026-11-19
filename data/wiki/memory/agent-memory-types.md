@@ -12,6 +12,7 @@ sources:
   - data/raw/agent-skills/langchain-rag/references/advanced-patterns.md
   - data/raw/claude-docs/playground/docs/components.md
   - data/raw/papers/2026-11-08-learning-langchain-ch04-langgraph-memory-chatbot.md
+  - data/raw/papers/2026-11-08-prompt-engineering-for-generative-ai-ch06-autonomous-agents-memory-tools.md
 ---
 
 # Agent Memory Types
@@ -253,6 +254,10 @@ Three helpers decide what is sent back in the prompt:
 - `merge_message_runs` joins consecutive same-type messages, for models like Anthropic chat that refuse them.
 
 The chapter's summary promises trimming, filtering and summarising, yet it has no summarisation code; the summarization node above covers that.
+
+### LangChain memory types (Prompt Engineering for Generative AI, ch. 6)
+
+Phoenix's chapter splits agent memory into long-term (the model's library: vector databases, self-reflection, custom retrievers) and short-term (a temporary workspace: conversation history and avoiding repetition). For conversation history in LangChain it advises choosing by need: window memory keeps the last K turns, summary memory suits long chats and saves tokens, summary-buffer is a hybrid of the two, and token-buffer caps memory at a token count. It also advises replacing in-process memory with a database store when conversations must carry over between sessions. The chapter's code targets 2023-24 LangChain APIs such as ConversationBufferMemory and gives no measurements for these choices.
 
 ## ADK vs LangGraph: State Access
 

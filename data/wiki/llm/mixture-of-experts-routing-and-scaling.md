@@ -10,6 +10,7 @@ sources:
   - data/raw/papers/2026-11-07-du-2021-glam.md
   - data/raw/papers/2026-11-08-clark-2022-unified-scaling-laws-routed-language.md
   - data/raw/papers/2026-11-07-huyen-ai-engineering-ch02-understanding-foundation-models.md
+  - data/raw/papers/2026-11-08-mcintosh-2023-google-gemini-openai-q-q.md
 ---
 
 # Mixture-of-Experts Routing and Scaling
@@ -44,6 +45,14 @@ Clark et al. train 168 decoder-only models (dense size 15M to 1.3B, 1 to 512 exp
 
 Huyen's textbook chapter (AI Engineering, ch. 2) uses Mixtral 8x7B to illustrate active parameters: of 46.7B in total, 12.9B are used for each token, because two experts run per layer. She says this makes its serving cost and speed those of a 12.9B model (a reported figure, not Huyen's own measurement).
 
+McIntosh et al.'s December 2023 survey of generative AI research defines a mixture of experts as sparse layers made of several expert networks, with a trainable gate that allocates input tokens to experts. It quotes efficiency figures from other systems, each without model, hardware or baseline (reported, not the survey's own):
+
+- DeepSpeed-MoE: model size down about 3.7x, with inference latency and cost improved by as much as 7.3x.
+- Lina: training steps up to 1.73x shorter, and 95th-percentile inference latency 1.63x lower on average.
+- Training cost up to five times lower than a dense model, in some encoder-decoder settings.
+
+As directions for MoE research it lists sparse fine-tuning, instruction tuning and improved routing.
+
 ## Limits
 
 - Shazeer 2017: the largest model's efficiency was 0.30 TFLOPS/GPU, since batch size had not been scaled with GPU count (0.72 at 65536 experts); the cause of the drop at 131072 experts is only conjectured ("possibly too much sparsity"). K40-era hardware and an LSTM backbone, no Transformer. Single runs, no seeds or learning rate reported.
@@ -51,6 +60,8 @@ Huyen's textbook chapter (AI Engineering, ch. 2) uses Mixtral 8x7B to illustrate
 - Switch: training of Switch-XXL is sometimes unstable. Upstream perplexity gains do not always carry over: Switch-C scores 87.7 on SQuAD against 89.6 for the smaller Switch-XXL, and on SuperGLUE, in the large regime, dense models often score higher at a given perplexity. The largest model's downstream numbers come from a partial checkpoint (503B tokens). The T5-XXL baseline saw an easier C4 containing duplicates, making that gap a lower bound. Speed depends on the Mesh-TensorFlow TPUv3 implementation.
 - GLaM: the authors concede that serving a MoE takes many more devices and costs more when traffic is low. Training steps, warmup, weight decay and seeds are not stated; code, weights and data are unreleased. The energy ratios rest on GPT-3 estimates made by others (Patterson et al.). The extraction gives the Fig 4 caption as 9 NLG tasks and the text as 8. Minimal hyperparameter tuning.
 - Clark et al.: every number holds only at 130B tokens, and the authors show models are unconverged; the cutoff N is extremely sensitive to the second decimal of b. The main sweep is single-seed with K from 1 to 4 and a largest dense base of 1.3B (plus one 7B anecdote). Zero-shot downstream effective parameter counts differ per task (370M validation, 284M LAMBADA, 535M Pile for N=110M, E=32). Disputes Kaplan et al.'s Eq 1.6 without claiming to disprove it.
+
+- McIntosh 2023: the relayed MoE figures carry no model, hardware or baseline. The survey's reference for "Mixtral 8x7B" is printed as "Mixture-of-experts meets instruction tuning", which is not the Mixtral paper.
 
 ## See Also
 

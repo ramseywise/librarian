@@ -9,6 +9,7 @@ sources:
   - data/raw/papers/2026-11-07-li-2023-starcoder.md
   - data/raw/papers/2026-11-07-hui-2024-qwen2-5-coder-technical-report.md
   - data/raw/papers/2026-11-06-zhang-2023-unifying-perspectives-nlp-software-engineering.md
+  - data/raw/papers/2026-11-07-roziere-2023-code-llama.md
 ---
 
 # MBPP and MathQA-Python

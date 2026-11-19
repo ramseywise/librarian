@@ -6,6 +6,8 @@ updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-ba-2016-layer-normalization.md
   - data/raw/papers/2026-11-07-vaswani-2017-attention-all-you-need.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch02-generative-models.md
+  - data/raw/papers/2026-11-07-build-a-large-language-model-from-scratch-ch04-implementing-a-gpt-model.md
 ---
 
 # Layer Normalization
@@ -33,12 +35,17 @@ By the paper's analysis (Table 1), LN does not change under rescaling or shiftin
 
 Vaswani et al. apply layer norm after each residual sub-layer of the [[Transformer Architecture]]; the original arrangement and the later pre-norm variant are compared in [[Pre-Norm vs Post-Norm and Warm-Up]].
 
+## Placement and RMSNorm in LLM textbooks
+
+Xiao and Zhu write layer norm as alpha times (h - mu)/(sigma + eps) plus beta, and RMSNorm as alpha times h/(sigma_rms + eps): RMSNorm only rescales by the root mean square, with no re-centring, and Llama uses it. They say most LLMs use pre-norm blocks, F(LNorm(input)) + input, rather than post-norm, because deep Transformers train more stably that way, a qualitative statement with no experiment in the chapter. Raschka's chapter 4 normalises each layer's activations to mean 0 and variance 1 across the feature dimension, places it ahead of both the attention and feed-forward layers, and uses unbiased=False in the variance for compatibility with GPT-2's TensorFlow weights.
+
 ## Limits
 
 - Convolutional networks: only preliminary experiments, and batch norm did better; the authors say further research is needed. No numbers, task or architecture are given for them.
 - The skip-thought setup departs from the original because the public code does not condition at every decoder timestep. The attentive-reader results cover validation only, with batch-norm curves borrowed from Cooijmans et al.
 - Single runs; seeds, learning rates and significance tests are absent, and many hyperparameters are left to the original papers. The comparison with Wang et al. on MSCOCO is not direct (one test set against a mean of five).
 - It has no transformer or attention experiments, since the paper predates the Transformer.
+- The two textbook passages (Xiao and Zhu, Raschka) run no experiment on norm placement or RMSNorm; Xiao and Zhu's chapter has almost no experiments of its own.
 
 ## See Also
 - [[Batch Normalization]] — alternative-to

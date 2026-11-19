@@ -9,6 +9,7 @@ sources:
   - data/raw/papers/2026-11-07-su-2023-roformer.md
   - data/raw/papers/2026-11-07-press-2021-train-short-test-long.md
   - data/raw/papers/2026-11-07-likhomanenko-2021-cape.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch02-generative-models.md
 ---
 
 # Position Encodings — Relative, Rotary, ALiBi and CAPE
@@ -51,6 +52,10 @@ ALiBi drops position embeddings and adds m·[-(i-1), ..., -1, 0] to the query-ke
 - Cost: no added parameters or runtime and 0 to 0.7% more memory than sinusoidal at the same L; the T5 bias trains at 14.4k words per second at L=512 against 28.5k for sinusoidal at L=1024.
 - The 1.3B model trained at 1024 and validated at 2048 reaches slightly lower perplexity than a sinusoidal model trained at 2048, with 3.1 GB less memory (CC100+RoBERTa, 50k updates, equal training time). The abstract states 11% faster training and 11% less memory.
 
+## Xiao and Zhu's textbook formulas
+
+Xiao and Zhu (*Foundations of Large Language Models*, ch. 2) write the ALiBi bias as PE(i,j) = -beta*(i-j) with a per-head slope beta_k = 2^(-8k/n_head), and say no tuning is needed. They describe the T5 relative bias as bucketed, with 32 buckets and a maximum distance of 1024 in their Figure 2.10: the first half of the buckets take one offset each, the second half are log-spaced, and the last bucket catches all offsets at or beyond the maximum. They give RoPE angles as theta_k = 10000^(-2(k-1)/d), by analogy with sinusoidal embeddings (see also [[Position Interpolation]]), and favour relative or rotary schemes over learned absolute embeddings when length generalisation matters. These are the book's own descriptions; the bucket figure is an illustration.
+
 ## CAPE
 
 CAPE keeps an absolute sinusoidal encoding over continuous positions (token index for text, coordinates scaled to [-1, 1] for images, seconds for audio). During training it applies mean-normalisation, a random global shift, a per-token local shift and a random global scale; at inference only mean-normalisation. The aim is to keep generalisation to unseen lengths and sizes without changing the attention mechanism.
@@ -66,6 +71,7 @@ CAPE keeps an absolute sinusoidal encoding over continuous positions (token inde
 - Shaw et al. hypothesise generalisation to unseen sequence lengths but do not test it. RoFormer has no test of extrapolation beyond the trained length, and its authors concede they have no faithful explanation of its faster convergence or long-text results.
 - ALiBi's authors analyse that gains from validating on longer sequences under non-overlapping evaluation largely reflect the early token curse: with a sliding window (stride 1) ALiBi stays flat as validation length grows (17.98 at 512, about 18.3 at 3072) while sinusoidal rises from 18.35 to 360.12. They note it may not use contexts longer than it was trained on, and on the 1.3B model it performs similarly to sinusoidal at equal L. Its slopes came from trying roughly ten hand-chosen sets on WikiText-103.
 - CAPE's 82.92% top-1 (UniViT) picks the best resize per bin on the validation set itself. CAPE for MT needs source and target position scaling and a BOS token. On MT En-De relative embeddings remain better beyond training lengths.
+- The Xiao and Zhu paragraph is textbook description with almost no experiments of its own, and its advice is not tested there.
 - All results are single runs unless stated; none report significance tests. Shaw et al. give no reason why their relative-position gain is 1.3 BLEU in one configuration and 0.3 in another.
 - The existing note [[Positional Encoding]] says sinusoidal encodings allow extrapolation to longer lengths; the ALiBi experiment above (sinusoidal trained on 512) did not extrapolate. The conflict is recorded in the conflicts file.
 

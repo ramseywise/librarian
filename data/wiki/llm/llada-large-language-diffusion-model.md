@@ -9,11 +9,11 @@ sources:
 
 # LLaDA Large Language Diffusion Model
 
-Nie and colleagues ask whether the core capabilities of LLMs (scalability, in-context learning, instruction following) can come from a masked diffusion model trained from scratch. Their hypothesis is that those capabilities stem from generative-modelling principles (maximum likelihood, Transformers, scale) rather than from the autoregressive factorisation. Numbers are self-reported.
+Nie and colleagues ask if a masked diffusion model trained from scratch can show what makes LLMs capable: scaling well, learning in context, and following instructions. Their hypothesis is that those capabilities stem from generative-modelling principles (maximum likelihood, Transformers, scale) rather than from the autoregressive factorisation. Numbers are self-reported.
 
 ## Mechanism
 
-- A Transformer **without a causal mask** is a mask predictor: each token is masked independently at ratio t ~ U[0,1], and the model predicts masked tokens with loss L = -E[(1/t) sum_i 1[x_t^i = M] log p(x_0^i | x_t)], which upper-bounds negative log-likelihood. For SFT only response tokens are masked and the loss is rescaled by L/l.
+- A Transformer **without a causal mask** works as a mask predictor. A ratio t is drawn from U[0,1], every token is masked independently at that ratio, and the model is trained to recover the masked tokens under a loss that sums the log-probability of each masked position's original token, weighted by 1/t and negated; this upper-bounds the negative log-likelihood. For SFT only response tokens are masked and the loss is rescaled by L/l.
 - The 8B model is pretrained on 2.3T tokens (0.13 million H800 GPU hours) and fine-tuned on 4.5M SFT pairs.
 - **Sampling** is reverse diffusion from a fully masked sequence. **Low-confidence remasking** remasks the s/t fraction of predicted tokens with lowest confidence at each step. A block-diffusion variant (semi-autoregressive remasking) runs the reverse process in fixed-length blocks, autoregressive across blocks.
 - The learning-rate scheduler is Warmup-Stable-Decay and classifier-free guidance was studied as an ablation, not used in the main results.
@@ -22,18 +22,18 @@ Nie and colleagues ask whether the core capabilities of LLMs (scalability, in-co
 
 | Claim | Setup |
 |---|---|
-| MMLU 65.9 against 65.4 for LLaMA3 8B Base, with 2.3T against 15T training tokens | Table 1, both re-evaluated under one protocol, likelihood-based, 5-shot, no CFG |
-| GSM8K 70.3 against 48.7 for LLaMA3 8B Base | 4-shot, pure diffusion sampling, low-confidence remasking, length 1024 |
+| MMLU 65.9; LLaMA3 8B Base scores 65.4. Training tokens: 2.3T versus 15T | Table 1, both re-evaluated under one protocol, likelihood-based, 5-shot, no CFG |
+| GSM8K 70.3 against 48.7 for LLaMA3 8B Base | 4-shot; length 1024; sampling is pure diffusion with low-confidence remasking |
 | BBH 49.7 against 62.1; HellaSwag 70.5 against 79.1 | LLaMA3 8B Base ahead; 3-shot and 0-shot |
-| Matches 1B and 7B ARM baselines trained on the same data up to a 10^23 FLOPs compute budget on six tasks | 6ND FLOPs; matched comparison limited below 10^23 |
+| Matches 1B and 7B ARM baselines trained on the same data up to a 10^23 FLOPs compute budget on six tasks | FLOPs counted as 6ND; the matched comparison does not go beyond 10^23 |
 | Reversal poem completion 45.6 against GPT-4o 34.3 (forward: 51.8 against 82.7); Qwen2.5-7B Instruct 38.0 | Instruct model, zero-shot, 496 pairs of Chinese poem sentences |
 | Instruct GSM8K 69.4 (SFT alone), while LLaMA3 8B Instruct (SFT plus RL) gets 78.3 | 4-shot, pure diffusion sampling |
-| Block-style sampling lifts Instruct GSM8K and Math to 78.6 and 42.2 from 69.4 and 31.9 | block length 32 (8 for GSM8K) |
+| Instruct GSM8K goes from 69.4 to 78.6 and Math from 31.9 to 42.2 with block-style sampling | block length 32 (8 for GSM8K) |
 | Low-confidence remasking 70.0 against random remasking 21.3 on GSM8K | Base, length and steps 256 |
-| 1.5x and 1.8x the throughput of LLaMA3 8B (with KV cache) on GSM8K and Math at comparable accuracy | single A100-80GB, batch 1, bf16, output 256, steps 32-256 |
+| Throughput is 1.5x (GSM8K) and 1.8x (Math) that of LLaMA3 8B using a KV cache, at comparable accuracy | single A100-80GB, batch 1, bf16, output 256, steps 32-256 |
 | iGSM unseen math at 4 steps: 64.0 against 38.0 | 100 questions per step count, 4-shot, modulo-5 arithmetic |
 
-Further numbers: GSM8K is insensitive to generation length (70.0, 70.8, 70.3 at 256, 512, 1024); memory 17.03 GB for 512 in and out against 16.70 GB for LLaMA3 without KV cache and 16.32 GB with; CFG raised ARC-C from 45.9 to 47.9. The paper says an earlier masked-diffusion study suggested 16x the ARM compute for equal likelihood, at 10^18 to 10^20 FLOPs, and extends to 10^20-10^23.
+Further numbers: GSM8K barely depends on generation length (length 256: 70.0; 512: 70.8; 1024: 70.3); memory 17.03 GB for 512 in and out against 16.70 GB for LLaMA3 without KV cache and 16.32 GB with; CFG raised ARC-C from 45.9 to 47.9. The paper says an earlier masked-diffusion study suggested 16x the ARM compute for equal likelihood, at 10^18 to 10^20 FLOPs, and extends to 10^20-10^23.
 
 ## Limits
 

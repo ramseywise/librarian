@@ -1,6 +1,6 @@
 ---
 title: PEGASUS Gap-Sentence Pretraining
-tags: [eval, pattern]
+tags: [eval, language-tasks, pattern]
 summary: "PEGASUS pre-trains an encoder-decoder by masking the whole sentences that score highest in ROUGE1-F1 against the rest of the document and generating them as a pseudo-summary; the 568M model beat BART on XSum ROUGE-2 and fine-tuned from 1,000 examples beat the previous best on 6 of 12 datasets (self-reported)."
 updated: 2026-11-19
 sources:

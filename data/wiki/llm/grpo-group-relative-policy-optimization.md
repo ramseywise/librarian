@@ -48,7 +48,7 @@ The chapter also notes that the claim that RL produced R1's emergent abilities i
 
 ## Xiao and Zhu's step-level form
 
-Xiao and Zhu list GRPO group standardisation next to the temporal-difference error as ways to cut the variance of a step-level training signal. Their step-level form sums standardised step scores over the later steps, a sum over later steps k of (v_k - mu) / sigma, per sampled path i, where `v` are step scores from a process model.
+Xiao and Zhu list GRPO group standardisation next to the temporal-difference error as ways to cut the variance of a step-level training signal. Their step-level form sums standardised step scores over the later steps, a sum over later steps k of (v_k - mu) / sigma, per sampled path i.
 
 ## Limits
 

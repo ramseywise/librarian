@@ -30,7 +30,7 @@ Unless stated otherwise: Defects4J 2.0, code-davinci-002 sampled at temperature 
 - The count of reproduced bugs rises logarithmically as more tests are generated and shows no plateau (1000 resamples from 50 tests per bug).
 - 91 more unique bugs than EvoCrash on the 60-bug JCrashPack and Defects4J overlap (19 crash bugs).
 - One run of 50 tests lasts 444 s overall, with 292 s spent querying the API (i7-7700).
-- Repository analysis motivating the task: the median ratio of tests added by issue-linked commits to the current suite size is 28.4% (300 Java repositories). Separately, 81% of tokens in generated tests overlap the report's code snippets where snippets exist. Among 40 failures checked by hand, the commonest cause is missing helper definitions (13).
+- Repository analysis motivating the task: the median ratio of tests added by issue-linked commits to the current suite size is 28.4% (300 Java repositories). Separately, in generated tests 81% of tokens come from code snippets in the report, where snippets exist. Among 40 failures checked by hand, the commonest cause is missing helper definitions (13).
 
 ## Limits
 

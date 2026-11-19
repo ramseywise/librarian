@@ -17,7 +17,7 @@ Phoenix and Taylor (*Prompt Engineering for Generative AI*, chapters 7 to 9) des
 
 ## Choosing a model
 
-By the authors' own experience, DALL-E 3 composes best and integrates with ChatGPT, Midjourney looks best, and Stable Diffusion is the most flexible and the one to build products on. The comparison is a single prompt (their Figure 7-12) and no metric. Chapter 7 also repeats figures from other sources. Parameter counts cited are 6.6 billion for SDXL 1.0 and, for Stable Diffusion v1.5, 0.98 billion. Running Stable Diffusion locally needs a GPU with 8GB of VRAM. Only a small share of its training images could be reproduced by researchers, which the chapter offers as evidence that the model keeps no copies (see [[Diffusion Model Training-Data Extraction]]). The controls it exposes include classifier-free guidance, denoising and seed (see [[Classifier-Free Diffusion Guidance]]).
+By the authors' own experience, DALL-E 3 composes best and integrates with ChatGPT, Midjourney looks best, and Stable Diffusion is the most flexible and the one to build products on. The comparison is a single prompt (their Figure 7-12) and no metric. Chapter 7 also repeats figures from other sources. Parameter counts cited are 6.6 billion for SDXL 1.0 and, for Stable Diffusion v1.5, 0.98 billion. By the chapter's claim, a GPU with 8GB of VRAM is enough to run Stable Diffusion locally. Only a small share of its training images could be reproduced by researchers, which the chapter offers as evidence that the model keeps no copies (see [[Diffusion Model Training-Data Extraction]]). The controls it exposes include classifier-free guidance, denoising and seed (see [[Classifier-Free Diffusion Guidance]]).
 
 ## Text-prompt techniques (Midjourney v5)
 
@@ -51,7 +51,7 @@ The settings below are what the authors recommend "in our experience", with the 
 ## Limits
 
 - Chapters 7 to 9 contain no experiment and no image-quality metric. Settings reflect the authors' experience, and the models date from late 2023 and early 2024 (Midjourney v5 and v6, SD 1.5 and SDXL 1.0, diffusers 0.11.1, AUTOMATIC1111). Midjourney features such as Zoom Out, Vary Region, `/describe` and `/shorten` belong to the product and may since have changed.
-- Chapters 8 and 9 disagree on inpainting: chapter 8 says to prompt for the erased region only, while chapter 9 says to describe the whole image.
+- Chapters 8 and 9 disagree on inpainting: chapter 8 says to prompt for the erased region only, while chapter 9 says to describe the whole image. The two used different tools (DALL-E via ChatGPT in chapter 8, AUTOMATIC1111 in chapter 9).
 - Chapter 7's cost, popularity and revenue numbers come from others and are dated. Its account of the diffusion mechanism is a few paragraphs with no noise schedule or sampler detail, and its idea that Midjourney upscale clicks serve as feedback data has no source.
 - How far the law permits imitating living artists is unsettled. Chapter 9's text prints no authors or year; they were taken from the repository's references.
 

@@ -41,7 +41,7 @@ Both papers state that parallelism exists only in training and evaluation; gener
 
 ## See Also
 
-- [[WaveNet Autoregressive Generation]] — prerequisite-for
+- [[WaveNet Autoregressive Generation]] — extends
 - [[Jukebox Multi-Scale VQ-VAE Music]] — related
 - [[CogView Text-to-Image Transformer]] — alternative-to (autoregressive over VQ tokens, not pixels)
 - [[Diffusion and GAN Image Generation]] — prerequisite-for

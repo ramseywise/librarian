@@ -68,7 +68,7 @@ In multi-market financial software, accounting rules differ significantly across
 - VAT rules differ
 - Regulatory reporting obligations differ
 
-A retrieval system that ignores market context may return content that is factually correct for one market but incorrect for another. **For financial software, incorrect regulatory guidance is the highest-risk failure mode.**
+A retrieval system that ignores market context may return content that is factually correct for one market but incorrect for another. **In financial software the riskiest failure is wrong regulatory guidance.**
 
 Every knowledge unit must include explicit market and language metadata. At query time, the retriever must include the user's market context as a filter — not as a ranking preference.
 
@@ -184,7 +184,7 @@ In Phoenix and Taylor's *Prompt Engineering for Generative AI*, retrieval means 
 Limits of this section:
 - Chapter 3 has no experiments of its own; MTEB ranks and context sizes have dated. Fig 3-11 (degradation with index size) is a schematic with no data. The chapter's pattern numbering is inconsistent, and its table example uses StandardScaler though the text says min-max.
 - Book-chapter section (Packt chapter and Rothman ch. 3): the extraction notes the first has no experiments (its formulas are images) and that the demo has no evaluation; the second's demo has 2 knowledge chunks and 3 blueprints, and it neither measures retrieval quality, latency or cost nor sets a score threshold on retrieval.
-- Phoenix and Taylor chapters 4 and 5 run no experiment on chunk size, overlap, embedding model or vector store. Prices, the standing of ada-002 and Pinecone, and gpt-4-1106-preview reflect the time of writing. The word2vec example depends on a hand-picked seed. Merging FAISS indexes with reconstruct_n is limited to flat indexes and keeps no IDs; only brute-force IndexFlatL2 appears, with no approximate index, recall or latency figures. Chapter 4's chunk counts come from truncated example text, and chapter 10's printed retry loop never writes the section when it fails.
+- Phoenix and Taylor chapters 4 and 5 run no experiment on chunk size, overlap, embedding model or vector store. Prices, the standing of ada-002 and Pinecone, and gpt-4-1106-preview reflect the time of writing. The word2vec example depends on a hand-picked seed. Merging FAISS indexes with reconstruct_n is limited to flat indexes and keeps no IDs; only brute-force IndexFlatL2 appears, with no approximate index, recall or latency figures. Chapter 4's chunk counts come from truncated example text, and its TokenTextSplitter overlap of 50 was read from truncated code, and chapter 10's printed retry loop never writes the section when it fails.
 
 ## See Also
 - [[Librarian RAG Architecture]] <!-- auto-linked -->

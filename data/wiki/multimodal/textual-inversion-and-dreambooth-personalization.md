@@ -46,4 +46,4 @@ Phoenix and Taylor (*Prompt Engineering for Generative AI*, chapter 9) train Dre
 - [[ControlNet Spatial Conditioning]] — related (another way to adapt a pretrained model)
 - [[AnimateDiff Motion Module]] — related
 - [[MVDream Multi-View Diffusion]] — related
-- [[Image Prompting Practices for Diffusion Models]] — extends
+- [[Image Prompting Practices for Diffusion Models]] — related

@@ -27,7 +27,7 @@ Dhariwal and colleagues ask whether a single model can produce varied, high-fide
 
 ## Place in this wiki
 
-The raw-audio autoregressive predecessor is [[WaveNet Autoregressive Generation]]; the extraction lists distilling a faster sampler (Parallel WaveNet) as a suggestion. Other discrete audio-code generators appear on [[Speech and Audio Generation and Recognition]] and [[SoundStream Neural Audio Codec]].
+The raw-audio autoregressive predecessor is [[WaveNet Autoregressive Generation]]; the extraction lists distilling a faster sampler (Parallel WaveNet) as a suggestion. Related audio pages are [[Speech and Audio Generation and Recognition]] and [[SoundStream Neural Audio Codec]].
 
 ## Limits
 

@@ -5,6 +5,7 @@ summary: "DeiT trains the unchanged ViT architecture on ImageNet-1k alone by cha
 updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-touvron-2020-training-data-efficient-image-transformers.md
+  - data/raw/papers/2026-11-07-darcet-2023-vision-transformers-need-registers.md
 ---
 
 # DeiT Data-Efficient Image Transformers
@@ -30,15 +31,19 @@ The distillation token is a learned token added alongside the class and patch to
 - Removing any of RandAugment, Mixup, CutMix and similar ingredients costs accuracy; using SGD rather than AdamW in pre-training gives 74.5 at 224. Longer schedules help the distilled model more, while plain DeiT levels off (read from a figure, so a claim not a table value).
 - Fine-tuning resolution sweep for DeiT-B trained at 224: 160 gives 79.9, 224 gives 81.8, 320 gives 82.7 and 384 gives 83.1, with throughput falling from 609 to 86 images per second.
 
+Darcet et al. retrain a supervised DeiT-III ViT-B on ImageNet-22k with and without register tokens: registers eliminate its high-norm outlier tokens, and its ImageNet, ADE20k and NYUd results stay about unchanged (self-reported). DeiT-III is the recipe name used there; this page covers the original DeiT. See [[Vision Transformer Registers and High-Norm Tokens]].
+
 ## Limits
 
 - The hyperparameters may be suboptimal and some ablation rows did not train well. Transformers are sensitive to initialisation and optimiser settings, and several options did not converge.
 - Without distillation DeiT sits a little below EfficientNet on the accuracy-versus-throughput curve. The headline 85.2 required 1000 epochs plus a convnet teacher the authors trained themselves.
 - The gain of the distillation token over a class token is small (about 0.1 to 0.3 points), and the authors say the convnet-inductive-bias explanation is not formally established.
 - Seed count, mixed-precision use and exact GPU model are not stated; evaluation is single-crop.
+- Inconsistent setup: the Contributions text says training used one node of 4 GPUs for three days, while the Results give 53 hours for 300 epochs on an 8-GPU node; the page uses the latter.
 
 ## See Also
 - [[Vision Transformer ViT Patch Tokens and Scaling]] — prerequisite-for
 - [[Knowledge Distillation with Soft Targets]] — prerequisite-for
 - [[ConvNeXt and ConvNeXt V2 Modernising a ResNet]] — related
 - [[Swin Transformer Shifted Windows]] — related
+- [[Vision Transformer Registers and High-Norm Tokens]] — related (retrains DeiT-III ViT-B with registers)

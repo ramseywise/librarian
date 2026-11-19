@@ -8,6 +8,7 @@ sources:
   - data/raw/claude-docs/project-g/docs/rag/vector-databases.md
   - data/raw/papers/2026-11-07-llm-engineers-handbook-ch02-tooling-and-installation.md
   - data/raw/papers/2026-11-07-llm-engineers-handbook-ch03-data-engineering.md
+  - data/raw/papers/2026-11-07-prompt-engineering-for-generative-ai-ch05-vector-databases-faiss-pinecone.md
 ---
 
 # Vector Database Comparison
@@ -82,6 +83,10 @@ Best for: fully managed RAG on GCP. Two modes: Agentic RAG (Gemini ADK agentic l
 | `amazon.titan-embed-text-v2:0` | 1024 | ✅ | Used by Bedrock KB |
 | `text-embedding-3-large` (OpenAI) | 3072 / 256 (MRL) | ✅ at 256 | Matryoshka allows dimension reduction |
 | `intfloat/multilingual-e5-large` | 1024 | ✅ | Local, natively multilingual |
+| `text-embedding-ada-002` (OpenAI) | 1536 | not stated | In Phoenix and Taylor's example the Pinecone index is set to dimension=1536 to fit it |
+| `sentence-transformers/all-MiniLM-L6-v2` | 384 | not stated | Open source; called through the Hugging Face inference API in the same chapter |
+
+Phoenix and Taylor (*Prompt Engineering for Generative AI*, ch. 5) advise embedding documents and queries with one and the same model, because vectors from different models or model versions cannot be compared. Their chapter does not compare vector stores or index types; only brute-force FAISS IndexFlatL2 is shown, and the model names and prices are dated to the time of writing.
 
 ---
 

@@ -6,6 +6,7 @@ updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-llm-engineers-handbook-ch04-rag-feature-pipeline.md
   - data/raw/papers/2026-11-07-llm-engineers-handbook-ch09-rag-inference-pipeline.md
+  - data/raw/papers/2026-11-07-prompt-engineering-for-generative-ai-ch05-vector-databases-faiss-pinecone.md
 ---
 
 # Advanced RAG Retriever: Self-Query, Query Expansion, Filtered Search and Rerank
@@ -21,6 +22,7 @@ Iusztin and Labonne (*LLM Engineer's Handbook*, chapters 4 and 9) divide RAG int
 ## The chain the book codes (chapter 9)
 
 1. **Self-query.** An LLM extracts metadata from the query (the author) and the result is a hard filter on the vector search. The chapter says this improves accuracy and latency, with no numbers.
+   Phoenix and Taylor (*Prompt Engineering for Generative AI*, ch. 5) show self-querying retrieval too and advise running it at temperature 0 so the generated metadata filter stays consistent; they give no measurements.
 2. **Query expansion.** A zero-shot prompt to GPT-4o-mini at temperature 0 writes the variants. The original query stays, and `expand_to_n - 1` variants join it (3 queries by default).
 3. **Filtered search per category.** Each query searches the three data categories, taking `k // 3` from each, so one query returns at most K chunks (defaults k=3; the code asserts k >= 3). The searches for the expanded queries run in a thread pool to cut latency.
 4. **Deduplicate** the aggregated results before reranking.

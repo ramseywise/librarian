@@ -66,7 +66,7 @@ Which parts of the examples drive the gain (Min et al., 2022; k=16 demonstration
 - **Label correctness** matters little: swapping in random labels lowered scores by just 0-5% absolute for nearly every model. In an ablation, GPT-J on classification dropped nearly 10% with always-incorrect labels but stayed above no demonstrations.
 - **Input distribution and label space** matter: out-of-distribution inputs cut performance by 3-16% absolute for most models tested, and direct models lost 5-16% when random English words replaced the labels.
 - **Format** matters: dropping the labels, or keeping only labels, leaves results near or below the no-demonstration level.
-- Drawing the random labels from the true label distribution shrank the gap to gold labels more, shown for channel MetaICL on classification only.
+- Drawing the random labels from the true label distribution shrank the gap to gold labels more, shown for channel MetaICL and channel GPT-J on classification.
 
 ## Three Drawbacks (Berryman & Ziegler)
 
@@ -149,6 +149,9 @@ Xiao and Zhu note that demonstrations teach the output format as well as the tas
 ## Limits
 
 - Xiao and Zhu's chapter 3 reports no experiments; the Inuktitut point is a qualitative argument, not a measured result.
+- Min et al. test classification and multi-choice tasks only; generation is untested.
+- Their macro averages can hide individual datasets that behave differently (financial_phrasebank shows a gap of about 14%).
+- The models are 2021-era, 774M to 175B parameters, and none is instruction-tuned.
 
 ## See Also
 - [[Prompt Engineering]] — related (part of)

@@ -25,7 +25,7 @@ Both reports argue that data quality can beat scale for small models. Gunasekar 
 
 ## phi-3
 
-- Decoder-only transformers go through two sequential training phases on filtered public web data and LLM-generated synthetic data, followed by SFT and DPO. Llama 2's block structure and tokenizer are reused.
+- Decoder-only transformers are trained in two sequential stages, the data being filtered web text and synthetic text written by LLMs, then SFT and DPO. Llama 2's block structure and tokenizer are reused.
 - phi-3-mini, with 3.8B parameters and 3.3T training tokens, gets 68.8% on 5-shot MMLU, against 70.5 for Mixtral 8x7b and 71.4 for GPT-3.5 (internal few-shot pipeline, temperature 0), and beats both on 8-shot CoT GSM-8K. Quantised to 4 bits it needs about 1.8GB and exceeds 12 tokens per second on an iPhone 14 (A16 Bionic chip, running natively and offline).
 - Two larger models, phi-3-small at 7B and phi-3-medium at 14B, both trained on 4.8T tokens, reach MMLU scores of 75.7 and 78.0. Because the step from small to medium is smaller than from mini to small on some benchmarks, the authors suspect the data mix has not reached the data optimal regime at 14B.
 - The phi-3.5 series adds a mini model, an MoE model (phi-3.5-MoE, 42B total, 6.6B active; average 69.2 against 74.9 for GPT-4o-mini on the Table 3 benchmarks) and a 4.2B vision model (phi-3.5-Vision).
