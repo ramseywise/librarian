@@ -1,8 +1,8 @@
 ---
 title: E-Commerce Operation Benchmarks
-tags: [eval, comparison]
+tags: [eval, agent-eval, comparison]
 summary: "Two 2026 benchmarks that have an agent run an online store for a simulated 365 days and score terminal assets: E-Commerce Bench (18 models, 5 episodes each; top mean 1,431,425 yuan, 10 of 90 episodes bankrupt) and MerchantBench (best LLM configuration 27.3% of the human mean); all numbers self-reported."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-fan-2026-e-commerce-bench.md
   - data/raw/papers/2026-11-06-shi-2026-merchantbench.md

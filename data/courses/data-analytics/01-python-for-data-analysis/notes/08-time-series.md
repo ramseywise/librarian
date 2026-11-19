@@ -1,10 +1,12 @@
 ---
-imported_hash: 3eea16182bf7dae6
+imported_hash: c124e38d2e552c99
 title: 8 — Time Series
 summary: '"How did we do last month?" sounds like a groupby, and it nearly is.'
 order: 9
 kind: reading
 section: Notes
+tier: practitioner
+depth: core
 source: learn-ai-engineering/data-analytics/01-python-for-data-analysis/notes/08-time-series.md
 ---
 

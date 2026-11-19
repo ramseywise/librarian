@@ -1,8 +1,8 @@
 ---
 title: LLM Bias and Fairness Survey
-tags: [eval, reference]
+tags: [eval, safety-and-bias, reference]
 summary: "Gallegos et al.'s survey (Computational Linguistics 50:3) organises LLM bias evaluation into embedding, probability and generated-text metrics and mitigation into pre-, in-, intra- and post-processing, and lists the weaknesses of each."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-gallegos-2024-bias-fairness-large-language-models.md
 ---

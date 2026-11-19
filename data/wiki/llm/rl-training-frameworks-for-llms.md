@@ -1,8 +1,8 @@
 ---
 title: RL Training Frameworks for LLMs
-tags: [llm, comparison]
+tags: [llm, reinforcement-learning, comparison]
 summary: "verl, OpenRLHF, and TRL are the three open-source backbones for RL on language models: verl for 70B+ reasoning runs, OpenRLHF for the broadest production use up to ~30B, and TRL for the flattest learning curve up to ~13B. Pick by model scale and algorithm, not popularity."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/learn-ai-engineering/docs/research/2026-07-22_rl_landscape.md
 ---

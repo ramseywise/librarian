@@ -1,8 +1,8 @@
 ---
 title: Copilot Learning Loop
-tags: [eval, memory, infra, pattern]
+tags: [eval, production-and-failures, memory, infra, pattern]
 summary: "The operational process for improving agent systems over time — signal capture from real usage, knowledge refinement workflows, and controlled autonomy expansion. Not automatic: requires deliberate instrumentation and tooling."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/notion/2026-04-09-copilot-why-what-how.md
   - data/raw/notion/2026-04-07-support-knowledge-agent.md

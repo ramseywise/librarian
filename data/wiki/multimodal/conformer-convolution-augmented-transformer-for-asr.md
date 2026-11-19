@@ -1,8 +1,8 @@
 ---
 title: Conformer Convolution-Augmented Transformer for ASR
-tags: [multimodal, method]
+tags: [multimodal, speech-and-audio, method]
 summary: "The Conformer encoder block sandwiches self-attention and a convolution module between two half-step feed-forward modules to model global and local dependencies in speech recognition."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-gulati-2020-conformer.md
 ---

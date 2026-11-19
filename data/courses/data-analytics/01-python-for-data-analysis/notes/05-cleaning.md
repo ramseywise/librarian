@@ -1,10 +1,12 @@
 ---
-imported_hash: 3678ec4d5a6dc0b2
+imported_hash: 923d7e9c80713fdf
 title: 5 — Cleaning
 summary: The shop's export was loaded in chapter 2 so that the frame matched the file, and the file is a mess.
 order: 6
 kind: reading
 section: Notes
+tier: practitioner
+depth: core
 source: learn-ai-engineering/data-analytics/01-python-for-data-analysis/notes/05-cleaning.md
 ---
 

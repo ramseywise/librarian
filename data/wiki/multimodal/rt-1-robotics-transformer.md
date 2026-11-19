@@ -1,8 +1,8 @@
 ---
 title: RT-1 Robotics Transformer
-tags: [multimodal, concept]
+tags: [multimodal, multimodal-llms, concept]
 summary: "RT-1 is a real-time Transformer policy for language-instructed robot manipulation: an ImageNet-pretrained EfficientNet conditioned on an instruction embedding through FiLM, TokenLearner compression, and discretised actions, trained by behaviour cloning on about 130k real episodes (all numbers self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-brohan-2023-rt-1.md
 ---

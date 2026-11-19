@@ -1,8 +1,8 @@
 ---
 title: ContinualSkillBench
-tags: [eval, reference]
+tags: [eval, agent-eval, reference]
 summary: "ContinualSkillBench runs ordered streams of 100 tasks per domain to test whether agents that maintain SKILL.md libraries beat agents that only keep context and feedback; on Law, Finance and Healthcare the two scored about the same (normalized reward 0.582 against 0.585, self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-guan-2026-continualskillbench.md
 ---

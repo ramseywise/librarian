@@ -1,8 +1,8 @@
 ---
 title: ASQA
-tags: [eval, reference]
+tags: [eval, language-tasks, reference]
 summary: "A long-form QA dataset of 6,316 ambiguous factoid questions whose answers must cover every interpretation, scored by DR, the geometric mean of ROUGE-L and a reader-based Disambig-F1; 2022 T5-large baselines sit far below humans (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-stelmakh-2022-asqa.md
 ---

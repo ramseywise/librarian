@@ -1,8 +1,8 @@
 ---
 title: "Erasure on Immutable Storage: Vacuum, Crypto-Shredding and the Ledger"
-tags: [data-engineering, pattern]
+tags: [data-engineering, architecture-and-governance, pattern]
 summary: "Deleting one person from immutable files needs a file rewrite, a vacuum in table formats, a ledger replayed on restore or crypto-shredding, and a coverage check across every store."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--07-architecture-and-governance--notes--02-access-control-pii-gdpr.md
 ---

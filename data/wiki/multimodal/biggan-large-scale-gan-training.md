@@ -1,8 +1,8 @@
 ---
 title: "BigGAN Large-Scale GAN Training"
-tags: [multimodal, concept]
+tags: [multimodal, gans, concept]
 summary: "BigGAN scales class-conditional GANs to batch 2048 and wider networks, adds orthogonal regularisation so a truncation trick can trade sample variety for fidelity, and documents why large GANs collapse."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-brock-2018-large-scale-gan-training-high.md
 ---

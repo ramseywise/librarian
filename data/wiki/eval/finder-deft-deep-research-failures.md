@@ -1,8 +1,8 @@
 ---
 title: FINDER and DEFT (Deep Research Agent Failures)
-tags: [eval, reference]
+tags: [eval, factuality-and-hallucination, reference]
 summary: "A 100-task checklist benchmark (FINDER) and a 14-category failure taxonomy (DEFT) built by coding about 1,000 reports from 12 deep research agents; generation failures, led by fabricated content, were the largest class, ahead of retrieval and reasoning (self-reported, LLM-assisted labelling)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-zhang-2025-how-far-we-genuinely-useful.md
 ---

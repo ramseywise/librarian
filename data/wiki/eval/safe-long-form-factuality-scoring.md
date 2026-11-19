@@ -1,8 +1,8 @@
 ---
 title: SAFE Long-Form Factuality Scoring
-tags: [eval, pattern]
+tags: [eval, factuality-and-hallucination, pattern]
 summary: "SAFE splits a long answer into atomic facts, searches Google for each and labels it supported, not supported or irrelevant; F1@K then combines the counts. It agreed with crowd annotators on 72.0% of 16,011 biography facts and cost $0.19 per response against $4 for humans (self-reported), with the LongFact prompt set used to rank 13 models."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-wei-2024-long-form-factuality-large-language.md
 ---

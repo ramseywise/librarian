@@ -1,8 +1,8 @@
 ---
 title: AlphaEval
-tags: [eval, reference]
+tags: [eval, agent-eval, reference]
 summary: "A benchmark of 94 tasks taken from 7 companies that deploy agents commercially, scoring whole agent products rather than bare models; the best configuration (Claude Code with Opus 4.6) scored 64.41 of 100, the same model ranged from 53.45 to 64.41 across four scaffolds, and a 27-company survey found 63.0% had low confidence that a model update improved their product (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-lu-2026-alphaeval.md
 ---

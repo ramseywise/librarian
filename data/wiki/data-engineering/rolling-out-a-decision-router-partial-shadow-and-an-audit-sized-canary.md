@@ -1,8 +1,8 @@
 ---
 title: "Rolling Out a Decision Router: Partial Shadow and an Audit-Sized Canary"
-tags: [data-engineering, pattern]
+tags: [data-engineering, ml-platform, pattern]
 summary: "A router that pays, reviews or rejects can shadow only where the champion produced outcomes, so it needs a canary with a stable unit, action limits and a clock set by label arrival, with an audit sized to the error jump it must detect."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--06-ml-platform--notes--06-ml-system-framing-to-monitoring.md
 ---

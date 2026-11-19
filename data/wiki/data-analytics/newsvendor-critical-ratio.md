@@ -1,8 +1,8 @@
 ---
 title: Newsvendor Critical Ratio
-tags: [data-analytics, concept]
+tags: [data-analytics, applied-analyses, concept]
 summary: For a one-off order under uncertain demand, order the quantile of demand equal to underage cost over underage plus overage cost, not the mean; the gain is real but small and forecast error matters more than the rule.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--10-operations-and-supply-chain.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: "Lock Queue and lock_timeout for Live DDL"
-tags: [data-engineering, concept]
+tags: [data-engineering, quality-and-observability, concept]
 summary: "A one-millisecond ALTER can stall every read because it queues for an ACCESS EXCLUSIVE lock behind a long reader while new queries queue behind it; a per-session lock_timeout with retry turns the stall into a short delay."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--05-quality-and-observability--notes--04-schema-and-data-migrations.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: "Point-in-Time As-Of Join for Features"
-tags: [data-engineering, pattern]
+tags: [data-engineering, ml-platform, pattern]
 summary: "A feature row has a window it describes and a moment it became knowable; joining a training row to the latest feature known at its event time, not the same-hour window, keeps the offline metric honest even though it makes it look worse."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--06-ml-platform--notes--01-feature-stores.md
 ---

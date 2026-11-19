@@ -1,8 +1,8 @@
 ---
 title: AlpacaFarm Simulated Human Feedback
-tags: [eval, concept]
+tags: [eval, judges, concept]
 summary: "AlpacaFarm replaces crowdworker pairwise labels with a pool of prompted LLM annotators and scores systems by win-rate against Davinci003 on 805 instructions; across 11 systems the paper reports that method rankings match those from 10k real human preference pairs (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-dubois-2023-alpacafarm.md
 ---

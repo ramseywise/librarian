@@ -1,8 +1,8 @@
 ---
 title: MVoT Multimodal Visualization of Thought
-tags: [multimodal, pattern]
+tags: [multimodal, multimodal-llms, pattern]
 summary: "MVoT interleaves generated images with text steps during reasoning (Anole-7B with a token discrepancy loss), scoring 92.95, 95.14 and 85.60 on Maze, MiniBehavior and FrozenLake (self-reported), but plain CoT does better on the two easier tasks."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-li-2025-imagine-while-reasoning-space.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: Rejection Sampling Fine-Tuning
-tags: [llm, pattern]
+tags: [llm, fine-tuning, pattern]
 summary: "Sample several candidates per prompt, keep only those a rule, test or reference answer verifies, deduplicate and cap per prompt, SFT on the survivors, and repeat as the model improves — the STaR/RFT loop that sits between SFT and RL with no reward model and no policy gradient."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--post-training-for-agents.md
   - data/raw/papers/2026-11-06-chen-2023-fireact.md

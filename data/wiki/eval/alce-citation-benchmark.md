@@ -1,8 +1,8 @@
 ---
 title: ALCE Citation Benchmark
-tags: [eval, reference]
+tags: [eval, rag-and-grounding, reference]
 summary: "ALCE asks a prompted LLM to retrieve, answer and cite from 100-word passages on ASQA, QAMPARI and ELI5, scoring fluency (MAUVE), correctness and NLI-checked citation recall and precision; the paper reports weak citation quality even for ChatGPT and GPT-4 (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-gao-2023-enabling-large-language-models-generate.md
 ---

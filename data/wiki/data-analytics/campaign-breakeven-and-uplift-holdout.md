@@ -1,8 +1,8 @@
 ---
 title: Campaign Breakeven and Uplift Holdout
-tags: [data-analytics, pattern]
+tags: [data-analytics, applied-analyses, pattern]
 summary: A contact campaign pays only for customers it persuades, not those who would buy anyway; compute the required lift as cost per contact over margin per extra order, then measure it against a randomised holdout, never against the contacted group's own past.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--05-segmentation-and-rfm.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: "Spark Shuffles and When One Machine Is Enough"
-tags: [data-engineering, concept]
+tags: [data-engineering, storage-and-compute-foundations, concept]
 summary: "What a groupBy and a join cost in a distributed engine, which Spark habits to avoid, and when DuckDB or Polars on one machine is the better answer."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--04-warehouse-lakehouse-streaming--notes--01-warehouse-and-store.md
 ---

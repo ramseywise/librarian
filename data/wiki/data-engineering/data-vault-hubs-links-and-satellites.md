@@ -1,8 +1,8 @@
 ---
 title: "Data Vault Hubs, Links and Satellites"
-tags: [data-engineering, concept]
+tags: [data-engineering, ingest-and-modelling, concept]
 summary: "Data Vault splits each source entity into insert-only hubs (keys), links (relationships) and satellites (attribute history) so new sources cost a table each; the price is several joins per attribute, so readers get marts on top."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--02-ingest-and-modelling--notes--03-data-vault-and-obt.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: MultiInstruct Multimodal Instruction Benchmark
-tags: [multimodal, concept]
+tags: [multimodal, benchmarks-and-metrics, concept]
 summary: "MultiInstruct is a 62-task multimodal instruction tuning benchmark with five expert-written instructions per task; tuning OFA on it improves zero-shot results and lowers sensitivity to instruction wording."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-xu-2023-multiinstruct.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: ComputerRL API-GUI Agent RL
-tags: [llm, pattern]
+tags: [llm, gui-and-embodied-agents, pattern]
 summary: "ComputerRL combines an action space mixing generated APIs with GUI actions, step-level GRPO with a binary outcome reward, and Entropulse, which alternates RL with SFT on collected successes to restore entropy; its 9B agents scored 48.9% on OSWorld (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-lai-2025-computerrl.md
 ---

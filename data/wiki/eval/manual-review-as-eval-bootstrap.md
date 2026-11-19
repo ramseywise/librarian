@@ -1,8 +1,8 @@
 ---
 title: Manual Review as Eval Bootstrap
-tags: [eval, planning]
+tags: [eval, production-and-failures, planning]
 summary: Human eyeballs on 10–20 real queries as the deliberate first eval rung — zero setup, doesn't scale, and valuable precisely because its failure patterns become the criteria every automated approach above it needs.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/eval-approaches.md
 ---

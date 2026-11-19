@@ -1,8 +1,8 @@
 ---
 title: AgentArk Multi-Agent Distillation
-tags: [llm, pattern]
+tags: [llm, agent-training, pattern]
 summary: AgentArk distils five-agent debate trajectories into a single student model by three routes (RSFT, DA, and PAD with a PRM and GRPO); the authors report about 4.8% average gain for a single agent, but most Qwen3-8B gains are under one point (self-reported, single runs).
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-luo-2026-agentark.md
 ---

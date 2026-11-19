@@ -1,8 +1,8 @@
 ---
 title: LaMer Meta-RL Exploration
-tags: [llm, pattern]
+tags: [llm, agent-training, pattern]
 summary: "LaMer trains a language agent on trials of several sequential episodes with a reflection written after each failure, optimising a cross-episode return; pass@3 beat GiGPO on Sokoban, MineSweeper and Webshop (self-reported) while first-attempt success was mixed."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-jiang-2025-meta-rl-induces-exploration-language.md
 ---

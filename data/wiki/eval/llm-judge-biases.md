@@ -1,8 +1,8 @@
 ---
 title: LLM Judge Biases
-tags: [eval, llm, concept]
+tags: [eval, judges, llm, concept]
 summary: "Position, verbosity, self-preference, leniency, format/authority and capability limits — the documented ways LLM judges go wrong, each with a mitigation (both-order pairwise, different model family, binary criteria with tricky-FAIL examples), plus the pairwise-vs-pointwise and Elo/Bradley–Terry choices."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--05-llm-as-judge.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--12-failure-modes.md

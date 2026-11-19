@@ -1,8 +1,8 @@
 ---
 title: "K-Anonymity, Quasi-Identifiers and Linkage Attacks"
-tags: [data-engineering, concept]
+tags: [data-engineering, architecture-and-governance, concept]
 summary: "Removing names does not anonymise a table: combinations of quasi-identifiers single people out, k-anonymity measures it, and l-diversity covers the inference it misses."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--07-architecture-and-governance--notes--02-access-control-pii-gdpr.md
 ---

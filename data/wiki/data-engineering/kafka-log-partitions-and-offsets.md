@@ -1,8 +1,8 @@
 ---
 title: "Kafka Log, Partitions and Offsets"
-tags: [data-engineering, concept]
+tags: [data-engineering, warehouse-lakehouse-streaming, concept]
 summary: "A log keeps every record and lets each reader remember its own offset, which gives replay, multiple independent consumers, per-partition ordering and a lag metric that tells you whether a consumer is healthy."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--04-warehouse-lakehouse-streaming--notes--04-kafka-and-stream-semantics.md
 ---

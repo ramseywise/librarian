@@ -1,8 +1,8 @@
 ---
 title: Visual Instruction Tuning and Tool-Using VLMs
-tags: [multimodal, comparison]
+tags: [multimodal, multimodal-llms, comparison]
 summary: "Four ways to give an LLM vision compared by what is trained: LLaVA and Emu train a connector or the whole model, SPAE trains only a tokenizer into a frozen LLM's words, and ViperGPT and Visual ChatGPT train nothing and call tools; benchmarks and a medical and a planning variant round out the family."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-liu-2023-visual-instruction-tuning.md
   - data/raw/papers/2026-11-07-liu-2024-improved-baselines-visual-instruction-tuning.md

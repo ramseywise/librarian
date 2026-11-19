@@ -1,8 +1,8 @@
 ---
 title: "Replica Lag and Replication Slots Retain WAL"
-tags: [data-engineering, concept]
+tags: [data-engineering, quality-and-observability, concept]
 summary: "Reads from a standby are stale even on an idle pair, long standby queries get cancelled by replay conflicts, an unread replication slot holds WAL until the disk fills, and capacity forecasts must include operations that need a table's size again."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--05-quality-and-observability--notes--05-operating-data-stores.md
 ---

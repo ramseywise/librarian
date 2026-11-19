@@ -1,8 +1,8 @@
 ---
 title: Pandas Label Alignment and Dtypes
-tags: [data-analytics, concept]
+tags: [data-analytics, python-for-data-analysis, concept]
 summary: pandas matches values by label rather than position and ties behaviour to per-column dtypes, so NaN promotion and text-typed numbers are the first things to check on any frame.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--01-python-for-data-analysis--notes--01-series-and-dataframe.md
 ---

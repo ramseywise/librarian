@@ -1,8 +1,8 @@
 ---
 title: LLaMA-Adapter V2 and MultiModal-GPT Parameter-Efficient Visual Tuning
-tags: [multimodal, concept]
+tags: [multimodal, multimodal-llms, concept]
 summary: "Two cheap routes to a visual instruction model: LLaMA-Adapter V2 early-fuses visual tokens into a frozen LLaMA with bias tuning (about 14M trainable parameters), and MultiModal-GPT trains LoRA adapters on OpenFlamingo (all numbers self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-gao-2023-llama-adapter-v2.md
   - data/raw/papers/2026-11-07-gong-2023-multimodal-gpt.md

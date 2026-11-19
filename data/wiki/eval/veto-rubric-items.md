@@ -1,8 +1,8 @@
 ---
 title: Veto Rubric Items
-tags: [eval, llm, pattern]
+tags: [eval, graders-and-metrics, llm, pattern]
 summary: "A must-pass rubric item that zeroes the total when it fires — hallucination is the classic one — inside a hybrid scoring scheme of must-pass gates plus a weighted remainder, so fluency cannot buy off a fabricated fact and keyword stuffing cannot pad past it."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--04-graders.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--12-failure-modes.md

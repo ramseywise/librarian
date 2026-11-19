@@ -1,8 +1,8 @@
 ---
 title: Evaluation-Driven Model Selection
-tags: [eval, concept]
+tags: [eval, defining-correct, concept]
 summary: "Huyen's four-step workflow for choosing a model (filter on hard attributes, narrow with public information, run your own evaluation pipeline, monitor in production), why public benchmarks are a filter for bad models rather than a way to find the best one, and the three-step recipe for the pipeline you can trust."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-huyen-ai-engineering-ch04-evaluate-ai-systems.md
 ---

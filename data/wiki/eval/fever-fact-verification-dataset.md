@@ -1,8 +1,8 @@
 ---
 title: FEVER Fact Verification Dataset
-tags: [eval, concept]
+tags: [eval, language-tasks, concept]
 summary: "FEVER holds 185,445 Wikipedia-derived claims labelled supported, refuted or not enough info with sentence-level evidence, plus a retrieve-select-entail baseline."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-thorne-2018-fever.md
 ---

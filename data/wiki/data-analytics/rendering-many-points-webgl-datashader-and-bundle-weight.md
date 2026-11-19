@@ -1,8 +1,8 @@
 ---
 title: "Rendering Many Points: WebGL, Datashader and Bundle Weight"
-tags: [data-analytics, reference]
+tags: [data-analytics, visualisation-and-storytelling, reference]
 summary: Measured costs of drawing many points (SVG vs WebGL vs server-side datashader), shipping chart libraries, and mapping; ask first whether the points are needed at all.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--05-visualisation-and-storytelling--notes--06-dashboard-stacks-from-python-to-frontend.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: Segment Anything SAM and SA-1B
-tags: [multimodal, concept]
+tags: [multimodal, vision-backbones, concept]
 summary: "Segment Anything defines promptable segmentation, an MAE-pretrained ViT-H model with a light mask decoder, and a three-stage data engine that produced the 1.1B-mask SA-1B dataset."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-kirillov-2023-segment-anything.md
 ---

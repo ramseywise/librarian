@@ -1,8 +1,8 @@
 ---
 title: Live Multi-Market Trading Benchmark
-tags: [eval, reference]
+tags: [eval, agent-eval, reference]
 summary: "Qian et al.'s live benchmark runs four trading-agent designs on five LLM backbones across two stocks and two cryptocurrencies from August to September 2025, one BUY/SELL/HOLD decision a day; the best cell (40.83% on TSLA) trails buy-and-hold (46.88%), each cell is one run, and the authors argue architecture matters more than backbone from min-max bands, a claim weakened by identical rows in their table (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-qian-2025-when-agents-trade.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: Cost-Based Decisions from a Posterior
-tags: [data-analytics, pattern]
+tags: [data-analytics, bayesian-analysis, pattern]
 summary: "Turn posterior draws and explicit costs into decisions: the newsvendor quantile short/(short+over) for stock, a cost-ratio probability threshold for blocking, and expected net value with regret risk across plausible costs for a ship decision."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--05-loss-functions-and-decisions.md
 ---

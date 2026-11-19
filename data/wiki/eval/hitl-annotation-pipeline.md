@@ -1,8 +1,8 @@
 ---
 title: HITL Annotation Pipeline
-tags: [eval, concept]
+tags: [eval, judges, concept]
 summary: Human-in-the-loop annotation workflow for conversation data — two-queue structure (random + edge case), inter-annotator agreement as quality gate, and feedback routing to eval dataset vs failure taxonomy.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-veselovsky-2023-artificial-artificial-artificial-intelligence.md
   - data/raw/linear/2026-04-24-evaluation-and-improvement.md

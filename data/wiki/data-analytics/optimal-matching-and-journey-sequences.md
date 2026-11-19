@@ -1,8 +1,8 @@
 ---
 title: Optimal Matching and Journey Sequences
-tags: [data-analytics, concept]
+tags: [data-analytics, applied-analyses, concept]
 summary: Optimal matching measures how alike two customer journeys are as the cheapest edits turning one state string into another; clustering that distance describes journey shapes after the fact but cannot value or predict, and costs are a modelling choice.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--08-states-and-sequences.md
 ---

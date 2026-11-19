@@ -1,8 +1,8 @@
 ---
 title: Per-User Metrics Depend on Window Length
-tags: [data-analytics, pattern]
+tags: [data-analytics, experimentation-and-causality, pattern]
 summary: Any metric with the user as its unit grows with the observation window because users get more chances to return, so comparing periods of unequal length manufactures a change; match windows or use sessions.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--04-funnel-and-conversion.md
 ---

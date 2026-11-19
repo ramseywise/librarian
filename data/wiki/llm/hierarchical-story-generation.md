@@ -1,8 +1,8 @@
 ---
 title: Hierarchical Story Generation
-tags: [llm, pattern]
+tags: [llm, reasoning-and-planning, pattern]
 summary: Generate a short premise first, then condition a convolutional seq2seq story model on it, using gated multi-scale decoder self-attention and fusion with a pretrained model; introduces the WritingPrompts dataset, with stories decoded by top-k sampling (k=10).
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-fan-2018-hierarchical-neural-story-generation.md
 ---

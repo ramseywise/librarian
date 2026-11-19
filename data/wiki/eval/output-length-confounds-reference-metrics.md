@@ -1,8 +1,8 @@
 ---
 title: Output Length Confounds Reference Metrics
-tags: [eval, concept]
+tags: [eval, graders-and-metrics, concept]
 summary: "On open-ended long-context tasks, L-Eval found n-gram scores track answer length rather than human judgement: Claude-100k's NQ F1 rose from 9.84 to 57.76 once the prompt stated the expected length, and the length instruction lifted ROUGE-L's Kendall tau with human rankings from 0.5 to 0.8 (self-reported), so check answer lengths before comparing systems."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-an-2023-l-eval.md
   - data/raw/papers/2026-11-06-janiak-2025-illusion-progress.md

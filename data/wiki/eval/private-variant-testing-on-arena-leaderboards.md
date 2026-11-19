@@ -1,8 +1,8 @@
 ---
 title: Private Variant Testing on Arena Leaderboards
-tags: [eval, concept]
+tags: [eval, datasets-and-contamination, concept]
 summary: "Singh et al. argue that Chatbot Arena's open-ended policy lets a provider test many private variants and publish only the best: two identical checkpoints scored 1052 and 1069, a simulation puts the gain from picking the best of 20 variants at about 50 points, and they estimate Google and OpenAI received about 40% of all battles (all self-reported, with the authors' disclosed conflict of interest)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-singh-2025-leaderboard-illusion.md
 ---

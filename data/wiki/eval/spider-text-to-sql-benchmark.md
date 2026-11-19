@@ -1,8 +1,8 @@
 ---
 title: Spider Text-to-SQL Benchmark
-tags: [eval, concept]
+tags: [eval, code, concept]
 summary: "Spider is a human-labeled text-to-SQL dataset of 10,181 questions over 200 multi-table databases, split so test databases are unseen; in 2018 the best baseline reached 9.7% exact match on that split against 34.3% when databases were shared (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-yu-2018-spider.md
 ---

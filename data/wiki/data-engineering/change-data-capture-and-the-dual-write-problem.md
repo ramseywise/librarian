@@ -1,8 +1,8 @@
 ---
 title: "Change Data Capture and the Dual-Write Problem"
-tags: [data-engineering, concept]
+tags: [data-engineering, ingest-and-modelling, concept]
 summary: "Writing one change to two systems leaves them permanently different about half the time; CDC instead reads the database's own ordered change log, and a replay-safe consumer stores the log position per row and remembers deletes."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--02-ingest-and-modelling--notes--01-ingest.md
 ---

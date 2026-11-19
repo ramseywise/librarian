@@ -1,8 +1,8 @@
 ---
 title: HELM Holistic Evaluation
-tags: [eval, reference]
+tags: [eval, language-tasks, reference]
 summary: "HELM scores 30 language models on 42 scenarios under one standardized prompting setup across seven metric categories, so that accuracy, robustness, fairness and cost can be read side by side; the paper's own ablations show prompt format and in-context examples changing accuracy, with the best adaptation method differing by model (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-bommasani-2023-holistic-evaluation-language-models.md
   - data/raw/papers/2026-11-08-chang-2023-survey-evaluation-large-language-models.md

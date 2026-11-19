@@ -1,8 +1,8 @@
 ---
 title: "Cascaded Diffusion Models"
-tags: [multimodal, concept]
+tags: [multimodal, diffusion-and-image-generation, concept]
 summary: "A pipeline of separately trained diffusion models at rising resolution reaches strong class-conditional ImageNet FID with no classifier guidance, provided each super-resolution stage is trained on augmented low-resolution inputs."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-ho-2021-cascaded-diffusion-models-high-fidelity.md
 ---

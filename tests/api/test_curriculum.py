@@ -95,6 +95,24 @@ def test_modules_list_pages_best_linked_first(client: TestClient) -> None:
     assert body["courses"][0]["pageIds"] == ["rerank", "bm25"]
 
 
+def test_modules_list_their_notes_in_reading_order_with_public_pages(client: TestClient) -> None:
+    notes = _module(client.get("/api/graph/curriculum").json(), "ai", "rag")["notes"]
+    assert [n["id"] for n in notes] == ["ai/rag/a", "ai/rag/b"]
+    # wrong-project is a project page and gone is no longer public: neither is listed.
+    assert [n["pageIds"] for n in notes] == [["bm25", "rerank"], ["rerank"]]
+    assert "tier" not in notes[0]
+
+
+def test_old_snapshot_without_notes_still_serves(client: TestClient) -> None:
+    snapshot = curriculum.write_snapshot()
+    assert snapshot is not None
+    for course in snapshot["courses"]:
+        for module in course["modules"]:
+            del module["notes"]
+    curriculum.SNAPSHOT.write_text(json.dumps(snapshot))
+    assert _module(client.get("/api/graph/curriculum").json(), "ai", "rag")["notes"] == []
+
+
 def test_empty_module_is_kept_so_the_gap_shows(client: TestClient) -> None:
     viz = _module(client.get("/api/graph/curriculum").json(), "data", "viz")
     assert viz["pageIds"] == []
@@ -179,3 +197,58 @@ def test_write_snapshot_never_raises(client: TestClient, monkeypatch: pytest.Mon
 def test_snapshot_is_valid_json_on_disk(client: TestClient) -> None:
     curriculum.write_snapshot()
     assert json.loads(curriculum.SNAPSHOT.read_text())["signature"] == [1, 1]
+
+
+def _snapshot(notes: dict[str, list[tuple[str | None, list[str]]]]) -> dict:
+    """{"course/module": [(tier, pageIds), ...]} as a snapshot, in the order given."""
+    courses: dict[str, list[dict]] = {}
+    for key, rows in notes.items():
+        course, module = key.split("/")
+        courses.setdefault(course, []).append(
+            {
+                "id": module,
+                "notes": [
+                    {"id": f"{key}/{i}", "pageIds": pages, **({"tier": t} if t else {})}
+                    for i, (t, pages) in enumerate(rows)
+                ],
+            }
+        )
+    return {"courses": [{"id": c, "modules": ms} for c, ms in courses.items()]}
+
+
+def test_a_page_is_introduced_at_the_lowest_tier_linking_it() -> None:
+    places = curriculum.placements(
+        _snapshot(
+            {
+                "ai/rag": [("specialist", ["bm25"]), ("practitioner", ["bm25", "rerank"])],
+                "data/stats": [("foundations", ["bm25"]), (None, ["untiered"])],
+            }
+        )
+    )
+    assert places["bm25"] == {"modules": ["ai/rag", "data/stats"], "tier": "foundations"}
+    assert places["rerank"] == {"modules": ["ai/rag"], "tier": "practitioner"}
+    # Linked only by an untiered note: placed in its module, no tier yet.
+    assert places["untiered"] == {"modules": ["data/stats"]}
+
+
+def test_payload_carries_tiered_public_pages_only(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    snapshot = curriculum.write_snapshot()
+    assert snapshot is not None
+    notes = snapshot["courses"][0]["modules"][0]["notes"]
+    notes[0]["tier"] = "practitioner"  # ai/rag/a links bm25 and rerank
+    curriculum.SNAPSHOT.write_text(json.dumps(snapshot))
+    body = client.get("/api/graph/curriculum").json()
+    assert body["pageTier"] == {"bm25": "practitioner", "rerank": "practitioner"}
+
+
+def test_placement_needs_a_snapshot_and_never_builds(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(curriculum, "catalog", lambda: pytest.fail("built the catalog"))
+    assert curriculum.placement("bm25") is None
+    monkeypatch.setattr(curriculum, "catalog", _catalog)
+    curriculum.write_snapshot()
+    assert curriculum.placement("bm25") == {"modules": ["ai/rag", "data/stats"]}
+    assert curriculum.placement("unlinked") is None

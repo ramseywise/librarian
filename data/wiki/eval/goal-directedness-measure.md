@@ -1,8 +1,8 @@
 ---
 title: Goal-Directedness Measure
-tags: [eval, concept]
+tags: [eval, agent-eval, concept]
 summary: "Everitt et al. score goal-directedness as how much of an LLM's measured capability it actually uses on a larger task, on a scale from a random policy to full use; in a Blocksworld test of 8 models, most fell short, and measurements taken fell when a step sat inside a bigger task (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-everitt-2025-evaluating-goal-directedness-large-language.md
   - data/raw/papers/2026-11-08-chan-2023-harms-increasingly-agentic-algorithmic-systems.md

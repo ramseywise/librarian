@@ -1,8 +1,8 @@
 ---
 title: InternVL Scaled Vision Encoder with QLLaMA
-tags: [multimodal, concept]
+tags: [multimodal, multimodal-llms, concept]
 summary: "InternVL scales the vision encoder to 5.9B parameters and bridges it to an LLM through QLLaMA, a LLaMA-initialised middleware with 96 queries, using contrastive-then-generative alignment (all numbers self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-chen-2024-intern-vl.md
 ---

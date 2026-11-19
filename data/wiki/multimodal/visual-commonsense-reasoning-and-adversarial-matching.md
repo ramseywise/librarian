@@ -1,8 +1,8 @@
 ---
 title: Visual Commonsense Reasoning and Adversarial Matching
-tags: [multimodal, concept]
+tags: [multimodal, benchmarks-and-metrics, concept]
 summary: "VCR is a four-way multiple-choice dataset of movie-scene questions, answers and rationales built with Adversarial Matching; the R2C model reaches 44.0% on the staged answer-plus-rationale task against 85.0% for humans (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-zellers-2019-recognition-cognition.md
 ---

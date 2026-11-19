@@ -1,8 +1,8 @@
 ---
 title: "Spectral Normalization for GANs"
-tags: [multimodal, concept]
+tags: [multimodal, gans, concept]
 summary: "Spectral normalization divides each discriminator weight matrix by its largest singular value, estimated with one power-iteration step, to stabilise GAN training more cheaply than gradient penalties and without collapsing weight rank."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-miyato-2018-spectral-normalization-generative-adversarial-networks.md
 ---

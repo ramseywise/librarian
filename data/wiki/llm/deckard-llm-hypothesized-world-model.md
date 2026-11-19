@@ -1,8 +1,8 @@
 ---
 title: DECKARD LLM-Hypothesized World Model
-tags: [llm, pattern]
+tags: [llm, reasoning-and-planning, pattern]
 summary: "DECKARD asks a few-shot LLM once for a crafting-recipe dependency graph, then verifies and corrects it through Minecraft experience during RL training, so the LLM guides exploration but not execution; it cut steps to a stone pickaxe from 32M to 2.6M."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-nottingham-2023-do-embodied-agents-dream-pixelated.md
 ---

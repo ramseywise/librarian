@@ -1,8 +1,8 @@
 ---
 title: "Misleading Axes: Dual Axes and Truncated Bars"
-tags: [data-analytics, pattern]
+tags: [data-analytics, visualisation-and-storytelling, pattern]
 summary: Two y scales let the author author the story, and a bar from a non-zero baseline exaggerates differences; use aligned panels, an index, and zero-based bars.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--05-visualisation-and-storytelling--notes--01-grammar-and-chart-choice.md
   - data/raw/repos/learn-ai-engineering/data-analytics--05-visualisation-and-storytelling--notes--02-matplotlib-and-seaborn.md

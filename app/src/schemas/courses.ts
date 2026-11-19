@@ -176,6 +176,13 @@ export const flashcardSchema = z.object({
   back: z.string(),
   lesson: z.string().nullable(),
   lessonTitle: z.string().nullable(),
+  /** The explanation behind `back`, shown on request. Same inline markup. */
+  more: z.string().optional(),
+  /** The card's own depth, and its lesson's tier (depth-rubric.md). Absent until tagged. */
+  depth: z.enum(["intro", "core", "deep"]).optional(),
+  tier: z.enum(["foundations", "practitioner", "specialist"]).optional(),
+  /** What the answers rest on: a citation, or a `[text](https://...)` link. */
+  sources: z.array(z.string()).optional(),
   /** Leitner box 1-5; null until first graded. Absent only on an API older than scheduling. */
   box: z.number().nullable().optional(),
   dueOn: z.string().nullable().optional(),

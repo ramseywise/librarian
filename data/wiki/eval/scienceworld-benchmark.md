@@ -1,8 +1,8 @@
 ---
 title: ScienceWorld Benchmark
-tags: [eval, agents, benchmark]
+tags: [eval, agent-eval, agents, benchmark]
 summary: "ScienceWorld is an interactive text environment of 30 elementary-science tasks over a simulator with thermodynamics, circuits, chemistry and biology; five trained agents averaged between 0.05 and 0.17 on unseen variations, and a 1.5M-parameter interactive agent beat 11B models trained on static data (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-wang-2022-scienceworld.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: UI-TARS Native GUI Agent
-tags: [llm, pattern]
+tags: [llm, gui-and-embodied-agents, pattern]
 summary: "UI-TARS trains one vision-language model on screenshots to emit thoughts and keyboard-mouse actions, replacing prompted agent frameworks; the 72B DPO model reports 24.6 on OSWorld at 50 steps against 22.0 for Claude Computer Use (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-qin-2025-ui-tars.md
 ---

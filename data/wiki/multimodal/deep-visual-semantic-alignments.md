@@ -1,8 +1,8 @@
 ---
 title: Deep Visual-Semantic Alignments
-tags: [multimodal, concept]
+tags: [multimodal, vision-language-pretraining, concept]
 summary: "Karpathy and Fei-Fei embed image regions and sentence fragments in one space, infer word-to-region alignments, and use them to train a multimodal RNN captioner that also describes regions (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-karpathy-2015-deep-visual-semantic-alignments-generating.md
 ---

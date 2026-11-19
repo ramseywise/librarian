@@ -1,8 +1,8 @@
 ---
 title: "Safe DDL Recipes for Defaults, NOT NULL and Indexes"
-tags: [data-engineering, pattern]
+tags: [data-engineering, quality-and-observability, pattern]
 summary: "Split the slow proof from the strong lock: constant defaults avoid a rewrite, NOT NULL goes through NOT VALID then VALIDATE, and indexes use CONCURRENTLY, which leaves an INVALID index if it fails."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--05-quality-and-observability--notes--04-schema-and-data-migrations.md
 ---

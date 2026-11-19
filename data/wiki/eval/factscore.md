@@ -1,8 +1,8 @@
 ---
 title: FActScore
-tags: [eval, reference]
+tags: [eval, factuality-and-hallucination, reference]
 summary: "A long-form factual-precision metric: split a generation into atomic facts and report the share a knowledge source supports; on 183 people biographies it showed ChatGPT falling from 80% to 16% as entities got rarer, and an automatic estimator came within 2% error of the human score (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-min-2023-factscore.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: "W2V-BERT Contrastive and Masked Speech Pretraining"
-tags: [multimodal, method]
+tags: [multimodal, speech-and-audio, method]
 summary: "W2V-BERT trains wav2vec 2.0's contrastive task and a masked prediction task over the quantizer's token IDs together, end to end, for self-supervised speech pretraining."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-chung-2021-w2v-bert.md
 ---

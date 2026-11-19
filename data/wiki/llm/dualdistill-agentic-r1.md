@@ -1,8 +1,8 @@
 ---
 title: DualDistill Agentic-R1
-tags: [llm, pattern]
+tags: [llm, agent-training, pattern]
 summary: "Distil two teachers, one that reasons in text and one that solves with Python code, into a single student by composing trajectories where one teacher's failure is followed by the other's correction; the 7B student chooses between code and text per problem on math."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-du-2025-agentic-r1.md
 ---

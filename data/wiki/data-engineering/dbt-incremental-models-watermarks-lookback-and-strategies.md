@@ -1,8 +1,8 @@
 ---
 title: "dbt Incremental Models: Watermarks, Lookback and Strategies"
-tags: [data-engineering, pattern]
+tags: [data-engineering, transform-and-orchestrate, pattern]
 summary: "An incremental model carries two code paths, and a watermark with no key duplicates the boundary row while a bare greater-than watermark loses late rows silently; use a unique key, a lookback sized from measured lateness, and a periodic full refresh."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--03-transform-and-orchestrate--notes--03-dbt-tests-snapshots-incremental.md
 ---

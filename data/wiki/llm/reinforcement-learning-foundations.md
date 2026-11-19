@@ -1,8 +1,8 @@
 ---
 title: Reinforcement Learning Foundations
-tags: [llm, concept]
+tags: [llm, reinforcement-learning, concept]
 summary: "The MDP tuple (S, A, P, R, γ), the Markov property that makes RL tractable, the four algorithm families, and the exploration/exploitation tension — with how each maps onto LLM training and agentic tool use."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--01-llm-fundamentals--rl.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--rl.md

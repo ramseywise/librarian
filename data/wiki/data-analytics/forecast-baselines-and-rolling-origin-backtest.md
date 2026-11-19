@@ -1,8 +1,8 @@
 ---
 title: Forecast Baselines and Rolling-Origin Backtest
-tags: [data-analytics, pattern]
+tags: [data-analytics, applied-analyses, pattern]
 summary: A forecasting model earns trust only by beating free baselines (seasonal naive above all) across many rolling origins, scored with a scaled error plus bias, with the final origin held back as an untouched exam.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--01-forecasting.md
 ---

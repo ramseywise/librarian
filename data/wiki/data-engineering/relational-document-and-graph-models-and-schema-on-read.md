@@ -1,8 +1,8 @@
 ---
 title: "Relational, Document and Graph Models and Schema on Read"
-tags: [data-engineering, comparison]
+tags: [data-engineering, storage-and-compute-foundations, comparison]
 summary: "Choosing a data model by the relationships the data has: documents suit self-contained trees, relational suits shared and many-to-many facts, graphs suit variable-length paths; plus schema-on-read versus schema-on-write and why declarative queries free the engine."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--01-storage-and-compute-foundations--notes--01-data-systems-and-data-models.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: Append-Only Human Labels
-tags: [eval, pattern]
+tags: [eval, judges, pattern]
 summary: Persist rater judgments as append-only rows keyed to the exact enrichment row they judged, with an instrument column and a fixed rater picklist — never update, never collapse to consensus, because agreement statistics need every rating that was ever made.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/akira/docs/research/2026-09-15-dis275-human-label-persistence.md
   - data/raw/claude-docs/kiez-archive/docs/research/2026-09-15-dis275-human-label-persistence.md

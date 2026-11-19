@@ -1,8 +1,8 @@
 ---
 title: LLM Trustworthiness Taxonomy
-tags: [eval, concept]
+tags: [eval, safety-and-bias, concept]
 summary: "A 2023 survey sorts LLM alignment into seven trustworthiness dimensions with 29 sub-categories and measures eight sub-categories on six LLMs with LLM-generated tests and a gpt-4 judge, concluding that more-aligned models do better overall but unevenly by category (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-liu-2023-trustworthy-llms.md
 ---

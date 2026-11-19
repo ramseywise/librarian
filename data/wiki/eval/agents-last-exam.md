@@ -1,8 +1,8 @@
 ---
 title: Agents' Last Exam (ALE)
-tags: [eval, reference]
+tags: [eval, agent-eval, reference]
 summary: "ALE is a living benchmark of 1,490 expert-contributed computer tasks in 13 domains (150 public) graded by code against hidden reference outputs; the best configuration, Codex with GPT-5.5, passed 24.0% of public tasks and none of the hardest tier, with partial-credit scores far above pass rates (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-sun-2026-agents-last-exam.md
 ---

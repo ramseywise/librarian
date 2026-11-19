@@ -1,8 +1,8 @@
 ---
 title: Extreme-Risk Model Evaluation
-tags: [eval, concept]
+tags: [eval, safety-and-bias, concept]
 summary: "Shevlane et al.'s 2023 framework splits evaluation for extreme risks into dangerous-capability and alignment (propensity) tests, names nine dangerous capabilities, and wires results into training, deployment, transparency and security decisions; a position paper with no experiments, it lists its own limits and hazards, including that training models to pass the tests removes their value as a risk indicator."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-shevlane-2023-model-evaluation-extreme-risks.md
 ---

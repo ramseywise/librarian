@@ -1,8 +1,8 @@
 ---
 title: Population Stability Index
-tags: [data-analytics, concept]
+tags: [data-analytics, applied-analyses, concept]
 summary: PSI compares a score's current distribution with the one a model was built on, bin by bin, needing no outcomes, so it warns of drift years before defaults arrive; its 0.10 and 0.25 thresholds are conventions.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--02-credit-scoring.md
 ---

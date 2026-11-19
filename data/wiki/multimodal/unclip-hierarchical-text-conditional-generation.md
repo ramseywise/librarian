@@ -1,8 +1,8 @@
 ---
 title: "unCLIP Hierarchical Text-Conditional Generation"
-tags: [multimodal, concept]
+tags: [multimodal, diffusion-and-image-generation, concept]
 summary: "unCLIP first generates a CLIP image embedding from a caption with a prior, then decodes it to pixels with a diffusion decoder and upsamplers, gaining image diversity at a small cost in caption match."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-ramesh-2022-hierarchical-text-conditional-image-generation.md
 ---

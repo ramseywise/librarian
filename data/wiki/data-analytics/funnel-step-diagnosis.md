@@ -1,8 +1,8 @@
 ---
 title: Funnel Step Diagnosis
-tags: [data-analytics, pattern]
+tags: [data-analytics, applied-analyses, pattern]
 summary: A flat end-to-end conversion can hide a broken step behind an unrelated gain; split into conditional step rates by device, use an unaffected segment as a difference-in-differences control, rule out tracking bugs, then price the loss and size the test the step's own traffic allows.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--04-funnel-and-conversion.md
 ---

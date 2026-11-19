@@ -1,8 +1,8 @@
 ---
 title: TyDi QA
-tags: [eval, reference]
+tags: [eval, language-tasks, reference]
 summary: A multilingual question-answering benchmark of 204K examples in 11 typologically diverse languages, with questions written natively from a short Wikipedia snippet and no translation, built so that question and answer overlap little.
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-clark-2020-tydi-qa.md
 ---

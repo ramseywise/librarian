@@ -1,8 +1,8 @@
 ---
 title: OEC, Guardrails and North Star Metrics
-tags: [data-analytics, concept]
+tags: [data-analytics, experimentation-and-causality, concept]
 summary: "Experiment metrics split into data-quality checks, one pre-agreed overall evaluation criterion, guardrails tested for non-inferiority against a margin, and diagnostics; a correct test on the wrong metric gives a confident wrong answer, and not significant is not a guardrail pass."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--02-metrics-and-kpi-design.md
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--03-experimentation-at-scale.md

@@ -1,8 +1,8 @@
 ---
 title: Self-Critiquing Models for Human Evaluators
-tags: [eval, concept]
+tags: [eval, judges, concept]
 summary: "Saunders et al. fine-tune language models to write critiques of summaries and find that showing eight model critiques lets human labelers find about 50 percent more flaws, including 45 percent against 27 percent of deliberately planted ones (self-reported, 2022-era models)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-saunders-2022-self-critiquing-models-assisting-human.md
 ---

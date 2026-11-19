@@ -1,8 +1,8 @@
 ---
 title: "Focused Transformer Crossbatch Training"
-tags: [llm, pattern]
+tags: [llm, architecture, pattern]
 summary: "Focused Transformer trains memory attention with keys from other documents as negatives (crossbatch training) to counter the distraction issue; LongLLaMA 3B reached 94.5% passkey accuracy at 100K tokens (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-tworkowski-2023-focused-transformer.md
 ---

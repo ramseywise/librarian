@@ -1,8 +1,8 @@
 ---
 title: "Small Files, Prefix Layout and Storage Tiers"
-tags: [data-engineering, concept]
+tags: [data-engineering, warehouse-lakehouse-streaming, concept]
 summary: "On an object store, file count and size decide request cost and whether column pruning works: partition by what you delete or backfill by, sort by what you filter on, and remember cold storage tiers lose money for tables that are read often or made of small objects."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--04-warehouse-lakehouse-streaming--notes--01b-object-storage-and-the-data-lake.md
   - data/raw/repos/learn-ai-engineering/data-engineering--04-warehouse-lakehouse-streaming--notes--05-cost.md

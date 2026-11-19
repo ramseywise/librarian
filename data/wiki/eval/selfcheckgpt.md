@@ -1,8 +1,8 @@
 ---
 title: SelfCheckGPT
-tags: [eval, pattern]
+tags: [eval, factuality-and-hallucination, pattern]
 summary: "A black-box hallucination detector that samples the model several times and scores each sentence of the main answer by how far the samples disagree with it; on 238 GPT-3 WikiBio passages the LLM-prompt variant was best on the AUC-PR and passage-correlation measures reported (self-reported), but it detects inconsistency, not falsehood."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-manakul-2023-selfcheckgpt.md
 ---

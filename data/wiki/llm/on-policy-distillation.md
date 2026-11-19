@@ -1,8 +1,8 @@
 ---
 title: On-Policy Distillation
-tags: [llm, concept]
+tags: [llm, fine-tuning, concept]
 summary: "The student generates its own trajectories and a teacher scores every token by its full next-token distribution (minimise KL) — RL's on-policy data with SFT's dense signal, matching RL on math in about a tenth of the steps; self-distillation (OPSD) gets the same signal from the model itself given privileged context."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--post-training-for-agents.md
   - data/raw/papers/2026-11-06-liao-2026-multi-turn-policy-distillation-prefix.md

@@ -1,8 +1,8 @@
 ---
 title: Chart Colour Scales and Accessibility
-tags: [data-analytics, pattern]
+tags: [data-analytics, visualisation-and-storytelling, pattern]
 summary: Colour has three jobs (categorical, sequential, diverging) with one rule each; pin mappings by name, centre diverging scales on a real zero, and meet WCAG contrast, non-colour and table requirements.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--05-visualisation-and-storytelling--notes--01-grammar-and-chart-choice.md
   - data/raw/repos/learn-ai-engineering/data-analytics--05-visualisation-and-storytelling--notes--02-matplotlib-and-seaborn.md

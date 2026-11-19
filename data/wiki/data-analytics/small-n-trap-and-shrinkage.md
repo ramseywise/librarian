@@ -1,8 +1,8 @@
 ---
 title: Small-N Trap and Shrinkage
-tags: [data-analytics, pattern]
+tags: [data-analytics, probability-and-statistics, pattern]
 summary: "Averages from small groups are noisy, so the best and worst groups of any league table are the smallest ones even when no group differs; show N beside every rate, rank by a lower bound, or shrink toward the overall rate with pseudo-observations."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--01-descriptive-statistics-and-eda.md
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--03-distributions-and-sampling.md

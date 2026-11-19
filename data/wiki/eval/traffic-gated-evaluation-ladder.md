@@ -1,8 +1,8 @@
 ---
 title: Traffic-Gated Evaluation Ladder
-tags: [eval, rag, pattern]
+tags: [eval, production-and-failures, rag, pattern]
 summary: For a pre-launch recommender, each evaluation method unlocks at a minimum data volume and can decide only certain questions — human blind rating now, LLM judge, offline replay (ranking only, never retrieval), interleaving, then A/B — so you climb the ladder instead of waiting for the top rung.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/akira/docs/technical-feasibility.md
   - data/raw/claude-docs/diskoe/docs/technical-feasibility.md

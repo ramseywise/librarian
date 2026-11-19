@@ -1,8 +1,8 @@
 ---
 title: TextVQA and LoRRA
-tags: [multimodal, concept]
+tags: [multimodal, benchmarks-and-metrics, concept]
 summary: "TextVQA is a crowd-sourced VQA set on Open Images photos whose questions need reading text in the image; the LoRRA model adds frozen OCR and a copy mechanism and reaches 27.63% test accuracy (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-singh-2019-towards-vqa-models-that-can.md
 ---

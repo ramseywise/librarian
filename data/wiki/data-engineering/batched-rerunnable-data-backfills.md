@@ -1,8 +1,8 @@
 ---
 title: "Batched Rerunnable Data Backfills"
-tags: [data-engineering, pattern]
+tags: [data-engineering, quality-and-observability, pattern]
 summary: "Fill a new column in small keyed batches whose predicate selects only unfilled rows so a dead job simply restarts; a backfill alone is wrong on a live table, so a trigger for new writes and a repair pass come first."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--05-quality-and-observability--notes--04-schema-and-data-migrations.md
 ---

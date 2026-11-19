@@ -1,8 +1,8 @@
 ---
 title: Muses-Bench Multi-User Agent Benchmark
-tags: [eval, concept]
+tags: [eval, agent-eval, concept]
 summary: A benchmark of 19 models acting as one shared agent for several users with different authority, covering conflicting instructions, prompt-level access control over turns, and meeting scheduling.
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-yang-2026-multi-user-large-language-model.md
 ---

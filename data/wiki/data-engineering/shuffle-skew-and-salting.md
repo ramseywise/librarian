@@ -1,8 +1,8 @@
 ---
 title: "Shuffle Skew and Salting"
-tags: [data-engineering, pattern]
+tags: [data-engineering, storage-and-compute-foundations, pattern]
 summary: "Joins and group-bys are shuffles; broadcast joins avoid moving the big side, and because hashing cannot split one key, a hot key makes one reducer the straggler, which salting plus a second aggregation stage reduces."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--01-storage-and-compute-foundations--notes--08-distributed-compute.md
 ---

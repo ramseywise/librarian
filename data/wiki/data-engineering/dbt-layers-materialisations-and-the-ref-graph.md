@@ -1,8 +1,8 @@
 ---
 title: "dbt Layers, Materialisations and the ref Graph"
-tags: [data-engineering, concept]
+tags: [data-engineering, transform-and-orchestrate, concept]
 summary: "dbt compiles templated SELECTs into warehouse SQL and runs them in dependency order; staging, core and mart layers each read only the one before, so a wrong number traces to one line in one file."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--03-transform-and-orchestrate--notes--01-transform.md
 ---

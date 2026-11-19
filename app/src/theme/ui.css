@@ -150,7 +150,7 @@
 .map-browse { display: flex; align-items: center; gap: var(--space-3); }
 .map-browse .panel-label { display: none; margin: 0; white-space: nowrap; }
 .app-map-dock .map-browse { flex-basis: 100%; }
-.app-map-dock .map-browse .panel-label { display: block; }
+.app-map-dock .map-browse .panel-label { display: block; width: auto; flex: none; }
 .app-map-dock .map-browse .seg { flex: 1; }
 .app-map-dock .map-browse .seg-btn { flex: 1; padding: var(--space-2) var(--space-4); font-size: var(--fs-md); }
 .app-map-dock .map-browse .seg-btn[aria-pressed="true"] { background: var(--accent-fill); color: var(--on-fill); font-weight: 600; }

@@ -1,8 +1,8 @@
 ---
 title: "MLOps Maturity Levels and CT vs CI/CD"
-tags: [data-engineering, concept]
+tags: [data-engineering, ml-platform, concept]
 summary: "Maturity models ask how much of the ML lifecycle runs without a human; level 4 (monitoring closes the retraining loop) is unsafe without strong monitoring, continuous training and CI/CD are separate loops, and a self-assessed level is a planning aid, not evidence."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--06-ml-platform--notes--05-mlops-maturity-and-best-practices.md
 ---

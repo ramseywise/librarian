@@ -44,6 +44,9 @@ An `overview: true` part is still an agenda part: it gets a number, a divider an
 | `lead` | one sentence under the breadcrumb, before the body |
 | `takeaway` | tinted strip at the bottom: the one line to remember, and the flashcard answer. Required on every content slide except `statement` |
 | `recall` | optional flashcard question when the title is not one. Not drawn on the slide |
+| `more` | optional in-depth answer for the flashcard: the mechanism, derivation, evidence or trade-off behind `answer`, shown on request. Only from the note or a source that was read. Not drawn on the slide |
+| `depth` | optional depth of the flashcard (`intro`, `core`, `deep`), by the rules for questions in depth-rubric.md. Not the same key as `level` |
+| `refs` | optional references for the flashcard: one citation or a list, in the form the note's `sources` use, or web links. Not drawn on the slide |
 | `answer` | the flashcard back: one or two sentences that give exactly what `recall` (or the title) asks for, with the numbers or the list it names. Not drawn on the slide. Without it the card's back is the takeaway, which is right only when the takeaway answers the question |
 | `card` | `false` keeps the slide out of the flashcards. Use it where the question is about the lecture and not the subject: the agenda, the objectives, what comes next. |
 | `source` | note path, shown in the footer and appended to the speaker notes |

@@ -1,8 +1,8 @@
 ---
 title: VizWiz Grand Challenge
-tags: [multimodal, concept]
+tags: [multimodal, benchmarks-and-metrics, concept]
 summary: "VizWiz is a VQA dataset of 31,173 questions that blind users asked about their own phone photos; about 28.63% are unanswerable, and VQA v2-trained models score about 0.14 accuracy on it off the shelf (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-gurari-2018-vizwiz-grand-challenge.md
 ---

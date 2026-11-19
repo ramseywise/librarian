@@ -1,8 +1,8 @@
 ---
 title: XYEval
-tags: [eval, reference]
+tags: [eval, language-tasks, reference]
 summary: "A benchmark-mutation recipe that appends one confident but wrong user suggestion to each task of an existing agent benchmark and measures the score drop as sycophancy to a bad solution; all five models lost score across six benchmarks, up to 46.7% relative (Gemini 3.1 Pro on Terminal-Bench, 67.4 to 36.0, self-reported), and a generic warning prompt recovered only part of it."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-wu-2026-xyeval.md
 ---

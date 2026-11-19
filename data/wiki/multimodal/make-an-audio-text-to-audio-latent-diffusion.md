@@ -1,8 +1,8 @@
 ---
 title: Make-An-Audio Text-to-Audio Latent Diffusion
-tags: [multimodal, method]
+tags: [multimodal, speech-and-audio, method]
 summary: "Make-An-Audio generates audio with a spectrogram latent diffusion model conditioned on CLAP text embeddings, using distill-then-reprogram pseudo prompts to exploit audio without captions."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-huang-2023-make-audio.md
 ---

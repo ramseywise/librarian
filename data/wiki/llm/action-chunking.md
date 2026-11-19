@@ -1,8 +1,8 @@
 ---
 title: Action Chunking
-tags: [llm, concept]
+tags: [llm, gui-and-embodied-agents, concept]
 summary: "A vision-language-action policy infers at 1–10 Hz while robot control runs at 50–1000 Hz, so it emits 25–50 actions per inference and replays them while the next chunk computes — smoother motion bought with blindness to sudden change; plus the discrete-token vs. flow-matching action representations and the planner + VLA split."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--07-agentic-applications--real-time-multimodal-agents.md
 ---

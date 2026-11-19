@@ -1,8 +1,8 @@
 ---
 title: Label Horizon vs Sampling Window
-tags: [data-analytics, concept]
+tags: [data-analytics, applied-analyses, concept]
 summary: "A supervised frame's label horizon (the window over which the label's outcome was observed and finalised) is distinct from its label definition and from its sampling window; a public fraud set's two-day `Time` column is routinely misread as a horizon when the labeling window is unstated and unrecoverable — under an 'inferred horizon = unavailable' standard, such a frame fails, and applying that standard to one run but not its sibling is itself the finding."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/galactus/docs/plans/2026-08-18-ml-frame-sourcing.md
   - data/raw/repos/galactus/.claude--docs--plans--2026-08-18-ml-frame-sourcing.md

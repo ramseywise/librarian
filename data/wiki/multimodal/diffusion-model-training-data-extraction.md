@@ -1,8 +1,8 @@
 ---
 title: Diffusion Model Training-Data Extraction
-tags: [multimodal, concept]
+tags: [multimodal, diffusion-and-image-generation, concept]
 summary: "Carlini et al. show a black-box generate-and-filter attack that pulls memorized training images out of Stable Diffusion and Imagen, and a CIFAR-10 study finding diffusion models leak more training data than GANs (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-carlini-2023-extracting-training-data-diffusion-models.md
 ---

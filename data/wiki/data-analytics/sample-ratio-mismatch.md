@@ -1,8 +1,8 @@
 ---
 title: Sample Ratio Mismatch
-tags: [data-analytics, pattern]
+tags: [data-analytics, experimentation-and-causality, pattern]
 summary: "Compare arm counts with the designed split using a chi-square test before reading any outcome; a failure means users were lost or added non-randomly, the test is stopped rather than reweighted, and A/A tests validate the whole pipeline."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--01-ab-testing.md
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--03-experimentation-at-scale.md

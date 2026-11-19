@@ -1,8 +1,8 @@
 ---
 title: "Dagster Assets vs Airflow Tasks"
-tags: [data-engineering, comparison]
+tags: [data-engineering, transform-and-orchestrate, comparison]
 summary: "Dagster's nodes are tables that should exist and Airflow's are work to run, so Dagster can answer which partitions are missing while Airflow reports which runs happened; both leave the checked table already written."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--03-transform-and-orchestrate--notes--05-dagster-and-airflow.md
 ---

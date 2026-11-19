@@ -1,8 +1,8 @@
 ---
 title: Min-K% Prob Pretraining-Data Detection
-tags: [eval, pattern]
+tags: [eval, datasets-and-contamination, pattern]
 summary: "Min-K% Prob scores a text by the average log-probability of its lowest-probability tokens to guess whether a model trained on it; on the WikiMIA benchmark it averaged AUC 0.72 against 0.67 for perplexity, and caught about a fifth of members at a 5% false-positive rate (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-shi-2023-detecting-pretraining-data-large-language.md
 ---

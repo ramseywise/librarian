@@ -1,8 +1,8 @@
 ---
 title: "GLIDE Text-Guided Diffusion"
-tags: [multimodal, concept]
+tags: [multimodal, diffusion-and-image-generation, concept]
 summary: "GLIDE is a 3.5B text-conditional diffusion model plus upsampler that compares CLIP guidance with classifier-free guidance, finds humans prefer the latter, and is fine-tuned for text-guided inpainting."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-nichol-2021-glide.md
 ---

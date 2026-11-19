@@ -1,8 +1,8 @@
 ---
 title: "Passive Retraining and the Promotion Gate"
-tags: [data-engineering, pattern]
+tags: [data-engineering, ml-platform, pattern]
 summary: "Retrain on a schedule, score champion and challenger on the same holdout newer than both, and move the alias only on a win beyond a margin; the gate decides what proceeds to rollout, not what users get."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--06-ml-platform--notes--02-experiment-tracking-and-model-registry.md
 ---

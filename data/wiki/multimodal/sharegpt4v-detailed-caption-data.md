@@ -1,8 +1,8 @@
 ---
 title: ShareGPT4V Detailed Caption Data
-tags: [multimodal, concept]
+tags: [multimodal, datasets, concept]
 summary: "ShareGPT4V replaces short captions with long GPT4-Vision captions (100K directly, 1.2M from a distilled captioner) in both pretraining and SFT of a LLaVA-1.5-style 7B model, and reports gains from caption quality alone (all numbers self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-chen-2024-sharegpt4v.md
 ---

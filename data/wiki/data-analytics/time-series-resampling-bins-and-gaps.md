@@ -1,8 +1,8 @@
 ---
 title: Time-Series Resampling, Bins and Gaps
-tags: [data-analytics, concept]
+tags: [data-analytics, python-for-data-analysis, concept]
 summary: Absent rows hide gaps in time data, and resample is a time-bin groupby whose closed and label edges, unequal period lengths and fill rules change the numbers.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--01-python-for-data-analysis--notes--06-time-series.md
 ---

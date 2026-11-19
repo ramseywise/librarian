@@ -1,8 +1,8 @@
 ---
-imported_hash: 281f5e2bb3f69803
+imported_hash: c4c5ab37d16c7542
 title: Convolutional networks
 summary: 'Parameter count follows from the shapes: a layer with $k$ filters of extent $e$ over $d{in}$ input channels has $k\,d{in}e^2 + k$ parameters, and a pooling layer has none.'
-order: 5
+order: 6
 kind: reading
 section: Notes
 source: learn-ai-engineering/data-science/02-deep-learning/notes/04-convolutional-networks.md

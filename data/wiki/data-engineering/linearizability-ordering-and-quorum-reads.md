@@ -1,8 +1,8 @@
 ---
 title: "Linearizability, Ordering and Quorum Reads"
-tags: [data-engineering, concept]
+tags: [data-engineering, storage-and-compute-foundations, concept]
 summary: "Linearizability is a recency guarantee on one object, distinct from serializability; strict quorums with w + r > n do not deliver it, CAP is better read as consistent-or-available under partition, and causality gives only a partial order."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--01-storage-and-compute-foundations--notes--07-consistency-and-consensus.md
 ---

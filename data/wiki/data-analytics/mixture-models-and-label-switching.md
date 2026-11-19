@@ -1,8 +1,8 @@
 ---
 title: Mixture Models and Label Switching
-tags: [data-analytics, pattern]
+tags: [data-analytics, bayesian-analysis, pattern]
 summary: "A two-cluster mixture can be fitted with sampled discrete labels or, far faster, by summing the labels out of the likelihood; symmetric components then swap identity across chains, which an ordering constraint or informative priors fixes."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--02-mcmc-and-pymc.md
 ---

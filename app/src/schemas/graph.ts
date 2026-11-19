@@ -6,7 +6,7 @@
  */
 import { z } from "zod";
 
-export const edgeTypeSchema = z.enum(["wikilink", "semantic", "tag-shared", "module"]);
+export const edgeTypeSchema = z.enum(["wikilink", "semantic", "tag-shared", "module", "term", "course-order"]);
 
 /** A page as the map draws it. `highlighted` and the optional flags are set client-side. */
 export const wikiNodeDataSchema = z.looseObject({
@@ -117,11 +117,20 @@ export const glossaryTermsSchema = z.object({ terms: z.array(glossaryTermSchema)
 /** Term id → public pages mentioning it (GET /api/glossary/mentions). */
 export const glossaryMentionsSchema = z.record(z.string(), z.array(z.string()));
 
+/** A note (lesson) of a module, in reading order, with the wiki pages it links. */
+export const curriculumNoteSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  tier: z.string().optional(),
+  pageIds: z.array(z.string()),
+});
 export const curriculumModuleSchema = z.object({
   id: z.string(),
   title: z.string(),
   firstLesson: z.string().nullable(),
   pageIds: z.array(z.string()),
+  /** Absent from an older server. */
+  notes: z.array(curriculumNoteSchema).default([]),
 });
 export const curriculumCourseSchema = z.object({
   id: z.string(),
@@ -138,9 +147,12 @@ export const curriculumSchema = z.object({
   courses: z.array(curriculumCourseSchema),
   beyond: z.array(z.object({ domain: z.string(), pageIds: z.array(z.string()) })),
   primaryCourse: z.record(z.string(), z.string()),
+  /** Lowest tier among the notes linking a page; untiered pages are absent. */
+  pageTier: z.record(z.string(), z.enum(["foundations", "practitioner", "specialist"])).optional(),
   /** Served from an older snapshot while a rebuild runs. */
   stale: z.boolean(),
 });
 export type Curriculum = z.output<typeof curriculumSchema>;
 export type CurriculumCourse = z.output<typeof curriculumCourseSchema>;
 export type CurriculumModule = z.output<typeof curriculumModuleSchema>;
+export type CurriculumNote = z.output<typeof curriculumNoteSchema>;

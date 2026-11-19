@@ -1,8 +1,8 @@
 ---
 title: A/B Test Lifecycle and Interval Decisions
-tags: [data-analytics, pattern]
+tags: [data-analytics, experimentation-and-causality, pattern]
 summary: "A sound A/B test fixes the metric, the minimum detectable effect and the sample before launch, randomises and analyses at the same unit, checks the split, tests once, and decides by comparing the confidence interval with the effect worth shipping rather than reading the p-value."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--01-ab-testing.md
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--03-experimentation-at-scale.md

@@ -23,8 +23,13 @@ export E2E_UI_URL="${E2E_API_URL}"
 cleanup() {
     status=$?
     if [ "${status}" -ne 0 ]; then
-        echo "--- container logs (tail)"
-        docker logs --tail 80 "${NAME}" 2>&1 || true
+        # Say why it is not ready: the probe body names the failing check, and the probe's own
+        # request lines are dropped so they cannot push the index build's events out of the tail.
+        echo "--- /readyz"
+        curl -sS "${E2E_API_URL}/readyz" 2>&1 || true
+        echo
+        echo "--- container logs (tail, probe requests omitted)"
+        docker logs "${NAME}" 2>&1 | grep -v '"path": "/readyz"' | tail -n 80 || true
     fi
     if [ "${KEEP:-0}" != "1" ]; then
         docker rm -f "${NAME}" >/dev/null 2>&1 || true

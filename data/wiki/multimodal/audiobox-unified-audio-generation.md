@@ -1,8 +1,8 @@
 ---
 title: Audiobox Unified Audio Generation
-tags: [multimodal, method]
+tags: [multimodal, speech-and-audio, method]
 summary: "Audiobox pre-trains a 330M flow-matching Transformer by infilling unlabeled speech, music and sound, then fine-tunes it for speech, sound and a unified model controlled by text descriptions and voice prompts."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-vyas-2023-audiobox.md
 ---

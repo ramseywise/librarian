@@ -205,8 +205,10 @@ export function useWikiData({ tagShared = true, live = true }: { tagShared?: boo
     [tagShared, graph.nodes, graph.domains],
   );
 
-  const fetchSemanticEdges = useCallback(async (threshold = 0.65) => {
-    const res = await apiFetch(`/api/edges/semantic?threshold=${threshold}`);
+  // Each page's 5 nearest pages at least 0.45 alike: a global cut (0.65 had been the default) left
+  // most pages with no similar page at all and hub pages with dozens.
+  const fetchSemanticEdges = useCallback(async (threshold = 0.45, k = 5) => {
+    const res = await apiFetch(`/api/edges/semantic?threshold=${threshold}&k=${k}`);
     if (!res.ok) throw new Error(`semantic edges: HTTP ${res.status}`);
     setSemanticEdges(await parseJson(res, semanticEdgesSchema));
   }, []);

@@ -1,8 +1,8 @@
 ---
 title: Speech and Audio Generation and Recognition
-tags: [multimodal, comparison]
+tags: [multimodal, speech-and-audio, comparison]
 summary: "A map of the speech and audio methods in the wiki by job: self-supervised speech encoders and ASR, neural codecs, generation of speech and sound, speech translation, and speech inputs to language models."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-chung-2021-w2v-bert.md
   - data/raw/papers/2026-11-07-defossez-2022-high-fidelity-neural-audio-compression.md

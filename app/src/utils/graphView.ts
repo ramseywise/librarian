@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import type { Edge, Node } from "@xyflow/react";
+import { MarkerType, type Edge, type Node } from "@xyflow/react";
 import type { EdgeVisibility, Facets, WikiEdgeData, WikiNodeData } from "../types";
 
 /**
@@ -141,17 +141,19 @@ export function expandFrom(
 }
 
 /**
- * "Same module" edges among the rendered pages: each module's pages joined to its best-linked one
- * on the canvas, a star rather than a clique, so a module of 30 adds 29 lines and not 435.
+ * Edges among the rendered pages for pages that share a group (a module, a glossary term): each
+ * group's pages joined to its best-linked one on the canvas, a star rather than a clique, so a
+ * group of 30 adds 29 lines and not 435. A pair in several groups gets one line.
  */
-export function moduleEdges(
+function groupStars(
   rendered: Iterable<string>,
-  modulesOf: Map<string, string[]>,
+  groupsOf: (id: string) => string[],
   degree: Map<string, number>,
+  edgeType: "module" | "term",
 ): GraphEdge[] {
   const members = new Map<string, string[]>();
   for (const id of rendered) {
-    for (const m of modulesOf.get(id) ?? []) {
+    for (const m of groupsOf(id)) {
       const list = members.get(m);
       if (list) list.push(id);
       else members.set(m, [id]);
@@ -159,6 +161,7 @@ export function moduleEdges(
   }
   const seen = new Set<string>();
   const out: GraphEdge[] = [];
+  const prefix = edgeType === "module" ? "md" : "tm";
   for (const [m, ids] of members) {
     if (ids.length < 2) continue;
     const [hub, ...rest] = ids.sort((a, b) => (degree.get(b) ?? 0) - (degree.get(a) ?? 0) || a.localeCompare(b));
@@ -166,7 +169,73 @@ export function moduleEdges(
       const key = hub < other ? `${hub}|${other}` : `${other}|${hub}`;
       if (seen.has(key)) continue;
       seen.add(key);
-      out.push({ id: `md:${key}`, source: hub, target: other, data: { edgeType: "module", module: m } });
+      out.push({ id: `${prefix}:${key}`, source: hub, target: other, data: { edgeType, [edgeType]: m } });
+    }
+  }
+  return out;
+}
+
+/** "Same module" edges among the rendered pages (groupStars). */
+export function moduleEdges(
+  rendered: Iterable<string>,
+  modulesOf: Map<string, string[]>,
+  degree: Map<string, number>,
+): GraphEdge[] {
+  return groupStars(rendered, (id) => modulesOf.get(id) ?? [], degree, "module");
+}
+
+/**
+ * "Shared term" edges among the rendered pages: pages mentioning the same glossary term, a star
+ * per term. Terms on more than `common` pages say little about any two of them and are skipped.
+ */
+export function termEdges(
+  rendered: Iterable<string>,
+  mentions: Record<string, string[]>,
+  degree: Map<string, number>,
+  common: number,
+): GraphEdge[] {
+  const termsOf = new Map<string, string[]>();
+  for (const [term, pages] of Object.entries(mentions)) {
+    if (pages.length > common) continue;
+    for (const p of pages) {
+      const list = termsOf.get(p);
+      if (list) list.push(term);
+      else termsOf.set(p, [term]);
+    }
+  }
+  return groupStars(rendered, (id) => termsOf.get(id) ?? [], degree, "term");
+}
+
+/**
+ * "Course order" edges: per module, the rendered pages in the order its notes first link them,
+ * each joined to the next, earlier → later. `readingOrder` is each module's notes in order, as
+ * the pages each note links.
+ */
+export function courseOrderEdges(rendered: Iterable<string>, readingOrder: string[][][]): GraphEdge[] {
+  const present = new Set(rendered);
+  const seen = new Set<string>();
+  const out: GraphEdge[] = [];
+  for (const notes of readingOrder) {
+    const chain: string[] = [];
+    const placed = new Set<string>();
+    for (const pages of notes) {
+      for (const p of pages) {
+        if (!present.has(p) || placed.has(p)) continue;
+        placed.add(p);
+        chain.push(p);
+      }
+    }
+    for (let i = 1; i < chain.length; i++) {
+      const key = `${chain[i - 1]}>${chain[i]}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      out.push({
+        id: `co:${key}`,
+        source: chain[i - 1],
+        target: chain[i],
+        markerEnd: { type: MarkerType.ArrowClosed, width: 14, height: 14, color: "var(--edge-course)" },
+        data: { edgeType: "course-order" },
+      });
     }
   }
   return out;
@@ -386,6 +455,8 @@ export const EDGE_STYLES: Record<string, CSSProperties> = {
   semantic: { stroke: "var(--edge-semantic)", strokeWidth: 1, strokeDasharray: "4 3" },
   "tag-shared": { stroke: "var(--edge-tag)", strokeWidth: 1, strokeDasharray: "2 4" },
   module: { stroke: "var(--edge-module)", strokeWidth: 1.5, opacity: 0.6 },
+  term: { stroke: "var(--edge-term)", strokeWidth: 1, strokeDasharray: "1 3", opacity: 0.8 },
+  "course-order": { stroke: "var(--edge-course)", strokeWidth: 1.5 },
 };
 
 export interface EdgeSources {
@@ -394,6 +465,10 @@ export interface EdgeSources {
   tagShared: GraphEdge[];
   /** Same-module stars among the rendered pages (moduleEdges). */
   module?: GraphEdge[];
+  /** Shared-term stars among the rendered pages (termEdges). */
+  term?: GraphEdge[];
+  /** Reading-order chains among the rendered pages (courseOrderEdges). */
+  courseOrder?: GraphEdge[];
 }
 
 /**
@@ -428,6 +503,8 @@ export function visibleEdges(
     ...(vis.semantic ? src.semantic : []),
     ...(vis["tag-shared"] ? src.tagShared : []),
     ...(vis.module ? (src.module ?? []) : []),
+    ...(vis.term ? (src.term ?? []) : []),
+    ...(vis["course-order"] ? (src.courseOrder ?? []) : []),
   ];
 
   const anyHighlighted = viewNodes.some((n) => n.data.highlighted);

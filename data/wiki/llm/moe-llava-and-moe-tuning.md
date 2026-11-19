@@ -1,8 +1,8 @@
 ---
 title: MoE-LLaVA and MoE-Tuning
-tags: [llm, concept]
+tags: [llm, architecture, concept]
 summary: "MoE-LLaVA turns a vision-language model sparse in three stages, copying the feed-forward layer into experts in the last stage; a 3.6B-activated model beats LLaVA-1.5-7B on some benchmarks and POPE against 13B (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-lin-2024-moe-llava.md
 ---

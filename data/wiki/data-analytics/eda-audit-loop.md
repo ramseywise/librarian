@@ -1,8 +1,8 @@
 ---
 title: EDA Audit Loop
-tags: [data-analytics, pattern]
+tags: [data-analytics, probability-and-statistics, pattern]
 summary: "What to do with a new extract before any test or model: fix the row unit, hunt impossible and missing values, pick summaries the shape allows, and write the findings and open questions down."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--01-descriptive-statistics-and-eda.md
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--README.md

@@ -1,8 +1,8 @@
 ---
 title: Regression Discontinuity
-tags: [data-analytics, pattern]
+tags: [data-analytics, experimentation-and-causality, pattern]
 summary: "Units just either side of a cutoff are nearly comparable, so fitting a line on each side and reading the jump estimates the effect at the cutoff; report several bandwidths and check for pile-up at the cutoff, and do not extrapolate away from it."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--04-correlation-and-causation.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: OpenCUA and AgentNet
-tags: [llm, pattern]
+tags: [llm, gui-and-embodied-agents, pattern]
 summary: "OpenCUA is an open recipe for desktop computer-use agents built on AgentNet, a 22,625-task human-annotated trajectory set, with reflective long chain-of-thought synthesized per step; the 72B model reaches 45.0% on OSWorld-Verified at 100 steps (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-wang-2025-opencua.md
 ---

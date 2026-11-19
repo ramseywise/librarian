@@ -1,8 +1,8 @@
 ---
 title: Peeking and Sequential Testing
-tags: [data-analytics, pattern]
+tags: [data-analytics, experimentation-and-causality, pattern]
 summary: "Checking a fixed-horizon p-value repeatedly inflates false positives to 25% at 20 looks, so if people will look use group-sequential boundaries (O'Brien-Fleming, Pocock) or always-valid mSPRT p-values, which pay for looks with a stricter threshold."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--01-ab-testing.md
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--03-experimentation-at-scale.md

@@ -1,8 +1,8 @@
 ---
 title: Contrastive and Masked Vision-Language Pretraining
-tags: [multimodal, comparison]
+tags: [multimodal, vision-language-pretraining, comparison]
 summary: "Family comparison of how vision and vision-language encoders are pretrained: contrastive dual towers, fusion encoders, masked image or video modeling, self-distillation, and LLM-bridged instruction tuning, with a page per method."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-akkus-2023-multimodal-deep-learning.md
   - data/raw/papers/2026-11-08-multimodal-deep-learning-ch02-introducing-modalities.md

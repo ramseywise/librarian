@@ -1,8 +1,8 @@
 ---
 title: "Row Stores vs Column Stores"
-tags: [data-engineering, comparison]
+tags: [data-engineering, storage-and-compute-foundations, comparison]
 summary: "OLTP and OLAP pull storage in opposite directions: row stores win on key lookups, column stores win on scans by about two orders of magnitude through pruning, compression, vectorisation and block skipping; includes rollups and the column-store write path."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--01-storage-and-compute-foundations--notes--03-row-and-column-stores.md
 ---

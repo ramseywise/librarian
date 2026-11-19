@@ -1,8 +1,8 @@
 ---
 title: Recurrent Memory Transformer (RMT)
-tags: [llm, concept]
+tags: [llm, architecture, concept]
 summary: RMT passes a few memory tokens from one fixed-size segment to the next on a pretrained transformer, giving linear compute and constant memory; it reached 2M tokens on synthetic fact tasks, though memory is lossy and the tasks are easy.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-bulatov-2023-scaling-transformer-1m-tokens-beyond.md
   - data/raw/papers/2026-11-08-bulatov-2022-recurrent-memory-transformer.md

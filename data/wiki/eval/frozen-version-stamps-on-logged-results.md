@@ -1,8 +1,8 @@
 ---
 title: Frozen Version Stamps on Logged Results
-tags: [eval, infra, pattern]
+tags: [eval, harness-and-ci, infra, pattern]
 summary: Every served result row carries a named version constant for each component that shaped it — prompt hash, enrichment, weights, ranker, composer, schema — and a classifier whose output is logged but whose rule-table is unversioned is a hole; instrumentation ships in the same commit as the feature because logs cannot be backfilled.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/akira/docs/research/2026-09-16-dis289-relevance-benchmark-corpus.md
   - data/raw/claude-docs/kiez-archive/docs/research/2026-09-16-dis289-relevance-benchmark-corpus.md

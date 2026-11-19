@@ -1,8 +1,8 @@
 ---
 title: "Cost-of-Pass and Efficient Agent Design"
-tags: [eval, concept]
+tags: [eval, agent-eval, concept]
 summary: "Cost-of-pass divides the expected spend per attempt by the success rate, which lets an agent design be judged on cost per solved task instead of accuracy alone; a GAIA component study and a survey of cost levers both point toward simple memory, bounded steps and selective tool use, with the study's gaps listed in Limits."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-wang-2025-efficient-agents.md
   - data/raw/papers/2026-11-06-yang-2026-toward-efficient-agents.md

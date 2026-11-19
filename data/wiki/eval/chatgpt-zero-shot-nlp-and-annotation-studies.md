@@ -1,8 +1,8 @@
 ---
 title: ChatGPT Zero-Shot NLP and Annotation Studies
-tags: [eval, comparison]
+tags: [eval, language-tasks, comparison]
 summary: "Two 2023 ChatGPT studies: a 20-dataset zero-shot survey finding strong NLI and sentiment scores but weak NER and summarisation against fine-tuned models, and a short implicit-hate study where ChatGPT explanations were clearer than human ones but no more informative (both self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-qin-2023-chatgpt-general-purpose-natural-language.md
   - data/raw/papers/2026-11-08-huang-2023-chatgpt-better-than-human-annotators.md

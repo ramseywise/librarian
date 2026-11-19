@@ -1,0 +1,59 @@
+# Topics for the wiki directories of more than about 100 pages.
+# A page in a listed directory carries exactly one of its directory's topics as a tag (CLAUDE.md).
+# Where a course module covers the directory, the topic is the module's slug.
+# Lint reads the keys; the one-line descriptions guide the choice at ingest.
+
+data-analytics:
+  python-for-data-analysis: "pandas, loading, indexing, joins, cleaning, dates, groupby, time-series mechanics"
+  probability-and-statistics: "descriptive statistics, probability, distributions, estimation, tests, regression and GLMs, panel data"
+  experimentation-and-causality: "A/B tests, metric design, experiments at scale, causal identification, matching and weighting"
+  bayesian-analysis: "Bayesian inference, MCMC, priors, bandits, Bayesian A/B tests, decisions, multilevel models"
+  visualisation-and-storytelling: "chart grammar and choice, plotting libraries, interactive and JS charts, dashboards, data stories"
+  applied-analyses: "forecasting, credit scoring, retention, funnels, segmentation, analytics SQL, survival, marketing, operations, metric trees, surveys"
+
+data-engineering:
+  storage-and-compute-foundations: "data models, encoding, row and column stores, transactions, replication, distributed failure, consensus, distributed compute, durability, choosing a store"
+  ingest-and-modelling: "ingest and CDC, dimensional modelling, data vault and OBT, data contracts"
+  transform-and-orchestrate: "transforms, dbt, orchestration, idempotency and backfills, Dagster and Airflow"
+  warehouse-lakehouse-streaming: "warehouses, object storage and lakes, table formats, lakehouse choice, Kafka and stream semantics, cost"
+  quality-and-observability: "quality tests, monitors and lineage, incidents, schema and data migrations, operating stores, DataOps"
+  ml-platform: "feature stores, experiment tracking and registry, serving, drift, MLOps maturity, ML system design"
+  architecture-and-governance: "mesh, fabric and modern data warehouse, access control and privacy, catalog and semantic layer, contract governance"
+
+eval:
+  language-tasks: "QA, long-form, summarisation, dialogue and translation datasets and their evaluation"
+  reasoning-and-math: "reasoning, maths, science and planning benchmarks"
+  code: "code generation, SQL and software-engineering benchmarks"
+  agent-eval: "agent and tool-use benchmarks, trajectories, simulated users, agent cost"
+  defining-correct: "what an eval is, success criteria, eval versus test, falsifiability"
+  datasets-and-contamination: "golden sets, synthetic data, splits, contamination, benchmark sensitivity"
+  graders-and-metrics: "reference and model-based metrics, rubrics, grader design"
+  judges: "LLM as judge, judge bias and calibration, pairwise ranking, human labels as the reference"
+  rag-and-grounding: "RAG evaluation, citation and attribution, grounding"
+  factuality-and-hallucination: "factuality scoring, hallucination taxonomies and detection"
+  safety-and-bias: "bias, safety, red teaming, dangerous-capability evaluation"
+  reading-results: "error bars, small samples, paired comparison, non-determinism, reporting"
+  harness-and-ci: "eval harnesses, tracing for evals, gates and evals in CI"
+  production-and-failures: "online evals, feedback loops, drift, maturity ladders, failure taxonomies and error analysis"
+
+multimodal:
+  vision-language-pretraining: "contrastive and fusion image-text pretraining (CLIP family, single and two-stream VLP)"
+  multimodal-llms: "LLMs with vision or other modalities, visual instruction tuning, tool-using and embodied VLMs"
+  vision-backbones: "self-supervised and supervised vision encoders, detection, segmentation, depth"
+  gans: "GAN models, training techniques and GAN editing"
+  diffusion-and-image-generation: "diffusion, autoregressive and masked-token image generation, editing, personalisation"
+  video: "video generation, video understanding and video-text pretraining"
+  speech-and-audio: "speech recognition, TTS, audio codecs and generation, speech translation, voice agents"
+  datasets: "image-text and speech training corpora"
+  benchmarks-and-metrics: "VQA and multimodal benchmarks, hallucination probes, image-quality metrics"
+
+llm:
+  architecture: "transformer internals, normalisation, position encodings, long context and memory layers, model composition"
+  pretraining-and-data: "pretraining objectives and data, synthetic training data, what pretraining instils"
+  fine-tuning: "SFT, PEFT, distillation, rejection sampling, fine-tuning risks"
+  preference-and-alignment: "RLHF, reward models, preference optimisation, constitutional AI, reward hacking"
+  reinforcement-learning: "RL foundations and algorithms for LLMs, RL frameworks, verifiable and process rewards"
+  agent-training: "training agents and tool use: agent tuning data, agentic RL, self-improvement, multi-agent training"
+  gui-and-embodied-agents: "GUI, computer-use, mobile and robot agents"
+  reasoning-and-planning: "reasoning, planning, world models, decision-making framing, knowing when to ask"
+  interpretability-and-safety: "probing, latent knowledge, jailbreaks, role drift, hidden transmission"

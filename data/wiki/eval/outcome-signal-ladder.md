@@ -1,8 +1,8 @@
 ---
 title: Outcome Signal Ladder
-tags: [eval, pattern]
+tags: [eval, production-and-failures, pattern]
 summary: Interaction events (open, save, click, share) are proxies for interest, not evidence that a recommendation helped; rank the candidate outcome signals by cost and strength, ship the cheapest one that can be logged from the first serve, and name in the decision record that the first round is measured on a proxy.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/diskoe/docs/research/2026-09-29-beta-outcome-signal.md
   - data/raw/claude-docs/akira/docs/research/2026-09-29-beta-outcome-signal.md

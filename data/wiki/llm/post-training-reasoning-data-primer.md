@@ -1,8 +1,8 @@
 ---
 title: Post-Training Reasoning Data Primer
-tags: [llm, concept]
+tags: [llm, pretraining-and-data, concept]
 summary: "A 2026 survey of over 150 public studies on the data side of reasoning post-training: difficulty is relative to the base model, small curated sets work only inside the base model's support, coverage is a recipe, and self-play moves curation rather than removing it; it reports no results of its own."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-li-2026-primer-post-training-reasoning-data.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: Frozen Visual Prefix Few-Shot Learning
-tags: [multimodal, concept]
+tags: [multimodal, multimodal-llms, concept]
 summary: "Frozen trains only a vision encoder, through a frozen 7B language model, to emit a two-token visual prefix on Conceptual Captions, then prompts with interleaved images and text for few-shot VQA and classification (all numbers self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-tsimpoukelli-2021-multimodal-few-shot-learning-frozen.md
 ---

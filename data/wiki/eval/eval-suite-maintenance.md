@@ -1,8 +1,8 @@
 ---
 title: Eval Suite Maintenance
-tags: [eval, llm, agents, pattern]
+tags: [eval, harness-and-ci, llm, agents, pattern]
 summary: "Fix the evaluation system before changing the agent — a dropped score is a claim about the eval as much as about the agent, and a suite everyone passes is saturated rather than solved."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/akira/docs/product-feasibility.md
   - data/raw/claude-docs/kiez-archive/docs/product-feasibility.md

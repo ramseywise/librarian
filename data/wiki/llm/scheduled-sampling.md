@@ -1,8 +1,8 @@
 ---
 title: Scheduled Sampling
-tags: [llm, pattern]
+tags: [llm, pretraining-and-data, pattern]
 summary: A training schedule for recurrent sequence generators that mixes the true previous token and the model's own sampled token as decoder input, with the true-token probability decaying over training, to narrow the gap between training and decoding.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-a-2015-scheduled-sampling-sequence-prediction-recurrent.md
 ---

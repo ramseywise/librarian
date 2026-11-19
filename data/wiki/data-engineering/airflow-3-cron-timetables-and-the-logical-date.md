@@ -1,8 +1,8 @@
 ---
 title: "Airflow 3 Cron Timetables and the Logical Date"
-tags: [data-engineering, pattern]
+tags: [data-engineering, transform-and-orchestrate, pattern]
 summary: "From Airflow 3 a bare cron string means a trigger timetable whose logical date is the fire time, so ds names the day in progress; name CronDataIntervalTimetable to process the completed day."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--03-transform-and-orchestrate--notes--05-dagster-and-airflow.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: LENS Frozen LLM with Vision Modules
-tags: [multimodal, concept]
+tags: [multimodal, multimodal-llms, concept]
 summary: "LENS converts an image to text with frozen tag, attribute and captioning modules and has a frozen Flan-T5 answer from that text, with no multimodal training."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-berrios-2023-towards-language-models-that-can.md
 ---

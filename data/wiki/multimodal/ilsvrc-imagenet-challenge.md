@@ -1,8 +1,8 @@
 ---
 title: ILSVRC ImageNet Challenge
-tags: [multimodal, concept]
+tags: [multimodal, benchmarks-and-metrics, concept]
 summary: "The ILSVRC paper documents how the ImageNet challenge was built, how classification, localization and detection entries improved from 2010 to 2014, and a two-annotator human comparison with GoogLeNet (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-russakovsky-2015-imagenet-large-scale-visual-recognition.md
 ---

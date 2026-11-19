@@ -1,8 +1,8 @@
 ---
 title: Q0–Q5 Quality Ladder
-tags: [eval, llm, pattern]
+tags: [eval, production-and-failures, llm, pattern]
 summary: A six-level per-feature quality ladder (unit/schema → golden set → LLM judge → adversarial/safety → human acceptance → production monitoring) where every level is owned by name, judges are never the sole authority, and the golden set is written from the requirement before the function to avoid the own-oracle trap.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/playground/skills/design-roadmap/SKILL.md
   - data/raw/claude-docs/playground/skills/design-product/SKILL.md

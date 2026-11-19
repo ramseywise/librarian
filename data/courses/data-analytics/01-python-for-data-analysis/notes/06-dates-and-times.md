@@ -1,10 +1,12 @@
 ---
-imported_hash: 1fbabe8ea2375648
+imported_hash: ae037bd934c629ae
 title: 6 — Dates and Times
 summary: A date in a file is text. It looks like a date to you, and to pandas it is a string that sorts by its first character, cannot be subtracted and has no month.
 order: 7
 kind: reading
 section: Notes
+tier: practitioner
+depth: core
 source: learn-ai-engineering/data-analytics/01-python-for-data-analysis/notes/06-dates-and-times.md
 ---
 

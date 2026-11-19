@@ -1,8 +1,8 @@
 ---
 title: "LongBench"
-tags: [eval, reference]
+tags: [eval, language-tasks, reference]
 summary: "LongBench is a bilingual multitask long-context benchmark of 21 datasets in 6 categories, with a length-balanced LongBench-E subset; it also found retrieval helped a 4k model but hurt long-context models (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-bai-2024-longbench.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: TheoremQA
-tags: [eval, reference]
+tags: [eval, reasoning-and-math, reference]
 summary: An 800-question university-level benchmark built around 354 theorems in math, physics, EE&CS and finance with short exact-match answers; GPT-4 with Program-of-Thoughts led at 52.4% (self-reported) and open instruction-tuned models stayed under 15%.
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-chen-2023-theoremqa.md
 ---

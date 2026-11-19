@@ -1,8 +1,8 @@
 ---
 title: "Data Catalog Metadata: Push, Pull and Measuring Adoption"
-tags: [data-engineering, concept]
+tags: [data-engineering, architecture-and-governance, concept]
 summary: "A catalog needs both push and pull ingestion, separates tier from certification, and should be measured by stale descriptions and reads on certified tables, not coverage."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--07-architecture-and-governance--notes--03-catalog-semantic-layer-and-contracts.md
   - data/raw/repos/learn-ai-engineering/data-engineering--07-architecture-and-governance--README.md

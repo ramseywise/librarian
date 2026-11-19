@@ -1,8 +1,8 @@
 ---
 title: REST Multi-Problem Stress Testing
-tags: [eval, pattern]
+tags: [eval, reasoning-and-math, pattern]
 summary: "Concatenate s consecutive benchmark questions into one prompt and score each; on MATH500 a 1.6-point gap between two distilled 7B and 32B reasoning models became 22.22 points under stress, and DeepSeek-R1's AIME24 accuracy fell from 81.66 to 52.49 (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-pan-2025-rest.md
 ---

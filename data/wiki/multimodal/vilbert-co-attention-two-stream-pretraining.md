@@ -1,8 +1,8 @@
 ---
 title: ViLBERT Co-Attention Two-Stream Pretraining
-tags: [multimodal, concept]
+tags: [multimodal, vision-language-pretraining, concept]
 summary: "ViLBERT runs separate BERT-style text and image-region streams that exchange keys and values through co-attention layers, pretrained on Conceptual Captions and transferred to four vision-language tasks."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-lu-2019-vilbert.md
 ---

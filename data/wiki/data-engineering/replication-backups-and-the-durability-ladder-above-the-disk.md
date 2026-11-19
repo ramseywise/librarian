@@ -1,8 +1,8 @@
 ---
 title: "Replication, Backups and the Durability Ladder Above the Disk"
-tags: [data-engineering, decision]
+tags: [data-engineering, storage-and-compute-foundations, decision]
 summary: "A replica survives the machine but copies your mistakes in milliseconds; async replication loses the lag at failover, sync replication stalls commits when the standby stalls, and only a restored backup with archived WAL survives a bad deploy."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--01-storage-and-compute-foundations--notes--09-persistence.md
 ---

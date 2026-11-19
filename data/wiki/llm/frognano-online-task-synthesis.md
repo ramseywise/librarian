@@ -1,8 +1,8 @@
 ---
 title: FrogNano Online Task Synthesis
-tags: [llm, pattern]
+tags: [llm, agent-training, pattern]
 summary: Train a 4B coding agent with RL on synthetic tasks regenerated each iteration to match the current policy's solve rate (TaskPilot); five iterations of 300 tasks took SWE-bench Verified from 39.4% to 61.5% with no distillation of trajectories.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-kim-2026-frognano.md
 ---

@@ -343,6 +343,10 @@ a.course-row-title:hover { color: var(--link); text-decoration: underline; }
 .flashcard-text code { font-size: 0.9em; }
 .flashcard-source { margin-top: var(--space-3); font-size: var(--fs-md); color: var(--text-secondary); }
 .flashcard-source a { color: var(--link); }
+.flashcard-refs { list-style: none; }
+.flashcard-refs li::before { content: "Source: "; color: var(--text-faint); }
+.flashcard-more { margin-top: var(--space-3); }
+.flashcard-more-text { margin-top: var(--space-2); font-size: var(--fs-lg); line-height: 1.6; color: var(--text); }
 .flashcard-controls { display: flex; align-items: center; gap: var(--space-4); margin-top: var(--space-5); }
 .flashcard-count { color: var(--text-faint); font-size: var(--fs-base); margin-left: auto; }
 

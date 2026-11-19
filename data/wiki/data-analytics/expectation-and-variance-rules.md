@@ -1,8 +1,8 @@
 ---
 title: Expectation and Variance Rules
-tags: [data-analytics, reference]
+tags: [data-analytics, probability-and-statistics, reference]
 summary: "Expectations always add, even for dependent variables, while variances add only for uncorrelated ones; indicator variables turn counts into sums, and the law of total variance explains why knowing a group removes noise."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--02-probability-foundations.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: CLT on Heavy-Tailed Metrics
-tags: [data-analytics, concept]
+tags: [data-analytics, probability-and-statistics, concept]
 summary: "The law of large numbers and central limit theorem only earn their keep at large N on zero-inflated heavy-tailed data: a nominal 95 percent normal interval on spend covered the truth 56 percent of the time at n=30 and needed tens of thousands of users to reach 95."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--03-distributions-and-sampling.md
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--README.md

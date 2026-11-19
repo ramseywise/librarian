@@ -1,8 +1,8 @@
 ---
 title: UQ Unsolved Questions Benchmark
-tags: [eval, reference]
+tags: [eval, language-tasks, reference]
 summary: "A benchmark of 500 Stack Exchange questions that had no answers after at least two years, with no gold labels: LLM validators screen candidate answers and humans check the survivors. On the validator pass rate o3-pro cleared 15.0% and only 10 of the 91 human-checked passes were correct (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-nie-2025-uq.md
 ---

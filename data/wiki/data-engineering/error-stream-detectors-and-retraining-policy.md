@@ -1,8 +1,8 @@
 ---
 title: "Error-Stream Detectors and Retraining Policy"
-tags: [data-engineering, pattern]
+tags: [data-engineering, ml-platform, pattern]
 summary: "When labels arrive, Page-Hinkley or CUSUM on the error stream trades detection delay against false alarms with no free setting; label delay decides whether this is possible, and scheduled retraining is the defensible default over triggers."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--06-ml-platform--notes--04-drift.md
 ---

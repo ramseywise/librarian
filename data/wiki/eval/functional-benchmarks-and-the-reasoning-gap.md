@@ -1,8 +1,8 @@
 ---
 title: Functional Benchmarks and the Reasoning Gap
-tags: [eval, pattern]
+tags: [eval, reasoning-and-math, pattern]
 summary: "Rewrite benchmark problems as code that regenerates them with new inputs each quarter, and count a problem as solved only if the static version and every snapshot are right; on 2,060 functionalised MATH problems the 13 models tested lost 58.35% to 80.31% of their static accuracy (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-srivastava-2024-functional-benchmarks-robust-evaluation-reasoning.md
 ---

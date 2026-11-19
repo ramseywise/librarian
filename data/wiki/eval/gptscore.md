@@ -1,8 +1,8 @@
 ---
 title: GPTScore
-tags: [eval, llm, pattern]
+tags: [eval, graders-and-metrics, llm, pattern]
 summary: "GPTScore rates a generated text by the language-model probability of that text under a prompt stating the task and aspect, with no training; across 19 backbones, 4 tasks and 37 datasets the authors found instructions and demonstrations help on some aspects and not others, and text-davinci-003 beat -001 in summarisation but not in dialogue (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-fu-2023-gptscore.md
 ---

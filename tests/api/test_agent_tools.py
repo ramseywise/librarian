@@ -122,3 +122,25 @@ def test_chat_schema_matches_the_old_hand_written_one() -> None:
         "required": ["query"],
     }
     assert tools.MAX_BRIEFING_CHARS == 40_000
+
+
+def test_mcp_read_page_ends_with_where_the_course_teaches_it(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    page = "---\ntitle: BM25\n---\n\n# BM25\n\nBody.\n"
+    monkeypatch.setattr(tools.retrieval, "read_page", lambda _q: page)
+    monkeypatch.setattr(
+        tools, "parse_wiki", lambda: {"nodes": [{"id": "bm25", "data": {"title": "BM25"}}]}
+    )
+    places = {"bm25": {"modules": ["ai/rag", "data/stats"], "tier": "foundations"}}
+    monkeypatch.setattr(tools.curriculum, "placement", places.get)
+    assert tools.mcp_read_page("bm25").endswith(
+        "Body.\n\nCurriculum: introduced at foundations; modules: ai/rag, data/stats\n"
+    )
+    places["bm25"] = {"modules": ["ai/rag"]}
+    assert "introduced at not yet tiered" in tools.mcp_read_page("bm25")
+    # A page no note links, and a miss, come back untouched.
+    places.clear()
+    assert tools.mcp_read_page("bm25") == page
+    monkeypatch.setattr(tools.retrieval, "read_page", lambda _q: "Page not found: 'x'.")
+    assert tools.mcp_read_page("x") == "Page not found: 'x'."

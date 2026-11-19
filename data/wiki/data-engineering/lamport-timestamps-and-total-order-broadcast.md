@@ -1,8 +1,8 @@
 ---
 title: "Lamport Timestamps and Total Order Broadcast"
-tags: [data-engineering, concept]
+tags: [data-engineering, storage-and-compute-foundations, concept]
 summary: "A counter-plus-node-ID gives a total order consistent with causality but only after the fact; total order broadcast, in practice a replicated log, fixes the order at delivery and so can implement uniqueness checks and compare-and-set."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--01-storage-and-compute-foundations--notes--07-consistency-and-consensus.md
 ---

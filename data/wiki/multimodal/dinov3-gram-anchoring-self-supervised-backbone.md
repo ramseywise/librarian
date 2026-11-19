@@ -1,8 +1,8 @@
 ---
 title: DINOv3 Gram Anchoring Self-Supervised Backbone
-tags: [multimodal, concept]
+tags: [multimodal, vision-backbones, concept]
 summary: "DINOv3 scales DINOv2-style self-supervised training to a 6.7B ViT on 1,689 million curated images and adds Gram anchoring, a loss on patch-similarity structure that repairs dense-feature degradation over long training (all numbers self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-simeoni-2025-dinov3.md
 ---

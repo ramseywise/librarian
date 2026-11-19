@@ -1,8 +1,8 @@
 ---
 title: Generative Story Models
-tags: [data-analytics, pattern]
+tags: [data-analytics, bayesian-analysis, pattern]
 summary: "Build a Bayesian model by writing how the data could have been generated, top down, and translating each line into a distribution; a known measurement process (a changepoint, randomised response, serial numbers) goes into the model, not into a correction afterwards."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--01-bayesian-inference.md
 ---

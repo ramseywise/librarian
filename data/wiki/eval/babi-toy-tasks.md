@@ -1,8 +1,8 @@
 ---
 title: bAbI Toy Tasks
-tags: [eval, benchmark]
+tags: [eval, language-tasks, benchmark]
 summary: "Twenty automatically generated question-answering tasks, each isolating one reasoning skill, with a 95% pass threshold; Weston et al. report an extended Memory Network averaging well above LSTM (49%) and N-gram (34%) baselines but failing path finding (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-weston-2015-towards-ai-complete-question-answering.md
 ---

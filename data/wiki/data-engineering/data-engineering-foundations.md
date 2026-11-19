@@ -1,8 +1,8 @@
 ---
 title: Data Engineering Foundations
-tags: [data-engineering, concept]
+tags: [data-engineering, storage-and-compute-foundations, concept]
 summary: "The six stages of data engineering as a pipeline discipline — ingest, transform, orchestrate, warehouse, monitor, feature-serve — where each stage's job is to prepare data for the next, plus the modern-stack tools (DuckDB, Polars, Iceberg, Dagster) missing from Zoomcamp-era material."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--CURRICULUM.md
   - data/raw/repos/learn-ai-engineering/data-engineering--README.md

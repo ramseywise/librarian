@@ -1,8 +1,8 @@
 ---
 title: LXMERT
-tags: [multimodal, concept]
+tags: [multimodal, vision-language-pretraining, concept]
 summary: "LXMERT pretrains a three-encoder cross-modality Transformer on 9.18M image-sentence pairs with five tasks and, among the models the paper compares against, sets state of the art on VQA, GQA and NLVR2 (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-tan-2019-lxmert.md
 ---

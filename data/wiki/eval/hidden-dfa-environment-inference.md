@@ -1,8 +1,8 @@
 ---
 title: Hidden-DFA Environment Inference Testbed
-tags: [eval, reference]
+tags: [eval, agent-eval, reference]
 summary: "A procedurally generated, size-controlled testbed in which a tool-calling agent must learn a hidden automaton by querying it; success drops sharply with automaton size, and the paper grades failures by whether classic passive learners could have recovered the automaton from the agent's own evidence (self-reported, three models)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-menaged-2026-can-agents-infer-environment-interaction.md
 ---

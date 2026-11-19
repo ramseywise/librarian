@@ -1,8 +1,8 @@
 ---
-imported_hash: 76e771de032f946a
+imported_hash: c8f8856b9f34f611
 title: Sequence models
 summary: 'def sigmoid(z): return 1 / (1 + np.exp(-z))'
-order: 7
+order: 8
 kind: reading
 section: Notes
 source: learn-ai-engineering/data-science/02-deep-learning/notes/05-sequence-models.md

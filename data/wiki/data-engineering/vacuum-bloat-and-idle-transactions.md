@@ -1,8 +1,8 @@
 ---
 title: "Vacuum, Bloat and Idle Transactions"
-tags: [data-engineering, concept]
+tags: [data-engineering, quality-and-observability, concept]
 summary: "Updates leave dead row versions that VACUUM only frees for reuse, VACUUM FULL returns space under an exclusive lock, and one forgotten idle transaction stops cleanup entirely; transaction-ID wraparound is the failure to know by name."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--05-quality-and-observability--notes--05-operating-data-stores.md
 ---

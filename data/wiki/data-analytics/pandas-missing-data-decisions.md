@@ -1,8 +1,8 @@
 ---
 title: Pandas Missing Data Decisions
-tags: [data-analytics, decision]
+tags: [data-analytics, python-for-data-analysis, decision]
 summary: Pandas can count, fill and drop gaps but cannot say what a gap means; the treatment follows from why the value is missing.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--01-python-for-data-analysis--notes--02-loading-and-cleaning.md
   - data/raw/repos/learn-ai-engineering/data-analytics--01-python-for-data-analysis--notes--05-groupby-and-aggregation.md

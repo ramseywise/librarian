@@ -1,8 +1,8 @@
 ---
 title: Clustered Standard Errors
-tags: [data-analytics, pattern]
+tags: [data-analytics, probability-and-statistics, pattern]
 summary: "When rows share a group that was randomised or shares shocks, cluster the standard errors at that level: ignoring it understated the SE by half and inflated the false-positive rate to 28 percent, and it still fails with few clusters."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--06-regression-and-glms.md
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--08-panel-data-and-fixed-effects.md

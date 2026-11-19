@@ -1,8 +1,8 @@
 ---
 title: "Staging Dedupe Keys and Fact Join Row Loss"
-tags: [data-engineering, pattern]
+tags: [data-engineering, transform-and-orchestrate, pattern]
 summary: "A dedupe is only as right as its key, and an inner join in a fact silently turns missing dimension rows into missing revenue with every test green; left join through an explicit unknown row and reconcile."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--03-transform-and-orchestrate--notes--01-transform.md
 ---

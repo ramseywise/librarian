@@ -1,8 +1,8 @@
 ---
 title: Long-Form QA Evaluation Hurdles
-tags: [eval, concept]
+tags: [eval, language-tasks, concept]
 summary: "Krishna et al.'s 2021 control experiments on long-form QA (ELI5, KILT): random retrievals barely move ROUGE-L, a copied question beats a retrieval-augmented system on it, and humans prefer gold answers 68% to 14%, so leaderboard gains there say little about answer quality (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-krishna-2021-hurdles-progress-long-form-question.md
 ---

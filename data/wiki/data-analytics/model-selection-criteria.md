@@ -1,8 +1,8 @@
 ---
 title: Model Selection Criteria
-tags: [data-analytics, reference]
+tags: [data-analytics, probability-and-statistics, reference]
 summary: "R-squared never rejects extra terms, adjusted R-squared, AIC, BIC, likelihood-ratio tests and cross-validation each trade fit against complexity differently: BIC found a true quadratic 98 percent of the time at n=800, AIC 77 percent."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--07-data-generating-process.md
 ---

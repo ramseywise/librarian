@@ -1,8 +1,8 @@
 ---
 title: Synthetic Computers at Scale
-tags: [llm, pattern]
+tags: [llm, agent-training, pattern]
 summary: "A pipeline that turns personas into synthetic computers with files, collaborators and a month of simulated work, then distils skills from run retrospectives; the skills lifted a held-out score from 61.6% to 68.6% (self-reported) with no weight updates."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-ge-2026-synthetic-computers-scale-long-horizon.md
 ---

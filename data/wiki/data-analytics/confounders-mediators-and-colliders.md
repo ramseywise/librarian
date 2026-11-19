@@ -1,8 +1,8 @@
 ---
 title: Confounders, Mediators and Colliders
-tags: [data-analytics, concept]
+tags: [data-analytics, experimentation-and-causality, concept]
 summary: "Control for a confounder, leave out a mediator if you want the total effect, and never condition on a collider; each mistake has a measured cost, and plotting the data beats trusting a single correlation coefficient."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--04-correlation-and-causation.md
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--05-matching-and-weighting.md

@@ -1,8 +1,8 @@
 ---
 title: Knowledge Index and Information Gain
-tags: [eval, pattern]
+tags: [eval, reasoning-and-math, pattern]
 summary: "Two step-level scores for a chain of thought, Knowledge Index (are the facts right) and Information Gain (does the step move toward the answer), reported to separate what accuracy hides: on five medical benchmarks the Qwen R1-distilled model had similar Information Gain to its base but lower Knowledge Index and lower accuracy (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-wu-2025-knowledge-or-reasoning.md
 ---

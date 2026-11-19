@@ -1,8 +1,8 @@
 ---
 title: Visual Genome
-tags: [multimodal, reference]
+tags: [multimodal, datasets, reference]
 summary: "Visual Genome densely annotates 108,077 images with region descriptions, objects, attributes, relationships, scene graphs and about 17 QA pairs per image, canonicalised to WordNet synsets; it is the base for GQA (all figures self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-krishna-2017-visual-genome.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: "Feature Stores: Parts and When You Need One"
-tags: [data-engineering, concept]
+tags: [data-engineering, ml-platform, concept]
 summary: "A feature store is a point-in-time join with a registry, an offline history store, an online latest-value store and a materialisation job around it; most teams with one model need only the join and a shared function."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--06-ml-platform--notes--01-feature-stores.md
 ---

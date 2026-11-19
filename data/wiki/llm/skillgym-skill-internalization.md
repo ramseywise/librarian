@@ -1,8 +1,8 @@
 ---
 title: SkillGym
-tags: [llm, reference]
+tags: [llm, agent-training, reference]
 summary: "SkillGym is a set of 2,756 containerised task environments built around human skills, with 8,364 verified teacher trajectories used for SFT; fine-tuning a Qwen3.5-35B-A3B student lifted GDPval-AA, Terminal-Bench 2.1 and SkillsBench scores, and the trained agent without skills beat its skill-assisted base (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-ge-2026-skillgym.md
 ---

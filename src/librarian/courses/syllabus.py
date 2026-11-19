@@ -7,10 +7,15 @@ Generated, never edited: the text comes from the course itself and the links fro
 - Module: the opening of its readme's `## What it is`, its unit section from the start-here
   readme (purpose, objectives, mastery lab, evidence, key sources) and its `## Builds on and
   feeds into` section, then a count of its practice material.
-- Note, in reading order: summary, the wiki pages it links (explicit, compiled from it, or
-  named in its text) and, kept apart, the pages only the embedding says are near it.
+- Note, in reading order: tier (`librarian.courses.depth`), summary, the wiki pages it links
+  (explicit, compiled from it, or named in its text) and, kept apart, the pages only the
+  embedding says are near it. Each module counts its notes by tier.
 - Module and course: every wiki page the module uses, and the pages in the course's wiki area
   (`librarian.wiki.areas`) that no note links. Last, the directories in no area.
+- Competency map: for each glossary term with a public page, the note that introduces it (first
+  in course order to link the page), the other modules that develop it and the labs that
+  demonstrate it (a lab whose `demonstrates` names a note linking the page); then the pages
+  linked from several modules, the candidates for duplication.
 
 Private lessons and private or tombstoned wiki pages are left out (the catalog already hides
 the pages), so the file is safe to commit.
@@ -32,7 +37,9 @@ from typing import Any
 import frontmatter
 
 from librarian.config import get_settings
+from librarian.courses import glossary, labs
 from librarian.courses.catalog import COURSES_DIR, WIKI_DIR, Catalog, catalog
+from librarian.courses.depth import TIERS
 from librarian.log_config import get_logger
 from librarian.wiki.areas import AREAS, area_of
 
@@ -44,6 +51,8 @@ COURSE_SECTIONS = ("Course outcomes", "Before you begin", "Completion standard")
 LINK_RE = re.compile(r"!?\[([^\]]*)\]\([^)]*\)")
 HEADING_RE = re.compile(r"^(#{1,6})\s+(.*)$")
 UNIT_RE = re.compile(r"^###\s+\[[^\]]+\]\(([^)]+)\)")
+# A page linked from this many modules is listed as a candidate for duplication.
+SHARED_MODULES = 3
 
 
 def _flatten(text: str) -> str:
@@ -121,6 +130,8 @@ class _Writer:
             if "private" not in p.relative_to(WIKI_DIR).parts
         }
         self.linked: set[str] = set()
+        self.where: dict[str, list[str]] = {}  # page → the notes linking it, in course order
+        self.module_of: dict[str, tuple[str, str]] = {}  # note → (module key, module title)
 
     def rel(self, path: Path) -> str:
         return os.path.relpath(path, self.base).replace(" ", "%20")
@@ -143,9 +154,12 @@ def _lesson(w: _Writer, lid: str) -> tuple[list[str], list[str]]:
     split = len(rec.concepts) - rec.semantic
     linked, nearby = rec.concepts[:split], rec.concepts[split:]
     title = f"[{rec.title}]({w.rel(COURSES_DIR / f'{lid}.md')})"
-    kind = "" if rec.kind == "reading" else f" *({rec.kind})*"
+    labels = [x for x in (rec.kind if rec.kind != "reading" else "", rec.tier) if x]
+    label = f" *({', '.join(labels)})*" if labels else ""
     summary = f" — {rec.summary}" if rec.summary else ""
-    w.add(f"- **{title}**{kind}{summary}")
+    w.add(f"- **{title}**{label}{summary}")
+    for p in linked:
+        w.where.setdefault(p, []).append(lid)
     if linked:
         w.add(f"  - Wiki: {' · '.join(w.page(p) for p in linked)}")
     if nearby:
@@ -178,10 +192,17 @@ def _module(w: _Writer, course: dict[str, Any], module: dict[str, Any], unit: st
     lessons = [x["id"] for x in module["lessons"] if not x.get("private")]
     uses: Counter[str] = Counter()
     nearby: Counter[str] = Counter()
+    tiers = Counter(w.cat.lessons[lid].tier for lid in lessons)
+    counts = [f"{tiers[t]} {t}" for t in TIERS if tiers[t]]
+    if tiers[""]:
+        counts.append(f"{tiers['']} not yet tiered")
+    if counts:
+        w.add(f"**Tier:** {' · '.join(counts)}", "")
     w.add(f"**Notes** ({len(lessons)}, in reading order)", "")
     section = ""
     for lid in lessons:
         rec = w.cat.lessons[lid]
+        w.module_of[lid] = (f"{course['id']}/{module['id']}", module["title"])
         if rec.section and rec.section != section:
             section = rec.section
             w.add("", f"*{section}*", "")
@@ -223,6 +244,78 @@ def _course(w: _Writer, course: dict[str, Any]) -> set[str]:
     return pages
 
 
+def _note(w: _Writer, lid: str) -> str:
+    rec = w.cat.lessons[lid]
+    tier = f", {rec.tier}" if rec.tier else ""
+    return f"[{rec.title}]({w.rel(COURSES_DIR / f'{lid}.md')}) ({w.module_of[lid][1]}{tier})"
+
+
+def _competencies(w: _Writer) -> None:
+    by_note: dict[str, list[labs.Lab]] = {}
+    for lab in labs.all_labs().values():
+        for lid in lab.notes:
+            by_note.setdefault(lid, []).append(lab)
+    terms = [t for t in glossary.load_terms() if t.page in w.cat.wiki]
+    untaught: list[str] = []
+    undemonstrated = 0
+    body: list[str] = []
+    for term in sorted(terms, key=lambda t: t.label.lower()):
+        page = term.page or ""
+        notes = w.where.get(page, [])
+        if not notes:
+            untaught.append(f"{term.label} ({w.page(page)})")
+            continue
+        first = w.module_of[notes[0]][0]
+        later = Counter(w.module_of[lid][1] for lid in notes if w.module_of[lid][0] != first)
+        shown = {lab.id: lab for lid in notes for lab in by_note.get(lid, [])}
+        undemonstrated += not shown
+        body.append(f"- **{term.label}** → {w.page(page)}")
+        body.append(f"  - Introduced: {_note(w, notes[0])}")
+        if later:
+            body.append(
+                f"  - Developed in: {' · '.join(f'{m} ({n})' for m, n in later.most_common())}"
+            )
+        demo = " · ".join(f"[{lab.title}]({w.rel(COURSES_DIR / lab.id)})" for lab in shown.values())
+        body.append(f"  - Demonstrated by: {demo or 'no lab'}")
+    w.add(
+        "## Competency map",
+        "",
+        "One entry per glossary term (`data/glossary.yaml`) whose page is public. **Introduced** is "
+        "the first note, in course order, that links the term's page; **Developed in** counts the "
+        "notes in other modules that link it; **Demonstrated by** is every lab whose manifest says "
+        "it demonstrates one of those notes. Embedding-only links are not counted. "
+        f"{len(terms) - len(untaught)} of {len(terms)} terms are taught; {undemonstrated} of those "
+        "have no lab.",
+        "",
+        *body,
+        "",
+    )
+    if untaught:
+        w.add(f"**Terms no note links:** {' · '.join(untaught)}", "")
+    shared = []
+    for pid, notes in w.where.items():
+        modules = {w.module_of[lid][0] for lid in notes}
+        if len(modules) >= SHARED_MODULES:
+            tiers = Counter(w.cat.lessons[lid].tier or "untiered" for lid in notes)
+            shared.append((len(modules), len(notes), pid, tiers))
+    shared.sort(key=lambda x: (-x[0], -x[1], w.cat.wiki[x[2]].title.lower()))
+    w.add(
+        f"### Pages linked from {SHARED_MODULES} or more modules",
+        "",
+        "Each is either a thread the course returns to on purpose or a topic taught twice. A "
+        "page linked at the same tier in several modules is the likelier duplicate.",
+        "",
+        "| Page | Modules | Notes | Tiers |",
+        "|---|---|---|---|",
+        *(
+            f"| {w.page(pid)} | {m} | {n} | "
+            f"{' · '.join(f'{c} {t}' for t, c in tiers.most_common())} |"
+            for m, n, pid, tiers in shared
+        ),
+        "",
+    )
+
+
 def _unlinked(w: _Writer) -> None:
     by_domain: dict[str, list[str]] = {}
     for pid, ref in w.cat.wiki.items():
@@ -248,8 +341,13 @@ def build(out: Path) -> str:
     rows: list[str] = []
     for course in courses:
         pages = _course(body, course)
-        notes = sum(1 for m in course["modules"] for x in m["lessons"] if not x.get("private"))
-        rows.append(f"| {course['title']} | {len(course['modules'])} | {notes} | {len(pages)} |")
+        notes = [x["id"] for m in course["modules"] for x in m["lessons"] if not x.get("private")]
+        tiered = sum(1 for lid in notes if cat.lessons[lid].tier)
+        rows.append(
+            f"| {course['title']} | {len(course['modules'])} | {len(notes)} | {tiered} "
+            f"| {len(pages)} |"
+        )
+    _competencies(body)
     _unlinked(body)
     head: list[str] = []
     head.extend(
@@ -263,11 +361,13 @@ def build(out: Path) -> str:
             "[curriculum-and-wiki.md](curriculum-and-wiki.md).",
             "",
             "Under each note, **Wiki** lists the pages the note links, was compiled into, or names in "
-            "its text; **Nearby** lists pages only the embedding matched, which are often wrong. Private "
-            "notes and pages are left out.",
+            "its text; **Nearby** lists pages only the embedding matched, which are often wrong. A note's "
+            "tier (foundations, practitioner, specialist) follows its title once set. After the "
+            "courses: the competency map, then the wiki pages no note links. Private notes and "
+            "pages are left out.",
             "",
-            "| Course | Modules | Notes | Wiki pages linked |",
-            "|---|---|---|---|",
+            "| Course | Modules | Notes | Tiered | Wiki pages linked |",
+            "|---|---|---|---|---|",
             *rows,
             "",
         )

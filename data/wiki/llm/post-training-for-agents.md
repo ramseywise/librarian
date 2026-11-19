@@ -1,8 +1,8 @@
 ---
 title: Post-Training for Agents
-tags: [llm, concept]
+tags: [llm, agent-training, concept]
 summary: "How SFT, RL and distillation divide the work of training an agent — SFT writes form and protocol, RL learns transferable strategy, on-policy distillation gives RL's on-policy data with SFT's dense signal — and why the environment, data and reward shape matter more than the choice of algorithm."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--post-training-for-agents.md
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--README.md

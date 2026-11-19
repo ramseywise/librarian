@@ -1,8 +1,8 @@
 ---
 title: Price Reversal in Reasoning-Model Costs
-tags: [eval, concept]
+tags: [eval, reasoning-and-math, concept]
 summary: "Chen et al. measured the total cost of 8 reasoning models on 12 tasks and found that in 106 of 336 pairwise comparisons (31.5%, self-reported) the model with the lower listed per-token price cost more; the authors attribute over 95% of the gap on reversed single-turn pairs to thinking tokens, and show per-query cost for one model and query varies up to 9.7 times."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-chen-2026-price-reversal-phenomenon.md
 ---

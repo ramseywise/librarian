@@ -1,8 +1,8 @@
 ---
 title: Own-Oracle Fixtures and the Blind Relabel Path
-tags: [eval, pattern]
+tags: [eval, graders-and-metrics, pattern]
 summary: "Fixtures whose expected values came from running the function under test can never justify a threshold. The way out is a separate export of real rows with `expected` set to null and the function's actual output in a separate `observed` field, labelled by a human from the written rule, appended to the same fixture file with provenance, measured, and only then gated at the observed rate."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-22-dis319-gate-enrichment-input-shaping.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-22-dis319-gate-enrichment-input-shaping.md

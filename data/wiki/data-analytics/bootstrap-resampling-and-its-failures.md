@@ -1,8 +1,8 @@
 ---
 title: Bootstrap Resampling and Its Failures
-tags: [data-analytics, pattern]
+tags: [data-analytics, probability-and-statistics, pattern]
 summary: "The bootstrap resamples the independent unit with replacement to get a standard error or interval without a formula, but it fails for extremes, tails that the sample never saw, and dependent rows resampled one at a time."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--04-estimation.md
 ---

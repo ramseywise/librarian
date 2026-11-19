@@ -1,8 +1,8 @@
 ---
 title: P-Value Misreadings
-tags: [data-analytics, concept]
+tags: [data-analytics, probability-and-statistics, concept]
 summary: "A p-value is the chance of data at least this extreme if the null were true, not the chance the null is true, not an effect size, and not evidence of no effect when large; with millions of users a negligible lift is highly significant."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--05-hypothesis-testing.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: "MaskGIT Masked Generative Image Transformer"
-tags: [multimodal, concept]
+tags: [multimodal, diffusion-and-image-generation, concept]
 summary: "MaskGIT generates images by iteratively predicting all VQGAN tokens in parallel with a bidirectional transformer, keeping the most confident and re-masking the rest on a cosine schedule, in about 8 to 12 steps."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-chang-2022-maskgit.md
 ---

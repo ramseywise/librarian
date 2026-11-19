@@ -1,8 +1,8 @@
 ---
 title: BG/NBD Customer Lifetime Value
-tags: [data-analytics, concept]
+tags: [data-analytics, applied-analyses, concept]
 summary: For non-contractual customers, BG/NBD needs only frequency, recency and observation time to estimate the chance a customer is still active and expected future orders; Gamma-Gamma adds order value, and LTV needs an explicit horizon and discount.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--09-marketing-measurement.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: Chain-of-Agents AFM Distillation
-tags: [llm, pattern]
+tags: [llm, agent-training, pattern]
 summary: Chain-of-Agents distils trajectories of a multi-agent system into one agent foundation model with supervised fine-tuning and then DAPO reinforcement learning, reporting 59.8 on AIME25 and 55.3 on GAIA for 32B models (self-reported, industry team, small-sample evaluations).
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-li-2025-chain-agents.md
 ---

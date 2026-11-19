@@ -1,8 +1,8 @@
 ---
 title: Eval Ladder
-tags: [eval, llm, planning]
+tags: [eval, production-and-failures, llm, planning]
 summary: A four-rung progression — manual review, golden-set grading, LLM-judge, user feedback — sequenced so each rung's failures supply the next rung's test cases, with an explicit "most POCs reach rung 2–3 and that's sufficient" stopping point.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/eval-approaches.md
 ---

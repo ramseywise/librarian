@@ -1,8 +1,8 @@
 ---
 title: Eval Maturity Ladder
-tags: [eval, llm, agents, reference]
+tags: [eval, production-and-failures, llm, agents, reference]
 summary: "Five levels of what eval infrastructure exists — vibes, deterministic gates, separated evaluator, eval sets plus tracing, continuous sampling — with most builders at 0 and production demanding 3+."
-updated: 2026-10-30
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--eval-maturity-ladder.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--README.md

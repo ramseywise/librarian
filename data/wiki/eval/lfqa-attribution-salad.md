@@ -1,8 +1,8 @@
 ---
 title: LFQA Attribution and SALAD
-tags: [eval, reference]
+tags: [eval, rag-and-grounding, reference]
 summary: "SALAD is a sentence-level human attribution dataset for long-form QA answers; with evidence documents in context, many sentences are supported and the last sentence is the likeliest to be unsupported, and a T5 NLI judge is the best automatic detector (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-chen-2023-understanding-retrieval-augmentation-long-form.md
 ---

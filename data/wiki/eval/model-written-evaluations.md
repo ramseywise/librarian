@@ -1,8 +1,8 @@
 ---
 title: Model-Written Evaluations
-tags: [eval, llm, pattern]
+tags: [eval, datasets-and-contamination, llm, pattern]
 summary: "A language model writes labelled evaluation examples from a behaviour description and a preference model filters them; crowdworkers rated 93-95.5% of the labels correct across datasets, and the 154 resulting datasets surfaced sycophancy and RLHF-driven inverse scaling (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-perez-2023-discovering-language-model-behaviors-model.md
 ---

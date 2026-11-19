@@ -1,8 +1,8 @@
 ---
 title: Interactive Charts and When They Pay
-tags: [data-analytics, pattern]
+tags: [data-analytics, visualisation-and-storytelling, pattern]
 summary: Interaction moves work from author to reader; use it for exploration and monitoring, state the finding yourself for decisions, and know the shipping costs of plotly and Altair.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--05-visualisation-and-storytelling--notes--03-plotly-and-interactive.md
 ---

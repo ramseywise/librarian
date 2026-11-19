@@ -1,10 +1,12 @@
 ---
-imported_hash: 348e101d9f37eb59
+imported_hash: ee8ad411b952e988
 title: 2 — Loading Data
 summary: The first chapter's frame was typed in by hand, so every value was what it looked like.
 order: 3
 kind: reading
 section: Notes
+tier: practitioner
+depth: core
 source: learn-ai-engineering/data-analytics/01-python-for-data-analysis/notes/02-loading-data.md
 ---
 

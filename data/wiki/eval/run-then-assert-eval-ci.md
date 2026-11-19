@@ -1,8 +1,8 @@
 ---
 title: Run-Then-Assert Eval CI
-tags: [eval, infra, pattern]
+tags: [eval, harness-and-ci, infra, pattern]
 summary: "Split an eval job into a slow, costly RUN phase that writes results.jsonl and a fast deterministic ASSERT phase that computes CIs per slice against a stored baseline — tiered by trigger (smoke per PR, regression on prompt/tool paths, full nightly), with every gate emitting metrics, labels, worst slices and a next action."
-updated: 2026-10-30
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--10-evals-in-ci.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--09-reading-results.md

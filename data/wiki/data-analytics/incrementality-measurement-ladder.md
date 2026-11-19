@@ -1,8 +1,8 @@
 ---
 title: Incrementality Measurement Ladder
-tags: [data-analytics, pattern]
+tags: [data-analytics, experimentation-and-causality, pattern]
 summary: "Rank marketing evidence by what it can claim: attribution shares credit, a geo test measures the average return over a tested spend change, and a media mix model with adstock and saturation estimates marginal returns, which budgets move on."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--09-marketing-measurement.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: Pseudoreplication and Intraclass Correlation
-tags: [data-analytics, concept]
+tags: [data-analytics, probability-and-statistics, concept]
 summary: "Rows from the same unit are correlated, so m rows per unit with intraclass correlation rho inflate the variance of a mean by 1+(m-1)rho; analysing at a finer level than the randomisation unit makes standard errors too small and null effects look significant."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--02-probability-foundations.md
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--06-regression-and-glms.md

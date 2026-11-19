@@ -1,8 +1,8 @@
 ---
 title: SQL Fan-Out and Source Reconciliation
-tags: [data-analytics, pattern]
+tags: [data-analytics, applied-analyses, pattern]
 summary: Joining before aggregating repeats rows of the one side once per match and inflates sums with no error; aggregate the many side to the one side's grain first, and reconcile every report total to the source.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--06-sql-for-analytics.md
 ---

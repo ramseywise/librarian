@@ -1,8 +1,8 @@
 ---
 title: "Separated Storage and Compute and Warehouse Billing Shapes"
-tags: [data-engineering, comparison]
+tags: [data-engineering, warehouse-lakehouse-streaming, comparison]
 summary: "Why modern warehouses split storage from compute, how the main engines differ in layout and billing, and why Redshift-style distribution keys decide join cost."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--04-warehouse-lakehouse-streaming--notes--01-warehouse-and-store.md
 ---

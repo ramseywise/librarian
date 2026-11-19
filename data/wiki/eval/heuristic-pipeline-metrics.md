@@ -1,8 +1,8 @@
 ---
 title: Heuristic Pipeline Metrics
-tags: [eval, infra, observability]
+tags: [eval, graders-and-metrics, infra, observability]
 summary: Automated measurement of operational health — latency, error rate, token usage, retrieval recall — that runs alongside every eval rung and is explicitly never sufficient alone, since a fast cheap wrong answer still fails.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/eval-approaches.md
   - data/raw/repos/nonprofit-success-ai/.claude--docs--plans--2026-10-07-r10-eval-metrics.md

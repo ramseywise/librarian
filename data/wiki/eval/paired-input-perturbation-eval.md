@@ -1,8 +1,8 @@
 ---
 title: Paired Input-Perturbation Eval
-tags: [eval, pattern]
+tags: [eval, graders-and-metrics, pattern]
 summary: "To decide whether a skip gate may ignore a field, perturb only that field on real rows with everything else held fixed, run the production prompt on both copies, and diff the outputs: report material vs immaterial changes separately for a shift that stays inside an output bucket and one that crosses it, state the real N, and name the missing same-input noise control as a limitation."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-22-dis281-stage2b-schedule-sensitivity-eval.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-22-dis281-stage2b-schedule-sensitivity-eval.md

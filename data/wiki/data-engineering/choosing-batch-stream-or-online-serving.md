@@ -1,8 +1,8 @@
 ---
 title: "Choosing Batch, Stream or Online Serving"
-tags: [data-engineering, decision]
+tags: [data-engineering, ml-platform, decision]
 summary: "Pick the serving shape by when the consumer needs the answer; batch is the default because a failure is a rerun, precompute works only when traffic concentrates on few keys, and online latency is mostly features and framework, not the model."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--06-ml-platform--notes--03-batch-and-online-serving.md
 ---

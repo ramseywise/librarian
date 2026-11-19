@@ -1,8 +1,8 @@
 ---
 title: Explanatory Data Story and the Big Idea
-tags: [data-analytics, pattern]
+tags: [data-analytics, visualisation-and-storytelling, pattern]
 summary: Fix audience, ask and one-sentence point of view before opening a slide tool, size the decision with named assumptions and a break-even, and test the story with horizontal logic.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--05-visualisation-and-storytelling--notes--05-dashboards-and-storytelling.md
 ---

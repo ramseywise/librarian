@@ -125,7 +125,9 @@ parts in this order. `make chapter-check PILLAR=<pillar>` checks them.
    an ASCII diagram in a `text` fence written for the note.
 4. **`## Pitfalls`.** What practitioners get wrong, with the symptom.
 5. **`## Try it`.** Two to four exercises with answers in a `<details>` block or linked to `practice/`.
-6. **`## Interview checklist`.** A table of questions with the answers filled in.
+6. **`## Interview checklist`.** A table of questions with the answers filled in. Each row becomes a flashcard. Optional
+   columns after the answer, in any order, give the card more: `In depth` (the explanation behind the short answer),
+   `Depth` (`intro`, `core` or `deep`) and `Sources` (references, `;` between them). Rules: `depth-rubric.md`, "Flashcards".
 7. **`## Next`.** The link to the following note, or to the next pillar on the last note.
 
 Python, SQL and TypeScript modules under `programming/` are exercise-driven at 300 to 600 words and are exempt from the length and shape above. TypeScript 01-09 and the SQL capstone still need three of the sections, in chapter order: `## Pitfalls`, `## Try it` where the note names a lab under `practice/`, and `## Next`. `librarian courses check chapters` gates that subset (`make chapter-check-all`). New `programming/` chapters and tracks, such as `software-design/` and Python 03/08 and 03/09, follow the full standard.

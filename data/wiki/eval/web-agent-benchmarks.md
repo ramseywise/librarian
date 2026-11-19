@@ -1,8 +1,8 @@
 ---
 title: Web Agent Benchmarks (WebShop and Mind2Web)
-tags: [eval, comparison]
+tags: [eval, agent-eval, comparison]
 summary: "Two early web-agent datasets: WebShop (a simulated Amazon-style shop, best trained agent 28.7% success against 59.6% for expert humans) and Mind2Web (real websites, offline scoring, best step success 52.0% but whole-task success at most 7.1%); all numbers self-reported."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-yao-2022-webshop.md
   - data/raw/papers/2026-11-07-deng-2023-mind2web.md

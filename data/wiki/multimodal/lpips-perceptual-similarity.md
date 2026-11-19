@@ -1,8 +1,8 @@
 ---
 title: LPIPS Perceptual Similarity
-tags: [multimodal, concept]
+tags: [multimodal, benchmarks-and-metrics, concept]
 summary: "Zhang et al. build the 484k-judgment BAPPS dataset and show deep features from supervised, self-supervised and unsupervised networks agree with human similarity judgments better than L2, SSIM and FSIM; calibrated features give LPIPS (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-zhang-2018-unreasonable-effectiveness-deep-features-as.md
 ---

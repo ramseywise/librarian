@@ -1,8 +1,8 @@
 ---
 title: "ClashEval Prior Versus Context Benchmark"
-tags: [eval, reference]
+tags: [eval, rag-and-grounding, reference]
 summary: "ClashEval is a 1,294-question benchmark that perturbs retrieved context to contradict the model's own answer and measures which side the model follows; its headline says models adopt wrong context over 60% of the time, though a table gives a lower figure for one model (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-wu-2024-clasheval.md
 ---

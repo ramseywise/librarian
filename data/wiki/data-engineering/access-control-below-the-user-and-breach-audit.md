@@ -1,8 +1,8 @@
 ---
 title: "Access Control Below the User, Audit Logs and Breach Scope"
-tags: [data-engineering, pattern]
+tags: [data-engineering, architecture-and-governance, pattern]
 summary: "A control the subject can alter is no control: enforce access below the user, log who read what with purpose, and keep an inventory so breach scope is a lookup."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--07-architecture-and-governance--notes--02-access-control-pii-gdpr.md
   - data/raw/repos/learn-ai-engineering/data-engineering--07-architecture-and-governance--README.md

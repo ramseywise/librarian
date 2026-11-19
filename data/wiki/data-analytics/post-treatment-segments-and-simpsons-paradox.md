@@ -1,8 +1,8 @@
 ---
 title: Post-Treatment Segments and Simpson's Paradox
-tags: [data-analytics, concept]
+tags: [data-analytics, probability-and-statistics, concept]
 summary: "A trend can reverse inside every subgroup of aggregated data; which table to trust depends on the causal story, so segment on traits fixed before treatment, never on something the treatment changes, and in experiments keep the allocation constant across periods."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--02-metrics-and-kpi-design.md
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--04-correlation-and-causation.md

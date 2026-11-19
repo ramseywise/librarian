@@ -1,8 +1,8 @@
 ---
 title: APIGen
-tags: [llm, pattern]
+tags: [llm, agent-training, pattern]
 summary: "APIGen generates function-calling training data and keeps only calls that pass format, execution and semantic checks; xLAM-7B trained on its output ranked 6th on BFCL (85.65 overall, June 2024 snapshot, self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-liu-2024-apigen.md
 ---

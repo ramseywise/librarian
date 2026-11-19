@@ -1,8 +1,8 @@
 ---
 title: "Breaking Schema Changes and Expand-Contract"
-tags: [data-engineering, pattern]
+tags: [data-engineering, ingest-and-modelling, pattern]
 summary: "Diff contract versions in the producer's CI to flag removals, renames, type changes and tightened constraints as breaking, and ship an unavoidable break as add-new, migrate consumers, then drop the old column in a new major version."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--02-ingest-and-modelling--notes--04-data-contracts.md
 ---

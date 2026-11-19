@@ -1,8 +1,8 @@
 ---
 title: J1 Reinforcement-Learned Judge
-tags: [eval, llm, pattern]
+tags: [eval, judges, llm, pattern]
 summary: "J1 trains a judge to write out its reasoning before a verdict using online reinforcement learning with a reward for matching the known-better response, plus a consistency reward for answer-order swaps; its 32B model scored 76.8 on PPE Correctness, 10.3 above its base model (self-reported), yet trained pairwise judges still flipped verdicts on 14.5-21.9% of swapped pairs."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-whitehouse-2025-j1.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: SeamlessM4T Multilingual Speech Translation
-tags: [multimodal, method]
+tags: [multimodal, speech-and-audio, method]
 summary: "SeamlessM4T is one multitask UnitY model for S2ST, S2TT, T2ST, T2TT and ASR across up to 100 languages, built on w2v-BERT 2.0 pretraining, an NLLB text model and mined SeamlessAlign data."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-communication-2023-seamlessm4t.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: Stratified Judgment Pool for a Ranker Benchmark
-tags: [eval, pattern]
+tags: [eval, datasets-and-contamination, pattern]
 summary: Build a human-graded ranker benchmark by freezing an offline snapshot, deriving its strata from the snapshot's own counts, and filling each moment's pool with a deliberate mix (top slate, ranks 6-20, near-threshold by score, one per exclusion reason, random) — and expect the first real-data run to expose defects that every fixture test passed over.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-16-dis289-relevance-benchmark-corpus.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-16-dis289-relevance-benchmark-corpus.md

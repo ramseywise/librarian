@@ -1,8 +1,8 @@
 ---
 title: Human Agreement Ceiling Protocol
-tags: [eval, pattern]
+tags: [eval, judges, pattern]
 summary: Before trusting any LLM-judge score on a subjective dimension, measure how well humans agree with each other on the same items (κ_HH) — the judge target is κ_judge ≥ 0.8 × κ_HH, not an absolute number — using quadratic-weighted κ for ordinal scales, Krippendorff's α with MASI distance for multi-select tags, per-tag binary κ, bootstrap 95% CIs, ~100 items (±0.1 CI), and 3–5 scene-literate raters recruited by name before the rating sheet is designed.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/playground/docs/open-questions.md
   - data/raw/claude-docs/akira/docs/research/2026-08-27-b15-kappa-protocol.md

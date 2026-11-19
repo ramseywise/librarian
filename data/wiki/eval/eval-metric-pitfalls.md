@@ -1,8 +1,8 @@
 ---
 title: Eval Metric Interpretation Pitfalls
-tags: [eval, llm, concept]
+tags: [eval, graders-and-metrics, llm, concept]
 summary: "Ways a correct-looking eval number misleads — flat headlines hiding cancelling slice moves (Simpson's paradox), dropped errored rows shrinking the denominator, ratio metrics whose denominator moves, novelty effects — and the rule: count errors and refusals as failures or report them separately."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--09-reading-results.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--12-failure-modes.md

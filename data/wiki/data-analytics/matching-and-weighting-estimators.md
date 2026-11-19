@@ -1,8 +1,8 @@
 ---
 title: Matching and Weighting Estimators
-tags: [data-analytics, comparison]
+tags: [data-analytics, experimentation-and-causality, comparison]
 summary: "Exact matching, coarsened exact matching, propensity matching, propensity weighting, entropy balancing and regression adjustment answer different questions (ATE, ATT, local ATT) and all landed 3 to 4 pounds above the truth because of an unlogged confounder; report who was kept and judge designs on balance before outcomes."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--04-correlation-and-causation.md
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--05-matching-and-weighting.md

@@ -1,8 +1,8 @@
 ---
 title: Survey Weighting, Raking and Effective Sample Size
-tags: [data-analytics, pattern]
+tags: [data-analytics, applied-analyses, pattern]
 summary: Weighting respondents to known population totals (post-stratification or raking) removes only bias carried by the auxiliary variables; it inflates variance by Kish's 1 + L, and the margin must be multiplied by deft and still ignores leftover bias.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--12-surveys-and-sampling-design.md
 ---

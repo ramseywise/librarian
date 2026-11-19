@@ -1,8 +1,8 @@
 ---
 title: ReST Meets ReAct Agent Self-Improvement
-tags: [llm, concept]
+tags: [llm, agent-training, concept]
 summary: Recipe that runs a prompted multi-step search agent, ranks its trajectories with an LLM, and fine-tunes on them for two iterations using AI feedback only; reported to bring PaLM 2 XS and S close to the prompted L teacher (self-reported).
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-aksitov-2023-rest-meets-react.md
 ---

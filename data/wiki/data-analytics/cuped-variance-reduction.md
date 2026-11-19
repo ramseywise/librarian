@@ -1,8 +1,8 @@
 ---
 title: CUPED Variance Reduction
-tags: [data-analytics, pattern]
+tags: [data-analytics, experimentation-and-causality, pattern]
 summary: "CUPED subtracts theta times the centred pre-experiment value of the same metric from each outcome, cutting variance by rho squared without bias because the covariate predates assignment; it equals regression adjustment and fails for new users or weak predictors."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--03-experimentation-at-scale.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: Counterfactual Task Variants
-tags: [eval, pattern]
+tags: [eval, reasoning-and-math, pattern]
 summary: "Test whether a model's success is general by changing the task's world (number base, indexing, axes, chess setup) while keeping the reasoning procedure fixed, with a comprehension check to separate misunderstanding from failure; GPT-4 showed a large drop from base-10 to base-9 addition across 1,000 additions per base (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-wu-2024-reasoning-or-reciting.md
 ---

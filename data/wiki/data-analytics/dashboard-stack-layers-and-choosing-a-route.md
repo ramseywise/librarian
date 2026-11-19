@@ -1,8 +1,8 @@
 ---
 title: Dashboard Stack Layers and Choosing a Route
-tags: [data-analytics, comparison]
+tags: [data-analytics, visualisation-and-storytelling, comparison]
 summary: Every dashboard has analysis, application and presentation layers; chart libraries are presentation only, and the route (BI tool, Python app, full stack) is chosen by audience, data and maintainer.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--05-visualisation-and-storytelling--notes--06-dashboard-stacks-from-python-to-frontend.md
 ---

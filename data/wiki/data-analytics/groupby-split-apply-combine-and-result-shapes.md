@@ -1,8 +1,8 @@
 ---
 title: Groupby Split-Apply-Combine and Result Shapes
-tags: [data-analytics, concept]
+tags: [data-analytics, python-for-data-analysis, concept]
 summary: groupby splits a table, applies a function per group and recombines; agg, transform, filter and apply differ by the shape they return, and picking one starts from what a row of output should mean.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--01-python-for-data-analysis--notes--05-groupby-and-aggregation.md
 ---

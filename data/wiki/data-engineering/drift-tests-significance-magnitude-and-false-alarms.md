@@ -1,8 +1,8 @@
 ---
 title: "Drift Tests: Significance, Magnitude and False Alarms"
-tags: [data-engineering, concept]
+tags: [data-engineering, ml-platform, concept]
 summary: "KS, chi-squared and PSI answer different questions: p-values go to zero on any shift at scale, PSI is noisy on small windows, and testing many features daily rings daily unless corrected; a domain classifier catches changes in feature relationships."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--06-ml-platform--notes--04-drift.md
 ---

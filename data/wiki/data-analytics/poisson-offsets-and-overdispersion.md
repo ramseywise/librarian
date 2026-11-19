@@ -1,8 +1,8 @@
 ---
 title: Poisson Offsets and Overdispersion
-tags: [data-analytics, pattern]
+tags: [data-analytics, probability-and-statistics, pattern]
 summary: "Model rates by adding log exposure as an offset in a log-link count model, then check dispersion: when variance exceeds the mean the Poisson standard error is too small by a factor of three and robust or negative binomial errors are needed."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--06-regression-and-glms.md
 ---

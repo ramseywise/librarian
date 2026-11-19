@@ -1,8 +1,8 @@
 ---
 title: "RAGEval and DragonBall"
-tags: [eval, reference]
+tags: [eval, rag-and-grounding, reference]
 summary: "RAGEval generates scenario-specific RAG test sets from a schema and scores answers with Completeness, Hallucination, Irrelevance, Recall and EIR; DragonBall is the resulting 6,711-question finance, law and medical set in Chinese and English (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-zhu-2024-rageval.md
 ---

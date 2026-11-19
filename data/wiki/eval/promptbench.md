@@ -1,8 +1,8 @@
 ---
 title: PromptBench
-tags: [eval, benchmark]
+tags: [eval, language-tasks, benchmark]
 summary: "A modular Python library that unifies LLM evaluation across standard, dynamic (DyVal) and semantic (MSTemp) protocols, adversarial prompt attacks at four levels and six prompt-engineering methods, with 12 tasks and 22 datasets; its leaderboards are given only as figures (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-zhu-2023-promptbench.md
 ---

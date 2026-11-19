@@ -1,8 +1,8 @@
 ---
 title: Language Model Self-Knowledge
-tags: [eval, concept]
+tags: [eval, language-tasks, concept]
 summary: "Two 2022-23 ways to test whether a model knows what it knows: Kadavath et al. have models score their own samples (P(True)) or train a head to predict whether they will answer correctly (P(IK)), and Yin et al.'s SelfAware set (1,032 unanswerable questions) scores whether a model voices uncertainty, with GPT-4 below a human F1 of 84.93 (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-kadavath-2022-language-models-mostly-know-what.md
   - data/raw/papers/2026-11-08-yin-2023-do-large-language-models-know.md

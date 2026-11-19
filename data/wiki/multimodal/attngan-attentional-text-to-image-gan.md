@@ -1,8 +1,8 @@
 ---
 title: "AttnGAN Attentional Text-to-Image GAN"
-tags: [multimodal, concept]
+tags: [multimodal, gans, concept]
 summary: "AttnGAN generates images in three stages that attend to individual words per image sub-region, and adds a word-level image-text matching loss (DAMSM) to the GAN loss."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-xu-2018-attngan.md
 ---

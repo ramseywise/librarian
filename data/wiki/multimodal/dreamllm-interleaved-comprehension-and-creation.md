@@ -1,8 +1,8 @@
 ---
 title: DreamLLM Interleaved Comprehension and Creation
-tags: [multimodal, concept]
+tags: [multimodal, multimodal-llms, concept]
 summary: "DreamLLM trains a Vicuna-7B to read and generate images and interleaved documents end to end, using learnable dream queries and score distillation through a frozen Stable Diffusion decoder."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-dong-2023-dreamllm.md
 ---

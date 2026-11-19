@@ -1,8 +1,8 @@
 ---
 title: Bayesian A/B Testing with Expected Loss
-tags: [data-analytics, pattern]
+tags: [data-analytics, bayesian-analysis, pattern]
 summary: "Draw from each arm's Beta posterior to get P(B > A), the lift interval and expected loss; ship when expected loss is below the smallest difference you care about, and report the lift size, since P(B > A) alone says nothing about it."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--04-bayesian-ab-testing.md
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--05-loss-functions-and-decisions.md

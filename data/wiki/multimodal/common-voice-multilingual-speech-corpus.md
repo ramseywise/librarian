@@ -1,8 +1,8 @@
 ---
 title: Common Voice Multilingual Speech Corpus
-tags: [multimodal, benchmark]
+tags: [multimodal, datasets, benchmark]
 summary: "Common Voice is a crowdsourced, CC0 multilingual read-speech corpus with vote-based validation and speaker-disjoint splits, evaluated with DeepSpeech transfer learning from English."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-ardila-2019-common-voice.md
 ---

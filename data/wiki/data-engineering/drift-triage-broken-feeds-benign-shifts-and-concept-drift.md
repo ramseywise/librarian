@@ -1,8 +1,8 @@
 ---
 title: "Drift Triage: Broken Feeds, Benign Shifts and Concept Drift"
-tags: [data-engineering, decision]
+tags: [data-engineering, ml-platform, decision]
 summary: "Input drift can scream while error is flat, and concept drift can double the error while inputs and predictions look identical; triage an alert by checking the pipeline first, then measuring error on labels, and retrain only for real harm."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--06-ml-platform--notes--04-drift.md
 ---

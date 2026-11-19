@@ -1,8 +1,8 @@
 ---
 title: "Stream Joins Replay and Lambda Architecture"
-tags: [data-engineering, decision]
+tags: [data-engineering, warehouse-lakehouse-streaming, decision]
 summary: "Stream joins depend on cross-stream event order, so a replay can silently change history unless the joined table is versioned; and a stream is worth its cost only if a faster number changes a decision, otherwise a micro-batch or one replayable stream path beats lambda."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--04-warehouse-lakehouse-streaming--notes--04-kafka-and-stream-semantics.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: Contrast-Consistent Search
-tags: [llm, pattern]
+tags: [llm, interpretability-and-safety, pattern]
 summary: "Contrast-Consistent Search (CCS) trains a linear probe on a frozen model's unlabeled hidden states so that a yes-no statement and its negation get opposite probabilities; Burns et al. report it beating calibrated zero-shot on average over 5 models and 10 datasets, and holding up under a misleading prefix (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-burns-2022-discovering-latent-knowledge-language-models.md
 ---

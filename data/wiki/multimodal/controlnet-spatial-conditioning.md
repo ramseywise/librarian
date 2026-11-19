@@ -1,8 +1,8 @@
 ---
 title: "ControlNet Spatial Conditioning"
-tags: [multimodal, concept]
+tags: [multimodal, diffusion-and-image-generation, concept]
 summary: "ControlNet adds spatial conditions such as edges, depth, pose or segmentation to a pretrained Stable Diffusion model by training a copy of its encoder and joining it to the locked model through zero-initialized convolutions."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-zhang-2023-adding-conditional-control-text-image.md
 ---

@@ -33,12 +33,14 @@ interface Props {
   onOpenLesson?: (lessonId: string) => void;
   /** The page's links, grouped by how they relate; each opens that page's level. */
   related?: RelatedPages[];
+  /** Why the page is on this level: what ties it to the page the level is for. */
+  why?: string[];
   onOpenPage?: (pageId: string) => void;
 }
 
 /** The open card of a page on the canvas: what it is, what it relates to, where it is taught. */
 export function NodeDetailPanel({
-  nodeId, data, highlighted, lastQuery, onClose, onTagClick, activeTags, onOpenLesson, related, onOpenPage,
+  nodeId, data, highlighted, lastQuery, onClose, onTagClick, activeTags, onOpenLesson, related, why, onOpenPage,
 }: Props) {
   const lessons = useConceptLessons(nodeId);
   const theme = useTheme();
@@ -82,6 +84,8 @@ export function NodeDetailPanel({
             {data.summary}
           </div>
         )}
+
+        {why && why.length > 0 && <div className="detail-why">Here because: {why.join(" · ")}</div>}
 
         {/* What it relates to, by kind of link */}
         {related && related.length > 0 && (

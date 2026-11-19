@@ -1,8 +1,8 @@
 ---
 title: AgentTuning and AgentInstruct
-tags: [llm, concept]
+tags: [llm, agent-training, concept]
 summary: Supervised fine-tuning of Llama-2-chat on 1,866 filtered GPT-4 agent trajectories (AgentInstruct) mixed 20/80 with ShareGPT; the paper reports large held-in gains and a held-out gain that is significant only at 70B (self-reported).
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-zeng-2024-agenttuning.md
 ---

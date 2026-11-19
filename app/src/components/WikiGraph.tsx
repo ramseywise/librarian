@@ -21,7 +21,7 @@ import { WikiNode, type WikiFlowNode } from "./WikiNode";
 import { NodeCardContext, type NodeCard } from "./nodeCard";
 import { FiltersPanel } from "./TagFilterPanel";
 import { MapControls } from "./MapControls";
-import { EdgeTogglePanel } from "./EdgeTogglePanel";
+import { ConnectChips } from "./EdgeTogglePanel";
 import { fitPadding, fitToCanvasShape, layoutClusterField, positionsOf } from "./wikiGraphLayout";
 import { ResourceNotice } from "./ResourceNotice";
 import { useCurriculum } from "../hooks/useCurriculum";
@@ -29,7 +29,8 @@ import { useGlossary } from "../hooks/useGlossary";
 import { useHashRoute } from "../hooks/useHashRoute";
 import { useWikiData } from "../hooks/useWikiData";
 import { sectorIdOf, sectorsOf } from "../utils/atlas";
-import { facetPending, facetsOf, isModuleFacet, modulesOf, withCourseGroups } from "../utils/curriculum";
+import { facetPending, facetsOf, isModuleFacet, modulesOf, rankGroupsOf, withCourseGroups } from "../utils/curriculum";
+import { COMMON_TERM, RANK_WEIGHTS, rankGraph, rankedNeighbourhood, whyLinked, type RankKind } from "../utils/neighbourRank";
 import { searchMap } from "../utils/glossary";
 import { clusterTree, depthsOf, layoutClusters, skeletonOf, withSideHandles } from "../utils/clusterLayout";
 import { growDir, hopsFrom } from "../utils/hopField";
@@ -40,10 +41,12 @@ import {
   expandBridges,
   expandFrom,
   filterPrimaryIds,
+  courseOrderEdges,
   moduleEdges,
   neighbours,
   pageNeighbourhood,
   relatedGroups,
+  termEdges,
   renderIds as computeRenderIds,
   visibleEdges,
   type ViewState,
@@ -119,10 +122,15 @@ function WikiGraphInner({
 }: WikiGraphProps) {
   // Semantic edges arrive in the background after first paint. Tag-shared stays off until asked
   // for: deriving them is ~42k pairs, and under a large filter they were most of the edge count.
+  // Shared terms start off too: a term star per glossary term is a lot of lines on a page's level.
+  // Same module and course order start off: the dock offers links against similarity only, and the
+  // course's own ties are in the focused map's Map popover.
   const [edgeVis, setEdgeVis] = useState<EdgeVisibility>({
     wikilink: true,
     semantic: true,
-    module: true,
+    module: false,
+    term: false,
+    "course-order": false,
     "tag-shared": false,
   });
   // The level of the map lives in the route. Under the courses tabs the graph stays mounted and
@@ -167,6 +175,7 @@ function WikiGraphInner({
   const { data: curriculum, error: curriculumError, retry: retryCurriculum } = useCurriculum(baseNodes, hasNodes);
   const { data: glossary, error: glossaryError, retry: retryGlossary } = useGlossary(baseNodes, hasNodes);
   const facets = useMemo(() => facetsOf(curriculum, baseNodes, glossary, areas), [curriculum, baseNodes, glossary, areas]);
+  const termTitle = useMemo(() => new Map((glossary?.terms ?? []).map((t) => [t.id, t.label])), [glossary]);
   /** Pages some lesson links; the atlas draws the rest faint. Null until the curriculum is in. */
   const taught = useMemo(() => (curriculum ? new Set(Object.keys(curriculum.primaryCourse)) : null), [curriculum]);
   const pageModules = useMemo(() => modulesOf(curriculum), [curriculum]);
@@ -233,16 +242,43 @@ function WikiGraphInner({
   const sector = useMemo(() => sectors.find((s) => s.id === sectorId) ?? null, [sectors, sectorId]);
   const cap = mapView.level === "sector" || mapView.level === "page" ? mapView.cap : DEFAULT_CAP;
 
+  // A page's level is ranked over every connection that is switched on (utils/neighbourRank), so
+  // switching a kind off changes which pages it holds, not only which lines are drawn.
+  const rankGroups = useMemo(() => {
+    const { groups, readingOrder } = rankGroupsOf(curriculum, glossary);
+    const known = groups.map((g) => ({ ...g, pages: g.pages.filter((p) => pageInfo.has(p)) }));
+    return { groups: known, readingOrder };
+  }, [curriculum, glossary, pageInfo]);
+  const rankWeights = useMemo(() => {
+    const on: Record<RankKind, boolean> = {
+      typed: edgeVis.wikilink,
+      link: edgeVis.wikilink,
+      module: edgeVis.module,
+      // Course order runs between notes, so notes are in while either is on.
+      note: edgeVis.module || edgeVis["course-order"],
+      term: edgeVis.term,
+      course: edgeVis["course-order"],
+      similar: edgeVis.semantic,
+    };
+    return Object.fromEntries(Object.entries(RANK_WEIGHTS).filter(([k]) => on[k as RankKind]));
+  }, [edgeVis]);
+  const ranking = useMemo(
+    () => rankGraph({ links: wikilinkEdges, similar: semanticEdges, ...rankGroups, weights: rankWeights }),
+    [wikilinkEdges, semanticEdges, rankGroups, rankWeights],
+  );
+
   const scope = useMemo<{ ids: Set<string>; total: number; hops?: number } | null>(() => {
     if (mapView.level === "sector" && sector) {
       const ids = primaryIds ? sector.pageIds.filter((id) => primaryIds.has(id)) : sector.pageIds;
       return { ids: new Set(ids.slice(0, cap)), total: ids.length };
     }
     if (mapView.level === "page" && pageInfo.has(mapView.page)) {
-      return pageNeighbourhood(mapView.page, wikilinkEdges, degree, cap);
+      // With every kind that reaches it switched off, fall back to its links by distance.
+      if (!ranking.out.get(mapView.page)?.length) return pageNeighbourhood(mapView.page, wikilinkEdges, degree, cap);
+      return rankedNeighbourhood(mapView.page, ranking, cap);
     }
     return null;
-  }, [mapView, sector, primaryIds, cap, pageInfo, wikilinkEdges, degree]);
+  }, [mapView, sector, primaryIds, cap, pageInfo, wikilinkEdges, degree, ranking]);
 
   // A link can outlive what it names: an unknown or private page, a retired sector, or an "All"
   // that the filter no longer makes small enough. Nothing here says which ids exist.
@@ -381,6 +417,18 @@ function WikiGraphInner({
     () => (edgeVis.module ? moduleEdges(pageNodes.map((n) => n.id), pageModules, degree) : []),
     [edgeVis.module, pageNodes, pageModules, degree],
   );
+  const sharedTerm = useMemo(
+    () => (edgeVis.term && glossary ? termEdges(pageNodes.map((n) => n.id), glossary.mentions, degree, COMMON_TERM) : []),
+    [edgeVis.term, glossary, pageNodes, degree],
+  );
+  const notePages = useMemo(
+    () => (curriculum?.courses ?? []).flatMap((c) => c.modules.map((m) => m.notes.map((n) => n.pageIds))),
+    [curriculum],
+  );
+  const courseOrder = useMemo(
+    () => (edgeVis["course-order"] ? courseOrderEdges(pageNodes.map((n) => n.id), notePages) : []),
+    [edgeVis, pageNodes, notePages],
+  );
   const edges = useMemo(() => {
     const shown = visibleEdges(
       {
@@ -388,13 +436,15 @@ function WikiGraphInner({
         semantic: semanticEdges,
         tagShared: tagSharedEdges,
         module: sameModule,
+        term: sharedTerm,
+        courseOrder,
       },
       edgeVis,
       pageNodes,
       edgeView,
     );
     return clusters ? withSideHandles(shown, clusters.positions) : shown;
-  }, [wikilinkEdges, semanticEdges, tagSharedEdges, sameModule, edgeVis, pageNodes, edgeView, clusters]);
+  }, [wikilinkEdges, semanticEdges, tagSharedEdges, sameModule, sharedTerm, courseOrder, edgeVis, pageNodes, edgeView, clusters]);
 
   // --- Sync derived nodes into React Flow state (keeps node dragging working) -----------
   // A new `positions` object means a relayout: take the new positions and refit. A new
@@ -587,7 +637,7 @@ function WikiGraphInner({
   const handleLoadSemantic = useCallback(async () => {
     setLoadingSemantic(true);
     try {
-      await fetchSemanticEdges(0.65);
+      await fetchSemanticEdges();
     } catch {
       // Toggle stays on with no edges; the next toggle retries.
     } finally {
@@ -657,6 +707,13 @@ function WikiGraphInner({
           pages: g.ids.map((p) => ({ id: p, title: pageInfo.get(p)?.title ?? p })),
           more: g.more,
         })),
+      why:
+        mapView.level === "page"
+          ? (id) =>
+              id === mapView.page
+                ? []
+                : whyLinked(mapView.page, id, { links: wikilinkEdges, similar: semanticEdges, ...rankGroups }, (t) => termTitle.get(t) ?? t)
+          : undefined,
       cited: highlightedPages ?? NO_CITED,
       lastQuery,
       activeTags: activePageTags,
@@ -665,7 +722,7 @@ function WikiGraphInner({
       onTagClick,
       onOpenLesson,
     }),
-    [wikilinkEdges, degree, pageInfo, highlightedPages, lastQuery, activePageTags, closeCard, openPage, onTagClick, onOpenLesson],
+    [wikilinkEdges, semanticEdges, degree, pageInfo, mapView, rankGroups, termTitle, highlightedPages, lastQuery, activePageTags, closeCard, openPage, onTagClick, onOpenLesson],
   );
 
   const handleNodeDoubleClick = useCallback(
@@ -785,13 +842,15 @@ function WikiGraphInner({
       withEdges={!dock}
     />
   );
-  // Under the chat the connections are listed inline, after the filters.
-  const connections = !onAtlas && dock && (
-    <EdgeTogglePanel
+  // Under the chat the connections are two chips (Links, Similar) pinned under the filters, on every level. The
+  // atlas draws no lines, so there they stay in place but disabled, saying where lines are drawn.
+  const connections = dock && (
+    <ConnectChips
       visibility={edgeVis}
       onChange={setEdgeVis}
       onLoadSemantic={handleLoadSemantic}
       loadingSemanticEdges={loadingSemantic}
+      inactive={onAtlas ? "Open a sector to draw lines" : undefined}
     />
   );
   // Under the chat the bar is the map's controls only, below the clusters in view.
@@ -829,6 +888,7 @@ function WikiGraphInner({
           activeTags={activeTags}
           onChange={onActiveTagsChange}
           onBrief={onBrief}
+          grouping={grouping}
         />
       }
       activeCount={activeTags.size}
@@ -900,7 +960,7 @@ function WikiGraphInner({
           >
             <Background variant={BackgroundVariant.Dots} color="var(--border)" gap={20} />
             <Controls className="graph-flow-controls" />
-            {field && <HopField field={field} titleOf={titleOf} onOpenPage={openPage} focus={focusSector} onPickSector={pickSector} />}
+            {field && <HopField field={field} titleOf={titleOf} onOpenPage={openPage} focus={focusSector} onPickSector={pickSector} showLinks={edgeVis.wikilink} />}
           </ReactFlow>
           </NodeCardContext.Provider>
         )}

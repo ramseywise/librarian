@@ -1,8 +1,8 @@
 ---
 title: ViperGPT Visual Inference via Python Execution
-tags: [multimodal, pattern]
+tags: [multimodal, multimodal-llms, pattern]
 summary: "ViperGPT has a code model write a Python program per visual query against an API of pretrained vision modules, then runs it with the interpreter; no training, and zero-shot results on grounding, image QA and video QA that stay well below supervised models."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-suris-2023-vipergpt.md
 ---

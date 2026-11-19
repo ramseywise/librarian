@@ -1,8 +1,8 @@
 ---
 title: Self-Taught Evaluators
-tags: [eval, llm, pattern]
+tags: [eval, judges, llm, pattern]
 summary: "Self-Taught Evaluators trains a pairwise judge with no human preference labels: it builds a worse response by answering a modified instruction, keeps judgments that pick the right side, and repeats; Llama3-70B-Instruct went from 75.4 to 88.3 on RewardBench (self-reported), with a 5.6-point swing from answer order alone."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-wang-2024-self-taught-evaluators.md
 ---

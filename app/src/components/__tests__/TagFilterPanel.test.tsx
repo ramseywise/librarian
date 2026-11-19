@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { FiltersPanel, TagFilterPanel } from "../TagFilterPanel";
 import type { Area, Curriculum, Facets, Glossary } from "../../types";
@@ -18,8 +18,8 @@ describe("TagFilterPanel with the curriculum", () => {
         title: "AI Engineering",
         pageIds: ["a", "b"],
         modules: [
-          { id: "rag", title: "RAG", firstLesson: "ai/rag/one", pageIds: ["a", "b"] },
-          { id: "viz", title: "Visualisation", firstLesson: "ai/viz/one", pageIds: [] },
+          { id: "rag", title: "RAG", firstLesson: "ai/rag/one", pageIds: ["a", "b"], notes: [] },
+          { id: "viz", title: "Visualisation", firstLesson: "ai/viz/one", pageIds: [], notes: [] },
         ],
       },
     ],
@@ -98,7 +98,7 @@ describe("FiltersPanel", () => {
         id: "generative-ai",
         title: "Generative AI",
         pageIds: ["a"],
-        modules: [{ id: "02-rag", title: "RAG", pageIds: ["a"], firstLesson: "generative-ai/02-rag/intro" }],
+        modules: [{ id: "02-rag", title: "RAG", pageIds: ["a"], firstLesson: "generative-ai/02-rag/intro", notes: [] }],
       },
     ],
     beyond: [{ domain: "loose", pageIds: ["c"] }],
@@ -116,6 +116,7 @@ describe("FiltersPanel", () => {
     ["gap:generative-ai", new Set(["b"])],
     ["gap:programming", new Set()],
     ["beyond:loose", new Set(["c"])],
+    ["beyond:all", new Set(["c"])],
     ["beyond:rag", new Set(["b"])],
     ["module:generative-ai/02-rag", new Set(["a"])],
     ["tag:rag", new Set(["a", "b"])],
@@ -142,74 +143,86 @@ describe("FiltersPanel", () => {
     return { onChange, onBrief };
   }
 
-  it("lists the wiki directories with their page counts and a brief each", () => {
-    const { onBrief } = setup();
-    const dirs = screen.getByRole("group", { name: "Filter by directory" });
-    expect(within(dirs).getByRole("button", { name: "rag 2" })).toBeInTheDocument();
-    fireEvent.click(within(dirs).getByRole("button", { name: "Brief me on rag" }));
-    expect(onBrief).toHaveBeenCalledWith("rag");
-    expect(screen.queryByText("Page type")).toBeNull();
-    expect(screen.queryByRole("group", { name: "Filter by domain" })).toBeNull();
+  const wiki = { grouping: "wiki" as const };
+
+  it("Modules lists the modules only; Wiki lists the wiki topics only, with no drop-downs", () => {
+    setup();
+    expect(screen.getByRole("group", { name: "Filter by module" })).toBeInTheDocument();
+    expect(screen.queryByRole("group", { name: "Wiki topics" })).toBeNull();
+    cleanup();
+    setup(new Set(), wiki);
+    expect(screen.getByRole("group", { name: "Wiki topics" })).toBeInTheDocument();
+    expect(screen.queryByRole("group", { name: "Filter by module" })).toBeNull();
+    expect(document.querySelector("details")).toBeNull();
+    expect(screen.queryByRole("button", { name: /^Show / })).toBeNull();
   });
 
-  it("a directory chip filters by `dir:`", () => {
-    const { onChange } = setup();
-    fireEvent.click(within(screen.getByRole("group", { name: "Filter by directory" })).getByRole("button", { name: "loose 1" }));
+  it("lists the directories first, largest first, each with a brief, and filters by `dir:`", () => {
+    const { onBrief, onChange } = setup(new Set(), wiki);
+    const topics = screen.getByRole("group", { name: "Wiki topics" });
+    const names = within(topics)
+      .getAllByRole("button", { name: /^\w+ \d+$/ })
+      .map((b) => b.getAttribute("aria-label") ?? b.textContent);
+    expect(names.slice(0, 3)).toEqual(["rag 2", "loose 1", "programming 1"]);
+    fireEvent.click(within(topics).getByRole("button", { name: "Brief me on rag" }));
+    expect(onBrief).toHaveBeenCalledWith("rag");
+    fireEvent.click(within(topics).getByRole("button", { name: "loose 1" }));
     expect(onChange).toHaveBeenCalledWith(new Set(["dir:loose"]));
   });
 
-  it("offers the pages no lesson links per course area and per loose directory, never an empty one", () => {
-    const { onChange } = setup();
-    const gaps = screen.getByRole("group", { name: "Not yet in a lesson" });
-    expect(within(gaps).queryByRole("button", { name: /^Programming/ })).toBeNull();
-    // A directory the area covers is its area's gap, not a row of its own.
-    expect(within(gaps).queryByRole("button", { name: /^rag/ })).toBeNull();
-    fireEvent.click(within(gaps).getByRole("button", { name: "Generative AI 1" }));
-    expect(onChange).toHaveBeenCalledWith(new Set(["gap:generative-ai"]));
-    fireEvent.click(within(gaps).getByRole("button", { name: "loose 1" }));
-    expect(onChange).toHaveBeenCalledWith(new Set(["beyond:loose"]));
+  it("merges topic tags and glossary terms after the directories, never a page type or a directory twice", () => {
+    const { onChange } = setup(new Set(), wiki);
+    const topics = screen.getByRole("group", { name: "Wiki topics" });
+    // tag:rag is the rag directory; pattern is a page type; rrf is on one page only.
+    expect(within(topics).getAllByRole("button", { name: /^rag/ })).toHaveLength(1);
+    expect(within(topics).queryByRole("button", { name: /pattern/ })).toBeNull();
+    expect(within(topics).queryByRole("button", { name: /Reciprocal/ })).toBeNull();
+    fireEvent.click(within(topics).getByRole("button", { name: "BM25 2" }));
+    expect(onChange).toHaveBeenCalledWith(new Set(["term:bm25"]));
   });
 
-  it("has no gap section until the curriculum is in", () => {
-    setup(new Set(), { curriculum: null });
-    expect(screen.queryByText("Not yet in a lesson")).toBeNull();
-  });
-
-  it("lists the top topic tags, the rest behind more, and an active one always", () => {
+  it("lists the top topics, the rest behind more, and an active one always", () => {
     const many: Facets = new Map(
-      Array.from({ length: 15 }, (_, i) => [`tag:t${i}`, new Set(Array.from({ length: 20 - i }, (_, j) => `p${j}`))]),
+      Array.from({ length: 19 }, (_, i) => [`tag:t${i}`, new Set(Array.from({ length: 30 - i }, (_, j) => `p${j}`))]),
     );
-    setup(new Set(["tag:t14"]), { facets: many, areas: [], curriculum: null, glossary: null });
-    const topic = screen.getByRole("group", { name: "Filter by tag" });
-    expect(within(topic).queryByRole("button", { name: /^t13/ })).toBeNull();
-    expect(within(topic).getByRole("button", { name: /^t14/ })).toHaveAttribute("aria-pressed", "true");
-    fireEvent.click(within(topic).getByRole("button", { name: "+3 more" }));
-    expect(within(topic).getByRole("button", { name: /^t13/ })).toBeInTheDocument();
+    setup(new Set(["tag:t18"]), { ...wiki, facets: many, areas: [], curriculum: null, glossary: null });
+    const topics = screen.getByRole("group", { name: "Wiki topics" });
+    expect(within(topics).queryByRole("button", { name: /^t17/ })).toBeNull();
+    expect(within(topics).getByRole("button", { name: /^t18/ })).toHaveAttribute("aria-pressed", "true");
+    fireEvent.click(within(topics).getByRole("button", { name: "+3 more" }));
+    expect(within(topics).getByRole("button", { name: /^t17/ })).toBeInTheDocument();
   });
 
-  it("lists topic tags only, never a page type, and a tag chip filters by `tag:`", () => {
-    const { onChange } = setup();
-    const topic = screen.getByRole("group", { name: "Filter by tag" });
-    expect(within(topic).queryByRole("button", { name: /pattern/ })).toBeNull();
-    fireEvent.click(within(topic).getByRole("button", { name: /rag/ }));
-    expect(onChange).toHaveBeenCalledWith(new Set(["tag:rag"]));
+  it("lists each course's modules as chips after its name, then its pages no lesson links, then the pages in no course", () => {
+    const { onChange, onBrief } = setup();
+    const course = screen.getByRole("group", { name: "Generative AI" });
+    expect(within(course).getAllByRole("button").map((b) => b.textContent)).toEqual([
+      "Generative AI",
+      "RAG 1",
+      "↗",
+      "not yet in a lesson 1",
+    ]);
+    fireEvent.click(within(course).getByRole("button", { name: "RAG 1" }));
+    expect(onChange).toHaveBeenCalledWith(new Set(["module:generative-ai/02-rag"]));
+    fireEvent.click(within(course).getByRole("button", { name: "Brief me on RAG" }));
+    expect(onBrief).toHaveBeenCalledWith("course/generative-ai/02-rag");
+    fireEvent.click(within(course).getByRole("button", { name: "Generative AI" }));
+    expect(onChange).toHaveBeenCalledWith(new Set(["course:generative-ai"]));
+    fireEvent.click(within(course).getByRole("button", { name: "not yet in a lesson 1" }));
+    expect(onChange).toHaveBeenCalledWith(new Set(["gap:generative-ai"]));
+    fireEvent.click(screen.getByRole("button", { name: "Not in a course 1" }));
+    expect(onChange).toHaveBeenCalledWith(new Set(["beyond:all"]));
   });
 
-  it("lists mentioned glossary terms, narrows them by search, and filters by `term:`", () => {
-    const { onChange } = setup();
-    const terms = screen.getByRole("group", { name: "Glossary terms" });
-    expect(within(terms).queryByRole("button", { name: /Unused/ })).toBeNull();
-    fireEvent.change(screen.getByRole("searchbox", { name: "Search glossary terms" }), { target: { value: "fusion" } });
-    expect(within(terms).queryByRole("button", { name: /BM25/ })).toBeNull();
-    fireEvent.click(within(terms).getByRole("button", { name: /Reciprocal Rank Fusion/ }));
-    expect(onChange).toHaveBeenCalledWith(new Set(["term:rrf"]));
+  it("says so while the courses load", () => {
+    setup(new Set(), { curriculum: null });
+    expect(screen.getByText("Loading courses…")).toBeInTheDocument();
   });
 
-  it("an active term stays listed whatever the search, and Clear empties the filter", () => {
+  it("keeps a filter set in the other view as a chip, and Clear empties the filter", () => {
     const { onChange } = setup(new Set(["term:bm25"]));
-    fireEvent.change(screen.getByRole("searchbox", { name: "Search glossary terms" }), { target: { value: "fusion" } });
-    const terms = screen.getByRole("group", { name: "Glossary terms" });
-    expect(within(terms).getByRole("button", { name: /BM25/ })).toHaveAttribute("aria-pressed", "true");
+    const active = screen.getByRole("group", { name: "Active filters" });
+    expect(within(active).getByRole("button", { name: /BM25/ })).toHaveAttribute("aria-pressed", "true");
     fireEvent.click(screen.getByRole("button", { name: "Clear" }));
     expect(onChange).toHaveBeenCalledWith(new Set());
   });
@@ -219,24 +232,22 @@ describe("FiltersPanel", () => {
     expect(screen.getByRole("button", { name: "Clear" })).toBeDisabled();
   });
 
-  it("lists a module set by a link in the open course tree, so it can be switched off there", () => {
+  it("shows a module set by a link pressed among the chips, so it can be switched off there", () => {
     const { onChange } = setup(new Set(["module:generative-ai/02-rag"]));
     expect(screen.queryByRole("group", { name: "Active filters" })).toBeNull();
-    const tree = screen.getByRole("group", { name: "Filter by curriculum" });
-    const row = within(tree).getByRole("button", { name: /^RAG/ });
-    expect(row).toHaveAttribute("aria-pressed", "true");
-    fireEvent.click(row);
+    const chip = screen.getByRole("button", { name: "RAG 1" });
+    expect(chip).toHaveAttribute("aria-pressed", "true");
+    fireEvent.click(chip);
     expect(onChange).toHaveBeenCalledWith(new Set());
-  });
-
-  it("orders the sections broadest first: course, domain, term, tag, then gaps", () => {
-    setup();
-    const titles = [...document.querySelectorAll(".side-section > summary")].map((s) => s.textContent);
-    expect(titles).toEqual(["Course › module", "Domain", "Glossary term", "Tag", "Not yet in a lesson"]);
   });
 
   it("still names an area set by a link, which no section lists", () => {
     setup(new Set(["area:programming"]));
     expect(within(screen.getByRole("group", { name: "Active filters" })).getByRole("button", { name: "Programming" })).toBeInTheDocument();
+  });
+
+  it("keeps a note set by a link as a chip, since Modules lists no notes", () => {
+    setup(new Set(["note:generative-ai/02-rag/notes/01-bm25"]));
+    expect(within(screen.getByRole("group", { name: "Active filters" })).getByRole("button", { name: "01-bm25" })).toBeInTheDocument();
   });
 });

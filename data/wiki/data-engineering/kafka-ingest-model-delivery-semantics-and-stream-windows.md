@@ -1,8 +1,8 @@
 ---
 title: "Kafka Ingest Model, Delivery Semantics and Stream Windows"
-tags: [data-engineering, concept]
+tags: [data-engineering, warehouse-lakehouse-streaming, concept]
 summary: "Topics, partitions, keys, offsets and consumer groups define what ordering and replay a stream gives you; auto-commit is at-most-once, a schema registry turns silent schema change into a failed deploy, and four window types cover most stream aggregation."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--02-ingest-and-modelling--notes--01-ingest.md
 ---

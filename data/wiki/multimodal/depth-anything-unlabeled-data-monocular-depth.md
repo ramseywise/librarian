@@ -1,8 +1,8 @@
 ---
 title: Depth Anything Monocular Depth from Unlabeled Data
-tags: [multimodal, method]
+tags: [multimodal, vision-backbones, method]
 summary: "Depth Anything scales monocular depth estimation by pseudo-labeling 62M unlabeled images with a teacher, training a student under strong perturbation and aligning its features to a frozen DINOv2 encoder."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-yang-2024-depth-anything-2401-10891.md
 ---

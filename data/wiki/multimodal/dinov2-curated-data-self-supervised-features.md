@@ -1,8 +1,8 @@
 ---
 title: DINOv2 Curated-Data Self-Supervised Features
-tags: [multimodal, concept]
+tags: [multimodal, vision-backbones, concept]
 summary: "DINOv2 trains a ViT-g/14 on the 142M-image LVD-142M set curated by retrieval, with DINO plus iBOT losses, centering and KoLeo, to give frozen features that match or beat text-supervised OpenCLIP."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-oquab-2023-dinov2.md
 ---

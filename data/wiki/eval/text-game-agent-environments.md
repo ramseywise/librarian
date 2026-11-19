@@ -1,8 +1,8 @@
 ---
 title: Text-Game Agent Environments (Jericho, ALFWorld, CALM)
-tags: [eval, comparison]
+tags: [eval, agent-eval, comparison]
 summary: "Three 2020-era pieces of the text-game line of agent evaluation: Jericho (an interface to human-made interactive fiction, with template actions), CALM (a language model trained on human play that proposes candidate actions) and ALFWorld (text games mirroring embodied household tasks, where text training transferred to the embodied side); all numbers self-reported, RL-era agents only."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-hausknecht-2020-interactive-fiction-games.md
   - data/raw/papers/2026-11-07-yao-2020-keep-calm-explore.md

@@ -1,8 +1,8 @@
 ---
 title: Skill Lift Evaluation
-tags: [eval, pattern]
+tags: [eval, harness-and-ci, pattern]
 summary: "Measure an agent skill by running the same tasks with and without it and reporting the difference (skill lift); ACES (NVIDIA authors) averaged +0.2134 composite lift over 947 paired cases while static scan scores had no measurable correlation with live lift, and SkillsBench reported curated skills lifting mean pass rate from 33.9% to 50.5% over 18 model-harness configurations (all self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-kevin-2026-evaluating-skills-not-just-agents.md
   - data/raw/papers/2026-11-07-li-2026-skillsbench.md

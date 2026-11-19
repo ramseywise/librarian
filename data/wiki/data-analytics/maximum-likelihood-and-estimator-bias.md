@@ -1,8 +1,8 @@
 ---
 title: Maximum Likelihood and Estimator Bias
-tags: [data-analytics, concept]
+tags: [data-analytics, probability-and-statistics, concept]
 summary: "An estimator is a recipe judged by bias, variance and MSE; maximum likelihood picks the parameter that makes the data most probable, gives standard errors from the curvature of the log-likelihood, and is a little biased at small n."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--04-estimation.md
 ---

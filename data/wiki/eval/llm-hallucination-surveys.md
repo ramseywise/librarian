@@ -1,8 +1,8 @@
 ---
 title: LLM Hallucination Surveys
-tags: [eval, concept]
+tags: [eval, factuality-and-hallucination, concept]
 summary: "Two 2023-24 surveys carve LLM hallucination up differently (factuality versus faithfulness in one; input-, context- and fact-conflicting in the other); neither runs experiments, and both compile benchmark sizes, detection families and mitigations from cited work."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-huang-2023-survey-hallucination-large-language-models.md
   - data/raw/papers/2026-11-08-zhang-2025-sirens-song-ai-ocean.md

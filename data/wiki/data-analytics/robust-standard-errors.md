@@ -1,8 +1,8 @@
 ---
 title: Robust Standard Errors
-tags: [data-analytics, pattern]
+tags: [data-analytics, probability-and-statistics, pattern]
 summary: "When residual spread changes with the fitted value, classical OLS standard errors are wrong while the coefficients stay fine; HC3 heteroskedasticity-robust errors fix the standard error, not the estimate."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--06-regression-and-glms.md
 ---

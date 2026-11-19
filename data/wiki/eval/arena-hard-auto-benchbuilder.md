@@ -1,8 +1,8 @@
 ---
 title: Arena-Hard-Auto and BenchBuilder
-tags: [eval, llm, pattern]
+tags: [eval, datasets-and-contamination, llm, pattern]
 summary: "BenchBuilder filters crowdsourced Chatbot Arena prompts by seven LLM-scored quality criteria and topic clusters into a 500-prompt benchmark judged pairwise by GPT-4-Turbo; the authors report 3x the separation of MT-Bench and 98.6% confidence agreement with human rankings at about $20 per model (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-li-2024-crowdsourced-data-high-quality-benchmarks.md
 ---

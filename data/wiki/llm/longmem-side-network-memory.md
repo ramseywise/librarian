@@ -1,8 +1,8 @@
 ---
 title: "LongMem Side-Network Memory"
-tags: [llm, pattern]
+tags: [llm, architecture, pattern]
 summary: "LongMem caches key-value pairs from a frozen backbone layer into a 65k FIFO memory bank and reads them through a trainable SideNet with gated joint attention; it reached 40.5% on ChapterBreak AO3 at an 8k prefix (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-wang-2023-augmenting-language-models-long-term.md
 ---

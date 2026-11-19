@@ -1,8 +1,8 @@
 ---
 title: Shepherd Critic Model
-tags: [eval, reference]
+tags: [eval, judges, reference]
 summary: "Shepherd is a LLaMA-7B fine-tuned on about 8K curated community critiques to point out errors in another model's answer; GPT-4 pairwise judging favoured it 87.0 against Alpaca-7B but near-tied it with SelFee-7B and ChatGPT (self-reported), and the same paper found GPT-4 Likert scoring disagreed with humans."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-wang-2023-shepherd.md
 ---

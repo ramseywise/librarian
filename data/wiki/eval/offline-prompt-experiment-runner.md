@@ -1,8 +1,8 @@
 ---
 title: Offline Prompt Experiment Runner
-tags: [eval, prompting, pattern]
+tags: [eval, harness-and-ci, prompting, pattern]
 summary: "Try a prompt change on a frozen, stratified sample of real rows before shipping it: keep a typed variant registry of same-shaped template functions with production auto-registered as control, call the model gateway and the pure pipeline directly with the write-back half removed, prove it is read-only with a client Proxy that throws on any write, and resume from append-only JSONL that tolerates (and self-heals) a truncated final line."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-15-dis272-enrichment-prompt-experiments.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-15-dis272-enrichment-prompt-experiments.md

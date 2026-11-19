@@ -1,8 +1,8 @@
 ---
 title: RFM Segmentation Validated on a Holdout
-tags: [data-analytics, pattern]
+tags: [data-analytics, applied-analyses, pattern]
 summary: RFM segments are predictions and must be scored on a period after the snapshot; doing so shows that frequent buyers who went silent are mostly gone (iso-value curves bend backwards), that clustering adds little over R and F, and that value is concentrated but only partly predictable.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--05-segmentation-and-rfm.md
 ---

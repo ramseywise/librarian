@@ -1,8 +1,8 @@
 ---
 title: "Freshness Alerts Need a Date Spine"
-tags: [data-engineering, pattern]
+tags: [data-engineering, quality-and-observability, pattern]
 summary: "An age check on max(loaded_at) clears the moment a newer partition lands, with the hole still behind it; pairing it with a list of expected dates keeps firing until the gap is repaired."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--05-quality-and-observability--notes--02-monitors-and-lineage.md
   - data/raw/repos/learn-ai-engineering/data-engineering--05-quality-and-observability--notes--03-incident-playbooks.md

@@ -1,8 +1,8 @@
 ---
 title: "Connection Pooling Turns Failure into Waiting"
-tags: [data-engineering, concept]
+tags: [data-engineering, quality-and-observability, concept]
 summary: "Each Postgres connection is a server process under a fixed max_connections, so a burst beyond it fails; a pool shares a few connections and converts the failures into queueing, with PgBouncer transaction mode breaking session state."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--05-quality-and-observability--notes--05-operating-data-stores.md
 ---

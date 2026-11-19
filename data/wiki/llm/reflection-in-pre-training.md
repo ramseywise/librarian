@@ -1,8 +1,8 @@
 ---
 title: Reflection in Pre-Training
-tags: [llm, concept]
+tags: [llm, pretraining-and-data, concept]
 summary: "A study of OLMo-2 checkpoints reports that self-correction behaviour already appears during plain pre-training and grows with pre-training compute, measured by injecting errors into chains of thought and appending 'Wait,'; it argues against reflection being a product of RL alone."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-ai-2025-rethinking-reflection-pre-training.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: Dynabench
-tags: [eval, benchmark]
+tags: [eval, datasets-and-contamination, benchmark]
 summary: "Dynabench is an open platform where annotators write examples to fool a live target model, other humans validate them, and models are retrained between rounds, so the benchmark moves as models improve; the 2021 paper reports validated error rates of 33-44% on four tasks (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-kiela-2021-dynabench.md
 ---

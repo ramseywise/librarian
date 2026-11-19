@@ -1,8 +1,8 @@
 ---
 title: OCR-VQA
-tags: [multimodal, concept]
+tags: [multimodal, benchmarks-and-metrics, concept]
 summary: "OCR-VQA-200K has 207,572 book-cover images and about 1M template-based questions about title, author, genre, year and edition; an OCR-plus-CNN baseline reaches 48.3% accuracy (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-mishra-2019-ocr-vqa.md
 ---

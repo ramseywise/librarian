@@ -1,8 +1,8 @@
 ---
 title: RAG Eval Metrics Suite
-tags: [eval, rag, pattern]
+tags: [eval, rag-and-grounding, rag, pattern]
 summary: Eight-metric RAG evaluation framework covering stakeholder quality (faithfulness, naturalness, completeness, relevance), retrieval quality (contextual relevance, recall, document precision), and system calibration — split between runtime-compatible and offline-only metrics.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/chat-agent/docs/eval/eval_metrics.md
   - data/raw/claude-docs/project-g/docs/stakeholders/agent-comparison-findings.md

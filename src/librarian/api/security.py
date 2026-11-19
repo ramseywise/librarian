@@ -322,7 +322,10 @@ class ChatLimiter:
             with engine.begin() as conn:
                 conn.execute(stmt)
         except SQLAlchemyError as e:
+            from librarian.api import prom  # prom imports this module
+
             log.error("chat.spend_write_failed", error=str(e), usd=round(usd, 4))
+            prom.note_spend_write_failed()
 
     def reset(self) -> None:
         """Forget the burst window. The day's spend is in the database and is not touched."""

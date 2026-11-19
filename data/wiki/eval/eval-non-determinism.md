@@ -1,8 +1,8 @@
 ---
 title: Eval Non-Determinism
-tags: [eval, llm, agents, concept]
+tags: [eval, reading-results, llm, agents, concept]
 summary: "A single trial is an anecdote — run k trials and report pass@k when one success suffices, pass^k when consistency is the product, because a 75% agent passes three consecutive trials only 42% of the time."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--eval-harness.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--eval-harness.md

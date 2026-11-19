@@ -1,8 +1,8 @@
 ---
 title: Prove Discovery Before Evaluating Enrichment
-tags: [eval, decision]
+tags: [eval, production-and-failures, decision]
 summary: "Before any enrichment-quality evaluation, prove that the pipeline found the right things and represents them faithfully: discovery precision, negative controls, entity boundaries, cross-source identity, recurrence, venue identity, field provenance and minimum evidence. One labelled sample per discovery route, reported with a Wilson CI, covers three of those proofs. Notebooks call pipeline rules and never re-derive them."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-15-pre-enrichment-proof.md
   - data/raw/claude-docs/diskoe/docs/plans/2026-09-15-pre-enrichment-proof.md

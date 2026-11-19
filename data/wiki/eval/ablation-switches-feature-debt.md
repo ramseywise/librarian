@@ -1,8 +1,8 @@
 ---
 title: Ablation Switches and Feature Debt
-tags: [eval, infra, pattern]
+tags: [eval, agent-eval, infra, pattern]
 summary: "A master switch that turns off an agent product's major features (thinking, compaction, memory, background tasks) gives a bare-model baseline, and per-feature switches answer whether each still helps — run before every release to find feature debt that newer models no longer need; companions are two-layer feature flags, deterministic prompt-rendering snapshots and privacy-typed analytics."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--11-production-and-the-maturity-ladder.md
 ---

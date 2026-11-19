@@ -1,8 +1,8 @@
 ---
 title: "MapReduce, the Shuffle and Spark Lineage"
-tags: [data-engineering, concept]
+tags: [data-engineering, storage-and-compute-foundations, concept]
 summary: "MapReduce splits a job into map, a hash-partitioned sort-and-copy shuffle and reduce, tolerating failure through immutable inputs and atomic output; Spark keeps the shape but recovers by recomputing partitions from lineage."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--01-storage-and-compute-foundations--notes--08-distributed-compute.md
 ---

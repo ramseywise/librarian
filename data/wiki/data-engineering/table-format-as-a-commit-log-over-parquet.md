@@ -1,8 +1,8 @@
 ---
 title: "Table Format as a Commit Log over Parquet"
-tags: [data-engineering, pattern]
+tags: [data-engineering, warehouse-lakehouse-streaming, pattern]
 summary: "A table format turns a bucket of immutable Parquet files into a table by keeping an ordered log of live files, committed by one atomic create, which gives atomic commits, time travel and optimistic concurrency."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--04-warehouse-lakehouse-streaming--notes--02-table-formats.md
   - data/raw/repos/learn-ai-engineering/data-engineering--04-warehouse-lakehouse-streaming--notes--01b-object-storage-and-the-data-lake.md

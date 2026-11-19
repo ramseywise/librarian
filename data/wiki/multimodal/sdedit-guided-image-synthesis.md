@@ -1,8 +1,8 @@
 ---
 title: SDEdit Guided Image Synthesis
-tags: [multimodal, method]
+tags: [multimodal, diffusion-and-image-generation, method]
 summary: "SDEdit noises a user guide image to an intermediate time t0 and runs the reverse SDE of a pretrained diffusion model, trading faithfulness to the guide against realism through t0, with no training."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-meng-2021-sdedit.md
 ---

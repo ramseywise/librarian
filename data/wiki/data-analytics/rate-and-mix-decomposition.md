@@ -1,8 +1,8 @@
 ---
 title: Rate and Mix Decomposition
-tags: [data-analytics, pattern]
+tags: [data-analytics, applied-analyses, pattern]
 summary: Split a change in any aggregate into a rate (within-segment) effect and a mix effect by holding one fixed at a time; the split depends on order, so report it roughly, and it decomposes a change without proving cause.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--03-cohort-and-retention.md
   - data/raw/repos/learn-ai-engineering/data-analytics--05-visualisation-and-storytelling--notes--05-dashboards-and-storytelling.md

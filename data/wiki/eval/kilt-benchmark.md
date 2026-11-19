@@ -1,8 +1,8 @@
 ---
 title: KILT Benchmark
-tags: [eval, reference]
+tags: [eval, language-tasks, reference]
 summary: "KILT maps 11 knowledge-intensive datasets across 5 tasks onto one 2019 Wikipedia snapshot with provenance, and its joint scores pay out only when the right page is ranked first; RAG-style baselines beat closed-book BART on most tasks except ELI5 (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-petroni-2021-kilt.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: KnowNo Conformal Ask-for-Help
-tags: [llm, concept]
+tags: [llm, reasoning-and-planning, concept]
 summary: "KnowNo has an LLM planner propose multiple-choice options, turns next-token probabilities into conformal prediction scores, and asks a human when the set is not a single option; with 400 calibration examples it gives a task-success guarantee, and cuts help by 10-24% in simulation (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-ren-2023-robots-that-ask-help.md
 ---

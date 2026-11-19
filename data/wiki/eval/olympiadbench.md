@@ -1,8 +1,8 @@
 ---
 title: OlympiadBench
-tags: [eval, reference]
+tags: [eval, reasoning-and-math, reference]
 summary: "OlympiadBench is 8,476 bilingual, multimodal Olympiad-level math and physics problems with expert solutions; zero-shot, the best model (GPT-4V) scored 17.97% on the auto-scorable open-ended subset in the authors' own run (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-he-2024-olympiadbench.md
 ---

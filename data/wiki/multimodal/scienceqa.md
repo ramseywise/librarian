@@ -1,8 +1,8 @@
 ---
 title: ScienceQA
-tags: [multimodal, concept]
+tags: [multimodal, benchmarks-and-metrics, concept]
 summary: "ScienceQA is 21,208 K-12 multimodal science questions with annotated lectures and explanations; few-shot GPT-3 with chain of thought is the best model and gold explanations in the prompt lift it to 94.13 (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-lu-2022-learn-explain.md
 ---

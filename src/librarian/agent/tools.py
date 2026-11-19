@@ -32,8 +32,11 @@ from pydantic import BaseModel, Field, ValidationError
 
 from librarian import retrieval
 from librarian.config import get_settings
+from librarian.courses import curriculum
 from librarian.retrieval import corpus
 from librarian.tools.codemap import client as codemap
+from librarian.wiki.common import parse_frontmatter
+from librarian.wiki.parser import parse_wiki
 
 CHAT: Final = "chat"
 MCP: Final = "mcp"
@@ -177,6 +180,24 @@ def chat_read_page(page_id: str) -> str:
     return retrieval.read_page(page_id)
 
 
+def mcp_read_page(path_or_title: str) -> str:
+    """read_page, plus where the course teaches a wiki page: the lowest tier among the notes
+    linking it and their modules, from the curriculum snapshot (no catalog build)."""
+    text = retrieval.read_page(path_or_title)
+    lines = text.splitlines()
+    title = parse_frontmatter(text).get("title") or (
+        lines[0].removeprefix("# ") if lines and lines[0].startswith("# ") else None
+    )
+    if not title:  # a lesson, a miss or an ambiguous match
+        return text
+    page_id = next((n["id"] for n in parse_wiki()["nodes"] if n["data"]["title"] == title), None)
+    place = curriculum.placement(page_id) if page_id else None
+    if place is None:
+        return text
+    tier = place.get("tier", "not yet tiered")
+    return f"{text.rstrip()}\n\nCurriculum: introduced at {tier}; modules: {', '.join(place['modules'])}\n"
+
+
 def chat_domain_briefing(domain: str) -> str:
     """Outline of a domain or course module: titles and summaries, not page bodies.
 
@@ -308,7 +329,8 @@ _MCP_SEARCH_DOC = inspect.cleandoc("""
 
 _MCP_READ_DOC = inspect.cleandoc("""
     Read a specific wiki page or course lesson by file path or title.
-    Append `#<heading>` to read one section only.
+    Append `#<heading>` to read one section only. A wiki page the course links ends with a
+    `Curriculum:` line: the lowest tier among the linking notes, and their modules.
     """)
 
 _MCP_LIST_DOMAIN_DOC = inspect.cleandoc("""
@@ -418,7 +440,7 @@ TOOLS: Final[tuple[Tool, ...]] = (
         name="read_page",
         description=_MCP_READ_DOC,
         params=_McpRead,
-        fn=lambda p, _ctx: retrieval.read_page(p.path_or_title),
+        fn=lambda p, _ctx: mcp_read_page(p.path_or_title),
         surfaces=_ONLY_MCP,
         log_arg="path_or_title",
     ),

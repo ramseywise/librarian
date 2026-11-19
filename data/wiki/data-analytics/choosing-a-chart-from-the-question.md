@@ -1,8 +1,8 @@
 ---
 title: Choosing a Chart from the Question
-tags: [data-analytics, reference]
+tags: [data-analytics, visualisation-and-storytelling, reference]
 summary: "Pick the chart from the question being asked, and keep marks honest: bars start at zero, one y axis, several bin counts, uncertainty bands read as uncertainty, and titles that state the finding."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--01-python-for-data-analysis--notes--07-plotting.md
 ---

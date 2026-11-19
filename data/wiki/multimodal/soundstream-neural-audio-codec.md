@@ -1,8 +1,8 @@
 ---
 title: SoundStream Neural Audio Codec
-tags: [multimodal, method]
+tags: [multimodal, speech-and-audio, method]
 summary: "SoundStream is an end-to-end trained codec built from a causal convolutional encoder, a residual vector quantizer with quantizer dropout, and an adversarially trained decoder."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-zeghidour-2021-soundstream.md
 ---

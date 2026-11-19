@@ -1,8 +1,8 @@
 ---
 title: "Data Quality Dimensions and Tests as Failing-Row Queries"
-tags: [data-engineering, concept]
+tags: [data-engineering, quality-and-observability, concept]
 summary: "Quality is six separate questions, each needing more context than the last; a test is a query that should return no rows, with a stated tolerance, and row-level tests are blind to anything that is only visible against time."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--05-quality-and-observability--notes--01-quality-dimensions-and-tests.md
 ---

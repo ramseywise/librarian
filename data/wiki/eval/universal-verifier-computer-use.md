@@ -1,8 +1,8 @@
 ---
 title: Universal Verifier for Computer-Use Agents
-tags: [eval, pattern]
+tags: [eval, agent-eval, pattern]
 summary: "A prompted trajectory verifier for web computer-use agents built on four choices (task-only rubrics scored separately, process and outcome scored apart, controllable versus uncontrollable failures, per-criterion screenshot selection); with GPT-5.2 it reached outcome kappa 0.64 and 0.58 against human labels on two sets of 140 and 106 Fara-7B trajectories, above two baseline verifiers, WebJudge and WebVoyager (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-rosset-2026-art-building-verifiers-computer-use.md
 ---

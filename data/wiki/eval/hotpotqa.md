@@ -1,8 +1,8 @@
 ---
 title: HotpotQA
-tags: [eval, benchmark]
+tags: [eval, language-tasks, benchmark]
 summary: "A crowdsourced multi-hop QA set where each question needs two Wikipedia paragraphs and carries sentence-level supporting facts; the 2018 baseline scores 58.28 answer F1 in the distractor setting but 34.36 in the full wiki setting, against 91.40 for humans (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-yang-2018-hotpotqa.md
 ---

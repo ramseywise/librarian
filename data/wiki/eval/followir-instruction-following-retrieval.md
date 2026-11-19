@@ -1,8 +1,8 @@
 ---
 title: "FollowIR Instruction-Following Retrieval Benchmark"
-tags: [eval, reference]
+tags: [eval, language-tasks, reference]
 summary: "FollowIR re-annotates three TREC collections with long instructions and measures with p-MRR whether retrievers change their ranking when an instruction changes; most embedders scored near or below zero (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-weller-2024-followir.md
 ---

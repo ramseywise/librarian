@@ -1,8 +1,8 @@
 ---
 title: Region-Based Single-Stream VLP (UNITER, VL-BERT, Unified VLP)
-tags: [multimodal, comparison]
+tags: [multimodal, vision-language-pretraining, comparison]
 summary: "Three 2019-2020 detector-region pretraining models compared: UNITER's conditional masking and optimal-transport alignment, VL-BERT's finding that sentence-image matching hurt, and Unified VLP's single shared encoder-decoder switched by attention mask (all numbers self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-chen-2020-uniter.md
   - data/raw/papers/2026-11-07-su-2019-vl-bert.md

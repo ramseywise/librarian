@@ -1,8 +1,8 @@
 ---
 title: Delta Lake Transaction Log
-tags: [data-engineering, pattern]
+tags: [data-engineering, warehouse-lakehouse-streaming, pattern]
 summary: Delta Lake keeps a write-ahead log of table membership as files in the object store itself, giving ACID tables over Parquet data with no server holding table state.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-armbrust-2020-delta-lake.md
 ---

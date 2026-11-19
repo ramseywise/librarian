@@ -1,8 +1,8 @@
 ---
 title: Golden Set Mechanics
-tags: [eval, llm, reference]
+tags: [eval, datasets-and-contamination, llm, reference]
 summary: The shape of a golden case (input/expected/metadata), sizing by purpose (20–50 at spec time, 100–1000 for CI), sourcing priority, and the anti-staleness practices that keep a set measuring.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/guacamayo/docs/research/2026-08-02_eval-driven-development.md
   - data/raw/claude-docs/guacamayo/skills/workflow-plan/references/golden-set-authoring.md

@@ -1,8 +1,8 @@
 ---
 title: Data Defect Correlation
-tags: [data-analytics, concept]
+tags: [data-analytics, probability-and-statistics, concept]
 summary: "Error of a sample mean equals the correlation between being recorded and the value, times sqrt((1-f)/f), times the standard deviation, so a large self-selected sample can be worth a few hundred random rows while reporting a tiny standard error."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--03-distributions-and-sampling.md
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--07-data-generating-process.md

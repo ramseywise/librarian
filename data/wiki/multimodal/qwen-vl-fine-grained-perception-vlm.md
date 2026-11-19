@@ -1,8 +1,8 @@
 ---
 title: Qwen-VL Fine-Grained Perception VLM
-tags: [multimodal, concept]
+tags: [multimodal, multimodal-llms, concept]
 summary: "Qwen-VL pairs an OpenCLIP ViT-bigG and a 256-query cross-attention adapter with Qwen-7B, trained in three stages on caption, box and OCR data to add grounding and text reading to a vision-language generalist (all numbers self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-bai-2023-qwen-vl.md
 ---

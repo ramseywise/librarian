@@ -1,8 +1,8 @@
 ---
 title: SPADE Spatially-Adaptive Normalization
-tags: [multimodal, method]
+tags: [multimodal, gans, method]
 summary: "SPADE injects a semantic segmentation mask into a GAN generator through per-pixel scale and bias predicted for each normalization layer, instead of feeding the mask as the input."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-park-2019-semantic-image-synthesis-spatially-adaptive.md
 ---

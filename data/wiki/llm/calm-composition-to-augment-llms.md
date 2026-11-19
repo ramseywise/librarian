@@ -1,8 +1,8 @@
 ---
 title: CALM Composition to Augment LLMs
-tags: [llm, pattern]
+tags: [llm, architecture, pattern]
 summary: "CALM joins a frozen large anchor model to a frozen smaller specialist through learned projections and cross-attention over every fourth layer; the authors report gains on low-resource translation, maths and code over the anchor without the forgetting seen after further pre-training, and a synthetic task neither model can do alone (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-bansal-2024-llm-augmented-llms.md
 ---

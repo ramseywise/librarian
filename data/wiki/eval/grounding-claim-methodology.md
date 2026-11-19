@@ -1,8 +1,8 @@
 ---
 title: Grounding Claim Methodology
-tags: [eval, rag, pattern]
+tags: [eval, rag-and-grounding, rag, pattern]
 summary: Claims-based grounding — the "yellow highlighter" approach to RAG verification, where the agent extracts verbatim supporting quotes from retrieved documents before writing the final answer, creating a verifiable paper trail.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/playground/docs/support-agents/invocation-flow.md
   - data/raw/claude-docs/project-g/docs/support-agents/grounding-methodology.md

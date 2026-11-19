@@ -1,8 +1,8 @@
 ---
 title: CLUE Chinese Benchmark
-tags: [eval, benchmark]
+tags: [eval, language-tasks, benchmark]
 summary: "A GLUE-style benchmark of nine Chinese language understanding tasks plus a 514-pair diagnostic set; the best 2020 baseline averages 74.90 against 85.09 for humans, a gap of about 10 points (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-xu-2020-clue.md
 ---

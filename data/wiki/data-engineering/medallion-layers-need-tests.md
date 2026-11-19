@@ -1,8 +1,8 @@
 ---
 title: "Medallion Layers Need Tests"
-tags: [data-engineering, pattern]
+tags: [data-engineering, quality-and-observability, pattern]
 summary: "Bronze, silver and gold layers organise where problems get fixed but detect nothing; filters between layers drop rows silently unless a test counts them."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--04-warehouse-lakehouse-streaming--notes--03-lakehouse-vs-warehouse.md
 ---

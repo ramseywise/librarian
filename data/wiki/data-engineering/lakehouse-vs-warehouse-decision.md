@@ -1,8 +1,8 @@
 ---
 title: "Lakehouse vs Warehouse Decision"
-tags: [data-engineering, decision]
+tags: [data-engineering, warehouse-lakehouse-streaming, decision]
 summary: "A lakehouse puts a transactional metadata layer over open files to avoid the two-tier lake-plus-warehouse copy; what you gain is one copy and many engines, what you give up is data independence, multi-table transactions and some native performance."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--04-warehouse-lakehouse-streaming--notes--03-lakehouse-vs-warehouse.md
 ---

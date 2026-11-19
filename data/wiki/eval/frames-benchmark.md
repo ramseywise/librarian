@@ -1,8 +1,8 @@
 ---
 title: FRAMES Benchmark
-tags: [eval, rag, llm, reference]
+tags: [eval, rag-and-grounding, rag, llm, reference]
 summary: "FRAMES is an 824-question multi-hop Wikipedia benchmark that scores factuality, retrieval and reasoning together; the paper's multi-step BM25 loop with search-planning prompts took Gemini-1.5-Pro from 0.408 to 0.66."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-krishna-2024-fact-fetch-reason.md
 ---

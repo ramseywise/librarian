@@ -1,8 +1,8 @@
 ---
 title: XSTest
-tags: [eval, reference]
+tags: [eval, safety-and-bias, reference]
 summary: "XSTest pairs 250 hand-written safe prompts across ten types with 200 unsafe contrasts to measure exaggerated safety; Llama2-70B-chat with its original system prompt fully refused 38% of the safe ones (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-rottger-2024-xstest.md
 ---

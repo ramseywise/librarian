@@ -1,8 +1,8 @@
 ---
 title: "Prompt-to-Prompt Cross-Attention Editing"
-tags: [multimodal, concept]
+tags: [multimodal, diffusion-and-image-generation, concept]
 summary: "Prompt-to-Prompt edits a generated image by changing only the text prompt while copying or rescaling the diffusion model's cross-attention maps, so layout is preserved without masks or training."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-hertz-2022-prompt-prompt-image-editing-cross.md
 ---

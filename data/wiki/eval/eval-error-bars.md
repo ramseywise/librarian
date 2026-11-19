@@ -1,8 +1,8 @@
 ---
 title: Eval Error Bars and Sample Size
-tags: [eval, llm, reference]
+tags: [eval, reading-results, llm, reference]
 summary: "Every pass rate is an estimate — SE = √(p(1−p)/n), so on 50 tasks 80% is ±11 points; size the suite from the smallest difference you must detect, average trials within a task before computing SE, cluster SEs for grouped tasks, and correct for multiple comparisons."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--09-reading-results.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--03-eval-datasets.md

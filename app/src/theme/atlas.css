@@ -112,7 +112,9 @@
 .app-map-dock .map-bar { border-top: 1px solid var(--border); padding-top: var(--space-3); }
 /* Under the chat: switch, then search and Layout on one row, then the filters, which scroll. */
 .map-bar--docked { flex-direction: column; flex-wrap: nowrap; align-items: stretch; flex: 1; min-height: 0; }
-.map-dock-row { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2); }
+/* The switch and the search row keep their height; only the filters below give way. */
+.app-map-dock .map-bar--docked .map-browse { flex: none; }
+.map-dock-row { flex: none; display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2); }
 .map-dock-row .map-search { flex: 1; min-width: 0; }
 .map-dock-row .map-search-input { width: 100%; }
 .map-dock-scroll {
@@ -262,3 +264,5 @@
 .health-chip--healthy strong { color: var(--success); }
 .health-chip--watch strong { color: var(--warn); }
 .health-chip--broken strong { color: var(--danger); }
+/* The connection chips stay in view below the scrolling filters, whichever Browse by is on. */
+.map-dock-connect { flex: none; border-top: 1px solid var(--border); padding-top: var(--space-2); }

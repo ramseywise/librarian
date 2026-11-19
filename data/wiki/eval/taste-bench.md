@@ -1,8 +1,8 @@
 ---
 title: Taste-Bench
-tags: [eval, reference]
+tags: [eval, agent-eval, reference]
 summary: "A 502-question benchmark of decision forks mined from agent trajectories, where a model must pick the better of two directions before the outcome is visible; the top of 14 models scored 59.7% against 25% for random under a both-orders rule, accuracy fell from 62.3% to 21.0% as the deciding evidence moved later, and a distilled student's advice raised a small executor's SWE-bench Pro success on 41 tasks (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-pan-2026-tasteful-agent.md
 ---

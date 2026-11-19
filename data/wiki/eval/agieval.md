@@ -1,8 +1,8 @@
 ---
 title: AGIEval
-tags: [eval, reference]
+tags: [eval, language-tasks, reference]
 summary: "A benchmark of 8,062 objective questions from 20 human exams (Gaokao, SAT, law, LSAT, civil service, GRE/GMAT, AMC/AIME) in English and Chinese; GPT-4 averaged 58.4 under zero-shot chain of thought against a human average of 67 (self-reported), but the human figures are not measured on the same items."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-zhong-2023-agieval.md
 ---

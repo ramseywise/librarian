@@ -1,8 +1,8 @@
 ---
 title: Eval Failure Taxonomy
-tags: [eval, llm, pattern]
+tags: [eval, production-and-failures, llm, pattern]
 summary: "A fixed set of stable failure labels, ordered by pipeline stage, one label per fix, including the eval's own failures (context_missing) — the shared vocabulary for graders, dashboards, gate reports and bug tickets."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--02-defining-correct.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--04-graders.md

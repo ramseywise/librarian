@@ -1,8 +1,8 @@
 ---
 title: "Video Diffusion Models"
-tags: [multimodal, concept]
+tags: [multimodal, video, concept]
 summary: "A Gaussian diffusion model with a space-time factorized 3D U-Net generates video, trained jointly on images and video and extended in time or space with reconstruction-guided sampling."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-ho-2022-video-diffusion-models.md
 ---

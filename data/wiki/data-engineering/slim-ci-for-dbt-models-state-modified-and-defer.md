@@ -1,8 +1,8 @@
 ---
 title: "Slim CI for dbt Models: state:modified and defer"
-tags: [data-engineering, pattern]
+tags: [data-engineering, transform-and-orchestrate, pattern]
 summary: "Build only what a pull request changed by comparing the project with the production manifest, resolve unselected parents from production with defer, write to a per-PR schema, and make the test check required so a failing test stops the merge."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--05-quality-and-observability--notes--06-dataops.md
 ---

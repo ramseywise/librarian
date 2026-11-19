@@ -1,8 +1,8 @@
 ---
 title: InstructBLIP Instruction-Aware Query Transformer
-tags: [multimodal, concept]
+tags: [multimodal, multimodal-llms, concept]
 summary: "InstructBLIP instruction-tunes only the Q-Former of a BLIP-2 model on 13 held-in datasets and feeds it the instruction too, improving zero-shot results on 13 held-out datasets."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-dai-2023-instructblip.md
 ---

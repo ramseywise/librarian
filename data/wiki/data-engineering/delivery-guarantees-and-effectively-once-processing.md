@@ -1,8 +1,8 @@
 ---
 title: "Delivery Guarantees and Effectively-Once Processing"
-tags: [data-engineering, concept]
+tags: [data-engineering, warehouse-lakehouse-streaming, concept]
 summary: "At-most-once, at-least-once and exactly-once differ only in whether position or output is saved first; effectively-once comes from idempotent keyed sinks, offsets stored atomically with the data, and idempotent producers, and it holds only within a boundary."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--04-warehouse-lakehouse-streaming--notes--04-kafka-and-stream-semantics.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: "Clustering Categorical and Mixed Data"
-tags: [data-analytics, concept]
+tags: [data-analytics, applied-analyses, concept]
 summary: "One-hot plus k-means goes deaf to categories because dummy variance is small; FAMD and MCA recode before PCA, reducing first can hide groups, and the best method depends on which columns hold the groups."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--05b-clustering-categorical-and-mixed-data.md
 ---

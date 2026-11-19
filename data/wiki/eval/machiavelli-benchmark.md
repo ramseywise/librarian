@@ -1,8 +1,8 @@
 ---
 title: MACHIAVELLI Benchmark
-tags: [eval, benchmark]
+tags: [eval, agent-eval, benchmark]
 summary: "134 text games with 572,322 scenes labelled by GPT-4 for utility, power and 13 ethical violation types, used to chart reward against harm; a reward-trained RL agent scored about double a random agent's reward with 108% of its violations, and steering methods gave only modest gains (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-pan-2023-do-rewards-justify-means.md
 ---

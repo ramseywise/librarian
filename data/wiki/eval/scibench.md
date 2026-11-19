@@ -1,8 +1,8 @@
 ---
 title: SciBench
-tags: [eval, benchmark]
+tags: [eval, reasoning-and-math, benchmark]
 summary: "SciBench has 869 college textbook science and math problems (177 multimodal) plus a closed set of exam problems, scored by numeric answers, with an LLM verifier assigning each error to one of ten missing skills; GPT-4 with few-shot Python tools was best, and no prompting strategy won on all skills (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-wang-2023-scibench.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: "Choosing a Store from the Access Pattern"
-tags: [data-engineering, decision]
+tags: [data-engineering, storage-and-compute-foundations, decision]
 summary: "Pick a data store by describing how records are found, how much one query touches, how data changes, its size and who operates it; row vs column is the first split, and each of ten store kinds is a bet that fits some patterns and hurts under others."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--01-storage-and-compute-foundations--notes--10-choosing-a-store.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: Revenue Bridge Query
-tags: [data-analytics, pattern]
+tags: [data-analytics, applied-analyses, pattern]
 summary: A revenue bridge labels each customer-month new, returning or reactivated with a lag window over a CTE chain, so a flat-looking total splits into parts that move in opposite directions; the labelling gap is a stated choice and the total must reconcile to source.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--06-sql-for-analytics.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: Posterior Predictive Checks
-tags: [data-analytics, pattern]
+tags: [data-analytics, bayesian-analysis, pattern]
 summary: "A precise posterior can still be wrong; simulate new datasets from the fitted model and compare them with the real data on a quantity the model was not tuned to match, ideally also reporting the whole probability band rather than a line."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--01-bayesian-inference.md
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--03-priors-and-bandits.md

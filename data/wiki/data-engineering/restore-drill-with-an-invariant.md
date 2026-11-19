@@ -1,8 +1,8 @@
 ---
 title: "Restore Drill with an Invariant"
-tags: [data-engineering, pattern]
+tags: [data-engineering, quality-and-observability, pattern]
 summary: "Only a restore proves a backup: schedule the restore on separate hardware, check a data invariant rather than an exit code, record the time taken, and alert on missing success; a replica is not a backup."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--05-quality-and-observability--notes--05-operating-data-stores.md
 ---

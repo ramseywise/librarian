@@ -1,8 +1,8 @@
 ---
 title: SWE-Lancer
-tags: [eval, reference]
+tags: [eval, code, reference]
 summary: "OpenAI's benchmark of 1,488 real Upwork software tasks worth $1,000,000 in payouts, graded by hidden end-to-end browser tests and scored in dollars earned; Claude 3.5 Sonnet earned $208k of $501k on the public Diamond split (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-miserendino-2025-swe-lancer.md
 ---

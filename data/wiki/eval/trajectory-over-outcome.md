@@ -1,8 +1,8 @@
 ---
 title: Trajectory Over Outcome
-tags: [eval, agents, concept]
+tags: [eval, agent-eval, agents, concept]
 summary: "Why an agent has to be scored on the path and not just the answer — a correct output from a lucky trajectory is a latent failure, and routing and stopping point are the two decisions an outcome score cannot see."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/articles/2026-07-19-evaluating-ai-agents-deeplearning.md
   - own-prose

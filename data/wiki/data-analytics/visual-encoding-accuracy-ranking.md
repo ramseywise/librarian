@@ -1,8 +1,8 @@
 ---
 title: Visual Encoding Accuracy Ranking
-tags: [data-analytics, concept]
+tags: [data-analytics, visualisation-and-storytelling, concept]
 summary: Readers judge some visual channels far more accurately than others, so put the comparison that matters on the most accurate channel and choose the chart from the question.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--05-visualisation-and-storytelling--notes--01-grammar-and-chart-choice.md
 ---

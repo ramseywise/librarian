@@ -1,8 +1,8 @@
 ---
 title: ScienceAgentBench
-tags: [eval, reference]
+tags: [eval, agent-eval, reference]
 summary: "A benchmark of 102 data-driven discovery tasks taken from 44 peer-reviewed papers, where an agent must write one self-contained Python program; the best agents solve about a third of tasks best-of-3 and far fewer on average, and in a sample of 50 failures most programs ran but computed the wrong thing (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-chen-2024-scienceagentbench.md
 ---

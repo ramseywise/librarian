@@ -1,8 +1,8 @@
 ---
 title: Small-N Reporting Floor
-tags: [eval, pattern]
+tags: [eval, judges, pattern]
 summary: "A baseline report over human labels whose N is unknown at design time must never print a confident-looking rate from a small sample: every rate carries its N, buckets under 30 print raw counts only, totals under 100 get a fixed INSUFFICIENT-N banner (exit 0, it is a report, not a gate), and a before/after delta is computed only when both runs clear the same floor on the same population."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-21-dis357-qc-baseline-fixes.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-21-dis357-qc-baseline-fixes.md

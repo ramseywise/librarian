@@ -1,8 +1,8 @@
 ---
 title: IMO-Bench
-tags: [eval, reference]
+tags: [eval, reasoning-and-math, reference]
 summary: "A Google DeepMind suite of three Olympiad-level benchmarks (400 short-answer problems, 60 proof problems, 1,000 proof-grading items) with LLM autograders; the top model scored 80.0% on answers and 65.7% on advanced proofs while non-Gemini models stayed below 25% on advanced proofs (self-reported, with the lab's own models and judge)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-luong-2025-towards-robust-mathematical-reasoning.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: Constitutional AI and RLAIF
-tags: [llm, eval, concept]
+tags: [llm, preference-and-alignment, eval, concept]
 summary: "Anthropic's two-phase replacement for human preference labels — critique-and-revise SL-CAI followed by RLAIF against a written constitution — plus what AI feedback provably matches and where it still underperforms humans."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--constitutional-ai.md
 ---

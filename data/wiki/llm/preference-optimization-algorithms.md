@@ -1,8 +1,8 @@
 ---
 title: Preference Optimization Algorithms
-tags: [llm, comparison]
+tags: [llm, preference-and-alignment, comparison]
 summary: "The PPO → DPO → GRPO → KTO/IPO/ORPO family — what each removes from the stage before it, the five-algorithm decision table, and why the field shifted from choosing an algorithm to designing a reward structure."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--preference-optimization.md
   - data/raw/claude-docs/learn-ai-engineering/docs/research/2026-07-22_rl_landscape.md

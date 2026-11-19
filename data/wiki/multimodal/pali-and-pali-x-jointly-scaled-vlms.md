@@ -1,8 +1,8 @@
 ---
 title: PaLI and PaLI-X Jointly Scaled VLMs
-tags: [multimodal, concept]
+tags: [multimodal, vision-language-pretraining, concept]
 summary: "PaLI feeds ViT patch features to an mT5 encoder-decoder and scales vision and language together on the multilingual WebLI dataset; PaLI-X pairs a 22B ViT with a 32B encoder-decoder and a 13-objective mixture (all numbers self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-chen-2022-pali.md
   - data/raw/papers/2026-11-08-chen-2023-pali-x.md

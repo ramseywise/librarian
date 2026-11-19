@@ -15,6 +15,10 @@ export interface EdgeVisibility {
   "tag-shared": boolean;
   /** Pages taught in the same curriculum module. */
   module: boolean;
+  /** Pages mentioning the same (not too common) glossary term. */
+  term: boolean;
+  /** Pages in the order a module's notes teach them. */
+  "course-order": boolean;
 }
 
 export interface Glossary {

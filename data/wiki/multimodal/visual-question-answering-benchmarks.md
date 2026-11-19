@@ -1,8 +1,8 @@
 ---
 title: Visual Question Answering Benchmarks
-tags: [multimodal, comparison]
+tags: [multimodal, benchmarks-and-metrics, comparison]
 summary: "A comparison of VQA datasets and the multimodal-LLM evaluations that followed, grouped by what each isolates (language priors, compositional reasoning, outside knowledge, reading text, commonsense, expert knowledge), with the models and grounding datasets they build on."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-goyal-2017-making-v-vqa-matter.md
   - data/raw/papers/2026-11-07-gurari-2018-vizwiz-grand-challenge.md

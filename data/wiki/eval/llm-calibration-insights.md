@@ -1,8 +1,8 @@
 ---
 title: LLM Grader Calibration Insights
-tags: [eval, concept]
+tags: [eval, judges, concept]
 summary: Calibration evidence for LLM-as-judge graders in the project-g eval pipeline — custom v3 grader outperforms DeepEval defaults (+0.214 score delta vs +0.086), domain-shift is the main failure pattern, passage context is required for grounding accuracy. Grounding cross-check vs DeepEval shows near-zero agreement until article text is wired in.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/playground/docs/evals/llm-calibration-insights.md
   - data/raw/notion/2026-06-26-va-hca-retrieval-executive-summary.md

@@ -1,8 +1,8 @@
 ---
 title: NatureBench
-tags: [eval, reference]
+tags: [eval, language-tasks, reference]
 summary: "A benchmark of 90 containerised tasks built from Nature-family papers with the source method withheld, scored by the gap to the published result; the top agent matched it on 47.8% of tasks, and successes were mostly recast as generic prediction or engineering problems (self-reported, one run per agent)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-wang-2026-naturebench.md
 ---

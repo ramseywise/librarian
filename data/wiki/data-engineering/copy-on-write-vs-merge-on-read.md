@@ -1,8 +1,8 @@
 ---
 title: "Copy-on-Write vs Merge-on-Read"
-tags: [data-engineering, decision]
+tags: [data-engineering, warehouse-lakehouse-streaming, decision]
 summary: "Updating a lake table either rewrites whole files (copy-on-write) or appends delete and delta records merged later (merge-on-read); choose by update distribution, and compare Delta, Iceberg and Hudi as of their release snapshot."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--04-warehouse-lakehouse-streaming--notes--02-table-formats.md
 ---

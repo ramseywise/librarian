@@ -1,8 +1,8 @@
 ---
 title: PlanBench o1 Evaluation
-tags: [eval, reference]
+tags: [eval, reasoning-and-math, reference]
 summary: "A September 2024 research note that runs OpenAI's o1-preview and o1-mini on the PlanBench Blocksworld and Mystery Blocksworld sets, with accuracy, cost, time and unsolvable-instance results; a classical planner scores 600/600 at a small fraction of the cost."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-valmeekam-2024-llms-still-can-t-plan.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: project-g Eval Architecture
-tags: [eval, rag, concept]
+tags: [eval, harness-and-ci, rag, concept]
 summary: Routing vs domain eval distinction (Strand A/E/F), grader interface contract, three-tier eval coverage, calibration methodology for the project-g HC agent eval pipeline, and ADK vs LangGraph parallel evaluation approach.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/playground/docs/support-agents/invocation-flow.md
   - data/raw/claude-docs/playground/skills/eval-creation/va-eval/SKILL.md

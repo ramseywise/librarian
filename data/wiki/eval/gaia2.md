@@ -1,8 +1,8 @@
 ---
 title: Gaia2
-tags: [eval, reference]
+tags: [eval, agent-eval, reference]
 summary: "Meta's benchmark of 1,120 scenarios in an asynchronous simulated environment where the clock keeps running while the agent thinks, graded by a verifier that checks only write actions; GPT-5 (high) scored 42.1 pass@1 overall but 0.0 on the Time split (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-froger-2026-gaia2.md
 ---

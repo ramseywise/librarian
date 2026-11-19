@@ -1,8 +1,8 @@
 ---
 title: NFNet Adaptive Gradient Clipping
-tags: [multimodal, concept]
+tags: [multimodal, vision-backbones, concept]
 summary: "NFNets are normalizer-free ResNets trained with unit-wise Adaptive Gradient Clipping, which lets them train at large batch and strong augmentation; the paper reports F1 matching EfficientNet-B7 about 8.7x faster and 86.5% ImageNet top-1 without extra data (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-brock-2021-high-performance-large-scale-image.md
 ---

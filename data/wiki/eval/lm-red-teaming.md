@@ -1,8 +1,8 @@
 ---
 title: LM Red Teaming
-tags: [eval, concept]
+tags: [eval, safety-and-bias, concept]
 summary: "Red teaming with a language model has a red LM write test cases, a target LM answer them and a classifier flag harmful replies; in Perez et al.'s 2022 study on a 280B chatbot, zero-shot generation found 18,444 offensive replies and RL raised the hit rate above 40% at a cost in diversity (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-perez-2022-red-teaming-language-models-language.md
 ---

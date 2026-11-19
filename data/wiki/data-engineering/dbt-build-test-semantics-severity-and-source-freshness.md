@@ -1,8 +1,8 @@
 ---
 title: "dbt Build Test Semantics, Severity and Source Freshness"
-tags: [data-engineering, concept]
+tags: [data-engineering, transform-and-orchestrate, concept]
 summary: "A dbt test is a query returning the rows that break a rule; in dbt build a failing error-severity test skips downstream models but the tested model is already rebuilt, and only freshness notices data that never arrived."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--03-transform-and-orchestrate--notes--01-transform.md
   - data/raw/repos/learn-ai-engineering/data-engineering--03-transform-and-orchestrate--notes--03-dbt-tests-snapshots-incremental.md

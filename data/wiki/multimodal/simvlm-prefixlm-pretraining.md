@@ -1,8 +1,8 @@
 ---
 title: SimVLM PrefixLM Pretraining
-tags: [multimodal, concept]
+tags: [multimodal, vision-language-pretraining, concept]
 summary: "SimVLM trains one encoder-decoder end to end with a single prefix language-modeling loss on image patches and noisy web pairs, replacing detector features and multi-loss pretraining."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-wang-2021-simvlm.md
 ---

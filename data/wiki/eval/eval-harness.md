@@ -1,8 +1,8 @@
 ---
 title: Eval Harness
-tags: [eval, langgraph, adk, concept, pattern]
+tags: [eval, harness-and-ci, langgraph, adk, concept, pattern]
 summary: "Agent evaluation harness for assistant agents — four eval suites (routing, quality, behavioral, error handling), JSON evalset schema, tool_trajectory_avg_score metric, LLM-as-judge, Makefile flow, and CI regression gate. Production golden dataset: ~100 questions from 700-question Intercom set, Langfuse pipeline live, CS agent validated."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/playground/skills/eval-creation/va-eval/SKILL.md
   - data/raw/claude-docs/playground/docs/evals/eval-harness-patterns.md

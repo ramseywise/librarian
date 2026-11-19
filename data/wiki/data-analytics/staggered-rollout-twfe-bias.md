@@ -1,8 +1,8 @@
 ---
 title: Staggered Rollout Bias in Two-Way Fixed Effects
-tags: [data-analytics, pattern]
+tags: [data-analytics, experimentation-and-causality, pattern]
 summary: "With staggered adoption and effects that grow, one TWFE coefficient can be badly wrong because already-treated units serve as controls; a clean comparison against never-treated units recovers the effect."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--08-panel-data-and-fixed-effects.md
 ---

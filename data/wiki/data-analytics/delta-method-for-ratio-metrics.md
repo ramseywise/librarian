@@ -1,8 +1,8 @@
 ---
 title: Delta Method for Ratio Metrics
-tags: [data-analytics, pattern]
+tags: [data-analytics, experimentation-and-causality, pattern]
 summary: "A ratio of two per-user totals, such as revenue per session, needs a standard error that accounts for numerator and denominator co-varying; computing it as if sessions were the independent units understates it by about 40 percent."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--04-estimation.md
 ---

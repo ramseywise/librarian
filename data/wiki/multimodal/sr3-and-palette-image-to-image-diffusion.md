@@ -1,8 +1,8 @@
 ---
 title: "SR3 and Palette Image-to-Image Diffusion"
-tags: [multimodal, concept]
+tags: [multimodal, diffusion-and-image-generation, concept]
 summary: "SR3 conditions a DDPM-style U-Net on a low-resolution image to do super-resolution; Palette reuses the idea, with the source image concatenated to the noisy target, for colorization, inpainting, uncropping and JPEG restoration."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-saharia-2022-image-super-resolution-iterative-refinement.md
   - data/raw/papers/2026-11-08-saharia-2022-palette.md

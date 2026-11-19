@@ -1,8 +1,8 @@
 ---
 title: BABILong Benchmark
-tags: [eval, concept]
+tags: [eval, language-tasks, concept]
 summary: "BABILong hides bAbI reasoning facts inside PG19 book text padded to any length; on it GPT-4-Turbo failed for most of its 128K window and retrieval failed on multi-fact tasks, while a small recurrent-memory GPT-2 held up to 10M tokens on the simple tasks tested (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-kuratov-2024-search-needles-11m-haystack.md
 ---

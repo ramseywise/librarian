@@ -1,8 +1,8 @@
 ---
 title: JEV-as-a-Judge Cascade
-tags: [eval, infra, pattern]
+tags: [eval, judges, infra, pattern]
 summary: "A decision-only cheap judge (JEV) answers when its confidence clears a threshold and escalates the rest to GPT-6; on 1,610 preference pairs the frozen cascade scored 93.4% against 92.5% for GPT-6 alone at 41.4% of the fee (self-reported), but the saving was large on RewardBench and small on JudgeBench, and confidence routing failed on reference-free prose."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-li-2026-jev-as-judge.md
 ---

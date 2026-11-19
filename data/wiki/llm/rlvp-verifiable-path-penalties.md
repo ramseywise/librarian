@@ -1,8 +1,8 @@
 ---
 title: RLVP — Verifiable Path Penalties
-tags: [llm, pattern]
+tags: [llm, reinforcement-learning, pattern]
 summary: "Add deterministic per-action penalties (and matching compliant-action bonuses) to an outcome reward, R = O + β·Φ, so agent RL learns outcome-neutral constraints like 'don't edit the tests' and recovers the within-group variance GRPO needs — with four design rules that avoid the inaction trap."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--post-training-for-agents.md
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--preference-optimization.md

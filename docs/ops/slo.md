@@ -145,7 +145,9 @@ day. At 100% chat stops for everyone until 00:00 UTC. Who is spending: `GET /api
 How accurate it is: the figures are the estimate the spend cap uses (token counts times the price
 table in `src/librarian/pricing.py`), not the provider invoice. The `chat_usage` table has one row per
 user and UTC day and no model column, so the model breakdown comes from `logs/agent.jsonl` and covers
-only the answers that file still holds. Compare with the provider's console once a month.
+only the answers that file still holds. Compare with the provider's console once a month. A call
+whose cost could not be written (the database was unavailable) is logged as `chat.spend_write_failed`
+and counted in `librarian_chat_spend_write_failures_total`; any increase means the cap undercounts.
 
 ### The price table must be reviewed
 

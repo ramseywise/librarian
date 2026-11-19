@@ -1,8 +1,8 @@
 ---
 title: Confidence Interval Coverage and Wilson
-tags: [data-analytics, concept]
+tags: [data-analytics, probability-and-statistics, concept]
 summary: "A 95 percent interval is a claim about the procedure's long-run coverage, and the textbook Wald interval for a proportion fails badly for rare events at modest n where the Wilson interval holds up."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--04-estimation.md
 ---

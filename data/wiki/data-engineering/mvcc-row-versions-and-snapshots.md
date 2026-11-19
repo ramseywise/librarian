@@ -1,8 +1,8 @@
 ---
 title: "MVCC Row Versions and Snapshots"
-tags: [data-engineering, concept]
+tags: [data-engineering, storage-and-compute-foundations, concept]
 summary: "Multi-version concurrency control keeps old row versions so readers never block writers; a held-open snapshot pins versions and bloats tables, and table formats repeat the design at file scale."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--01-storage-and-compute-foundations--notes--04-transactions-and-isolation.md
 ---

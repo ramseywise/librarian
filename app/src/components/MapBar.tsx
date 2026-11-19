@@ -17,7 +17,7 @@ interface Props {
   onExpand: () => void;
   /** Label of the page a click has focused, offered as the next level. */
   refocus: { title: string; onClick: () => void } | null;
-  /** The Domain / Wiki switch: the map's arrangement. */
+  /** The Modules / Wiki switch: the map's arrangement. */
   onGrouping: (g: Grouping) => void;
   /** The map's search box. */
   search?: ReactNode;
@@ -26,13 +26,13 @@ interface Props {
   activeCount?: number;
   /** How a focused map is drawn: connections, arrangement, minimap. Absent on the atlas, which draws no lines. */
   map?: ReactNode;
-  /** Under the chat: the connection types, listed inline after the filters rather than in the Map popover. */
+  /** Under the chat: the connection chips, pinned at the bottom of the dock on every level. */
   connections?: ReactNode;
   /** A brief on the sector in the crumbs; no button without it. */
   onBriefSector?: () => void;
   /** Anything else for the end of the bar: the All nodes button. */
   extra?: ReactNode;
-  /** Under the chat: no Back, breadcrumb or count, and the filters and connections listed inline. */
+  /** Under the chat: no Back, breadcrumb, count or layout controls; the filters and connections listed inline. */
   controlsOnly?: boolean;
 }
 
@@ -86,11 +86,11 @@ function Popover({ label, children }: { label: string; children: ReactNode }) {
 }
 
 /**
- * The map's bar: the Domain / Wiki switch, search and the Filters popover on every level; on a
+ * The map's bar: the Modules / Wiki switch, search and the Filters popover on every level; on a
  * focused level also the breadcrumb, Back, how much of the level is shown, and a Map popover for
  * connections, arrangement and the minimap (the atlas draws no lines, so none there). Under the
- * chat the bar is `controlsOnly`: the switch, then search and the Map popover, then the filters and
- * the connections inline, broadest first, with no Back or breadcrumb.
+ * chat the bar is `controlsOnly`: the switch, then search, then the filters (scrolling) and the
+ * connection chips pinned below them, with no Back, breadcrumb or layout controls.
  */
 export function MapBar({
   view,
@@ -134,7 +134,7 @@ export function MapBar({
       <div className="seg" role="group" aria-label="Browse by">
         {(["domain", "wiki"] as const).map((g) => (
           <button key={g} type="button" className="seg-btn" aria-pressed={grouping === g} onClick={() => onGrouping(g)}>
-            {g === "domain" ? "Domain" : "Wiki"}
+            {g === "domain" ? "Modules" : "Wiki"}
           </button>
         ))}
       </div>
@@ -167,7 +167,6 @@ export function MapBar({
         {switcher}
         <div className="map-dock-row">
           {search}
-          {map && <Popover label="Layout">{map}</Popover>}
           {extra}
           {more}
         </div>
@@ -177,13 +176,8 @@ export function MapBar({
               {filters}
             </section>
           )}
-          {connections && (
-            <details className="side-section" open>
-              <summary className="panel-label">Connect by</summary>
-              <div className="side-section-body">{connections}</div>
-            </details>
-          )}
         </div>
+        {connections && <div className="map-dock-connect">{connections}</div>}
       </div>
     );
   }

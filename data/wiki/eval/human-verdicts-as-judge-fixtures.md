@@ -1,8 +1,8 @@
 ---
 title: Human Verdicts as Judge Fixtures
-tags: [eval, pattern]
+tags: [eval, judges, pattern]
 summary: "Close the eval loop by exporting human right/wrong verdicts into judge fixtures where the judged value becomes `expected`, the human decision rides in `metadata` the judge never sees, and a `wrong` verdict is as valid a case as a `right` one; score judge-vs-human agreement on a hash-split holdout beside the human retest ceiling, and feed judge/gate disagreements back to humans as a separately tagged sample stream."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-21-dis358-eval-loop.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-21-dis358-eval-loop.md

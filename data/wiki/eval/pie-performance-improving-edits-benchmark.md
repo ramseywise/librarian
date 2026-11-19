@@ -1,8 +1,8 @@
 ---
 title: PIE Performance-Improving Edits Benchmark
-tags: [eval, project]
+tags: [eval, code, project]
 summary: PIE is a dataset of more than 77K pairs of slow and fast C++ programs timed in the gem5 simulator; the paper reports that fine-tuned and retrieval-prompted models reach multi-fold speedups, that chain-of-thought prompting adds little, and that conditioning on speed lowers correctness.
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-shypula-2023-learning-performance-improving-code-edits.md
 ---

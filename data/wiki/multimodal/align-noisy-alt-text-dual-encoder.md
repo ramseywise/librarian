@@ -1,8 +1,8 @@
 ---
 title: ALIGN Noisy Alt-Text Dual Encoder
-tags: [multimodal, concept]
+tags: [multimodal, vision-language-pretraining, concept]
 summary: "ALIGN trains an image encoder and a text encoder with a contrastive loss on 1.8B alt-text pairs filtered only lightly, testing whether corpus scale can make up for noise; it reports retrieval and zero-shot results on par with or above CLIP."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-jia-2021-scaling-up-visual-vision-language.md
   - data/raw/papers/2026-11-07-akkus-2023-multimodal-deep-learning.md

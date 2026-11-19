@@ -1,8 +1,8 @@
 ---
 title: ALBEF Align Before Fuse
-tags: [multimodal, concept]
+tags: [multimodal, vision-language-pretraining, concept]
 summary: "ALBEF aligns image and text features with a contrastive loss before a cross-attention fusion encoder, and uses momentum-distilled pseudo-targets to cope with noisy web captions, without a detector."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-li-2021-align-before-fuse.md
 ---

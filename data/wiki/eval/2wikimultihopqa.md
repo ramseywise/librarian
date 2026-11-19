@@ -1,8 +1,8 @@
 ---
 title: 2WikiMultiHopQA
-tags: [eval, reference]
+tags: [eval, language-tasks, reference]
 summary: "A 192,606-question multi-hop QA set generated from Wikipedia text and Wikidata triples, with the triples as evidence paths; the paper reports a single-hop model scoring 8.7 F1 lower than on HotpotQA and baselines far below humans (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-ho-2020-constructing-multi-hop-qa-dataset.md
 ---

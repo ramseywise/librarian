@@ -1,8 +1,8 @@
 ---
 title: LLM-as-a-Verifier
-tags: [eval, pattern]
+tags: [eval, judges, pattern]
 summary: "Instead of reading the single score token a judge emits, take the probability-weighted expectation over its score-token logprobs, which removes ties between candidates; on Terminal-Bench V2 trajectory pairs one such verifier pass scored 74.7% pairwise accuracy against 71.8% for a discrete judge, and best-of-N selection with it recovered part of the gap to an oracle (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-kwok-2026-llm-as-verifier.md
 ---

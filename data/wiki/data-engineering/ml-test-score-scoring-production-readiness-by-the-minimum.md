@@ -1,8 +1,8 @@
 ---
 title: "ML Test Score: Scoring Production Readiness by the Minimum"
-tags: [data-engineering, reference]
+tags: [data-engineering, ml-platform, reference]
 summary: "A 28-test rubric in four sections of seven (data, model, infrastructure, monitoring), half a point manual and one automated, scored by the minimum across sections so one strong area cannot hide a gap."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--06-ml-platform--notes--05-mlops-maturity-and-best-practices.md
   - data/raw/repos/learn-ai-engineering/data-engineering--06-ml-platform--notes--06-ml-system-framing-to-monitoring.md

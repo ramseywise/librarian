@@ -1,8 +1,8 @@
 ---
 title: LMSYS-Chat-1M
-tags: [eval, benchmark]
+tags: [eval, language-tasks, benchmark]
 summary: "One million real user conversations with 25 LLMs collected from the Vicuna demo and Chatbot Arena in 2023, with four demonstrated uses: a fine-tuned Vicuna-7B moderator matching GPT-4 on a 110-message set, a 50-conversation jailbreak benchmark, instruction tuning, and the Arena-Hard-200 prompt set (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-zheng-2023-lmsys-chat-1m.md
 ---

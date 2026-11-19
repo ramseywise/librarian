@@ -1,8 +1,8 @@
 ---
 title: Datetime Parsing, Frequency Aliases and Time Zones
-tags: [data-analytics, reference]
+tags: [data-analytics, python-for-data-analysis, reference]
 summary: Parse dates with an explicit format, use the explicit pandas 3 frequency aliases, and store timestamps in UTC so ambiguous days, renamed aliases and daylight-saving hours do not corrupt results.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--01-python-for-data-analysis--notes--06-time-series.md
 ---

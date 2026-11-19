@@ -1,8 +1,8 @@
 ---
 title: Pandas loc, iloc and the Integer Index Trap
-tags: [data-analytics, concept]
+tags: [data-analytics, python-for-data-analysis, concept]
 summary: loc selects by label and iloc by position; they agree only until a filter or sort leaves gaps in the default integer labels, after which the same-looking code returns different rows.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--01-python-for-data-analysis--notes--03-indexing-and-selection.md
 ---

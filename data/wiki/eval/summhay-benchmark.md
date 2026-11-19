@@ -1,8 +1,8 @@
 ---
 title: SummHay Benchmark
-tags: [eval, concept]
+tags: [eval, language-tasks, concept]
 summary: SummHay asks a model to summarise the insights shared across a synthetic 100-document haystack (about 93K tokens) and cite the source documents, scoring coverage, citation and their product; no tested system came near the human estimate of 56.1 (self-reported).
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-laban-2024-summary-haystack.md
 ---

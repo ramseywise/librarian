@@ -8,7 +8,8 @@ import sys
 import textwrap
 from collections.abc import AsyncIterator, Callable, Iterator
 from pathlib import Path
-from typing import Any
+from types import SimpleNamespace
+from typing import Any, NoReturn
 
 import pytest
 from fastapi.testclient import TestClient
@@ -151,6 +152,22 @@ def test_a_stream_with_no_token_is_counted_as_such(
     _stream_stub(monkeypatch, [{"type": "done"}])
     client.post("/api/chat/stream", json={"query": "hi"}, headers=ADMIN)
     assert 'librarian_chat_streams_total{outcome="no_token"}' in _scrape(client)
+
+
+def test_a_failed_spend_write_is_counted(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from sqlalchemy.exc import OperationalError
+
+    def broken() -> NoReturn:
+        raise OperationalError("UPSERT", {}, Exception("database is locked"))
+
+    before = _sample(_scrape(client), "librarian_chat_spend_write_failures_total")
+    # `upsert` reads the dialect before the write, so the stub needs one.
+    engine = SimpleNamespace(begin=broken, dialect=SimpleNamespace(name="sqlite"))
+    monkeypatch.setattr(chat_limiter, "_db", lambda: engine)
+    chat_limiter.record_usage(get_settings(), TokenUsage(output=10))
+    assert _sample(_scrape(client), "librarian_chat_spend_write_failures_total") == before + 1
 
 
 def test_prepare_sets_up_an_empty_directory_only_for_several_workers(

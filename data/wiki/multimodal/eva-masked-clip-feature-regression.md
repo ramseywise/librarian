@@ -1,8 +1,8 @@
 ---
 title: EVA Masked CLIP-Feature Regression
-tags: [multimodal, concept]
+tags: [multimodal, vision-language-pretraining, concept]
 summary: "EVA pretrains a 1.0B vanilla ViT to regress CLIP vision features of masked patches on 29.6M public images, then reuses it to initialise a 1.1B CLIP that trains stably."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-fang-2023-eva.md
 ---

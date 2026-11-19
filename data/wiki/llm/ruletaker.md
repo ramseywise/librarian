@@ -1,8 +1,8 @@
 ---
 title: RuleTaker
-tags: [llm, concept]
+tags: [llm, reasoning-and-planning, concept]
 summary: "Clark et al. fine-tune RoBERTa-large on synthetic natural-language facts and rules and report it answers true/false questions at about 99% on its own test data, generalises to deeper proofs, and transfers to paraphrased rules, while stopping short of proving it reasons (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-clark-2020-transformers-as-soft-reasoners-over.md
 ---

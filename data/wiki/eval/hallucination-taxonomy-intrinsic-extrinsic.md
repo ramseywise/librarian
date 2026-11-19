@@ -1,8 +1,8 @@
 ---
 title: Intrinsic vs Extrinsic Hallucination
-tags: [eval, concept]
+tags: [eval, factuality-and-hallucination, concept]
 summary: "The NLG hallucination survey by Ji and colleagues defines intrinsic hallucination as output that contradicts the source and extrinsic as output the source can neither support nor contradict, then reviews metrics and mitigations; nearly every number is quoted from earlier work."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-ji-2022-survey-hallucination-natural-language-generation.md
 ---

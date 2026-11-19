@@ -1,8 +1,8 @@
 ---
 title: "How Far Plain Postgres Stretches"
-tags: [data-engineering, comparison]
+tags: [data-engineering, storage-and-compute-foundations, comparison]
 summary: "A single relational server emulates key-value, document, search, time-series, graph and small-scale vector workloads at levels most applications never exceed; it stops being enough when writes exceed one primary, when scanning most of a huge table, for multi-region writes, search as a product, or blobs."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--01-storage-and-compute-foundations--notes--10-choosing-a-store.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: GAMUT Meta-Rubric Benchmark
-tags: [eval, reference]
+tags: [eval, language-tasks, reference]
 summary: "GAMUT is a 1,813-question multimodal benchmark of factual completeness whose rubrics are written as structured meta-rubrics (lists, processes, importance tiers) and compiled by fixed rules into flat binary checks for a judge; the best of 14 models scored 58.7% under one judge and no flat-versus-structured comparison was run (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-chen-2026-two-level-meta-rubrics-evaluating.md
 ---

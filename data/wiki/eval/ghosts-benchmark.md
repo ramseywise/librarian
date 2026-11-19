@@ -1,8 +1,8 @@
 ---
 title: GHOSTS Benchmark
-tags: [eval, reference]
+tags: [eval, reasoning-and-math, reference]
 summary: "A set of 709 maths prompts in six subdatasets (proofs, graduate textbook exercises, integrals, olympiad problems, search-style queries) graded 1-5 by expert mathematicians with error codes; ChatGPT averaged 3.20 and 3.29 on two January 2023 versions and GPT-4 4.15 on a 170-prompt subset (self-reported), under a pass line of 3.5."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-frieder-2023-mathematical-capabilities-chatgpt.md
 ---

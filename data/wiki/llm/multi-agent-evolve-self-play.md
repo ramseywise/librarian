@@ -1,8 +1,8 @@
 ---
 title: Multi-Agent Evolve Self-Play
-tags: [llm, pattern]
+tags: [llm, agent-training, pattern]
 summary: "Multi-Agent Evolve trains one model in three roles (proposer, solver, judge) with reinforcement learning on unlabelled seed questions; quality filtering and partial reference use were the stabilisers, on a single 3B model."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-chen-2025-multi-agent-evolve.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: TIR-Judge
-tags: [eval, llm, pattern]
+tags: [eval, judges, llm, pattern]
 summary: "TIR-Judge trains a judge that writes and runs Python while judging, using end-to-end reinforcement learning; on RewardBench2 listwise best-of-4 its 8B Zero variant averaged 73.4 against 76.5 for Claude-Opus-4 (self-reported), while merely prompting Qwen3 with the same code tool gave negligible or negative gains."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-xu-2025-incentivizing-agentic-reasoning-llm-judges.md
 ---

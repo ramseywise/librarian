@@ -1,8 +1,8 @@
 ---
 title: "Object Store Guarantees and the Partial-Write Problem"
-tags: [data-engineering, concept]
+tags: [data-engineering, warehouse-lakehouse-streaming, concept]
 summary: "An object store gives atomic single-key writes and little else: no rename, no multi-key atomicity, so a half-finished overwrite shows readers a wrong answer without error."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--04-warehouse-lakehouse-streaming--notes--01b-object-storage-and-the-data-lake.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: "Classifier Guidance and the ADM Architecture"
-tags: [multimodal, concept]
+tags: [multimodal, diffusion-and-image-generation, concept]
 summary: "Dhariwal and Nichol re-engineer the diffusion U-Net (ADM) and steer sampling with gradients from a classifier trained on noisy images, trading diversity for fidelity and reaching lower FID than BigGAN-deep on ImageNet."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-dhariwal-2021-diffusion-models-beat-gans-image.md
 ---

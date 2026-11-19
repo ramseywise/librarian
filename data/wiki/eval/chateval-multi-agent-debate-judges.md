@@ -1,8 +1,8 @@
 ---
 title: ChatEval Multi-Agent Debate Judges
-tags: [eval, pattern]
+tags: [eval, judges, pattern]
 summary: "ChatEval has several LLM judges with distinct personas read each other's replies over a fixed number of turns and then vote or average; on FairEval's 80 questions the gain over a single judge was 6.2 points for ChatGPT and 2.5 for GPT-4, and only with diverse roles."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-chan-2023-chateval.md
 ---

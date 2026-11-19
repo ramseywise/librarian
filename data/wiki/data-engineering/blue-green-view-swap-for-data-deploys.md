@@ -1,8 +1,8 @@
 ---
 title: "Blue-Green View Swap for Data Deploys"
-tags: [data-engineering, pattern]
+tags: [data-engineering, quality-and-observability, pattern]
 summary: "Build the new version of a table beside the old, audit it, then repoint a view in about a millisecond; rollback is the same swap while the old build is kept and nothing has been written on top."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--05-quality-and-observability--notes--06-dataops.md
 ---

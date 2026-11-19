@@ -19,7 +19,7 @@ torch, fastapi) load only for the verbs that need them.
     librarian ingest notion|linear|pdf                 pull a source into data/raw/
     librarian scrape sessions|docs|repos|feeds|arxiv|bookmarks
     librarian courses import                           mirror learn-ai-engineering coursework into data/courses/
-    librarian courses check chapters|curriculum|links|drills|quiz|manifest|crosswalk|smoke-labs
+    librarian courses check chapters|curriculum|links|drills|quiz|manifest|crosswalk|smoke-labs|tiers
     librarian courses review findings|signals|score-eval|depth-classify|depth-score
     librarian courses syllabus [--out FILE]           every module's objectives and notes, with wiki pages
     librarian db upgrade|check|import-attempts|import-drill-log   user-state database (DATABASE_URL)
@@ -249,6 +249,7 @@ _CHECKS: dict[str, str] = {
     "manifest": "librarian.courses.checks.check_manifest:main",
     "crosswalk": "librarian.courses.checks.crosswalk:main",
     "smoke-labs": "librarian.courses.checks.smoke_labs:main",
+    "tiers": "librarian.courses.checks.tier_order:main",
 }
 _REVIEWS: dict[str, str] = {
     "findings": "librarian.courses.review.findings:main",

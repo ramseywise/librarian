@@ -1,8 +1,8 @@
 ---
 title: Pandas Merge Validation and Many-to-Many Blow-up
-tags: [data-analytics, pattern]
+tags: [data-analytics, python-for-data-analysis, pattern]
 summary: A pandas merge can silently drop or multiply rows; state how, set validate, then compare row counts and one total before and after every join.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--01-python-for-data-analysis--notes--04-reshaping-and-joins.md
 ---

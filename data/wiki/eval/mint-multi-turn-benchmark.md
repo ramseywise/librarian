@@ -1,8 +1,8 @@
 ---
 title: MINT Multi-Turn Benchmark
-tags: [eval, reference]
+tags: [eval, agent-eval, reference]
 summary: "A 2023 benchmark of 586 instances where an LLM solves tasks over up to five turns by running Python and receiving GPT-4-simulated language feedback; across 20 LLMs, feedback added 2-17% absolute and SIFT or RLHF often lowered multi-turn scores (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-wang-2023-mint.md
 ---

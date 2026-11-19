@@ -1,8 +1,8 @@
 ---
 title: SPAE Semantic Pyramid AutoEncoder
-tags: [multimodal, concept]
+tags: [multimodal, multimodal-llms, concept]
 summary: "SPAE turns an image into a pyramid of words from a frozen LLM's own vocabulary, coarse semantics first, so a frozen LLM can classify, caption, answer questions about and generate images by in-context learning; understanding peaks at 21 tokens (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-yu-2023-spae.md
 ---

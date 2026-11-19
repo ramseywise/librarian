@@ -1,8 +1,8 @@
 ---
 title: DALL-E and Parti Autoregressive Text-to-Image
-tags: [multimodal, concept]
+tags: [multimodal, diffusion-and-image-generation, concept]
 summary: "DALL-E and Parti generate images by predicting discrete image tokens with a transformer: DALL-E uses a 12B decoder over dVAE tokens, Parti an encoder-decoder up to 20B over ViT-VQGAN tokens."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-ramesh-2021-zero-shot-text-image-generation.md
   - data/raw/papers/2026-11-07-yu-2022-scaling-autoregressive-models-content-rich.md

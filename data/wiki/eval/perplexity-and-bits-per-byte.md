@@ -1,8 +1,8 @@
 ---
 title: Perplexity and Bits-per-Byte
-tags: [eval, concept]
+tags: [eval, graders-and-metrics, concept]
 summary: "Language-modeling metrics measure how well a model predicts text: entropy and cross entropy in bits, perplexity as their exponential, bits-per-byte as the tokenizer-independent version; useful for contamination checks and deduplication, a poor proxy once a model is post-trained or quantized."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-huyen-ai-engineering-ch03-evaluation-methodology.md
 ---

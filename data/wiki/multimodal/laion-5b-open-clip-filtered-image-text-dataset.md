@@ -1,8 +1,8 @@
 ---
 title: LAION-5B Open CLIP-Filtered Image-Text Dataset
-tags: [multimodal, concept]
+tags: [multimodal, datasets, concept]
 summary: "LAION-5B is an open set of 5.85B web image-text links filtered by CLIP ViT-B/32 similarity, released with safety tags and used to reproduce OpenCLIP models, with explicit warnings that it is research-only and unfinished (all numbers self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-schuhmann-2022-laion-5b.md
 ---

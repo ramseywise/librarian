@@ -1,8 +1,8 @@
 ---
 title: "Adapting While Learning Tool Usage Adaptation"
-tags: [llm, pattern]
+tags: [llm, agent-training, pattern]
 summary: "Adapting While Learning trains a model to answer directly after absorbing tool-derived knowledge, and to call scientific tools only on questions its own accuracy marks as hard; on custom science datasets an 8B model reports 59.31 against 30.20 for the base, with a tool-rate drop from about 91% to about 52% (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-lyu-2024-adapting-while-learning.md
 ---

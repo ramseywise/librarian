@@ -1,8 +1,8 @@
 ---
 title: DAPO
-tags: [llm, concept]
+tags: [llm, reinforcement-learning, concept]
 summary: "Four changes to PPO/GRPO-style RL — Clip-Higher, token-level loss, dynamic sampling and overlong reward shaping — each aimed at stopping the policy from collapsing early onto a single strategy; the reported state-of-the-art recipe for verifiable-reward math RL."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--post-training-for-agents.md
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--preference-optimization.md

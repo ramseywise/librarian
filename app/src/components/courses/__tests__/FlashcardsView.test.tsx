@@ -42,6 +42,42 @@ describe("FlashcardsView", () => {
     expect(screen.getByRole("link", { name: "Intro" }).getAttribute("href")).toBe("#/courses/c1/m1/intro");
   });
 
+  it("keeps the in-depth answer and the sources behind the flip, and the in-depth answer behind a click", async () => {
+    const tagged: FlashcardDeck = {
+      ...deck,
+      cards: [
+        {
+          ...deck.cards[0],
+          more: "The derivation in **full**",
+          depth: "core",
+          tier: "practitioner",
+          sources: ["Goodfellow et al. 2016, ch. 8", "[Adam](https://arxiv.org/abs/1412.6980)", "[x](javascript:alert(1))"],
+        },
+        deck.cards[1],
+      ],
+    };
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify(tagged))));
+    render(<FlashcardsView deckId="c1/m1" />);
+    await screen.findByText("First question");
+    expect(screen.getByText(/practitioner · core/)).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "In depth" })).toBeNull();
+    expect(screen.queryByText(/Goodfellow/)).toBeNull();
+
+    await userEvent.click(screen.getByRole("button", { pressed: false }));
+    expect(screen.queryByText(/The derivation/)).toBeNull();
+    expect(screen.getByText("Goodfellow et al. 2016, ch. 8")).toBeTruthy();
+    expect(screen.getByRole("link", { name: "Adam" }).getAttribute("href")).toBe("https://arxiv.org/abs/1412.6980");
+    expect(screen.queryByRole("link", { name: "x" })).toBeNull();
+    await userEvent.click(screen.getByRole("button", { name: "In depth" }));
+    expect(screen.getByText(/The derivation/)).toBeTruthy();
+
+    // The next card has none of it, and the reveal does not carry over.
+    await userEvent.click(screen.getByRole("button", { name: "Next" }));
+    await userEvent.click(screen.getByRole("button", { pressed: false }));
+    expect(screen.queryByRole("button", { name: "In depth" })).toBeNull();
+    expect(screen.queryByText(/The derivation/)).toBeNull();
+  });
+
   it("next shows the question side of the following card and wraps at the end", async () => {
     stubDeck();
     render(<FlashcardsView deckId="c1/m1" />);

@@ -1,8 +1,8 @@
 ---
 title: Foundation Models as Decision Makers (MDP View)
-tags: [llm, agents, concept]
+tags: [llm, reasoning-and-planning, agents, concept]
 summary: "A 2023 survey frames dialogue, prompting and tool use by a foundation model as sequential decision problems in a Markov decision process, with the model as policy and tools, humans or the world as environment; it reports no experiments, only framing and cited numbers."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-yang-2023-foundation-models-decision-making.md
 ---

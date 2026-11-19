@@ -1,8 +1,8 @@
 ---
 title: MIMESIS User Simulator Training
-tags: [llm, pattern]
+tags: [llm, agent-training, pattern]
 summary: "MIMESIS trains a 9B user simulator to behave like real users and uses it as the training environment for interactive agents; an agent trained against it scored higher on nine held-out simulators than one trained against GPT-5.5 (self-reported), and coached self-distillation added a further gain."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-phan-2026-mimesis.md
 ---

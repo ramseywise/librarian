@@ -1,8 +1,8 @@
 ---
 title: Metric Tree Decomposition
-tags: [data-analytics, pattern]
+tags: [data-analytics, applied-analyses, pattern]
 summary: A metric tree splits a top number into identity edges that can be asserted and attributed exactly (log-mean weights) and dashed causal edges that need a test before anyone acts; a count north star needs a paired check.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--11-metric-trees.md
 ---

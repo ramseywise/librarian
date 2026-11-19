@@ -1,8 +1,8 @@
 ---
 title: Robust Summaries for Skewed Metrics
-tags: [data-analytics, concept]
+tags: [data-analytics, probability-and-statistics, concept]
 summary: "When mean and median disagree, the tail is running the summary: choose location, spread and correlation measures the shape allows, and report percentiles and the mean-to-median ratio instead of one number."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--01-descriptive-statistics-and-eda.md
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--README.md

@@ -251,27 +251,47 @@ def _compute_embeddings() -> tuple[list[str], np.ndarray]:
     return page_ids, np.array(vecs, dtype=np.float32)
 
 
-def semantic_edges(threshold: float = 0.65) -> list[dict]:
+def semantic_edges(
+    threshold: float = 0.65, k: int | None = None, keep: set[str] | None = None
+) -> list[dict]:
+    """Pairs of pages whose embeddings are at least `threshold` alike.
+
+    With `k`, each page keeps only its `k` most alike pages (still at least `threshold`), and a
+    pair either page keeps is an edge: every page gets a few neighbours, where one global cut
+    leaves most pages with none and hub pages with a hundred. `keep` limits both ends to those
+    pages before choosing, so a page dropped later (a private one) never takes a page's slot.
+    """
+    import numpy as np
     from sklearn.metrics.pairwise import cosine_similarity
 
     page_ids, vecs = compute_embeddings()
+    if keep is not None:
+        rows = [i for i, p in enumerate(page_ids) if p in keep]
+        page_ids, vecs = [page_ids[i] for i in rows], vecs[rows]
     if len(page_ids) < 2:
         return []
     sim = cosine_similarity(vecs)
+    if k is None:
+        n = len(page_ids)
+        pairs = {(i, j) for i in range(n) for j in range(i + 1, n) if sim[i, j] >= threshold}
+    else:
+        np.fill_diagonal(sim, -1.0)
+        pairs = set()
+        for i, row in enumerate(sim):
+            for j in np.argsort(-row)[:k]:
+                if row[j] >= threshold:
+                    pairs.add((min(i, int(j)), max(i, int(j))))
     edges = []
-    for i in range(len(page_ids)):
-        for j in range(i + 1, len(page_ids)):
-            score = float(sim[i, j])
-            if score >= threshold:
-                a, b = page_ids[i], page_ids[j]
-                edges.append(
-                    {
-                        "id": f"sem:{a}->{b}",
-                        "source": a,
-                        "target": b,
-                        "data": {"edgeType": "semantic", "score": round(score, 3)},
-                    }
-                )
+    for i, j in sorted(pairs):
+        a, b = page_ids[i], page_ids[j]
+        edges.append(
+            {
+                "id": f"sem:{a}->{b}",
+                "source": a,
+                "target": b,
+                "data": {"edgeType": "semantic", "score": round(float(sim[i, j]), 3)},
+            }
+        )
     return edges
 
 

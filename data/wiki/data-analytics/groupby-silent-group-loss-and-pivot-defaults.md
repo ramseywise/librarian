@@ -1,8 +1,8 @@
 ---
 title: Groupby Silent Group Loss and Pivot Defaults
-tags: [data-analytics, pattern]
+tags: [data-analytics, python-for-data-analysis, pattern]
 summary: Groupby drops NaN keys, hides empty categories or averages by default without a warning, so compare the sum of groups with the overall total and state every default.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--01-python-for-data-analysis--notes--05-groupby-and-aggregation.md
   - data/raw/repos/learn-ai-engineering/data-analytics--01-python-for-data-analysis--notes--02-loading-and-cleaning.md

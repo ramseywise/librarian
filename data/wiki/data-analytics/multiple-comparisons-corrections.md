@@ -1,8 +1,8 @@
 ---
 title: Multiple Comparisons Corrections
-tags: [data-analytics, pattern]
+tags: [data-analytics, probability-and-statistics, pattern]
 summary: "Running many tests makes a false positive likely, 64 percent for 20 tests at 5 percent, so adjust: Bonferroni and Holm control the chance of any false positive, Benjamini-Hochberg controls the share of false discoveries and keeps more power."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--02-probability-foundations.md
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--05-hypothesis-testing.md

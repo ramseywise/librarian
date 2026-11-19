@@ -1,8 +1,8 @@
 ---
 title: Wizard of Wikipedia
-tags: [eval, reference]
+tags: [eval, language-tasks, reference]
 summary: "A crowd-sourced dialogue dataset where a knowledgeable wizard grounds each reply in a retrieved Wikipedia sentence, used to test knowledge selection and knowledge-grounded generation; knowledge helped, but selection was weak and fluent wrong facts remained (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-dinan-2018-wizard-wikipedia.md
 ---

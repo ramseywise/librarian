@@ -1,8 +1,8 @@
 ---
 title: MMBench
-tags: [multimodal, concept]
+tags: [multimodal, benchmarks-and-metrics, concept]
 summary: "MMBench is a 3,217-question bilingual multiple-choice benchmark over 20 abilities that scores a model only if it answers every circular shift of the choices (CircularEval) and uses GPT-4 to extract the chosen option (all figures self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-liu-2024-mmbench.md
 ---

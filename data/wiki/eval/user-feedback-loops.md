@@ -1,8 +1,8 @@
 ---
 title: User Feedback Loops
-tags: [eval, llm, infra]
+tags: [eval, production-and-failures, llm, infra]
 summary: Explicit ratings or implicit usage signals from deployed users — the only eval source that catches "technically correct but unhelpful", slow and sparse and biased, whose real payoff is converting thumbs-down cases into permanent golden-set entries.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/eval-approaches.md
   - data/raw/claude-docs/akira/docs/research/2026-09-20-dis345-favourite-holdout-judgments.md

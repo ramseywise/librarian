@@ -1,8 +1,8 @@
 ---
 title: MME Benchmark
-tags: [multimodal, concept]
+tags: [multimodal, benchmarks-and-metrics, concept]
 summary: "MME scores multimodal LLMs on 14 subtasks (10 perception, 4 cognition) with manually written yes/no question pairs per image, reporting accuracy and the stricter per-image accuracy+ across 30 models (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-fu-2025-mme.md
 ---

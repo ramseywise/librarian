@@ -23,6 +23,19 @@ export function InlineMarkup({ text }: { text: string }) {
   );
 }
 
+/** A card reference: plain text, with any `[text](http...)` in it as a link. Only web links are kept by
+ * the generator, and nothing else is linked here. */
+function SourceRef({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(/(\[[^\]]+\]\(https?:\/\/[^)\s]+\))/).map((part, i) => {
+        const link = /^\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)$/.exec(part);
+        return link ? <a key={i} href={link[2]} target="_blank" rel="noreferrer">{link[1]}</a> : part;
+      })}
+    </>
+  );
+}
+
 function shuffled(n: number): number[] {
   const order = Array.from({ length: n }, (_, i) => i);
   for (let i = n - 1; i > 0; i--) {
@@ -51,6 +64,7 @@ export function FlashcardsView({
   const [order, setOrder] = useState<number[]>([]);
   const [pos, setPos] = useState(0);
   const [flipped, setFlipped] = useState(false);
+  const [inDepth, setInDepth] = useState(false);
   useDocumentTitle(pageTitle(deck?.id === deckId ? deck.title : "Loading…", "Flashcards"));
 
   useEffect(() => {
@@ -68,6 +82,7 @@ export function FlashcardsView({
         setOrder(studyOrder(d.cards, start, new Set()));
         setPos(0);
         setFlipped(false);
+        setInDepth(false);
       })
       .catch((e: Error) => !cancelled && setError(e.message));
     return () => { cancelled = true; };
@@ -87,7 +102,8 @@ export function FlashcardsView({
   if (!deck || (!order.length && mode === "all")) return <div className="course-centered"><div>Loading…</div></div>;
 
   const card: Flashcard | undefined = deck.cards[order[pos]];
-  const turn = (next: number) => { setPos(next); setFlipped(false); };
+  const turn = (next: number) => { setPos(next); setFlipped(false); setInDepth(false); };
+  const labels = card ? [card.tier, card.depth].filter(Boolean).join(" · ") : "";
   const study = (next: StudyMode) => {
     setMode(next);
     setOrder(studyOrder(deck.cards, next, graded));
@@ -121,11 +137,24 @@ export function FlashcardsView({
         ) : (
         <>
         <button onClick={() => setFlipped((f) => !f)} aria-pressed={flipped} className={`flashcard${flipped ? " is-flipped" : ""}`}>
-          <span className="flashcard-side">{flipped ? "Answer" : "Question (click to flip)"}</span>
+          <span className="flashcard-side">{flipped ? "Answer" : "Question (click to flip)"}{labels && ` · ${labels}`}</span>
           <span className="flashcard-text"><InlineMarkup text={flipped ? card.back : card.front} /></span>
         </button>
+        {flipped && card.more && (
+          <div className="flashcard-more">
+            <button onClick={() => setInDepth((d) => !d)} aria-expanded={inDepth} className="link-btn">
+              {inDepth ? "Hide the in-depth answer" : "In depth"}
+            </button>
+            {inDepth && <p className="flashcard-more-text"><InlineMarkup text={card.more} /></p>}
+          </div>
+        )}
         {flipped && card.lesson && deck.id !== card.lesson && (
           <div className="flashcard-source">From <a href={`#/courses/${card.lesson}`}>{card.lessonTitle}</a></div>
+        )}
+        {flipped && !!card.sources?.length && (
+          <ul className="flashcard-source flashcard-refs" aria-label="Sources">
+            {card.sources.map((s) => <li key={s}><SourceRef text={s} /></li>)}
+          </ul>
         )}
         <div className="flashcard-controls">
           {flipped && <button onClick={() => grade("knew")} className="btn-primary">Knew it</button>}

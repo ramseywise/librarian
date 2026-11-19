@@ -1,8 +1,8 @@
 ---
 title: Panel Data Fixed Effects
-tags: [data-analytics, concept]
+tags: [data-analytics, probability-and-statistics, concept]
 summary: "Fixed effects remove all stable differences between units by using only within-unit variation, turning a pooled estimate of -1.0 into the true 0.5, but they absorb time-invariant variables and do not remove time-varying confounders."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--08-panel-data-and-fixed-effects.md
 ---

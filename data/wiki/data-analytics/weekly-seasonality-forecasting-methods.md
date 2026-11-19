@@ -1,8 +1,8 @@
 ---
 title: Weekly Seasonality Forecasting Methods
-tags: [data-analytics, comparison]
+tags: [data-analytics, applied-analyses, comparison]
 summary: Weekly data has a non-integer yearly period (about 52.18 weeks) and moving holidays; STL+ETS, dynamic harmonic regression and Prophet handle it differently, and most of their edge comes from knowing the calendar.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--01-forecasting.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: MultiMedQA and Med-PaLM
-tags: [eval, benchmark]
+tags: [eval, language-tasks, benchmark]
 summary: "MultiMedQA combines six medical QA datasets with a new 3,173-question consumer set and a clinician and lay rating framework; Flan-PaLM 540B reached 67.6% on MedQA and instruction prompt tuning (Med-PaLM) cut clinician-rated potentially harmful answers from 29.7% to 5.9% on 140 questions (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-singhal-2023-large-language-models-encode-clinical.md
 ---

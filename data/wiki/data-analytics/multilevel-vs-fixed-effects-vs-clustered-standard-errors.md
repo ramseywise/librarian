@@ -1,8 +1,8 @@
 ---
 title: Multilevel vs Fixed Effects vs Clustered Standard Errors
-tags: [data-analytics, comparison]
+tags: [data-analytics, probability-and-statistics, comparison]
 summary: "Pick by question: clustered SEs when groups are a nuisance, fixed effects (or a within-between model) when the group effect may correlate with the predictor, multilevel when group-level estimates are the question; plain random intercepts can be biased where the others are not."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--07-multilevel-models-and-partial-pooling.md
 ---

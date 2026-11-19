@@ -1,8 +1,8 @@
 ---
 title: "StyleGAN Style-Based Generator"
-tags: [multimodal, concept]
+tags: [multimodal, gans, concept]
 summary: "StyleGAN rebuilds the GAN generator around a mapping network and per-layer style modulation; StyleGAN3 removes aliasing to fix texture sticking, and Self-Distilled StyleGAN filters uncurated data and truncates toward cluster centres."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-karras-2019-style-based-generator-architecture-generative.md
   - data/raw/papers/2026-11-07-karras-2021-alias-free-generative-adversarial-networks.md

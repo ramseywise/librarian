@@ -1,8 +1,8 @@
 ---
 title: Self-Supervised LLM Evaluation by Text Transformations
-tags: [eval, llm, pattern]
+tags: [eval, datasets-and-contamination, llm, pattern]
 summary: "Score a model's sensitivity or invariance to a simple transformation of any text corpus (negation, a toxic trigger, shuffling, splitting tokens) and compare against labelled benchmarks; on Wikipedia sentences the scores tracked TriviaQA and LAMBADA closely in scatter plots, with no correlation coefficients (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-jain-2023-bring-your-own-data-self.md
 ---

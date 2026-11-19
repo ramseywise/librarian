@@ -1,8 +1,8 @@
 ---
 title: Reinforcement-Learned Teachers
-tags: [llm, pattern]
+tags: [llm, reinforcement-learning, pattern]
 summary: "Train a small model with RL to write explanations for known question-solution pairs, rewarded by how well a student can reproduce the solution from them; in the paper a 7B teacher's raw traces gave better student models than traces distilled from much larger reasoners."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-cetin-2025-reinforcement-learning-teachers-test-time.md
 ---

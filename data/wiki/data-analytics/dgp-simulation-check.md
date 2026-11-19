@@ -1,8 +1,8 @@
 ---
 title: Data Generating Process Simulation Check
-tags: [data-analytics, pattern]
+tags: [data-analytics, probability-and-statistics, pattern]
 summary: "Before trusting an analysis, simulate data from a known process, run the estimator, and report bias, spread and coverage; a placebo run with a true zero effect exposes a model that invents effects."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--07-data-generating-process.md
 ---

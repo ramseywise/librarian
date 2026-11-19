@@ -1,8 +1,8 @@
 ---
 title: PICa GPT-3 Knowledge VQA
-tags: [multimodal, concept]
+tags: [multimodal, multimodal-llms, concept]
 summary: "PICa turns an image into a caption and tags, then prompts a frozen GPT-3 with a few examples; with 16 shots it reports 48.0% on OK-VQA against 39.4% for the supervised state of the art (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-yang-2022-empirical-study-gpt-3-few.md
 ---

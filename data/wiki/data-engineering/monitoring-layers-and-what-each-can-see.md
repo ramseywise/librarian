@@ -1,8 +1,8 @@
 ---
 title: "Monitoring Layers and What Each Can See"
-tags: [data-engineering, reference]
+tags: [data-engineering, ml-platform, reference]
 summary: "Operations, inputs, predictions and outcomes each catch a different failure; a drift score can fire loudly on a harmless input shift and read zero on an expensive new fraud type, so a random audit is what measures cost, and training on reviewed cases alone destroys automation."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--06-ml-platform--notes--06-ml-system-framing-to-monitoring.md
 ---

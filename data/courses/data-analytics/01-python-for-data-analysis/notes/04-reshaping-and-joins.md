@@ -1,10 +1,14 @@
 ---
-imported_hash: d5abbe8b04a0ecd8
+imported_hash: 61293b2c8477bc5b
 title: 4 — Reshaping and Joins
 summary: The shop's orders say that dev bought a kettle.
 order: 5
 kind: reading
 section: Notes
+tier: practitioner
+depth: core
+depth_sections:
+  'What one row means: tidy data': intro
 source: learn-ai-engineering/data-analytics/01-python-for-data-analysis/notes/04-reshaping-and-joins.md
 ---
 

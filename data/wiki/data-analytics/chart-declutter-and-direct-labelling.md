@@ -1,8 +1,8 @@
 ---
 title: Chart Declutter and Direct Labelling
-tags: [data-analytics, pattern]
+tags: [data-analytics, visualisation-and-storytelling, pattern]
 summary: Strip every element that adds reader effort without understanding, set the style once, label data directly, and make the title state the finding; small multiples need a shared scale and grey context.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--05-visualisation-and-storytelling--notes--02-matplotlib-and-seaborn.md
   - data/raw/repos/learn-ai-engineering/data-analytics--05-visualisation-and-storytelling--notes--05-dashboards-and-storytelling.md

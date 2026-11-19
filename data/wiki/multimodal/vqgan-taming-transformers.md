@@ -1,8 +1,8 @@
 ---
 title: "VQGAN Taming Transformers"
-tags: [multimodal, concept]
+tags: [multimodal, diffusion-and-image-generation, concept]
 summary: "VQGAN compresses an image into a grid of discrete codebook indices using perceptual and patch-adversarial losses, then an autoregressive transformer models the index sequence, with a sliding window for megapixel images."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-esser-2021-taming-transformers-high-resolution-image.md
 ---

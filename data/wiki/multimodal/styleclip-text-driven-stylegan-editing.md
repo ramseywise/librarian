@@ -1,8 +1,8 @@
 ---
 title: StyleCLIP Text-Driven StyleGAN Editing
-tags: [multimodal, concept]
+tags: [multimodal, gans, concept]
 summary: "StyleCLIP edits StyleGAN images from text with a frozen CLIP, in three ways (latent optimization, a per-prompt residual mapper, and an input-agnostic global direction in style space); evaluation is mostly qualitative (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-patashnik-2021-styleclip.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: SQL Date Spine and Window Frames
-tags: [data-analytics, pattern]
+tags: [data-analytics, applied-analyses, pattern]
 summary: "Grouping drops periods with no rows, which inflates averages and lies on charts; start from a table of every period and left join. Also: explicit window frames, lag-by-rows pitfalls, QUALIFY for top-N and a one-scan funnel with FILTER."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--06-sql-for-analytics.md
 ---

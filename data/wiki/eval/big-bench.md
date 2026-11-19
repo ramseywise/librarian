@@ -1,8 +1,8 @@
 ---
 title: BIG-bench
-tags: [eval, reference]
+tags: [eval, language-tasks, reference]
 summary: "A community-built benchmark of 204 tasks from 450 authors at 132 institutions, run on models from 2M to 175B parameters; the best models scored under 20 on the normalised aggregate where expert raters would score close to 100, and about 5% of tasks showed sudden gains with scale (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-srivastava-2022-beyond-imitation-game.md
 ---

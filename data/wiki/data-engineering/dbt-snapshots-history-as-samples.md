@@ -1,8 +1,8 @@
 ---
 title: "dbt Snapshots: History as Samples"
-tags: [data-engineering, concept]
+tags: [data-engineering, transform-and-orchestrate, concept]
 summary: "A snapshot is a Type 2 history built by comparing a mutable source with what it holds on each run, so it samples rather than records: changes between runs are lost and a missed run cannot be rebuilt."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--03-transform-and-orchestrate--notes--03-dbt-tests-snapshots-incremental.md
 ---

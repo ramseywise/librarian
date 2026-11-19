@@ -1,8 +1,8 @@
 ---
 title: Open NLP Questions Large Language Models Do Not Solve
-tags: [eval, reference]
+tags: [eval, language-tasks, reference]
 summary: "A 2023 position paper from one academic lab lists 14 research areas with 45 directions it says LLMs do not directly solve, chosen to be thesis-sized and independent of paid APIs; it runs no experiments and is best used as a framing citation."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-ignat-2023-has-it-all-been-solved.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: PaLM-E Embodied Multimodal Language Model
-tags: [multimodal, concept]
+tags: [multimodal, multimodal-llms, concept]
 summary: "PaLM-E injects continuous sensor inputs (state vectors, ViT features, object-centric scene representations) into a pretrained PaLM's embedding space as multimodal sentences, so one model handles robot planning, VQA and language tasks (all numbers self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-driess-2023-palm-e.md
 ---

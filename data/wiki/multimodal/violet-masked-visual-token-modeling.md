@@ -1,8 +1,8 @@
 ---
 title: VIOLET Masked Visual-Token Modeling
-tags: [multimodal, concept]
+tags: [multimodal, video, concept]
 summary: "VIOLET is an end-to-end video-language transformer that uses a Video Swin encoder for temporal modelling and masked visual-token modeling over dVAE tokens as a pretraining task."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-fu-2021-violet.md
 ---

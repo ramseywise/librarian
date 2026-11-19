@@ -1,8 +1,8 @@
 ---
 title: Improved Techniques for Training GANs
-tags: [multimodal, concept]
+tags: [multimodal, gans, concept]
 summary: "Salimans et al. propose five heuristics for stabilising GAN training, a K+1-class semi-supervised GAN, and the Inception score as an automatic sample-quality metric (self-reported results on MNIST, CIFAR-10 and SVHN)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-salimans-2016-improved-techniques-training-gans.md
 ---

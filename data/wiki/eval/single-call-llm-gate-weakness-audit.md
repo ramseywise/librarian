@@ -1,8 +1,8 @@
 ---
 title: Single-Call LLM Gate Weakness Audit
-tags: [eval, pattern]
+tags: [eval, safety-and-bias, pattern]
 summary: "Seven recurring defect classes in a one-LLM-call publish gate: silent sanitizer repairs, self-reported approval, anchoring on the prior verdict, one verdict answering two questions, computable checks asked in prose, unbounded undelimited input, and decorative confidence. Fix order: baseline against human labels first, deterministic fixes next, and spend-backed experiments last, where a measured 'keep it as is' counts as a finished outcome."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-21-dis357-qc-baseline-fixes.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-21-dis357-qc-baseline-fixes.md

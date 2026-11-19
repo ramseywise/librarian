@@ -1,8 +1,8 @@
 ---
 title: "Imagen Frozen Language Model Text Conditioning"
-tags: [multimodal, concept]
+tags: [multimodal, diffusion-and-image-generation, concept]
 summary: "Imagen conditions a cascade of diffusion models on a frozen text-only T5 encoder, adds dynamic thresholding for large guidance weights, and introduces the DrawBench prompt set."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-saharia-2022-photorealistic-text-image-diffusion-models.md
 ---

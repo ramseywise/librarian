@@ -1,8 +1,8 @@
 ---
 title: "Data SLOs, Error Budgets and Paging on the Symptom"
-tags: [data-engineering, pattern]
+tags: [data-engineering, quality-and-observability, pattern]
 summary: "An SLI measures, an SLO targets, and the error budget (one minus the target) is arithmetic for acceptable failure; page on symptoms that threaten the SLO, and adapt burn-rate thresholds to a batch cadence where one late run is a large share of the budget."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--05-quality-and-observability--notes--06-dataops.md
 ---

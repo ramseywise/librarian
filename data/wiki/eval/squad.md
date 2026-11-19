@@ -1,8 +1,8 @@
 ---
 title: SQuAD
-tags: [eval, reference]
+tags: [eval, language-tasks, reference]
 summary: A span-extraction reading-comprehension benchmark of 107,785 crowdsourced questions on 536 Wikipedia articles, scored by exact match and token F1 against humans; the CNN/Daily Mail cloze corpus is its large semi-synthetic predecessor.
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-rajpurkar-2016-squad.md
   - data/raw/papers/2026-11-07-hermann-2015-teaching-machines-read-comprehend.md

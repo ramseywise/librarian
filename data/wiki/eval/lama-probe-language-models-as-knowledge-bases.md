@@ -1,8 +1,8 @@
 ---
 title: LAMA Knowledge Probe
-tags: [eval, reference]
+tags: [eval, language-tasks, reference]
 summary: "LAMA turns facts into cloze statements to test what relational knowledge pretrained language models hold with no fine-tuning; BERT-large rivals an oracle relation-extraction KB on some relations and trails on N-to-M ones (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-petroni-2019-language-models-as-knowledge-bases.md
 ---

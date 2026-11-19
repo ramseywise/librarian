@@ -1,8 +1,8 @@
 ---
 title: "Iceberg Metadata Tree and Hidden Partitioning"
-tags: [data-engineering, concept]
+tags: [data-engineering, warehouse-lakehouse-streaming, concept]
 summary: "Iceberg stores a tree of metadata, manifest lists and manifests under an atomic catalog pointer, which enables planning-time pruning, hidden partitioning, partition evolution and schema tracking by field ID."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--04-warehouse-lakehouse-streaming--notes--02-table-formats.md
 ---

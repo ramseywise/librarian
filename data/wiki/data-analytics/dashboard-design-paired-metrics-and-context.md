@@ -1,8 +1,8 @@
 ---
 title: "Dashboard Design: Paired Metrics and Context"
-tags: [data-analytics, pattern]
+tags: [data-analytics, visualisation-and-storytelling, pattern]
 summary: A dashboard serves a recurring decision with few contextualised metrics, each growth metric paired with a health metric; Streamlit reruns the script per interaction, and BI tools suit shared editing.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--05-visualisation-and-storytelling--notes--05-dashboards-and-storytelling.md
 ---

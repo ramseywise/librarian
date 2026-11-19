@@ -1,8 +1,8 @@
 ---
 title: Cohort Retention Triangle
-tags: [data-analytics, pattern]
+tags: [data-analytics, applied-analyses, pattern]
 summary: Cohorts hold customer age fixed so retention changes can be read as a cohort effect (who arrived) or a period effect (something hit everyone), with incomplete ages masked and channel value judged over 24 months, not at the first order.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--03-cohort-and-retention.md
 ---

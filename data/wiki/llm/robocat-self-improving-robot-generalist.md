@@ -1,8 +1,8 @@
 ---
 title: RoboCat Self-Improving Robot Generalist
-tags: [llm, pattern]
+tags: [llm, gui-and-embodied-agents, pattern]
 summary: "RoboCat trains one vision-based goal-conditioned policy across robot arms and tasks, fine-tunes it on a few hundred demonstrations, lets it collect its own data and retrains; the appendix evidence shows self-generated data is mostly failures and matches the data's success rate (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-bousmalis-2023-robocat.md
 ---

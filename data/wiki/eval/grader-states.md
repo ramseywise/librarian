@@ -1,8 +1,8 @@
 ---
 title: Grader States (Heuristic, Calibrated, Experimental)
-tags: [eval, llm, pattern]
+tags: [eval, graders-and-metrics, llm, pattern]
 summary: "Give every grader an explicit state — heuristic (deterministic code), calibrated (judge with human-agreement evidence), experimental (new or uncalibrated) — and let only the first two gate a release; behind it sits one grader interface with a requires field and a grader_version."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--04-graders.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--10-evals-in-ci.md

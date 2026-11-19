@@ -1,8 +1,8 @@
 ---
 title: "Diffusion and GAN Image Generation"
-tags: [multimodal, concept]
+tags: [multimodal, diffusion-and-image-generation, concept]
 summary: "Map of the image-generation methods compiled from the multimodal engineering papers: diffusion foundations, guidance, text-to-image systems, editing and personalisation, GANs and their metrics, and token-based generators."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-brock-2018-large-scale-gan-training-high.md
   - data/raw/papers/2026-11-07-brooks-2023-instructpix2pix.md

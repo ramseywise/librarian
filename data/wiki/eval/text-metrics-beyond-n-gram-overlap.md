@@ -1,8 +1,8 @@
 ---
 title: Text Metrics Beyond N-gram Overlap
-tags: [eval, concept]
+tags: [eval, graders-and-metrics, concept]
 summary: "Four 2019-2020 metrics that replace word overlap with something else: BERTScore (greedy embedding matching), BLEURT (BERT pretrained on synthetic perturbations, then tuned on human ratings), CodeBLEU (BLEU plus syntax-tree and data-flow matches) and USR (reference-free dialog scoring), each reporting gains on its own correlation setup (self-reported), plus a 2022 study where ROUGE and human preference ranked prompted GPT-3 summaries in opposite order."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-zhang-2019-bertscore.md
   - data/raw/papers/2026-11-07-sellam-2020-bleurt.md

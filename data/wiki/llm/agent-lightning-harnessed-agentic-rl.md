@@ -1,8 +1,8 @@
 ---
 title: Agent Lightning v1.0 Harnessed Agentic RL
-tags: [llm, pattern]
+tags: [llm, agent-training, pattern]
 summary: "Agent Lightning v1.0 trains agents behind a proxy that records token IDs per call, merges calls into sequences only when the exact token prefix survives, and computes advantage and loss per rollout; Qwen3.5-9B went from 41.8% to 56.4% on SWE-bench Verified (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-he-2026-agent-lightning-v1-0.md
 ---

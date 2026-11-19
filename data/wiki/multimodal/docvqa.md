@@ -1,8 +1,8 @@
 ---
 title: DocVQA
-tags: [multimodal, concept]
+tags: [multimodal, benchmarks-and-metrics, concept]
 summary: "DocVQA pairs 12,767 document page images with 50,000 extractive questions and scores answers with ANLS; scene-text VQA models and text-only BERT readers fall well short of humans, especially on layout, figures and handwriting (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-mathew-2021-docvqa.md
 ---

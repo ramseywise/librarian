@@ -1,8 +1,8 @@
 ---
 title: "Contract Change Impact Chain and the Same-Name Unit Change"
-tags: [data-engineering, pattern]
+tags: [data-engineering, architecture-and-governance, pattern]
 summary: "Follow a column change from contract to catalog to metrics to named consumers using registration, lineage and the query log; a unit change under the same name passes every check."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--07-architecture-and-governance--notes--03-catalog-semantic-layer-and-contracts.md
   - data/raw/repos/learn-ai-engineering/data-engineering--07-architecture-and-governance--notes--01-data-architectures-mesh-fabric-mdw.md

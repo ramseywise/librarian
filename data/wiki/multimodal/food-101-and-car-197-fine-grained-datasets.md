@@ -1,8 +1,8 @@
 ---
 title: Food-101 and car-197 Fine-Grained Datasets
-tags: [multimodal, reference]
+tags: [multimodal, benchmarks-and-metrics, reference]
 summary: "Food-101 (101,000 images, 101 dish classes) and car-197 (16,185 images, 197 car models) are two fine-grained recognition datasets from 2013-2014 papers; both papers' own methods were hand-engineered and, on the main sets, did not beat a CNN or a plain 2D baseline (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-bossard-2014-food-101-mining-discriminative-components.md
   - data/raw/papers/2026-11-08-krause-2013-3d-object-representations-fine-grained.md

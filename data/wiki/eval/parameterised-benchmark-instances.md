@@ -1,8 +1,8 @@
 ---
 title: Parameterised Benchmark Instances
-tags: [eval, concept]
+tags: [eval, datasets-and-contamination, concept]
 summary: The answer to benchmark leakage for agent evals — publish the instance generator, keep instances private and freshly drawn per run, grade on final environment state, and when training on a benchmark reuse its environments but hold out whole templates or domains, because parameterisation stops answer memorisation but not template overfitting.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/sisyphus/interviewing--guides--6-evals-observability--interview-guide.md
   - data/raw/repos/sisyphus/interviewing--guides--2-llm-fundamentals--interview-guide.md

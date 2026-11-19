@@ -1,8 +1,8 @@
 ---
 title: Model Version Drift
-tags: [eval, concept]
+tags: [eval, reading-results, concept]
 summary: "A hosted model behind the same name can change between snapshots: Chen et al. found GPT-4's prime-number accuracy fall from 84% to 51% between March and June 2023 and its directly runnable code from 52% to 10%, several drops coming from format and instruction-following changes, while 12.2% of its medical-exam answers changed although accuracy moved about four points."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-chen-2023-how-chatgpt-s-behavior-changing.md
   - data/raw/papers/2026-11-08-chen-2023-chatgpt-s-one-year-anniversary.md

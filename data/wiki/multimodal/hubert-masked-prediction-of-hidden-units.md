@@ -1,8 +1,8 @@
 ---
 title: HuBERT Masked Prediction of Hidden Units
-tags: [multimodal, method]
+tags: [multimodal, speech-and-audio, method]
 summary: "HuBERT predicts offline k-means cluster labels for masked speech frames, with the loss on masked frames only and the cluster targets refined over iterations."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-hsu-2021-hubert.md
 ---

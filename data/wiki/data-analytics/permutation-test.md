@@ -1,8 +1,8 @@
 ---
 title: Permutation Test
-tags: [data-analytics, pattern]
+tags: [data-analytics, probability-and-statistics, pattern]
 summary: "A permutation test builds the null distribution by shuffling group labels, needing few assumptions; classical t-tests are approximations to it and agree closely on well-behaved data."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--05-hypothesis-testing.md
 ---

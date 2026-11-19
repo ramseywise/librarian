@@ -1,8 +1,8 @@
 ---
 title: MERLOT Multimodal Script Knowledge
-tags: [multimodal, concept]
+tags: [multimodal, video, concept]
 summary: "MERLOT pretrains on YT-Temporal-180M, 180M frame and ASR-segment pairs from 6M YouTube videos, with contrastive matching, attention-masked language modeling and frame reordering to learn script knowledge."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-zellers-2021-merlot.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: Multimodal Fusion and Multipurpose Models
-tags: [multimodal, concept]
+tags: [multimodal, multimodal-llms, concept]
 summary: "A textbook digest on how deep to fuse modalities (early, joint, late), the structured-plus-unstructured data findings, and multipurpose multitask models (MultiModel, UniT, OFA, Gato, LIMoE, muNet), with the chapter's caveats about missing numbers."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-multimodal-deep-learning-ch04-further-topics.md
 ---

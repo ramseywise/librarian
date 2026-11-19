@@ -1,8 +1,8 @@
 ---
 title: Basel IRB Capital Vocabulary
-tags: [data-analytics, reference]
+tags: [data-analytics, applied-analyses, reference]
 summary: The terms linking a default-probability model to bank capital (PD, LGD, EAD, expected vs unexpected loss, RWA) and the one-factor logic that makes capital grow far more slowly than expected loss as PD rises.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--02-credit-scoring.md
 ---

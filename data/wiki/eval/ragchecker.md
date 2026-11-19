@@ -1,8 +1,8 @@
 ---
 title: RAGChecker
-tags: [eval, rag, reference]
+tags: [eval, rag-and-grounding, rag, reference]
 summary: "A claim-level RAG diagnosis framework that extracts claims from the response and the reference answer and checks entailment, reporting overall, retriever and generator metrics; its overall metrics correlated with human preference at Pearson 61.93 on 280 response pairs against 70.09 between annotators (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-ru-2024-ragchecker.md
 ---

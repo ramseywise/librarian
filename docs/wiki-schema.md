@@ -2,6 +2,15 @@
 
 Moved from CLAUDE.md. The routing rule (patterns vs subject vs interview) and the private rules stay in CLAUDE.md.
 
+## Topics within a large directory
+
+`data/wiki/_topics.yaml` lists the topics of each directory past about 100 pages (data-analytics,
+data-engineering, eval, multimodal, llm on 2026-11-19). A page there carries exactly one as a tag;
+`/lint` WARNs on none or two. Where a course module covers the directory, the topic is the module's
+slug. A page with no fitting topic is a candidate to move, so it is left untagged and the WARN
+stays. Tier ("introduced at") and modules are not tags: `courses/curriculum.py` derives them
+from the notes that link a page.
+
 ## Subdirectories of `data/wiki/`
 
 The top-level directory is the page's domain (its first tag). A subdirectory only files pages:

@@ -1,8 +1,8 @@
 ---
 title: Grammar of Graphics
-tags: [data-analytics, concept]
+tags: [data-analytics, visualisation-and-storytelling, concept]
 summary: A chart is a composition of independent decisions (data, mark, encoding, statistic, scale, coordinates, facet), so chart choice becomes "which encoding makes my comparison easiest to read".
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--05-visualisation-and-storytelling--notes--01-grammar-and-chart-choice.md
   - data/raw/repos/learn-ai-engineering/data-analytics--05-visualisation-and-storytelling--notes--04-javascript-d3-vega-lite-observable-plot.md

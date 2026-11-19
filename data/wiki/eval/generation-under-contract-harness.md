@@ -1,8 +1,8 @@
 ---
 title: Generation-Under-Contract Eval Harness
-tags: [eval, pattern]
+tags: [eval, defining-correct, pattern]
 summary: "A third kind of eval, separate from retrieval and interaction grading: the harness itself drives a producer through generate → validate → repair → fallback and measures process facts (first-pass validity, repair convergence, fallback rate). Two things make it work: a producer contract that returns those facts, and a scripted dry-run provider whose results vary across cases."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/galactus/docs/plans/2026-08-11-gal-4-phase3-ai-evals-extraction.md
   - data/raw/repos/galactus/.claude--docs--plans--2026-08-11-gal-4-phase3-ai-evals-extraction.md

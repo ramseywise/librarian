@@ -1,8 +1,8 @@
 ---
 title: Role Anchor and Role Drift
-tags: [llm, concept]
+tags: [llm, interpretability-and-safety, concept]
 summary: Role drift is the loss of a module's assigned job when a compound LLM pipeline is trained end to end with a final-answer reward; the Role Anchor penalty on a role-utility measure kept a RAG reader evidence-following (0.869 against 0.589) in a small study (self-reported).
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-cao-2026-do-modules-stay-their-lane.md
 ---

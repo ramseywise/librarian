@@ -1,8 +1,8 @@
 ---
 title: "Partitioning Strategies and Hot Spots"
-tags: [data-engineering, concept]
+tags: [data-engineering, storage-and-compute-foundations, concept]
 summary: "Range versus hash versus compound partition keys, why hot keys need salting, how secondary indexes fan out, and why rebalancing needs many fixed partitions rather than hash mod N."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--01-storage-and-compute-foundations--notes--05-partitioning-and-replication.md
 ---

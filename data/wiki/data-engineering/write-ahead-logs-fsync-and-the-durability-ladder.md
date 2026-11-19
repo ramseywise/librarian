@@ -1,8 +1,8 @@
 ---
 title: "Write-Ahead Logs, fsync and the Durability Ladder"
-tags: [data-engineering, concept]
+tags: [data-engineering, storage-and-compute-foundations, concept]
 summary: "Saved is a ladder of rungs (process buffer, page cache, device, log, replica, backup), each surviving a different failure; fsync and a checksummed write-ahead log make a crash boring, and replace-by-rename keeps whole files atomic."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--01-storage-and-compute-foundations--notes--09-persistence.md
 ---

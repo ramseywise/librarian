@@ -1,8 +1,8 @@
 ---
 title: "Re-embedding a Vector Store with a Second Index"
-tags: [data-engineering, pattern]
+tags: [data-engineering, quality-and-observability, pattern]
 summary: "A new embedding model is a schema change the database cannot see: queries still run and return garbage, so build a second collection, dual write, shadow test on retrieval, then swap an alias and keep the old one for rollback."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--05-quality-and-observability--notes--04-schema-and-data-migrations.md
 ---

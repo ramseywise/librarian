@@ -1,8 +1,8 @@
 ---
 title: "Backfills, As-Of Dimensions and Past-Dependent Tables"
-tags: [data-engineering, pattern]
+tags: [data-engineering, transform-and-orchestrate, pattern]
 summary: "With idempotent per-period tasks a backfill is a rerunnable, parallelisable loop; the hard parts are which dimension version old periods should use, tables that read the previous partition, late data restatement, and reconciling afterwards."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--03-transform-and-orchestrate--notes--04-idempotency-and-backfills.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: RISE Recursive Introspection
-tags: [llm, pattern]
+tags: [llm, agent-training, pattern]
 summary: "Fine-tune one model on multi-turn rollouts where it sees its earlier wrong answers and revises them, so that sequential revision beats parallel sampling on math; in the paper, prompted self-refine lowered accuracy and plain single-turn SFT on the same data did not teach it."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-qu-2024-recursive-introspection.md
 ---

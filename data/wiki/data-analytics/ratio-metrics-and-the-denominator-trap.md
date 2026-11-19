@@ -1,8 +1,8 @@
 ---
 title: Ratio Metrics and the Denominator Trap
-tags: [data-analytics, concept]
+tags: [data-analytics, experimentation-and-causality, concept]
 summary: "When treatment can change a ratio's denominator, the ratio can fall while the numerator and the business improve; never report a ratio without its parts, choose ratio of averages or average of ratios deliberately, and take the standard error with the user as the independent unit."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--02-metrics-and-kpi-design.md
 ---

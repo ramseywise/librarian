@@ -1,8 +1,8 @@
 ---
 title: Stored Instruction Computer LLM Memory Universality
-tags: [llm, concept]
+tags: [llm, architecture, concept]
 summary: "Schuurmans shows a frozen LLM plus an external associative memory and a regex loop can run a universal Turing machine, verified by 29 greedy prompts on Flan-U-PaLM 540B; it is a computability argument, not evidence about how agents use memory."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-schuurmans-2023-memory-augmented-large-language-models.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: DuckDB Embedded Analytical Database
-tags: [data-engineering, concept]
+tags: [data-engineering, storage-and-compute-foundations, concept]
 summary: DuckDB runs analytical SQL inside the host process using a vectorized interpreted engine, compressed column blocks and serializable MVCC, built from existing techniques rather than new ones.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-raasveldt-2019-duckdb.md
 ---

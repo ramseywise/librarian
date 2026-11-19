@@ -1,8 +1,8 @@
 ---
 title: Partial Pooling and Multilevel Models
-tags: [data-analytics, concept]
+tags: [data-analytics, bayesian-analysis, concept]
 summary: "A multilevel model estimates every group together so each borrows strength in proportion to how little data it has (weight = tau^2 / (tau^2 + sigma^2/n)); it beats both no pooling and complete pooling in simulation, but boundary estimates and few groups make the variance parts fragile."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--07-multilevel-models-and-partial-pooling.md
 ---

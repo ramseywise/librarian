@@ -1,8 +1,8 @@
 ---
 title: BBQ Bias Benchmark
-tags: [eval, reference]
+tags: [eval, safety-and-bias, reference]
 summary: "BBQ is 58,492 hand-written three-choice questions probing nine social bias categories in ambiguous and disambiguated contexts; the authors found QA models fell back on stereotypes when the context was under-informative, with bias scores that cannot certify a model unbiased (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-parrish-2022-bbq.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: Extract-and-Evaluate Monitoring
-tags: [eval, pattern]
+tags: [eval, agent-eval, pattern]
 summary: "Split an agent monitor in two: an extractor picks the suspicious quotes from a transcript and an evaluator scores only those quotes and the task; on BigCodeBench-Sabotage this raised a GPT-4.1-mini monitor's catch rate at 1% FPR by 16.8 points over the best of four baselines (self-reported), which the authors attribute to full-context monitors rationalising what they see."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-arike-2026-how-does-information-access-affect.md
 ---

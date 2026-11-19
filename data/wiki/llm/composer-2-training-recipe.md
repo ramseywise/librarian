@@ -1,8 +1,8 @@
 ---
 title: Composer 2 Training Recipe
-tags: [llm, concept]
+tags: [llm, agent-training, concept]
 summary: "Cursor's coding model: continued pretraining of Kimi K2.5, then RL in the production harness with Dr. GRPO-style updates, self-summarization trained end to end and a length penalty; scored on the internal CursorBench-3."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-research-2026-composer-2-technical-report.md
 ---

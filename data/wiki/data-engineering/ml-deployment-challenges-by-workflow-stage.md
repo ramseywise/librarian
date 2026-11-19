@@ -1,8 +1,8 @@
 ---
 title: ML Deployment Challenges by Workflow Stage
-tags: [data-engineering, concept]
+tags: [data-engineering, ml-platform, concept]
 summary: "A literature survey of deployment case studies maps issues onto four workflow stages plus cross-cutting concerns, argues that challenges appear at every stage, and ranks none of them."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-paleyes-2020-challenges-deploying-machine-learning.md
 ---

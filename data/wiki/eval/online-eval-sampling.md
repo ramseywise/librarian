@@ -1,8 +1,8 @@
 ---
 title: Online Eval Sampling
-tags: [eval, infra, llm, pattern]
+tags: [eval, production-and-failures, infra, llm, pattern]
 summary: "Score 10–20% of production traces by rule rather than at random — negative feedback, high-cost dialogues, time windows, and a full 48-hour review after any model or prompt change."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--eval-harness.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--eval-harness.md

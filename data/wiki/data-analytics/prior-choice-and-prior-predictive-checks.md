@@ -1,8 +1,8 @@
 ---
 title: Prior Choice and Prior Predictive Checks
-tags: [data-analytics, pattern]
+tags: [data-analytics, bayesian-analysis, pattern]
 summary: "A wide prior is not uninformative once a model transforms it; simulate outcomes from the prior before seeing data, pick weakly informative priors on a standardised scale, and remember priors wash out with data but a zero-mass region never does."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-gelman-2009-weakly-informative-default-prior-distribution.md
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--03-priors-and-bandits.md

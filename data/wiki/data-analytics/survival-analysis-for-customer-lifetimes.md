@@ -1,8 +1,8 @@
 ---
 title: Survival Analysis for Customer Lifetimes
-tags: [data-analytics, concept]
+tags: [data-analytics, applied-analyses, concept]
 summary: Customer lifetimes are censored, so averaging them is biased; Kaplan-Meier, Cox hazard ratios, time-varying covariates, competing risks and a person-period logit each handle one trap, and a single hazard ratio can hide an effect that wears off.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--07-survival-and-event-history.md
 ---

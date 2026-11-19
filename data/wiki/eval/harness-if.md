@@ -1,8 +1,8 @@
 ---
 title: Harness-IF
-tags: [eval, reference]
+tags: [eval, agent-eval, reference]
 summary: "A benchmark of rule-level instruction following in multi-turn coding agents that scores against-prior rules (ones the model would not follow by default) separately; across 12 models accuracy ran 72.1% to 85.9% but against-prior accuracy was lower for every model, by 3.6 to 7.4 points (mean 5.81), and a small pilot found tool and skill descriptions lose instruction conflicts (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-huang-2026-harness-if.md
 ---

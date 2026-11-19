@@ -1,8 +1,8 @@
 ---
 title: MCMC and Metropolis Sampling
-tags: [data-analytics, concept]
+tags: [data-analytics, bayesian-analysis, concept]
 summary: "MCMC returns correlated samples from the posterior using only density ratios; step size decides whether a Metropolis chain works, effective sample size and R-hat tell whether it did, and gradient-based NUTS removes the tuning for continuous models."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--02-mcmc-and-pymc.md
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--06-bayesian-machine-learning.md

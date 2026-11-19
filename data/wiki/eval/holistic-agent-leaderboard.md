@@ -1,8 +1,8 @@
 ---
 title: Holistic Agent Leaderboard (HAL)
-tags: [eval, reference]
+tags: [eval, agent-eval, reference]
 summary: "HAL is a shared harness that ran 21,730 agent rollouts (9 models, 9 benchmarks, about $40,000, self-reported), mostly single runs; it found higher reasoning effort gave equal or lower accuracy in 21 of 36 pairs, the costliest model on the cost-accuracy frontier in 1 of 9 benchmarks, and log analysis surfacing leakage, shortcuts and unsafe actions."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-kapoor-2025-holistic-agent-leaderboard.md
   - data/raw/papers/2026-11-05-yehudai-2025-survey-evaluation-llm-based-agents.md

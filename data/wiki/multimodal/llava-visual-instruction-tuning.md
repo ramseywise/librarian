@@ -1,8 +1,8 @@
 ---
 title: LLaVA Visual Instruction Tuning
-tags: [multimodal, pattern]
+tags: [multimodal, multimodal-llms, pattern]
 summary: "LLaVA connects a CLIP vision encoder to Vicuna through a small trained projector, aligns it on caption pairs, then instruction-tunes it on GPT-4-written image conversations; LLaVA-1.5 swaps in an MLP connector, VQA data with format prompts and 336px input (all numbers self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-liu-2023-visual-instruction-tuning.md
   - data/raw/papers/2026-11-07-liu-2024-improved-baselines-visual-instruction-tuning.md

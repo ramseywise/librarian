@@ -1,8 +1,8 @@
 ---
 title: GSM-Symbolic
-tags: [eval, reference]
+tags: [eval, reasoning-and-math, reference]
 summary: "A template-based rebuild of 100 GSM8K questions that can be re-instantiated with new names and numbers; across 25 models the score on one question set was a draw from a distribution, adding clauses lowered it, and one irrelevant clause (GSM-NoOp) cost o1-preview 17.5 points (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-mirzadeh-2024-gsm-symbolic.md
 ---

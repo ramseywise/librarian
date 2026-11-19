@@ -1,8 +1,8 @@
 ---
 title: VLM Benchmark Shortcuts
-tags: [eval, concept]
+tags: [eval, reasoning-and-math, concept]
 summary: "Vision-language benchmarks can be passed without seeing: a model of all-zero weights scores 100% on caption-pair tests when ties go to the first, correct, caption; for one question type in the original VQA, 'yes' is right 98% of the time; exact-match VQA accuracy under-scores free-form answers; and CHAIR misleads on long outputs."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-03-bordes-2024-introduction-vision-language-modeling.md
 ---

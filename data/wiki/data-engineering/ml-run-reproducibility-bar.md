@@ -1,8 +1,8 @@
 ---
 title: ML Run Reproducibility Bar
-tags: [data-engineering, eval, pattern]
+tags: [data-engineering, ml-platform, eval, pattern]
 summary: "A five-element bar that takes an ML prototype run from 'a finding in prose' to 'a finding a second person can refute from the record alone': tests in the default suite, a dry run on clean and planted-leak synthetic twins, guards the run owns, a validated run record with a reproduce check, and a data-handling sweep. It comes with the two ways a bar score misleads and the abort-vs-refuse guard taxonomy."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/galactus/docs/plans/2026-08-15-lending-parity.md
   - data/raw/repos/galactus/.claude--docs--plans--2026-08-15-lending-parity.md

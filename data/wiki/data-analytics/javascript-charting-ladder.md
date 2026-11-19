@@ -1,8 +1,8 @@
 ---
 title: JavaScript Charting Ladder
-tags: [data-analytics, comparison]
+tags: [data-analytics, visualisation-and-storytelling, comparison]
 summary: D3 (elements and geometry, data join), Vega-Lite (JSON grammar compiled to Vega) and Observable Plot (marks and options) trade control against code volume; default to the highest rung that works.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--05-visualisation-and-storytelling--notes--04-javascript-d3-vega-lite-observable-plot.md
 ---

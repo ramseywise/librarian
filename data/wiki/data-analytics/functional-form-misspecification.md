@@ -1,8 +1,8 @@
 ---
 title: Functional Form Misspecification
-tags: [data-analytics, pattern]
+tags: [data-analytics, probability-and-statistics, pattern]
 summary: "A linear control for a hump-shaped confounder biases the treatment effect threefold with zero coverage, flexible forms fix it, and a quadratic whose peak looks significant can be an artifact of a curve that never turns."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--07-data-generating-process.md
 ---

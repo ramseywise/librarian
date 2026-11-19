@@ -1,8 +1,8 @@
 ---
 title: Prometheus 2 Evaluator Models
-tags: [eval, llm, concept]
+tags: [eval, judges, llm, concept]
 summary: "Prometheus 2 is an open evaluator model made by training one judge for direct 1-5 rubric scoring and another for pairwise ranking, then merging their weights; on FLASK its 8x7B version reached 0.555 Pearson with humans against 0.449 for the first Prometheus and 0.679 for GPT-4 (self-reported), and merging beat joint training."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-kim-2024-prometheus-2.md
 ---

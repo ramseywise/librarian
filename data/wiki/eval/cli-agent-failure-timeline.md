@@ -1,8 +1,8 @@
 ---
 title: CLI Agent Failure Timeline
-tags: [eval, concept]
+tags: [eval, agent-eval, concept]
 summary: "Zhao et al. model a failed coding-agent run with three hindsight-labelled timestamps (decisive error, lock-in, first visible sign): across 1,184 failed Terminal-Bench runs the median decisive error is at step 7 of a median 27, and 28% of failures never surface (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-zhao-2026-failure-as-process.md
 ---

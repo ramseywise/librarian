@@ -1,8 +1,8 @@
 ---
 title: Eval vs Test Distinction
-tags: [eval, llm, concept]
+tags: [eval, defining-correct, llm, concept]
 summary: A test tells you your code is broken; an eval tells you your product got worse — two different instruments with different targets, graders, cadences, and failure semantics.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/guacamayo/docs/research/2026-08-02_eval-driven-development.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--01-what-an-eval-is.md

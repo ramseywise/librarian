@@ -1,8 +1,8 @@
 ---
 title: One-Sided Label Control
-tags: [eval, pattern]
+tags: [eval, judges, pattern]
 summary: A labelling UI that can only mark a value "wrong" makes precision = right/(right+wrong) zero or unmeasurable by construction and leaves affirmed-correct values indistinguishable from unreviewed ones — before a labelling session, check that the control can write both verdicts, that the sample is model output, that the surface can be scoped to the sample, and that a failed seed fails loudly.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/akira/docs/research/2026-09-28-dis414-venue-facet-labelling.md
   - data/raw/claude-docs/diskoe/docs/research/2026-09-28-dis414-venue-facet-labelling.md

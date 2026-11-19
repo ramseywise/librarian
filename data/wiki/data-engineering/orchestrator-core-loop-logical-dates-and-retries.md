@@ -1,8 +1,8 @@
 ---
 title: "Orchestrator Core Loop, Logical Dates and Retries"
-tags: [data-engineering, concept]
+tags: [data-engineering, transform-and-orchestrate, concept]
 summary: "Every orchestrator is a loop that orders tasks by dependency, skips what depends on a failure, retries with backoff and records runs against a logical date that is not the clock; scheduling is the set of expected runs minus the successful ones."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--03-transform-and-orchestrate--notes--02-orchestrate.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: LLM-as-Judge Evaluation
-tags: [eval, llm, pattern]
+tags: [eval, judges, llm, pattern]
 summary: A separate LLM scoring outputs against a rubric — the approach for subjective quality where exact matching fails, requiring calibration against human grades and recommended as a complement to golden-set grading rather than a replacement.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-luong-2025-towards-robust-mathematical-reasoning.md
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/eval-approaches.md

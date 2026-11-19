@@ -1,8 +1,8 @@
 ---
 title: MEDEC
-tags: [eval, reference]
+tags: [eval, language-tasks, reference]
 summary: A benchmark of clinical notes that are either correct or hold exactly one medical error of five types, with three subtasks (flag, locate, correct); LLMs lead on detection or correction in different ways and two doctors still beat all models.
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-abacha-2024-medec.md
 ---

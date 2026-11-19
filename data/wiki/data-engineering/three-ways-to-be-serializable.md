@@ -1,8 +1,8 @@
 ---
 title: "Three Ways to Be Serializable"
-tags: [data-engineering, comparison]
+tags: [data-engineering, storage-and-compute-foundations, comparison]
 summary: "Serial execution, two-phase locking and serializable snapshot isolation each buy serializability at a different price: a throughput ceiling, blocking and deadlocks, or aborts under contention."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--01-storage-and-compute-foundations--notes--04-transactions-and-isolation.md
 ---

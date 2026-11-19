@@ -1,8 +1,8 @@
 ---
 title: Writing a Metric Definition Two Analysts Agree On
-tags: [data-analytics, pattern]
+tags: [data-analytics, experimentation-and-causality, pattern]
 summary: A metric definition fixes population, finality, window, clock, unit, owner and version in a spec that code reads; immature cohorts read as falls (censoring) and the function should return None rather than zero.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--11-metric-trees.md
 ---

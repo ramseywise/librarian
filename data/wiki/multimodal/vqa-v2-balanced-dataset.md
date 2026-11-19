@@ -1,8 +1,8 @@
 ---
 title: VQA v2 Balanced Dataset
-tags: [multimodal, concept]
+tags: [multimodal, benchmarks-and-metrics, concept]
 summary: "VQA v2 pairs every question with two similar COCO images that have different answers, so a model cannot succeed on language priors alone; models trained on the original unbalanced set lose accuracy on it (all figures self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-goyal-2017-making-v-vqa-matter.md
 ---

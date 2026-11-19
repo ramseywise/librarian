@@ -1,8 +1,8 @@
 ---
 title: MedBrowseComp
-tags: [eval, reference]
+tags: [eval, language-tasks, reference]
 summary: "A benchmark of 1,000+ multi-hop medical fact-seeking questions built from HemOnc.org and linked sources; accuracy falls as hop count rises, search helps most at low hop counts, and computer-use agents trail API-driven deep research (self-reported, one run per system)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-chen-2025-medbrowsecomp.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: Expectation-Maximisation for Gaussian Mixtures
-tags: [data-analytics, concept]
+tags: [data-analytics, bayesian-analysis, concept]
 summary: "EM fits a mixture by alternating soft cluster assignments (E-step) with weighted parameter refits (M-step); the likelihood never falls but only reaches a local peak, so restart several times and keep the best, and remember it gives a point estimate with no parameter uncertainty."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--06-bayesian-machine-learning.md
 ---

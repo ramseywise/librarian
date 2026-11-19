@@ -1,8 +1,8 @@
 ---
 title: Covariate Balance and Overlap Checks
-tags: [data-analytics, pattern]
+tags: [data-analytics, experimentation-and-causality, pattern]
 summary: "Before reading any outcome, check that treated and comparison groups are comparable using standardised mean differences, variance ratios and propensity overlap; fix the design on balance alone, and report the effective sample size since 5,710 weighted controls were worth 107."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--05-matching-and-weighting.md
 ---

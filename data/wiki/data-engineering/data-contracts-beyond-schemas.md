@@ -1,8 +1,8 @@
 ---
 title: "Data Contracts Beyond Schemas"
-tags: [data-engineering, concept]
+tags: [data-engineering, ingest-and-modelling, concept]
 summary: "A data contract is a machine-checked agreement between producer and consumers covering structure, meaning, quality, freshness, ownership and grain; a units change such as dollars to cents passes every schema test and only a written semantic rule catches it."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--02-ingest-and-modelling--notes--04-data-contracts.md
 ---

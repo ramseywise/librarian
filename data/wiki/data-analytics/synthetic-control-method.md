@@ -1,8 +1,8 @@
 ---
 title: Synthetic Control Method
-tags: [data-analytics, pattern]
+tags: [data-analytics, experimentation-and-causality, pattern]
 summary: "With one treated unit and many untreated donors, fit non-negative weights summing to one on the pre-period so the weighted donors track the treated unit, then read the post-launch gap; inference comes from placebo runs, not conventional standard errors."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--04-correlation-and-causation.md
 ---

@@ -1,10 +1,12 @@
 ---
-imported_hash: 2fae71e1ba0f4e41
+imported_hash: 35366b42b180b514
 title: 3 — Indexing and Selection
 summary: 'Nearly everything you do to a frame starts with saying which part of it you mean: January''s orders, the revenue column, the top row of each product.'
 order: 4
 kind: reading
 section: Notes
+tier: practitioner
+depth: core
 source: learn-ai-engineering/data-analytics/01-python-for-data-analysis/notes/03-indexing-and-selection.md
 ---
 

@@ -1,8 +1,8 @@
 ---
 title: DreamGym Synthetic Experience RL
-tags: [llm, pattern]
+tags: [llm, agent-training, pattern]
 summary: "DreamGym replaces the real environment with an LLM experience model that predicts next states and rewards, plus a variance-based task curriculum; agents trained only on its output reached roughly the level of RL on 80K real transitions in two of three environments (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-chen-2025-scaling-agent-learning-experience-synthesis.md
 ---

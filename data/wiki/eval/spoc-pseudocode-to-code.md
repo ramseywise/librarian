@@ -1,8 +1,8 @@
 ---
 title: SPoC Pseudocode-to-Code
-tags: [eval, benchmark]
+tags: [eval, code, benchmark]
 summary: "SPoC pairs 18,356 C++ programs with line-level human pseudocode and about 38.6 tests each, and searches over per-line translations under a compilation budget; the paper reports error localization lifting success to 44.7% at 100 compilations, though its abstract and introduction disagree on the top-one baseline (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-kulal-2019-spoc.md
 ---

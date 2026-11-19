@@ -1,8 +1,8 @@
 ---
 title: Concept-Drift Detector Families and Prequential Evaluation
-tags: [data-engineering, concept]
+tags: [data-engineering, ml-platform, concept]
 summary: "A survey of online learning under drift sorts detectors into four families with different cost and precision, treats only real drift as needing adaptation, and scores streams prequentially because cross-validation breaks time order."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-gama-2014-survey-concept-drift-adaptation.md
 ---

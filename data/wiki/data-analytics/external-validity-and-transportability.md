@@ -1,8 +1,8 @@
 ---
 title: External Validity and Transportability
-tags: [data-analytics, concept]
+tags: [data-analytics, experimentation-and-causality, concept]
 summary: "Randomisation buys internal validity only: whether an effect carries to another population depends on how the sample was selected, and reweighting fixes selection on measured variables but never on an unmeasured one."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--07-data-generating-process.md
 ---

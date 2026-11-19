@@ -1,8 +1,8 @@
 ---
 title: The Augmentation Gate
-tags: [eval, rag, concept]
+tags: [eval, rag-and-grounding, rag, concept]
 summary: "The A in RAG is the gate nobody evaluates — retrieval can be perfect and generation can be sound while the failure lives entirely in how much retrieved context got handed to the model."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - own-prose
 ---

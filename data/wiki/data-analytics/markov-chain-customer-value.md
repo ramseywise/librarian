@@ -1,8 +1,8 @@
 ---
 title: Markov Chain Customer Value
-tags: [data-analytics, concept]
+tags: [data-analytics, applied-analyses, concept]
 summary: A monthly state-transition table gives customer lifetime value in one linear solve, but a single pooled chain averages unlike customers and undervalues them (about 19% low in simulation); check the chain on a holdout and use a mixture of chains.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--08-states-and-sequences.md
 ---

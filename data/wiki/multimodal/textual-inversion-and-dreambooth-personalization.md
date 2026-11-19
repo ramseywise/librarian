@@ -1,8 +1,8 @@
 ---
 title: "Textual Inversion and DreamBooth Personalization"
-tags: [multimodal, concept]
+tags: [multimodal, diffusion-and-image-generation, concept]
 summary: "Two ways to make a text-to-image model render a user's own subject from 3-5 photos: Textual Inversion learns one new word embedding in a frozen model, DreamBooth fine-tunes the model around a rare-token identifier with a prior-preservation loss."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-gal-2022-image-worth-one-word.md
   - data/raw/papers/2026-11-07-ruiz-2022-dreambooth.md

@@ -1,8 +1,8 @@
 ---
 title: PandaLM
-tags: [eval, llm, pattern]
+tags: [eval, judges, llm, pattern]
 summary: "PandaLM fine-tunes a LLaMA-based judge on 300K order-consistent pairwise labels distilled from GPT-3.5 and uses it to pick instruction-tuning hyperparameters; the 70B size agreed with humans slightly more than GPT-4 on a 999-pair test set while the 7B size scored 0.5926 and stayed below GPT-3.5 and GPT-4 (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-wang-2023-pandalm.md
 ---

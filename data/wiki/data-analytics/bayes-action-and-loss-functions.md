@@ -1,8 +1,8 @@
 ---
 title: Bayes Action and Loss Functions
-tags: [data-analytics, concept]
+tags: [data-analytics, bayesian-analysis, concept]
 summary: "A posterior is not a decision: write down what each wrong answer costs, average that loss over posterior draws and pick the minimiser; squared loss gives the mean, absolute loss the median, zero-one the mode, and asymmetric losses give answers no point estimate would."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--05-loss-functions-and-decisions.md
 ---

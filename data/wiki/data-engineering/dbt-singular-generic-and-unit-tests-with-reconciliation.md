@@ -1,8 +1,8 @@
 ---
 title: "dbt Singular, Generic and Unit Tests with Reconciliation"
-tags: [data-engineering, pattern]
+tags: [data-engineering, transform-and-orchestrate, pattern]
 summary: "Column tests cannot see a join that fans out; a reconciliation test of fact against source plus a unique test on every joined model's grain catches it, and unit tests with mocked rows guard logic that today's data does not exercise."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--03-transform-and-orchestrate--notes--03-dbt-tests-snapshots-incremental.md
 ---

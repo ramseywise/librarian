@@ -1,8 +1,8 @@
 ---
 title: "Encoding Compatibility and Schema Evolution"
-tags: [data-engineering, concept]
+tags: [data-engineering, storage-and-compute-foundations, concept]
 summary: "Data outlives code, so a format must be both backward and forward compatible; text formats silently destroy types, and schema-carrying binary formats (Avro, Protobuf) make evolution a checked property, with silent drift across files as the remaining trap."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--01-storage-and-compute-foundations--notes--02-encoding-and-files.md
 ---

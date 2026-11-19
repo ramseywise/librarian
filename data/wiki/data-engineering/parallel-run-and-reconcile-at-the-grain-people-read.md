@@ -1,8 +1,8 @@
 ---
 title: "Parallel Run and Reconcile at the Grain People Read"
-tags: [data-engineering, pattern]
+tags: [data-engineering, quality-and-observability, pattern]
 summary: "Moving a warehouse follows expand-migrate-contract at larger scale: run both side by side, compare per partition and key, because totals can match to the cent while no day matches."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--05-quality-and-observability--notes--04-schema-and-data-migrations.md
 ---

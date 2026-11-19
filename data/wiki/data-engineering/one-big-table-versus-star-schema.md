@@ -1,8 +1,8 @@
 ---
 title: "One Big Table versus Star Schema"
-tags: [data-engineering, comparison]
+tags: [data-engineering, ingest-and-modelling, comparison]
 summary: "A pre-joined wide table reads somewhat faster and costs more storage, but a one-label change rewrites every affected row or file and a second grain has nowhere to go; treat it as a rebuildable cache of a star, never the source of truth."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--02-ingest-and-modelling--notes--03-data-vault-and-obt.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: Explain vs Predict Modelling
-tags: [data-analytics, concept]
+tags: [data-analytics, probability-and-statistics, concept]
 summary: "Explanation wants low bias on a coefficient and prediction wants low total error, so a wrong simple model can win held-out error at small n while the true form wins at large n; say which goal comes first."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--07-data-generating-process.md
 ---

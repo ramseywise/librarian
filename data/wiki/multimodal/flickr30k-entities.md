@@ -1,8 +1,8 @@
 ---
 title: Flickr30k Entities
-tags: [multimodal, reference]
+tags: [multimodal, benchmarks-and-metrics, reference]
 summary: "Flickr30k Entities adds 244k coreference chains and 276k boxes to the Flickr30k captions and defines a phrase-localisation benchmark; a CCA plus detector, size and colour baseline reaches 50.89 Recall@1, yet barely improves image-sentence retrieval (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-plummer-2015-flickr30k-entities.md
 ---

@@ -285,7 +285,7 @@ def test_atlas_and_semantic_edges_are_rate_limited_per_user(
     get_settings.cache_clear()
     empty = {"nodes": [], "edges": [], "domains": [], "areas": []}
     monkeypatch.setattr(graph_router, "parse_wiki", lambda: empty)
-    monkeypatch.setattr(embeddings, "semantic_edges", lambda _t: [])
+    monkeypatch.setattr(embeddings, "semantic_edges", lambda *_a, **_k: [])
     with TestClient(main_module.app) as client:
         assert [client.get("/api/graph/atlas").status_code for _ in range(2)] == [200, 200]
         blocked = client.get("/api/graph/atlas")

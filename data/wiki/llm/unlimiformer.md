@@ -1,8 +1,8 @@
 ---
 title: Unlimiformer
-tags: [llm, concept]
+tags: [llm, architecture, concept]
 summary: Unlimiformer replaces cross-attention in a pretrained encoder-decoder with a kNN lookup over the encoder states of the whole input, so one index serves every head and layer; it improves summarization at book length, and does nothing when the input is already ranked.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-bertsch-2023-unlimiformer.md
 ---

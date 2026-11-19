@@ -1,8 +1,8 @@
 ---
 title: MMMU
-tags: [multimodal, concept]
+tags: [multimodal, benchmarks-and-metrics, concept]
 summary: "MMMU is 11.5K college-level multimodal questions across 6 disciplines and 30 subjects; GPT-4V scores 55.7% on the test set and the best human expert 88.6% on validation (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-xiang-2024-mmmu.md
 ---

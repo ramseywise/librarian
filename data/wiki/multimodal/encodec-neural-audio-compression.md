@@ -1,8 +1,8 @@
 ---
 title: EnCodec Neural Audio Compression
-tags: [multimodal, method]
+tags: [multimodal, speech-and-audio, method]
 summary: "EnCodec is a streaming encoder-decoder codec with residual vector quantization, a multiscale STFT discriminator and a gradient-fraction loss balancer, plus an optional Transformer LM for entropy coding."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-defossez-2022-high-fidelity-neural-audio-compression.md
 ---

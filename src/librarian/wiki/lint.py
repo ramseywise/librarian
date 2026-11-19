@@ -1,7 +1,8 @@
 """`librarian wiki lint`: the deterministic findings of the lint protocol, ranked.
 
 BLOCKER: dead wikilinks, missing required frontmatter, pages tagged `conflict`.
-WARN: orphans, stale pages, no domain tag. NOTE: short summaries, no See Also.
+WARN: orphans, stale pages, no domain tag, a page in a directory listed in `_topics.yaml` without
+exactly one of its topics. NOTE: short summaries, no See Also.
 The private-leak check stays in `librarian wiki check`, and the health rates in
 `librarian wiki stats`. Judgement calls (which page should link an orphan) are left to the skill.
 Also covers what used to be hand-checked in the skill: open entries in `_conflicts.md`
@@ -22,6 +23,7 @@ from datetime import date, timedelta
 from pathlib import Path
 
 import frontmatter
+import yaml
 
 from librarian.config import get_settings
 from librarian.wiki.common import WIKILINK_RE, fm, link_name, slugify
@@ -41,6 +43,7 @@ EXTRA_DOMAIN_TAGS = frozenset({"llm", "voice", "context-management", "deep-agent
 MIN_SUMMARY_WORDS = 8
 STALE_SUGGESTION_DAYS = 14
 RAW_EXAMPLES = 3
+TOPICS_FILE = "_topics.yaml"
 _HEADING_RE = re.compile(r"^#{1,6}\s+\S")
 _COMMENT_RE = re.compile(r"^\s*<!--.*-->\s*$")
 _FIRST_SEEN_RE = re.compile(r"first seen (\d{4}-\d{2}-\d{2})")
@@ -57,8 +60,17 @@ class Finding:
     message: str
 
 
+def topics(wiki_dir: Path) -> dict[str, set[str]]:
+    """Directory → its topic tags, from `_topics.yaml`; empty when the file is missing."""
+    path = wiki_dir / TOPICS_FILE
+    if not path.is_file():
+        return {}
+    return {d: set(ts or {}) for d, ts in (yaml.safe_load(path.read_text()) or {}).items()}
+
+
 def lint(wiki_dir: Path, today: date) -> list[Finding]:
     public = _public_pages(wiki_dir)
+    listed = topics(wiki_dir)
     links = _link_index(public)
     domains = {p.domain for p in public} | EXTRA_DOMAIN_TAGS
     scored = [p for p in public if p.scored]
@@ -86,6 +98,11 @@ def lint(wiki_dir: Path, today: date) -> list[Finding]:
             out.append(Finding("WARN", page.rel, f"stale (updated {page.updated})"))
         if page.parsed and not domains & set(page.tags):
             out.append(Finding("WARN", page.rel, "no domain tag"))
+        if page.parsed and page.domain in listed:
+            held = sorted(listed[page.domain] & set(page.tags))
+            if len(held) != 1:
+                found = f"topics {', '.join(held)}" if held else "no topic"
+                out.append(Finding("WARN", page.rel, f"{found}: needs one from {TOPICS_FILE}"))
         summary = str(meta.get("summary") or "")
         if summary and len(summary.split()) < MIN_SUMMARY_WORDS:
             out.append(

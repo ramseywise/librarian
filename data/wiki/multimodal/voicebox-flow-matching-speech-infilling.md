@@ -1,8 +1,8 @@
 ---
 title: Voicebox Flow-Matching Speech Infilling
-tags: [multimodal, method]
+tags: [multimodal, speech-and-audio, method]
 summary: "Voicebox is a non-autoregressive flow-matching model trained to infill masked Mel frames given a phone transcript, so zero-shot TTS, denoising and editing become different context masks."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-le-2023-voicebox.md
 ---

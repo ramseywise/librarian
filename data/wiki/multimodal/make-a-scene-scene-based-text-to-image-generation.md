@@ -1,8 +1,8 @@
 ---
 title: "Make-A-Scene Scene-Based Text-to-Image Generation"
-tags: [multimodal, concept]
+tags: [multimodal, diffusion-and-image-generation, concept]
 summary: "Make-A-Scene conditions a 4B-parameter autoregressive transformer on text plus optional segmentation (scene) tokens, uses region-aware tokenizer losses, and applies classifier-free guidance to logits."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-gafni-2022-make-scene.md
 ---

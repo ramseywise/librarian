@@ -1,8 +1,8 @@
 ---
 title: ARES Automated RAG Evaluation
-tags: [eval, pattern]
+tags: [eval, rag-and-grounding, pattern]
 summary: ARES fine-tunes small judges on synthetic data for context relevance, answer faithfulness and answer relevance, then uses prediction-powered inference with a small human set to score RAG systems with confidence intervals.
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-2311-09476v2.md
 ---

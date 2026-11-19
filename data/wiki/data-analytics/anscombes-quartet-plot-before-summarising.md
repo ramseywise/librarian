@@ -1,8 +1,8 @@
 ---
 title: "Anscombe's Quartet: Plot Before Summarising"
-tags: [data-analytics, concept]
+tags: [data-analytics, probability-and-statistics, concept]
 summary: Four datasets with identical means, variance, correlation and fitted line look completely different, so summary statistics alone cannot replace a plot.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--05-visualisation-and-storytelling--notes--01-grammar-and-chart-choice.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: Pandas Copy-on-Write and Chained Assignment
-tags: [data-analytics, concept]
+tags: [data-analytics, python-for-data-analysis, concept]
 summary: Since pandas 3.0 every indexing or method result behaves as a copy, so chained assignment does nothing and one .loc call is the only way to update part of a frame.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--01-python-for-data-analysis--notes--01-series-and-dataframe.md
   - data/raw/repos/learn-ai-engineering/data-analytics--01-python-for-data-analysis--notes--03-indexing-and-selection.md

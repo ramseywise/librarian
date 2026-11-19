@@ -86,7 +86,7 @@ Content...
 ### Frontmatter Rules
 
 - `aliases` (optional): former names; links and `read_page` resolve through them after stems and titles. Written by `/wiki-rename`.
-- `tags`: at least one domain tag (derived from the directories on disk; [docs/wiki-schema.md](docs/wiki-schema.md)) and exactly one type tag.
+- `tags`: at least one domain tag (derived from the directories on disk; [docs/wiki-schema.md](docs/wiki-schema.md)) and exactly one type tag. A page in a directory listed in `data/wiki/_topics.yaml` also carries exactly one of that directory's topics (lint WARNs otherwise); tier and modules are derived from the course, never written to a page.
 - `summary`: one line; answers "what do I need to know about this?"
 - `updated`: today's date whenever the page is modified. `sources`: every raw file the page was derived from.
 - Optional `## What argues against it` and `## Open questions` go before `## See Also` ([docs/wiki-schema.md](docs/wiki-schema.md)); only when a source supports them.

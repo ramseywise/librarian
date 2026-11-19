@@ -1,8 +1,8 @@
 ---
 title: Weight-of-Evidence Logistic Scorecard
-tags: [data-analytics, pattern]
+tags: [data-analytics, applied-analyses, pattern]
 summary: A credit scorecard bins each characteristic, converts bins to weight of evidence, fits a logistic regression, and prints the result as additive points; it matches gradient boosting within noise on small data while staying defensible line by line.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--02-credit-scoring.md
 ---

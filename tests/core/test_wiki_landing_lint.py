@@ -165,3 +165,23 @@ def test_see_also_creates_missing_section(tmp_path: Path) -> None:
     added, _ = add_see_also(path, ["- [[Hub]] — related"], wiki)
     assert added
     assert path.read_text().endswith("x\n\n## See Also\n- [[Hub]] — related\n")
+
+
+def test_lint_wants_one_topic_in_a_listed_directory(tmp_path: Path) -> None:
+    wiki = _wiki(tmp_path)
+    (wiki / "_topics.yaml").write_text('rag:\n  retrieval: "x"\n  reranking: "y"\n')
+    one = _page(wiki, "rag/one.md", "One")
+    one.write_text(one.read_text().replace("[rag, concept]", "[rag, retrieval, concept]"))
+    two = _page(wiki, "rag/two.md", "Two")
+    two.write_text(
+        two.read_text().replace("[rag, concept]", "[rag, retrieval, reranking, concept]")
+    )
+    _page(wiki, "eval/unlisted.md", "Unlisted")
+    topical = {
+        (f.page, f.message)
+        for f in lint(wiki, date(2026, 11, 7))
+        if f.message.endswith("_topics.yaml")
+    }
+    assert ("rag/hub.md", "no topic: needs one from _topics.yaml") in topical
+    assert ("rag/two.md", "topics reranking, retrieval: needs one from _topics.yaml") in topical
+    assert not {page for page, _ in topical} & {"rag/one.md", "eval/unlisted.md"}

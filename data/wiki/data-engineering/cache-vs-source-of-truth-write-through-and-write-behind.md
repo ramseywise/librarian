@@ -1,8 +1,8 @@
 ---
 title: "Cache vs Source of Truth: Write-Through and Write-Behind"
-tags: [data-engineering, pattern]
+tags: [data-engineering, storage-and-compute-foundations, pattern]
 summary: "A system of record holds the authoritative data and derived data can be rebuilt from it; write-behind silently turns a cache into the source of truth for its flush window, and the test is to delete the cache and see what breaks."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--01-storage-and-compute-foundations--notes--09-persistence.md
 ---

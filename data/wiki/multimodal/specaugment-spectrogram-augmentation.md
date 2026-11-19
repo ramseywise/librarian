@@ -1,8 +1,8 @@
 ---
 title: SpecAugment Spectrogram Augmentation
-tags: [multimodal, method]
+tags: [multimodal, speech-and-audio, method]
 summary: "SpecAugment applies time warping, frequency masking and time masking to the log mel spectrogram during training, turning ASR overfitting into underfitting."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-park-2019-specaugment.md
 ---

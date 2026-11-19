@@ -1,8 +1,8 @@
 ---
 title: "Idempotent Backfills and Dated Corrections"
-tags: [data-engineering, pattern]
+tags: [data-engineering, transform-and-orchestrate, pattern]
 summary: "A repair job that replaces one logical day per transaction is safe to run twice, corrections live in a dated table above untouched raw data, and a late partition needs a trigger: rebuild any mart row older than its input's newest load."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--05-quality-and-observability--notes--03-incident-playbooks.md
   - data/raw/repos/learn-ai-engineering/data-engineering--05-quality-and-observability--notes--02-monitors-and-lineage.md

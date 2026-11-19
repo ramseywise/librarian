@@ -1,8 +1,8 @@
 ---
 title: PubMedQA
-tags: [eval, benchmark]
+tags: [eval, language-tasks, benchmark]
 summary: "A biomedical yes/no/maybe QA set built from PubMed question-titled abstracts, with 1k expert labels; the best 2019 BioBERT setup reaches 68.1% accuracy against 78.0% for one human in the reasoning-required setting (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-jin-2019-pubmedqa.md
 ---

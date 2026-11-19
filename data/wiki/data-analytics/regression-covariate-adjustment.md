@@ -1,8 +1,8 @@
 ---
 title: Regression Covariate Adjustment
-tags: [data-analytics, pattern]
+tags: [data-analytics, experimentation-and-causality, pattern]
 summary: "OLS on a treatment dummy reproduces the t-test, and adding pre-assignment covariates shrinks the standard error without biasing a randomised estimate, while adding post-treatment or omitting confounders in observational data changes the answer entirely."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--06-regression-and-glms.md
 ---

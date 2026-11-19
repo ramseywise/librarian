@@ -1,8 +1,8 @@
 ---
 title: "Atomic Commit and Why Two-Phase Commit Blocks"
-tags: [data-engineering, concept]
+tags: [data-engineering, storage-and-compute-foundations, concept]
 summary: "Two-phase commit gets all-or-nothing across nodes with a coordinator, but a participant that voted yes is stuck holding locks if the coordinator dies; it is acceptable inside one system and a poor fit across heterogeneous ones."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--01-storage-and-compute-foundations--notes--07-consistency-and-consensus.md
 ---

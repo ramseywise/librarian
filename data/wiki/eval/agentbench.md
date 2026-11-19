@@ -1,8 +1,8 @@
 ---
 title: AgentBench
-tags: [eval, reference]
+tags: [eval, agent-eval, reference]
 summary: "A 2023 benchmark of eight interactive environments for LLMs as agents, scoring 29 models at temperature 0; gpt-4 had the top overall score and Task Limit Exceeded was the most common failure cause (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-liu-2023-agentbench.md
 ---

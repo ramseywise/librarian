@@ -1,8 +1,8 @@
 ---
 title: Stratified and Cluster Survey Design
-tags: [data-analytics, concept]
+tags: [data-analytics, applied-analyses, concept]
 summary: Stratify to guarantee coverage of known groups, allocate proportionally unless one statistic dominates (Neyman allocation helps one number and hurts others), and cluster only when travel cost beats the design-effect loss.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--12-surveys-and-sampling-design.md
 ---

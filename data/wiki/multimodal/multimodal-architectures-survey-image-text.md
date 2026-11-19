@@ -1,8 +1,8 @@
 ---
 title: Multimodal Architectures Survey (Image-Text)
-tags: [multimodal, reference]
+tags: [multimodal, vision-language-pretraining, reference]
 summary: "A compact digest of the textbook chapter surveying image-text architectures to about 2022: captioning, text-to-image generation, images helping language models, CLIP-family contrastive models, data2vec, ViLBERT and Flamingo, with where the chapter's prose and tables disagree."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-multimodal-deep-learning-ch03-multimodal-architectures.md
   - data/raw/papers/2026-11-08-multimodal-deep-learning-ch04-further-topics.md

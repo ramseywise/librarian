@@ -1,8 +1,8 @@
 ---
 title: "Warehouse Cost Meters: Bytes, Slots and Egress"
-tags: [data-engineering, comparison]
+tags: [data-engineering, warehouse-lakehouse-streaming, comparison]
 summary: "A warehouse bill is bytes scanned or slot-hours for compute, a small storage line and route-dependent egress; compute the on-demand versus capacity break-even before choosing, using list prices that carry a read date."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--04-warehouse-lakehouse-streaming--notes--05-cost.md
 ---

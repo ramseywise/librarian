@@ -1,8 +1,8 @@
 ---
 title: "Data Mesh as an Ownership Model and Federated Governance"
-tags: [data-engineering, concept]
+tags: [data-engineering, architecture-and-governance, concept]
 summary: "A mesh decides who owns each dataset, not where it is stored; it only works if global rules run as a gate that can fail a publish and name the owner."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--07-architecture-and-governance--notes--01-data-architectures-mesh-fabric-mdw.md
   - data/raw/repos/learn-ai-engineering/data-engineering--07-architecture-and-governance--README.md

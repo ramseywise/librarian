@@ -1,8 +1,8 @@
 ---
 title: Benchmark Prompt Format Sensitivity
-tags: [eval, concept]
+tags: [eval, datasets-and-contamination, concept]
 summary: "The same model on the same benchmark can move by more than 20 accuracy points, and swap ranks with its rivals, when only the prompt template, answer format or scoring choice changes; report the exact prompt, keep per-item outputs and never mix numbers from different harnesses."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-huyen-ai-engineering-ch04-evaluate-ai-systems.md
   - data/raw/papers/2026-11-05-biderman-2024-lessons-trenches-reproducible-evaluation-language.md

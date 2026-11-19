@@ -1,8 +1,8 @@
 ---
 title: SAM 2 Promptable Video Segmentation
-tags: [multimodal, concept]
+tags: [multimodal, vision-backbones, concept]
 summary: "SAM 2 extends Segment Anything to video with a streaming memory over an MAE-pretrained Hiera encoder and a 50.9K-video SA-V dataset; it reports better accuracy with over 3x fewer interactions than SAM plus tracker baselines (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-sam-2-2024.md
 ---

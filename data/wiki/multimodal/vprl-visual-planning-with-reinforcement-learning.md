@@ -1,8 +1,8 @@
 ---
 title: VPRL Visual Planning with Reinforcement Learning
-tags: [multimodal, concept]
+tags: [multimodal, multimodal-llms, concept]
 summary: "VPRL plans in pure image sequences: a video-pretrained model generates the next-state image, and a GRPO stage rewards moves that shorten the path to the goal; on three small grid-navigation tasks it averages 80.6 exact match against 53.6 for text SFT (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-xu-2025-visual-planning.md
 ---

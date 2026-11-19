@@ -1,8 +1,8 @@
 ---
 title: Kosmos-2 Grounded Multimodal LLM
-tags: [multimodal, concept]
+tags: [multimodal, multimodal-llms, concept]
 summary: "Kosmos-2 continues KOSMOS-1 training on GRIT, a web-scale set of grounded image-text pairs, writing bounding boxes as discrete location tokens so one language model can ground phrases and accept boxes as input (all numbers self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-peng-2023-kosmos-2.md
 ---

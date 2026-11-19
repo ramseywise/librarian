@@ -25,7 +25,7 @@ from librarian.observability import (
     trace_content_enabled,
 )
 from librarian.pricing import TokenUsage, cost_usd
-from librarian.retrieval import citations, corpus
+from librarian.retrieval import citations, corpus, ranking
 
 log = get_logger(__name__)
 
@@ -527,7 +527,7 @@ async def run_agent_stream(
             try:
                 async with asyncio.timeout(settings.claim_judge_timeout_s):
                     verdicts, usage = await support.judge(
-                        client,
+                        client or _get_client(),
                         model,
                         failing,
                         page_texts,
@@ -574,6 +574,7 @@ async def run_agent_stream(
             user_id=user_id,
             release=release,
             model=model,
+            **ranking.serving_version(),
             usage=asdict(total),
             cost_usd=_cost(model, total),
             query=query,

@@ -6,11 +6,13 @@ import {
   expandBridges,
   expandFrom,
   filterPrimaryIds,
+  courseOrderEdges,
   moduleEdges,
   neighbours,
   pageNeighbourhood,
   relatedGroups,
   renderIds,
+  termEdges,
   visibleEdges,
   type ViewState,
 } from "../graphView";
@@ -31,7 +33,7 @@ const edge = (source: string, target: string, edgeType: WikiEdgeData["edgeType"]
 const NONE: ViewState = {
   focusId: null, focusIds: null, filterIds: null, activeTags: new Set(),
 };
-const ALL_ON: EdgeVisibility = { wikilink: true, semantic: true, module: true, "tag-shared": true };
+const ALL_ON: EdgeVisibility = { wikilink: true, semantic: true, module: true, "tag-shared": true, term: false, "course-order": false };
 
 const nodes = [node("p", "projects", "project"), node("a", "rag"), node("b", "eval"), node("c", "memory")];
 const flags = (ns: Node<WikiNodeData>[]) =>
@@ -138,7 +140,7 @@ describe("visibleEdges", () => {
 
   it("respects the toggles when no filter is active", () => {
     const v = NONE;
-    const out = visibleEdges(src, { wikilink: true, semantic: false, module: false, "tag-shared": false }, applyView(nodes, v), v);
+    const out = visibleEdges(src, { wikilink: true, semantic: false, module: false, "tag-shared": false, term: false, "course-order": false }, applyView(nodes, v), v);
     expect(out.map((e) => e.id)).toEqual(["wikilink:a->b"]);
     expect(out[0].style).toBeDefined();
   });
@@ -168,10 +170,10 @@ describe("visibleEdges", () => {
     const v = { ...NONE, activeTags: new Set(["rag"]), filterIds: new Set(["a", "b"]) };
     const on = visibleEdges(src, ALL_ON, applyView(nodes, v), v).map((e) => e.id);
     expect(on.sort()).toEqual(["tag-shared:a->b", "wikilink:a->b"]);
-    const noTagShared = { ...ALL_ON, "tag-shared": false };
+    const noTagShared = { ...ALL_ON, "tag-shared": false, term: false, "course-order": false };
     const ids = visibleEdges(src, noTagShared, applyView(nodes, v), v).map((e) => e.id);
     expect(ids).toEqual(["wikilink:a->b"]);
-    const off = { wikilink: false, semantic: false, module: false, "tag-shared": false };
+    const off = { wikilink: false, semantic: false, module: false, "tag-shared": false, term: false, "course-order": false };
     expect(visibleEdges(src, off, applyView(nodes, v), v)).toEqual([]);
   });
 
@@ -260,6 +262,24 @@ describe("moduleEdges", () => {
   });
 });
 
+describe("termEdges", () => {
+  it("joins pages mentioning a term to its best-linked page, skipping common terms", () => {
+    const mentions = { bm25: ["a", "b", "x"], the: ["a", "b", "c", "d"] };
+    const degree = new Map([["a", 3], ["b", 1]]);
+    const out = termEdges(["a", "b", "c"], mentions, degree, 3);
+    expect(out.map((e) => [e.source, e.target, e.data?.edgeType])).toEqual([["a", "b", "term"]]);
+  });
+});
+
+describe("courseOrderEdges", () => {
+  it("chains a module's rendered pages in the order its notes first link them, earlier → later", () => {
+    const order = [[["b"], ["gone", "a"], ["b", "c"]]];
+    const out = courseOrderEdges(["a", "b", "c"], order);
+    expect(out.map((e) => [e.source, e.target])).toEqual([["b", "a"], ["a", "c"]]);
+    expect(out.every((e) => e.data?.edgeType === "course-order" && e.markerEnd)).toBe(true);
+  });
+});
+
 describe("relatedGroups", () => {
   const typed = (source: string, target: string, relationship?: string) => ({ source, target, data: { relationship } });
 
@@ -296,7 +316,7 @@ describe("open card and cluster skeleton", () => {
   it("draws only the skeleton's pairs until a page is focused", () => {
     const nodes = [node("a", "rag"), node("b", "rag"), node("c", "rag")];
     const src = { wikilink: [edge("a", "b", "wikilink"), edge("c", "b", "wikilink")], semantic: [], tagShared: [] };
-    const vis: EdgeVisibility = { wikilink: true, semantic: true, module: true, "tag-shared": false };
+    const vis: EdgeVisibility = { wikilink: true, semantic: true, module: true, "tag-shared": false, term: false, "course-order": false };
     const skeleton = new Set(["a|b"]);
     expect(visibleEdges(src, vis, nodes, { ...NONE, skeleton }).map((e) => e.id)).toEqual(["wikilink:a->b"]);
     const focused = { ...NONE, skeleton, focusId: "c", focusIds: new Set(["c", "b"]) };

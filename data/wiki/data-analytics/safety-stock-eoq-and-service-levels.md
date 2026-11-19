@@ -1,8 +1,8 @@
 ---
 title: Safety Stock, EOQ and Service Levels
-tags: [data-analytics, concept]
+tags: [data-analytics, applied-analyses, concept]
 summary: EOQ balances order and holding cost on a flat cost curve; safety stock is z times the spread of lead-time demand including lead-time variance, and a flat reorder point misses its service target in seasons where demand runs higher.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--10-operations-and-supply-chain.md
 ---

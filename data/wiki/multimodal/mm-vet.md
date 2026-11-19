@@ -1,8 +1,8 @@
 ---
 title: MM-Vet
-tags: [multimodal, concept]
+tags: [multimodal, benchmarks-and-metrics, concept]
 summary: "MM-Vet is a 218-question open-ended benchmark that tags each question with the capabilities it needs (recognition, OCR, knowledge, generation, spatial, math) and scores answers 0 to 1 with a few-shot GPT-4 judge; GPT-4V scores highest (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-yu-2023-mm-vet.md
 ---

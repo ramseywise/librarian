@@ -1,8 +1,8 @@
 ---
 title: DataSpace
-tags: [eval, reference]
+tags: [eval, agent-eval, reference]
 summary: "A benchmark of 410 data-analytics tasks over mixed-format workspaces, scored by a model-free table comparison; with one backbone held fixed the agent harness moved accuracy by 15.36 points, and most failures of the audited model were wrong output shape rather than wrong analysis (self-reported, one run per configuration)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-li-2026-dataspace.md
 ---

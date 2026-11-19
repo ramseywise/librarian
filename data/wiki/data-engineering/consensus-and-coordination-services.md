@@ -1,8 +1,8 @@
 ---
 title: "Consensus and Coordination Services"
-tags: [data-engineering, concept]
+tags: [data-engineering, storage-and-compute-foundations, concept]
 summary: "Consensus accepts a decision from a majority so it terminates while a majority is up; terms stop stale leaders, and most applications outsource it to a small coordination service or to a database row lock."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--01-storage-and-compute-foundations--notes--07-consistency-and-consensus.md
 ---

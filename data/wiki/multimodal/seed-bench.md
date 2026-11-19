@@ -1,8 +1,8 @@
 ---
 title: SEED-Bench
-tags: [multimodal, concept]
+tags: [multimodal, benchmarks-and-metrics, concept]
 summary: "SEED-Bench is a 19K-question multiple-choice benchmark over 12 image and video dimensions, with human-verified answers and scoring by option likelihood; in its July 2023 tests the best of 18 models reached 53.37% (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-li-2023-seed-bench.md
 ---

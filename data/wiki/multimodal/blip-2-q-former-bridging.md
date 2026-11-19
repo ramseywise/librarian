@@ -1,8 +1,8 @@
 ---
 title: BLIP-2 Q-Former Bridging
-tags: [multimodal, concept]
+tags: [multimodal, multimodal-llms, concept]
 summary: "BLIP-2 bridges a frozen image encoder and a frozen LLM with a 188M-parameter Q-Former of 32 learned queries, pretrained in a representation stage and then a generative stage (all numbers self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-li-2023-blip-2.md
   - data/raw/papers/2026-11-08-zhang-2023-video-llama.md

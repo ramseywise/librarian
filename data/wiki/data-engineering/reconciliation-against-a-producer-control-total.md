@@ -1,8 +1,8 @@
 ---
 title: "Reconciliation Against a Producer Control Total"
-tags: [data-engineering, pattern]
+tags: [data-engineering, quality-and-observability, pattern]
 summary: "Nothing inside a table can show it is true; the cheapest accuracy test compares it with a second, independent account such as the producer's own daily row count, and it fails if that count is computed after a retry."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--05-quality-and-observability--notes--01-quality-dimensions-and-tests.md
 ---

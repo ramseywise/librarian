@@ -207,13 +207,13 @@ LIBRARIAN_API_KEY=lk_... LIBRARIAN_API_URL=https://librarian.example.com uv run 
 
 | Tool | Description |
 |---|---|
-| `search_wiki(query, domain, limit, expand)` | Hybrid search: FTS + cosine similarity + backlink rank. `domain` matches directory **or** domain tag. `expand=True` also returns pages one typed relationship hop away (spike) |
+| `search_wiki(query, domain, limit, expand)` | Hybrid search: FTS + cosine similarity, weighted equally. `domain` matches directory **or** domain tag. `expand=True` also returns pages one typed relationship hop away (spike) |
 | `read_page(path_or_title)` | Read a page by path or fuzzy title match |
 | `list_domain(domain)` | All pages in a domain, sorted by backlink count |
 | `list_pages(tag, directory)` | Filter pages by tag or directory |
 | `get_domain_briefing(domain)` | All pages in a domain concatenated — decisions first, then patterns, concepts |
 
-**Hybrid search** blends three signals: text match relevance (FTS), semantic similarity (sentence-transformers, if installed), and inbound backlink count. Falls back to FTS-only if sentence-transformers is absent.
+**Hybrid search** blends two signals equally: text match relevance (FTS) and semantic similarity (sentence-transformers, if installed). Backlinks are deliberately not a ranking signal: they say how central a page is, not whether it answers the query (`src/librarian/retrieval/ranking.py`). Falls back to FTS-only if sentence-transformers is absent.
 
 **Graph-aware retrieval** — `expand=True` walks the *typed* relationship subgraph
 (`prerequisite-for` / `extends`) one hop out from the results to answer "what else do I need

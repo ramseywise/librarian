@@ -1,8 +1,8 @@
 ---
 title: DoRA Weight-Decomposed Low-Rank Adaptation
-tags: [llm, concept]
+tags: [llm, fine-tuning, concept]
 summary: "DoRA splits a pretrained weight into a magnitude vector and a direction, trains the magnitude directly and the direction with LoRA, and merges back with no inference overhead; commonsense-8 average on LLaMA-7B 74.7 to 78.4 over LoRA (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-liu-2024-dora.md
 ---

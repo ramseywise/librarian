@@ -1,8 +1,8 @@
 ---
 title: Agent Plasticity
-tags: [eval, concept]
+tags: [eval, agent-eval, concept]
 summary: "A metric for self-improving agents defined as held-out score gain per unit learning cost; across board-game tasks one model had the highest fitted endpoint while another had the highest plasticity (298 points per $1,000 for GPT-5.6 Sol versus 57 for Claude Fable 5, self-reported), so endpoint score and learning efficiency can rank models differently."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-singh-2026-agent-plasticity.md
 ---

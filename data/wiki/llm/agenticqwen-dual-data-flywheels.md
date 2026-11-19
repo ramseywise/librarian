@@ -1,8 +1,8 @@
 ---
 title: AgenticQwen Dual Data Flywheels
-tags: [llm, pattern]
+tags: [llm, agent-training, pattern]
 summary: "AgenticQwen trains small tool-use models with GRPO over three rounds on data from two loops, one that expands failed math problems and one that grows tool workflows into behaviour trees; the 8B model averaged 47.4 against 23.8 for its base (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-lyu-2026-agenticqwen.md
 ---

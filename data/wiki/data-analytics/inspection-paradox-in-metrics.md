@@ -1,8 +1,8 @@
 ---
 title: Inspection Paradox in Metrics
-tags: [data-analytics, concept]
+tags: [data-analytics, probability-and-statistics, concept]
 summary: "A metric sampled one way and quoted another differs: sampling by member weights each group by its size, so per-session averages exceed per-user averages and the two can move in opposite directions."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--01-descriptive-statistics-and-eda.md
 ---

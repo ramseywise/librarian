@@ -20,7 +20,7 @@ describe("MapBar", () => {
       <MapBar {...base} onGrouping={onGrouping} search={<input aria-label="Search the map" />} filters={<p>the filters</p>} />,
     );
     expect(screen.getByRole("button", { name: "Wiki" })).toHaveAttribute("aria-pressed", "true");
-    fireEvent.click(screen.getByRole("button", { name: "Domain" }));
+    fireEvent.click(screen.getByRole("button", { name: "Modules" }));
     expect(onGrouping).toHaveBeenCalledWith("domain");
     expect(screen.getByLabelText("Search the map")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Filters" })).toBeInTheDocument();
@@ -50,7 +50,7 @@ describe("MapBar", () => {
     expect(screen.queryByText("the filters")).toBeNull();
   });
 
-  it("under the chat lists the filters and connections inline, with layout in a popover", () => {
+  it("under the chat lists the filters, pins the connections below them, and has no layout", () => {
     const sector = { level: "sector", grouping: "wiki", sector: "rag", cap: 15 } as const;
     render(
       <MapBar
@@ -63,11 +63,15 @@ describe("MapBar", () => {
       />,
     );
     expect(screen.getByRole("region", { name: "Filters" })).toHaveTextContent("the filters");
-    expect(screen.getByText("the connections")).toBeInTheDocument();
+    // Outside the scrolling filters, so they stay in view however long the list is.
+    const pinned = screen.getByText("the connections").closest(".map-dock-connect");
+    expect(pinned).not.toBeNull();
+    expect(pinned!.closest(".map-dock-scroll")).toBeNull();
     expect(screen.queryByRole("button", { name: "Filters" })).toBeNull();
     expect(screen.queryByRole("link", { name: "‹ Back" })).toBeNull();
-    fireEvent.click(screen.getByRole("button", { name: "Layout" }));
-    expect(screen.getByText("the layout")).toBeInTheDocument();
+    // Layout stays off the dock: arrangement and minimap keep their defaults there.
+    expect(screen.queryByRole("button", { name: "Layout" })).toBeNull();
+    expect(screen.queryByText("the layout")).toBeNull();
   });
 
   it("offers the Map popover on focused levels only when it has controls", () => {

@@ -1,8 +1,8 @@
 ---
 title: AutoLab
-tags: [eval, reference]
+tags: [eval, agent-eval, reference]
 summary: "A benchmark of 36 long-horizon optimisation tasks run for 2 to 12 hours each; the authors report that persistence in benchmarking, editing and using feedback predicts score better than first-attempt quality, with several models quitting early, and that harness-induced variance can be comparable to model-induced variance (self-reported, correlational)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-xu-2026-autolab.md
 ---

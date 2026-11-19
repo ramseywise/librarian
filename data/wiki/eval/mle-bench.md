@@ -1,8 +1,8 @@
 ---
 title: MLE-bench
-tags: [eval, reference]
+tags: [eval, agent-eval, reference]
 summary: "OpenAI's benchmark of 75 Kaggle competitions that an agent must solve end to end, scored by the share of attempts that would have won any medal on the private leaderboard; o1-preview with the AIDE scaffold medalled in 16.9% of attempts at pass@1 (self-reported), and changing the scaffold moved the score more than changing the hardware."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-chan-2024-mle-bench.md
 ---

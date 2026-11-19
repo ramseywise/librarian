@@ -1,8 +1,8 @@
 ---
 title: Rerunnable Cleaning Loader with Assertions
-tags: [data-analytics, pattern]
+tags: [data-analytics, python-for-data-analysis, pattern]
 summary: Keep the raw file untouched and put every cleaning step in one function that asserts what must be true and prints row counts, so the next export runs through the same checks.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--01-python-for-data-analysis--notes--02-loading-and-cleaning.md
 ---

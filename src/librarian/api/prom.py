@@ -82,6 +82,10 @@ CHAT_STREAMS = Counter(
     "Chat streams that ended, by outcome: `token` (an answer began) or `no_token`.",
     ["outcome"],
 )
+SPEND_WRITE_FAILURES = Counter(
+    "librarian_chat_spend_write_failures",
+    "Model calls whose cost could not be added to the day's spend row: the cap undercounts.",
+)
 
 # Routes that make up the search SLO. The tool route is one template for every MCP tool, so it
 # counts only when the tool is the wiki search.
@@ -159,6 +163,11 @@ def observe_first_token(started: float) -> None:
 def note_no_token() -> None:
     if enabled():
         CHAT_STREAMS.labels("no_token").inc()
+
+
+def note_spend_write_failed() -> None:
+    if enabled():
+        SPEND_WRITE_FAILURES.inc()
 
 
 class _LiveCollector(Collector):

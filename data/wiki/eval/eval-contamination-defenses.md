@@ -1,8 +1,8 @@
 ---
 title: Eval Contamination Defenses
-tags: [eval, llm, pattern]
+tags: [eval, datasets-and-contamination, llm, pattern]
 summary: "If eval rows reach a model's training data, prompts or index, the score measures memory — public benchmarks fight it with unique multi-source answers, parameterized task templates refilled every run, temporal freshness and canary GUIDs, and each tactic transfers to a private suite."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--03-eval-datasets.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--12-failure-modes.md

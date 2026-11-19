@@ -1,8 +1,8 @@
 ---
 title: Judge Lifecycle with RART and a Drift Band
-tags: [eval, llm, pattern]
+tags: [eval, judges, llm, pattern]
 summary: "A production-judge lifecycle from a Netflix workshop paper: a rationale-annotated benchmark, RART rubric tuning that scores specificity 3:1:1, a bounded-retry revision gate, and a weekly human sample that triggers re-tuning when the judge falls more than 2 standard deviations below the rater mean; the re-tune path never fired online (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-kong-2026-lifecycle-llm-as-judge-large.md
 ---

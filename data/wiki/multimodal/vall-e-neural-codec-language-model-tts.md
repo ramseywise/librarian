@@ -1,8 +1,8 @@
 ---
 title: VALL-E Neural Codec Language Model TTS
-tags: [multimodal, method]
+tags: [multimodal, speech-and-audio, method]
 summary: "VALL-E treats text-to-speech as conditional language modeling over EnCodec codes, using a 3-second acoustic prompt for zero-shot voice cloning."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-wang-2023-neural-codec-language-models-zero.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: One Check Shape for Quality Verdicts
-tags: [eval, infra, pattern]
+tags: [eval, graders-and-metrics, infra, pattern]
 summary: Nine quality flag vocabularies across a pipeline, none of which joined, were replaced by one Check shape — component, kind, rule, rubric, runner, grader — writing to one `quality_verdicts` store keyed by `trace_id`; evals never score production rows (fixtures are exported from human overturns), each component's judged dimensions stay UNGATED until a human-agreement ceiling exists, and the trace tool is where you debug a call while the verdict store is where you read the rate.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-29-quality-verdicts-refactor.md
   - data/raw/claude-docs/diskoe/docs/plans/2026-09-29-quality-verdicts-refactor.md

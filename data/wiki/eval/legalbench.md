@@ -1,8 +1,8 @@
 ---
 title: LegalBench
-tags: [eval, reference]
+tags: [eval, language-tasks, reference]
 summary: "A benchmark of 162 legal-reasoning tasks from 36 sources, built by a call for tasks and grouped into six reasoning types; GPT-4 led the category averages of 20 models (self-reported), rule recall was the weakest category for every model, and the choice of in-context demonstrations moved scores by over 20 points."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-guha-2023-legalbench.md
 ---

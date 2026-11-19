@@ -1,8 +1,8 @@
 ---
 title: "Warehouse, Fabric and Lakehouse: Sizing the Physical Architecture"
-tags: [data-engineering, comparison]
+tags: [data-engineering, architecture-and-governance, comparison]
 summary: "Modern data warehouse, data fabric and lakehouse differ in how many copies and governance layers they add; size the choice by measuring one query, and name the system of record."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--07-architecture-and-governance--notes--01-data-architectures-mesh-fabric-mdw.md
   - data/raw/repos/learn-ai-engineering/data-engineering--07-architecture-and-governance--README.md

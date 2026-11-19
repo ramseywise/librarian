@@ -1,8 +1,8 @@
 ---
 title: Distribution Selection for Metrics
-tags: [data-analytics, reference]
+tags: [data-analytics, probability-and-statistics, reference]
 summary: "Name the distribution behind a metric and you can usually name the test: Normal for measurements, Binomial for conversions, Poisson for counts, Exponential for gaps, lognormal for money, Beta for an uncertain rate."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--03-distributions-and-sampling.md
 ---

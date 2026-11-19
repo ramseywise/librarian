@@ -1,8 +1,8 @@
 ---
 title: Flamingo Gated Cross-Attention VLM
-tags: [multimodal, concept]
+tags: [multimodal, multimodal-llms, concept]
 summary: "Flamingo keeps a pretrained vision encoder and a Chinchilla language model frozen and trains a Perceiver Resampler plus tanh-gated cross-attention layers on interleaved web data, giving few-shot prompting on image and video tasks (all numbers self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-alayrac-2022-flamingo.md
   - data/raw/papers/2026-11-08-multimodal-deep-learning-ch03-multimodal-architectures.md

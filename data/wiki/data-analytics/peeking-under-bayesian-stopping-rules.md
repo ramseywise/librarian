@@ -1,8 +1,8 @@
 ---
 title: Peeking Under Bayesian Stopping Rules
-tags: [data-analytics, pattern]
+tags: [data-analytics, bayesian-analysis, pattern]
 summary: "Bayesian tests are not immune to peeking: a daily P(B > A) > 0.95 rule shipped 23.8% of no-effect changes in simulation, and an expected-loss rule ships quickly but needs a minimum sample size to stop harmful launches."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--04-bayesian-ab-testing.md
 ---

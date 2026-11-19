@@ -1,8 +1,8 @@
 ---
 title: ETHICS Benchmark
-tags: [eval, reference]
+tags: [eval, safety-and-bias, reference]
 summary: "ETHICS is a dataset of over 130,000 scenarios for testing whether a language model predicts everyday moral judgments across justice, deontology, virtue, utilitarianism and commonsense morality; on its adversarially filtered Hard Test every model tested averaged under 50% (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-hendrycks-2020-aligning-ai-shared-human-values.md
 ---

@@ -1,8 +1,8 @@
 ---
-imported_hash: 6218c4c19d832935
+imported_hash: 6d9a2859498668ad
 title: Transformer encoders
 summary: This chapter treats the encoder as a model you choose and train.
-order: 8
+order: 9
 kind: reading
 section: Notes
 source: learn-ai-engineering/data-science/02-deep-learning/notes/05b-transformer-encoders.md

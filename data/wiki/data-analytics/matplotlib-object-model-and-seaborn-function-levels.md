@@ -1,8 +1,8 @@
 ---
 title: Matplotlib Object Model and Seaborn Function Levels
-tags: [data-analytics, reference]
+tags: [data-analytics, visualisation-and-storytelling, reference]
 summary: Matplotlib is a tree of Figure, Axes and artists with two APIs (use the object-oriented one), and pandas and seaborn draw through it; seaborn splits into figure-level and axes-level functions; plus pandas shortcuts, library-version changes, format and pitfall notes.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--05-visualisation-and-storytelling--notes--02-matplotlib-and-seaborn.md
   - data/raw/repos/learn-ai-engineering/data-analytics--01-python-for-data-analysis--notes--07-plotting.md

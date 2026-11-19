@@ -1,8 +1,8 @@
 ---
 title: MERLOT Reserve Audio-Video-Text Pretraining
-tags: [multimodal, method]
+tags: [multimodal, vision-language-pretraining, method]
 summary: "MERLOT Reserve pretrains on video frames, subtitles and audio with a contrastive span-matching objective, and transfers to VCR, TVQA, Kinetics-600 and zero-shot tasks."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-zellers-2022-merlot-reserve.md
 ---

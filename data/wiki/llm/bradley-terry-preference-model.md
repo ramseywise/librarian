@@ -1,8 +1,8 @@
 ---
 title: Bradley-Terry Preference Model
-tags: [llm, eval, concept]
+tags: [llm, preference-and-alignment, eval, concept]
 summary: "The pairwise-comparison model that converts human choices between two responses into a scalar reward — the shared formal core underneath RLHF reward models, DPO, and RLAIF preference models."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--rlhf-pipeline.md
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--preference-optimization.md

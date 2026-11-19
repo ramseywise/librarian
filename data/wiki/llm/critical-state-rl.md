@@ -1,8 +1,8 @@
 ---
 title: Critical-State RL
-tags: [llm, pattern]
+tags: [llm, agent-training, pattern]
 summary: "Critical-State RL picks which single tool call in a multi-turn trace to train on, ranking candidates by how much the action itself changes the outcome, then runs occurrence-local RL on that call only; it beat the alternative turn in all four BFCL cells tested (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-chen-2026-critical-state-rl.md
 ---

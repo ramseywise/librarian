@@ -1,8 +1,8 @@
 ---
 title: "Lineage for Blast Radius and Rebuild Lists"
-tags: [data-engineering, concept]
+tags: [data-engineering, quality-and-observability, concept]
 summary: "Lineage is a graph of which job read and wrote which dataset; walking it downstream gives the blast radius of a bad table, upstream gives suspects, and joined to run history it gives the exact runs to redo."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--05-quality-and-observability--notes--02-monitors-and-lineage.md
   - data/raw/repos/learn-ai-engineering/data-engineering--05-quality-and-observability--notes--06-dataops.md

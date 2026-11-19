@@ -63,7 +63,8 @@ describe("WikiGraph", () => {
     expect(screen.getByRole("group", { name: "Browse by" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Map" })).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "Filters" }));
-    expect(screen.getByRole("group", { name: "Filter by directory" })).toBeInTheDocument();
+    // Modules view: the filters are the course modules.
+    expect(screen.getByRole("region", { name: "Modules" })).toBeInTheDocument();
   });
 
   it("draws every page as a node on the all-pages level", async () => {

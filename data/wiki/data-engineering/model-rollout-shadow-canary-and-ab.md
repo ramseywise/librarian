@@ -1,8 +1,8 @@
 ---
 title: "Model Rollout: Shadow, Canary and A/B"
-tags: [data-engineering, pattern]
+tags: [data-engineering, ml-platform, pattern]
 summary: "A model that won the offline gate has won on old data; shadow shows disagreement before labels exist, canary routes a stable hashed share, and A/B is the only option when predictions change future data."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--06-ml-platform--notes--03-batch-and-online-serving.md
   - data/raw/papers/2026-11-07-building-applications-with-ai-agents-ch10-monitoring-production.md

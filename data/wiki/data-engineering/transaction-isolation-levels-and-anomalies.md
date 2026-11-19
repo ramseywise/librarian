@@ -1,8 +1,8 @@
 ---
 title: "Transaction Isolation Levels and Anomalies"
-tags: [data-engineering, concept]
+tags: [data-engineering, storage-and-compute-foundations, concept]
 summary: "What ACID letters actually promise and which anomaly each isolation level still allows: read skew, lost updates, write skew and phantoms, with the fixes (atomic update, row locks, constraints, serializable) and why level names differ across engines."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--01-storage-and-compute-foundations--notes--04-transactions-and-isolation.md
 ---

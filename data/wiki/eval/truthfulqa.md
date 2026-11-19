@@ -1,8 +1,8 @@
 ---
 title: TruthfulQA
-tags: [eval, reference]
+tags: [eval, factuality-and-hallucination, reference]
 summary: "An 817-question benchmark written to elicit imitative falsehoods; in 2021-era models the best, GPT-3-175B with a helpful prompt, was truthful on 58% of questions against 94% for a human baseline (self-reported), and larger models within a family were generally less truthful."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-lin-2021-truthfulqa.md
 ---

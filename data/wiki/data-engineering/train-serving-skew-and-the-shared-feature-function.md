@@ -1,8 +1,8 @@
 ---
 title: "Train-Serving Skew and the Shared Feature Function"
-tags: [data-engineering, pattern]
+tags: [data-engineering, ml-platform, pattern]
 summary: "Skew is the same input producing different features in two code paths; an unknown category vectorises to all zeros without an error, so the fix is one normalising feature function, a contract test, and logged serving features."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--06-ml-platform--notes--01-feature-stores.md
 ---

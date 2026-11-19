@@ -1,8 +1,8 @@
 ---
 title: "Same-Weekday Median and MAD Volume Monitor"
-tags: [data-engineering, pattern]
+tags: [data-engineering, quality-and-observability, pattern]
 summary: "A row-count baseline built from the median and MAD of the last six values for the same weekday catches a 25% loss that a 28-day mean-and-three-sigma band misses almost every time; validate any threshold by injecting losses into real history."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--05-quality-and-observability--notes--02-monitors-and-lineage.md
 ---

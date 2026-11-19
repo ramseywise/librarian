@@ -1,8 +1,8 @@
 ---
 title: Sensitivity Analysis for Unmeasured Confounding
-tags: [data-analytics, pattern]
+tags: [data-analytics, experimentation-and-causality, pattern]
 summary: "E-values and Rosenbaum bounds ask what hidden confounder would erase an effect entirely and so can look reassuring while real bias is smaller; the whiteboard bias approximation gamma times delta (hidden effect per SD times remaining imbalance) sizes the bias, and refuters only catch pipeline errors."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--05-matching-and-weighting.md
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--04-correlation-and-causation.md

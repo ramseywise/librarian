@@ -1,8 +1,8 @@
 ---
 title: Paired Eval Comparison
-tags: [eval, llm, pattern]
+tags: [eval, reading-results, llm, pattern]
 summary: "Compare two versions on identical tasks via per-task differences (McNemar for binary outcomes) — only discordant tasks carry information, so pairing shrinks the error bar for free; gate on the CI of the difference, read the flipped transcripts, and treat each fix as a tiered, cost-weighted hypothesis."
-updated: 2026-10-30
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--09-reading-results.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--10-evals-in-ci.md

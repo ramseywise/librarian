@@ -1,8 +1,8 @@
 ---
 title: "Distributed Compute Cost and the Single-Machine Threshold"
-tags: [data-engineering, decision]
+tags: [data-engineering, storage-and-compute-foundations, decision]
 summary: "Choose a cluster only when one query's input after pruning exceeds what a large single machine can hold; DuckDB and Polars spill to disk and push down filters, and scaling curves can hide large overheads."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--01-storage-and-compute-foundations--notes--08-distributed-compute.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: OK-VQA
-tags: [multimodal, concept]
+tags: [multimodal, benchmarks-and-metrics, concept]
 summary: "OK-VQA is a 14,055-question VQA benchmark on COCO images whose questions need outside knowledge; 2019 models score 25-28 and Wikipedia retrieval adds little (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-marino-2019-ok-vqa.md
 ---

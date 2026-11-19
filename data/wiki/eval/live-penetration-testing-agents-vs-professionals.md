@@ -1,8 +1,8 @@
 ---
 title: Live Penetration Testing of Agents and Professionals
-tags: [eval, comparison]
+tags: [eval, agent-eval, comparison]
 summary: "Lin et al. ran AI agents and 10 professionals on a live university network (about 8,000 hosts); the authors' own ARTEMIS scaffold ranked second of 15 entries, scoring 95.2 against 111.4 for the best human, with one run each and no statistical testing (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-lin-2025-comparing-ai-agents-cybersecurity-professionals.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: ViLT Patch Projection Vision-Language Transformer
-tags: [multimodal, concept]
+tags: [multimodal, vision-language-pretraining, concept]
 summary: "ViLT embeds images with a linear patch projection straight into a single-stream transformer, with no CNN or region detector, cutting visual-embedding cost sharply at some accuracy cost on VQA."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-kim-2021-vilt.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: SAM 3 Promptable Concept Segmentation
-tags: [multimodal, concept]
+tags: [multimodal, vision-backbones, concept]
 summary: "SAM 3 detects, segments and tracks every instance of a noun-phrase or exemplar concept using a presence head and a human-plus-AI-verifier data engine; it reports cgF1 54.1 on SA-Co/Gold and LVIS mask AP 48.8 zero-shot (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-sam-3-2025.md
 ---

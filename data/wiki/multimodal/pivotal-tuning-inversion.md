@@ -1,8 +1,8 @@
 ---
 title: Pivotal Tuning Inversion
-tags: [multimodal, method]
+tags: [multimodal, gans, method]
 summary: "Pivotal Tuning Inversion inverts a real face to a W-space pivot code in StyleGAN2, then fine-tunes the generator around the pivot with a locality regularizer so latent edits still work."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-roich-2022-pivotal-tuning-latent-based-editing.md
 ---

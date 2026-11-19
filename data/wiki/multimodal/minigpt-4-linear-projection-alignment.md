@@ -1,8 +1,8 @@
 ---
 title: MiniGPT-4 Linear Projection Alignment
-tags: [multimodal, concept]
+tags: [multimodal, multimodal-llms, concept]
 summary: "MiniGPT-4 aligns BLIP-2's frozen image encoder and Q-Former with a frozen Vicuna through a single trainable linear layer, then repairs unnatural captions with a 3,500-pair detailed-description stage (all numbers self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-zhu-2023-minigpt-4.md
 ---

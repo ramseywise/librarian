@@ -1,8 +1,8 @@
 ---
 title: Logistic Regression Odds Ratios vs Marginal Effects
-tags: [data-analytics, concept]
+tags: [data-analytics, probability-and-statistics, concept]
 summary: "A logistic coefficient is a change in log-odds; exponentiating gives an odds ratio, but the change in probability depends on the starting rate, so report average marginal effects for business impact."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--06-regression-and-glms.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: Hidden-State Hallucination Probes
-tags: [eval, pattern]
+tags: [eval, factuality-and-hallucination, pattern]
 summary: "Small classifiers on a frozen model's hidden activations to tell true from false output: SAPLMA (Azaria and Mitchell) trained one on a 6,084-sentence true-false set, and WACK (Simhi et al.) builds per-model datasets that separate hallucinations from missing knowledge (HK-) from hallucinations despite knowing (HK+), where probes reached 60-70% in the best settings (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-azaria-2023-internal-state-llm-knows-when.md
   - data/raw/papers/2026-11-08-simhi-2024-distinguishing-ignorance-error-llm-hallucinations.md

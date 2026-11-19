@@ -1,8 +1,8 @@
 ---
 title: TheAgentCompany
-tags: [eval, reference]
+tags: [eval, agent-eval, reference]
 summary: "A benchmark of 175 workplace tasks in a self-hosted simulated software company, scored by checkpoints with partial credit; the best agent fully completed 30.3% (OpenHands with Gemini 2.5 Pro, self-reported), at about 27 steps and $4 per task."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-xu-2024-theagentcompany.md
 ---

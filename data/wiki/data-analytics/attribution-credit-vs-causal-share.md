@@ -1,8 +1,8 @@
 ---
 title: Attribution Credit vs Causal Share
-tags: [data-analytics, concept]
+tags: [data-analytics, applied-analyses, concept]
 summary: Attribution divides each sale's credit among the channels on its path and must hand out every conversion; last touch and Shapley both overcredit channels that reach already-ready buyers, so credit is accounting, not cause.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--09-marketing-measurement.md
 ---

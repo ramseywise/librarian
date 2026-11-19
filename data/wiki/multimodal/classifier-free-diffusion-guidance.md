@@ -1,8 +1,8 @@
 ---
 title: "Classifier-Free Diffusion Guidance"
-tags: [multimodal, concept]
+tags: [multimodal, diffusion-and-image-generation, concept]
 summary: "One diffusion network is trained with the condition randomly dropped and, at sampling, the conditional and unconditional predictions are extrapolated, giving a fidelity/diversity trade-off without a separate classifier."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-ho-2022-classifier-free-diffusion-guidance.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: World Knowledge Model for Agent Planning
-tags: [llm, pattern]
+tags: [llm, reasoning-and-planning, pattern]
 summary: "WKM gives an agent a separately trained knowledge model: task knowledge written once from contrasting good and bad trajectories, and state knowledge retrieved per step and mixed into action probabilities; 7-8B models beat fine-tuned baselines on ALFWorld, WebShop and ScienceWorld (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-qiao-2024-agent-planning-world-knowledge-model.md
   - data/raw/papers/2026-11-06-chu-2026-agentic-world-modeling.md

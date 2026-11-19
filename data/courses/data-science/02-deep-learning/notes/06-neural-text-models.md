@@ -1,8 +1,8 @@
 ---
-imported_hash: 39e10af72c321b04
+imported_hash: 139247000f295b8b
 title: Neural text models
 summary: 'The intro-to-nlp TensorFlow track opened with tensors: rank (0 scalar, 1 vector, 2 matrix, 3+), dtype, shape, conversion with .numpy(), tf.argmax, tf.reduce_max, and the fact that tf.constant is immutable while tf.Variable can be assigned.'
-order: 9
+order: 10
 kind: reading
 section: Notes
 source: learn-ai-engineering/data-science/02-deep-learning/notes/06-neural-text-models.md

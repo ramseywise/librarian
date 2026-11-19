@@ -1,8 +1,8 @@
 ---
 title: "PDDL-INSTRUCT Logical-CoT Planning"
-tags: [llm, pattern]
+tags: [llm, reasoning-and-planning, pattern]
 summary: "PDDL-INSTRUCT tunes an LLM to write symbolic plans step by step, restating preconditions, effects and the full state after every action, with an external plan validator supplying feedback during training; Llama-3-8B reaches 94% valid plans on Blocksworld (self-reported, three PlanBench domains)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-verma-2025-teaching-llms-plan.md
 ---

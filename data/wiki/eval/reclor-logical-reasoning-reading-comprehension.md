@@ -1,8 +1,8 @@
 ---
 title: ReClor Logical Reasoning Reading Comprehension
-tags: [eval, reference]
+tags: [eval, reasoning-and-math, reference]
 summary: "ReClor is 6,138 GMAT and LSAT logical reasoning questions with an EASY split (solvable from the options alone) and a HARD split; fine-tuned models scored about 75% on EASY and about 30% on HARD in the authors' runs, showing biased options can inflate scores (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-yu-2020-reclor.md
 ---

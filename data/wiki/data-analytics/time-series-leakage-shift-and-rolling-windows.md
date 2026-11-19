@@ -1,8 +1,8 @@
 ---
 title: "Time-Series Leakage: Shift and Rolling Windows"
-tags: [data-analytics, pattern]
+tags: [data-analytics, python-for-data-analysis, pattern]
 summary: shift and rolling windows build comparisons and features from the past, but a negative shift or a centred window reads the future and leaks, and count-based windows misbehave on irregular rows.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--01-python-for-data-analysis--notes--06-time-series.md
 ---

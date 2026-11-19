@@ -1,8 +1,8 @@
 ---
 title: Survey Error Sources and Nonresponse Bias
-tags: [data-analytics, concept]
+tags: [data-analytics, applied-analyses, concept]
 summary: A margin of error measures only sampling error from a probability sample; coverage, nonresponse and measurement errors are larger and do not shrink with more replies, and nonresponse bias comes from the link between answering and the answer, not the response rate.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--12-surveys-and-sampling-design.md
 ---

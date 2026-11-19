@@ -1,8 +1,8 @@
 ---
 title: RAG Eval Gate Contract
-tags: [eval, rag, pattern]
+tags: [eval, rag-and-grounding, rag, pattern]
 summary: Eight-gate ownership contract for RAG evaluation pipelines — each gate answers a distinct question about corpus quality, retrieval, generation, and grader calibration, with strict handoff contracts between gates.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/playground/docs/evals/gate-contract.md
   - data/raw/claude-docs/project-g/docs/evals/gate-contract.md

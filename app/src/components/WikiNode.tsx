@@ -99,6 +99,7 @@ function OpenCard({ id, data, card }: { id: string; data: WikiNodeData; card: No
         activeTags={card.activeTags}
         onOpenLesson={card.onOpenLesson}
         related={card.related(id)}
+        why={card.why?.(id)}
         onOpenPage={card.onOpenPage}
       />
     </div>

@@ -1,8 +1,8 @@
 ---
 title: "Dr. MAMR Lazy-Agent Multi-Agent RL"
-tags: [llm, pattern]
+tags: [llm, agent-training, pattern]
 summary: "Dr. MAMR traces the collapse of trained two-agent reasoning pairs into one working agent to a turn-count normalization in multi-turn GRPO, and fixes it with a debiased loss, a causal-influence reward and a restart reward, scoring above single-agent GRPO on seven math benchmarks (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-zhang-2025-unlocking-power-multi-agent-llm.md
 ---

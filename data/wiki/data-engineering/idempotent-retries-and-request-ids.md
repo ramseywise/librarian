@@ -1,8 +1,8 @@
 ---
 title: "Idempotent Retries and Request IDs"
-tags: [data-engineering, pattern]
+tags: [data-engineering, transform-and-orchestrate, pattern]
 summary: "Because a timeout hides whether a write applied, retries are needed and duplicate effects follow; a request ID stored in the same transaction as the write makes a retry harmless, which is what most 'exactly-once' means."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--01-storage-and-compute-foundations--notes--06-when-distributed-systems-fail.md
   - data/raw/repos/learn-ai-engineering/data-engineering--01-storage-and-compute-foundations--notes--04-transactions-and-isolation.md

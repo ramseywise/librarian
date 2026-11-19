@@ -1,8 +1,8 @@
 ---
 title: Decompose Low-Ceiling Dimensions into Checkable Sub-Signals
-tags: [eval, rag, pattern]
+tags: [eval, judges, rag, pattern]
 summary: When humans cannot agree on a quality dimension (low κ ceiling), stop trying to rate it — decompose it into relational sub-signals that are facts in the data, turning a rating problem into a data-correctness problem, and cap the dimension's ranking weight by its ceiling meanwhile.
-updated: 2026-10-16
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/akira/docs/technical-feasibility.md
   - data/raw/claude-docs/diskoe/docs/technical-feasibility.md

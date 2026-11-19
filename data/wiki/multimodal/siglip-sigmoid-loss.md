@@ -1,8 +1,8 @@
 ---
 title: SigLIP Sigmoid Loss for Language-Image Pretraining
-tags: [multimodal, concept]
+tags: [multimodal, vision-language-pretraining, concept]
 summary: "SigLIP replaces the batch-softmax contrastive loss with an independent sigmoid loss on every image-text pair, which removes global normalisation, helps at small batch sizes and shows batch-size gains saturating near 32k."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-zhai-2023-sigmoid-loss-language-image-pre.md
   - data/raw/papers/2026-11-08-awais-2023-foundational-models-defining-new-era.md

@@ -1,8 +1,8 @@
 ---
 title: AgentScaler Environment Scaling
-tags: [llm, pattern]
+tags: [llm, agent-training, pattern]
 summary: "AgentScaler builds function-calling environments automatically by treating every tool call as a read or write on a generated database, filters trajectories by final database state, and SFTs in two stages; its 30B model scored 70.4 on tau-bench Retail (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-fang-2025-towards-general-agentic-intelligence-environment.md
 ---

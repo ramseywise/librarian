@@ -1,8 +1,8 @@
 ---
 title: "Semantic Layer: Metrics Compiled at the Requested Grain"
-tags: [data-engineering, concept]
+tags: [data-engineering, architecture-and-governance, concept]
 summary: "A semantic layer stores metrics and join keys as data and compiles each request, refusing fan-out joins, recomputing ratios from parts and handling balances as semi-additive."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--07-architecture-and-governance--notes--03-catalog-semantic-layer-and-contracts.md
   - data/raw/repos/learn-ai-engineering/data-engineering--07-architecture-and-governance--README.md

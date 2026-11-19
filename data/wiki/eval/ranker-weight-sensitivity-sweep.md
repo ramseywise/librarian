@@ -1,8 +1,8 @@
 ---
 title: Ranker Weight Sensitivity Sweep
-tags: [eval, pattern]
+tags: [eval, harness-and-ci, pattern]
 summary: "Turn a weight table's design thesis into a measured curve: perturb one weight at a time by ±10% and renormalise the rest (never clamp), score a synthetic pool large enough for rank correlation to mean something (≥ 20; 30 used), and report Spearman ρ, top-5 overlap, top-1 agreement, inverted-pair count and mean score delta per cell — and when adding questions lowers every absolute score, rank agreement, not score, is the metric that transfers."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-08-27-b27-sensitivity-sweeps.md
   - data/raw/claude-docs/diskoe/docs/plans/2026-08-27-b27-sensitivity-sweeps.md

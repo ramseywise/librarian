@@ -22,11 +22,11 @@ def test_every_price_is_positive_and_cache_read_is_cheaper_than_input() -> None:
 
 
 def test_cost_counts_each_token_class_at_its_own_rate() -> None:
-    # Sonnet 5.5: $2 in, $10 out, $0.20 cache read, $2.50 cache write per MTok.
+    # Sonnet 5.5: $2 in, $10 out, $0.10 cache read, $2.50 cache write per MTok.
     usage = TokenUsage(
         input=1_000_000, output=1_000_000, cache_read=1_000_000, cache_write=1_000_000
     )
-    assert cost_usd("claude-sonnet-5-5", usage) == pytest.approx(2 + 10 + 0.20 + 2.50)
+    assert cost_usd("claude-sonnet-5-5", usage) == pytest.approx(2 + 10 + 0.10 + 2.50)
 
 
 def test_cost_of_an_unknown_model_raises() -> None:
@@ -47,9 +47,9 @@ def test_limiter_prices_cache_reads_below_input() -> None:
     s = Settings(_env_file=None, anthropic_model="claude-sonnet-5-5")
     limiter = ChatLimiter()
     limiter.record_usage(s, TokenUsage(cache_read=1_000_000))
-    assert limiter.spent_usd() == pytest.approx(0.20)
+    assert limiter.spent_usd() == pytest.approx(0.10)
     limiter.record_usage(s, TokenUsage(input=1_000_000))
-    assert limiter.spent_usd() == pytest.approx(2.20)
+    assert limiter.spent_usd() == pytest.approx(2.10)
 
 
 def test_limiter_errs_high_for_an_unknown_model() -> None:

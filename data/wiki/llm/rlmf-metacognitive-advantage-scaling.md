@@ -1,8 +1,8 @@
 ---
 title: RLMF Metacognitive Advantage Scaling
-tags: [llm, pattern]
+tags: [llm, reinforcement-learning, pattern]
 summary: "Reinforcement learning with metacognitive feedback scales each GRPO completion's advantage by how accurately the model judged its own confidence faithfulness, instead of adding a reward term; on faithful calibration of small models it beat plain GRPO in the paper's runs."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-liu-2026-reinforcement-learning-metacognitive-feedback-elicits.md
 ---

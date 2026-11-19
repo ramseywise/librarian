@@ -1,8 +1,8 @@
 ---
 title: MedGemma 1.5 Medical Vision-Language Model
-tags: [multimodal, concept]
+tags: [multimodal, multimodal-llms, concept]
 summary: "MedGemma 1.5 4B keeps the Gemma 3 architecture and 400M MedSigLIP encoder but adds 3D CT/MRI via capped slice stacks, whole-slide pathology via capped patch sets, localization and lab-report extraction; gains on new tasks came with regressions on some older ones (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-sellergren-2026-medgemma-1-5-technical-report.md
 ---

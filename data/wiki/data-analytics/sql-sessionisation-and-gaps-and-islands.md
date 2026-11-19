@@ -1,8 +1,8 @@
 ---
 title: SQL Sessionisation and Gaps-and-Islands
-tags: [data-analytics, pattern]
+tags: [data-analytics, applied-analyses, pattern]
 summary: "Two window tricks for grouping consecutive rows without loops: a running sum of gap flags numbers sessions, and a running index minus row_number is constant along an unbroken run so it serves as an island key."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--06-sql-for-analytics.md
 ---

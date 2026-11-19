@@ -1,8 +1,8 @@
 ---
 title: CogVLM Visual Expert
-tags: [multimodal, concept]
+tags: [multimodal, multimodal-llms, concept]
 summary: "CogVLM keeps a frozen Vicuna-7B and adds, in every layer, a trainable visual expert (separate QKV and FFN for image tokens), arguing deep fusion avoids both shallow-alignment weakness and forgetting from training the LLM directly (all numbers self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-wang-2024-cogvlm.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: "ML System Design: Stages and Handoffs"
-tags: [data-engineering, pattern]
+tags: [data-engineering, ml-platform, pattern]
 summary: "Designing an ML system is a chain of stages from framing to correction loop, each handing the next a concrete artefact; the model is one row, the decision and its price come first, and the plain baseline doubles as the fallback."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--06-ml-platform--notes--06-ml-system-framing-to-monitoring.md
 ---

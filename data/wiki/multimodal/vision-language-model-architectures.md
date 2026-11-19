@@ -1,8 +1,8 @@
 ---
 title: Vision-Language Model Architectures
-tags: [multimodal, comparison]
+tags: [multimodal, multimodal-llms, comparison]
 summary: "Family hub for how vision-language models join an image encoder to a language model: frozen-component bridges, deep fusion, detector-region encoders, jointly scaled encoder-decoders, early-fusion token models, grounding and fine-grained models, video and embodied extensions, with the data and backbone pieces they rely on."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-alayrac-2022-flamingo.md
   - data/raw/papers/2026-11-07-bai-2023-qwen-vl.md

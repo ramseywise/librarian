@@ -1,8 +1,8 @@
 ---
 title: BigToM Model-Generated Benchmark
-tags: [eval, reference]
+tags: [eval, reasoning-and-math, reference]
 summary: "BigToM is a theory-of-mind benchmark of 5,000 items that GPT-4 writes by filling the variables of a causal template, with code assembling 25 controlled conditions per template; crowd raters scored the items above crowd-written ones and slightly above expert-written ones, and GPT-4 was near ceiling on forward belief but far below humans on backward belief (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-gandhi-2023-understanding-social-reasoning-language-models.md
 ---

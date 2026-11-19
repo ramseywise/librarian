@@ -1,8 +1,8 @@
 ---
 title: InterCode
-tags: [eval, reference]
+tags: [eval, code, reference]
 summary: "A 2023 gym-style framework that wraps Bash, SQL and Python execution so an LLM can retry with execution feedback; on Spider SQL, GPT-4 rose from 9.1% single-turn to 73.7% with Try Again (self-reported), though the retry loop sees the reward computed against the gold answer."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-yang-2023-intercode.md
 ---

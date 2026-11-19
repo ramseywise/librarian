@@ -1,8 +1,8 @@
 ---
 title: Position Interpolation
-tags: [llm, concept]
+tags: [llm, architecture, concept]
 summary: Position Interpolation (PI) extends a RoPE model's context window by scaling position indices down into the trained range instead of extrapolating past it, and recovers a working 8K to 32K window from LLaMA after about 1,000 fine-tuning steps (self-reported).
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-chen-2023-extending-context-window-large-language.md
   - data/raw/papers/2026-11-06-liu-2024-world-model-million-length-video.md

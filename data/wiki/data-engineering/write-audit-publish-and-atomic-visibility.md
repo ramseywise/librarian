@@ -1,8 +1,8 @@
 ---
 title: "Write-Audit-Publish and Atomic Visibility"
-tags: [data-engineering, pattern]
+tags: [data-engineering, transform-and-orchestrate, pattern]
 summary: "Idempotency repairs a crash on rerun but not what readers see meanwhile; write beside and swap so readers never see half a write, audit the staged copy before publishing so a failed test protects the tested table too, and expose only what passes: an honest gap instead of a wrong number, and a containment tool during an incident."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--03-transform-and-orchestrate--notes--04-idempotency-and-backfills.md
   - data/raw/repos/learn-ai-engineering/data-engineering--05-quality-and-observability--notes--01-quality-dimensions-and-tests.md

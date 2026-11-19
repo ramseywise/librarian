@@ -1,8 +1,8 @@
 ---
 title: UNGATED Metric Convention
-tags: [eval, pattern]
+tags: [eval, graders-and-metrics, pattern]
 summary: Every eval metric exists from day one, but a threshold is written only from a *measured* pass rate — until then the metric runs and reports UNGATED rather than being silently skipped, and the CI gate degrades to heuristic-only when judge credentials are absent instead of failing.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-04-dis60-lighthouse-ci.md
   - data/raw/claude-docs/diskoe/docs/plans/2026-09-04-dis60-lighthouse-ci.md

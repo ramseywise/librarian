@@ -1,8 +1,8 @@
 ---
 title: "Idempotent Batch Loads and Partition Overwrite"
-tags: [data-engineering, pattern]
+tags: [data-engineering, transform-and-orchestrate, pattern]
 summary: "A task is idempotent when rerunning it for the same period leaves the same state as running it once; overwrite the period in one transaction by default, merge only where no period owns the row, and keep tasks pure and side effects keyed."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--03-transform-and-orchestrate--notes--04-idempotency-and-backfills.md
   - data/raw/repos/learn-ai-engineering/data-engineering--02-ingest-and-modelling--notes--01-ingest.md

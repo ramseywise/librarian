@@ -1,8 +1,8 @@
 ---
 title: ROSCOE Reasoning Chain Metrics
-tags: [eval, concept]
+tags: [eval, reasoning-and-math, concept]
 summary: "ROSCOE scores a model's step-by-step reasoning chain without a gold chain, using 18 metrics built on step-to-context embedding alignment, NLI contradiction and fluency; it beat reference-free baselines (PRISM, CTC Consistency, BARTScore) on synthetic perturbation tests, with moderate correlations on small human-judged sets (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-golovneva-2022-roscoe.md
 ---

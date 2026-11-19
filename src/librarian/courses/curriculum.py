@@ -1,4 +1,4 @@
-"""Curriculum facet of the graph: which wiki pages each course and module covers.
+"""Curriculum facet of the graph: which wiki pages each course, module and note covers.
 
 An overlay on the course catalog, not a taxonomy: wiki directories stay the canonical
 domains (CLAUDE.md). A page may sit under several modules, and pages no lesson links to
@@ -21,6 +21,7 @@ from typing import Any
 
 from librarian.config import get_settings
 from librarian.courses.catalog import COURSES_DIR, WIKI_DIR, Catalog, _signature, catalog
+from librarian.courses.depth import TIERS
 from librarian.log_config import get_logger
 from librarian.wiki.parser import public_page_domains
 
@@ -40,7 +41,11 @@ def _current_signature() -> list[int]:
 
 
 def _build(cat: Catalog, signature: list[int]) -> dict[str, Any]:
-    """Course → module → pages, best-linked first, plus each page's main course."""
+    """Course → module → pages, best-linked first, plus each page's main course.
+
+    Each module also lists its notes in reading order with the pages each links: the map's
+    third level, and the order "Course order" reads pages in.
+    """
     votes: dict[str, Counter[str]] = {}
     courses: list[dict[str, Any]] = []
     for course in cat.courses:
@@ -52,11 +57,22 @@ def _build(cat: Catalog, signature: list[int]) -> dict[str, Any]:
             if module["id"] in SKIPPED_MODULES or module.get("private"):
                 continue
             links: Counter[str] = Counter()
+            notes: list[dict[str, Any]] = []
             for outline in public_lessons:
-                links.update(
+                rec = cat.lessons[outline["id"]]
+                pages = [
                     pid
-                    for pid in cat.lessons[outline["id"]].concepts
+                    for pid in rec.concepts
                     if pid in cat.wiki and cat.wiki[pid].domain not in SKIPPED_DOMAINS
+                ]
+                links.update(pages)
+                notes.append(
+                    {
+                        "id": rec.id,
+                        "title": rec.title,
+                        **({"tier": rec.tier} if rec.tier else {}),
+                        "pageIds": pages,
+                    }
                 )
             for pid, n in links.items():
                 votes.setdefault(pid, Counter())[course["id"]] += n
@@ -66,6 +82,7 @@ def _build(cat: Catalog, signature: list[int]) -> dict[str, Any]:
                     "title": module["title"],
                     "firstLesson": public_lessons[0]["id"] if public_lessons else None,
                     "pageIds": [pid for pid, _ in links.most_common()],
+                    "notes": notes,
                 }
             )
         if modules:  # an empty directory under data/courses/ is listed but has nothing to filter
@@ -73,6 +90,36 @@ def _build(cat: Catalog, signature: list[int]) -> dict[str, Any]:
     # most_common keeps first-seen order on a tie, so the earlier course wins.
     primary = {pid: c.most_common(1)[0][0] for pid, c in votes.items()}
     return {"signature": signature, "courses": courses, "primaryCourse": primary}
+
+
+def placements(snapshot: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    """Page → where the course teaches it: `tier`, the lowest tier among the notes linking it
+    (omitted while none of them is tiered), and `modules`, each `course/module` in course order.
+
+    Derived, never written to wiki frontmatter: it moves whenever a note is tiered or relinked.
+    """
+    out: dict[str, dict[str, Any]] = {}
+    for course in snapshot["courses"]:
+        for module in course["modules"]:
+            key = f"{course['id']}/{module['id']}"
+            for note in module.get("notes", []):
+                for pid in note["pageIds"]:
+                    place = out.setdefault(pid, {"modules": []})
+                    if key not in place["modules"]:
+                        place["modules"].append(key)
+                    tier = note.get("tier")
+                    if tier in TIERS and (
+                        "tier" not in place or TIERS.index(tier) < TIERS.index(place["tier"])
+                    ):
+                        place["tier"] = tier
+    return out
+
+
+def placement(page_id: str) -> dict[str, Any] | None:
+    """`placements()` for one page from the saved snapshot; None with no snapshot or no
+    linking note. Never builds the catalog, so a caller like MCP `read_page` stays fast."""
+    snapshot = _read_snapshot()
+    return None if snapshot is None else placements(snapshot).get(page_id)
 
 
 def _present(snapshot: dict[str, Any], signature: list[int]) -> dict[str, Any]:
@@ -85,7 +132,12 @@ def _present(snapshot: dict[str, Any], signature: list[int]) -> dict[str, Any]:
         for module in course["modules"]:
             pages = [pid for pid in module["pageIds"] if pid in domains]
             placed.update(pages)
-            modules.append({**module, "pageIds": pages})
+            # A snapshot from before notes were listed has none; the next build adds them.
+            notes = [
+                {**n, "pageIds": [pid for pid in n["pageIds"] if pid in domains]}
+                for n in module.get("notes", [])
+            ]
+            modules.append({**module, "pageIds": pages, "notes": notes})
         pages = list(dict.fromkeys(pid for m in modules for pid in m["pageIds"]))
         courses.append({**course, "modules": modules, "pageIds": pages})
     beyond: dict[str, list[str]] = {}
@@ -95,6 +147,12 @@ def _present(snapshot: dict[str, Any], signature: list[int]) -> dict[str, Any]:
         "courses": courses,
         "beyond": [{"domain": d, "pageIds": beyond[d]} for d in sorted(beyond)],
         "primaryCourse": {p: c for p, c in snapshot["primaryCourse"].items() if p in placed},
+        # Foundations first on the map: only tiered pages, the rest read as not yet tiered.
+        "pageTier": {
+            pid: place["tier"]
+            for pid, place in placements(snapshot).items()
+            if pid in placed and "tier" in place
+        },
         "stale": snapshot["signature"] != signature,
     }
 
@@ -122,6 +180,11 @@ def write_snapshot() -> dict[str, Any] | None:
         log.warning("curriculum.snapshot.failed", error=str(e))
         return None
     return snapshot
+
+
+def snapshot() -> dict[str, Any]:
+    """The saved snapshot, or a fresh build when there is none yet."""
+    return _read_snapshot() or _build(catalog(), _current_signature())
 
 
 def current_curriculum() -> dict[str, Any]:

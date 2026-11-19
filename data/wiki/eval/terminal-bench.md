@@ -1,8 +1,8 @@
 ---
 title: Terminal-Bench
-tags: [eval, reference]
+tags: [eval, agent-eval, reference]
 summary: "A benchmark of 89 manually verified command-line tasks (version 2.0) run in containers; across six agents and 16 models the best pair, Codex CLI with GPT-5.2, resolved under two-thirds of tasks (self-reported), and the same model scored differently under different scaffolds."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-merrill-2026-terminal-bench.md
 ---

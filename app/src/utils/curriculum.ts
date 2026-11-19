@@ -2,9 +2,12 @@ import type { Node } from "@xyflow/react";
 import { courseColor } from "../theme/domains";
 import type { Theme } from "./theme";
 import type { Area, Curriculum, Facets, Glossary, WikiNodeData } from "../types";
+import type { RankGroup } from "./neighbourRank";
 
 export const courseFacet = (course: string) => `course:${course}`;
 export const moduleFacet = (course: string, module: string) => `module:${course}/${module}`;
+/** A note (lesson) by its lesson id, `<course>/<module>/notes/NN-slug`: the pages it links. */
+export const noteFacet = (lesson: string) => `note:${lesson}`;
 export const beyondFacet = (domain: string) => `beyond:${domain}`;
 /** Every page no lesson links, whatever its directory. */
 export const OUTSIDE_COURSES = "beyond:all";
@@ -16,8 +19,8 @@ export const areaFacet = (area: string) => `area:${area}`;
 /** An area's pages no lesson links yet: what its course has still to cover. */
 export const gapFacet = (area: string) => `gap:${area}`;
 
-const FACET_ID = /^(course|module|beyond|area|gap|dir|tag|term):/;
-const CURRICULUM_FACET = /^(course|module|beyond|gap):/;
+const FACET_ID = /^(course|module|note|beyond|area|gap|dir|tag|term):/;
+const CURRICULUM_FACET = /^(course|module|note|beyond|gap):/;
 export const isFacetId = (tag: string) => FACET_ID.test(tag);
 export const isModuleFacet = (tag: string) => tag.startsWith("module:");
 
@@ -47,7 +50,10 @@ export function facetsOf(
   if (c) {
     for (const course of c.courses) {
       out.set(courseFacet(course.id), new Set(course.pageIds));
-      for (const m of course.modules) out.set(moduleFacet(course.id, m.id), new Set(m.pageIds));
+      for (const m of course.modules) {
+        out.set(moduleFacet(course.id, m.id), new Set(m.pageIds));
+        for (const n of m.notes) if (n.pageIds.length) out.set(noteFacet(n.id), new Set(n.pageIds));
+      }
     }
     for (const b of c.beyond) out.set(beyondFacet(b.domain), new Set(b.pageIds));
     out.set(OUTSIDE_COURSES, new Set(c.beyond.flatMap((b) => b.pageIds)));
@@ -87,6 +93,29 @@ export function modulesOf(c: Curriculum | null): Map<string, string[]> {
     }
   }
   return out;
+}
+
+/**
+ * The groups a page's level is ranked over (utils/neighbourRank): every module, every note and
+ * every glossary term with its pages, and each module's notes in reading order.
+ */
+export function rankGroupsOf(c: Curriculum | null, glossary: Glossary | null): { groups: RankGroup[]; readingOrder: string[][] } {
+  const groups: RankGroup[] = [];
+  const readingOrder: string[][] = [];
+  for (const course of c?.courses ?? []) {
+    for (const m of course.modules) {
+      groups.push({ id: moduleFacet(course.id, m.id), kind: "module", pages: m.pageIds });
+      const order: string[] = [];
+      for (const n of m.notes) {
+        if (!n.pageIds.length) continue;
+        groups.push({ id: noteFacet(n.id), kind: "note", pages: n.pageIds });
+        order.push(noteFacet(n.id));
+      }
+      if (order.length > 1) readingOrder.push(order);
+    }
+  }
+  for (const [term, pages] of Object.entries(glossary?.mentions ?? {})) groups.push({ id: termFacet(term), kind: "term", pages });
+  return { groups, readingOrder };
 }
 
 /**

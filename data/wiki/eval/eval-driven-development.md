@@ -1,8 +1,8 @@
 ---
 title: Eval-Driven Development (EDD)
-tags: [eval, llm, pattern]
+tags: [eval, defining-correct, llm, pattern]
 summary: Writing the eval suite before the agent exists — ATDD reconstructed for non-deterministic systems, where first-ness buys honesty rather than design pressure.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/guacamayo/docs/research/2026-08-02_eval-driven-development.md
   - data/raw/claude-docs/ai-project-template/docs/plans/AIT-89-plan.md

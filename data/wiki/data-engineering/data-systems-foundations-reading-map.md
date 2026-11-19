@@ -1,8 +1,8 @@
 ---
 title: "Data Systems Foundations Reading Map"
-tags: [data-engineering, reference]
+tags: [data-engineering, storage-and-compute-foundations, reference]
 summary: "Map and rules of thumb for the storage-and-compute layer under data engineering: what a system promises, encoding and layout, concurrent writers, partitioning and replication, failure, consensus, distributed compute, durability and choosing a store."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--01-storage-and-compute-foundations--README.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: "InstructPix2Pix Instruction-Based Image Editing"
-tags: [multimodal, concept]
+tags: [multimodal, diffusion-and-image-generation, concept]
 summary: "InstructPix2Pix trains a conditional diffusion model on synthetic before/after image pairs, built with GPT-3 and Stable Diffusion plus Prompt-to-Prompt, to edit a real image from a written instruction in one forward pass."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-brooks-2023-instructpix2pix.md
 ---

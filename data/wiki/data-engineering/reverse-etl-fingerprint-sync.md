@@ -1,8 +1,8 @@
 ---
 title: "Reverse ETL Fingerprint Sync"
-tags: [data-engineering, pattern]
+tags: [data-engineering, transform-and-orchestrate, pattern]
 summary: "Copy modelled data into a downstream tool by upserting on a stable ID, sending only records whose fingerprint changed, and recording each send only after it succeeds, so a crash costs nothing and a rerun sends only the rest."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--05-quality-and-observability--notes--06-dataops.md
 ---

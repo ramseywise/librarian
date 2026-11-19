@@ -1,8 +1,8 @@
 ---
 title: Emu Generative Pretraining in Multimodality
-tags: [multimodal, concept]
+tags: [multimodal, multimodal-llms, concept]
 summary: "Emu trains one 14B autoregressive model on interleaved image, video and text, predicting text tokens with cross-entropy and continuous visual embeddings with l2 regression, and decodes embeddings to pixels with a separate fine-tuned Stable Diffusion; all figures self-reported."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-sun-2023-emu.md
   - data/raw/papers/2026-11-08-sun-2024-generative-multimodal-models-context-learners.md

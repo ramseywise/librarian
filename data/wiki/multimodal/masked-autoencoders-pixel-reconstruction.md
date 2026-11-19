@@ -1,8 +1,8 @@
 ---
 title: Masked Autoencoders Pixel Reconstruction
-tags: [multimodal, concept]
+tags: [multimodal, vision-backbones, concept]
 summary: "MAE masks 75% of image patches, encodes only the visible ones and reconstructs masked pixels with a small decoder, which makes pretraining of large ViTs cheap and strong for fine-tuning."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-he-2022-masked-autoencoders-scalable-vision-learners.md
 ---

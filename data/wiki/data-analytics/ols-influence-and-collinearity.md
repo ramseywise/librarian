@@ -1,8 +1,8 @@
 ---
 title: OLS Influence and Collinearity Diagnostics
-tags: [data-analytics, concept]
+tags: [data-analytics, probability-and-statistics, concept]
 summary: "One high-leverage point can flip a regression slope, flagged by leverage and Cook's distance, while near-duplicate regressors inflate standard errors without hurting prediction, flagged by the variance inflation factor."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--06-regression-and-glms.md
 ---

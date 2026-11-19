@@ -1,8 +1,8 @@
 ---
 title: "Replication Lag, Failover and Read Anomalies"
-tags: [data-engineering, concept]
+tags: [data-engineering, storage-and-compute-foundations, concept]
 summary: "Leader-based replication, why logical row logs power change data capture, how asynchronous replication loses acknowledged writes and reuses IDs on failover, and the read anomalies lag produces on replica-fed dashboards."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--01-storage-and-compute-foundations--notes--05-partitioning-and-replication.md
 ---

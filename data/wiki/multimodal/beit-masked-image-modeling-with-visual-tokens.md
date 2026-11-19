@@ -1,8 +1,8 @@
 ---
 title: BEiT Masked Image Modeling with Visual Tokens
-tags: [multimodal, concept]
+tags: [multimodal, vision-backbones, concept]
 summary: "BEiT pretrains a vision transformer by masking about 40% of patches blockwise and predicting each masked patch's discrete dVAE token, which the ablations show beats raw-pixel regression."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-bao-2021-beit.md
 ---

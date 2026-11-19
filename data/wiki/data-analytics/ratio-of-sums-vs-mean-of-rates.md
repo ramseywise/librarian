@@ -1,8 +1,8 @@
 ---
 title: Ratio of Sums vs Mean of Rates
-tags: [data-analytics, pattern]
+tags: [data-analytics, probability-and-statistics, pattern]
 summary: A group's rate is the sum of numerators over the sum of denominators; averaging per-row rates weights tiny and huge rows equally and can reverse the ranking of groups.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--01-python-for-data-analysis--notes--05-groupby-and-aggregation.md
 ---

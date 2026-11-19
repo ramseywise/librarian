@@ -1,10 +1,14 @@
 ---
-imported_hash: 9a663bc568c5d8d3
+imported_hash: 757b37680a3287dc
 title: 7 — Groupby and Aggregation
 summary: 'Ask a shop owner what they want to know and almost every answer has the word "per" in it: revenue per region, orders per customer, average basket per month.'
 order: 8
 kind: reading
 section: Notes
+tier: practitioner
+depth: core
+depth_sections:
+  Split, apply, combine: intro
 source: learn-ai-engineering/data-analytics/01-python-for-data-analysis/notes/07-groupby-and-aggregation.md
 ---
 

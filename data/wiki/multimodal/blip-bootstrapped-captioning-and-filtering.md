@@ -1,8 +1,8 @@
 ---
 title: BLIP Bootstrapped Captioning and Filtering
-tags: [multimodal, concept]
+tags: [multimodal, vision-language-pretraining, concept]
 summary: "BLIP pretrains one mixture of encoder-decoder (MED) for understanding and generation, then uses CapFilt, a captioner plus a filter, to clean noisy web image-text pairs before pretraining a new model."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-li-2022-blip.md
 ---

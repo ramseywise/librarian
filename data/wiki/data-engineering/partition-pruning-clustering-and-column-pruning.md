@@ -1,8 +1,8 @@
 ---
 title: "Partition Pruning, Clustering and Column Pruning"
-tags: [data-engineering, concept]
+tags: [data-engineering, warehouse-lakehouse-streaming, concept]
 summary: "Layout decides what an analytical query reads: named columns, partition filters and sort order each cut bytes scanned, and the savings multiply."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--04-warehouse-lakehouse-streaming--notes--01-warehouse-and-store.md
 ---

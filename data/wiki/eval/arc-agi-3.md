@@ -1,8 +1,8 @@
 ---
 title: ARC-AGI-3
-tags: [eval, reference]
+tags: [eval, agent-eval, reference]
 summary: "ARC-AGI-3 is an interactive benchmark of turn-based grid environments with no stated goal, scored by RHAE, the squared ratio of a human action count to the agent's; on its semi-private set the best frontier model scored 0.50% (Opus 4.6), while the authors say every environment was solved by at least 2 of 10 humans (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-foundation-2026-arc-agi-3.md
 ---

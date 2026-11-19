@@ -1,8 +1,8 @@
 ---
 title: Microsoft COCO
-tags: [multimodal, reference]
+tags: [multimodal, datasets, reference]
 summary: "Microsoft COCO is a 2014 object dataset of non-iconic Flickr images with per-instance segmentations (91 categories, 2.5M instances, 328k images); a DPM detector lost about half its AP moving from PASCAL VOC to COCO (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-lin-2014-microsoft-coco.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: Beta-Binomial Updating and Credible Intervals
-tags: [data-analytics, concept]
+tags: [data-analytics, bayesian-analysis, concept]
 summary: "The Beta prior is conjugate to a Binomial rate, so Bayesian updating is addition of counts; the posterior gives a credible interval that says what people wish a confidence interval said, and separates MLE, MAP and posterior mean."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--01-bayesian-inference.md
 ---

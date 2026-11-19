@@ -1,8 +1,8 @@
 ---
 title: Counter-Metrics, Guardrails and Goodhart Variants
-tags: [data-analytics, concept]
+tags: [data-analytics, experimentation-and-causality, concept]
 summary: A guardrail is a global must-not-break; a counter-metric is paired with one target to expose hitting it badly, and it must come from a later funnel step; four Goodhart variants each need a different defence.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--11-metric-trees.md
 ---

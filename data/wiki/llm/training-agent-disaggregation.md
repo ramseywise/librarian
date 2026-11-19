@@ -1,8 +1,8 @@
 ---
 title: Training-Agent Disaggregation
-tags: [llm, pattern]
+tags: [llm, agent-training, pattern]
 summary: "Make an existing agent trainable without rewriting it: keep the runtime as-is, trace each run as state → action → reward into an external trainer, bind trainable roles to logical model names a proxy can re-route to a learning policy, and train each role with the algorithm that fits it (SFT, PPO, contextual bandit)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--notes--agents-self-training.md
   - data/raw/repos/sisyphus/interviewing--notes--agents-self-training.md

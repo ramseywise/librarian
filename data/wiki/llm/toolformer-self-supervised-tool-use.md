@@ -1,8 +1,8 @@
 ---
 title: Toolformer Self-Supervised Tool Use
-tags: [llm, concept]
+tags: [llm, agent-training, concept]
 summary: Fine-tuning recipe in which a model samples API calls into plain text, executes them and keeps only those that lower the loss on following tokens; GPT-J 6.7B so trained is reported to beat GPT-3 175B on several zero-shot tasks (self-reported).
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-schick-2023-toolformer.md
 ---

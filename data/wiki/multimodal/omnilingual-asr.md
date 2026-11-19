@@ -1,8 +1,8 @@
 ---
 title: Omnilingual ASR
-tags: [multimodal, system]
+tags: [multimodal, speech-and-audio, system]
 summary: "Omnilingual ASR scales a wav2vec 2.0 encoder to 7B parameters over 1,600+ languages and adds an LLM-style decoder that can transcribe unseen languages from a few in-context examples."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-team-2025-omnilingual-asr.md
 ---

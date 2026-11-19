@@ -1,8 +1,8 @@
 ---
 title: Florence UniCL Vision Foundation Model
-tags: [multimodal, concept]
+tags: [multimodal, vision-language-pretraining, concept]
 summary: "Florence pretrains a two-tower CoSwin-H and text transformer on 900M curated image-text pairs with the UniCL contrastive loss, then adds small adapters for detection, vision-language tasks and video."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-yuan-2021-florence.md
   - data/raw/papers/2026-11-07-akkus-2023-multimodal-deep-learning.md

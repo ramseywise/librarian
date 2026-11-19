@@ -1,8 +1,8 @@
 ---
 title: GEMBA Translation Quality Prompting
-tags: [eval, llm, pattern]
+tags: [eval, graders-and-metrics, llm, pattern]
 summary: "GEMBA prompts a GPT model once per translation segment for a quality score and averages segments into a system score; with GPT-4 it topped the WMT22 metrics at system level on three language pairs but only trailed the best metrics at segment level (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-kocmi-2023-large-language-models-state-art.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: "Data Incident Playbook: Contain Before Diagnosing"
-tags: [data-engineering, pattern]
+tags: [data-engineering, quality-and-observability, pattern]
 summary: "A data incident runs detect, triage, contain, repair, verify and postmortem in that order, because wrong data persists and spreads after the cause is fixed; contain first, never fix raw in place, and close only when the checks that fired are quiet."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--05-quality-and-observability--notes--03-incident-playbooks.md
 ---

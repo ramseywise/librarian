@@ -1,8 +1,8 @@
 ---
 title: Specialist Verdict Panel
-tags: [eval, pattern]
+tags: [eval, graders-and-metrics, pattern]
 summary: "Agent-output eval as a panel of single-dimension specialist judges — relevance, hallucination, completeness, escalation — each returning a structured verdict, so dimensions aggregate without a halo effect and each failure is attributable."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/articles/2026-07-19-langfuse-multi-agent-eval.md
   - data/raw/articles/2026-07-19-evaluating-ai-agents-deeplearning.md

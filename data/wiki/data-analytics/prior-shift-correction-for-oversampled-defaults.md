@@ -1,8 +1,8 @@
 ---
 title: Prior Shift Correction for Oversampled Defaults
-tags: [data-analytics, pattern]
+tags: [data-analytics, applied-analyses, pattern]
 summary: When bad outcomes are oversampled, a model's probabilities describe a population that does not exist; adding a constant to the log odds fixes the level without changing ranking, so Gini and KS cannot reveal the error, and the approve/decline cutoff must come from costs on the corrected probability.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--02-credit-scoring.md
 ---

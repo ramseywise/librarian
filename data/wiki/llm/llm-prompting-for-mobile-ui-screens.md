@@ -1,8 +1,8 @@
 ---
 title: LLM Prompting for Mobile UI Screens
-tags: [llm, pattern]
+tags: [llm, gui-and-embodied-agents, pattern]
 summary: "A 2022 paper converts an Android view hierarchy to HTML and prompts PaLM with at most two exemplars for four screen-language tasks; one example in the prompt delivers most of the improvement, and results are rater-study and benchmark numbers with no agent loop (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-wang-2022-enabling-conversational-interaction-mobile-ui.md
 ---

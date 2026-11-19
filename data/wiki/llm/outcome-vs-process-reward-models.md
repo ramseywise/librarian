@@ -1,8 +1,8 @@
 ---
 title: Outcome vs Process Reward Models
-tags: [llm, comparison]
+tags: [llm, reinforcement-learning, comparison]
 summary: "An outcome reward model scores the whole rollout and a process reward model scores each reasoning step. ORM is cheap but cannot tell a lucky guess from sound reasoning. PRM assigns credit better but needs step-level data, and in 2025 practice swung back to ORM with a light PRM used only for verification."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/learn-ai-engineering/docs/research/2026-07-22_rl_landscape.md
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--post-training-for-agents.md

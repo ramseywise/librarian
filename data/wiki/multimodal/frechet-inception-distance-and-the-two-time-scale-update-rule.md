@@ -1,8 +1,8 @@
 ---
 title: "Frechet Inception Distance and the Two Time-Scale Update Rule"
-tags: [multimodal, concept]
+tags: [multimodal, benchmarks-and-metrics, concept]
 summary: "TTUR gives a GAN's discriminator and generator separate learning rates, with a convergence argument to a local Nash equilibrium, and the paper introduces FID, a Gaussian distance between Inception features of real and generated images."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-heusel-2017-gans-trained-two-time-scale.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: Ragas Reference-Free RAG Metrics
-tags: [eval, rag, pattern]
+tags: [eval, rag-and-grounding, rag, pattern]
 summary: "Ragas scores a RAG pipeline on faithfulness, answer relevance and context relevance by prompting gpt-3.5-turbo-16k, with no reference answers; on the 50-question WikiEval set it agreed with human pairwise preference 0.95, 0.78 and 0.70 of the time, above two direct-prompting baselines (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-es-2023-ragas.md
 ---

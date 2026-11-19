@@ -1,8 +1,8 @@
 ---
 title: LiveMCP-101
-tags: [eval, reference]
+tags: [eval, agent-eval, reference]
 summary: "A benchmark of 101 multi-step tasks over live MCP tools (41 servers, 260 tools) that grades an agent against a reference agent run at the same time; GPT-5 had the highest task success rate at 58.42% across 18 LLMs (self-reported), and semantic parameter errors were the largest failure type."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-yin-2025-livemcp-101.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: BYOL Bootstrap Your Own Latent
-tags: [multimodal, concept]
+tags: [multimodal, vision-backbones, concept]
 summary: "BYOL learns image representations with no negative pairs: an online network with a predictor regresses the projection of a slow moving-average target network on another augmented view."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-grill-2020-bootstrap-your-own-latent.md
 ---

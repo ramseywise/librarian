@@ -1,8 +1,8 @@
 ---
 title: Regularisation as a Prior
-tags: [data-analytics, concept]
+tags: [data-analytics, probability-and-statistics, concept]
 summary: "Ridge is the MAP estimate under a Normal prior and lasso the MAP under a Laplace prior, with penalty strength equal to prior precision; lasso's exact zeros come from the MAP's geometry, not from a Bayesian belief in sparsity."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--03-priors-and-bandits.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: "Tool-N1 Binary-Reward Tool-Calling RL"
-tags: [llm, pattern]
+tags: [llm, agent-training, pattern]
 summary: "Tool-N1 trains Qwen2.5 models for tool calling with GRPO and a binary reward on output format plus exact call match, with no reasoning-trace supervision; its 7B and 14B models edge past GPT-4o on single-turn BFCL (self-reported), and pure RL matches SFT-then-RL by a hair."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-zhang-2025-nemotron-research-tool-n1.md
 ---

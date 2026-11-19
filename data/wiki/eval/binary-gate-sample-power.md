@@ -1,8 +1,8 @@
 ---
 title: Binary Gate Sample Power
-tags: [eval, pattern]
+tags: [eval, reading-results, pattern]
 summary: "Before a small model-comparison run, compute what it can detect: with per-event pass/fail gates, the chance of seeing at least one failure in N events is 1-(1-p)^N. That makes N=10-20 a gross-failure detector (it catches a 15-30% failure rate) and not evidence of parity, so the results must state that scope."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-06-dis29-deepseek-arm.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-06-dis29-deepseek-arm.md

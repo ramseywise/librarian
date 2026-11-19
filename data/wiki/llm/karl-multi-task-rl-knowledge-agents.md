@@ -1,8 +1,8 @@
 ---
 title: KARL Multi-Task RL Knowledge Agents
-tags: [llm, pattern]
+tags: [llm, agent-training, pattern]
 summary: "KARL trains a search agent with iterative large-batch off-policy RL (OAPL) on two tasks, using agent-synthesised questions and a learned compression tool; the result matched a frontier model on a six-task suite at lower cost (self-reported) and generalised better than SFT distillation."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-chang-2026-karl.md
 ---

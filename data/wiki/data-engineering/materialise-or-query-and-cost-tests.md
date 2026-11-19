@@ -1,8 +1,8 @@
 ---
 title: "Materialise or Query and Cost Tests"
-tags: [data-engineering, pattern]
+tags: [data-engineering, warehouse-lakehouse-streaming, pattern]
 summary: "Decide whether to store a daily aggregate by comparing rebuild cost to scans saved at the real read rate, and stop cost regressions with dry-run byte budgets and per-job attribution instead of finding them on the invoice."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--04-warehouse-lakehouse-streaming--notes--05-cost.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: Agentic KPI Trees
-tags: [eval, pattern]
+tags: [eval, agent-eval, pattern]
 summary: KPI tree pattern for agentic products — goal completion rate, no-touch rate, and transaction match accuracy as the primary success metrics for product-assistant, document processing, and reconciliation agents.
-updated: 2026-11-02
+updated: 2026-11-19
 sources:
   - data/raw/gdrive/2026-05-28-ai-chapter-meeting-2.md
 ---

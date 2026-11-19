@@ -47,6 +47,7 @@ and reports the problems.
 | Note | wiki pages | `wiki:` in frontmatter, inline `[[links]]`, wiki pages whose `sources:` list the note's raw copy, title mentions in prose, then nearest pages by embedding | `courses/linker.py` |
 | Wiki directory | course | a fixed table groups directories into one area per course, for the map only | `wiki/areas.py` |
 | Course and module | wiki pages | the curriculum facet: the pages each module's notes link, and per course the pages no note links ("Not yet in a lesson") | `courses/curriculum.py` |
+| Course | wiki page | derived placement: the lowest tier among the notes linking the page ("introduced at") and their modules; on the map as `pageTier`, at the end of MCP `read_page`; never written to wiki frontmatter. `librarian courses check tiers` flags a `prerequisite-for` link whose prerequisite is tiered above its page | `courses/curriculum.py`, `courses/checks/tier_order.py` |
 | Glossary term | wiki pages | `page:` names the page it paraphrases; mentions are word matches in public page bodies | `courses/glossary.py` |
 | Glossary term | notes | hover definitions in lessons | `courses/glossary.py` |
 | Maths concept | the notes that teach it | `data/concept_homes.json`; a note that uses the concept without linking its home is reported | `courses/checks/curriculum_map.py` |

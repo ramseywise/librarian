@@ -1,8 +1,8 @@
 ---
 title: Difference-in-Differences as Two-Way Fixed Effects
-tags: [data-analytics, pattern]
+tags: [data-analytics, experimentation-and-causality, pattern]
 summary: "A difference-in-differences estimate equals the treated-by-post coefficient in a two-way fixed effects regression, and rests on untestable parallel trends that pre-period event-study checks detect poorly."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--08-panel-data-and-fixed-effects.md
 ---

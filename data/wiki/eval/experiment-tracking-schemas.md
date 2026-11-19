@@ -1,8 +1,8 @@
 ---
 title: Experiment Tracking Schemas
-tags: [eval, infra, rag, pattern]
+tags: [eval, harness-and-ci, infra, rag, pattern]
 summary: "The metadata contract that makes an eval run reproducible and diffable — base trace fields every agent emits, plus ExperimentRun/RagConfig/BedrockConfig/ChunkRecord dataclasses that pin the exact configuration a result came from."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--06-observability--support-agent-observability.md
   - data/raw/claude-docs/ai-project-template/docs/plans/2026-08-11-ait-run-registry.md

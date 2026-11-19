@@ -1,8 +1,8 @@
 ---
 title: "Distribution Monitors Need an Effect Size and a Fixed Reference"
-tags: [data-engineering, pattern]
+tags: [data-engineering, quality-and-observability, pattern]
 summary: "Only a distribution monitor sees a silent unit change; threshold on an effect size such as the KS statistic rather than a p-value, keep an approved fixed reference, and start with prediction drift when labels arrive late."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--05-quality-and-observability--notes--02-monitors-and-lineage.md
   - data/raw/repos/learn-ai-engineering/data-engineering--05-quality-and-observability--notes--01-quality-dimensions-and-tests.md

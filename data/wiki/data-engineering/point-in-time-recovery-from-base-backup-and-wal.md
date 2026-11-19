@@ -1,8 +1,8 @@
 ---
 title: "Point-in-Time Recovery from Base Backup and WAL"
-tags: [data-engineering, pattern]
+tags: [data-engineering, quality-and-observability, pattern]
 summary: "A base backup plus every archived WAL segment recovers a database to a chosen moment just before a bad delete, on a new timeline, which a nightly dump and a replica cannot do."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--05-quality-and-observability--notes--05-operating-data-stores.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: Instrumental Variables and LATE
-tags: [data-analytics, pattern]
+tags: [data-analytics, experimentation-and-causality, pattern]
 summary: "An instrument moves treatment but affects the outcome only through it, so the Wald ratio of the instrument's effect on outcome over its effect on treatment recovers the effect for compliers despite unmeasured confounding; weak first stages and an untestable exclusion restriction are the failure modes."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--04-correlation-and-causation.md
 ---

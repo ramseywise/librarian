@@ -1,8 +1,8 @@
 ---
 title: "Testing an ML System Beyond Its Code"
-tags: [data-engineering, pattern]
+tags: [data-engineering, ml-platform, pattern]
 summary: "Code tests pass on a correct function fed broken data, so also test data validity, model behaviour (minimum functionality, invariance, direction) and model sanity (overfit a tiny batch), with injected seams and a container integration test against fake cloud services."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--06-ml-platform--notes--05-mlops-maturity-and-best-practices.md
 ---

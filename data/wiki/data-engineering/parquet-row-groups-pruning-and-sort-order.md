@@ -1,8 +1,8 @@
 ---
 title: "Parquet Row Groups, Pruning and Sort Order"
-tags: [data-engineering, concept]
+tags: [data-engineering, storage-and-compute-foundations, concept]
 summary: "How Parquet's footer statistics enable column pruning and predicate pushdown, why pushdown only works when physical sort order matches the filter, and how Parquet (compressed, at rest) differs from Arrow (uncompressed, in memory)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--01-storage-and-compute-foundations--notes--02-encoding-and-files.md
 ---

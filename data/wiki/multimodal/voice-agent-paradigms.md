@@ -1,8 +1,8 @@
 ---
 title: Voice Agent Paradigms
-tags: [multimodal, voice, comparison]
+tags: [multimodal, speech-and-audio, voice, comparison]
 summary: "Cascaded (VAD → ASR → LLM → TTS), end-to-end omnimodal, and full-duplex voice agents differ in one thing — how far each gets from VAD's assumption that conversation happens in discrete turns — and all three coexist as trade-offs; the cascade's serial latency budget is about 1–2 s before queueing multiplies it."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--07-agentic-applications--real-time-multimodal-agents.md
 ---

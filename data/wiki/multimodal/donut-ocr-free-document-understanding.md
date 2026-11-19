@@ -1,8 +1,8 @@
 ---
 title: Donut OCR-Free Document Understanding
-tags: [multimodal, method]
+tags: [multimodal, multimodal-llms, method]
 summary: "Donut is an encoder-decoder Transformer that reads a document image and generates structured JSON directly, with no OCR engine, after pretraining to read text."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-kim-2022-ocr-free-document-understanding-transformer.md
 ---

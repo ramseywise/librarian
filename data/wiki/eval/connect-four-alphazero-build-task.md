@@ -1,8 +1,8 @@
 ---
 title: Connect Four AlphaZero Build Task
-tags: [eval, reference]
+tags: [eval, agent-eval, reference]
 summary: "A single-task benchmark in which coding agents build an AlphaZero-style Connect Four player in 3 hours on one consumer GPU and are graded by playing a perfect solver; one agent won as first mover in 7 of 8 trials, and an odd early-stopping pattern in another prompted a small, inconclusive sandbagging probe (self-reported, n = 8 per agent)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-sherwood-2026-frontier-coding-agents-can-now.md
 ---

@@ -11,6 +11,8 @@ interface Props {
   focus: string | null;
   /** A sector's arc or label was picked. */
   onPickSector: (sector: string) => void;
+  /** Links are switched on: the lines from page to page through the circle are drawn. */
+  showLinks?: boolean;
 }
 
 /** How a point is drawn: its page has a card, or is this near, or no link reaches it. */
@@ -25,11 +27,12 @@ const away = (d: FieldDot) =>
  * the viewport, so it pans and zooms with the cards; CSS puts the portal under them. A point opens
  * its page's level; a sector's arc or label moves the view in on that part of the circle, where
  * its points are drawn larger. Under the pointer a point's links back to the cards are drawn.
+ * With Links switched off the circle keeps only its points and each card's tie to its own point.
  *
  * Points are placed by a CSS transform and kept in a fixed order, so from one page's level to the
  * next each is the same element: the circle stays and its points grow and light for the new page.
  */
-export const HopField = memo(function HopField({ field, titleOf, onOpenPage, focus, onPickSector }: Props) {
+export const HopField = memo(function HopField({ field, titleOf, onOpenPage, focus, onPickSector, showLinks = true }: Props) {
   const [hover, setHover] = useState<string | null>(null);
   const byId = useMemo(() => new Map(field.dots.map((d) => [d.id, d])), [field.dots]);
 
@@ -51,7 +54,7 @@ export const HopField = memo(function HopField({ field, titleOf, onOpenPage, foc
         ))}
         {field.dots.map((d) => {
           // A card to its own point, and a page in reach to the page it is reached through.
-          const tied = (d.card || (d.hop !== undefined && d.hop <= FIELD_HOPS)) && d.from;
+          const tied = (d.card || (showLinks && d.hop !== undefined && d.hop <= FIELD_HOPS)) && d.from;
           return tied && (
             <line
               key={d.id}
@@ -89,11 +92,11 @@ export const HopField = memo(function HopField({ field, titleOf, onOpenPage, foc
         ))}
       </>
     );
-  }, [field, titleOf, focus]);
+  }, [field, titleOf, focus, showLinks]);
 
   // From the point under the pointer back, link by link, to the card its chain starts at.
   const chain = useMemo(() => {
-    const start = hover ? byId.get(hover) : undefined;
+    const start = hover && showLinks ? byId.get(hover) : undefined;
     if (!start) return null;
     const points: string[] = [];
     const seen = new Set<string>();
@@ -106,7 +109,7 @@ export const HopField = memo(function HopField({ field, titleOf, onOpenPage, foc
       at = next?.card ? undefined : next;
     }
     return points.length > 1 ? { points: points.join(" "), color: field.sectors[start.sector].color } : null;
-  }, [hover, byId, field.sectors]);
+  }, [hover, showLinks, byId, field.sectors]);
 
   const attr = (target: EventTarget, name: string) => (target as Element).getAttribute?.(name) ?? null;
   return (

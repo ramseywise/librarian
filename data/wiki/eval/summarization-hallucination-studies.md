@@ -1,8 +1,8 @@
 ---
 title: Summarization and Translation Hallucination Studies
-tags: [eval, concept]
+tags: [eval, factuality-and-hallucination, concept]
 summary: "Two pre-LLM studies of hallucination in generated text: a human annotation of five XSum systems found hallucinations in over 70% of summaries and entailment as the best automatic proxy, and a token-level detector trained on synthetic noise reached average F1 near 0.6 on translation and summarization sets (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-maynez-2020-faithfulness-factuality-abstractive-summarization.md
   - data/raw/papers/2026-11-08-zhou-2021-detecting-hallucinated-content-conditional-neural.md

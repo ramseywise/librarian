@@ -1,8 +1,8 @@
 ---
 title: Ranking by Lower Credible Bound
-tags: [data-analytics, pattern]
+tags: [data-analytics, bayesian-analysis, pattern]
 summary: "Sort items with few observations by a low percentile of each item's Beta posterior instead of the raw ratio, so 1 upvote with 0 downvotes cannot outrank 999 and 1; the same fix applies to star ratings and to LLM prompts compared on eval pass rate."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--04-bayesian-ab-testing.md
 ---

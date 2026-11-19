@@ -1,8 +1,8 @@
 ---
 title: "Unreliable Networks, Clocks and Process Pauses"
-tags: [data-engineering, concept]
+tags: [data-engineering, storage-and-compute-foundations, concept]
 summary: "A timeout means 'unknown', not 'failed'; clock skew of a few milliseconds makes last-write-wins drop acknowledged writes and inverts cause and effect; processes can pause unnoticed; checksums catch corruption that still parses."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--01-storage-and-compute-foundations--notes--06-when-distributed-systems-fail.md
 ---

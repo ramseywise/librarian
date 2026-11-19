@@ -1,8 +1,8 @@
 ---
 title: MAUVE
-tags: [eval, concept]
+tags: [eval, graders-and-metrics, concept]
 summary: "MAUVE scores the gap between model text and human text by quantizing embeddings of both and taking the area under a divergence curve; the paper reports it ranks decoders and model sizes as expected where generation perplexity does not (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-pillutla-2021-mauve.md
 ---

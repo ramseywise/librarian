@@ -1,8 +1,8 @@
 ---
 title: Conversational Test Fixture Design
-tags: [eval, pattern]
+tags: [eval, defining-correct, pattern]
 summary: How to author a fixture for a pipeline whose input is dialogue — the volunteer's verbatim words as the input unit, the full expected artifact as the oracle, and a short "key validation points" list naming the specific wrong answers the scenario exists to catch.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/ai-project-template/skills/design-dryrun/reference/scenarios.md
 ---

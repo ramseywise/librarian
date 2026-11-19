@@ -1,8 +1,8 @@
 ---
 title: Synthesize the Cheap Half
-tags: [eval, rag, pattern]
+tags: [eval, datasets-and-contamination, rag, pattern]
 summary: Synthetic data is safe for queries and (calibrated) judge labels, wrong for events, and forbidden for interactions — synthesize the side of the evaluation that is cheap to verify against reality, never the side that becomes the target.
-updated: 2026-10-30
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/akira/docs/technical-feasibility.md
   - data/raw/claude-docs/diskoe/docs/technical-feasibility.md

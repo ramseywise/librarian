@@ -1,8 +1,8 @@
 ---
 title: Divergences and Non-Centred Parameterisation
-tags: [data-analytics, pattern]
+tags: [data-analytics, bayesian-analysis, pattern]
 summary: "Hierarchical models create a funnel when the group scale is small, so NUTS diverges and underestimates the scale; sampling a standard normal and scaling it (non-centred form) changes the coordinates, not the model, and removes most divergences."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--02-mcmc-and-pymc.md
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--07-multilevel-models-and-partial-pooling.md

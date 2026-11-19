@@ -1,8 +1,8 @@
 ---
 title: "Orchestrator Design Rules and Tool Choice"
-tags: [data-engineering, decision]
+tags: [data-engineering, transform-and-orchestrate, decision]
 summary: "Keep domain logic in a plain package with orchestrator code as thin glue, hand off between tasks through storage, adopt an orchestrator on day 0, and pick the tool the organisation already runs unless starting fresh."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--03-transform-and-orchestrate--notes--02-orchestrate.md
   - data/raw/repos/learn-ai-engineering/data-engineering--03-transform-and-orchestrate--notes--05-dagster-and-airflow.md

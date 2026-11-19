@@ -1,8 +1,8 @@
 ---
 title: Generalised Linear Models and Deviance
-tags: [data-analytics, concept]
+tags: [data-analytics, probability-and-statistics, concept]
 summary: "A GLM pairs a distribution with a link function and is fitted by maximum likelihood; deviance replaces the sum of squares for comparing models, while Pearson dispersion is the better check of the variance assumption."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--06-regression-and-glms.md
 ---

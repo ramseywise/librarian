@@ -1,8 +1,8 @@
 ---
 title: "High-Watermark Incremental Extraction and Its Blind Spots"
-tags: [data-engineering, pattern]
+tags: [data-engineering, ingest-and-modelling, pattern]
 summary: "Reading rows newer than the last seen updated_at misses late-committed rows and every hard delete; an overlap window patches the first, nothing patches the second, and dlt's incremental cursor is the same mechanism."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--02-ingest-and-modelling--notes--01-ingest.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: API-Bank
-tags: [eval, reference]
+tags: [eval, agent-eval, reference]
 summary: Executable tool-use benchmark of 73 APIs and 314 human-annotated dialogues at three levels (Call, Retrieve+Call, Plan+Retrieve+Call), with a Lynx-7B baseline fine-tuned on ChatGPT-agent-generated data (self-reported).
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-li-2023-api-bank.md
 ---

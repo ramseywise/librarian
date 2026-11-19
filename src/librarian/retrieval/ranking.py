@@ -102,6 +102,21 @@ TEXT_WEIGHT = 0.5
 SEMANTIC_WEIGHT = 0.5
 
 
+def serving_version() -> dict[str, object]:
+    """What a ranking came from, for the telemetry lines: index build, embedding model, weights.
+
+    `index_build` is the loaded build's id (the corpus id it was built from), or None without a
+    handle (library mode, tests). Read from the handle, not recomputed: it is on every search.
+    A request that started on the previous build just before a swap is logged with the new one.
+    """
+    handle = index.get_handle()
+    return {
+        "index_build": handle.build_id if handle is not None else None,
+        "embedding_model": embeddings.MODEL_NAME if embeddings.HAS_EMBEDDINGS else None,
+        "ranking": {"text": TEXT_WEIGHT, "semantic": SEMANTIC_WEIGHT, "experiment": experiment()},
+    }
+
+
 def _cosine(a: list[float], b: list[float]) -> float:
     dot = sum(x * y for x, y in zip(a, b, strict=True))
     na = sum(x * x for x in a) ** 0.5
@@ -417,7 +432,13 @@ def _search_rows(
         course_dir = corpus.resolve_course_dir(domain)
         if course_dir is None:
             corpus.log_retrieval(
-                tool, query=query, domain=domain, n_results=0, top_paths=[], degraded=[]
+                tool,
+                query=query,
+                domain=domain,
+                n_results=0,
+                top_paths=[],
+                degraded=[],
+                **serving_version(),
             )
             return [], []
         tag_filter, tag_params = "AND starts_with(path, ?)", [f"{course_dir.as_posix()}/"]
@@ -470,7 +491,13 @@ def _search_rows(
 
     if not rows:
         corpus.log_retrieval(
-            tool, query=query, domain=domain, n_results=0, top_paths=[], degraded=degraded
+            tool,
+            query=query,
+            domain=domain,
+            n_results=0,
+            top_paths=[],
+            degraded=degraded,
+            **serving_version(),
         )
         return [], degraded
 
@@ -486,6 +513,7 @@ def _search_rows(
         n_results=len(ranked),
         top_paths=[r[0] for r in ranked[:5]],
         degraded=degraded,
+        **serving_version(),
         **extra,
     )
     return ranked, degraded

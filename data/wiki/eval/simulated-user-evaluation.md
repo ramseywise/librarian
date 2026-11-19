@@ -1,8 +1,8 @@
 ---
 title: Simulated User Evaluation
-tags: [eval, llm, agents, pattern]
+tags: [eval, agent-eval, llm, agents, pattern]
 summary: "Evaluate multi-turn agents with an LLM playing the user toward a goal — realistic only with progressive information disclosure (known facts plus rules for when to reveal them), optionally dual-control where the user acts on shared state — graded per turn and per conversation, versus canned conversations that cannot see compounding errors."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--06-evaluating-agents.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--references.md

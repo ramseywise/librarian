@@ -1,8 +1,8 @@
 ---
 title: Eval Falsifiability
-tags: [eval, pattern]
+tags: [eval, defining-correct, pattern]
 summary: An eval that cannot fail measures nothing and fails green — test both directions (the negative case is load-bearing), make scripted providers derive output from their actual inputs, run eval at production config, validate fixture tables at load, and keep eval fakes conformant to the port.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/galactus/skills/review-safeguards/SKILL.md
   - data/raw/claude-docs/galactus/skills/proto-harden/SKILL.md

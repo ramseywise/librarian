@@ -1,8 +1,8 @@
 ---
 title: Repository-Level Coding Benchmarks
-tags: [eval, comparison]
+tags: [eval, code, comparison]
 summary: "Three 2025-26 benchmarks that stretch SWE-bench beyond single-issue Python fixes: SWE-EVO (48 release-to-release tasks, best 25% resolved), SWE-PolyBench (2,110 tasks in four languages, best 14.1% overall) and LongCLI-Bench (20 long command-line tasks, best 16.7%); all self-reported."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-le-2025-swe-evo.md
   - data/raw/papers/2026-11-05-rashid-2025-swe-polybench.md

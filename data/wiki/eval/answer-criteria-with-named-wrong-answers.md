@@ -1,8 +1,8 @@
 ---
 title: Answer Criteria with Named Wrong Answers
-tags: [eval, rag, pattern]
+tags: [eval, defining-correct, rag, pattern]
 summary: "A per-topic answer rubric for a support RAG bot that lists, next to what a complete answer contains, the specific wrong answers to fail — and those wrong answers cluster into five predictable classes (collapsed distinctions, irreversibility, per-tier numbers, silent exclusions, capabilities the product lacks) worth seeding into any judge rubric or golden set."
-updated: 2026-10-17
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/chat-agent/docs/kb-analysis/answer_quality_criteria.md
 ---

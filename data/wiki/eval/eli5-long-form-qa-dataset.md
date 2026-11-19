@@ -1,8 +1,8 @@
 ---
 title: ELI5 Long-Form QA Dataset
-tags: [eval, concept]
+tags: [eval, language-tasks, concept]
 summary: "ELI5 pairs 272K Reddit questions with paragraph-length answers and TF-IDF-built web support documents, showing that a multi-task Seq2Seq model still hallucinates and ROUGE cannot rank abstractive against extractive systems."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-fan-2019-eli5.md
 ---

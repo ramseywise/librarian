@@ -1,8 +1,8 @@
 ---
 title: "Faults, Load Parameters and Systems of Record"
-tags: [data-engineering, concept]
+tags: [data-engineering, storage-and-compute-foundations, concept]
 summary: "Design vocabulary for data systems: faults versus failures, why correlated software and human faults beat redundancy, choosing load parameters from the distribution not the mean, and separating systems of record from rebuildable derived data."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--01-storage-and-compute-foundations--notes--01-data-systems-and-data-models.md
 ---

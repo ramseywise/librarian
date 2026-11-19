@@ -1,8 +1,8 @@
 ---
 title: Logistic Regression Separation
-tags: [data-analytics, pattern]
+tags: [data-analytics, probability-and-statistics, pattern]
 summary: "When a feature perfectly predicts the outcome, maximum likelihood diverges, giving a huge coefficient and an absurd standard error; a penalty or weakly informative prior stabilises it."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-gelman-2009-weakly-informative-default-prior-distribution.md
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--06-regression-and-glms.md

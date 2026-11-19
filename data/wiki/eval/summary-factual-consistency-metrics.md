@@ -1,8 +1,8 @@
 ---
 title: Summary Factual Consistency Metrics
-tags: [eval, concept]
+tags: [eval, factuality-and-hallucination, concept]
 summary: "Three ways to check whether a summary's claims are supported by its source: FactCC (a BERT classifier trained on rule-made corruptions), QAGS (ask questions of the summary, answer them from summary and source, compare) and TrueTeacher (an LLM labels real model summaries to train a smaller checker); each paper reports its own gains (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-kryscinski-2020-evaluating-factual-consistency-abstractive-text.md
   - data/raw/papers/2026-11-07-wang-2020-asking-answering-questions-evaluate-factual.md

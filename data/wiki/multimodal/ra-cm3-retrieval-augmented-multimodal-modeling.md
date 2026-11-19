@@ -1,8 +1,8 @@
 ---
 title: RA-CM3 Retrieval-Augmented Multimodal Modeling
-tags: [multimodal, concept]
+tags: [multimodal, multimodal-llms, concept]
 summary: "RA-CM3 prepends up to two documents retrieved by a frozen CLIP retriever to a 2.7B CM3 generator, so it can retrieve and generate both text and images; on MS-COCO it reports better FID and CIDEr than vanilla CM3 at under 30% of DALL-E training compute (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-yasunaga-2022-retrieval-augmented-multimodal-language-modeling.md
 ---

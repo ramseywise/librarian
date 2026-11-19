@@ -1,8 +1,8 @@
 ---
 title: Swin Transformer Shifted Windows
-tags: [multimodal, concept]
+tags: [multimodal, vision-backbones, concept]
 summary: "Swin builds a hierarchical vision transformer with patch merging and window self-attention whose windows shift between blocks, giving cost linear in image size and strong dense-prediction results."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-liu-2021-swin-transformer.md
 ---

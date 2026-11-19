@@ -1,8 +1,8 @@
 ---
 title: ALCUNA New Knowledge Benchmark
-tags: [eval, reference]
+tags: [eval, language-tasks, reference]
 summary: "ALCUNA is a benchmark of questions about artificial organisms that cannot be in any training set, testing how well LLMs use new in-context knowledge; multi-hop association with existing knowledge is hardest for all four models tested (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-yin-2023-alcuna.md
 ---

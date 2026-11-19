@@ -1,8 +1,8 @@
 ---
 title: "NeedleBench"
-tags: [eval, reference]
+tags: [eval, language-tasks, reference]
 summary: "NeedleBench is a bilingual synthetic long-context benchmark with information-sparse needle tasks and an information-dense Ancestral Trace Challenge; retrieval is near-solved at 128K while multi-needle reasoning is not (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-li-2024-needlebench.md
 ---

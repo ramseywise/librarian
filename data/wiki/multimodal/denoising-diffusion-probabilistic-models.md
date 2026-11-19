@@ -1,8 +1,8 @@
 ---
 title: "Denoising Diffusion Probabilistic Models"
-tags: [multimodal, concept]
+tags: [multimodal, diffusion-and-image-generation, concept]
 summary: "A diffusion model learns to undo gradual noising of an image; DDPM trains a U-Net to predict the added noise, and three follow-ups (score-based NCSN, Improved DDPM, DDIM) change the objective, the variances or the sampler."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-ho-2020-denoising-diffusion-probabilistic-models.md
   - data/raw/papers/2026-11-07-nichol-2021-improved-denoising-diffusion-probabilistic-models.md

@@ -1,8 +1,8 @@
 ---
 title: Blind Labels Judge No Prompt
-tags: [eval, pattern]
+tags: [eval, judges, pattern]
 summary: "When one labelling tool hosts both a blind instrument (the human rates the item's own evidence and is the κ_HH ceiling) and an output-judgment instrument (the human compares model outputs), enforce the split in the schema: blind rows carry no prompt identity at all, only an evidence hash. That is what lets every future prompt version be re-scored against the same labels."
-updated: 2026-10-17
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-15-dis275-human-label-persistence.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-15-dis275-human-label-persistence.md

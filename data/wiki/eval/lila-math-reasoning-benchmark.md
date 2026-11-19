@@ -1,8 +1,8 @@
 ---
 title: LILA Math Reasoning Benchmark
-tags: [eval, benchmark]
+tags: [eval, reasoning-and-math, benchmark]
 summary: "LILA unifies 20 math datasets into 23 tasks with Python program solutions, plus out-of-distribution and robustness splits; multi-task fine-tuning of GPT-Neo-2.7B beat single-task training and few-shot Codex scored only 60.40% F1 (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-mishra-2022-lila.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: CLIP Contrastive Language-Image Pretraining
-tags: [multimodal, concept]
+tags: [multimodal, vision-language-pretraining, concept]
 summary: "CLIP trains an image encoder and a text encoder together with a symmetric contrastive loss on web image-text pairs, so class names can be turned into a zero-shot classifier; a later open study (OpenCLIP) fits power-law scaling curves and finds scaling differs by training dataset."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-radford-2021-learning-transferable-visual-models-natural.md
   - data/raw/papers/2026-11-07-cherti-2023-reproducible-scaling-laws-contrastive-language.md

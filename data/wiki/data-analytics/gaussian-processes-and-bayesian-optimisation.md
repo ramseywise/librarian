@@ -1,8 +1,8 @@
 ---
 title: Gaussian Processes and Bayesian Optimisation
-tags: [data-analytics, concept]
+tags: [data-analytics, bayesian-analysis, concept]
 summary: "A Gaussian process is a prior over functions that gives a prediction with an honest error bar; Bayesian optimisation uses it as a cheap surrogate and an acquisition function to pick the next expensive evaluation, but beats random search only when each fit is costly."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--06-bayesian-machine-learning.md
 confidence: medium

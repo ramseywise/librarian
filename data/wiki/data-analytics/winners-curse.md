@@ -1,8 +1,8 @@
 ---
 title: Winner's Curse
-tags: [data-analytics, concept]
+tags: [data-analytics, experimentation-and-causality, concept]
 summary: "When a test is underpowered, the estimates that reach significance are exaggerated: a true 1 percent lift with a 1 percent standard error had power 0.17, significant estimates averaged 2.5 times the truth, and some had the wrong sign."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--05-hypothesis-testing.md
 ---

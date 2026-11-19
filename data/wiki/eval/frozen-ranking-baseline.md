@@ -1,8 +1,8 @@
 ---
 title: Frozen Ranking Baseline from a Pure Ranker
-tags: [eval, foundations, pattern]
+tags: [eval, harness-and-ci, foundations, pattern]
 summary: Because the ranker and composer are pure functions, an offline "snapshot in, ranked slate out" baseline is a composition of three things the tree already has — not new infrastructure — and the genuinely missing pieces are an export that keeps excluded candidates with their reason, a slice-breakdown layer over the per-case grade file, and a version stamp for every rule table.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/diskoe/docs/research/2026-09-16-dis290-frozen-ranking-baseline.md
   - data/raw/claude-docs/diskoe/docs/research/2026-09-16-dis289-relevance-benchmark-corpus.md

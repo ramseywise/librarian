@@ -1,8 +1,8 @@
 ---
 title: Queue Staffing with Little's Law and Erlang C
-tags: [data-analytics, concept]
+tags: [data-analytics, applied-analyses, concept]
 summary: Little's law (L = lambda W) validates a queue log exactly and gives waits from a head count; Erlang C describes steady state but a shift that starts empty runs below it; price the extra worker and solve rosters as a linear programme.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--10-operations-and-supply-chain.md
 ---

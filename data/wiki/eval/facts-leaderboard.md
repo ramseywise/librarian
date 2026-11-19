@@ -1,8 +1,8 @@
 ---
 title: FACTS Leaderboard
-tags: [eval, reference]
+tags: [eval, factuality-and-hallucination, reference]
 summary: "Google's four-part factuality suite (grounding to a document, closed-book parametric recall, search use, image-grounded answers) averaged into one FACTS Score; Gemini 3 Pro led at 68.8 over 15 proprietary models (self-reported), with the authors' judges mostly Google models."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-cheng-2025-facts-leaderboard.md
 ---

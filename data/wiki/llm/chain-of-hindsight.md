@@ -1,8 +1,8 @@
 ---
 title: Chain of Hindsight
-tags: [llm, pattern]
+tags: [llm, preference-and-alignment, pattern]
 summary: "Chain of Hindsight fine-tunes a language model on sequences that pair outputs with templated 'Bad' and 'Good' feedback using the ordinary next-token loss, so no RL stage is needed; on GPT-J 6B it beat PPO-based RLHF in pairwise human preference."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-liu-2023-chain-hindsight-aligns-language-models.md
 ---

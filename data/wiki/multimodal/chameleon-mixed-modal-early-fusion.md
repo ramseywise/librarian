@@ -1,8 +1,8 @@
 ---
 title: Chameleon Mixed-Modal Early Fusion
-tags: [multimodal, concept]
+tags: [multimodal, multimodal-llms, concept]
 summary: "Chameleon trains one Llama-2-style decoder from scratch on text, code and VQ-quantised image tokens in a shared vocabulary, with QK-norm and norm reordering needed for stable training (all numbers self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-team-2024-chameleon.md
 ---

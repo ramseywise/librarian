@@ -1,8 +1,8 @@
 ---
 title: Computer Use Visual Grounding
-tags: [llm, concept]
+tags: [llm, gui-and-embodied-agents, concept]
 summary: "How a GUI agent turns a screenshot into a click — Set-of-Mark labelling, structured DOM/accessibility indexing (prefer it whenever structure exists) and direct coordinate prediction with aspect-ratio-matched rescaling — plus the observation-interface fix for dynamic screens and why per-step efficiency is now the bottleneck."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--07-agentic-applications--real-time-multimodal-agents.md
   - data/raw/papers/2026-11-08-hu-2024-dawn-gui-agent.md

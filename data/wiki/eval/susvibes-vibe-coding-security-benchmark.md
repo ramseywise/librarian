@@ -1,8 +1,8 @@
 ---
 title: SUSVIBES (Vibe-Coding Security Benchmark)
-tags: [eval, reference]
+tags: [eval, code, reference]
 summary: "A benchmark of 186 repository-level feature requests, each originally implemented with a vulnerability, that scores agent code on functional and security tests together; the best settings pass functional tests on over half the tasks but pass security too on about one in eight (self-reported, pass@1)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-zhao-2025-vibe-coding-safe.md
 ---

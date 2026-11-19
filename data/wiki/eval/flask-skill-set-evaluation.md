@@ -1,8 +1,8 @@
 ---
 title: FLASK Skill-Set Evaluation
-tags: [eval, llm, reference]
+tags: [eval, graders-and-metrics, llm, reference]
 summary: "FLASK scores each model answer on 12 separate skills with hand-written 1-5 rubrics instead of one overall grade; with a GPT-4 grader, skill-specific rubrics reached Spearman 0.680 with human labels against 0.641 for a skill-agnostic prompt on 200 instances (self-reported), and removing the reference answer hurt most."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-ye-2023-flask.md
 ---

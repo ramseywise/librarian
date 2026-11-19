@@ -1,8 +1,8 @@
 ---
 title: "Pseudonymised Is Not Anonymised: Hashing Attacks and Keyed Pseudonyms"
-tags: [data-engineering, concept]
+tags: [data-engineering, architecture-and-governance, concept]
 summary: "Hashing a low-entropy identifier is pseudonymisation at best; a keyed hash with the key outside the lake, scoped per domain, is the minimum."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--07-architecture-and-governance--notes--02-access-control-pii-gdpr.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: PaperBench
-tags: [eval, reference]
+tags: [eval, agent-eval, reference]
 summary: "OpenAI's benchmark in which an agent replicates 20 ICML 2024 papers from scratch and is graded by an LLM judge walking a weighted rubric tree of 8,316 binary leaves; o1 with an iterative agent scored 24.4% on all 20 papers, and on a 3-paper subset ML PhDs reached 41.4% against 26.6% for o1 (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-starace-2025-paperbench.md
 ---

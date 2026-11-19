@@ -3,7 +3,7 @@ import type { Node } from "@xyflow/react";
 import type { Area, Curriculum, WikiNodeData } from "../../types";
 import { courseColor, domainColor } from "../../theme/domains";
 import { applyView, filterPrimaryIds } from "../graphView";
-import { facetPending, facetsOf, withCourseGroups } from "../curriculum";
+import { facetPending, facetsOf, isFacetId, rankGroupsOf, withCourseGroups } from "../curriculum";
 
 function node(id: string, domain = "rag", typeTag = "concept"): Node<WikiNodeData> {
   return {
@@ -15,7 +15,7 @@ function node(id: string, domain = "rag", typeTag = "concept"): Node<WikiNodeDat
 
 const curriculum: Curriculum = {
   courses: [
-    { id: "ai", title: "AI Eng", pageIds: ["a", "b"], modules: [{ id: "rag", title: "RAG", firstLesson: null, pageIds: ["a"] }] },
+    { id: "ai", title: "AI Eng", pageIds: ["a", "b"], modules: [{ id: "rag", title: "RAG", firstLesson: null, pageIds: ["a"], notes: [] }] },
     { id: "data", title: "Data", pageIds: ["b"], modules: [] },
   ],
   beyond: [{ domain: "patterns", pageIds: ["c", "d", "e"] }],
@@ -117,5 +117,53 @@ describe("tag and glossary filters", () => {
     expect(facetPending("course:ai", curriculum, null)).toBe(false);
     expect(facetPending("term:bm25", curriculum, null)).toBe(true);
     expect(facetPending("tag:rag", null, null)).toBe(false);
+  });
+});
+
+describe("notes", () => {
+  const withNotes: Curriculum = {
+    ...curriculum,
+    courses: [
+      {
+        id: "ai",
+        title: "AI Eng",
+        pageIds: ["a", "b", "c"],
+        modules: [
+          {
+            id: "rag",
+            title: "RAG",
+            firstLesson: null,
+            pageIds: ["a", "b", "c"],
+            notes: [
+              { id: "ai/rag/notes/01-bm25", title: "BM25", pageIds: ["a", "b"] },
+              { id: "ai/rag/notes/02-empty", title: "Empty", pageIds: [] },
+              { id: "ai/rag/notes/03-rerank", title: "Rerank", pageIds: ["c"] },
+            ],
+          },
+        ],
+      },
+    ],
+  };
+  const glossary = {
+    terms: [{ id: "bm25", label: "BM25", aliases: [], def: "", page: "b", mentions: 2 }, { id: "x", label: "X", aliases: [], def: "", page: "zz", mentions: 1 }],
+    mentions: { bm25: ["a", "b"] },
+  };
+
+  it("a note is a filter on the pages it links; an empty note is none", () => {
+    const f = facetsOf(withNotes);
+    expect([...f.get("note:ai/rag/notes/01-bm25")!]).toEqual(["a", "b"]);
+    expect(f.has("note:ai/rag/notes/02-empty")).toBe(false);
+    expect(isFacetId("note:ai/rag/notes/01-bm25")).toBe(true);
+  });
+
+  it("rank groups hold modules, notes and terms, with each module's notes in reading order", () => {
+    const { groups, readingOrder } = rankGroupsOf(withNotes, glossary);
+    expect(groups.map((g) => g.id)).toEqual([
+      "module:ai/rag",
+      "note:ai/rag/notes/01-bm25",
+      "note:ai/rag/notes/03-rerank",
+      "term:bm25",
+    ]);
+    expect(readingOrder).toEqual([["note:ai/rag/notes/01-bm25", "note:ai/rag/notes/03-rerank"]]);
   });
 });

@@ -1,8 +1,8 @@
 ---
 title: "Model Registry Aliases and the Run Record"
-tags: [data-engineering, concept]
+tags: [data-engineering, ml-platform, concept]
 summary: "A tracker records every run with its data version; a registry names the runs that matter via numbered versions and movable aliases; the registry labels but does not deploy, so a service must resolve the alias and log the version it got."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--06-ml-platform--notes--02-experiment-tracking-and-model-registry.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: GAIA General-Assistant Benchmark
-tags: [eval, reference]
+tags: [eval, agent-eval, reference]
 summary: "GAIA is a 2023 set of 466 human-written questions with unique short answers that are conceptually simple for people but need multi-step tool use; humans scored 92% against 15% for GPT-4 with plugins (self-reported), and every system scored 0 on Level 3."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-mialon-2023-gaia.md
 ---

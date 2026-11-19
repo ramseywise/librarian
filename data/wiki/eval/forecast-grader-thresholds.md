@@ -1,8 +1,8 @@
 ---
 title: Forecast Grader Thresholds
-tags: [eval, reference]
+tags: [eval, graders-and-metrics, reference]
 summary: The pass/fail contract for time-series forecast evaluation — MASE against a naïve baseline, SMAPE, directional accuracy, and prediction-interval coverage — with the diagnostic each failure points to and the drift ratio that triggers retraining.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/atlas/skills/ml-experiment/SKILL.md
   - data/raw/claude-docs/atlas/skills/eval-report/SKILL.md

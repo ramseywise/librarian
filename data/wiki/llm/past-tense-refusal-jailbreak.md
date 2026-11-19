@@ -1,8 +1,8 @@
 ---
 title: Past-Tense Refusal Jailbreak
-tags: [llm, pattern]
+tags: [llm, interpretability-and-safety, pattern]
 summary: Rewriting a harmful request in the past tense bypasses refusal training on several frontier models, and fine-tuning on past-tense refusals closes the gap at a cost in overrefusal.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-andriushchenko-2024-does-refusal-training-llms-generalize.md
 ---

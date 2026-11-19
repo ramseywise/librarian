@@ -93,3 +93,25 @@ def test_tombstone_still_readable(tmp_wiki: Path) -> None:
     content = retrieval.read_page.fn if hasattr(retrieval.read_page, "fn") else retrieval.read_page
     result = content(str(tmp_wiki / "retired.md"))
     assert "supersedes" in result
+
+
+def test_a_search_line_names_what_ranked_it(
+    tmp_wiki: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from librarian.retrieval import ranking
+
+    monkeypatch.setattr(corpus, "DB_PATH", tmp_path / "idx.duckdb")
+    ranking.search_rows("content")
+
+    entry = json.loads((tmp_path / "logs" / "retrieval.jsonl").read_text().splitlines()[-1])
+    assert entry["index_build"] is None  # library mode: no handle
+    assert entry["embedding_model"] is None  # embeddings off in the fixture
+    assert entry["ranking"]["text"] == ranking.TEXT_WEIGHT
+    assert entry["ranking"]["semantic"] == ranking.SEMANTIC_WEIGHT
+
+
+def test_serving_version_names_the_loaded_build(monkeypatch: pytest.MonkeyPatch) -> None:
+    from librarian.retrieval import ranking
+
+    monkeypatch.setattr(index, "get_handle", lambda: type("H", (), {"build_id": "abc123def456"})())
+    assert ranking.serving_version()["index_build"] == "abc123def456"

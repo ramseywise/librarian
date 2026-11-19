@@ -1,12 +1,11 @@
 """Model price table and token-usage cost, in one place.
 
-USD per million tokens, keyed by model id. Source: the claude-api skill's model table
-(2026-10-06 snapshot) and its models.md / prompt-caching.md notes. The skill states input and
-output prices for every model, cache reads explicitly for Fable 5.1 ($0.25), Fable 5 ($1.00),
-Opus 5.5 and Sonnet 5.5 ($0.20), and otherwise "~0.1x input"; cache writes are 1.25x input for
-the default 5-minute TTL. Entries marked "derived" apply those multipliers to the stated input
-price. The spend cap is an estimate, not a bill: Haiku 5.5 is priced at its up-to-100K-token
-rate (prompts above 100K cost $0.50 / $2.50), which a chat turn here does not reach.
+USD per million tokens, keyed by model id. Source: the published pricing page
+(platform.claude.com/docs/en/about-claude/pricing, read 2026-11-19), every column taken from it.
+Cache reads are 0.1x input except Fable 5.1 / 5.2 (0.025x) and Opus 5.5 / Sonnet 5.5 (0.05x);
+cache writes are the 5-minute TTL rate (1.25x input). The spend cap is an estimate, not a bill:
+Haiku 5.5 is priced at its up-to-100K-token rate (prompts above 100K cost $0.50 / $2.50), which a
+chat turn here does not reach, and the 1.1x US-only `inference_geo` multiplier is not applied.
 
 A model missing from the table is refused at startup (`librarian.api.startup`); extend the table
 rather than adding a price setting.
@@ -25,9 +24,8 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import UTC, date, datetime
 
-# Last time the table below was compared with the published prices. 2026-10-06 is the date of the
-# snapshot in the docstring above; nobody has re-checked since.
-PRICES_REVIEWED = date(2026, 10, 6)
+# Last time the table below was compared with the published prices.
+PRICES_REVIEWED = date(2026, 11, 19)
 MAX_AGE_DAYS = 35  # a monthly review plus a few days' slack
 
 
@@ -58,18 +56,19 @@ class TokenUsage:
 
 
 PRICES: dict[str, ModelPrice] = {
+    "claude-fable-5-2": ModelPrice(8.00, 40.00, 0.20, 10.00),
     "claude-fable-5-1": ModelPrice(10.00, 50.00, 0.25, 12.50),
     "claude-fable-5": ModelPrice(10.00, 50.00, 1.00, 12.50),
     "claude-opus-5-5": ModelPrice(4.00, 20.00, 0.20, 5.00),
-    "claude-opus-5": ModelPrice(5.00, 25.00, 0.50, 6.25),  # cache: derived
-    "claude-opus-4-8": ModelPrice(5.00, 25.00, 0.50, 6.25),  # cache: derived
-    "claude-opus-4-7": ModelPrice(5.00, 25.00, 0.50, 6.25),  # cache: derived
-    "claude-opus-4-6": ModelPrice(5.00, 25.00, 0.50, 6.25),  # cache: derived
-    "claude-sonnet-5-5": ModelPrice(2.00, 10.00, 0.20, 2.50),
-    "claude-sonnet-5": ModelPrice(2.00, 10.00, 0.20, 2.50),  # cache read: derived
-    "claude-sonnet-4-6": ModelPrice(3.00, 15.00, 0.30, 3.75),  # cache: derived
-    "claude-haiku-5-5": ModelPrice(0.10, 0.50, 0.01, 0.125),  # cache: derived; <=100K prompts
-    "claude-haiku-4-5": ModelPrice(1.00, 5.00, 0.10, 1.25),  # cache: derived
+    "claude-opus-5": ModelPrice(5.00, 25.00, 0.50, 6.25),
+    "claude-opus-4-8": ModelPrice(5.00, 25.00, 0.50, 6.25),
+    "claude-opus-4-7": ModelPrice(5.00, 25.00, 0.50, 6.25),
+    "claude-opus-4-6": ModelPrice(5.00, 25.00, 0.50, 6.25),
+    "claude-sonnet-5-5": ModelPrice(2.00, 10.00, 0.10, 2.50),
+    "claude-sonnet-5": ModelPrice(2.00, 10.00, 0.20, 2.50),
+    "claude-sonnet-4-6": ModelPrice(3.00, 15.00, 0.30, 3.75),
+    "claude-haiku-5-5": ModelPrice(0.10, 0.50, 0.01, 0.125),  # <=100K prompts
+    "claude-haiku-4-5": ModelPrice(1.00, 5.00, 0.10, 1.25),
 }
 
 # The chat agent's default model: the current Sonnet-class model.

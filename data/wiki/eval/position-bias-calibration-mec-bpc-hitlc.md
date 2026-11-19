@@ -1,8 +1,8 @@
 ---
 title: Position Bias Calibration (MEC, BPC, HITLC)
-tags: [eval, llm, pattern]
+tags: [eval, judges, llm, pattern]
 summary: "Three calibrations for pairwise LLM judges whose verdicts flip with answer order: sample evidence-first judgments (MEC), average over both orders (BPC), and send high-entropy cases to humans (HITLC); on 80 Vicuna questions they lifted GPT-4 agreement with a three-author majority from 52.7% to 62.5% without humans (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-wang-2024-large-language-models-not-fair.md
 ---

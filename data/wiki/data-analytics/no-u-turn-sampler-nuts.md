@@ -1,8 +1,8 @@
 ---
 title: No-U-Turn Sampler (NUTS)
-tags: [data-analytics, pattern]
+tags: [data-analytics, bayesian-analysis, pattern]
 summary: NUTS extends Hamiltonian Monte Carlo so the number of leapfrog steps is chosen per iteration by doubling a trajectory until it turns back, and dual averaging tunes the step size during burn-in.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-hoffman-2011-no-u-turn-sampler.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: MAG-V Trajectory Verification
-tags: [eval, pattern]
+tags: [eval, agent-eval, pattern]
 summary: "MAG-V generates synthetic test questions with an investigator agent, then verifies a tool-calling agent's trajectory by asking it three reverse-engineered alternate questions and feeding trajectory similarity features to a classical classifier; on 45 annotated trajectories, k-NN matched a GPT-4 judge (82.33 vs 82.83 accuracy) (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-sengupta-2024-mag-v.md
 ---

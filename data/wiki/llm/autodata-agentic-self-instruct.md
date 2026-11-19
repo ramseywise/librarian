@@ -1,8 +1,8 @@
 ---
 title: Autodata Agentic Self-Instruct
-tags: [llm, pattern]
+tags: [llm, pretraining-and-data, pattern]
 summary: "Autodata wraps data creation in an agent loop that accepts a question only when a weak solver fails and a strong solver succeeds; the resulting reinforcement-learning data beat single-pass data in three domains, though about half of one gain was truncation fixing."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-kulikov-2026-autodata.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: "Metric Definitions, Exposures and a Manifest Catalog"
-tags: [data-engineering, pattern]
+tags: [data-engineering, architecture-and-governance, pattern]
 summary: "Define each metric once near the models so every tool asks for it, declare dashboards as exposures with owners to extend lineage, and start a catalog from the dbt manifest with a CI gate on missing owners."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--05-quality-and-observability--notes--06-dataops.md
 ---

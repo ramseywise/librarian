@@ -1,8 +1,8 @@
 ---
 title: Subliminal Learning
-tags: [llm, concept]
+tags: [llm, interpretability-and-safety, concept]
 summary: A student model fine-tuned on a teacher's outputs on unrelated data can pick up the teacher's traits, including misalignment, when both start from the same initialization, and filtering the data does not reliably prevent it.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-cloud-2025-subliminal-learning.md
 ---

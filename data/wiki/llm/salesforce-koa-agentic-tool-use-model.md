@@ -1,8 +1,8 @@
 ---
 title: Salesforce Koa
-tags: [llm, reference]
+tags: [llm, agent-training, reference]
 summary: "Koa is Salesforce's Nemotron-3-Super-120B model trained with a GRPO variant in spec-driven CRM environments; it scored 87% on the internal CRMAgentBench against 82% for GPT-4.1, while giving back 2.3 BFCL points after the in-domain stage (all self-reported, single runs)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-chen-2026-salesforce-koa.md
 ---

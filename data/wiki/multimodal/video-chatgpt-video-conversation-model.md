@@ -1,8 +1,8 @@
 ---
 title: Video-ChatGPT Video Conversation Model
-tags: [multimodal, concept]
+tags: [multimodal, video, concept]
 summary: "Video-ChatGPT fine-tunes a LLaVA-style model on 100K video-instruction pairs, training only a linear projection over spatially and temporally average-pooled CLIP frame features, and proposes a GPT-judged video conversation benchmark (all numbers self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-maaz-2024-video-chatgpt.md
   - data/raw/papers/2026-11-08-zhang-2023-video-llama.md

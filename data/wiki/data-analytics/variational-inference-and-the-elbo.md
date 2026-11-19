@@ -1,8 +1,8 @@
 ---
 title: Variational Inference and the ELBO
-tags: [data-analytics, concept]
+tags: [data-analytics, bayesian-analysis, concept]
 summary: "Variational inference replaces an intractable posterior with a simple q chosen by maximising the ELBO (reconstruction minus KL to the prior), whose gap to the log evidence equals the KL to the true posterior; it scales well but mean-field versions understate variance under correlation."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--06-bayesian-machine-learning.md
 confidence: medium

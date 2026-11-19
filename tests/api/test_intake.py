@@ -59,7 +59,11 @@ def client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[TestClie
     _write(root / "private" / "ds" / "01-one" / "_quiz.md", _quiz([(SECRET, "core")] * 1))
     monkeypatch.setenv("LIBRARIAN_API_TOKEN", TOKEN)
     monkeypatch.setenv("LIBRARIAN_INTAKE_SUBJECTS", "ds,thin,absent")
-    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    # Empty, not unset: unset would fall through to a real key in the local .env.
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "")
+    # Startup refuses chat enabled without a key (api/startup.py), so the app starts with chat
+    # off; the free-text tests turn it on after startup with `_chat_on`.
+    monkeypatch.setenv("LIBRARIAN_CHAT_ENABLED", "false")
     get_settings.cache_clear()
     monkeypatch.setattr(courses, "COURSES_DIR", root)
     monkeypatch.setattr(courses, "WIKI_DIR", tmp_path / "wiki")
@@ -78,6 +82,11 @@ def _member(email: str) -> dict[str, str]:
     engine = get_engine()
     accounts.add_user(engine, email)
     return _auth(accounts.create_key(engine, email, scopes="read write")[1])
+
+
+def _chat_on(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("LIBRARIAN_CHAT_ENABLED", "true")
+    get_settings.cache_clear()
 
 
 def _profile(**over: Any) -> dict[str, Any]:  # noqa: ANN401
@@ -312,7 +321,10 @@ def test_the_routes_need_a_signed_in_caller(client: TestClient) -> None:
     assert client.post("/api/intake/profile", json=_profile()).status_code == 401
 
 
-def test_free_text_is_kept_uninterpreted_without_a_key(client: TestClient) -> None:
+def test_free_text_is_kept_uninterpreted_without_a_key(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _chat_on(monkeypatch)
     me = _auth(TOKEN)
     profile = _profile(interestsText="  Causal inference for pricing.  ")
     state = client.post("/api/intake/profile", json=profile, headers=me).json()
@@ -339,6 +351,7 @@ def test_interests_are_mapped_to_public_modules_only(
     monkeypatch.setattr(
         intake_routes, "_get_client", lambda: type("C", (), {"messages": _Messages()})()
     )
+    _chat_on(monkeypatch)
     me = _auth(TOKEN)
     profile = _profile(interestsText="Statistics.")
     state = client.post("/api/intake/profile", json=profile, headers=me).json()

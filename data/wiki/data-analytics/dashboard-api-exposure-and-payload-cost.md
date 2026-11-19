@@ -1,8 +1,8 @@
 ---
 title: Dashboard API Exposure and Payload Cost
-tags: [data-analytics, pattern]
+tags: [data-analytics, visualisation-and-storytelling, pattern]
 summary: A list endpoint returning the whole table is insecure and slow; return aggregates by default, filter fields with a response model, cap and keyset-paginate row-level routes, and enforce limits server-side.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--05-visualisation-and-storytelling--notes--06-dashboard-stacks-from-python-to-frontend.md
 ---

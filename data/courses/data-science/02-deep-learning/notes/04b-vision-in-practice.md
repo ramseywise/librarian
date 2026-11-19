@@ -1,8 +1,8 @@
 ---
-imported_hash: 5144df3f99913605
+imported_hash: 101ce9ce63fa9657
 title: Vision in practice
 summary: Daniel Bourke's free course Learn PyTorch for Deep Learning (learnpytorch.io, code MIT-licensed) teaches this path in chapters 03 to 08, on a 3-class food dataset.
-order: 6
+order: 7
 kind: reading
 section: Notes
 source: learn-ai-engineering/data-science/02-deep-learning/notes/04b-vision-in-practice.md

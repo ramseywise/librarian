@@ -1,8 +1,8 @@
 ---
 title: "Infrastructure as Code Plans: Drift, Replacement and State"
-tags: [data-engineering, concept]
+tags: [data-engineering, quality-and-observability, concept]
 summary: "A plan loop of write config, plan, apply after approval exposes three traps: console edits show up as drift and get reverted, some edits force a destroy and re-create, and the state file must be stored remotely with locking."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--05-quality-and-observability--notes--06-dataops.md
 ---

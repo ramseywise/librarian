@@ -1,8 +1,8 @@
 ---
 title: "pix2pix Conditional Adversarial Image Translation"
-tags: [multimodal, concept]
+tags: [multimodal, gans, concept]
 summary: "pix2pix uses a conditional GAN with a U-Net generator and a 70x70 PatchGAN discriminator plus an L1 term as one general recipe for paired image-to-image translation across tasks."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-isola-2017-image-image-translation-conditional-adversarial.md
 ---

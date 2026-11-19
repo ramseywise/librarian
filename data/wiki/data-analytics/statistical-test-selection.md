@@ -1,8 +1,8 @@
 ---
 title: Statistical Test Selection
-tags: [data-analytics, reference]
+tags: [data-analytics, probability-and-statistics, reference]
 summary: "Pick the test from the data type and design: Welch by default for two means, paired when rows pair, chi-square or Fisher for counts by expected cell size, rank tests for ordinal data but not for questions about totals."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--05-hypothesis-testing.md
 ---

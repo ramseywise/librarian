@@ -1,8 +1,8 @@
 ---
 title: Skill Pipeline Dryrun Testing
-tags: [eval, pattern]
+tags: [eval, harness-and-ci, pattern]
 summary: Regression-testing a chain of conversational skills by simulating a user through fixed scenarios with unambiguous expected outcomes — asserting not only what the pipeline produces but which questions it correctly skips and which it must still ask.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/ai-project-template/skills/design-dryrun/SKILL.md
   - data/raw/claude-docs/ai-project-template/skills/design-dryrun/reference/scenarios.md

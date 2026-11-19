@@ -1,8 +1,8 @@
 ---
 title: Potential Outcomes and Selection Bias
-tags: [data-analytics, concept]
+tags: [data-analytics, experimentation-and-causality, concept]
 summary: "Each unit has two potential outcomes but only one is seen, so a naive treated-minus-untreated comparison equals the effect on the treated plus selection bias; opt-in comparisons mostly measure selection (1.21 against a true 0.30), and controlling for the selection driver recovers it only if nothing unmeasured matters."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--04-correlation-and-causation.md
 ---

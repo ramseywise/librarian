@@ -1,8 +1,8 @@
 ---
 title: Backdoor and Front-Door Criteria
-tags: [data-analytics, concept]
+tags: [data-analytics, experimentation-and-causality, concept]
 summary: "A set Z satisfies the backdoor criterion if it has no descendant of treatment and blocks every path into treatment; any valid set gives the same effect, and when the confounder is unmeasured the front-door criterion chains two identifiable effects through a mediator that carries everything."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--04-correlation-and-causation.md
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--05-matching-and-weighting.md

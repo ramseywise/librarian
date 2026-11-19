@@ -1,8 +1,8 @@
 ---
 title: Causal Design Selection Beyond Randomisation
-tags: [data-analytics, comparison]
+tags: [data-analytics, experimentation-and-causality, comparison]
 summary: "When you cannot randomise, choose a design by how assignment happened (rollout with a pre-period, threshold, randomised nudge, rich covariates, one treated unit), name its untestable assumption, and check difference-in-differences pre-trends, since diverging trends almost doubled an estimate."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--04-correlation-and-causation.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: Compiling Workflows into Weights
-tags: [llm, pattern]
+tags: [llm, fine-tuning, pattern]
 summary: "Dennis et al. write a procedure as a flowchart, have a strong model generate dialogues along its paths, and fine-tune a small model on them so no orchestrator runs at inference; they report near-in-context quality at 128-462x lower cost per conversation on three scripted customer-service domains (self-reported, judged by the teacher model)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-dennis-2026-compiling-agentic-workflows-into-llm.md
 ---

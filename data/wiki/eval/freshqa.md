@@ -1,8 +1,8 @@
 ---
 title: FreshQA
-tags: [eval, reference]
+tags: [eval, factuality-and-hallucination, reference]
 summary: "A 600-question benchmark of never-, slow-, fast-changing and false-premise questions with RELAXED and STRICT grading; in April 2023 GPT-4 scored 28.6% STRICT with no search and 75.6% with FreshPrompt search-result injection (self-reported), with the STRICT-RELAXED gap read as the hallucination measure."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-vu-2023-freshllms.md
 ---

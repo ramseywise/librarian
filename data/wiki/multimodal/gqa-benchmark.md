@@ -1,8 +1,8 @@
 ---
 title: GQA Benchmark
-tags: [multimodal, concept]
+tags: [multimodal, benchmarks-and-metrics, concept]
 summary: "GQA builds 1.7M balanced compositional questions from Visual Genome scene graphs and adds consistency, validity, plausibility, distribution and grounding metrics; the best 2019 model, MAC, scores 54.06% against 89.3% for humans (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-hudson-2019-gqa.md
 ---

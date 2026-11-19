@@ -1,8 +1,8 @@
 ---
 title: Forecasting Rare Model Behaviours
-tags: [eval, pattern]
+tags: [eval, datasets-and-contamination, pattern]
 summary: "Fit a Gumbel-tail line to the ten highest per-query elicitation scores of a 100-1,000 query eval to forecast the worst-case risk at up to roughly 1,000 times as many queries; the mean absolute log10 error on misuse worst-query risk was 1.7 against 2.4 for a log-normal fit (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-jones-2025-forecasting-rare-language-model-behaviors.md
 ---

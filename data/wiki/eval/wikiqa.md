@@ -1,8 +1,8 @@
 ---
 title: WikiQA
-tags: [eval, benchmark]
+tags: [eval, language-tasks, benchmark]
 summary: "A 3,047-question answer-sentence-selection set from Bing query logs where about two-thirds of questions have no correct sentence, introducing the answer triggering task; the best system's question-level F1 stays only slightly above 30% (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-yang-2015-wikiqa.md
 ---

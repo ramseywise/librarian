@@ -1,8 +1,8 @@
 ---
 title: Experiment Ramps and Overlapping Tests
-tags: [data-analytics, pattern]
+tags: [data-analytics, experimentation-and-causality, pattern]
 summary: "A platform assigns users with a salted cryptographic hash per experiment layer so many tests overlap independently, ramps traffic from tiny shares because a catastrophe needs far less data than a planned effect, and audits the portfolio because winners' summed lifts overstate what shipped."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--01-ab-testing.md
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--03-experimentation-at-scale.md

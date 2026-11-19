@@ -1,8 +1,8 @@
 ---
 title: Agent-FLAN Agent Tuning Data Design
-tags: [llm, pattern]
+tags: [llm, agent-training, pattern]
 summary: "Agent-FLAN tunes Llama2 for agent tasks by rewriting ReAct and JSON traces as chat, weighting data by capability and adding negative samples; it reports a 3.5-point overall gain over a re-implemented AgentTuning baseline and fewer hallucinated tool calls (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-chen-2024-agent-flan.md
 ---

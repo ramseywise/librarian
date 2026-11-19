@@ -1,8 +1,8 @@
 ---
 title: Lookback Lens
-tags: [eval, concept]
+tags: [eval, factuality-and-hallucination, concept]
 summary: "A contextual-hallucination detector that feeds one number per attention head, the share of attention going to the supplied context, into a logistic regression; on LLaMA-2-7B-Chat it reached AUROC 85.3 transferring QA to summarisation (self-reported), but only about 66 in the realistic chunk-by-chunk setting, and it needs white-box access."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-chuang-2024-lookback-lens.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: Shifted Beta Geometric Retention Model
-tags: [data-analytics, concept]
+tags: [data-analytics, applied-analyses, concept]
 summary: The sBG gives each customer a constant per-period churn probability drawn from a beta distribution, so aggregate retention rises with age without anyone becoming loyal, and it extrapolates a cohort's survival far better than curve fits.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--03-cohort-and-retention.md
 ---

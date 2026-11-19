@@ -1,8 +1,8 @@
 ---
 title: Interference and Cluster-Randomised Experiments
-tags: [data-analytics, pattern]
+tags: [data-analytics, experimentation-and-causality, pattern]
 summary: "When one user's arm changes another's outcome, as with fixed stock in a marketplace, a user-level A/B test overstates the effect (+30% measured against +19% real), so randomise by cluster, switchback or item and pay the design effect 1+(m-1)rho in variance."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--03-experimentation-at-scale.md
 ---

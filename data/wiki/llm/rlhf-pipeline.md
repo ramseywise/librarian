@@ -1,8 +1,8 @@
 ---
 title: RLHF Pipeline
-tags: [llm, concept]
+tags: [llm, preference-and-alignment, concept]
 summary: "The three-stage InstructGPT pipeline — SFT, then a Bradley-Terry reward model on ~33k comparisons, then PPO with a KL penalty against the SFT policy — and why all three stages are load-bearing."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--rlhf-pipeline.md
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--README.md

@@ -1,8 +1,8 @@
 ---
 title: Standardised Survival and Pricing an Intervention
-tags: [data-analytics, pattern]
+tags: [data-analytics, applied-analyses, pattern]
 summary: Turn a fitted hazard model into two survival curves (everyone treated, nobody treated) averaged over the real customer mix, so the gap becomes months gained and money; valid only if the observed covariates explain who got treated.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--07-survival-and-event-history.md
 ---

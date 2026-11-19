@@ -1,8 +1,8 @@
 ---
 title: "Diffusion Transformers (DiT)"
-tags: [multimodal, concept]
+tags: [multimodal, diffusion-and-image-generation, concept]
 summary: "DiT replaces the convolutional U-Net of a latent diffusion model with a ViT-style transformer over latent patches, conditioned through adaLN-Zero blocks, and finds FID falls as transformer Gflops rise."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-peebles-2023-scalable-diffusion-models-transformers.md
 ---

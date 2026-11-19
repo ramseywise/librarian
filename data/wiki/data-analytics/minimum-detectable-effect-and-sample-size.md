@@ -1,8 +1,8 @@
 ---
 title: Minimum Detectable Effect and Sample Size
-tags: [data-analytics, reference]
+tags: [data-analytics, experimentation-and-causality, reference]
 summary: "Sample size per arm is about 16 sigma squared over delta squared at 5 percent significance and 80 percent power, so halving the detectable effect quadruples the users and small relative lifts on rare outcomes need millions."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--04-estimation.md
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--05-hypothesis-testing.md

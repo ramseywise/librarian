@@ -1,8 +1,8 @@
 ---
 title: Generative Search Engine Verifiability Audit
-tags: [eval, reference]
+tags: [eval, rag-and-grounding, reference]
 summary: A 2023 human audit of four commercial answer engines scoring each sentence's citations for recall and precision; the engines were fluent but often unsupported, and citation precision moved opposite to perceived utility.
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-liu-2023-evaluating-verifiability-generative-search-engines.md
 ---

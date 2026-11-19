@@ -1,8 +1,8 @@
 ---
 title: Synthetic Dataset Generation for RAG Eval
-tags: [eval, rag, pattern]
+tags: [eval, datasets-and-contamination, rag, pattern]
 summary: Four-mode pipeline for generating and maintaining a versioned synthetic test dataset from a knowledge base — article fingerprinting drives incremental refresh, stable content-derived IDs make Langfuse upserts idempotent, and four query categories cover the full quality surface.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/chat-agent/docs/kb-analysis/intercom_kb_analysis.md
   - data/raw/claude-docs/chat-agent/docs/eval/pipeline.md

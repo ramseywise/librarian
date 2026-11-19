@@ -1,8 +1,8 @@
 ---
 title: ChartQA and VisionTaPas
-tags: [multimodal, concept]
+tags: [multimodal, benchmarks-and-metrics, concept]
 summary: "ChartQA offers 9,608 human-written and 23,111 machine-generated questions on real charts; a pipeline that extracts a data table and feeds it to VisionTaPas or T5-style models reaches at best 51.84% overall, and human-written questions are far harder (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-masry-2022-chartqa.md
 ---

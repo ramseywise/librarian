@@ -12,7 +12,7 @@ import asyncio
 import contextlib
 from typing import Any, Literal
 
-from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, HTTPException, Query, WebSocket, WebSocketDisconnect
 
 from librarian.api.security import WS_SUBPROTOCOL, compute_rate_limit
 from librarian.config import get_settings
@@ -120,11 +120,13 @@ def get_graph_atlas() -> dict[str, Any]:
 # Sync routes (threadpool): both block on embeddings, and compute_embeddings serialises
 # on a lock the course-catalog build may hold — never wait on it from the event loop.
 @router.get("/api/edges/semantic", dependencies=[Depends(compute_rate_limit("semantic"))])
-def get_semantic_edges(threshold: float = 0.65) -> list[dict]:
+def get_semantic_edges(
+    threshold: float = 0.65, k: int | None = Query(None, ge=1, le=20)
+) -> list[dict]:
+    """Similar pages: every pair at least `threshold` alike, or with `k` each page's `k` nearest."""
     from librarian.retrieval.embeddings import semantic_edges
 
-    public = public_page_ids()
-    return [e for e in semantic_edges(threshold) if e["source"] in public and e["target"] in public]
+    return semantic_edges(threshold, k=k, keep=public_page_ids())
 
 
 @router.post("/api/layout/umap", dependencies=[Depends(compute_rate_limit("umap", umap=True))])

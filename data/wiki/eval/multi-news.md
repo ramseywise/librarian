@@ -1,8 +1,8 @@
 ---
 title: Multi-News
-tags: [eval, reference]
+tags: [eval, language-tasks, reference]
 summary: A multi-document news summarization dataset of 56,216 article-summary pairs built from editor-written summaries and their cited sources, released with Hi-MAP, a pointer-generator that rescales attention with a learned MMR score.
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-fabbri-2019-multi-news.md
 ---

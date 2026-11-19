@@ -1,8 +1,8 @@
 ---
 title: Thompson Sampling and Bandit Regret
-tags: [data-analytics, pattern]
+tags: [data-analytics, bayesian-analysis, pattern]
 summary: "Thompson sampling draws one sample from each arm's posterior and pulls the highest, so exploration is automatic and fades with evidence; regret measures the cost, and which rule wins depends on the gaps and horizon, so simulate your own."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--03-priors-and-bandits.md
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--04-bayesian-ab-testing.md

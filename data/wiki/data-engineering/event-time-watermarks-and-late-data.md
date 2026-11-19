@@ -1,8 +1,8 @@
 ---
 title: "Event Time, Watermarks and Late Data"
-tags: [data-engineering, concept]
+tags: [data-engineering, warehouse-lakehouse-streaming, concept]
 summary: "Windows must be defined on event time, but a stream never says a window is complete; a watermark is a heuristic that fires windows, and allowed lateness trades lost late events against stale results."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--04-warehouse-lakehouse-streaming--notes--04-kafka-and-stream-semantics.md
 ---

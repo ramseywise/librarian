@@ -1,8 +1,8 @@
 ---
 title: "MemLong Retrieval Memory Layers"
-tags: [llm, pattern]
+tags: [llm, architecture, pattern]
 summary: "MemLong caches chunk key-value pairs from a frozen lower-layer stack and retrieves them with an external dense retriever into upper layers; OpenLLaMA-3B kept lowering perplexity past 2048 tokens (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-liu-2024-memlong.md
 ---

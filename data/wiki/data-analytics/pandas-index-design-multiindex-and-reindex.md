@@ -1,8 +1,8 @@
 ---
 title: Pandas Index Design, MultiIndex and Reindex
-tags: [data-analytics, reference]
+tags: [data-analytics, python-for-data-analysis, reference]
 summary: Making a real key the index turns lookups into plain label access, but non-unique indexes change the return type and MultiIndex slicing needs sorting; reindex fixes the row list of a report.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--01-python-for-data-analysis--notes--03-indexing-and-selection.md
 ---

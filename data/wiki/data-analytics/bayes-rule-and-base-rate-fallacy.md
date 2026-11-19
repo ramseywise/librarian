@@ -1,8 +1,8 @@
 ---
 title: Bayes Rule and the Base Rate Fallacy
-tags: [data-analytics, concept]
+tags: [data-analytics, probability-and-statistics, concept]
 summary: "P(A|B) and P(B|A) share a numerator but not a denominator; Bayes' rule converts between them through the base rate, which is why a 99 percent accurate test of a rare event is mostly false positives and why a significant p-value is often a dud."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--02-probability-foundations.md
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--05-hypothesis-testing.md

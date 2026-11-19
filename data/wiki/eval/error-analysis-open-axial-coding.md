@@ -1,8 +1,8 @@
 ---
 title: Error Analysis (Open and Axial Coding)
-tags: [eval, llm, pattern]
+tags: [eval, production-and-failures, llm, pattern]
 summary: "Find failure modes by reading ~100 traces before choosing any metric — free-text note on the first thing that went wrong (open coding), group notes into 5–15 categories (axial coding), rank by frequency × cost, and build graders only for failures you have actually seen."
-updated: 2026-10-30
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--02-defining-correct.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--eval-engineering.md

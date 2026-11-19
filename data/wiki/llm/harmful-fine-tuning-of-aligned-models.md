@@ -1,8 +1,8 @@
 ---
 title: Harmful Fine-Tuning of Aligned Models
-tags: [llm, concept]
+tags: [llm, fine-tuning, concept]
 summary: "Qi et al. find that fine-tuning an aligned model on 10 to 100 harmful or identity-shifting examples, or even on benign data, raises its harmfulness rate (GPT-3.5 Turbo from 1.8% to 91.8% at 100 shots), and test mixed-in safety data as a mitigation (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-qi-2023-fine-tuning-aligned-language-models.md
 ---

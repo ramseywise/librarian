@@ -1,8 +1,8 @@
 ---
 title: ImageBind Emergent Cross-Modal Alignment
-tags: [multimodal, concept]
+tags: [multimodal, vision-language-pretraining, concept]
 summary: "ImageBind aligns audio, depth, thermal and IMU encoders to frozen OpenCLIP image embeddings using only image-paired data, and text-to-modality alignment emerges without any modality-text pairs."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-girdhar-2023-imagebind-one-embedding-space-bind.md
 ---

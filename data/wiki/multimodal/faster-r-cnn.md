@@ -1,8 +1,8 @@
 ---
 title: Faster R-CNN
-tags: [multimodal, concept]
+tags: [multimodal, vision-backbones, concept]
 summary: "Faster R-CNN adds a fully convolutional Region Proposal Network that shares convolutional features with the detector, cutting proposal cost to 10 ms per image and reaching 5 fps with VGG-16 (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-ren-2016-faster-r-cnn.md
 ---

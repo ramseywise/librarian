@@ -1,8 +1,8 @@
 ---
 title: Precomputed Labels, Not Refits on Filter
-tags: [data-analytics, pattern]
+tags: [data-analytics, applied-analyses, pattern]
 summary: Cluster ids are arbitrary and refits on filtered data move customers between groups, so a batch job should publish labels and the app should only read them.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--05-visualisation-and-storytelling--notes--06-dashboard-stacks-from-python-to-frontend.md
 ---

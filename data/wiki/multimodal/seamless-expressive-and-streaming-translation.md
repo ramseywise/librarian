@@ -1,8 +1,8 @@
 ---
 title: Seamless Expressive and Streaming Translation
-tags: [multimodal, system]
+tags: [multimodal, speech-and-audio, system]
 summary: "The Seamless family adds SeamlessM4T v2, expressive speech translation with a prosody-aware generator, and EMMA-based streaming translation, plus red teaming and watermarking."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-seamless-2023.md
 ---

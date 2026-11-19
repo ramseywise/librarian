@@ -1,8 +1,8 @@
 ---
 title: OBELICS Interleaved Web Document Dataset
-tags: [multimodal, concept]
+tags: [multimodal, datasets, concept]
 summary: "OBELICS is an open dataset of 141M filtered Common Crawl documents with 353M images and 115B tokens, used to train the Flamingo-style IDEFICS models and to show interleaved documents beat image-text pairs for few-shot use (all numbers self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-laurencon-2023-obelics.md
 ---

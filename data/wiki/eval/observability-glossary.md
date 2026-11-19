@@ -1,8 +1,8 @@
 ---
 title: Observability & Evaluation Glossary
-tags: [eval, infra, reference]
+tags: [eval, harness-and-ci, infra, reference]
 summary: Canonical vocabulary for agent observability and evaluation — the observability/tracking/tracing/monitoring/alerting hierarchy, offline vs online evaluation modes, heuristic vs LLM-judge metric types, dataset terminology, and rank-based retrieval metrics (MRR/precision@k/recall@k/ndcg@k/hit@k).
-updated: 2026-10-30
+updated: 2026-11-19
 sources:
   - data/raw/notion/2026-07-14-evaluation-glossary.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--08-tracing-and-observability.md

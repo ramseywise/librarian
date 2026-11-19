@@ -1,8 +1,8 @@
 ---
 title: GIT Generative Image-to-Text Transformer
-tags: [multimodal, concept]
+tags: [multimodal, vision-language-pretraining, concept]
 summary: "GIT uses one contrastively pretrained image encoder and a 6-block text decoder trained with a single language-modelling loss on 0.8B pairs, casting captioning, VQA, classification and scene-text tasks as caption generation (all numbers self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-wang-2022-git.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: POPE Object Hallucination Probing
-tags: [multimodal, concept]
+tags: [multimodal, benchmarks-and-metrics, concept]
 summary: "POPE asks a vision-language model yes/no questions about whether chosen objects are in an image, with absent objects sampled randomly, by popularity or by co-occurrence; it varied less across prompts than caption-based CHAIR in the authors' tests (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-li-2023-evaluating-object-hallucination-large-vision.md
 ---

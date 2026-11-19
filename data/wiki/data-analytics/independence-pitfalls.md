@@ -1,8 +1,8 @@
 ---
 title: Independence Pitfalls
-tags: [data-analytics, concept]
+tags: [data-analytics, probability-and-statistics, concept]
 summary: "Pairwise independence does not give mutual independence, and two correlated events can be independent given a third; checking variables two at a time cannot prove there is no joint structure, and a shared cause creates correlation that vanishes when conditioned on."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--02-probability-foundations.md
 ---

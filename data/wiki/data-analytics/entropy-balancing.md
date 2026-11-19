@@ -1,8 +1,8 @@
 ---
 title: Entropy Balancing
-tags: [data-analytics, pattern]
+tags: [data-analytics, experimentation-and-causality, pattern]
 summary: "Entropy balancing finds control weights closest to uniform whose covariate moments equal the treated group's exactly, skipping the propensity model; limited overlap shows up as extreme weights, so check effective sample size alongside balance."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--05-matching-and-weighting.md
 ---

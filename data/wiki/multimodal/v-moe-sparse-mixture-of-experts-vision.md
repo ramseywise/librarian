@@ -1,8 +1,8 @@
 ---
 title: V-MoE Sparse Mixture of Experts for Vision
-tags: [multimodal, concept]
+tags: [multimodal, vision-backbones, concept]
 summary: "V-MoE replaces a subset of ViT MLP blocks with sparse expert layers (32 experts, top-k routing per patch) and adds Batch Prioritized Routing, which drops the least useful patches first when expert capacity is small (all numbers self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-riquelme-2021-scaling-vision-sparse-mixture-experts.md
 ---

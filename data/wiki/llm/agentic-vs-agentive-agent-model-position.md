@@ -1,8 +1,8 @@
 ---
 title: "Agentic vs Agentive: Agent Model Position"
-tags: [llm, concept]
+tags: [llm, agent-training, concept]
 summary: "A position paper separates agentic systems, whose competence sits in scaffolding and harnesses, from agentive ones that carry goals, identity and self-regulation inside the model, and proposes a Goal-Identity-Configurator architecture; it has no experiments, only theorems under stated assumptions."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-xing-2026-critique-agent-model.md
 ---

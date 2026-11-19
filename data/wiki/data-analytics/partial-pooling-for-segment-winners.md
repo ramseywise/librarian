@@ -1,8 +1,8 @@
 ---
 title: Partial Pooling for Segment Winners
-tags: [data-analytics, pattern]
+tags: [data-analytics, experimentation-and-causality, pattern]
 summary: "When an experiment reports a lift per segment, the raw winner is overstated; pooling segment estimates removed most of the exaggeration in simulation (+2.93 to +0.09) but picked the best segment only modestly better, and it fails for outliers, wrong centres and when the prior on tau is wrong."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--07-multilevel-models-and-partial-pooling.md
 ---

@@ -27,7 +27,7 @@ Run lint to find health issues. Check each of the following:
 - **Stale suggestions** — `data/wiki/_relink_suggestions.md` entries older than 14 days unreviewed
 - **Private leak** — a page outside `private/` has a wikilink resolving into `private/` (`make wiki-check`, exit 1; a 3+ word private title in public text is a WARN). A lesson outside `data/courses/private/` that links, embeds or lists a lesson id into it, or names a private wiki page (`[[...]]` or `wiki:`), also blocks, and so does a git-tracked file under either `private/` tree (pre-commit runs `wiki check --tracked-only`). Reports name the public file and line, never the private page
 
-Output a prioritised list: BLOCKER (conflicts, dead links, private leak) → WARN (orphans, stale, untyped) → NOTE (missing coverage, bridge gaps, stale suggestions).
+Output a prioritised list: BLOCKER (conflicts, dead links, private leak) → WARN (orphans, stale, untyped, missing or doubled topic in a `_topics.yaml` directory) → NOTE (missing coverage, bridge gaps, stale suggestions).
 
 ## Health numbers (`make wiki-stats`)
 

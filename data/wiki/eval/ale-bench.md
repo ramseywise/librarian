@@ -1,8 +1,8 @@
 ---
 title: ALE-Bench
-tags: [eval, reference]
+tags: [eval, code, reference]
 summary: "Sakana AI's benchmark of 40 AtCoder Heuristic Contest optimisation problems where an agent's score is placed on the human leaderboard and converted to an Elo-like performance; o4-mini-high with 4-hour iterative refinement reached rating 2104 (top 11.8%) but only 1520 average performance (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-05-imajuku-2025-ale-bench.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: Validated Concept vs Unmeasured System
-tags: [eval, pattern]
+tags: [eval, defining-correct, pattern]
 summary: A user-test number everyone quotes (77.8% Top-5 hit rate) was a validation of the concept — human-curated sets, N=6, a pre-specified answer key — not of the automated system, which had never been measured against it; the same confusion shows up as roadmap rows marked BUILT on the strength of specifications and as launch gates "asserted in every document and tested in none", and the cure is to label every number with what produced it.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/playground/docs/open-questions.md
   - data/raw/claude-docs/akira/docs/onboarding-comments.md

@@ -1,8 +1,8 @@
 ---
 title: BARTScore
-tags: [eval, llm, pattern]
+tags: [eval, graders-and-metrics, llm, pattern]
 summary: "BARTScore rates generated text by the log-probability BART assigns to producing it from the source (or the reference from it), with the direction chosen per quality aspect; the authors report beating existing metrics in 16 of 22 settings, with prompts helping semantic overlap but not factuality (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-yuan-2021-bartscore.md
 ---
