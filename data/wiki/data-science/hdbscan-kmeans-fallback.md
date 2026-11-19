@@ -7,6 +7,7 @@ sources:
   - data/raw/claude-docs/atlas/skills/segment-analysis/SKILL.md
   - data/raw/claude-docs/atlas/skills/eval-report/SKILL.md
   - data/raw/repos/atlas/.claude--skills--new-agent--specs--cap-cluster.md
+  - data/raw/papers/2026-11-08-mcinnes-2017-hdbscan-joss.md
 
 ---
 
@@ -17,6 +18,8 @@ clustering, and fall back to centroid-based clustering only when the density res
 poorly. Implemented in `core/segmentation/algorithms.py::select_best()`.
 
 ## Why HDBSCAN first
+
+The hdbscan library paper describes it as DBSCAN run over varying epsilon, keeping the clustering with the best stability over epsilon; the mechanism is on [[HDBSCAN: Mutual Reachability and Stability Extraction]].
 
 HDBSCAN does not require `n_clusters` and can label points as noise, so it discovers cluster
 count from the data and tolerates outliers. KMeans requires a `k` chosen in advance and
@@ -65,7 +68,12 @@ evaluator should set the next cycle's strategy to KMeans. The same template note
 against declaring strategy fields no node reads, such as an unwired `umap_n_components`.
 They also say to guard UMAP with `n_samples > n_components + 1`.
 
+## Limits
+
+The hdbscan library paper cited here is a one-paragraph software summary: it offers no benchmarks or complexity figures, no guidance on min_cluster_size or min_samples, and no API detail, and its claims about varying density and parameter robustness are asserted without measurement.
+
 ## See Also
+- [[HDBSCAN: Mutual Reachability and Stability Extraction]] — prerequisite-for
 - [[Data Sufficiency Refusal]] — extends (refusing to report a metric the data cannot support)
 - [[Clustering Validation Against Named Baselines]] — alternative-to (centroid method validated against baselines)
 - [[Embedding Clustering and Anomaly Detection]] — related (UMAP then HDBSCAN on sentence embeddings, with c-TF-IDF cluster labels)

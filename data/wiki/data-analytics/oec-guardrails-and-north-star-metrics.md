@@ -6,6 +6,7 @@ updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--02-metrics-and-kpi-design.md
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--03-experimentation-at-scale.md
+  - data/raw/papers/2026-11-08-2017-08-kddmetricinterpretationpitfalls.md
 ---
 
 # OEC, Guardrails and North Star Metrics
@@ -42,6 +43,14 @@ A metric needs name, owner, kind, unit (the randomisation unit), numerator, deno
 ## Twyman's law and the dozen
 
 A figure that looks interesting or different is usually wrong. A button change showed +28% clicks and +27% on the neighbouring button with no retention change. The catalogued pitfalls (ratio metrics, telemetry loss, underpowered metrics, borderline p-values, early stopping, non-uniform effects, segment misreads, outliers, novelty, incomplete funnels) each map to an automatable check: [[Ratio Metrics and the Denominator Trap]], [[Peeking and Sequential Testing]], [[Post-Treatment Segments and Simpson's Paradox]].
+
+## The taxonomy and the dozen in the original paper
+
+The four kinds above follow the taxonomy proposed in Dmitriev and colleagues' KDD 2017 paper (data quality, OEC, guardrail, local feature or diagnostic); it is the authors' own framing. The paper describes guardrails as metrics that do not clearly indicate success yet must not be significantly harmed if the change is to ship. It names Twyman's law as the rule behind its last pitfall and advises investigating any unexpectedly large movement, positive or negative, with automated alerts and auto-shutdown. That paper's other recommendations, all the authors' own advice: a power analysis done in advance for OEC and guardrail metrics, aiming at 80% power or more (their figure), and a data-quality metric counting the values affected by outlier handling, with the filtering applied equally to every variant.
+
+## Limits
+
+- The paper's twelve pitfalls are illustrated by single Microsoft experiments, its mitigations (Fisher's method, Bayesian monitoring, heterogeneous-effect tools) are named without detail or evidence, and its segment example reports significance without effect sizes.
 
 ## See Also
 - [[A/B Test Lifecycle and Interval Decisions]] — prerequisite-for

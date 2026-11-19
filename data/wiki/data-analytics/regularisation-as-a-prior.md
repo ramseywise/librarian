@@ -5,6 +5,7 @@ summary: "Ridge is the MAP estimate under a Normal prior and lasso the MAP under
 updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--03-priors-and-bandits.md
+  - data/raw/papers/2026-11-08-islp-ch06-linear-model-selection-regularization.md
 ---
 
 # Regularisation as a Prior
@@ -18,6 +19,8 @@ sources:
 
 With unit noise, a Normal(0, tau) prior corresponds to a ridge penalty of 1/tau^2, so Normal(0, 1) against Normal(0, 10) differs by a factor of 100 in lambda. A Laplace prior of scale b matches a lasso penalty of 1/b (scikit-learn divides the loss by n, hence alpha = 1 / (n * scale)).
 
+In the simplest case, an identity design matrix with no intercept (n = p), James and colleagues (*An Introduction to Statistical Learning with Python*, ch. 6) show the two penalties act differently on each least-squares coefficient y: ridge divides it by 1 + lambda, shrinking every coefficient by the same proportion, while the lasso subtracts lambda/2 from a large coefficient and sets a small one exactly to zero (soft-thresholding). That is why the lasso selects variables and ridge does not. In their simulations with 45 predictors and 50 observations, ridge slightly beat the lasso when all predictors were related to the response and the lasso won when only 2 were.
+
 ## Checking it
 
 60 rows, 6 inputs, only 2 matter. With tau = 0.3 the MAP and ridge agree: [1.263, -0.979, -0.114, 0.115, -0.092, -0.088] against ridge with the last at -0.089. With Laplace scale 0.1, lasso and MAP both zero out the same coefficients (lasso [1.349, -0.987, 0, 0.006, 0, 0]). But the posterior mean under the same prior is not sparse (for example -0.053, 0.065, -0.047, -0.038 on the null coefficients), and none of 24,000 draws was exactly zero. If you want a Bayesian to say "this coefficient is zero", the Laplace prior is not doing it; use the MAP and say so.
@@ -30,6 +33,10 @@ Shrinkage toward zero is shrinkage toward a prior mean, the same mechanism as in
 
 Across 2,000 simulated experiments with true lifts Normal(0, 0.2) and standard error 0.3, 91 were significant and their mean observed lift was 0.759 against a true 0.246. Estimating the prior from the whole population (sd 0.192, shrink factor 0.290) and multiplying each estimate by that factor brought the winners' mean to 0.220. This is empirical Bayes in the safe form: the prior comes from a population in which one experiment is a tiny share, so its data is not meaningfully counted twice. It relies on known noise and a really Normal population (see [[Winner's Curse]]).
 
+## Limits
+
+- The ISLP soft-thresholding closed form holds only in the orthonormal case, and its simulation figures give no seeds or repetition counts.
+
 ## See Also
 - [[Prior Choice and Prior Predictive Checks]] — prerequisite-for
 - [[Winner's Curse]] — related (the inflation shrinkage removes)
@@ -37,3 +44,7 @@ Across 2,000 simulated experiments with true lifts Normal(0, 0.2) and standard e
 - [[Adam, AdamW and Decoupled Weight Decay]] — related
 - [[MC Dropout]] — related (dropout reread as approximate Bayesian inference)
 - [[Soft Inductive Bias, Benign Overfitting and Double Descent]] — extends
+- [[Stepwise Selection and Overfitting on Noise]] — related
+- [[James-Stein Estimator and Shrinkage]] — extends
+- [[Least-Angle Regression and the Lasso Path]] — related
+- [[WAIC, KL Divergence and Akaike Weights]] — extends

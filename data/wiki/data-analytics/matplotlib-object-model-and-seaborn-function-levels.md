@@ -6,6 +6,8 @@ updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--05-visualisation-and-storytelling--notes--02-matplotlib-and-seaborn.md
   - data/raw/repos/learn-ai-engineering/data-analytics--01-python-for-data-analysis--notes--07-plotting.md
+  - data/raw/papers/2026-11-08-python-for-data-analysis-ch09-plotting-visualization.md
+  - data/raw/papers/2026-11-08-python-data-science-handbook-ch04-visualization-matplotlib.md
 ---
 
 # Matplotlib Object Model and Seaborn Function Levels
@@ -58,6 +60,17 @@ Sizes for one simple line chart: PNG 50 KB, SVG 24 KB, PDF 8 KB. PNG has fixed p
 - Not calling `plt.close(fig)` in a loop: every open figure holds memory and matplotlib warns after 20.
 - Passing `ax=` to a figure-level seaborn function.
 - Colour that follows rank rather than a fixed per-entity mapping.
+
+## What the books add
+
+- McKinney: seaborn's `barplot` shows the mean with a 95% confidence-interval line; importing seaborn changes the default matplotlib styling; call `legend()` explicitly; `savefig('fig.png', dpi=400, bbox_inches='tight')` is his publication-quality export. Matplotlib will not detect colliding tick labels, so they need manual fixing (*Python for Data Analysis*, ch9).
+- VanderPlas: `plt.plot` is faster than `plt.scatter` for large point counts because `scatter` can style each point separately (his claim, no timing given); `fill_between` draws error bands; `clim` and `extend` control a colourbar's range (*Python Data Science Handbook*, ch4).
+- Check subgroup sizes before reading a plotted trend: in his marathon-split example only 7 runners were over 80, so the oldest-age points rest on very few people.
+
+## Limits
+
+- Edition: ch4 of the Handbook targets matplotlib about 1.5. The extractions list removed or changed names, among them `plt.axes` style calls and Basemap (deprecated in favour of Cartopy).
+- Neither chapter gives a timing; the plot-versus-scatter claim and other speed remarks are unmeasured.
 
 ## See Also
 - [[Chart Declutter and Direct Labelling]] — extends

@@ -5,6 +5,10 @@ summary: groupby splits a table, applies a function per group and recombines; ag
 updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--01-python-for-data-analysis--notes--05-groupby-and-aggregation.md
+  - data/raw/papers/2026-11-08-python-for-data-analysis-ch10-data-aggregation-group.md
+  - data/raw/papers/2026-11-08-python-for-data-analysis-ch12-advanced-pandas.md
+  - data/raw/papers/2026-11-08-python-for-data-analysis-ch14-data-analysis-examples.md
+  - data/raw/papers/2026-11-08-python-data-science-handbook-ch03-data-manipulation-pandas.md
 ---
 
 # Groupby Split-Apply-Combine and Result Shapes
@@ -33,6 +37,14 @@ A key can be a column, a list of columns (giving a MultiIndex, see [[Pandas Inde
 - **`filter`** keeps or drops whole groups (`len(d) >= 2`); in SQL, `HAVING`.
 - **`apply`** is the general, slowest escape hatch. For top row per group, `sort_values` then `groupby(...).head(n)` is faster and keeps the frame flat.
 
+## What the books add
+
+- Wickham coined the term split-apply-combine; McKinney builds *Python for Data Analysis* ch10 on it and VanderPlas's ch3 gives the same four-way split: aggregate reduces each group, filter removes whole groups, transform preserves shape, and apply covers the rest.
+- McKinney: user-written aggregators are usually far slower than the built-ins, owing to call and data-reshuffling overhead (qualitative, no timing). Pass a list of `(name, function)` tuples to `agg`, since lambdas are all named `<lambda>`. `as_index=False` avoids some computation compared with `reset_index`. `group_keys=False` in `apply` drops the group index, and `g.name` inside `apply` gives the group's key.
+- ch12: `transform('mean')` broadcasts group means to the original shape, and `(value - transform('mean')) / transform('std')` equals an `apply(normalize)` (first element -1.161895 on a 12-row example); he claims the built-in `transform` path is much faster than `apply`, with no timing. For per-key time bins, group by `[key, TimeGrouper('5min')]` with time as the index. `assign` with callables and `pipe` avoid temporaries in chains, though he says chaining is a matter of taste.
+- ch14 normalises inside groups using `transform('sum')` instead of `apply`, and takes top-n with `nlargest` rather than sorting by hand.
+- A worked `apply` on 2003-01-02 to 2011-10-14 closes (2,214 rows): the per-year correlation between AAPL and SPX daily returns ran from 0.374283 (2004) up to 0.710105 (2010), and the yearly OLS slope of AAPL on SPX fell from 1.766415 (2005) to 0.806605 (2011).
+
 ## Current-pandas behaviour
 
 - `mean` on a frame with text columns raises `TypeError` (old versions silently dropped them). Select numeric columns or pass `numeric_only=True`.
@@ -42,6 +54,12 @@ A key can be a column, a list of columns (giving a MultiIndex, see [[Pandas Inde
 ## Pitfalls
 
 Means without counts, averaging averages, lost keys: see [[Ratio of Sums vs Mean of Rates]] and [[Groupby Silent Group Loss and Pivot Defaults]]. Reaching for `apply` first.
+
+## Limits
+
+- Edition: ch10 relies on `groupby(axis=1)`, tuple-style column selection and NumPy functions passed to `agg`, all later deprecated or removed. `TimeGrouper` was removed; the extraction names `pd.Grouper(freq='5min')` as the replacement (its own knowledge, not the chapter's).
+- None of the speed claims above has a timing. The ch10 example data are unseeded random draws, so printed numbers do not reproduce. Resampling is deferred to ch11 and more groupby cases to ch14.
+- ch12 typo: one `assign` example averages `col2` where `col1` is intended. Its chained-assignment example would trigger `SettingWithCopy`, which the extraction notes the chapter does not say.
 
 ## See Also
 - [[Ratio of Sums vs Mean of Rates]] — extends

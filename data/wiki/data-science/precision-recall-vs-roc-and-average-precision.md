@@ -4,6 +4,7 @@ tags: [data-science, comparison]
 summary: "ROC AUC is a ranking probability unaffected by class balance, while PR curves and average precision track the flagged set on rare positives; the two can disagree and PR points must not be linearly interpolated."
 updated: 2026-11-19
 sources:
+  - data/raw/papers/2026-11-07-davis-2006-relationship-between-precision-recall-roc.md
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--04-model-evaluation.md
   - data/raw/papers/2026-11-08-intro-to-ml-with-python-ch05-model-evaluation-improvement.md
 ---
@@ -27,13 +28,17 @@ For fixed positives and negatives, one curve dominates another in ROC exactly wh
 
 **Do not linearly interpolate PR points.** Precision need not change linearly with recall: from a single point at recall 0.02 with 433 positives and 56,164 negatives, a straight line gives an area of 0.50 where the correct interpolation gives 0.031. Never draw a PR curve by joining a handful of points.
 
+Davis and Goadrich interpolate between two PR points A and B using the local skew, defined as how many negatives are worth one positive: the false-positive difference between B and A divided by their true-positive difference. In their 20-positive, 2,000-negative example, A has TP=5 and FP=5 and B has TP=10 and FP=30, so the skew is 5, and precision drops from 0.500 to 0.250 along a curve, not a line. Moving x true positives past A gives recall of A's true positives plus x over all positives, and precision of that same count over itself plus A's false positives plus skew times x.
+
+**Achievable PR curve.** Take the ROC convex hull, map its points to PR space and interpolate correctly. The points that fall below the ROC hull are exactly the ones dropped. It is not a true convex hull, because the interpolation is non-linear. Build the hull on a tuning set rather than test data, which keeps the split intact but means the test curve need not be a hull. The paper also notes that on a highly skewed cancer-detection dataset the ROC curves look near optimal while the PR curves show one algorithm clearly better (no numbers given).
+
 ## The book chapter's examples
 
 On imbalanced blobs (4000 vs 500, SVC gamma=.05 and a 100-tree random forest), the chapter reports F1 preferring the SVC (0.656 against 0.610) and average precision slightly preferring the forest (0.666 against 0.663), with AUC 0.937 for the forest and 0.916 for the SVC. On 9-vs-rest digits, three SVMs with 90% accuracy had AUCs of 0.50, 0.90 and 1.00 for gamma 1, 0.05 and 0.01 respectively; 3-fold CV AUC for a default SVC was 0.994, 0.99 and 0.996 against accuracy 0.9 in every fold. Selecting gamma with AUC gave 0.01 and with accuracy gave 0.0001, and the AUC choice scored higher on test AUC and test accuracy. Its authors advise preferring AUC or average precision to accuracy when classes are imbalanced, feeding them scores (decision_function or predict_proba) instead of hard predictions.
 
 ## Limits
 
-The chapter's examples are small and single-split with no significance on the comparisons. Its prose says the gamma=0.05 SVM has AUC 0.5 while its output shows 0.90; the page follows the output. The course note gives gamma 0.1 for the middle SVM where the chapter gives 0.05, for the same AUCs; the page cannot tell which is right. Its code uses an older scikit-learn API.
+Davis and Goadrich rely on constructed examples, so their paper gives no rate for AUC-ROC and AUC-PR disagreeing on real data. The one-to-one link between the curves fails at recall 0, where false positives cannot be recovered, and dominance gives no ranking when curves cross. It computes AUC-PR by trapezoids over interpolated points and does not discuss average precision. Cost curves are named as an alternative but not pursued. The size of the dataset behind the paper's Fig 1 cancer-detection curves is not stated there; that figure is taken from the earlier Davis et al. 2005 work. The chapter's examples are small and single-split with no significance on the comparisons. Its prose says the gamma=0.05 SVM has AUC 0.5 while its output shows 0.90; the page follows the output. The course note gives gamma 0.1 for the middle SVM where the chapter gives 0.05, for the same AUCs; the page cannot tell which is right. Its code uses an older scikit-learn API.
 
 ## See Also
 - [[Classification Metrics, Confusion Matrix and Thresholds]] — prerequisite-for

@@ -5,6 +5,7 @@ summary: Four datasets with identical means, variance, correlation and fitted li
 updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--05-visualisation-and-storytelling--notes--01-grammar-and-chart-choice.md
+  - data/raw/papers/2026-11-08-think-stats-ch09-correlation.md
 ---
 
 # Anscombe's Quartet: Plot Before Summarising
@@ -34,7 +35,14 @@ Each needs a different next step (a nonlinear model, outlier handling, more data
 - There are two jobs for charts. **Exploratory** charts are the many you make to find out what is true; **explanatory** charts are the few you make to tell someone else one thing; see [[Explanatory Data Story and the Big Idea]].
 - For a systematic pass over a new dataset see [[EDA Audit Loop]].
 
+Downey's *Think Stats* chapter 9 cites the quartet as the reason Pearson correlation is not robust to outliers (referenced, not reproduced), and advises a scatterplot before any coefficient; see [[Pearson, Spearman Correlation and R-Squared]].
+
+## Limits
+
+The Think Stats chapter refers to the quartet but does not reproduce it, so the correlation claim there rests on the reference.
+
 ## See Also
 - [[EDA Audit Loop]] — related
 - [[OLS Influence and Collinearity Diagnostics]] — related
 - [[Visual Encoding Accuracy Ranking]] — related
+- [[Pearson, Spearman Correlation and R-Squared]] — related (correlation's outlier and linearity limits)

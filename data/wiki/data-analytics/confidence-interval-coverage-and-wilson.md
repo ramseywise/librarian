@@ -38,3 +38,6 @@ Coverage assumes independent rows ([[Pseudoreplication and Intraclass Correlatio
 - [[Bootstrap Resampling and Its Failures]] — alternative-to (an interval without a formula)
 - [[Minimum Detectable Effect and Sample Size]] — related
 - [[Eval Error Bars and Sample Size]] — related
+- [[Difference in Significance and Error Bar Overlap]] — related
+- [[BCa Bootstrap Confidence Intervals]] — alternative-to
+- [[Jackknife Standard Error]] — related

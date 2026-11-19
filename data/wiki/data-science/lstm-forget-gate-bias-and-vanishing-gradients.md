@@ -2,9 +2,10 @@
 title: "LSTM Forget-Gate Bias and Vanishing Gradients"
 tags: [data-science, pattern]
 summary: "Default-initialised LSTMs pass a gradient of about 10^-12 from the first step, no better than a plain RNN; setting the forget-gate bias to 1 or 2 (mind PyTorch's two bias vectors) restores long memory, and gradient clipping handles the opposite failure."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--05-sequence-models.md
+  - data/raw/papers/2026-11-08-fundamentals-of-deep-learning-ch07-models-sequence-analysis.md
 ---
 
 # LSTM Forget-Gate Bias and Vanishing Gradients
@@ -30,6 +31,17 @@ Rescale the whole gradient when its global norm exceeds a threshold (`clip_grad_
 ## Sampling
 
 Training feeds the true previous character (teacher forcing); sampling feeds back its own output, so a model never sees its own mistakes in training. Low temperature concentrates on the likeliest next token; t=3.0 flattens the distribution until structure breaks.
+
+## The vanishing-gradient bound and a textbook LSTM run (Fundamentals of Deep Learning, chapter 7)
+
+The textbook's argument for vanilla RNNs uses one input neuron and one recurrent neuron with tied weights over time and an activation whose derivative is at most 1 (tanh, logistic or ReLU): the gradient reaching an input k steps back is at most |w_rec|^k |w_in|, which shrinks toward zero when the weights are small. Its fix is the LSTM memory cell, a tensor changed by a keep gate (a sigmoid mask on the old state), a write gate (a tanh candidate times a sigmoid mask) and an output gate. The authors advise LSTM or GRU over vanilla RNNs, and, for the SGD-trained seq2seq translator, clipping the gradients to a global norm.
+
+Its IMDB sentiment model (30,000-word vocabulary, length 500, 512-d embedding learned jointly, one 512-unit LSTM, dropout keep 0.5) reaches about 86% test accuracy before overfitting, with training and validation cost diverging late. The extraction notes that padding to 500 takes the last output, a padded position when padding is appended at the end, and the chapter does not address masking.
+
+## Limits
+
+- Textbook runs report no baselines, seeds or significance, and not the sentiment optimiser, learning rate, batch size or epochs.
+- Dated: TensorFlow 0.x and Python 2 code; the book predates transformers.
 
 ## See Also
 - [[Seq2seq Bottleneck and Attention]] — extends

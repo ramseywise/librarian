@@ -6,6 +6,9 @@ updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--03-nlp--notes--03-topic-models-and-summarization.md
   - data/raw/papers/2026-11-07-grootendorst-2022-bertopic.md
+  - data/raw/papers/2026-11-08-text-analytics-with-python-ch05-text-summarization.md
+  - data/raw/papers/2026-11-08-text-analytics-with-python-ch06-text-similarity-clustering.md
+  - data/raw/papers/2026-11-08-intro-to-ml-with-python-ch07-working-text-data.md
 ---
 
 # Topic Models and Extractive Summarisation
@@ -62,9 +65,31 @@ Pick representative sentences in original order. Extractive methods cannot inven
 
 On a 29-sentence article both methods opened with the defining sentence and shared 5 of 8 picks. Mean sentence length 17.2 words against 18.1 for TextRank picks and 17.1 for LSA: no length bias here, but test a document with a wider range.
 
+## Textbook runs on small corpora
+
+Sarkar's chapters 5 and 6 (Python 2, gensim and scikit-learn of 2016) judge every method by reading output.
+
+- **Topic models.** On an 8-document toy corpus (4 on animals, 4 on programming) with 2 topics, LSI, LDA and NMF all recover the split; LSI weights are signed and LDA and NMF weights positive. On Amazon reviews of Skyrim with 5 topics, scikit-learn's LDA on TF-IDF features produced several unusable topics (rare words, Spanish text); LSI, gensim's LDA and NMF produced topics on praise, genre and the earlier game Oblivion. The extraction says feeding TF-IDF to LDA, which models counts, likely explains the junk. The author claims NMF is strongest even for small corpora, resting that on the single toy example with no metric to compare.
+- **LSA summaries.** A sentence's salience score combines, for each retained concept, its squared singular value and the squared entry for that sentence, summed and square-rooted. The chapter drops singular values below half the largest, after Steinberger and Jezek. On a 9-sentence elephants text (3 singular vectors, frequency features, threshold 0.5) it picks sentences 1, 5 and 8.
+- **TextRank.** On the same text, with TF-IDF similarity and `networkx.pagerank`, the scores are near-uniform (top 0.1189, bottom 0.1059) and sentences 0, 3 and 8 are chosen. gensim's `summarize` (TextRank-based, ratio 0.4) cut it to 3 sentences. On a 13-sentence Skyrim description, LSA and TextRank each gave 3 sentences and shared two. The chapter states 0.85 as the ideal PageRank damping factor.
+- **Clustering 100 IMDb movie synopses.** TF-IDF with a document-frequency floor of 0.24, a ceiling of 0.85 and unigrams plus bigrams gives a 100 by 307 matrix. k-means with k=5 gives cluster sizes 29, 5, 21, 15 and 30. Affinity propagation at default settings returns 17 clusters holding between 2 and 12 movies each. Ward linkage over cosine distance draws a dendrogram that splits into three main groups. Cluster quality is not scored.
+- **Advice.** The authors advise choosing the topic count by intuition and trial and error, using k-means++ with several restarts, choosing k by the elbow or silhouette coefficient, and building a topic model per cluster to label it better than centroid keywords.
+
+## LDA on IMDb in scikit-learn
+
+Setup: Müller and Guido's chapter 7 fits LDA with 10 and with 100 topics on the IMDb reviews, using `CountVectorizer(max_features=10000, max_df=.15)`, batch learning, `max_iter=25` and `random_state=0`. They advise dropping very common words with `max_df` and reading the top documents for each topic to verify it. LDA is randomised, so a different `random_state` can give quite different topics. They also note that per-document topic weights give a short feature vector, which may help a supervised model when there are few training examples. The extraction flags the code's `n_topics` argument as dated scikit-learn API.
+
 ## Pitfalls
 - LDA on counts, NMF and LSI on TF-IDF; prune vocabulary and merge phrases first or topics become stop words and fragments.
 - Treating a topic as a fact: it is a pattern a model found and needs a human to name it.
+
+## Limits
+
+- The textbook has no ROUGE, coherence, perplexity or human judgement; its data are an 8-sentence corpus, a 9-sentence text and a 13-sentence description, and the Skyrim review file's size is not stated.
+- Its code uses `gensim.summarization` (removed in gensim 4) and other since-changed APIs, and two helper functions use global variables instead of their arguments.
+- The 2nd edition of the book adds coherence tuning and pyLDAvis; this edition does not.
+- The LDA runs in the scikit-learn book come from one dataset (IMDb) and one classifier, with no variance reported. LDA is randomised, so topics should be checked against documents, and the code uses the dated `n_topics` argument.
+- By the author's account, k-means must be given k and may stop at a local minimum, and affinity propagation is costly to compute.
 
 ## See Also
 - [[Bag of Words, n-grams and TF-IDF]] — prerequisite-for

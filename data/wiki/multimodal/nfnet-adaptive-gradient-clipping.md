@@ -34,3 +34,5 @@ Brock et al. (arXiv:2102.06171v1, no venue in the PDF) examine whether deep ResN
 - [[Batch Normalization]] — prerequisite-for
 - [[ILSVRC ImageNet Challenge]] — related
 - [[Swin Transformer Shifted Windows]] — alternative-to
+- [[Big Transfer (BiT) Generalist Pretraining]] — related
+- [[Compound Scaling of Depth, Width and Resolution (EfficientNet)]] — related

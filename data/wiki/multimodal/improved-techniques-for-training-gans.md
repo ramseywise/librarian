@@ -36,3 +36,4 @@ Salimans et al. (preprint) ask how to make GAN training and samples better and h
 - [[Frechet Inception Distance and the Two Time-Scale Update Rule]] — extends (a later metric built on Inception features)
 - [[Spectral Normalization for GANs]] — extends
 - [[BigGAN Large-Scale GAN Training]] — extends
+- [[DCGAN Architectural Constraints for Stable GANs]] — prerequisite-for

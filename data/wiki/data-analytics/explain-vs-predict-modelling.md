@@ -30,3 +30,4 @@ State the goal first. Collinearity ([[OLS Influence and Collinearity Diagnostics
 ## See Also
 - [[Functional Form Misspecification]] — related
 - [[Regression Covariate Adjustment]] — related
+- [[WAIC, KL Divergence and Akaike Weights]] — related

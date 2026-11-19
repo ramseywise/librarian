@@ -5,6 +5,9 @@ summary: "One-hot, ordinal, frequency and target encoding suit different models 
 updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--03-feature-engineering-and-pipelines.md
+  - data/raw/papers/2026-11-08-python-data-science-handbook-ch05-machine-learning.md
+  - data/raw/papers/2026-11-08-python-for-data-analysis-ch13-introduction-modeling-libraries.md
+  - data/raw/papers/2026-11-08-intro-to-ml-with-python-ch04-representing-data-engineering-features.md
 ---
 
 # Categorical Encoding Choices
@@ -29,6 +32,19 @@ A column with k categories becomes k binary columns. On the adult census data, s
 - **Typos and whitespace.** "Male" vs "male", or " Private" vs "Private", become separate columns; check `value_counts()`.
 
 Result: with the six adult columns, logistic regression reaches 0.811 test accuracy on 44 columns, against a 0.759 base rate. Adding the country column grows the matrix to 86 columns with no change in accuracy, because it is mostly one value.
+
+## What the books add
+
+- VanderPlas: integer codes are the wrong encoding for categories, so one-hot them, sparse when there are many levels. For text, TF-IDF reweights word counts using how frequently words occur across the documents.
+- McKinney (ch13): Patsy drops one level of a categorical term when the formula has an intercept, `+ 0` removes the intercept so all levels appear, and `I()` wraps arithmetic inside a formula.
+
+- The ch4 authors, Müller and Guido (*Introduction to ML with Python*), report 0.81 test accuracy for logistic regression on the one-hot Adult data (32,561 rows, `get_dummies` to 44 features, default 75/25 split, `random_state=0`), the same figure as above. Their habits: check string columns with `value_counts` for spelling and case variants before encoding; when using `get_dummies`, apply it to train and test together (or align their columns) so the dummy columns mean the same thing; and split off the target, here both income dummy columns, before training.
+
+## Limits
+
+- The ch4 extraction notes its own slips: a sample output shows 46 columns where the shape says 44, so the column count above is the shape figure.
+
+- Both chapters use 2016-2017 APIs.
 
 ## See Also
 - [[Feature Representation for Linear Models]] — related

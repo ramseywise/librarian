@@ -33,3 +33,4 @@ Check any interval ([[Confidence Interval Coverage and Wilson]]), any standard e
 - [[Explain vs Predict Modelling]] — related
 - [[External Validity and Transportability]] — related
 - [[Maximum Likelihood and Estimator Bias]] — prerequisite-for
+- [[Simulate the Joint and Slice for a Conditional]] — related

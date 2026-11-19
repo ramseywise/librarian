@@ -5,6 +5,7 @@ summary: "A Gaussian process is a prior over functions that gives a prediction w
 updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--06-bayesian-machine-learning.md
+  - data/raw/papers/2026-11-08-statistical-rethinking-ch13-adventures-covariance.md
 confidence: medium
 ---
 
@@ -46,8 +47,21 @@ Tuning a gradient-boosted classifier's learning rate and leaf count on a small b
 
 The best setting had a learning rate of 0.447 and 3 leaves. This compares one Bayesian run with five random ones where each evaluation takes about a second, so it shows the shape of the method rather than measuring an advantage. The case grows as each fit gets expensive; if a fit takes a second, random search with more fits is often simpler.
 
+## Gaussian process regression for cases at a distance (Statistical Rethinking)
+
+McElreath (first edition, chapter 13) carries the varying-effects idea over to a continuous category: instead of a fixed covariance matrix, estimate a covariance function that depends on how far apart two cases are (a squared-distance form, GPL2). Setup: Oceanic tools data, 10 societies, Poisson model with distance in thousands of km, 4 chains of 10,000 iterations with 2000 warmup. The log-population slope is 0.24, with an 89% interval spanning 0.05 to 0.42, near the non-spatial estimate from earlier. Malekula, Tikopia and Santa Cruz show posterior-median correlations over 0.8 among themselves, while Hawaii correlates about 0 with the rest; most sampled covariance curves reach zero before 4000 km. The chapter suggests reporting the posterior median for skewed GP parameters, plotting sampled covariance functions, and writing Stan directly beyond the basics. Automatic relevance determination gives every dimension of difference its own relevance parameter.
+
+See [[Varying Slopes and the LKJ Correlation Prior]] for the chapter's first half.
+
+## Limits
+
+- Only 10 societies, with wide uncertainty about the spatial effect's strength.
+- The author says the descriptive result fits many causal explanations.
+- Code is first-edition `map2stan`, which is hard to extend.
+
 ## See Also
 - [[Variational Inference and the ELBO]] — related
 - [[Thompson Sampling and Bandit Regret]] — related (exploration versus exploitation)
 - [[Prior Choice and Prior Predictive Checks]] — related
 - [[Tree-Structured Parzen Estimator (TPE)]] — alternative-to
+- [[Varying Slopes and the LKJ Correlation Prior]] — related

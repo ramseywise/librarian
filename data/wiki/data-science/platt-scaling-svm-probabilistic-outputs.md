@@ -41,3 +41,4 @@ Setup: Table 2, five task configurations from three datasets (Reuters, Adult, We
 - [[Kernel SVM and the Kernel Trick]] — prerequisite-for
 - [[LLM Grader Calibration Insights]] — related
 - [[Temperature Scaling for Post-Hoc Calibration]] — extends (single-parameter variant for network logits)
+- [[Margin Classifiers, Hinge Loss and Kernel Smoothing]] — related

@@ -7,6 +7,7 @@ sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--01-ab-testing.md
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--03-experimentation-at-scale.md
   - data/raw/papers/2026-11-06-kohavi-2008-controlled-experiments-web.md
+  - data/raw/papers/2026-11-08-2017-08-kddmetricinterpretationpitfalls.md
 ---
 
 # A/B Test Lifecycle and Interval Decisions
@@ -61,6 +62,16 @@ Lift in week one overstates the lasting effect. In a simulation with a decaying 
 ## Limits
 
 A test says which version won, not why, so log diagnostics; it measures only the test window; it tests only what you can build.
+
+- The Microsoft paper gives no aggregate prevalence data, mostly omits experiment sizes, durations and user counts, and says its twelve pitfalls are not complete.
+
+## Cases from the 2017 Microsoft paper
+
+Dmitriev and colleagues (KDD 2017) give single-experiment examples that bear on this lifecycle:
+
+- Novelty: on the Edge new-tab page, a coach mark (a hint shown one time to users whose top sites were empty; 4-week experiment) lifted clicks 0.96% (self-reported) across the whole page and 2.07% (self-reported) on top sites, yet the lift shrank every day and was gone after a user's first visit. On MSN.com, a mail-app button put in the Outlook.com button's place raised navigation clicks 4.7% (self-reported) and button clicks 28% (self-reported) in an MSN.com homepage experiment; retention and satisfaction did not move, daily clicks decayed, and the experiment was stopped. They call an effect primacy when it begins small and grows with user learning or ML-system adaptation, and advise splitting the effect by day or by visit number.
+- Power: on an MSN.com test, a +0.5% change in total page views per user was not significant; only a change of 7.8% or more (self-reported) was detectable at 80% power, with an interval of about plus or minus 5% (self-reported). They warn against taking an underpowered metric that is not significant as proof of no change.
+- Borderline p-values: a Bing OEC metric that had p = 0.029 (self-reported) showed nothing significant when the certification rerun used twice the traffic. They advise rerunning with more traffic and, for continuous monitoring, deciding at the pre-defined time point or using adjusted p-values or Bayesian testing.
 
 ## See Also
 - [[Sample Ratio Mismatch]] — prerequisite-for

@@ -5,6 +5,8 @@ summary: "An estimator is a recipe judged by bias, variance and MSE; maximum lik
 updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--04-estimation.md
+  - data/raw/papers/2026-11-08-computer-age-statistical-inference-ch04-fisherian-inference-maximum-likelihood-e.md
+  - data/raw/papers/2026-11-08-think-stats-ch08-estimation.md
 ---
 
 # Maximum Likelihood and Estimator Bias
@@ -22,6 +24,8 @@ Variance computed by dividing by n is biased low; dividing by n-1 removes the bi
 
 The biased estimator had the lower MSE. Unbiasedness is a property worth having, not a goal that beats variance every time.
 
+Think Stats (ch. 8) advises dividing by n-1 to get an unbiased variance estimate and points out that both versions are called "sample variance". The chapter only cites Wikipedia for the unbiasedness and gives no proof.
+
 ## Maximum likelihood
 
 Write the probability of the observed data as a function of the parameter and pick the value that maximises it (in practice the log-likelihood).
@@ -32,9 +36,22 @@ Write the probability of the observed data as a function of the parameter and pi
 
 MLEs are consistent and efficient with enough data, but not guaranteed unbiased at small n, as the variance case shows.
 
+## Fitting a family to real data
+
+Efron and Hastie (*Computer Age Statistical Inference*, ch. 4) fit the gfr measurements of 211 kidney patients two ways. Under a normal model the estimates are the sample mean and a standard deviation that divides by n. A gamma model with a free lower limit has no closed-form estimate and needs numerical maximisation; it fits better but the authors call neither fit satisfactory. They call maximum likelihood the method of first choice (automatic, near-efficient) and warn that with many parameters a plug-in estimate of a derived quantity can mislead: with 6033 prostate-study genes, the estimate of the largest gene mean is a flagrant overestimate. Their advice for high dimensions is a regularised maximum likelihood estimate. Accuracy from observed information and conditioning are in [[Observed Fisher Information and Ancillary Conditioning]].
+
+## Limits
+
+- CASI ch. 4: the derivations are heuristic, the gamma and normal fits to the kidney data are both called unsatisfactory, and maximum likelihood is dangerous with many parameters.
+- Think Stats ch. 8 gives no simulation results, and its unbiasedness claim for n-1 is cited, not proved. Its locomotive section also has printed inconsistencies in a constant and a likelihood condition.
+
 ## See Also
 - [[Confidence Interval Coverage and Wilson]] — extends (intervals built on these standard errors)
 - [[Delta Method for Ratio Metrics]] — extends (propagating the standard error through a function)
 - [[Distribution Selection for Metrics]] — prerequisite-for
 - [[Generalised Linear Models and Deviance]] — related (GLMs are fitted by maximum likelihood)
 - [[Expectation and Variance Rules]] — prerequisite-for
+- [[Observed Fisher Information and Ancillary Conditioning]] — extends
+- [[Exponential Families and Tilting]] — extends
+- [[James-Stein Estimator and Shrinkage]] — extends (the many-parameter case)
+- [[Locomotive Problem: Estimators and Losses]] — instance-of

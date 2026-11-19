@@ -2,7 +2,7 @@
 title: End-to-End Memory Networks
 tags: [data-science, concept]
 summary: "A softmax-attention form of the Memory Network that stacks several read hops over embedded sentences and trains from question-answer pairs alone; on bAbI it came close to a supervised memory network and on language modeling it edged out LSTM baselines (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-sukhbaatar-2015-end-end-memory-networks.md
 ---
@@ -37,3 +37,4 @@ Training tricks the paper names: position encoding, temporal encoding, linear st
 - [[Neural Turing Machine]] — related (closely related continuous memory; this model addresses by content only)
 - [[Recurrent Memory Transformer (RMT)]] — related
 - [[Seq2seq Bottleneck and Attention]] — related (the paper reads its model as attention with several hops per output)
+- [[DNC Memory Allocation and Temporal Links]] — alternative-to

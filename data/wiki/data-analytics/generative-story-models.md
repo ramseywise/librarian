@@ -42,3 +42,4 @@ For k serial numbers drawn from 1..N, the likelihood is (1/N)^k for N at least t
 - [[Data Generating Process Simulation Check]] — related (simulating from the story to test it)
 - [[Maximum Likelihood and Estimator Bias]] — related (biased versus unbiased estimators)
 - [[Mixture Models and Label Switching]] — related (another model written from a story)
+- [[Unseen Species Hierarchical Dirichlet Model]] — instance-of

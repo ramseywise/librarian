@@ -43,3 +43,5 @@ Pearson r is linear and outlier-sensitive; Spearman uses ranks. One outlier move
 - [[Post-Treatment Segments and Simpson's Paradox]] — related
 - [[Independence Pitfalls]] — related (shared cause makes correlation that vanishes when conditioned on)
 - [[Potential Outcomes and Selection Bias]] — related
+- [[Pearson, Spearman Correlation and R-Squared]] — related
+- [[Masked Relationships and Collinear Predictors]] — extends

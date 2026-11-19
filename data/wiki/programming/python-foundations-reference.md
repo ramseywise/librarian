@@ -18,6 +18,8 @@ sources:
   - data/raw/papers/2026-11-08-ml-engineering-in-action-ch09-modularity-ml-writing-testable-legible-code.md
   - data/raw/papers/2026-11-08-ml-engineering-in-action-ch10-standards-coding-creating-maintainable-ml-code.md
   - data/raw/papers/2026-11-08-ml-engineering-in-action-ch13-ml-development-hubris.md
+  - data/raw/papers/2026-11-08-python-for-data-analysis-ch02-python-language-basics-ipython-jupyter-notebooks.md
+  - data/raw/papers/2026-11-08-python-for-data-analysis-ch03-built-data-structures-functions-files.md
 ---
 
 # Python Foundations Reference
@@ -148,6 +150,15 @@ Limits: his text has an internal inconsistency (a dictionary approach needing 32
 
 Wilson (*Machine Learning Engineering in Action*, ch13) advises writing for the team's skill level and teaching any advanced idioms through documentation, examples and pair programming rather than a style guide linked in a pull request. He sketches five developer personas on one column-casting task: Hacker, Mystic, Show-off, Mad Scientist and Good Samaritan, the last writing concise code that is complex only where needed. He advises explicit type casts over a catch-all String default for unmatched columns, which he says breeds fragile production failures (a Scala listing). He distinguishes premature generalisation (a framework before the patterns exist) from premature optimisation (tuning one stage before the whole runs). In his Scala generator example, `Seq` with positional lookup scaled worse than linearly (5,000 rows 0.6 s; 50 million rows roughly 2 h 54 min) against about 15 minutes after refactoring; hardware is not stated. His fix rate for tightly coupled imperative Spark code was under 40 percent, counting fixes made before predictions lapsed once an upstream column had changed (his experience, not a measurement). Examples are Scala and Spark, not directly reusable in Python, and the tool names are dated.
 
+## What *Python for Data Analysis* adds
+
+- `list.extend` is cheaper than `+`, which builds a new list; `collections.deque` suits inserting at both ends; `bisect` on an unsorted list returns a wrong answer without an error.
+- `defaultdict(list)` or `setdefault` avoids a membership check when grouping; catch specific exceptions rather than a bare `except`; note that text mode defaults to UTF-8, and mind `seek` offsets on multibyte text; test iterability with `iter()`; compare with `None` using `is`.
+
+## Limits
+
+- The book (2nd ed., Python 3.6) calls dicts unordered, which is dated: they keep insertion order since 3.7. See [[IPython Timing and Profiling Workflow]] for the profiling tools.
+
 ## See Also
 - [[Python Data Model and Idioms]] — extends
 - [[Python Generators and Lazy Iteration]] — extends
@@ -155,3 +166,4 @@ Wilson (*Machine Learning Engineering in Action*, ch13) advises writing for the 
 - [[Python Type Hints and Dataclasses]] — extends
 - [[SQL from Python]] — extends
 - [[Programming Curriculum]] — related (course map)
+- [[NumPy Vectorisation, Views and Fancy Indexing]] — related

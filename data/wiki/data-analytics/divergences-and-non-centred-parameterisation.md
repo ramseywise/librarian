@@ -29,3 +29,4 @@ Sample raw ~ Normal(0, 1) and set theta = mu + tau * raw as a deterministic. It 
 ## See Also
 - [[MCMC and Metropolis Sampling]] — prerequisite-for (diagnostics and samplers)
 - [[Partial Pooling and Multilevel Models]] — related (the models where this appears)
+- [[Varying Slopes and the LKJ Correlation Prior]] — instance-of

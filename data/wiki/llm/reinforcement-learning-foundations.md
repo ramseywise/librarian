@@ -6,6 +6,7 @@ updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--01-llm-fundamentals--rl.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--rl.md
+  - data/raw/papers/2026-11-08-fundamentals-of-deep-learning-ch09-deep-reinforcement-learning.md
 ---
 
 # Reinforcement Learning Foundations
@@ -89,6 +90,15 @@ The difference that matters: in (1) the environment is trivial (a single generat
 and the difficulty is in the reward model; in (2) the reward is often obvious (did the
 task complete?) and the difficulty is credit assignment across a long trajectory.
 
+## Deep RL in a 2017-era textbook
+
+*Fundamentals of Deep Learning* chapter 9 gives rules of thumb: a discount factor between 0.97 and 0.99, and annealing epsilon downward, exploring early and exploiting late (typical runs go from 0.99 down to 0.1 across 10,000 scenarios; the authors report that fixed values did poorly on a CartPole policy-gradient agent). It states the Q-function and Bellman equation and builds a policy-gradient agent and a DQN agent; the DQN mechanism is on [[Deep Q-Network, Target Network and Experience Replay]]. It also reports A3C learning Atari Breakout in under 12 hours against 3 to 4 days for DQN, and UNREAL about 10 times faster than A3C on Labyrinth (both reported secondhand).
+
+## Limits (textbook chapter)
+
+- The chapter prints no numeric results, and its code is TensorFlow 1.x with known bugs.
+- It covers only 2013 to 2016 methods; PPO, which this page calls dominant, and RLHF are absent.
+
 ## See Also
 - [[RLHF Pipeline]] — instance-of (the LLM-as-policy formulation)
 - [[Preference Optimization Algorithms]] — extends (actor-critic and what each method removes)
@@ -104,3 +114,4 @@ task complete?) and the difficulty is credit assignment across a long trajectory
 - [[Autodata Agentic Self-Instruct]] — instance-of
 - [[CodeRL Unit-Test Actor-Critic]] — instance-of
 - [[Foundation Models as Decision Makers (MDP View)]] — extends
+- [[Deep Q-Network, Target Network and Experience Replay]] — instance-of (value-based deep RL)

@@ -34,3 +34,5 @@ After fitting: heteroskedasticity ([[Robust Standard Errors]]), grouped rows ([[
 - [[Minimum Detectable Effect and Sample Size]] — related (adjustment lowers required n)
 - [[Explain vs Predict Modelling]] — related
 - [[CUPED Variance Reduction]] — related (the pre-period covariate case)
+- [[Dichotomising Continuous Variables]] — related
+- [[Linear Interactions and Centring]] — related

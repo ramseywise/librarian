@@ -6,6 +6,7 @@ updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--01-ab-testing.md
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--03-experimentation-at-scale.md
+  - data/raw/papers/2026-11-08-statistics-done-wrong-ch06-double-dipping-data.md
 ---
 
 # Peeking and Sequential Testing
@@ -31,6 +32,10 @@ A boundary that is 1.96 divided by the square root of the information fraction, 
 
 The mixture sequential probability ratio test compares the likelihood under "some effect drawn from a normal with variance tau squared" to the likelihood under no effect. Under the null the ratio is a martingale with mean 1, so the chance it ever reaches 1/alpha is at most alpha; p = min(1/ratio) is valid at any stopping time. In simulation, checking after every pair of users gave a false-positive rate of 0.041. With a true effect of 0.05 sd, 98.2% of runs detected it within 20,000 pairs; median stop 5,897 pairs, 90th percentile 12,932, against 6,272 pairs for a fixed test with 80% power. So half the runs stop sooner, but the tail is long. Tau squared sets where the method is sharpest; choose it from effect sizes seen in past experiments.
 
+## Reinhart's account
+
+Chapter 6 shows the same effect in a simulation with no true difference: starting at 10 per group with 100 planned, testing after every added pair eventually gives p < 0.05. He cites more than half of surveyed academic psychologists saying they chose whether to gather more data once they had looked at significance, and trials stopped early overstating effects by 29% on average ([[Double Dipping and Selection on the Test Data]]).
+
 ## Choosing
 
 - Test planned for weeks and reviewed weekly: group-sequential.
@@ -38,8 +43,14 @@ The mixture sequential probability ratio test compares the likelihood under "som
 - Either way keep whole weeks, and allow early stops for guardrail failure.
 - A Bayesian posterior does not make peeking free either.
 
+## Limits
+
+- Reinhart's 29% figure for early-stopped trials rests on a footnote not in the extract (chapter 6).
+- The chapter names no sequential-analysis procedure to use instead.
+
 ## See Also
 - [[A/B Test Lifecycle and Interval Decisions]] — prerequisite-for
 - [[Multiple Comparisons Corrections]] — related (repeated looks are multiple tests)
 - [[Minimum Detectable Effect and Sample Size]] — prerequisite-for
 - [[Experiment Ramps and Overlapping Tests]] — related
+- [[Double Dipping and Selection on the Test Data]] — extends

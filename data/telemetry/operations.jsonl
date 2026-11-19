@@ -10,3 +10,5 @@
 {"date": "2026-11-19", "op": "ingest", "detail": "data/raw/papers/ (MLE in Action ch01-10, 10 files) -> 4 new, 19 updated, 38 links, 0 conflicts"}
 {"date": "2026-11-19", "op": "ingest", "detail": "papers: MLE in Action ch11-16, Rabanser 2018, Shankar 2022, Raissi 2023, Zaharia 2021, Strengholt mesh topologies -> 7 new, 31 updated, 67 links, 0 conflicts"}
 {"date": "2026-11-19", "op": "ingest", "detail": "papers data-science batches 5-7 (27 sources) -> 22 new, 67 updated, 176 links, 0 conflicts"}
+{"date": "2026-11-19", "op": "ingest", "detail": "papers batch A (data-science, programming; 67 sources) -> 74 new, 139 updated, 530 links, 0 conflicts"}
+{"date": "2026-11-19", "op": "ingest", "detail": "papers batch B (data-analytics; 118 sources) -> 74 new, 139 updated, 530 links, 0 conflicts"}

@@ -6,6 +6,7 @@ updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/programming--python--03-language-for-engineers--notes--01-data-model-and-idioms.md
   - data/raw/papers/2026-11-08-ml-engineering-in-action-ch10-standards-coding-creating-maintainable-ml-code.md
+  - data/raw/papers/2026-11-08-nlp-with-python-ch04-writing-structured-programs.md
 ---
 
 # Python Data Model and Idioms
@@ -87,7 +88,14 @@ Dict keys and set members must be **hashable**: their hash must never change.
 
 - Immutable built-ins are hashable; lists and dicts aren't.
 - A tuple is hashable only if everything inside it is.
+- In the NLTK book's timing (Python 2, a 100,000-integer vocabulary, machine unstated), 1,000 list lookups took 2.8 seconds and the set version was about three orders of magnitude faster. It is a single run.
 - **If you define `__eq__` on a class, define `__hash__` too** (or use a frozen dataclass), or instances stop working as keys.
+
+## Limits
+
+- Each timing is one run, and neither the machine nor the Python version is stated.
+- The book's claim about a 50% hit rate may be wrong, since operator precedence could change what the expression computes.
+- The code is Python 2.5/2.6.
 
 ## See Also
 - [[Python Foundations Reference]] — prerequisite-for
@@ -95,3 +103,6 @@ Dict keys and set members must be **hashable**: their hash must never change.
 - [[Python Type Hints and Dataclasses]] — extends (frozen dataclasses solve the hash/eq pairing)
 - [[Python Closures and Decorators]] — related (functions as first-class objects)
 - [[Programming Curriculum]] — related (course map)
+- [[Clean Code: Names, Functions and Comments]] — extends (Java-era naming and function-size guidance)
+- [[Out of the Tar Pit: Essential and Accidental Complexity]] — related (mutable state as a source of complexity)
+- [[NumPy Vectorisation, Views and Fancy Indexing]] — related (aliasing in arrays)

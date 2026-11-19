@@ -6,6 +6,7 @@ updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--03-distributions-and-sampling.md
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--README.md
+  - data/raw/papers/2026-11-08-think-stats-ch06-operations-distributions.md
 ---
 
 # CLT on Heavy-Tailed Metrics
@@ -38,9 +39,17 @@ Most small samples contain few whales, so they underestimate both the mean and t
 
 The theorem also needs independence and finite variance. Dependent rows break the first ([[Pseudoreplication and Intraclass Correlation]]); some extreme tails break the second, and then a mean never settles.
 
+## How the textbook states it
+
+Downey's *Think Stats* (chapter 6) gives the sum form: for n independent draws from one distribution with finite mean mu and finite standard deviation sigma, the total is roughly N(n mu, n sigma^2); most Pareto cases fall outside. He says the same-distribution condition can be relaxed. How quickly the approximation settles depends on skew, he says: sums of exponentials get there at small n, sums of lognormals do not (qualitative, no sample sizes given). The chapter proves neither the theorem nor a convergence rate. It also shows the normal is closed under linear maps and sums of independent normals. Downey advises checking independence, finite variance and skewness before assuming a sum is normal, and looking at the log for products.
+
 ## Check by simulation
 
 Treat the 95% label as a claim and test coverage by simulating from a model of your data. Making 30% of users buy instead of 4.7% raises coverage at n = 300 because far fewer samples are mostly zeros, though the lognormal tail still costs.
+
+## Limits
+
+The Think Stats material is a short textbook chapter with no empirical results; its claims are asserted, not proven. The convolution derivation uses independence of X and Y without stating it, convergence of the maximum to a Gumbel distribution is mentioned but not derived, and the code is Python 2 era.
 
 ## See Also
 - [[Bootstrap Resampling and Its Failures]] — alternative-to (resample instead of trusting the normal approximation)

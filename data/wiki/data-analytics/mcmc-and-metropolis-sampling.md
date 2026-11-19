@@ -6,6 +6,8 @@ updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--02-mcmc-and-pymc.md
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--06-bayesian-machine-learning.md
+  - data/raw/papers/2026-11-08-computer-age-statistical-inference-ch13-objective-bayes-inference-markov-chain-m.md
+  - data/raw/papers/2026-11-08-statistical-rethinking-ch08-markov-chain-monte-carlo.md
 ---
 
 # MCMC and Metropolis Sampling
@@ -36,6 +38,21 @@ Random-walk Metropolis proposes blindly, and in high dimensions most directions 
 
 Scaling matters as much as the sampler. On a 23-point logistic model with raw temperature: Metropolis ESS 5 with R-hat 2.16; NUTS ESS 304 at 18.8 leapfrog steps per draw; NUTS on standardised input ESS 2,591 at 3.1 steps. The raw intercept and slope are almost perfectly correlated far from zero, a narrow ridge; standardising removes it. On a 2,000-row logistic regression with five inputs, from the same draws NUTS had a minimum ESS of 3,306 against 155 for Metropolis.
 
+## Gibbs sampling and the balance equations
+
+Efron and Hastie (Computer Age Statistical Inference, ch. 13) describe Gibbs sampling as reducing a multidimensional draw to univariate draws from each coordinate's full conditional given the others and the data, using conjugacy to get closed forms. A posterior for any derived parameter comes from applying the function to each joint draw. A Metropolis-Hastings chain is built to satisfy the balance equations between each pair of states, which make the target the chain's equilibrium distribution. The authors advise dropping an initial burn-in of draws and running long enough for estimates to settle; they list as costs that successive draws are correlated, the burn-in length and run length have no clear rule, the convergence factor is unknown, and the method favours convenient priors.
+
+Setup for their two examples: a Bayesian t-test on vasoconstriction data (20 and 19 observations, 10,000 Gibbs draws per group) gave Pr(delta < 0) = 0.0028 against a frequentist one-sided p of 0.0047; a population-admixture model (197 individuals, 100 SNPs, J = 3, flat Dirichlet and Beta priors, burn-in 1000 then 2000 iterations, the STRUCTURE software) recovered ethnic clusters without supervision. Both examples are small and give no timing details.
+
+## Pathological chains and run settings
+
+McElreath (Statistical Rethinking, ch. 8) shows two failures that flat priors cause, using Stan chains (2 chains, 4000 iterations, 1000 warmup each):
+
+- **Flat priors on two observations (y = -1 and 1):** the chains wander and never become stationary. Weakly informative priors (Normal(1, 10) on the mean, half-Cauchy(0, 1) on the sd) repaired it at once, with an effective sample size of 1121 for the mean.
+- **Non-identifiable sum:** with the mean written as a1 + a2 (only the sum is estimable) and 100 simulated N(0, 1) observations, flat priors gave huge opposite-signed estimates, an effective sample size of 1 and R-hat 2.83. Normal(0, 10) priors on both gave about 1223 effective samples and R-hat 1.
+
+His practical advice: R-hat can reach 1.00 for an invalid chain, so it signals danger but never safety; warmup is adaptation, not burn-in, and is dropped from the saved samples; run four short chains to check the model and one long chain to infer. Stan's defaults as the chapter gives them were 1000 warmup and 1000 kept draws, and he claims roughly 200 effective samples suffice for a posterior mean in typical near-Gaussian regressions (about ten times more for a variance).
+
 ## Diagnostics
 
 | Check | Healthy |
@@ -51,8 +68,17 @@ Run four chains from dispersed starts: one chain cannot disagree with itself. Bu
 
 Start sensibly, bound priors, rescale inputs, run several chains, prefer NUTS. The folk theorem: if you have computational problems, probably your model is wrong. Approximations exist when sampling is too slow: the Laplace approximation (a Normal at the MAP) and [[Variational Inference and the ELBO]].
 
+## Limits
+
+- The Rethinking examples are toy models from an older R and Stan interface, with no divergence analysis and no bulk or tail effective sample sizes; the 200-sample rule is the author's own claim.
+- The Gibbs examples from the Efron and Hastie chapter are small and give no timings.
+
 ## See Also
 - [[Beta-Binomial Updating and Credible Intervals]] — prerequisite-for (the closed form used to check a sampler)
 - [[Prior Choice and Prior Predictive Checks]] — related (what the sampler is given)
 - [[Expectation-Maximisation for Gaussian Mixtures]] — alternative-to (point estimate instead of samples)
 - [[No-U-Turn Sampler (NUTS)]] — instance-of (adaptive Hamiltonian sampler)
+- [[CAVI and Stochastic Variational Inference]] — alternative-to
+- [[Approximate Bayesian Computation with Summary Statistics]] — related
+- [[Simulate the Joint and Slice for a Conditional]] — related
+- [[Grid and Quadratic Approximation and Posterior Samples]] — alternative-to

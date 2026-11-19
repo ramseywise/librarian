@@ -43,3 +43,4 @@ Best FID over training, 8 runs per setting unless noted; learning rates differ p
 - [[Spectral Normalization for GANs]] — related (another stabiliser for GAN training)
 - [[Improved Techniques for Training GANs]] — prerequisite-for (introduces the Inception score)
 - [[LPIPS Perceptual Similarity]] — alternative-to
+- [[DCGAN Architectural Constraints for Stable GANs]] — related

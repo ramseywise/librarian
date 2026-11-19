@@ -8,6 +8,7 @@ sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--05-visualisation-and-storytelling--notes--02-matplotlib-and-seaborn.md
   - data/raw/repos/learn-ai-engineering/data-analytics--05-visualisation-and-storytelling--notes--05-dashboards-and-storytelling.md
   - data/raw/repos/learn-ai-engineering/data-analytics--05-visualisation-and-storytelling--notes--06-dashboard-stacks-from-python-to-frontend.md
+  - data/raw/papers/2026-11-08-python-data-science-handbook-ch04-visualization-matplotlib.md
 ---
 
 # Chart Colour Scales and Accessibility
@@ -32,6 +33,14 @@ Colour is near the bottom of the [[Visual Encoding Accuracy Ranking]], so spend 
 - **1.4.3 / 1.4.11** text needs 4.5:1 contrast (3:1 if large); graphical marks need 3:1 against adjacent colours. Run a contrast calculation rather than judging by eye. In one validated palette, aqua (2.74:1) and yellow (2.11:1) fell short on a near-white surface; guidance accepts the information being available another way, such as a table, so those charts must also carry direct labels or a table.
 - **1.1.1** where practical, provide the data in a table.
 - **2.1.1 / 1.4.13** everything must work without a mouse; anything only on hover fails keyboard and touch users. A real `<select>` gets keyboard support free.
+
+## Jet versus viridis
+
+VanderPlas shows the `jet` colormap, the matplotlib default before 2.0, has uneven luminance; `viridis` was built for even perceived brightness and survives conversion to grayscale. A divergent map also loses its sign information in grayscale (*Python Data Science Handbook*, ch4, matplotlib about 1.5).
+
+## Limits
+
+- The chapter predates matplotlib 2.0, where `viridis` became the default, so its "default" advice is dated. Its grayscale claim is shown by figures, not measured.
 
 ## See Also
 - [[Chart Declutter and Direct Labelling]] — related

@@ -5,6 +5,8 @@ summary: "Each classical supervised family has one knob that sets its complexity
 updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--02-supervised-learning.md
+  - data/raw/papers/2026-11-08-intro-to-ml-with-python-ch02-supervised-learning.md
+  - data/raw/papers/2026-11-08-python-data-science-handbook-ch05-machine-learning.md
 ---
 
 # Supervised Model Families and Complexity Knobs
@@ -49,6 +51,41 @@ Gradient descent iterates with a learning rate; the normal equation is closed fo
 - Reading coefficients as causes: correlated features can flip sign between fits.
 - A convergence warning ignored: coefficients differ with solver or seed; scale or raise `max_iter`.
 
+## One textbook's numbers on the breast-cancer data
+
+Müller and Guido (2016) run each family on the Wisconsin Breast Cancer data (569 rows, 30 features) with 2016-era scikit-learn defaults. The split changes between experiments, so the rows below are not a leaderboard.
+
+| Model and setting | Train | Test | Split |
+|---|---|---|---|
+| Decision tree, grown until pure | 1.000 | 0.937 | stratified, random_state=42 |
+| Same tree, `max_depth=4` | 0.988 | 0.951 | same |
+| Random forest, 100 trees, no tuning | 1.000 | 0.972 | `random_state=0` |
+| Gradient boosting, defaults (100 trees, depth 3, rate 0.1) | 1.000 | 0.958 | `random_state=0` |
+| Gradient boosting, `max_depth=1` | 0.991 | 0.972 | same |
+| Gradient boosting, `learning_rate=0.01` | 0.988 | 0.965 | same |
+| MLP on unscaled features | 0.92 | 0.90 | `random_state=0` |
+| MLP after standardising | 0.991 | 0.965 | same |
+| MLP standardised, `alpha=1`, `max_iter=1000` | 0.988 | 0.972 | same |
+
+For k-NN, test accuracy over `n_neighbors` 1 to 10 (stratified split, `random_state=66`) peaks near six, with one neighbour too complex and ten too simple; the worst setting is about 88%. On small synthetic sets, 3-NN scores 0.86 test accuracy on the 26-point forge classification data and R squared 0.83 on 40 samples of the wave regression data. In a depth-4 tree on the cancer data, "worst radius" carries feature importance 0.727, and importances sum to 1.
+
+A tree regressor fitted to RAM price history before the year 2000 and tested from 2000 on keeps predicting the last training value (a qualitative figure, with the target log-transformed). A weight count shows why networks grow quickly: a binary classifier with 100 inputs and two hidden layers of 100 units has 20,100 weights, and two layers of 1,000 units has 1,101,000, about 50 times more (biases not counted).
+
+The authors advise a few things beyond the table: try 3 or 5 neighbours for k-NN and use it as a baseline; use naive Bayes as a baseline on very large high-dimensional sparse count data, where the multinomial variant usually beats the Bernoulli one on long documents; for boosting, fix the number of trees from the time and memory budget, then search the learning rate, and keep depth at five or less; try a random forest before boosting.
+
+## Baselines first (Python Data Science Handbook)
+
+VanderPlas advises starting with naive Bayes as a fast baseline with few tunable parameters, and turning to SVMs only once simpler methods have fallen short. It is practical advice with no experiment behind it in the chapter.
+
+## Limits
+
+- The chapter reports one train/test split per experiment, with no cross-validation or intervals. A 0.01 accuracy gap on 143 test points is a few samples, and several models make the same four mistakes (its footnote 12).
+- Parameters such as `alpha` and `C` are picked by looking at test scores, and proper tuning is postponed to a later chapter on model evaluation.
+- The kNN and tree figures in the notes above come from a different split than the chapter's (for example an unpruned tree at 0.895 test above, 0.937 in the chapter), so the two sets of numbers are not comparable.
+- The data are small and synthetic to moderate (26 to 569 points); the authors concede that intuition from low dimensions may not transfer.
+- The chapter's API is dated (`load_boston` is gone from scikit-learn 1.2, the MLP `algorithm` argument is now `solver`, the RBF `gamma` default changed), and so is some advice (xgboost "faster at the time of writing", deep-learning library recommendations). Boston Housing is ethically problematic and was removed from scikit-learn.
+- The chapter's text has slips: the Gaussian kernel is written without the minus sign, and the hidden-unit formula reuses the same weights for three units.
+
 ## See Also
 - [[Penalised Linear Models: Ridge, Lasso and Elastic Net]] — extends
 - [[Kernel SVM and the Kernel Trick]] — extends
@@ -56,3 +93,6 @@ Gradient descent iterates with a learning rate; the normal equation is closed fo
 - [[Bias-Variance Decomposition and Model Complexity]] — prerequisite-for
 - [[Kolmogorov-Arnold Networks]] — related
 - [[XGBoost System Design: Sparsity-Aware Splits, Quantile Sketch and Cache-Aware Blocks]] — related
+- [[LDA, QDA and Naive Bayes Generative Classifiers]] — extends
+- [[Cost-Complexity Pruning of Decision Trees]] — extends
+- [[Density Estimators: KDE Bandwidth, GMM Components and the Generative Classifier]] — related

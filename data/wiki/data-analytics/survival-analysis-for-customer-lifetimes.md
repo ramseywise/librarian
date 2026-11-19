@@ -5,6 +5,7 @@ summary: Customer lifetimes are censored, so averaging them is biased; Kaplan-Me
 updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--07-survival-and-event-history.md
+  - data/raw/papers/2026-11-08-islp-ch11-survival-analysis-censored-data.md
 ---
 
 # Survival Analysis for Customer Lifetimes
@@ -18,6 +19,8 @@ A customer still active when the data stop has a lifetime of at least what was s
 ## Cox model and the moving hazard ratio
 
 Cox proportional hazards: hazard = common baseline over tenure x a factor per characteristic; only factors are estimated. A ratio of 0.8 means a 20% lower chance of leaving now at any tenure. Adjusting a welcome-call effect for channel and plan moved it from 0.681 to 0.811, since the called came mostly from stickier channels. The assumption check then failed for the call only (large samples flag tiny departures, so check size, not just p). Splitting tenure into bands showed a ratio of 0.535 in days 0-90 and 1.024, 0.984, 1.076 afterwards: the single 0.81 describes nobody. A single ratio is a weighted average over time and drifts toward 1 the longer people are followed.
+
+A textbook case of the same two shortcuts is in [[Log-Rank Test and Cox Partial Likelihood]]: on 88 brain-tumour patients the Kaplan-Meier chance of surviving past 20 months is 71%, against about 55% when censored patients count as non-survivors and about 68% when they are dropped. The same chapter's publication data show confounding at work: a log-rank p of 0.36 for positive against negative trial results became a Cox hazard ratio of 1.74 once other covariates were in the model. To judge a Cox model, score it on held-out data with the C-index (0.733 on that test half); a censored true time cannot be set beside a predicted one.
 
 ## Time-varying covariates
 
@@ -40,9 +43,14 @@ A downgrade ends time at risk of cancelling. Treating it as censoring pretends t
 - Censoring competing events silently.
 - Reading a hazard ratio as a share of customers saved: 0.53 for three months became about 6 points at a year. Convert to survival; see [[Standardised Survival and Pricing an Intervention]].
 
+## Limits
+
+- ISLP ch. 11 assumes independent censoring, which cannot be checked from the data, and develops only right censoring.
+
 ## See Also
 - [[Standardised Survival and Pricing an Intervention]] — extends
 - [[Shifted Beta Geometric Retention Model]] — related
 - [[Cohort Retention Triangle]] — prerequisite-for
 - [[Regression Covariate Adjustment]] — related
 - [[Matching and Weighting Estimators]] — related
+- [[Log-Rank Test and Cox Partial Likelihood]] — extends

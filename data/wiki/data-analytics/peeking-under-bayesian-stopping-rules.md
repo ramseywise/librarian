@@ -5,6 +5,7 @@ summary: "Bayesian tests are not immune to peeking: a daily P(B > A) > 0.95 rule
 updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--04-bayesian-ab-testing.md
+  - data/raw/papers/2026-11-08-computer-age-statistical-inference-ch03-bayesian-inference.md
 ---
 
 # Peeking Under Bayesian Stopping Rules
@@ -29,6 +30,14 @@ Tightening epsilon to 0.01 points (from 0.05) on the daily row cut no-effect shi
 ## Rule of thumb
 
 An expected-loss threshold, a minimum sample size set in advance, and full weeks. Never describe the test as immune to peeking. The figures depend on effect sizes, traffic and epsilon: rerun the simulation with your own (see [[Multiple Comparisons Corrections]] for the frequentist side).
+
+## The likelihood-principle view
+
+Efron and Hastie (*Computer Age Statistical Inference*, ch. 3) give the frequentist side of the same issue. Setup: one N(theta, 1) observation a month for up to 30 months, testing theta = 0, and declaring significance if either the month-20 or month-30 statistic tops 1.645. The type I error is 0.074 rather than 0.05, yet the Bayesian posterior is unaffected because the likelihood is the same; the data had Z20 = 0.79 and Z30 = 1.66. They make a related claim that selection of the winner among many estimates leaves the likelihood unchanged, with the burden moving to a genuine prior. Their prostate example (6033 genes, 52 patients and 50 controls, largest statistic 5.29): a flat prior gives 5.29, while an empirical Bayes uninformative prior gives 4.11. The authors caution this needs a real prior. The table above shows that a posterior-threshold rule still ships no-effect changes when checked daily.
+
+## Limits
+
+- CASI ch. 3 is expository; the authors concede some subjectivity without real prior information, and that Bayesian immunity to selection bias needs caution with uninformative priors.
 
 ## See Also
 - [[Bayesian A/B Testing with Expected Loss]] — prerequisite-for

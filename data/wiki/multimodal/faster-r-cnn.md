@@ -37,3 +37,4 @@ Ren et al. (arXiv v3, January 2016, extending the NIPS 2015 paper to journal len
 - [[LXMERT]] — extends (consumes 36 detected objects per image)
 - [[Microsoft COCO]] — related (a detection benchmark here)
 - [[ILSVRC ImageNet Challenge]] — related
+- [[R-CNN Region Proposals with CNN Features]] — prerequisite-for

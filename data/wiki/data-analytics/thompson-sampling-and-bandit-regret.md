@@ -6,6 +6,7 @@ updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--03-priors-and-bandits.md
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--04-bayesian-ab-testing.md
+  - data/raw/papers/2026-11-08-practical-statistics-for-data-scientists-ch03-statistical-experiments-significan.md
 ---
 
 # Thompson Sampling and Bandit Regret
@@ -38,6 +39,14 @@ Random pays at a constant rate. Here the plain 95% bound beat Thompson over this
 ## Bandit or fixed test?
 
 Use a bandit when showing a loser is costly, arms change or there are many. Use a fixed-horizon test when you must report an unbiased effect, make a one-off decision or read guardrail metrics: adaptive allocation starves the early-looking-bad arm, so its estimate stays noisy and tends to stay low. A week-long price test with weekend effects confounds timing with price; a fixed split over whole weeks is the honest answer.
+
+## Book framing of bandits
+
+*Practical Statistics for Data Scientists* (chapter 3) describes a multi-arm bandit as a slot machine with several arms standing in for a multi-treatment experiment, and advises bandits when the goal is the best treatment rather than significance. Its epsilon-greedy rule shows A or B by a fair coin with probability epsilon and otherwise the offer with the best response rate so far; setting epsilon to 1 reproduces an ordinary A/B test and 0 is fully greedy. Its illustration, hypothetical, has arm A winning 10, arm B 2 and arm C 4 after 50 pulls per arm.
+
+## Limits
+
+- The chapter describes bandit algorithms and Thompson sampling in outline only, with no regret or simulation results.
 
 ## See Also
 - [[Bayesian A/B Testing with Expected Loss]] — alternative-to (fixed allocation)

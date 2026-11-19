@@ -5,6 +5,7 @@ summary: "Variational inference replaces an intractable posterior with a simple 
 updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--06-bayesian-machine-learning.md
+  - data/raw/papers/2026-11-07-blei-2016-variational-inference.md
 confidence: medium
 ---
 
@@ -29,6 +30,10 @@ One observation x = 2, with x ~ N(z, 1) and z ~ N(0, 1): the log evidence is -2.
 
 Moving q toward the data costs some KL and gains more reconstruction; at the exact posterior the ELBO reaches the log evidence up to Monte Carlo noise. In a real model that gap cannot be measured. The consequence: an ELBO is a bound, and its gap differs across models, so it is not a safe way to rank models; use held-out predictive scores.
 
+## The review's view
+
+Blei, Kucukelbir and McAuliffe (2016) write the ELBO as E[log p(z,x)] minus E[log q(z)] and name the **mean-field family**, where each latent variable has its own independent factor. They say mean-field densities generally understate posterior variance, since the KL(q||p) objective punishes q for covering regions where p is low, and that VI has no exactness guarantee whereas MCMC is asymptotically exact. They advise VI when data are large or many models need quick exploration, MCMC for small data needing precise samples, and add that their relative accuracy is unknown. Their theory is thin, covering one model and one family at a time. The coordinate-ascent algorithm and the minibatch version are on [[CAVI and Stochastic Variational Inference]].
+
 ## Reparameterisation trick
 
 Gradient ascent needs a gradient through a sampling step. Write z = m + s * eps with eps ~ N(0, 1) so the randomness no longer depends on the parameters. Forty noisy gradient steps (step size 0.2) took m from 0 to 1.000, the exact posterior mean.
@@ -49,8 +54,15 @@ ADVI fits one q per model; a variational autoencoder fits one encoder network th
 | Prior | N(0, I); decoding draws from it generates new items |
 | Conditional VAE | condition encoder and decoder on a label to generate a chosen class |
 
+## Limits
+
+- The experiments in Blei et al. are a single simulation and a single image-histogram mixture compared with Stan, which they say is not a definitive VI versus MCMC comparison; their theory is thin.
+- Coordinate-ascent VI finds only local optima, and the ELBO as a model-selection criterion is not justified in theory.
+- Non-conjugate and black-box VI get only brief coverage in that review.
+
 ## See Also
 - [[Expectation-Maximisation for Gaussian Mixtures]] — alternative-to
 - [[MCMC and Metropolis Sampling]] — alternative-to
 - [[Divergences and Non-Centred Parameterisation]] — related (posterior geometry)
 - [[Gaussian Processes and Bayesian Optimisation]] — related
+- [[CAVI and Stochastic Variational Inference]] — extends

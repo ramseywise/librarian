@@ -21,3 +21,4 @@ Use the odds ratio when comparing across studies, the marginal effect when sizin
 ## See Also
 - [[Regression Covariate Adjustment]] — related
 - [[Maximum Likelihood and Estimator Bias]] — prerequisite-for
+- [[LDA, QDA and Naive Bayes Generative Classifiers]] — alternative-to

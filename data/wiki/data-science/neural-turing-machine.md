@@ -2,9 +2,10 @@
 title: Neural Turing Machine
 tags: [data-science, concept]
 summary: "A controller network coupled to a memory matrix through differentiable read and write heads, using content-based and location-based addressing, trained by gradient descent to learn copy, recall and sort; on small synthetic tasks it generalised to longer inputs where an LSTM did not (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-graves-2014-neural-turing-machines.md
+  - data/raw/papers/2026-11-08-fundamentals-of-deep-learning-ch08-memory-augmented-neural-networks.md
 ---
 
 # Neural Turing Machine
@@ -38,7 +39,12 @@ Training used RMSProp on five synthetic algorithmic tasks, compared with a three
 - The extraction notes that descriptions of the learned algorithms (a heap-sort hypothesis, pseudocode for copy) come from inspection and are phrased as belief, not proof.
 - The extraction notes the only baseline is the LSTM, which is much larger in parameters than the NTM on most tasks.
 
+## Textbook account (Fundamentals of Deep Learning, chapter 8)
+
+A later textbook chapter describes the NTM as a controller network (usually an RNN) coupled to an external memory, likened to the brain's working memory. It names two addressing parameters: a key strength, beta, that sharpens near-uniform content-based weights, and an interpolation gate g_t in [0, 1] that mixes the content weighting with the previous step's weighting. The chapter skips the NTM implementation and goes on to the DNC (see [[DNC Memory Allocation and Temporal Links]]).
+
 ## See Also
+- [[DNC Memory Allocation and Temporal Links]] — extends (usage, allocation and link-matrix bookkeeping)
 - [[End-to-End Memory Networks]] — related (a closely related continuous memory; content-only addressing)
 - [[Recurrent Memory Transformer (RMT)]] — related (a later route to external memory over long inputs)
 - [[LSTM Forget-Gate Bias and Vanishing Gradients]] — related (the baseline and one controller)

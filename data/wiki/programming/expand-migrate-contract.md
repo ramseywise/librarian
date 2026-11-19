@@ -2,7 +2,7 @@
 title: "Expand, Migrate, Contract"
 tags: [programming, pattern]
 summary: "A rename, split or type change cannot be one statement because old and new code run together during a rollout; add the new shape, dual write, backfill, verify, move readers, and drop the old shape last, since contract is the one step with no rollback."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--05-quality-and-observability--notes--04-schema-and-data-migrations.md
 ---
@@ -48,3 +48,4 @@ A tool such as Alembic stores a version in a table, finds the gap to the scripts
 - [[Safe DDL Recipes for Defaults, NOT NULL and Indexes]] — prerequisite-for
 - [[Parallel Run and Reconcile at the Grain People Read]] — related
 - [[Re-embedding a Vector Store with a Second Index]] — related
+- [[Clean Code: Tests and Refactoring Discipline]] — related (parallel change at the scale of one class)

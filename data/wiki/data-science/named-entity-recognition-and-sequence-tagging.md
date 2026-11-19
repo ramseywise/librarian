@@ -2,9 +2,11 @@
 title: "Named Entity Recognition and Sequence Tagging"
 tags: [data-science, concept]
 summary: "NER is sequence labelling with BIO tags; a CRF learns tag-transition grammar, closed lists beat models via rules, and evaluation must be entity-level because O dominates tokens."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--03-nlp--notes--05-semantic-analysis-and-ner.md
+  - data/raw/papers/2026-11-08-nlp-with-python-ch07-extracting-information-from-text.md
+  - data/raw/papers/2026-11-08-text-analytics-with-python-ch07-semantic-sentiment-analysis.md
 ---
 
 # Named Entity Recognition and Sequence Tagging
@@ -33,9 +35,17 @@ Setup: 12,000 training and 4,000 test sentences from a corpus of 47,959 sentence
 
 **Domain shift.** A news-trained pretrained tagger on film descriptions (1,000 of them) produced mostly PERSON (1,684) but its ORG list mixed real agencies with fictional characters. A CRF merged "United Kingdom and Canada" into one organisation while the pretrained model split them but missed a company. Neither is uniformly better: test on your own text. Counting entity labels over a corpus is a quick profile of what it is about.
 
+## A stock tagger against a chunker on one paragraph
+
+Sarkar's chapter 7 compares NLTK's `ne_chunk` with the Stanford 3-class CRF tagger (2014 release) on one Wikipedia paragraph of about 110 words about Bayern Munich. Stanford returned 9 entities, none mislabelled, while NLTK returned 14 rows containing several mistakes. The author cautions against reading that as a general ranking, and recommends fitting a tagger of your own to a tagged corpus resembling your text. Judged by eye, with no gold labels.
+
 ## Evaluate at entity level
 
 Exact span and type match (as `seqeval` does), not token level, because O is most tokens. On the same test set the CRF had token accuracy 0.969, an always-O tagger had 0.849, and the always-O entity F1 was 0.0. This is the same trap as a rare-event model that looks accurate by never firing; see [[Text Classification Metrics: Macro-F1, Log-Loss and Calibration]].
+
+## Gazetteer lookup alone
+
+In the NLTK book's extraction chapter, Bird, Klein and Loper caution that a gazetteer by itself misfires, because place names overlap ordinary words and other entity classes (May, North), so context has to back up the lookup. The chapter demonstrates entity recognition only with a gazetteer and a ready-made chunker, and gives no accuracy figure.
 
 ## Pitfalls
 - Splitting by token instead of sentence or document leaks context.
@@ -43,8 +53,14 @@ Exact span and type match (as `seqeval` does), not token level, because O is mos
 - Rare types have low F1 whatever the model: add examples or merge classes.
 - Reaching for a model before a list.
 
+## Limits
+
+- The chapter 7 comparison is one paragraph judged by eye; the textbook code is Python 2 and calls a 2014 Stanford jar through Java.
+
 ## See Also
 - [[Semantic Analysis, WordNet and Lexical Ambiguity]] — related
 - [[Text Preprocessing and the Stop-Word Negation Trap]] — prerequisite-for
 - [[Regularisation as a Prior]] — related (CRF penalties)
 - [[DIET Architecture]] — related (joint intent and slot models)
+- [[N-gram Taggers, Backoff and Brill Transformation Rules]] — prerequisite-for
+- [[NP Chunking with IOB Tags: Regexp, N-gram and Classifier Chunkers]] — prerequisite-for

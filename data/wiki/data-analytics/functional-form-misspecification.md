@@ -5,6 +5,7 @@ summary: "A linear control for a hump-shaped confounder biases the treatment eff
 updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--07-data-generating-process.md
+  - data/raw/papers/2026-11-08-practical-statistics-for-data-scientists-ch04-regression-prediction.md
 ---
 
 # Functional Form Misspecification
@@ -27,7 +28,17 @@ A fitted squared term can have p of about 1e-19 and a peak with a tidy interval 
 
 Plot residuals against each regressor, run the placebo ([[Data Generating Process Simulation Check]]), and compare with a spline.
 
+## Book diagnostics for shape
+
+*Practical Statistics for Data Scientists* (chapter 4, R, King County sales, zip 98105) uses a partial residual plot, the ordinary residual plus the predictor's fitted term, as its main check for nonlinearity after outlier detection. For living area the plot showed the line underestimating below 1,000 square feet and overestimating between 2,000 and 3,000. The authors prefer splines or generalised additive models to high-order polynomials, which become wiggly, and note that spline coefficients are read from plots. They add that rising residual variance for higher-valued homes (heteroskedasticity) can signal a missing predictor, and that the model should not be extrapolated: a 5,000 square foot empty lot got an absurd negative price.
+
+## Limits
+
+- The chapter reports one dataset with R code only, and its equations were stripped from the extracted text.
+
 ## See Also
 - [[Regression Covariate Adjustment]] — related
 - [[Robust Standard Errors]] — related
 - [[Explain vs Predict Modelling]] — related
+- [[Regression Splines, Smoothing Splines and GAMs]] — extends
+- [[Linear Interactions and Centring]] — related

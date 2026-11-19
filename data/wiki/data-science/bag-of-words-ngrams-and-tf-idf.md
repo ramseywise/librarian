@@ -2,9 +2,10 @@
 title: "Bag of Words, n-grams and TF-IDF"
 tags: [data-science, concept]
 summary: "Sparse count and TF-IDF document vectors: how vocabulary controls, n-grams and idf weighting shape features, and why the vectoriser must be fitted inside the training fold."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--03-nlp--notes--01-text-representation.md
+  - data/raw/papers/2026-11-08-intro-to-ml-with-python-ch07-working-text-data.md
 ---
 
 # Bag of Words, n-grams and TF-IDF
@@ -72,6 +73,23 @@ The other route maps tokens to integer ids, pads to a fixed length and lets an e
 | Token-id sequences | Yes | Learned | CNN, RNN, transformer |
 | Sentence embeddings (384 to 1024 dims) | Encoded | Yes | Retrieval, few-shot classification |
 
+## Measurements on IMDb reviews (Müller and Guido)
+
+Setup for all rows: the Maas movie-review set (25,000 training and 25,000 test reviews, balanced), logistic regression, `GridSearchCV` over C, 5-fold CV.
+
+- Default counts give 88% mean CV accuracy; the tuned C=0.1 gives 89% CV and 0.88 test.
+- `min_df=5` leaves CV accuracy at 0.89. Adding `stop_words="english"` trims just 305 further features (27,271 down to 26,966), and CV accuracy slips to 0.88 from 0.89.
+- TF-IDF with `min_df=5, norm=None` in a pipeline gives 0.89; adding bigrams and trigrams with C searched up to 100 gives 0.91 (best range (1,3), C=100).
+- spaCy lemmatization cuts the `min_df=5` vocabulary from 27,271 to 21,596 features. With only 1% of the data for training (five stratified shuffles), best CV accuracy rises from 0.721 to 0.731.
+
+The authors advise stripping HTML such as `<br />` before vectorising, using linear models on high-dimensional sparse counts and tuning C by cross-validation, keeping unigrams and adding bigrams (n-grams to length 5 risk a feature explosion and overfitting), reading the largest coefficients to inspect a text model, and trying lemmatization or stemming for small datasets.
+
+## Limits
+
+- The textbook uses one dataset and one classifier, with CV scores printed to two decimals and no variance, so 0.88 against 0.89 cannot separate `min_df`, stop words or TF-IDF.
+- Cross-validating a `CountVectorizer` outside a pipeline is valid only because its defaults collect no statistics; the author prefers a pipeline.
+- The chapter's code targets old releases of scikit-learn (for example `get_feature_names`) and spaCy 1.x. Word2vec, recurrent networks and transformers are out of scope.
+
 ## See Also
 - [[Text Preprocessing and the Stop-Word Negation Trap]] — prerequisite-for
 - [[Linear Text Classifiers and the TF-IDF Baseline]] — extends
@@ -79,3 +97,4 @@ The other route maps tokens to integer ids, pads to a fixed length and lets an e
 - [[Topic Models and Extractive Summarisation]] — extends
 - [[Pipelines Prevent Preprocessing Leakage]] — related
 - [[Neural Text Models vs TF-IDF]] — related
+- [[Lexical Diversity: Types, Tokens and Conditional Frequency Counts]] — prerequisite-for

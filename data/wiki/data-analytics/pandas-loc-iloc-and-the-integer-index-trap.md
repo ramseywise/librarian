@@ -5,6 +5,8 @@ summary: loc selects by label and iloc by position; they agree only until a filt
 updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--01-python-for-data-analysis--notes--03-indexing-and-selection.md
+  - data/raw/papers/2026-11-08-python-for-data-analysis-ch05-getting-started-pandas.md
+  - data/raw/papers/2026-11-08-python-data-science-handbook-ch03-data-manipulation-pandas.md
 ---
 
 # Pandas loc, iloc and the Integer Index Trap
@@ -24,6 +26,12 @@ A position slice excludes its end, like all of Python: `iloc[0:2]` is two rows. 
 Filtering keeps the original labels, so the labels of a filtered frame have gaps. On a frame filtered to four rows labelled 1, 3, 6, 9, `iloc[1]` returns the row labelled 3, and `loc[0]` raises `KeyError`. Sorting does the same: after sorting by revenue descending, `iloc[0]` is the top row while `loc[0]` is whichever row kept label 0. Remedies: `reset_index(drop=True)` before position work, or never let a default integer label mean anything.
 
 On a Series in pandas 3, a bare integer in brackets always means a label (older versions fell back to position when the index held no integers). With a text index `s[0]` now raises `KeyError`; use `iloc[0]` for the first value.
+
+## What the books say
+
+- McKinney notes that plain `[]` on an integer-indexed axis selects by label, and so advises `loc` or `iloc` for precise handling; he suggests `loc` as a succinct replacement for `reindex`, and says many users use it exclusively. (*Python for Data Analysis*, ch5).
+- VanderPlas recommends `loc` and `iloc` over `[]` or `ix` because `[]` mixes explicit and implicit slicing conventions on integer indexes (*Python Data Science Handbook*, ch3).
+- McKinney also notes duplicate index labels make selection return a Series or a scalar depending on the label, so avoid them where you can (see [[Pandas Index Design, MultiIndex and Reindex]]).
 
 ## Boolean masks
 
@@ -47,6 +55,10 @@ An array is same-typed values with a shape. Selection by position, slice, boolea
 - Forgetting `.loc` slices are end-inclusive.
 - `and`/`or` in a mask.
 - Old `.ix` code: decide whether you meant label or position.
+
+## Limits
+
+- Edition: ch5 targets pandas about 0.20 and ch3 of the Handbook pandas 0.18.1. The extractions list `ix` and `get_value`/`set_value` as removed, and positional fallback for `obj[1]` on a non-integer index as gone in pandas 3 in favour of `iloc`, as this page already says.
 
 ## See Also
 - [[Pandas Copy-on-Write and Chained Assignment]] — related

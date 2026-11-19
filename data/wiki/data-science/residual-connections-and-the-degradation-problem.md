@@ -2,7 +2,7 @@
 title: "Residual Connections and the Degradation Problem"
 tags: [data-science, concept]
 summary: "A block that outputs F(x)+x makes the identity the easy default, fixing the optimisation failure of very deep plain networks (62-layer plain net: train 0.379), and makes blocks optional so stochastic depth can drop them as regularisation."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--04-convolutional-networks.md
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--README.md
@@ -43,3 +43,4 @@ If a deeper model does worse on training accuracy, add residual connections befo
 - [[Pre-Norm vs Post-Norm and Warm-Up]] — related (the same skip path, where the norm sits)
 - [[Transformer Architecture]] — related
 - [[Intrinsic Dimension of Objective Landscapes]] — related (another parameter-count result for deep nets)
+- [[ResNeXt Cardinality in Residual Blocks]] — extends

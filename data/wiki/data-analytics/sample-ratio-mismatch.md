@@ -6,6 +6,7 @@ updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--01-ab-testing.md
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--03-experimentation-at-scale.md
+  - data/raw/papers/2026-11-08-2017-08-kddmetricinterpretationpitfalls.md
 ---
 
 # Sample Ratio Mismatch
@@ -38,6 +39,14 @@ Dirty identifiers are a separate defect: some users appear in both arms or on th
 ## A/A tests
 
 Run the whole pipeline with no change, continuously. About 5% of p-values should fall below 0.05 and they should be uniform (an A/A run gave a false-positive rate of 0.046 with about a tenth in each decile). A mismatch points to a broken variance estimate, usually an analysis unit that differs from the randomisation unit ([[A/B Test Lifecycle and Interval Decisions]]), or a poor assignment hash ([[Experiment Ramps and Overlapping Tests]]). An A/A's variance also sets sample size.
+
+## Metric-level mismatch
+
+Dmitriev and colleagues (KDD 2017, describing their own Microsoft experiments) separate two cases. The user-count version is the chi-square test above; they say it usually signals severe selection bias and advise treating a failure as invalidating the experiment (the authors' own advice). A *metric* sample ratio mismatch is different: the set of events a metric is computed over differs between arms, which usually invalidates that metric. Their example is an MSN.com homepage test where links opened in a new tab: Page Load Time rose 8.32% (p <= 0.05) (self-reported) while treatment had 7.8% fewer homepage loads (self-reported), the dropped loads being faster cached back-button visits. When a metric-level mismatch appears the authors advise splitting the metric into numerator and denominator and then into sub-parts. For segment analysis the authors advise running the SRM test within every segment group, and applying a Bonferroni correction (their own practices, with no independent check).
+
+## Limits
+
+- The paper's examples are single Microsoft experiments with no prevalence data, and experiment sizes and durations are mostly not given.
 
 ## See Also
 - [[A/B Test Lifecycle and Interval Decisions]] — prerequisite-for

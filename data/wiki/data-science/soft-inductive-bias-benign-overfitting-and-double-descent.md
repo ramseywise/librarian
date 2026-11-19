@@ -5,6 +5,7 @@ summary: "Wilson argues that benign overfitting and double descent are not speci
 updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-wilson-2025-deep-learning-not-so-mysterious.md
+  - data/raw/papers/2026-11-08-islp-ch10-deep-learning.md
 ---
 
 # Soft Inductive Bias, Benign Overfitting and Double Descent
@@ -35,6 +36,10 @@ The paper dates double descent to Opper et al. (1989) at the latest, and notes B
 - The bias-variance "trade-off" is a misnomer in Wilson's view, since the order-dependent polynomial and ensembles show a model can have both low bias and low variance. See [[Bias-Variance Decomposition and Model Complexity]].
 - What the paper calls distinctive about neural networks is representation learning, plus universality, in-context learning and mode connectivity, though even these have partial analogues (deep kernel learning, tree-ensemble mode connectivity).
 
+## Double descent in ISLP
+
+ISLP's Chapter 10 reproduces double descent on simulated data (n = 20, Y = sin(X) + eps, X uniform on [-5, 5], sigma = 0.3) with a natural spline of d degrees of freedom. Test error peaks at d = 20 = n, the interpolation threshold where training error reaches zero, and descends again for d > 20 under the minimum-norm solution, the least-squares solution with the smallest sum of squared coefficients. According to the authors, ridge-penalised fits avoid interpolation, show no second descent and test better, and the bias-variance trade-off holds throughout; they advise regularising or stopping early rather than relying on double descent. Wilson's paper, above, calls the trade-off a misnomer.
+
 ## Limits
 
 - Wilson does not say deep learning is fully understood, and calls the reason larger models gain a stronger compression bias an open question.
@@ -42,6 +47,7 @@ The paper dates double descent to Opper et al. (1989) at the latest, and notes B
 - PAC-Bayes bounds are descriptive, and their tightness depends on the prior. Restricting the model (sparsity, parameter sharing) can still save computation; the paper treats computation as free.
 - Almost all evidence is cited or toy-scale: Figs 1 and 5 are the only experiments, giving no new large-scale results and no measure of how loose the language-model bounds are.
 - The extraction could not recover Fig 1 and Fig 5 plot values or the exact penalty formula in Appendix D, and the Fig 1(f) caption names ResNet-18 while the text names CIFAR-100 cross-entropy and the appendix gives only the width sweep.
+- The ISLP double-descent example is a simulation with n = 20, and the chapter was written in early 2020.
 
 ## See Also
 - [[Bias-Variance Decomposition and Model Complexity]] — prerequisite-for

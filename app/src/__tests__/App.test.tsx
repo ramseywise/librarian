@@ -55,6 +55,22 @@ describe("App", () => {
     expect(screen.getByRole("menuitem", { name: "Admin" })).toHaveAttribute("href", "#/admin");
   });
 
+  it("folds the map filters under an open chat and gives them the column when it is hidden", async () => {
+    await renderApp();
+    const toggle = await screen.findByRole("button", { name: /Browse & filter/ });
+    const dock = document.getElementById("app-map-dock")!;
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    expect(dock).toHaveAttribute("hidden");
+    fireEvent.click(toggle);
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
+    expect(dock).not.toHaveAttribute("hidden");
+
+    fireEvent.click(screen.getByRole("button", { name: "Hide Chat" }));
+    expect(screen.getByRole("complementary", { name: "Map filters" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Browse & filter/ })).not.toBeInTheDocument();
+    expect(document.getElementById("app-map-dock")).not.toHaveAttribute("hidden");
+  });
+
   it("sends a signed-out visitor to the login page, keeping where they were", async () => {
     signedIn = false;
     window.location.hash = "#/courses";

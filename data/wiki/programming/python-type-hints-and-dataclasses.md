@@ -2,7 +2,7 @@
 title: Python Type Hints and Dataclasses
 tags: [programming, concept]
 summary: "Type hints are checked by tools, not Python: type every signature (loose in, specific out, `X | None` to force None handling, `object` over `Any`), use Protocols for checker-understood duck typing, frozen dataclasses for trusted internal data, and Pydantic to validate untrusted data at every boundary."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/programming--python--03-language-for-engineers--notes--05-types-and-dataclasses.md
 ---
@@ -103,3 +103,4 @@ truth ([[Structured Output]]). Note that Pydantic's default coercion (`"4"` → 
 - [[TypeScript any Escapes]] — related (`unknown` + narrowing mirrors `object` + `isinstance`)
 - [[Structured Output]] — related (validating LLM output with a schema)
 - [[Programming Curriculum]] — related (course map)
+- [[Clean Code: Objects, Classes and Systems]] — extends (object versus data-structure design)

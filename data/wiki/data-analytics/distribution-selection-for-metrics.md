@@ -41,3 +41,5 @@ The data's distribution is not the statistic's: revenue is not Normal and never 
 - [[Statistical Test Selection]] — related (the distribution picks the test)
 - [[Generalised Linear Models and Deviance]] — related (the distribution is the GLM family)
 - [[Robust Summaries for Skewed Metrics]] — related
+- [[Empirical CDFs for Comparing and Checking Distributions]] — extends (checking a chosen distribution against the sample)
+- [[Maximum Entropy Likelihoods and Link Functions]] — related

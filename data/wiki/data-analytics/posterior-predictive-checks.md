@@ -39,3 +39,5 @@ Every fitted model, on a statistic that is not the fitting objective. Report the
 - [[Prior Choice and Prior Predictive Checks]] — related (the same check before fitting)
 - [[Model Selection Criteria]] — related
 - [[Data Generating Process Simulation Check]] — related
+- [[Predicting from a Posterior as a Mixture]] — extends
+- [[Approximate Bayesian Computation with Summary Statistics]] — related

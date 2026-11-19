@@ -98,3 +98,4 @@ Wilson (*Machine Learning Engineering in Action*, ch10) calls a blind `try`/`exc
 - [[Python Data Model and Idioms]] — prerequisite-for (`__enter__`/`__exit__` are dunders)
 - [[Python Concurrency Models]] — extends (TaskGroup failures surface as ExceptionGroup)
 - [[Programming Curriculum]] — related (course map)
+- [[Clean Code: Error Handling and Boundaries]] — extends (a Java-era argument for exceptions over error codes, and wrapping third-party errors)

@@ -2,9 +2,11 @@
 title: "Choosing k and Naming Clusters Honestly"
 tags: [data-science, pattern]
 summary: "Scale and choose features before clustering, expect BIC, silhouette and seed agreement to disagree on k, shuffle columns as a null check, and only name clusters that survive reseeding."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--05-unsupervised-learning.md
+  - data/raw/papers/2026-11-08-practical-statistics-for-data-scientists-ch07-unsupervised-learning.md
+  - data/raw/papers/2026-11-08-islp-ch12-unsupervised-learning.md
 ---
 
 # Choosing k and Naming Clusters Honestly
@@ -39,8 +41,24 @@ Name from the features, use the taxonomy as evidence, and only name clusters who
 
 Binary model per playlist (26 playlists, five-fold twice, scaler and mixture refit per training fold): AUC 0.870 and P@10 0.397 against a 0.038 base rate, but non-members are tracks in other playlists, so it measures filing, not taste. Cluster posteriors add nothing (AUC change -0.001); the proxy columns beat audio by 0.050. A feature that is the mean audio of a track's playlist leaks to AUC 1.000. Zero meaning "not on the map" (266 tracks) must be treated as missing. A previously recorded 0.954 AUC rebuilt to 0.947 on a smaller population: a check, not a reproduction.
 
+## Book examples on scaling and number of clusters
+
+Chapter 7 of *Practical Statistics for Data Scientists* (R) shows the scaling point on loan data: unscaled K-means (4 centers, 10 starts, 6 numeric variables) produces a single very small cluster driven by income and revolving balance (sizes 55, 1,218, 7,686 and 14,177), while z-scoring first gives much more balanced sizes. K-means on z-scored dummy variables gives clusters that only proxy the factor levels. The authors advise choosing K from practical considerations first, using the elbow method or gap statistic only as aids, inspecting cluster sizes (imbalance may mark outliers), and checking whether clusters replicate on new data. They concede that for noisy data the three families (K-means, hierarchical, model-based) can return very different solutions and that no rule of thumb picks between them.
+
+## K-means starts, scaling and stability in Introduction to Statistical Learning
+
+- K-means reaches only a local optimum, since an exact search over almost K to the n partitions is infeasible. On 150 simulated points with K = 3, six random starts gave objective values of 235.8 (best), 310.9 and 320.9. In the lab, one start gave inertia 78.06 against 75.04 for 20 starts, and the authors advise 20 or 50 starts with a fixed random_state.
+- Scaling to a standard deviation of 1 changes the clusters: with socks and computers, unscaled Euclidean distance follows socks and a dollars version follows computers. They advise correlation distance for shoppers, since Euclidean would group low-volume buyers.
+- Clusters are fragile: refitting on a random subset of rows often returns different groups, so the authors vary the scaling and linkage and cluster subsets. On NCI60 (64 cell lines, 6,830 genes) four-cluster K-means and complete linkage disagree apart from one nine-line cluster. In the complete-linkage cut alone, the leukemia lines fall in one cluster while the breast lines spread over three.
+
+## Limits
+
+- The chapter's results are single worked examples with no repeats or error bars, and its code is R.
+- Introduction to Statistical Learning ch12: unsupervised results have no accepted cross-validation or test set to validate them; every point is forced into some cluster, which lets outliers distort it; the NCI60 genes were scaled though the authors call that arguable; and the book defers cluster p-values to another text.
+
 ## See Also
 - [[Clustering Algorithms: k-means, Agglomerative and DBSCAN]] — prerequisite-for
 - [[Clustering Validation Against Named Baselines]] — related
 - [[Mixture Models and Label Switching]] — related
 - [[Model Selection Criteria]] — related
+- [[Clustering Stability and Symmetry]] — related (reseeding agreement does not by itself indicate the right k)

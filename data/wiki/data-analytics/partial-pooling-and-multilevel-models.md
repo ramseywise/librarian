@@ -5,6 +5,8 @@ summary: "A multilevel model estimates every group together so each borrows stre
 updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--07-multilevel-models-and-partial-pooling.md
+  - data/raw/papers/2026-11-08-statistical-rethinking-ch12-multilevel-models.md
+  - data/raw/papers/2026-11-08-statistical-rethinking-ch01-golem-prague.md
 ---
 
 # Partial Pooling and Multilevel Models
@@ -44,12 +46,34 @@ A linear MixedLM and a non-centred PyMC model ([[Divergences and Non-Centred Par
 
 Tau is estimated from groups, so the number of groups is its sample size. With true tau 6.0, REML over 300 datasets: 3 groups median 5.06, 5th to 95th percentile 0.00 to 15.53, 11% at zero; 5 groups 0.00 to 10.87, 8% at zero; 8 groups 1.31 to 9.91; 20 groups 3.25 to 8.02; 50 groups 4.67 to 7.34. At zero everything is pooled completely. For five groups MixedLM gave tau 2.52 as a bare number, PyMC 3.91 with 90% interval 0.37 to 9.74, so the Bayesian interval states the real ignorance (and had one divergence).
 
+## Varying intercepts in Statistical Rethinking
+
+McElreath (first edition, chapter 12) calls models whose parameters are independent across clusters, forgetting earlier clusters as they go, anterograde-amnesia models, and advises making multilevel regression the default: start multilevel and simplify only if it proves unnecessary. Chapter 1 adds that a paper that skips multilevel modelling owes readers a justification. Fit with MCMC (`map2stan`), because the quadratic approximation cannot handle these models.
+
+- Reed frog tadpoles (48 tanks, binomial survival): the varying-intercept model m12.2 uses roughly 38 effective parameters of 50 nominal and beats the fixed-intercept model m12.1 by 13.1 WAIC. The SD across tanks is about 1.6. Every tank's multilevel estimate lies nearer the grand mean than its raw proportion, with the strongest shrinkage for small tanks (sizes 10, 25 and 35) and for tanks far from that mean.
+- Simulated ponds (true alpha 1.4 and sigma 1.5; 60 ponds, 15 at each size n = 5, 10, 25 and 35; one data set, one chain): on average partial pooling has lower error than no pooling at every size, and the advantage widens as ponds shrink (read qualitatively from a figure); some small ponds have no-pooling errors over 20%. Ponds with extreme survival probabilities are the exception, where no pooling can do better. The fit estimates sigma as 1.59 (SD 0.22) against a true value of 1.5 and alpha at 1.13 (SD 0.23) for a true 1.4.
+- Chimpanzees (7 actors, 6 blocks, cross-classified): adding block intercepts adds 7 parameters but about 2.5 effective ones (pWAIC 10.5 against 8.1), and the WAIC difference between the actor-only and actor-plus-block models is 1.2 with dSE 1.94. Variation among actors (sigma 2.25, sd 0.90) far exceeds that among blocks (0.22, sd 0.18). Three divergent iterations appeared; the author calls them safe to ignore at that stage and defers them to the next chapter.
+- Over-dispersion: a varying intercept per observation handles it in Poisson or binomial models; the Kline model m12.6 has 13 parameters for 10 societies and about 5 effective ones.
+- Exponential(1) is advised over half-Cauchy for the variance when there are few clusters (such as 5) or floor and ceiling effects. For a new cluster, simulate intercepts from Normal(0, sigma) for each posterior sample.
+
+Slopes that vary too are in [[Varying Slopes and the LKJ Correlation Prior]].
+
 ## When it does not help
 
 Well-measured groups: ratio of pooled to raw RMSE 0.93, 0.99 when groups truly differ. A true outlier and the wrong centre are covered in [[Partial Pooling for Segment Winners]]. Questions about only the population average need nothing this heavy: [[Multilevel vs Fixed Effects vs Clustered Standard Errors]].
+
+## Limits
+
+- Statistical Rethinking material above: first-edition code, a single simulation setting and draw, and no numeric errors printed for the pond comparison.
 
 ## See Also
 - [[Small-N Trap and Shrinkage]] — prerequisite-for
 - [[Partial Pooling for Segment Winners]] — extends
 - [[Multilevel vs Fixed Effects vs Clustered Standard Errors]] — alternative-to
 - [[Pseudoreplication and Intraclass Correlation]] — related
+- [[Varying Slopes and the LKJ Correlation Prior]] — extends
+- [[Linear Interactions and Centring]] — related
+- [[Grid Posteriors Over Several Parameters]] — related (a two-level grid model)
+- [[James-Stein Estimator and Shrinkage]] — extends
+- [[Robbins Empirical Bayes Formula]] — related
+- [[Empirical Bayes: Tweedie's Formula and g-Modeling]] — related

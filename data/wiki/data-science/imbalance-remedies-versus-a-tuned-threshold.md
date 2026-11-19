@@ -8,6 +8,7 @@ sources:
   - data/raw/papers/2026-11-08-chawla-2002-smote.md
   - data/raw/papers/2026-11-08-elor-2022-to-smote-or-not.md
   - data/raw/papers/2026-11-08-van-den-goorbergh-2022-harm-class-imbalance-corrections.md
+  - data/raw/papers/2026-11-08-practical-statistics-for-data-scientists-ch05-classification.md
 ---
 
 # Imbalance Remedies Versus a Tuned Threshold
@@ -40,6 +41,12 @@ SMOTE as trained gave mean PD 0.272 (0.305 over seeds) on a 3.0% book, calibrati
 ## Limits
 
 The numbers above come from the course note's thinned card-default book and its seeds. The three papers add: Elor et al. test binary tabular data only, and one of their classifiers is labelled strong in the abstract and weak in the body; van den Goorbergh et al. test only standard and ridge logistic regression, with a single 20%-prevalence case study; Chawla et al. report no probability metric and pick the best SMOTE amount on the cross-validation results they report.
+
+- The Practical Statistics ch05 base rate is about 5% against 3% in the course note's thinned book, it is a single run in R, and it describes SMOTE and cost-based classification without numbers or code.
+
+## Book chapter on loan data
+
+In chapter 5 of *Practical Statistics for Data Scientists* (R, loan data with a default rate of about 5%), a logistic model trained on a balanced set labels roughly half the loans as defaults, while the same kind of model trained on all the data labels almost none. Weighting defaulted loans by 1/p (p the default share) restores the predicted default share. The authors advise undersampling the prevalent class when there are tens of thousands of rare-class records and otherwise oversampling, bootstrapping or weighting, and describe weighting as a simple means of altering the loss for the rare class.
 
 ## See Also
 - [[SMOTE: Synthetic Minority Over-sampling]] — extends

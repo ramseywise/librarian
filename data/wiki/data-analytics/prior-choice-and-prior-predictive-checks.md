@@ -7,6 +7,8 @@ sources:
   - data/raw/papers/2026-11-06-gelman-2009-weakly-informative-default-prior-distribution.md
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--03-priors-and-bandits.md
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--04-bayesian-ab-testing.md
+  - data/raw/papers/2026-11-08-think-bayes-ch03-estimation.md
+  - data/raw/papers/2026-11-08-computer-age-statistical-inference-ch03-bayesian-inference.md
 ---
 
 # Prior Choice and Prior Predictive Checks
@@ -56,13 +58,27 @@ Data contribute more to the log-likelihood as N rises while the log-prior stays 
 
 On a first day of 42 against 58 conversions per 900 visitors, a flat prior reported a 1.77-point lift with P(B > A) 0.950; a Beta(500, 9500) prior reported 0.15 points and 0.689. On the full test all agreed on the decision. Use the same prior for both arms (see [[Bayesian A/B Testing with Expected Loss]]).
 
+## Sensitivity to a prior's bounds
+
+Downey's *Think Bayes* (ch. 3) tests this with the locomotive problem: one train numbered 60 is seen, the likelihood is 1/N for N at least 60, and the prior is uniform on fleet size. A bound of 1000 gives posterior mean 333; bounds of 500 and 2000 give 207 and 552. Once trains 30, 60 and 90 have all been seen, a uniform prior gives means of 152, 164 and 171 for bounds 500, 1000 and 2000, while a power-law prior (weight proportional to N to the minus alpha, alpha 1) gives 131, 133 and 134, and a 90% credible interval of (91, 243). Downey advises testing sensitivity to the bounds when data are scarce and favours informative priors, reasoning that abundant data make the prior nearly irrelevant, whereas with scarce data background knowledge changes the answer a lot. In the same chapter, in the dice version, seven rolls leave the 8-sided die at 0.943 among a box of five dice. Ruggles and Brodie's 1947 analysis of German tank serial numbers, reduced to the locomotive problem within blocks of 100, is reported to have produced estimates much lower than other intelligence, and closer to the postwar truth.
+
+## Jeffreys versus flat (Efron and Hastie, 2016)
+
+Efron and Hastie argue for Jeffreys' prior over Laplace's flat one because it transforms correctly under reparametrisation. It is proportional to the square root of the Fisher information; for the Poisson family the information is 1/theta. A prior flat in theta is not flat in exp(theta), so the probabilities of theta exceeding 0 and of phi = exp(theta) exceeding 1 change with the scale chosen as uniform, which they say makes Laplace's principle inconsistent. The joint Jeffreys prior for 10 independent normal means (unit variance) is flat, which they warn can give disastrous overall results (taken up in their chapter 13). In their student example (22 students, two test scores, sample correlation 0.498, bivariate normal, Jeffreys prior 1/(1 - theta^2)) the 95% credible interval for the correlation is [0.093, 0.750], nearly the same as the Neyman confidence interval. The flat, Jeffreys and triangular priors yield different posteriors in that example; the flat and triangular posteriors are shown only as curves.
+
 ## Failure modes
 
 - Fitting the prior on the same data.
 - Zero mass where the truth could be.
 - Calling a wide prior uninformative without simulating outcomes.
 
+## Limits
+
+- The locomotive model is a toy: one company only, each locomotive equally probable as a sighting, and a prior bound of 1000 that is arbitrary.
+- Efron and Hastie grant that without genuine prior information some subjectivity hangs over Bayesian results; the flat and triangular posteriors in their correlation example are shown only as curves.
+
 ## See Also
 - [[Beta-Binomial Updating and Credible Intervals]] — prerequisite-for
 - [[Regularisation as a Prior]] — extends (penalties as priors)
 - [[Small-N Trap and Shrinkage]] — related (an informative prior as shrinkage)
+- [[Bayesian Measurement Error and Imputation]] — related

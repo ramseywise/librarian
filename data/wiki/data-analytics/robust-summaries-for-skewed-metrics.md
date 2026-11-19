@@ -6,6 +6,8 @@ updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--01-descriptive-statistics-and-eda.md
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--README.md
+  - data/raw/papers/2026-11-08-practical-statistics-for-data-scientists-ch01-exploratory-data-analysis.md
+  - data/raw/papers/2026-11-08-think-stats-ch06-operations-distributions.md
 ---
 
 # Robust Summaries for Skewed Metrics
@@ -31,9 +33,21 @@ That comparison is the most reliable outlier detector: when mean and median, or 
 
 A histogram of the raw column shows a long right tail; on a log10 scale the same data were near symmetric, which says the spend is roughly lognormal (skewness 5.1 raw, about 0 on the log scale). Compare on the log scale when you care about multiplicative change. The empirical CDF has no bins to choose and reads as sentences ("61% of orders are at most 50").
 
+## Skewness measures
+
+Think Stats (chapter 6) defines sample skewness as g1 = m3 / m2^(3/2), with m2 the mean of squared deviations and m3 the mean of cubed ones, and Pearson's median skewness as gp = 3 (mean - median) / sigma. The text says gp is robust to outliers and g1 is not, and advises avoiding g1 when outliers exist, comparing mean and median or using gp instead. The chapter is a short textbook passage with no empirical results.
+
 ## Pearson against Spearman
 
 Pearson correlation is linear and as outlier-sensitive as the mean. One bad row among 500 flipped a Pearson correlation from +0.44 to -0.31, while Spearman (on ranks) moved from +0.42 to +0.41. Compute both; if they disagree, plot. A correlation near zero rules out only a straight-line relationship.
+
+## Book example: state populations
+
+In chapter 1 of *Practical Statistics for Data Scientists* (R, 2010 census population of the 50 states) the mean exceeds the 10% trimmed mean, which exceeds the median. The standard deviation is almost twice the median absolute deviation, which R scales by 1.4826 so that it matches the standard deviation under a normal distribution. A population-weighted median of state murder rates comes out about the same as the weighted mean, and state murder rates have a median of 4 per 100,000, a 5th percentile of 1.6 and a 95th percentile of 6.51. For hundreds of thousands of records the authors advise hexagonal binning or contours over scatterplots (their King County subset has 432,733 records).
+
+## Limits
+
+- The book's code is R only and its formulas are images; dataset sizes are mostly not stated, and Spearman and Kendall correlation are only mentioned.
 
 ## See Also
 - [[EDA Audit Loop]] — related (where these summaries are chosen)
@@ -41,3 +55,5 @@ Pearson correlation is linear and as outlier-sensitive as the mean. One bad row 
 - [[Statistical Test Selection]] — related (rank tests for the same skew problem)
 - [[CLT on Heavy-Tailed Metrics]] — related (skew also slows the central limit theorem)
 - [[Matplotlib Object Model and Seaborn Function Levels]] — related (box plots on a log scale for skewed values)
+- [[Empirical CDFs for Comparing and Checking Distributions]] — related
+- [[Pearson, Spearman Correlation and R-Squared]] — related

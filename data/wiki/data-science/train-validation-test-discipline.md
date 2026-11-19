@@ -7,6 +7,8 @@ sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--01-statistical-foundations.md
   - data/raw/papers/2026-11-06-varma-2006-bias-error-estimation-when-using.md
   - data/raw/papers/2026-11-08-intro-to-ml-with-python-ch05-model-evaluation-improvement.md
+  - data/raw/papers/2026-11-08-intro-to-ml-with-python-ch01-introduction.md
+  - data/raw/papers/2026-11-08-intro-to-ml-with-python-ch08-wrapping-up.md
 ---
 
 # Train, Validation and Test Discipline
@@ -34,6 +36,18 @@ In the book chapter's iris example (150 samples, SVC tuned over a 6x6 grid of C 
 
 The chapter example is one small dataset on a single split, and the 92% and 97% figures carry no variance. Varma and Simon's evidence is synthetic microarray-shaped data (40 samples, 6,000 features).
 
+The first-model numbers come from one seed with k=1, no interval, cross-validation or tuning, and the chapter never states the mathematical assumptions behind reading the 97% as expected accuracy on unseen irises. The book also does not cover stratified splitting, preprocessing leakage or class-imbalance pitfalls in accuracy, and its code is dated (an early scikit-learn 0.18 era). The closing chapter reports no data, dates from about 2016, gives online testing one paragraph without a sample size, run length, significance test or guardrail metrics, and offers no cost criteria for build against buy.
+
+## The first split in the textbook
+
+Müller and Guido's opening example splits the 150-sample Iris data by default into 112 training and 38 test rows (`random_state=0`), and a 1-nearest-neighbour classifier scores 0.97 on the held-out part. They give the 25% test share as a rule of thumb and call the exact size somewhat arbitrary. They shuffle before splitting because Iris is sorted by label, so the last 25% would hold only class 2, and they fix `random_state` for reproducibility. `X` is a 2-D array of samples by features, `y` is 1-D, and `predict` needs a 2-D array even for one sample.
+
+## Beyond the held-out test: framing and shipping
+
+The closing chapter of the same book is advice with no experiments. Its authors suggest measuring success against a business metric where possible and otherwise bounding the value by imagining a perfect model: in their fraud example, a flawless model saving only $100 monthly is not worth starting, whereas one saving tens of thousands could be. They suggest letting an algorithm handle the easy cases and routing the uncertain ones to people (an illustrative 10% automated is said to be enough to cut response time or cost), and treating modelling as one loop with data collection and error analysis, since collecting more or different data, or recasting the task, may beat further grid searching.
+
+After offline evaluation on the held-out set they add online testing. In an A/B test a portion of users get algorithm A and the rest B without being told, chosen metrics are tracked over a fixed period, and the winner is selected; typically A is the candidate and B the incumbent. They mention bandit algorithms as a more elaborate form. For production they advise weighing reliability, predictability, runtime and memory, asking of each pipeline step what complexity it adds, and scaling in this order: more memory or a rented machine, then learning from chunks on one machine, and a cluster last. See [[A/B Test Lifecycle and Interval Decisions]] for the test itself.
+
 ## Read every score against the base rate
 
 On the adult census income table (32,561 rows, target is income over 50k), 0.759 of rows are "<=50K". Always guessing that class is right about three times in four, so accuracy must be read against that number, not against zero. A sensible-looking rule, "predict >50K if `education-num` >= 13", scores 0.752 accuracy, below the baseline. Print the class proportions before fitting anything.
@@ -48,3 +62,6 @@ Every scikit-learn estimator follows `fit`, then `predict` / `transform` / `scor
 - [[Tabular ML Leakage Taxonomy]] — related
 - [[Prechelt's Stopping Criteria: GL, PQ and UP]] — related (validation rows used only for stopping)
 - [[ImageNetV2 and the Adaptivity Gap in Test-Set Reuse]] — extends
+- [[A/B Test Lifecycle and Interval Decisions]] — extends
+- [[Model Rollout: Shadow, Canary and A/B]] — related
+- [[N-gram Taggers, Backoff and Brill Transformation Rules]] — instance-of

@@ -6,6 +6,8 @@ updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--04-model-evaluation.md
   - data/raw/papers/2026-11-08-intro-to-ml-with-python-ch05-model-evaluation-improvement.md
+  - data/raw/papers/2026-11-08-practical-statistics-for-data-scientists-ch05-classification.md
+  - data/raw/papers/2026-11-08-islp-ch04-classification.md
 ---
 
 # Classification Metrics, Confusion Matrix and Thresholds
@@ -42,14 +44,25 @@ Adult census example (base rate 0.241 positives): dummy accuracy 0.759, model 0.
 
 On the same 9-vs-rest digits task (test n=450: 403 negative, 47 positive), the chapter reports a confusion matrix for logistic regression (C=0.1) with 401 true negatives, 2 false positives, 8 false negatives and 39 true positives, and precision 0.95, recall 0.83 and F1 0.89 for the 'nine' class. F1 for the majority-class model was 0.00, for a dummy 0.10, for the depth-2 tree 0.55, and for logistic regression 0.89; the chapter says F1 separates models that accuracy barely distinguishes. On 10-class digits, logistic regression had accuracy 0.953, micro F1 0.953 and macro F1 0.954. Lowering an SVC threshold from 0 to -0.8 on blobs (400 vs 50, test n=113) moved class-1 recall from 0.67 up to 1.00 while precision slipped from 0.35 to 0.32. The authors advise choosing the metric closest to the business goal, comparing against a dummy baseline, tuning the threshold on validation data and fixing an operating point such as 90% recall, and passing scoring= to GridSearchCV so selection uses that metric.
 
+## Default-data confusion matrices from Introduction to Statistical Learning
+
+Chapter 4 of *An Introduction to Statistical Learning* uses a simulated Default set (10,000 people, 333 defaulters, about 3%). Always predicting no default errs 3.33% of the time. LDA at a 0.5 threshold errs 2.75% but misses 252 of the 333 defaulters (true negatives 9,644, false negatives 252, false positives 23, true positives 81; sensitivity 24.3%, specificity 99.8%). Dropping the threshold to 0.2 shrinks the share of defaulters missed from 75.7% to 41.4% (matrix 9,432, 138, 235, 195) but raises overall error to 3.73%. The ROC AUC is 0.95 and logistic regression's curve is almost the same. On the Caravan data (1,000 test rows) a logistic model at 0.5 predicts no buyers, while at a threshold of 0.25 it flags 29 and 31% of them buy. The authors' point is that overall error hides what a rare-class model does.
+
+## Rare classes in the other book
+
+Chapter 5 of *Practical Statistics for Data Scientists* (R, loan data) warns that a model predicting no purchase for a 0.1% purchaser rate is 99.9% accurate and useless (hypothetical web store), and recommends adding precision, recall, specificity, the ROC curve with its AUC, and lift once a class is rare. Lift is how well the model finds rare positives at different cutoffs; a top decile with 0.3% response against 0.1% at random has a lift of 3. Reading the ROC curve of its loan model, recall is about 75% at a specificity of at least 50%. The authors advise lowering the cutoff to find a rare class, and picking the cutoff from cost-based expected return rather than accuracy or AUC.
+
 ## Limits
 
-- The chapter's examples are small and single-split, with neither variance nor significance tests on the metric comparisons; calibration and costs get only a mention, and regression metrics get one paragraph.
-- Its prose and output disagree: the dummy F-score is 0.13 in prose and 0.10 in the output.
-- Its code uses an older scikit-learn API (for example 'mean_squared_error' scorer names, where current names are neg_mean_squared_error).
+- Introduction to Machine Learning with Python ch05: the examples are small and single-split, with neither variance nor significance tests on the metric comparisons; calibration and costs get only a mention, and regression metrics get one paragraph.
+- Same chapter: its prose and output disagree: the dummy F-score is 0.13 in prose and 0.10 in the output.
+- Same chapter: its code uses an older scikit-learn API (for example 'mean_squared_error' scorer names, where current names are neg_mean_squared_error).
+- Practical Statistics ch05: numbers quoted in its text for the confusion matrix disagree with the matrix it prints, and its ROC curve was computed on training predictions, so the roughly 75% recall at a specificity of at least 50% comes from a training-set ROC. The chapter's code is R only.
+- Introduction to Statistical Learning ch04: the Default data is simulated with an exaggerated balance-to-default link, as the authors say, and its matrices are computed on the 10,000 training rows, so the error rates are optimistic. The Caravan precision rests on a small flagged count (29).
 
 ## See Also
 - [[Precision-Recall vs ROC and Average Precision]] — extends
 - [[Probability Calibration and Reliability Curves]] — extends
 - [[Choosing a Metric From the Cost of Errors]] — extends
 - [[Calibrated Score, Deterministic Decision Rule]] — related
+- [[LDA, QDA and Naive Bayes Generative Classifiers]] — related

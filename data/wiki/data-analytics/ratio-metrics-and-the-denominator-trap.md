@@ -5,6 +5,7 @@ summary: "When treatment can change a ratio's denominator, the ratio can fall wh
 updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--02-metrics-and-kpi-design.md
+  - data/raw/papers/2026-11-08-2017-08-kddmetricinterpretationpitfalls.md
 ---
 
 # Ratio Metrics and the Denominator Trap
@@ -29,6 +30,14 @@ Choose deliberately and write it into the definition.
 ## Standard error
 
 Sessions are not independent: the user is the unit. For the ratio of averages, linearise with the [[Delta Method for Ratio Metrics]]. On the example, the delta-method SE was 0.0490, a user-level bootstrap 0.0491 ([[Bootstrap Resampling and Its Failures]]), and the naive per-session formula 0.0282, about 40% too small. With the proper SE, neither ratio version of the revenue-per-session decline was significant (p = 0.2010 and 0.2743), while conversion was clearly up (p = 0.0033) and revenue per user had the right sign but was too noisy (p = 0.1450).
+
+## What the 2017 Microsoft paper adds
+
+The module-move and new-tab cases above are examples from Dmitriev and colleagues' KDD 2017 paper on metric pitfalls; for the module move they report the denominator (module impressions) up 200% (self-reported) and the numerator (clicks) up 74% (self-reported), with users balanced. Their practices: always report the numerator and denominator counts beside a ratio, prefer the average of per-user ratios to the ratio of averages, and give each client event a data-quality loss-rate metric measured against a server event or sequence numbers, favouring server-side events. A separate Windows Store example showed a 10% rise in views (self-reported) that came from misconfigured pages showing no content.
+
+## Limits
+
+- The paper's examples are single Microsoft experiments with no aggregate prevalence data, and the authors say the twelve pitfalls are not a complete list.
 
 ## See Also
 - [[OEC, Guardrails and North Star Metrics]] — related

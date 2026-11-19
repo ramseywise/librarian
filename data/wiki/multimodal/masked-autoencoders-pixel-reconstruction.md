@@ -35,3 +35,4 @@ MAE starts from the observation that images are spatially redundant, so a very h
 - [[Contrastive Self-Supervised Pretraining]] — related
 - [[MaskGIT Masked Generative Image Transformer]] — related (masked prediction over image tokens)
 - [[SAM 2 Promptable Video Segmentation]] — related (uses an MAE-pretrained Hiera encoder)
+- [[ConvNeXt and ConvNeXt V2 Modernising a ResNet]] — extends

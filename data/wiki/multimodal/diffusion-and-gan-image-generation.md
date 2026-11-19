@@ -104,3 +104,4 @@ Several extractions flag weak evidence: ControlNet, InstructPix2Pix and Prompt-t
 - [[StyleCLIP Text-Driven StyleGAN Editing]] — instance-of
 - [[Improved Techniques for Training GANs]] — instance-of
 - [[LPIPS Perceptual Similarity]] — instance-of
+- [[DCGAN Architectural Constraints for Stable GANs]] — instance-of

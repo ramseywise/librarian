@@ -2,9 +2,10 @@
 title: "Gradient Checking with Finite Differences"
 tags: [data-science, pattern]
 summary: "A centred finite difference gives a slow but independent estimate of every gradient; the relative difference to backprop separates a correct implementation (about 9e-11) from a planted 10% error (about 0.05), and the check is switched off in training."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--01-neural-networks-fundamentals.md
+  - data/raw/papers/2026-11-08-fundamentals-of-deep-learning-ch02-training-feed-forward-neural-networks.md
 ---
 
 # Gradient Checking with Finite Differences
@@ -36,6 +37,15 @@ On a small network trained on the two-moons data: correct backprop gave 9.1108e-
 Random initial weights are needed so hidden units differ; zero initialisation leaves every unit in a layer computing the same thing. See [[Weight Initialisation and Activation Scale]] for what scale to use.
 
 Autograd removes the backprop code, not the need to understand it: a PyTorch network given the NumPy weights reproduced the NumPy gradients to 6.9388e-17. See [[PyTorch Training Loop Silent Bugs]] for the failures that remain once autograd does the backward pass.
+
+## Backpropagation as a textbook derives it (Fundamentals of Deep Learning, chapter 2)
+
+The textbook defines backpropagation as dynamic programming that works out the error derivatives one layer at a time, starting at the output: at the output dE/dy_j = -(t_j - y_j), and each lower layer sums the weighted, sigmoid-scaled derivatives of the layer above (a sigmoid's derivative is y(1 - y)). It starts from the delta rule for a linear neuron and distinguishes batch, stochastic and minibatch gradient descent by how many examples feed each gradient. It folds the bias in as a weight on a constant input of one.
+
+## Limits
+
+- The derivations handle only sigmoid neurons with squared error and without a bias term; the softmax and cross-entropy, ReLU and tanh cases are left as exercises or deferred.
+- The chapter is conceptual, with no experiments and no benchmark numbers.
 
 ## See Also
 - [[PyTorch Training Loop Silent Bugs]] — related (the next layer of silent failures)

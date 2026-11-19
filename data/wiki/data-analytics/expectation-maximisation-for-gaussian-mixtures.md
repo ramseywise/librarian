@@ -5,6 +5,7 @@ summary: "EM fits a mixture by alternating soft cluster assignments (E-step) wit
 updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--06-bayesian-machine-learning.md
+  - data/raw/papers/2026-11-08-computer-age-statistical-inference-ch09-survival-analysis-em-algorithm.md
 ---
 
 # Expectation-Maximisation for Gaussian Mixtures
@@ -38,7 +39,20 @@ Fitting three clusters of 150, 100 and 50 points (variances 1.0, 0.5 and 2.0) fr
 
 EM suits a fast point fit; use MCMC when you need uncertainty on the parameters. EM is the special case that gives up the posterior over parameters but keeps latent-variable inference; [[Variational Inference and the ELBO]] keeps an approximate posterior instead.
 
+## Fake-data view and missing values
+
+Efron and Hastie (*Computer Age Statistical Inference*, ch. 9) present EM for missing data. The E step fills each missing value with its conditional expectation under the current estimate and the M step applies the ordinary complete-data maximum likelihood formulas. Their fake-data principle: complete data simulated from the fitted conditional law of the missing part do not move the maximum likelihood estimate, so the estimate is self-consistent. The Kaplan-Meier curve is self-consistent in this sense (each censored case's mass is redistributed to the right along the curve and the curve stays the same), which makes it the nonparametric maximum likelihood estimate of a survival function.
+
+Setup: bivariate normal, 40 observations with 20 of the x2 values missing and initialised at 0. EM reaches correlation 0.823 (mu2 1.064, sigma2 .769) but slowly, in about 20 iterations; the first step gives 0.162.
+
+## Limits
+
+- CASI ch. 9: EM convergence can be sluggish, as in the missing-data example.
+
 ## See Also
 - [[Mixture Models and Label Switching]] — prerequisite-for
 - [[Variational Inference and the ELBO]] — alternative-to
 - [[Maximum Likelihood and Estimator Bias]] — related
+- [[Log-Rank Test and Cox Partial Likelihood]] — related (Kaplan-Meier self-consistency)
+- [[CAVI and Stochastic Variational Inference]] — related
+- [[Density Estimators: KDE Bandwidth, GMM Components and the Generative Classifier]] — extends

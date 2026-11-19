@@ -6,6 +6,8 @@ updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--01-descriptive-statistics-and-eda.md
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--README.md
+  - data/raw/papers/2026-11-08-think-stats-ch01-statistical-thinking-programmers.md
+  - data/raw/papers/2026-11-08-think-stats-ch02-descriptive-statistics.md
 ---
 
 # EDA Audit Loop
@@ -23,6 +25,17 @@ The loop: load and type-check, then look for missing, impossible and duplicate v
 - **Treat missing values as data.** Compare the missing and non-missing groups on other columns before dropping. Here 300 blank devices had the same country mix as the rest, so they were kept as an explicit `unknown` level. If missingness tracks a segment (tracking failing on one old browser), dropping it silently removes that segment. Beware an apparent gap in a group summary that is really two outlier rows in the other group (a mean of 8.21 against 0.97 was entirely those two rows).
 - **Two columns at a time.** Keep group size next to every rate ([[Small-N Trap and Shrinkage]]). A group table is association, not cause: desktop converting at 7.5% against mobile at 4.0% generates a hypothesis only.
 
+## Habits from a textbook case
+
+Downey's *Think Stats* runs one question, whether first babies arrive late, through the NSFG pregnancy survey, and the early chapters give habits that fit this loop:
+
+- Verify a fresh dataset by tallying records and splitting groups, then compare both with the codebook; this exposes data errors and bugs. Use a published recode instead of handling raw data unless there is a strong reason.
+- For any apparent effect, ask if chance could explain it and if bias or measurement error produced it (an artifact). Look beyond the mean.
+- NSFG deliberately oversamples some groups, so population conclusions need the survey weight (finalwgt), which the book defers to later chapters.
+- A mean can mislead when nothing is typical: three pumpkins at 1 lb, two at 3 lb and one giant at 591 lb average 100 lb. Downey prefers reporting the standard deviation over the variance because it shares the data's units.
+- Compare groups of different size with PMFs, not histograms. For live-birth pregnancy lengths the mode is 39 weeks; values below 20 weeks are certainly errors and values near 50 weeks are doubtful, and the book gives no rule for trimming.
+- Early births (week 37 or earlier) had relative risk 1.08 for first babies, 18.2% against 16.8% for others. The chapter assumes the effect is real and defers a significance test.
+
 ## Writing it down
 
 An EDA is finished when someone else can act on it. A useful note has: what the extract is and what one row is; what was removed and why; what was kept and how labelled; the shape of each key metric; group differences flagged as observational; what to do next; and the open questions (is a refund part of the metric, who owns the two large accounts). The open questions are the bridge to the next stage.
@@ -33,9 +46,14 @@ An EDA is finished when someone else can act on it. A useful note has: what the 
 - Deleting outliers because they are large rather than because they are explained.
 - Hypotheses found by looking are already selected. Confirm them on new data, not the data that suggested them.
 
+## Limits
+
+The textbook chapters stop short of analysis: chapter 1 reports an expected difference of about 13 hours for the reader's exercise with no source beyond it, and chapter 2 does not give the sample sizes behind 18.2% and 16.8%. The code is Python 2 and depends on the author's own library.
+
 ## See Also
 - [[Robust Summaries for Skewed Metrics]] — related (the summaries step of the loop)
 - [[Inspection Paradox in Metrics]] — related (the row unit decides whose average it is)
 - [[Small-N Trap and Shrinkage]] — related (why group tables mislead)
 - [[Data Science Curriculum Layers]] — related (the analytics layers this audit belongs to)
 - [[Anscombe's Quartet: Plot Before Summarising]] — related (why plot before summarising)
+- [[Empirical CDFs for Comparing and Checking Distributions]] — related (comparing groups without PMF noise)

@@ -9,6 +9,9 @@ sources:
   - data/raw/papers/2026-11-07-chen-2016-xgboost.md
   - data/raw/papers/2026-11-07-prokhorenkova-2017-catboost.md
   - data/raw/papers/2026-11-08-karbasi-2023-impossibility-parallelizing-boosting.md
+  - data/raw/papers/2026-11-08-practical-statistics-for-data-scientists-ch06-statistical-machine-learning.md
+  - data/raw/papers/2026-11-08-islp-ch08-tree-based-methods.md
+  - data/raw/papers/2026-11-08-computer-age-statistical-inference-ch17-random-forests-boosting.md
 ---
 
 # Gradient Boosting Mechanics and Library Choice
@@ -56,6 +59,24 @@ Fix the learning rate, let early stopping pick rounds, then tune tree size, leaf
 
 Pitfalls: early stopping on the test set; `class_weight` raises log-loss (0.280 to 0.328) and lowers accuracy (0.874 to 0.838) while AUC barely moves (0.9270 to 0.9256); train and serving category dtypes differing; fixing one lucky seed.
 
+## Book example: regularising XGBoost
+
+In chapter 6 of *Practical Statistics for Data Scientists* (R, Lending Club loan data, 250 rounds, 10,000 random test records, the rest for training), a default XGBoost fit overfits, with training error well under test error. Setting lambda = 1000 (eta 0.1, subsample 0.63) lifts the training error to 33.2% and brings the test error down to 34.8%. A 5-fold cross-validation over eta in {0.1, 0.5, 0.9} and max_depth in {3, 6, 12} (100 rounds) selects eta 0.1 with depth 3 (or 6); the worst cell is eta 0.9 at depth 12. The authors advise a small eta with more rounds, shallow trees, subsampling and lambda or alpha regularisation, tuned by cross-validation.
+
+## Depth, shrinkage and BART in two more books
+
+- Introduction to Statistical Learning ch08 advises a shrinkage of 0.01 or 0.001, small trees (depth 1 stumps give an additive model and often work well) and the number of trees chosen by cross-validation. Its Boston lab (70/30 split, 5,000 trees, depth 3) gives test MSE 14.48 at rate 0.001 and 14.50 at 0.2, so shrinkage barely mattered there. On Heart data boosting overfits, its test error climbing past a few hundred iterations.
+- Same book, gene data collapsed to cancer versus normal (rate 0.01, up to 5,000 trees): depth 1 slightly beat depth 2 and both beat a forest, but the standard error is about 0.02, so the authors treat the differences as not significant.
+- Computer Age Statistical Inference ch17, ALS data (1,197 training rows, 369 predictors, 625 test rows, shrinkage 0.02): depth 4 is about best, depth 1 is worse, and depth 7 overfits from roughly 200 trees against roughly 300 for depth 4. That contrasts with the stump advice above, so depth is data dependent. On a subset with depth 3, a shrinkage of 0.02 reached lower validation error than 0.5 and overfitted much later, at the price of many more trees. Trees of depth d give an interaction model of order d minus 1, and the R gbm package fits each tree on a random half of the rows by default.
+- Boosting beat the forest by a small margin on ALS but needed time-costly tuning. AdaBoost as stagewise exponential-loss fitting is covered in [[AdaBoost as Stagewise Exponential-Loss Fitting]].
+- BART: the ISLP authors recommend 200 trees, 1,000 iterations and a 100-iteration burn-in; on Heart its error stabilises once burn-in is discarded, with train and test close. Its Boston run used a burn-in of 5 and 15 draws and scored test MSE 20.92, similar to the forest.
+
+## Limits
+
+- The chapter's runs are single and unseeded on one dataset, its code uses older xgboost syntax, and as a 2017 text it predates LightGBM and CatBoost.
+- Introduction to Statistical Learning ch08: results are single random splits that shift with the seed; boosting for classification is omitted and BART is shown for regression only; the lab text gives the scikit-learn default learning rate as 0.001, which the extraction could not verify (the current default is commonly cited as 0.1).
+- Computer Age ch17: ALS and spam data only, no repeats or error bars, and the ALS errors are read off plots; it uses R gbm, so it predates XGBoost-style libraries.
+
 ## See Also
 - [[Random Forests and Bagging]] — alternative-to
 - [[Ordered Boosting and Ordered Target Statistics]] — extends
@@ -65,3 +86,4 @@ Pitfalls: early stopping on the test set; `class_weight` raises log-loss (0.280 
 - [[Tree Ensemble Interpretation Beyond Impurity Importance]] — extends
 - [[Bias-Variance Decomposition and Model Complexity]] — prerequisite-for
 - [[Supervised Model Families and Complexity Knobs]] — related
+- [[AdaBoost as Stagewise Exponential-Loss Fitting]] — instance-of

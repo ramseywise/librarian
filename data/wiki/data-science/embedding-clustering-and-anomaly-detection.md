@@ -65,3 +65,4 @@ Detectors: **kNN distance** (far from nearest reference neighbours), **local out
 - [[Isolation Forest vs Gaussian Anomaly Detection]] — related
 - [[BERTopic: Clustering Embeddings with Class-Based TF-IDF]] — extends
 - [[UMAP Graph Construction and Layout]] — related
+- [[HDBSCAN: Mutual Reachability and Stability Extraction]] — prerequisite-for

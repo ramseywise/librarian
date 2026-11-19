@@ -51,3 +51,6 @@ Sample sizes are never large: once N is large enough you start subdividing, and 
 - [[CLT on Heavy-Tailed Metrics]] — related
 - [[EDA Audit Loop]] — related (group tables keep N)
 - [[Partial Pooling and Multilevel Models]] — extends
+- [[James-Stein Estimator and Shrinkage]] — extends
+- [[Robbins Empirical Bayes Formula]] — extends
+- [[Empirical Bayes: Tweedie's Formula and g-Modeling]] — extends

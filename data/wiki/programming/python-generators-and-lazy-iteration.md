@@ -2,7 +2,7 @@
 title: Python Generators and Lazy Iteration
 tags: [programming, concept]
 summary: "Iterators are single-use and generators run only on demand, so chained generator pipelines process arbitrarily large inputs in constant memory — but a second pass over an exhausted iterator silently yields nothing, and a generator's open `with` block lives until it is consumed."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/programming--python--03-language-for-engineers--notes--02-generators-and-iteration.md
 ---
@@ -83,3 +83,4 @@ sliding window) and `namedtuple`.
 - [[Python Foundations Reference]] — prerequisite-for (loop patterns and files)
 - [[Python Exceptions and Context Managers]] — related (generator-based `@contextmanager` and resource lifetime)
 - [[Programming Curriculum]] — related (course map)
+- [[IPython Timing and Profiling Workflow]] — related (measuring memory)

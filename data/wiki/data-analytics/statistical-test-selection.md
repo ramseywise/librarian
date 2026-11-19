@@ -5,6 +5,7 @@ summary: "Pick the test from the data type and design: Welch by default for two 
 updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--05-hypothesis-testing.md
+  - data/raw/papers/2026-11-08-computer-age-statistical-inference-ch02-frequentist-inference.md
 ---
 
 # Statistical Test Selection
@@ -31,6 +32,14 @@ Rank tests ignore magnitude, which is sometimes the point and sometimes the prob
 ## Check the design first
 
 Pair when rows pair ([[P-Value Misreadings]]), cluster when assignment clusters ([[Clustered Standard Errors]]), and correct when testing many things ([[Multiple Comparisons Corrections]]). The data's distribution sets the family ([[Distribution Selection for Metrics]]).
+
+## Pivots and the optimal rule
+
+Efron and Hastie (*Computer Age Statistical Inference*, ch. 2) call a statistic pivotal when its distribution does not depend on the underlying distribution F. Setup: two-sample t on the leukemia example with normal data and common variance, n1 + n2 - 2 = 70 degrees of freedom: the null probability of t landing between -1.99 and 1.99 is 0.95, so a test rejecting beyond 1.99 has size exactly 0.05, and the matching interval has exact 95% coverage. Pivotality is unavailable in most situations. For choosing among tests they cite the Neyman-Pearson lemma: only rules that threshold the likelihood ratio L(x) = f1/f0 can be optimum, and any other rule has some threshold rule with smaller errors of both kinds. Setup: f0 = N(0,1) against f1 = N(.5,1), 10 iid draws: cutoff c = .4 gives alpha = .10 and beta = .38. The chapter adds that this optimality theory is stretched by large data sets and complex questions.
+
+## Limits
+
+- CASI ch. 2: frequentist correctness does not choose the test statistic, exact pivots are unavailable in most settings, and the list of devices is incomplete.
 
 ## See Also
 - [[Permutation Test]] — related

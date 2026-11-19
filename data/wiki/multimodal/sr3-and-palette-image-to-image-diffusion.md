@@ -46,3 +46,4 @@ An ADM-style U-Net at 256x256 without class conditioning receives the source ima
 - [[pix2pix Conditional Adversarial Image Translation]] — alternative-to
 - [[SDEdit Guided Image Synthesis]] — alternative-to
 - [[SPADE Spatially-Adaptive Normalization]] — alternative-to
+- [[Colorization as Classification over Quantised Colour Bins]] — related

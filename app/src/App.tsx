@@ -20,6 +20,17 @@ const NARROW_QUERY = "(max-width: 1099px)";
 const isNarrow = () =>
   typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia(NARROW_QUERY).matches;
 
+function useNarrow(): boolean {
+  const [narrow, setNarrow] = useState(isNarrow);
+  useEffect(() => {
+    const mq = typeof window.matchMedia === "function" ? window.matchMedia(NARROW_QUERY) : null;
+    const onChange = () => setNarrow(isNarrow());
+    mq?.addEventListener?.("change", onChange);
+    return () => mq?.removeEventListener?.("change", onChange);
+  }, []);
+  return narrow;
+}
+
 const NAV_HIDDEN_KEY = "librarian:nav-hidden";
 // Storage can be blocked (private window); the sidebar then just starts open.
 function readFlag(key: string): boolean {
@@ -44,8 +55,12 @@ export default function App() {
   // Open beside the graph on wide screens; on narrow ones it would cover the page on load.
   const [chatOpen, setChatOpen] = useState(() => !isNarrow());
   const chatToggleRef = useRef<HTMLButtonElement>(null);
-  // The slot under the chat that the map's bar is drawn in; null while the chat is closed.
+  // The slot in the right column that the map's bar is drawn in. Wide screens keep the column
+  // with the chat hidden (the filters fill it); narrow ones drop it, and the bar goes back on the map.
   const [mapDock, setMapDock] = useState<HTMLElement | null>(null);
+  const narrow = useNarrow();
+  // Beside an open chat the filters fold to one header row; open, they share the column.
+  const [filtersOpen, setFiltersOpen] = useState(false);
   // Narrow screens: the navigation is a drawer behind the Menu button. Wide ones: a sidebar the
   // same button slides away, which is remembered.
   const [navOpen, setNavOpen] = useState(false);
@@ -287,19 +302,45 @@ export default function App() {
           </div>
         </main>
 
-        {/* Chat panel: a column beside the main area, or an overlay on narrow screens. */}
-        {chatOpen && (
-          <aside id="chat-panel" ref={chatPanelRef} className="app-chat" aria-label="Agent chat">
-            <ChatPanel
-              messages={messages}
-              streaming={streaming}
-              onSend={handleSend}
-              onClearHighlights={clearHighlights}
-              onOpenPage={openConcept}
-              onStop={stop}
-              onClear={clear}
+        {/* Right column: the chat over the map's filters, or the filters alone while the chat is
+            hidden (wide screens). Narrow screens show it only with the chat, as an overlay. */}
+        {(chatOpen || (!narrow && !inCourses && !inLogin)) && (
+          <aside
+            id="chat-panel"
+            ref={chatPanelRef}
+            className={chatOpen ? "app-chat" : "app-chat app-chat--filters"}
+            aria-label={chatOpen ? "Agent chat" : "Map filters"}
+          >
+            {chatOpen && (
+              <ChatPanel
+                messages={messages}
+                streaming={streaming}
+                onSend={handleSend}
+                onClearHighlights={clearHighlights}
+                onOpenPage={openConcept}
+                onStop={stop}
+                onClear={clear}
+              />
+            )}
+            {chatOpen && !inCourses && (
+              <button
+                type="button"
+                className="app-map-dock-toggle"
+                aria-expanded={filtersOpen}
+                aria-controls="app-map-dock"
+                onClick={() => setFiltersOpen((o) => !o)}
+              >
+                <span>Browse &amp; filter</span>
+                {activeTags.size > 0 && <span className="app-map-dock-count">{activeTags.size} active</span>}
+                <span className="app-map-dock-chevron" aria-hidden="true">{filtersOpen ? "▾" : "▸"}</span>
+              </button>
+            )}
+            <div
+              id="app-map-dock"
+              ref={setMapDock}
+              className="app-map-dock"
+              hidden={inCourses || (chatOpen && !filtersOpen)}
             />
-            <div ref={setMapDock} className="app-map-dock" hidden={inCourses} />
           </aside>
         )}
       </div>

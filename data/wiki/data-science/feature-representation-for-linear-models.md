@@ -2,9 +2,10 @@
 title: "Feature Representation for Linear Models"
 tags: [data-science, pattern]
 summary: "Binning, interactions, polynomials, log transforms, selection and domain features give linear models shape; trees gain little from them."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--03-feature-engineering-and-pipelines.md
+  - data/raw/papers/2026-11-08-intro-to-ml-with-python-ch04-representing-data-engineering-features.md
 ---
 
 # Feature Representation for Linear Models
@@ -56,6 +57,22 @@ The forest on the timestamp has nothing to split on past the training range and 
 - Log-transform skewed counts.
 - Try a domain feature before a bigger model.
 - Split time-ordered data in time order; see [[Time-Series Leakage: Shift and Rolling Windows]].
+
+## Textbook results (Müller and Guido)
+
+- **One-hot on a census table:** logistic regression on the one-hot adult-income features (32,561 rows, `get_dummies` to 44 features, default 75/25 split) scores 0.81 test accuracy.
+- **Polynomials on Boston:** with 13 min-max-scaled features expanded to degree 2 (105 features including the constant, 379 training rows), ridge test R squared rises from 0.621 to 0.753 while a 100-tree random forest drops from 0.799 to 0.763.
+- **Selection on noise-padded cancer data:** the cancer features plus 50 standard-normal noise columns (80 features, half the rows for training, logistic regression). Univariate selection of 50% keeps 40 features and takes test accuracy to 0.940, up from 0.930 with every feature; model-based selection (100-tree forest, median threshold) gives 0.951, and RFE down to 40 features with the same forest also gives 0.951.
+- **Time features:** the Citi Bike table above is the chapter's (one station, August 2015, 3-hour bins, 184 training and 64 test points in time order), and it reports -0.04 for the forest on raw POSIX time where its text says -0.03. The Poisson-count figures above use 1,000 samples of 3 synthetic features.
+
+The authors advise binning only for linear models, adding bin-by-feature interactions so each bin gets its own slope, adding polynomial features for linear and naive Bayes models, log-transforming skewed counts, fitting selection on the training split only, and keeping raw timestamps away from tree models.
+
+## Limits
+
+- The chapter uses single splits and seeds, so 0.930 against 0.940 rests on about 285 test rows. Its selection experiments differ in split and numbers from the ones above (for instance 0.951 against 0.961 for model-based selection).
+- The authors themselves say selection seldom helps much on real data, and the noise-padded cancer example is synthetic. The Boston polynomial gain for ridge contrasts with the diabetes grid search above, which found no reason to expand.
+- Its code is pre-0.20 scikit-learn (`.ix`, integer-only `OneHotEncoder`, `load_boston`). It does not cover target or frequency encoding, high-cardinality categories, `ColumnTransformer` or leakage inside cross-validation.
+- Text and code slips: the log is applied twice in the Fig 4-8 code, value 2 is said to appear 62 times where `bincount` shows 68, and `get_dummies` is said to give 46 columns where the shape is 44.
 
 ## See Also
 - [[Categorical Encoding Choices]] — related

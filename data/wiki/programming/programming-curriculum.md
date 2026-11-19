@@ -2,7 +2,7 @@
 title: Programming Curriculum
 tags: [programming, reference]
 summary: "Course map for the three languages an AI or data engineer writes daily — Python, SQL, TypeScript — with the phase order, the hand-offs between tracks, the rules of thumb each track ends on, and where each topic's wiki page lives."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/programming--README.md
   - data/raw/repos/learn-ai-engineering/programming--CURRICULUM.md
@@ -120,3 +120,5 @@ and *type-challenges*, Zod's docs, and the Anthropic TypeScript SDK for the last
 - [[Python Foundations Reference]] — extends
 - [[SQL Query Fundamentals]] — extends
 - [[TypeScript for Python Developers]] — extends
+- [[Clean Code: Names, Functions and Comments]] — related (Martin's Clean Code, line-level)
+- [[Out of the Tar Pit: Essential and Accidental Complexity]] — related (state, control and complexity)

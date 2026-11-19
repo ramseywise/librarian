@@ -2,9 +2,10 @@
 title: "Learning Curves and Bias-Variance Diagnosis"
 tags: [data-science, pattern]
 summary: "Plot train and validation error against training size to tell high bias (more data will not help) from high variance (it will)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--04-model-evaluation.md
+  - data/raw/papers/2026-11-08-python-data-science-handbook-ch05-machine-learning.md
 ---
 
 # Learning Curves and Bias-Variance Diagnosis
@@ -22,6 +23,15 @@ Worked case: regularised linear regression on a water-level / outflow dataset fi
 Choosing the regularisation strength `lambda` follows the same recipe: sweep it on a grid, pick the lowest validation error (about 3 in that exercise), and report test error once. That is grid search written by hand. scikit-learn's `learning_curve` varies training size; `validation_curve` sweeps one hyperparameter instead. For ridge on the diabetes data, train score rises 0.19 to 0.43 and validation 0.14 to 0.41 from 70 to 353 rows, a small gap with both still climbing.
 
 Plot a learning curve before collecting more data: it says whether more data can help.
+
+## What the Handbook adds
+
+- VanderPlas's validation curve on a polynomial regression picks degree 3 with 40 points and about degree 6 with 200. A `GridSearchCV` over the degree, `fit_intercept` and `normalize` chose degree 4, with the intercept option off and normalisation on (single run, 2016-era scikit-learn).
+- Once the training and validation curves have converged, extra data is no use; a different model is the remedy. If the best grid value sits on the edge of the grid, expand the grid.
+
+## Limits
+
+- Single runs on synthetic data, with no variance across seeds; the API (`normalize`, `sklearn.learning_curve`) is 2016-era and has since been removed or moved.
 
 ## See Also
 - [[Bias-Variance Decomposition and Model Complexity]] — prerequisite-for

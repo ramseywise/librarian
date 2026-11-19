@@ -5,6 +5,8 @@ summary: Making a real key the index turns lookups into plain label access, but 
 updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--01-python-for-data-analysis--notes--03-indexing-and-selection.md
+  - data/raw/papers/2026-11-08-python-for-data-analysis-ch08-data-wrangling-join-combine-reshape.md
+  - data/raw/papers/2026-11-08-python-data-science-handbook-ch03-data-manipulation-pandas.md
 ---
 
 # Pandas Index Design, MultiIndex and Reindex
@@ -30,6 +32,18 @@ Grouping by two keys yields an index with two levels, a way to hold higher-dimen
 - Cut across an inner level: `s.xs("filter", level="product")`.
 - Slicing needs a sorted MultiIndex: a groupby result already is; otherwise `sort_index()`.
 - `reset_index()` flattens levels back to ordinary columns, which many analysts do on purpose; `unstack` moves a level into columns (see [[Tidy Data and Long-Wide Reshaping]]).
+
+## What the books add
+
+- McKinney says lookups on a MultiIndex run far faster once it is sorted lexicographically starting at the outer level (`sort_index(level=0)`); VanderPlas adds that partial slicing on an unsorted MultiIndex raises a lexsort-depth `KeyError`.
+- VanderPlas uses `pd.IndexSlice` for slices inside a MultiIndex `.loc` tuple, for example `health_data.loc[idx[:, 1], idx[:, 'HR']]`, and advises a MultiIndex over tuple keys.
+- `stack` discards missing cells by default, which keeps it the inverse of `unstack`; `dropna=False` keeps it (McKinney, ch8). `swaplevel`, level-wise statistics and `set_index`/`reset_index` are in the same chapter.
+
+## Limits
+
+- Edition: McKinney's ch8 code uses `MultiIndex` `labels=`, `sum(level=)` and `join_axes=`, and VanderPlas's ch3 is pinned to pandas 0.18.1; the extractions list `labels` (now `codes`), `sortlevel`, `mean(level=)` and `join_axes` as removed or changed.
+- McKinney's ch8 repeats `data2.unstack()` where the sentence before it describes `stack`, and one of his example frames lists Ohio 2000 twice.
+- The examples are small toy frames, and the sort-speed remark has no measurement.
 
 ## See Also
 - [[Pandas loc, iloc and the Integer Index Trap]] — prerequisite-for

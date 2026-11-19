@@ -7,6 +7,11 @@ sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--02-supervised-learning.md
   - data/raw/papers/2026-11-07-cortes-1995-support-vector-networks.md
   - data/raw/papers/2026-11-07-pedregosa-2012-scikit-learn.md
+  - data/raw/papers/2026-11-08-intro-to-ml-with-python-ch02-supervised-learning.md
+  - data/raw/papers/2026-11-08-intro-to-ml-with-python-ch03-unsupervised-learning-preprocessing.md
+  - data/raw/papers/2026-11-08-computer-age-statistical-inference-ch19-support-vector-machines-kernel-methods.md
+  - data/raw/papers/2026-11-08-islp-ch09-support-vector-machines.md
+  - data/raw/papers/2026-11-08-python-data-science-handbook-ch05-machine-learning.md
 ---
 
 # Kernel SVM and the Kernel Trick
@@ -39,7 +44,30 @@ Distances are dominated by the largest-valued features. On the breast-cancer spl
 
 Good: small and medium data (up to about 10k samples), similar-scale features, complex boundaries in few dimensions. Fails: 100k+ samples (memory and time), unscaled features, interpretation.
 
+## Scaling in Müller and Guido's chapters
+
+On Wisconsin Breast Cancer (569 rows, 30 features, `random_state=0` split), the default `SVC` (C=1, gamma = 1/n_features) on raw features scores 1.00 train and 0.63 test. After min-max scaling with the training minimum and range it scores 0.948 train and 0.951 test, which the chapter reads as underfitting, and raising C to 1000 gives 0.988 and 0.972. In the preprocessing chapter, `SVC(C=100)` gets 0.63 test accuracy on raw features, 0.97 after `MinMaxScaler` and 0.96 after `StandardScaler`, each fit on the training part only. The scaled test set does not span exactly 0 to 1, because the training transform is reused.
+
+The authors advise scaling all features to a similar range such as 0 to 1, tuning C and gamma together, and note the method is practical up to about 10,000 samples and hard at 100,000.
+
+## Loss, tuning and a faces run (CASI, ISLP, Python Data Science Handbook)
+
+Efron and Hastie say that at the population level, with two classes and equal costs, the function minimising the hinge loss is the Bayes classifier, while the one minimising binomial deviance is the logit of the class probability. They also note that a ridged logistic regression's coefficient direction approaches the SVM's on separable data as lambda goes to zero. Their examples are two small, single-run illustrations from 2016.
+
+For the support-vector classifier's slack budget see [[Support Vector Classifier, Slack Budget and Hinge Loss]]. Two further points from ISLP's chapter 9 lab: a radial SVM whose cost and gamma were tuned by cross-validation misclassified 12% of the test points on the simulated data, and in the book's slack-budget formulation a large C allows more slack and a wider margin. The authors advise choosing C by cross-validation rather than keeping the default.
+
+VanderPlas's handbook runs an RBF SVM on faces: Labeled Faces in the Wild people with at least 60 images (1,348 images of 62 by 47 pixels, 8 people), reduced by whitened randomised PCA to 150 components, then `SVC(kernel='rbf', class_weight='balanced')`. A grid search over four values of C (1 to 50) crossed with four of gamma (0.0001 to 0.005) picked C=10 and gamma=0.001 and took 26 seconds of wall time (hardware not stated). On the 337 held-out faces precision, recall and F1 all average about 0.85. He suggests a naive Bayes model as the quick first baseline, with an SVM reserved for when simpler methods fall short.
+
+## Limits
+
+- The course-note figure above (0.629 unscaled) is stated with C=1000, while the chapter's unscaled 0.63 uses the default C; the two setups differ.
+- The chapters give single splits with no variance. The chapter's kernel formula drops the minus sign in the exponent, and the RBF `gamma` default has since changed to `'scale'`.
+- The faces result is one split on 337 images; the code is 2016-era scikit-learn API.
+- The hinge-versus-logistic claim is a cited result of Wahba and colleagues (2000), and the ISLP simulations are tiny with the LDA comparison read off a plot.
+
 ## See Also
 - [[Supervised Model Families and Complexity Knobs]] — prerequisite-for
 - [[Penalised Linear Models: Ridge, Lasso and Elastic Net]] — related
 - [[Platt Scaling for SVM Probabilistic Outputs]] — related
+- [[Margin Classifiers, Hinge Loss and Kernel Smoothing]] — extends
+- [[Support Vector Classifier, Slack Budget and Hinge Loss]] — related

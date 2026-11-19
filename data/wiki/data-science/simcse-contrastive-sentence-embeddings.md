@@ -2,7 +2,7 @@
 title: SimCSE Contrastive Sentence Embeddings
 tags: [data-science, pattern]
 summary: "SimCSE fine-tunes BERT or RoBERTa with an in-batch contrastive loss, using two dropout masks of the same sentence as the unsupervised positive pair and NLI entailment/contradiction pairs when labels exist."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-gao-2021-simcse.md
 ---
@@ -36,3 +36,4 @@ All numbers are self-reported unless noted; STS is averaged over 7 tasks with Sp
 - [[Frozen vs Fine-Tuned Sentence Encoders]] — related
 - [[Tuning an Embedding Model from Match Labels]] — related
 - [[Dense Passage Retrieval (DPR)]] — related (contrastive dual encoder with supervised pairs)
+- [[Sentence-BERT Siamese Fine-Tuning]] — prerequisite-for

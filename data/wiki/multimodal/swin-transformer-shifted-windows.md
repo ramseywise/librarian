@@ -31,3 +31,4 @@ Swin is designed as a general-purpose backbone for classification, detection and
 - [[VIOLET Masked Visual-Token Modeling]] — extends (Video Swin encoder)
 - [[NFNet Adaptive Gradient Clipping]] — alternative-to
 - [[V-MoE Sparse Mixture of Experts for Vision]] — related
+- [[ConvNeXt and ConvNeXt V2 Modernising a ResNet]] — alternative-to

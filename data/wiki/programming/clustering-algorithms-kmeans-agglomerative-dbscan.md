@@ -2,9 +2,11 @@
 title: "Clustering Algorithms: k-means, Agglomerative and DBSCAN"
 tags: [programming, comparison]
 summary: "k-means needs round similar clusters, agglomerative gives a dendrogram without prediction, DBSCAN finds arbitrary shapes and noise; with no ground truth, inspect the clusters."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--05-unsupervised-learning.md
+  - data/raw/papers/2026-11-08-intro-to-ml-with-python-ch03-unsupervised-learning-preprocessing.md
+  - data/raw/papers/2026-11-08-islp-ch12-unsupervised-learning.md
 ---
 
 # Clustering Algorithms: k-means, Agglomerative and DBSCAN
@@ -36,9 +38,29 @@ A point with at least `min_samples` neighbours within `eps` is a core point; clu
 
 The only reliable check is to inspect clusters by hand. On eigenface features, DBSCAN found one big cluster plus noise (faces with hats, open mouths, odd angles: an outlier detector), k-means gave blurred pose and lighting "average faces", agglomerative similar groups with less uniform sizes; none found identity.
 
+## Textbook runs (Müller and Guido)
+
+On 200 two-moons points (noise 0.05, standard-scaled), DBSCAN with the default `eps=0.5`, `min_samples=5` recovers the two moons; shrinking `eps` to 0.2 splits the data into eight clusters, and raising it to 0.7 merges it into one. The adjusted Rand index is about 0 for random assignment and 1 for DBSCAN, with k-means and two-cluster agglomerative scoring lower; silhouette prefers k-means.
+
+On 2,063 face images (100 whitened PCA components), DBSCAN with defaults or `min_samples=3` labels everything noise; with `eps=15` and `min_samples=3` the result is a single cluster of 2,036 images plus 27 noise points; `eps=7` gives 2,006 noise points and 13 clusters of 3 to 9 points. It never yields more than one large cluster across `eps` 1 to 13. Ten-cluster k-means gives sizes 64 to 386 and Ward agglomerative gives 26 to 623, with ARI 0.13 between the two partitions, and the dendrogram shows no natural cut. scikit-learn's k-means runs 10 random initialisations by default and keeps the best (2016 version).
+
+The authors advise scaling before choosing `eps` (which matters more than `min_samples`), watching for label -1 when indexing with cluster labels, using Ward linkage by default, switching to average or complete linkage if cluster sizes differ greatly, and `MiniBatchKMeans` for very large data.
+
+## k-means restarts, linkage and NCI60 (ISLP)
+
+K-means finds only a local optimum, so ISLP's lab runs it from many random starts. On simulated 50-by-2 data with two true clusters (the first 25 points shifted), K-means with K=3 and a single start gave inertia 78.06 against 75.04 with `n_init=20`, and they advise 20 or 50 restarts (`n_init`) and a fixed `random_state`. In a separate run on 150 simulated points in two dimensions (K=3, six random starts) the best objective was 235.8 while the other local optima scored 320.9 and 310.9. For hierarchical clustering they prefer average or complete linkage to single, and warn that centroid linkage can produce inversions. On NCI60 (64 cell lines by 6,830 genes), complete linkage cut at four clusters puts all the leukaemia lines together and spreads the breast cancer lines over three clusters; K-means with four clusters and 20 restarts agrees with it on only one nine-line cluster.
+
+## Limits
+
+- The numeric ARI values for k-means and agglomerative clustering on two moons appear only in figure titles in the chapter, so none is quoted here beyond the ordering.
+- The chapter uses single runs, 2016-era API defaults (`KMeans` `n_init`, `fetch_lfw_people`) that have since changed, and notes it gives no citation for DBSCAN.
+- The ISLP lab results are single runs on simulated data and one gene-expression set, and its clusterings are not robust to dropping observations.
+
 ## See Also
 - [[Choosing k and Naming Clusters Honestly]] — extends
 - [[Clustering Categorical and Mixed Data]] — extends
 - [[Clustering Validation Against Named Baselines]] — related
 - [[Expectation-Maximisation for Gaussian Mixtures]] — related
 - [[Isolation Forest vs Gaussian Anomaly Detection]] — related
+- [[Clustering Stability and Symmetry]] — extends (large-sample stability of k-means and spectral clustering)
+- [[HDBSCAN: Mutual Reachability and Stability Extraction]] — extends (DBSCAN over varying epsilon)

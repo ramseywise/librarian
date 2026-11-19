@@ -43,3 +43,5 @@ The ImageNet-1K runs train a vision model on that dataset (the COCO and ADE20K r
 ## See Also
 - [[Regularisation Knobs and Early Stopping]] — prerequisite-for
 - [[MC Dropout]] — related
+- [[ConvNeXt and ConvNeXt V2 Modernising a ResNet]] — related
+- [[Dropout and Input Distortion as Ridge Regression]] — related

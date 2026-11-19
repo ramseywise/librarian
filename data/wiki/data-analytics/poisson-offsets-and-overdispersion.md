@@ -29,3 +29,5 @@ The Poisson SE understated uncertainty by over 3x and would call the effect high
 - [[Generalised Linear Models and Deviance]] — prerequisite-for
 - [[Robust Standard Errors]] — related
 - [[Distribution Selection for Metrics]] — related
+- [[Exponential Families and Tilting]] — related
+- [[Maximum Entropy Likelihoods and Link Functions]] — related

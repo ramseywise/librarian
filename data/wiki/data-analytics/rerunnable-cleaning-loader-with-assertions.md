@@ -5,6 +5,8 @@ summary: Keep the raw file untouched and put every cleaning step in one function
 updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--01-python-for-data-analysis--notes--02-loading-and-cleaning.md
+  - data/raw/papers/2026-11-08-python-for-data-analysis-ch06-data-loading-storage-file.md
+  - data/raw/papers/2026-11-08-python-for-data-analysis-ch07-data-cleaning-preparation.md
 ---
 
 # Rerunnable Cleaning Loader with Assertions
@@ -60,6 +62,16 @@ CSV keeps only text, so every reader redoes type decisions (a date came back as 
 - Editing the raw file by hand makes the work unrepeatable.
 - `errors="coerce"` without counting.
 - Dropping rows silently; print counts at each step.
+
+## What the book adds
+
+- McKinney's `read_csv` options: `header=None` with `names=`, `index_col` as a list for a hierarchical index, `sep=r'\s+'` for whitespace-delimited files, `skiprows`, and `na_values` as a dict for per-column sentinels. For large files, `nrows` reads a peek and `chunksize` iterates in pieces (his example reads a 10,000-row file with `chunksize=1000`) (*Python for Data Analysis*, ch6).
+- `to_csv` takes `na_rep`, `index=False` and `header=False`. He says pickle is suitable for short-term storage only, because the format may not stay readable across library versions, and flags HDF5 caveats for concurrent writes. `read_html` pulled the FDIC failed-bank table, and `read_sql` returns a frame from a query.
+- ch7: the `.str` methods skip missing values, and compile with `re.compile` when applying a pattern to many strings.
+
+## Limits
+
+- Parquet is not covered. The book is 2017-era: removed or changed names are listed in the extraction, and it flags errata in In[82] and Out[96].
 
 ## See Also
 - [[Pandas Missing Data Decisions]] — prerequisite-for

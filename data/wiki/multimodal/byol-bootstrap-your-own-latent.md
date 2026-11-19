@@ -35,3 +35,4 @@ All of these are 300-epoch ablations on 64 TPU v3 cores with three seeds, using 
 - [[Contrastive and Masked Vision-Language Pretraining]] — related (the family comparison)
 - [[Contrastive Self-Supervised Pretraining]] — prerequisite-for (the contrastive baselines BYOL drops negatives from)
 - [[DINOv2 Curated-Data Self-Supervised Features]] — related (later self-distillation recipe)
+- [[SimCLRv2 Pretrain, Fine-Tune, Distill]] — alternative-to
