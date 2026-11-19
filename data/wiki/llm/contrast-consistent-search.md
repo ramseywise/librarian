@@ -42,3 +42,4 @@ Model weights stay frozen, and no labels or model outputs enter training. Nothin
 - [[Language Model Self-Knowledge]] — related (another route to what a model knows, from probabilities)
 - [[TruthfulQA]] — related (models mimic human falsehoods, cited by the paper)
 - [[Contrastive Self-Supervised Pretraining]] — related (a different use of contrastive pairs)
+- [[Edge Probing and Layer Localisation in BERT]] — related (probing frozen hidden states)

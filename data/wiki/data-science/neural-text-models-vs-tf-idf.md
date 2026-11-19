@@ -2,7 +2,7 @@
 title: "Neural Text Models vs TF-IDF"
 tags: [data-science, comparison]
 summary: "On 5,000 labelled reviews a TF-IDF bigram logistic regression (0.886) beat averaged embeddings (0.847), a text CNN (0.741) and a BiLSTM (0.716), because from-scratch embeddings overfit; truncation and sequence-loss choices also move scores, and generation and masked losses have their own traps."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--06-neural-text-models.md
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--README.md
@@ -44,3 +44,4 @@ Predicting airway pressure at each of 80 steps with an LSTM, scored only on the 
 - [[Text Preprocessing and the Stop-Word Negation Trap]] — related
 - [[Choosing an Encoder vs CNN vs LSTM]] — related
 - [[Linear Text Classifiers and the TF-IDF Baseline]] — related
+- [[Text CNNs: Kim Sentence CNN and Character-level ConvNets]] — related

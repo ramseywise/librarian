@@ -45,3 +45,4 @@ The extraction defines *task-agnostic* use of unlabeled data as self-supervised 
 - [[BYOL Bootstrap Your Own Latent]] — alternative-to (concurrent, compared in the paper)
 - [[Noisy Student Self-Training]] — related (self-training; SimCLRv2 omits its noise and thresholding)
 - [[Sequence-Level Knowledge Distillation]] — related
+- [[Contrastive Visual Representations: SimCLR, MoCo, CPC v2 and PIRL]] — prerequisite-for

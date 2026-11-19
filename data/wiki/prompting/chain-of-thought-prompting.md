@@ -8,6 +8,10 @@ sources:
   - data/raw/papers/2026-11-08-wang-2022-towards-understanding-chain-thought-prompting.md
   - data/raw/papers/2026-11-06-vatsal-2024-survey-prompt-engineering-methods-large.md
   - data/raw/papers/2026-11-08-sevinc-2024-autoreason.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch02-generative-models.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch03-prompting.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch06-reasoning.md
+  - data/raw/papers/2026-11-08-huang-2023-towards-reasoning-large-language-models.md
 ---
 
 # Chain-of-Thought Prompting
@@ -40,6 +44,14 @@ A 2024 survey of prompting methods relays the original CoT gains over basic prom
 
 Sevinc and Gumus (2024) have GPT-4-1106-preview write sub-question traces for each question, then give question and traces to GPT-3.5-Turbo-1106 to answer. Setup: StrategyQA and HotpotQA, three runs averaged with 20 randomly drawn questions each, scored by an unnamed LLM (self-reported). On StrategyQA GPT-3.5 scored 55.0 base and 70.3 with fixed few-shot CoT, with AutoReason reported higher (the extraction gives no figure). On HotpotQA GPT-3.5 scored 61.6 base and 58.3 with CoT; GPT-4-Turbo scored 73.3 base and 63.3 with CoT, with AutoReason in between.
 
+## Xiao and Zhu's framing
+
+Xiao and Zhu define chain-of-thought prompting as demonstrating intermediate steps in the prompt (few-shot) or appending a trigger like "Let's think step by step" (zero-shot, followed by a second prompt to extract the answer). In their reasoning chapter they call a direct single-pass answer System 1 and generating explicit intermediate steps with extra inference compute System 2, name chain-of-thought as the simplest way to elicit the latter, and advise putting the reasoning inside think tags in fine-tuning data, which lets it be hidden from users.
+
+## Huang and Chang's survey on scale and rationales
+
+Huang and Chang's survey (no new experiments) reports, from work by Wei et al. and Suzgun et al., that reasoning appears just in models that are large enough, at roughly 100 billion parameters (approximate), and that chain-of-thought prompting brings large gains in tasks where standard prompting improves steadily with scale, and it makes models more robust out of distribution, which standard prompting and fully supervised fine-tuning do not (reported; cited results, not the survey's own). From chain-of-thought ablations in Wang et al. 2022b, they report that a rationale does not have to be valid to help; being relevant to the query and keeping the steps in the right order counts for more (reported). The authors argue that prompting leaves model parameters unchanged, so it cannot make a model solve tasks beyond its current capabilities (their argument, not a measurement).
+
 ## Limits
 
 - AutoReason: the gain is confounded because a stronger model supplies the rationales; each run has only 20 questions; on HotpotQA the GPT-4-Turbo baseline drops from 73.3 to 71.6 with no explanation given; text and tables disagree (63.3 against 63.4); the HotpotQA CoT prompt is identical to the StrategyQA one.
@@ -49,6 +61,9 @@ Sevinc and Gumus (2024) have GPT-4-1106-preview write sub-question traces for ea
 - The 2022 models (LaMDA, PaLM, text-davinci-002) are dated.
 - The ablation study covers only arithmetic and multi-hop QA, uses hand-written invalid rationales, a single greedy run and no variance; its authors believe but do not test that results carry to CoT variants.
 - The survey extraction reports internal inconsistencies on GSM-IC.
+- Xiao and Zhu list their own stated limits for chain-of-thought: it needs multi-step demonstrations, there is no standard decomposition, and intermediate errors propagate. Their prompting chapter has no measured numbers, and its toy demos include deliberately wrong or unexplained answers.
+- Huang and Chang's survey has no quantitative result tables and loose scale thresholds, and it predates reasoning-trained models, so its capability-ceiling argument is untested against them.
+
 
 ## See Also
 
@@ -74,3 +89,8 @@ Sevinc and Gumus (2024) have GPT-4-1106-preview write sub-question traces for ea
 - [[Flan-PaLM Instruction Finetuning Scaling]] — related (CoT data in instruction finetuning)
 - [[Distilling Step-by-Step]] — instance-of (CoT rationales used as training supervision for a small model)
 - [[STaR Self-Taught Reasoner]] — extends (fine-tunes on self-generated rationales)
+- [[BIG-Bench Hard]] — related
+- [[Domain-Specific Pretraining from Scratch: Galactica and BloombergGPT]] — related (Galactica's working-memory token)
+- [[Early GPT-4 Probing and Planning Limits (Sparks of AGI)]] — related
+- [[Faithful Chain-of-Thought]] — extends (executes the chain with a deterministic solver)
+- [[In-Context Explanations for Few-Shot Examples]] — related

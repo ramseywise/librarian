@@ -2,13 +2,14 @@
 title: Disaggregated Prefill-Decode Serving
 tags: [infra, pattern]
 summary: "Disaggregated serving runs prompt prefill and token decode on separate GPU pools so long prefills stop delaying other requests' decode steps; the sources give routing, KV-transfer and sizing guidance, with figures mostly quoted from other work."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-ai-systems-performance-engineering-ch15-multinode-inference-parallelism-decoding.md
   - data/raw/papers/2026-11-07-ai-systems-performance-engineering-ch17-scaling-disaggregated-prefill-decode-inf.md
   - data/raw/papers/2026-11-07-ai-systems-performance-engineering-ch18-advanced-prefill-decode-kv-cache-tuning.md
   - data/raw/papers/2026-11-07-huyen-ai-engineering-ch09-inference-optimization.md
   - data/raw/papers/2026-11-08-rostam-2024-achieving-peak-performance-large-language.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch05-inference.md
 ---
 
 # Disaggregated Prefill-Decode Serving
@@ -31,6 +32,10 @@ KV bytes per token is 2 x layers x KV heads x head dimension x bytes per element
 ## Reported gains (none measured by the authors)
 
 Setups are those of the cited work. DistServe: 7.4x more requests within latency SLOs against an unspecified state-of-the-art baseline, and up to 12.6x tighter SLOs (reported). In DistServe's example (P90 TTFT 0.4 s, P90 TPOT 0.04 s), a single colocated GPU sustained 1.6 requests per second, against 3.3 per GPU for two prefill GPUs and one decode GPU (reported). Splitwise: 4 H100 for prefill plus 4 A100 for decode gave 2.35x the throughput of 8 homogeneous GPUs at matched cost and power, and another configuration 1.4x throughput at 20% lower cost (reported). HexGen-2: up to 2x throughput at the same price, about 1.3x on average (reported). Arrow: up to 5.6x request rate under a shifting workload against a non-adaptive system (reported). The survey by Rostam summarises Splitwise but states no hardware or baselines for it.
+
+## Xiao and Zhu on disaggregation
+
+Xiao and Zhu state that prefilling is compute-bound and decoding is memory-bound, and advise disaggregating the two only when a high-bandwidth, low-latency network can carry the KV transfer.
 
 ## Limits
 

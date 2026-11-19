@@ -7,6 +7,7 @@ sources:
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--04-convolutional-networks.md
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--README.md
   - data/raw/papers/2026-11-07-huang-2016-deep-networks-stochastic-depth.md
+  - data/raw/papers/2026-11-07-he-2016-deep-residual-learning-image-recognition.md
 ---
 
 # Residual Connections and the Degradation Problem
@@ -29,12 +30,23 @@ Drop whole residual blocks at random for each mini-batch (only the identity path
 
 The stochastic depth paper (Huang et al., ECCV 2016, arXiv 1603.09382) adds these numbers (self-reported). Survival probability decays linearly with depth from 1 at the first block to p_L at the last, and with p_L = 0.5 the expected count of active blocks is (3L-1)/4, roughly 40 of the 54 in the 110-layer net. Training time on CIFAR-10 fell from 20h42m to 15h7m. CIFAR-100 error with stochastic depth is 24.98%; without augmentation CIFAR-10 improves 13.63% to 11.66% and CIFAR-100 44.74% to 37.8%. SVHN (152-layer net, no augmentation) gives 1.75% against 1.80%. On ImageNet after 90 epochs, stochastic depth comes out marginally worse (23.38% against 23.06%). With p_L = 0.2 CIFAR-10 error matches the constant-depth net with a 40% speedup; linear decay beats uniform survival and is robust for p_L between 0.4 and 0.8. The authors report that dropout gives practically no gain on 110-layer batch-norm ResNets (no numbers).
 
+## ResNet on ImageNet and CIFAR-10
+
+He et al. (arXiv 1512.03385, self-reported) pit plain nets against residual nets with the same depth, width and parameter count, all trained from scratch using SGD and batch norm. Identity shortcuts add no parameters (projections appear only where dimensions change), and the 50, 101 and 152-layer versions use a bottleneck block of 1x1, 3x3 and 1x1 convolutions. The paper's hypothesis is that fitting F(x) = H(x) - x is easier than fitting H(x), so driving the residual to zero beats asking nonlinear layers to fit an identity.
+
+- ImageNet validation, 10-crop top-1: plain-34 does worse than plain-18, but ResNet-34 (25.03) beats ResNet-18 (27.88) and beats its plain twin by 3.5%. Depth keeps paying off: 50 layers 22.85, 101 layers 21.75, 152 layers 21.43. Shortcut variants differ little on ResNet-34 (A, parameter-free: 25.03; B: 24.52; C, projections everywhere: 24.19).
+- A single ResNet-152 gets 4.49% top-5 validation error; a six-model ensemble gets 3.57% on the test set and won ILSVRC 2015 classification. ResNet-152 uses 11.3 billion FLOPs against 15.3 and 19.6 billion for VGG-16 and VGG-19.
+- CIFAR-10: ResNet-110 (1.7M parameters) has 6.43% test error as the best of 5 runs (mean 6.61, standard deviation 0.16). The 1,202-layer net (19.4M parameters) fits training data to under 0.1% error yet tests at 7.93%, which the authors blame on overfitting.
+- Replacing VGG-16 with ResNet-101 inside Faster R-CNN lifted COCO mAP over IoU 0.5 to 0.95 from 21.2 to 27.2 (28% relative) and VOC 2007 mAP from 73.2 to 76.4. The COCO 2015 detection entry scored 34.9 as a single model and 37.4 as an ensemble of three networks.
+- After BN, layer responses are weaker in ResNets than in plain nets, and weaker still as depth grows. The authors argue that vanishing gradients do not explain degradation (BN keeps forward variances nonzero and backward norms healthy, and tripling the iterations did not cure it), though they give no numbers for this.
+
 ## Rule of thumb
 
 If a deeper model does worse on training accuracy, add residual connections before touching regularisation.
 
 ## Limits
 
+- ResNet: the authors leave the cause of the optimisation difficulty open (they conjecture exponentially slow convergence). Every ImageNet result is a single run without error bars, and only ResNet-110 on CIFAR-10 reports seeds. Compute, wall-clock and ImageNet parameter counts are not given.
 - For the stochastic depth numbers, the authors say the ImageNet net is probably too small to benefit.
 - The extraction notes single runs, gradient evidence drawn only from the average size of one layer's gradients, which does not test causation, a constant-depth CIFAR-100 baseline printed with three different values (27.76, 27.22, 27.88), and the 1,202-layer result reported on CIFAR-10 only.
 
@@ -44,3 +56,6 @@ If a deeper model does worse on training accuracy, add residual connections befo
 - [[Transformer Architecture]] — related
 - [[Intrinsic Dimension of Objective Landscapes]] — related (another parameter-count result for deep nets)
 - [[ResNeXt Cardinality in Residual Blocks]] — extends
+- [[Feature Pyramid Networks]] — extends (a ResNet backbone feeds the pyramid)
+- [[AlexNet ReLU, Dropout and the Two-GPU ConvNet]] — prerequisite-for
+- [[Inception-v3 Factorized Convolutions and Label Smoothing]] — related

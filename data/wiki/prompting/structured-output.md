@@ -2,7 +2,7 @@
 title: Structured Output
 tags: [prompting, llm, concept]
 summary: Getting machine-parseable output via a six-rung ladder (ask, show, fence, prefill, constrain, route through a tool) — a schema guarantees shape not truth, so pair it with content validation, and beware that a strict template can lower accuracy.
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt--prompt-engineering.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--04-controlling-output.md
@@ -10,6 +10,11 @@ sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--09-evaluating-prompts.md
   - data/raw/papers/2026-11-07-parikh-2026-structured-output-collapses-answer-diversity.md
   - data/raw/papers/2026-11-08-tang-2023-struc-bench.md
+  - data/raw/papers/2026-11-07-prompt-engineering-for-generative-ai-ch01-five-principles-of-prompting.md
+  - data/raw/papers/2026-11-07-prompt-engineering-for-generative-ai-ch03-standard-practices-text-generation.md
+  - data/raw/papers/2026-11-07-prompt-engineering-for-generative-ai-ch04-advanced-text-generation-langchain.md
+  - data/raw/papers/2026-11-08-prompt-engineering-for-generative-ai-ch06-autonomous-agents-memory-tools.md
+  - data/raw/papers/2026-11-07-prompt-engineering-for-generative-ai-ch10-building-ai-powered-applications.md
 ---
 
 # Structured Output
@@ -85,6 +90,19 @@ Limits: one snapshot through one channel, with requested temperature not honoure
 ## Complex table generation (Struc-Bench)
 
 Tang et al. (2023) built a text-to-table benchmark in raw text, HTML and LaTeX tables from RotoWire and The Stack. On RotoWire, MTurk annotation found just 3% of GPT-3.5 outputs and 9% of GPT-4 outputs fully accurate. They fine-tuned LLaMA-7B on format descriptions that GPT-3.5 wrote for each target table (FormatCoT). It reached SacreBLEU 90.6 on raw-text tables against 68.13 for GPT-4, and 89.13 against 78.15 on LaTeX, while GPT-4 narrowly won on HTML (79.25 against 77.50) (self-reported). The un-finetuned 7B model scored 9.9, so, the extraction notes, that row cannot separate the effect of FormatCoT from that of ordinary fine-tuning. The GPT-3.5 judged P-Score tracked human content scores at 0.5301 and the heuristic H-Score at 0.1059. Limits: no fine-tuning settings or variance, the FormatCoT ablation is one qualitative example, and model versions are unstated.
+
+## Format advice in Phoenix and Taylor
+
+Phoenix and Taylor (*Prompt Engineering for Generative AI*, chapters 1, 3, 4, 6 and 10) say to announce the format first and, for JSON, to leave the example structure unfinished so the model completes it. A system message limiting replies to JSON, or the API's JSON or grammar option, backs this up, and a failed JSON parse can trigger a retry (chapter 1).
+
+- **JSON.** Chapter 3 notes that replies often come wrapped in a backtick fence and may be invalid, so parsing code is needed; its prompt demands valid JSON without backticks and loads it with `json.loads()`. Once structure nests, it prefers JSON or YAML over regular expressions.
+- **YAML.** Chapter 3 credits YAML with three edges over JSON: no escaping, easier reading, comments. Its YAML prompts include a "No Items" outcome and check the parsed result with `yaml.safe_load` and custom exceptions before handing it on.
+- **Counts.** Requesting an exact number of items does not secure it (shown on one GPT-4 outline task, no rate), so code should check the count or tolerate other lengths. Chapter 10 adds that models count poorly, so section or word quotas in instructions are unreliable.
+- **Parsers and function calling.** Chapter 4 uses LangChain's Pydantic parser with its format instructions and says to handle errors and edge cases. For function calling it wants a detailed JSON schema plus an explicit system message, since parameters may be invented. Chapter 6 adds checking arguments against a pydantic `args_schema` and stating the expected input format in the tool docstring.
+
+## Limits
+
+- The Phoenix and Taylor chapters are single GPT-3.5 or GPT-4 transcripts from 2023-24 with no rates; the JSON-fencing and count-miss claims have no measured frequency. Their code uses 2023-24 LangChain and pydantic.v1 APIs.
 
 ## See Also
 - [[Prompt Engineering]] — related (part of)

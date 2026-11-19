@@ -38,3 +38,4 @@ The authors advise abundant hidden units with complexity controlled by weight re
 - [[Early and Late Dropout]] — related (dropout schedules)
 - [[Autoencoder Bottleneck vs PCA and Anomaly Scores]] — related
 - [[Regularisation as a Prior]] — related
+- [[Dropout, Thinned Networks and Weight Scaling]] — prerequisite-for

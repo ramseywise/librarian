@@ -5,6 +5,8 @@ summary: "PagedAttention stores each sequence's KV cache in fixed-size blocks ma
 updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-kwon-2023-efficient-memory-management-large-language.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch05-inference.md
+  - data/raw/papers/2026-11-07-llm-engineers-handbook-ch08-inference-optimization.md
 ---
 
 # PagedAttention and vLLM KV Cache Paging
@@ -32,6 +34,14 @@ Setups: OPT 13B/66B/175B and LLaMA-13B on A100 GPUs, ShareGPT, Alpaca and WMT16 
 | Shared prefix, LLaMA-13B on WMT16 | 1.67x (1-shot, 80 tokens), 3.58x (5-shot, 341 tokens) over Orca (Oracle) |
 
 Block size 16 is the default. ShareGPT does best at 16-128 and Alpaca degrades above 32. Recomputing after preemption costs at most 20% of what swapping's latency does.
+
+## Xiao and Zhu's summary
+
+Xiao and Zhu describe PagedAttention (vLLM) as splitting the KV cache into non-contiguous blocks of fixed size, an idea taken from operating-system paging, and advise fixed-size KV blocks to avoid fragmentation.
+
+## Figures cited in the LLM Engineer's Handbook
+
+The handbook reports, citing the PagedAttention authors, up to 55% less memory overhead and up to 2.2x higher throughput when several outputs share one prompt (parallel sampling, beam search); these are the authors' figures, and the chapter gives no model or hardware.
 
 ## Limits
 

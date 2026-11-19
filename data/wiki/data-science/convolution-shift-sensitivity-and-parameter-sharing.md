@@ -58,3 +58,5 @@ Results as the extraction gives them: a small CNN (two 5x5 conv layers with 2x2 
 - [[Residual Connections and the Degradation Problem]] — extends
 - [[Dilated Causal Convolutions]] — related
 - [[Object Detection Anchors, Non-Max Suppression and Focal Loss]] — extends
+- [[LeNet-5 and Graph Transformer Networks]] — instance-of
+- [[AlexNet ReLU, Dropout and the Two-GPU ConvNet]] — instance-of

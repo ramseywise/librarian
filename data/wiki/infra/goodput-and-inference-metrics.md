@@ -2,12 +2,14 @@
 title: Goodput and Inference Metrics
 tags: [infra, reference]
 summary: "Reference for the serving metrics the inference sources use (TTFT, TPOT, throughput, goodput, MFU, MBU): two different goodput definitions, worked examples, and the advice to report percentiles."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-huyen-ai-engineering-ch09-inference-optimization.md
   - data/raw/papers/2026-11-07-ai-systems-performance-engineering-ch01-introduction-ai-system-overview.md
   - data/raw/papers/2026-11-07-ai-systems-performance-engineering-ch17-scaling-disaggregated-prefill-decode-inf.md
   - data/raw/papers/2026-11-08-lakshmanan-hapke-genai-design-patterns-ch08-addressing-constraints.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch05-inference.md
+  - data/raw/papers/2026-11-07-llm-engineers-handbook-ch10-inference-pipeline-deployment.md
 ---
 
 # Goodput and Inference Metrics
@@ -38,14 +40,25 @@ The two should not be mixed in one comparison; the extraction notes chapter 1's 
 
 The chapter measures time to first token (TTFT), end-to-end request latency (EERL, including queueing, network and KV-cache creation, at P50/P95/P99), output tokens per second (TPS) and requests per second (RPS), and says to find the degradation point rather than just the failure point, with scalability, stress and load tests. Example benchmark: gpt-4o-mini via the OpenAI API, 100 users x 25 requests, max 150 tokens, temperature 0.7, a single short prompt: a mean TTFT of 3.556 s with throughput of 1914.5 tokens/s overall, 2499 requests succeeded and 1 failed in 190.57 s (self-reported, the authors' own benchmark tool). An unnamed setup under similar load averaged 52 s TTFT with mostly failed requests (self-reported). Levers named for lowering TTFT: a shorter prompt, a cached prefix, a smaller max context window, and retrieved text placed late in the prompt.
 
+## Xiao and Zhu's metric list
+
+Xiao and Zhu define time to first token (TTFT) as the time from sending a request to the first generated token, and call the time for each later token inter-token latency. They list latency, throughput, utilisation, energy and cost alongside these and advise reporting quality and efficiency metrics together.
+
+## Latency and throughput arithmetic in the LLM Engineer's Handbook
+
+The handbook's illustrative arithmetic (unbatched, sequential): 100 ms per request gives 10 requests per second and 10 ms gives 100. With batching, 20 requests in 100 ms is 200 requests per second and 60 in 200 ms is 300, so doubling latency raises throughput by half. It also cites a 2016 Google study, via Think with Google, that 53% of mobile visits were abandoned when a site took over three seconds to load.
+
 ## Limits
 
 - Prices, batch-API discounts (50% cheaper, hours of turnaround), MFU benchmarks and hardware specs date from the books' writing (2024-2025).
 - The extraction lost the MBU equations and figures, and most chapter-1 figures are uncited or quoted from vendors; the chapter text conflicts on H800 memory.
 Limits of this section:
 - One run per setup, a single prompt, no variance. The chapter calls Pattern 27 by a different name in its summary.
+- The handbook's latency-throughput figures are worked examples, not measurements, and its abandonment figure is a cited mobile-site result, not a model-serving one.
+
 
 ## See Also
 - [[Disaggregated Prefill-Decode Serving]] — related
 - [[LLM Inference Economics]] — prerequisite-for
 - [[LLM System Bottleneck Table]] — related
+- [[AI Application Planning: Usefulness Threshold and Milestones]] — related (TTFT and TPOT as part of a usefulness threshold)

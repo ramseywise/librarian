@@ -2,12 +2,13 @@
 title: Loop Detection and the Two-Retry Rule
 tags: [llm, agents, infra, pattern]
 summary: "The doom loop produces ten mutations of a broken solution — detection tracks per-file edit counts and forces re-planning rather than repair, because past two failures the problem is the spec, not the execution."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/playground/skills/workflow-triage/SKILL.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--05-verification-loops.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--05-verification-loops.md
   - data/raw/repos/nonprofit-success-ai/.claude--skills--workflow-triage--SKILL.md
+  - data/raw/papers/2026-11-08-prompt-engineering-for-generative-ai-ch06-autonomous-agents-memory-tools.md
 ---
 
 # Loop Detection and the Two-Retry Rule
@@ -68,6 +69,14 @@ dispatching a third attempt. Two failed attempts at the same stage mean the prob
 judgment, not another sample. The retry counter turned out to be a weak signal in
 practice: it read 0 in 134 of 135 ledger rows, while plans failed a day later at build.
 See Gate Pass Rate Measures Effort, Not Readiness.
+
+## Iteration caps in LangChain agents (Phoenix and Taylor)
+
+Phoenix and Taylor (*Prompt Engineering for Generative AI*, chapter 6) let a ReAct loop end on a "Final Answer" string or an iteration limit, and say to bound cost with `max_iterations` and `max_execution_time` in case an agent loops. The `create_sql_agent` signature they print has `max_iterations` 15 and `top_k` 10 (library version not stated). They also suggest a stop sequence so the model cannot make up tool output, and a recovery plan when regex parsing of agent output fails, such as having an LLM fix the earlier reply or retrying from the prior state.
+
+## Limits
+
+- The Phoenix and Taylor chapter has no experiments and uses 2023-24 LangChain APIs; its caps are advice, with no measurement of how often loops occur.
 
 ## See Also
 - [[CLI Agent Failure Timeline]] — related

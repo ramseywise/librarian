@@ -57,3 +57,4 @@ Results below are self-reported, with the setup beside each.
 - [[MemLong Retrieval Memory Layers]] — related (retrieval memory layers)
 - [[Stored Instruction Computer LLM Memory Universality]] — related
 - [[DNC Memory Allocation and Temporal Links]] — related
+- [[Transformer-XL Segment Recurrence]] — related (segment-level recurrence with cached hidden states)

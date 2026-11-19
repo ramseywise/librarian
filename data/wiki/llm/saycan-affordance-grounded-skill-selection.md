@@ -74,3 +74,5 @@ Plan success means the chosen skills are right, whether or not they execute.
 - [[KnowNo Conformal Ask-for-Help]] — extends (adds a calibrated decision to ask a human)
 - [[RT-1 Robotics Transformer]] — related
 - [[PaLM-E Embodied Multimodal Language Model]] — related
+- [[Inner Monologue Embodied Feedback Planning]] — extends (adds closed-loop language feedback)
+- [[Code as Policies Language Model Programs]] — related

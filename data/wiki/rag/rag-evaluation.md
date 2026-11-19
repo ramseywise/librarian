@@ -2,13 +2,14 @@
 title: RAG Evaluation
 tags: [rag, eval, concept]
 summary: Three-tier evaluation architecture for RAG pipelines — golden datasets, LLM-as-judge, failure clustering, ragas vs deepeval, and retrieval lift measurement.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
   - data/raw/claude-docs/playground/docs/archived/rag-agent-template-research.md
   - data/raw/claude-docs/playground/docs/archived/mvp-feedback-eval/plan.md
   - data/raw/claude-docs/listen-wiseer/docs/research/eval-harness.md
   - data/raw/linear/2026-04-24-evaluation-and-improvement.md
+  - data/raw/papers/2026-11-08-llm-engineers-handbook-ch07-evaluating-llms.md
 ---
 
 # RAG Evaluation
@@ -262,6 +263,10 @@ LLM judge scores should not be trusted at scale until calibrated against human l
 This is especially important for edge cases — judge prompts optimized on average-case behavior may not generalize to failure modes. See [[HITL Annotation Pipeline]] for the full annotation workflow.
 
 ---
+
+## Handbook note (LLM Engineer's Handbook, ch. 7)
+
+Iusztin and Labonne judge RAG on three axes (retrieval accuracy, how well the context is integrated, and factuality with relevance), using Ragas to iterate quickly and ARES for deeper checks at key stages. See [[Ragas Reference-Free RAG Metrics]] and [[ARES Automated RAG Evaluation]].
 
 ## See Also
 - [[RAGChecker]] — related (claim-level retriever and generator diagnosis)

@@ -37,3 +37,5 @@ Baselines were 2014-2018 neural parsers adapted to take the schema as a column l
 - [[Text-to-SQL as a Retrieval Strategy]] — prerequisite-for (the use of text-to-SQL this benchmark measures)
 - [[Lost in Conversation (Sharded Multi-Turn Simulation)]] — related (its database tasks come from this benchmark)
 - [[Simulated User Evaluation]] — related
+- [[WikiSQL and Seq2SQL]] — alternative-to
+- [[CodeXGLUE Code Understanding and Generation Benchmark]] — related

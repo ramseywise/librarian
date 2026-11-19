@@ -2,7 +2,7 @@
 title: "Choosing an Encoder vs CNN vs LSTM"
 tags: [data-science, comparison]
 summary: "Decide by score at your data size, fit to the problem's structure, and cost at your length: a CNN won on small digits at every size, the encoder aced long-range tasks and lost local-pattern ones, and attention cost grows as n squared; take the learning curve on your own data."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--05b-transformer-encoders.md
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--06-neural-text-models.md
@@ -41,3 +41,4 @@ Batch 8, d 32, one thread: n=512 encoder 22.18 ms vs LSTM 4.28 ms; n=2048 327.15
 - [[Pre-Norm vs Post-Norm and Warm-Up]] — related
 - [[Neural Text Models vs TF-IDF]] — related
 - [[Transformer Architecture]] — related
+- [[LSTM: Constant Error Carousel and Gated Memory Cells]] — related

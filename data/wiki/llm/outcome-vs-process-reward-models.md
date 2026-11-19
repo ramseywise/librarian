@@ -8,6 +8,9 @@ sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--post-training-for-agents.md
   - data/raw/papers/2026-11-07-lightman-2023-let-s-verify-step-step.md
   - data/raw/papers/2026-11-07-lambert-2024-tulu-3.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch04-alignment.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch05-inference.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch06-reasoning.md
 ---
 
 # Outcome vs Process Reward Models
@@ -78,10 +81,21 @@ The DeepSeekMath paper's curves also favour process over outcome supervision for
 
 Tulu 3 (Lambert et al., 2024) runs PPO with a binary verifiable reward after preference tuning (RLVR): the verifier returns alpha for a verifiably correct answer and 0 otherwise, with alpha set to 10 from pilot experiments and not tuned (self-reported, all RLVR runs). In a GSM8K RLVR sweep of the KL coefficient beta from 0.1 down to 0.001, a variant that also added reward-model scores to the verifiable reward scored below the verifiable reward alone (self-reported; Figure 22).
 
+## Xiao and Zhu's textbook treatment
+
+Xiao and Zhu define an outcome model as scoring only the final answer and a process model as scoring each step given the input and earlier steps. Their example of the outcome failure is a solution to 2x+4=10 with wrong logic but the correct answer 3, which an outcome model would score high (a worked example, no model run).
+
+- **Aggregation and labels.** They aggregate step scores with the minimum or the mean. They build process labels by human annotation or by rollouts sampled from each step and checked against a known final answer, and advise annotating steps where the model is confident yet mistaken. In chapter 4 the process reward is the sum over steps of `log Pr(correct | x, y<=k)`.
+- **Generative verifiers.** A generative verifier prompts an LLM to critique the steps in words, and its score is the probability that the first token is "Correct".
+- **Choosing a verifier.** They advise choosing by availability: tools or tests, a trained reward model, an LLM judge, or majority vote, and using formal systems (code execution, equivalence checkers) where the task allows, feeding error messages back to the model.
+- **Credit assignment.** With outcome-only feedback the model must guess which step caused a failure. Shaping the reward as step differences `r_t = v_t - v_{t-1}` makes the sum of rewards telescope to the final step score minus the starting score. Their illustration has a process-model confidence rising from 0.4 to 0.9 (reward +0.5) and then falling to 0.1 (reward -0.8), with a starting score of 0; it is not an experiment. They link this to the advantage through potential-based shaping, an argument they do not measure.
+
 ## Limits
 
 - Lightman et al.: the large-scale ORM and PRM training sets cannot be compared directly, since the PRM set is biased by active learning and an order of magnitude smaller. No RL is applied to the generator; only the reward models are evaluated, via best-of-N. Whether this carries beyond math is unknown. Retraining the selector iteratively was unstable and brought no gain. MATH test contamination is possible, though the authors expect relative comparisons to hold. The optimizer, learning rate, batch size and hardware go unreported.
 - Lambert et al.: the RLVR stage handles just math and checkable instruction following, and its targets overlap with evaluation benchmarks; alpha was not tuned; the reward-model comparison is a GSM8K-only sweep, one run per configuration.
+- Xiao and Zhu's chapters 4 to 6 give almost no empirical numbers: the shaping and false-positive cases are worked examples, and the claim that search gains plateau is asserted from cited work without data. The chapter 6 PDF is truncated in its summary section and has no reference list.
+
 
 ## See Also
 - [[Preference Optimization Algorithms]] — prerequisite-for (GRPO and DAPO, the reasoning methods that consume these rewards)
@@ -102,3 +116,4 @@ Tulu 3 (Lambert et al., 2024) runs PPO with a binary verifiable reward after pre
 - [[SDPO Self-Distillation Policy Optimization]] — related
 - [[GRPO Group Relative Policy Optimization]] — related
 - [[Tulu 3 Post-Training Recipe and RLVR]] — related (verifiable outcome reward with PPO)
+- [[Verifier Reranking for Math Word Problems]] — instance-of

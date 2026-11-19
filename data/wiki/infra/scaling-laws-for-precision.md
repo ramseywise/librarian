@@ -33,3 +33,5 @@ Setup: OLMo-style models of 30M to 220M parameters trained on Dolma, with GPTQ p
 - [[MoE Expert Offloading]] — related (hard quantization of expert weights in practice)
 - [[FP8-LM Mixed-Precision FP8 Training]] — related
 - [[QLoRA 4-Bit Quantized Finetuning]] — related (4-bit finetuning in practice)
+- [[Scaling Laws: Kaplan, Chinchilla and Error Landscapes]] — prerequisite-for
+- [[Training Energy and Carbon Estimates]] — related

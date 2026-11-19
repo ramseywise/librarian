@@ -2,7 +2,7 @@
 title: "Batch Norm Eval Mode and Small-Batch Failure"
 tags: [data-science, pattern]
 summary: "Batch norm uses batch statistics in train mode and running statistics in eval mode, so forgetting model.eval() costs about 9 accuracy points at batch 32, tiny batches break it, and layer norm removes the batch dependence."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--02-optimisation-and-regularisation.md
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--README.md
@@ -30,3 +30,4 @@ Running (exponential-average) statistics lag the current weights. A ResNet-50 at
 - [[Batch Normalization]] — extends
 - [[PyTorch Training Loop Silent Bugs]] — related
 - [[Weight Initialisation and Activation Scale]] — related
+- [[Critical Batch Size and the Gradient Noise Scale]] — related

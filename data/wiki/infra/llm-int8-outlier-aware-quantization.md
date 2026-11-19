@@ -5,6 +5,7 @@ summary: "LLM.int8() quantizes transformer matrix multiplications to 8 bits with
 updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-dettmers-2022-llm-int8.md
+  - data/raw/papers/2026-11-07-llm-engineers-handbook-ch08-inference-optimization.md
 ---
 
 # LLM.int8 Outlier-Aware Quantization
@@ -18,6 +19,10 @@ Dettmers et al. ask why standard 8-bit quantization fails on large transformers 
 - At 6.7B about 150k outliers appear per 2048-token sequence, concentrated in 6 feature dimensions. Zeroing at most 7 outlier dimensions increases perplexity by 600-1000%, whereas removing 7 random dimensions increases it by about 0.1%; the same removal also halves the mean top-1 attention softmax probability (about 40% before, about 20% after).
 - Speed: the raw Int8 matmul reaches 2x only at large sizes; once quantization overhead is counted, LLM.int8() loses to FP16 for small models and gains 1.81x at the GPT-3 175B feed-forward dimension (12288). End-to-end BLOOM-176B Int8 on 8 A100 80GB at batch size 1 is slightly slower than bfloat16.
 - Fine-tuning RoBERTa-large on GLUE with an Int8 feed-forward gives a mean of 88.81 against 88.61 at 32-bit. Int8 training of a 1.1B model with feed-forward and attention projections degrades (perplexity 10.52 against 9.99).
+
+## Handbook restatement (LLM Engineer's Handbook, ch. 8)
+
+Iusztin and Labonne repeat the paper's claim as: memory falls by almost half, performance drops by less than 1% relative to the FP32 originals, and large models run about 20% slower. The baseline for the slowdown is not stated, and the chapter gives no model or hardware for these figures (reported). They describe outlier features as about 0.1% of values.
 
 ## Limits
 
@@ -33,3 +38,4 @@ Dettmers et al. ask why standard 8-bit quantization fails on large transformers 
 - [[Model Compression Landscape]] — related
 - [[LLM Inference Economics]] — related
 - [[QLoRA 4-Bit Quantized Finetuning]] — related (quantised base model finetuned with adapters)
+- [[GLM-130B Stability Recipe and INT4 Quantization]] — alternative-to

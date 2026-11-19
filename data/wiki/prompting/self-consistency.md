@@ -2,7 +2,7 @@
 title: Self-Consistency
 tags: [prompting, llm, concept]
 summary: Sample several chain-of-thought completions at non-zero temperature and take the majority answer — reasoning paths that converge are more trustworthy than any single greedy path, at N× cost and only when there is a single extractable answer to vote on.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--03-core-techniques.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--06-chaining-and-workflows.md
@@ -13,6 +13,8 @@ sources:
   - data/raw/papers/2026-11-08-hu-2024-rankprompt.md
   - data/raw/papers/2026-11-08-prabhu-2024-pedal.md
   - data/raw/papers/2026-11-07-wang-2022-self-consistency-improves-chain-thought.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch03-prompting.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch06-reasoning.md
 ---
 
 # Self-Consistency
@@ -66,10 +68,16 @@ Wang et al. (ICLR 2023, arXiv v4) draw m reasoning paths from an unmodified mode
 
 For the sequential alternative to parallel voting see [[s1 Budget Forcing]], which compares budget forcing against majority voting on AIME24.
 
+## Xiao and Zhu's account
+
+Xiao and Zhu define self-consistency as sampling several reasoning paths and returning the most frequent extracted answer, `argmax_a sum_k 1(Extract(y_k) = a)`. A footnote classes it as output ensembling, a minimum-Bayes-risk selection, not prompt ensembling. Their worked example samples three chain-of-thought predictions for a three-coin-flip probability: two reach 37.5% and one reaches 33.3% by ignoring that there are 8 outcomes, so 37.5% wins (an illustration, not an experiment). For evaluation they define Cons@k as the accuracy of the majority answer over k sampled paths, next to Pass@k, the probability that at least one of k samples is correct.
+
 ## Limits
 
 - Original paper (Wang et al.): extra compute (40 samples per question); only where final answers come from a comparable fixed set; models can still produce incorrect reasoning paths when the answer is right; small gains at small scale; LaMDA and PaLM are not public; the engines are 2022-era and no longer served.
 - Mirzaei et al. study: small question sets, three small models, and several internal count inconsistencies noted in the extraction; do not extend the result to frontier models.
+- Xiao and Zhu say ensembling may give only modest gains for stronger LLMs; their self-consistency and Cons@k material has no experiments.
+
 
 ## See Also
 - [[Chain-of-Verification]] — related (the model checks its own draft with isolated questions)
@@ -95,3 +103,5 @@ For the sequential alternative to parallel voting see [[s1 Budget Forcing]], whi
 - [[RECITE Recitation-Augmented Generation]] — related
 - [[Multiagent Debate for Factuality and Reasoning]] — related
 - [[MultiMedQA and Med-PaLM]] — instance-of (used as a deferral signal)
+- [[Minerva Quantitative Reasoning]] — instance-of
+- [[CodeT Generated-Test Reranking]] — related

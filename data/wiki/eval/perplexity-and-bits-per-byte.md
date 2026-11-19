@@ -5,6 +5,7 @@ summary: "Language-modeling metrics measure how well a model predicts text: entr
 updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-huyen-ai-engineering-ch03-evaluation-methodology.md
+  - data/raw/papers/2026-11-08-build-a-large-language-model-from-scratch-ch05-pretraining-on-unlabeled-data.md
 ---
 
 # Perplexity and Bits-per-Byte
@@ -14,6 +15,8 @@ Chip Huyen's *AI Engineering* (O'Reilly, chapter 3) groups evaluation of open-en
 **Entropy** is the average amount of information carried by one token. **Perplexity** is the exponential of entropy or cross entropy. **BPC** and **bits-per-byte** (BPB) express the same quantity per character or per byte; BPB is the bits the model spends per byte of the original text it was trained on. Worked example from the chapter: with 7-bit ASCII characters, a BPC of 3 corresponds to a BPB of 3.43 (assuming 6 bits per token and 2 characters per token).
 
 Larger models give lower perplexity. The GPT-2 report (cited in the chapter) lists LAMBADA perplexity of 35.13 for the 117M model falling to 8.63 for the 1542M model, with 345M and 762M sizes between them.
+
+Raschka (*Build a Large Language Model (From Scratch)*, chapter 5) defines perplexity as exp(cross-entropy loss) and reads it as the number of tokens the model is effectively unsure among. His untrained-model example gives loss 10.7940 and perplexity 48,725.8203 on six target tokens; worked numbers are on [[Pretraining a Small GPT: Loss, Perplexity and Overfitting]].
 
 ## What it is used for
 
@@ -27,3 +30,4 @@ The author says perplexity is a poor proxy for models that have been post-traine
 - [[Evaluation-Driven Model Selection]] — related (the next chapter's treatment of criteria and benchmarks)
 - [[Neural Probabilistic Language Model]] — related (a paper whose headline result is stated in perplexity)
 - [[MAUVE]] — related
+- [[Pretraining a Small GPT: Loss, Perplexity and Overfitting]] — instance-of (worked untrained and trained numbers)

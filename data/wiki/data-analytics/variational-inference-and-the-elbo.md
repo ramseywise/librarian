@@ -66,3 +66,4 @@ ADVI fits one q per model; a variational autoencoder fits one encoder network th
 - [[Divergences and Non-Centred Parameterisation]] — related (posterior geometry)
 - [[Gaussian Processes and Bayesian Optimisation]] — related
 - [[CAVI and Stochastic Variational Inference]] — extends
+- [[Auto-Encoding Variational Bayes]] — instance-of

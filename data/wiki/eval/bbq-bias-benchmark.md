@@ -39,3 +39,5 @@ All numbers are the paper's own (self-reported). UnifiedQA was run zero-shot; Ro
 - [[LLM Judge Biases]] — related
 - [[Benchmark Prompt Format Sensitivity]] — related
 - [[LLM Bias and Fairness Survey]] — related (survey that places BBQ among bias datasets)
+- [[Stereotype and Gender Bias Benchmarks]] — alternative-to (likelihood, pair and coreference formats for the same kind of bias)
+- [[Model Cards]] — related

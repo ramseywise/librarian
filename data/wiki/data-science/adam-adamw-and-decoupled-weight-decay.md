@@ -8,6 +8,8 @@ sources:
   - data/raw/papers/2026-11-08-dahl-2023-benchmarking-neural-network-training-algorithms.md
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--README.md
   - data/raw/papers/2026-11-08-fundamentals-of-deep-learning-ch04-beyond-gradient-descent.md
+  - data/raw/papers/2026-11-07-kingma-2014-adam.md
+  - data/raw/papers/2026-11-07-loshchilov-2017-decoupled-weight-decay-regularization.md
 ---
 
 # Adam, AdamW and Decoupled Weight Decay
@@ -39,16 +41,43 @@ In the AlgoPerf baselines (8 workloads, 20 tuning trials by 5 studies; self-repo
 
 For deep nets the authors favour RMSProp or Adam to AdaGrad, and add that most breakthroughs came from architectures that are easier to train, not from the optimiser.
 
+## The Adam paper (Kingma and Ba)
+
+Adam is meant to merge what AdaGrad does for sparse gradients with what RMSProp does for shifting objectives. Two exponential moving averages track the gradient (m) and its square (v); both are bias-corrected, and the step is alpha times m_hat over (sqrt(v_hat) + eps). The authors call m_hat/sqrt(v_hat) a signal-to-noise ratio. Results below are the paper's own (self-reported).
+
+- With eps=0 the effective step is bounded by alpha in common cases (a trust-region reading). In the online convex setting regret is O(sqrt(T)), so the average regret goes to 0; the authors say the proof does not cover non-convex problems.
+- VAE experiment (500 softplus hidden units, 50-d latent): leaving out bias correction with beta2 close to 1 gave unstable training, chiefly early on; the best runs paired a small (1-beta2) with the correction, and Adam matched or beat RMSProp throughout.
+- On MNIST logistic regression Adam converged like SGD-Nesterov and faster than AdaGrad; on sparse IMDB bag-of-words (50% dropout) it matched AdaGrad, both well ahead of SGD-Nesterov. On a CIFAR-10 CNN, Adam and SGD converged considerably faster than AdaGrad; there v_hat fell near zero after a few epochs and was dominated by epsilon.
+- SFO ran 5-10x slower per iteration than Adam, needed memory linear in the number of minibatches, and failed to converge with dropout.
+- AdaMax swaps the L2 norm for the infinity norm, giving a running maximum of beta2 times the previous value and the current gradient magnitude; this needs no bias correction and keeps |delta_t| within alpha.
+
+## The AdamW paper (Loshchilov and Hutter)
+
+The authors prove that L2 regularisation matches weight decay for SGD only if the L2 coefficient is rescaled (lambda' = lambda/alpha), and that no coefficient makes them match for Adam. Decoupled decay moves the shrinkage into the parameter update, outside the gradient, so Adam's second-moment scaling no longer touches it: the update subtracts the Adam step and lambda times the current weights together. Setup for the numbers below (self-reported): 26 2x64d and 26 2x96d Shake-Shake-style ResNets on CIFAR-10 and ImageNet32x32, with grids over learning rate and decay.
+
+- With default lr 0.001, the 26 2x96d net, cosine annealing and 1800 epochs, AdamW lowered test error 15% relative to Adam with L2 (top-1 for CIFAR-10, top-5 for ImageNet32x32). On CIFAR-10 it narrowed most, not all, of the distance to SGD with decoupled decay and warm restarts.
+- Under L2, Adam's best runs with a non-zero penalty were no better than its best with lambda=0. Adam with L2 trained 1800 epochs on the larger network at most equalled AdamW trained 18 times fewer epochs on the smaller one.
+- Learning rate and weight decay are largely separable with decoupling (shown in heatmaps, no numeric measure, 26 2x64d, CIFAR-10, 100 epochs). Decoupled decay beat L2 under all three schedules, the gap widening for stronger schedules, and cosine annealing was best.
+- The best raw decay falls as the epoch count rises; the normalised form lambda = lambda_norm*sqrt(b/(B*T)), with b the batch size, B the training-set size and T the epochs, carries over between budgets and datasets. Without it, the raw lambda for ImageNet32x32 would have been about 5x too large against CIFAR-10 at the same epochs. Best normalised values were similar for SGDW and AdamW.
+- AdamWR (warm restarts) sped AdamW up by as much as 10x at the first restart.
+- Third-party, privately provided (reported): on EEG data from Voelker et al., AdamW against Adam gave 73.68% against 71.37% (Deep4Net) and 72.04% against 61.34% (ResNet).
+- Hoffmann et al. also found AdamW beat Adam regardless of schedule on 417M and 1.4B models; see [[Scaling Laws: Kaplan, Chinchilla and Error Landscapes]].
+
 ## Limits
 
 - The chapter's optimiser claims rest on one toy MNIST run, with no seeds, variance or comparison between optimisers; a script is only pointed to.
 - Dated (2017 book, TensorFlow 0.x API): it says Nesterov momentum, conjugate gradient and L-BFGS are missing from TensorFlow and AdaDelta unsupported, all since added. It calls second-order methods unpopular and says there is little consensus on optimiser choice. Decoupled weight decay (AdamW), learning-rate schedules and warmup are not covered.
 - The book itself calls the 1/3^d argument loose, and treats the prevalence of spurious local minima as an open question.
+- Adam paper: the regret proof is for convex online learning alone, and its last line disagrees with the theorem as stated; only training cost is reported (no test metrics, seeds or variance), with dataset sizes, splits, dropout rates, decay values, epochs and hardware left out; the authors observe that the second-moment estimate dies out in CNNs, a poor picture of the geometry.
+- AdamW paper: image classification only (CIFAR-10, ImageNet32x32, Shake-Shake ResNets); no seeds, error bars, hardware or compute; the square-root normalisation rests on few experiments; the belief that results carry to AdaGrad and AMSGrad is untested; language-model use is only cited. The 15% figure compares Adam with AdamW and mixes top-1 (CIFAR-10) with top-5 (ImageNet32x32).
 - The chapter's code has errors (the random-walk snippet's step range, an `append()` with no argument, relu applied to logits in the interpolated output layer).
 
 ## See Also
+- [[Adafactor Factored Second Moments]] — extends (cuts Adam's second-moment memory)
+- [[Large-Batch Recipes: Linear LR Scaling, Warmup and Growing the Batch]] — related
 - [[Weight Initialisation and Activation Scale]] — prerequisite-for
 - [[Regularisation Under Noisy Labels]] — related
 - [[Regularisation as a Prior]] — related
 - [[AlgoPerf: Time-to-Result Benchmark for Training Algorithms]] — extends
 - [[D-Adaptation (Learning-Rate-Free Optimisation)]] — extends (removes the learning-rate setting)
+- [[Pretraining a Small GPT: Loss, Perplexity and Overfitting]] — related (AdamW in a small GPT pretraining loop)

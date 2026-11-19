@@ -5,6 +5,7 @@ summary: WaveNet (van den Oord et al., 2016) is a deep autoregressive generative
 updated: 2026-11-19
 sources:
   - data/raw/pdfs/2016-09-12-wavenet.md
+  - data/raw/papers/2026-11-07-oord-2016-wavenet.md
 ---
 
 # WaveNet — Autoregressive Audio Generation
@@ -75,6 +76,19 @@ Harmonically pleasing samples but lacked long-range coherence (receptive field ~
 ### Speech Recognition
 18.8 PER on TIMIT — best result from a model trained directly on raw audio.
 
+## Setup and evidence
+
+The 2016 paper's setup, from the extraction (numbers are the authors' own, self-reported):
+
+- TTS: North American English, one female speaker with 24.6 h of audio, scored on 100 held-out sentences by crowdsourced MOS (8 raters per stimulus; roughly 40% of ratings were discarded because raters lacked headphones); Mandarin 34.8 h. WaveNet is conditioned on linguistic features and log F0. English baselines score 3.86 (concatenative) and 3.67 (LSTM parametric).
+- Multi-speaker: VCTK, 44 h, one-hot speaker conditioning, 109 speakers.
+- Given a 240 ms receptive field and only linguistic features, WaveNet at times put stress on the wrong words, and F0 conditioning corrected that. The roughly 300 ms receptive field of the multi-speaker model remembers only the last 2-3 phonemes.
+- Music (MagnaTagATune and YouTube piano) needs a large receptive field yet lacks long-range consistency over several seconds; evaluation is by listening only.
+- TIMIT uses a joint next-sample and frame-classification loss, mean-pooled to 10 ms frames.
+- The μ-law transform is f(x) = sign(x) ln(1 + μ|x|) / ln(1 + μ) with μ = 255, which avoids a 65,536-way softmax over 16-bit audio.
+
+The gated unit and autoregressive softmax come from the PixelCNN line, see [[PixelRNN and Gated PixelCNN]]; [[Jukebox Multi-Scale VQ-VAE Music]] takes raw-audio generation to music with a VQ-VAE hierarchy.
+
 ## Relevance to Agent Engineering
 
 WaveNet established that autoregressive neural models can generate high-quality audio directly from raw waveforms. This is the foundation for:
@@ -84,10 +98,20 @@ WaveNet established that autoregressive neural models can generate high-quality 
 
 Related speech generators are compared on [[Speech and Audio Generation and Recognition]].
 
+## Limits
+
+- The paper omits training hyperparameters: optimiser, learning rate, batch size, steps, layer and channel counts, parameter count and hardware.
+- Each audio sample needs its own sequential step, so generation is slow; no speed figure is given.
+- Without F0 conditioning, a 240-300 ms receptive field is too short to keep prosody and phoneme-level coherence, and generated music does not stay consistent over longer spans.
+- Music is judged only by listening.
+- The evaluation covers single-speaker data and just 100 test sentences.
+
 ## See Also
 - [[Dilated Causal Convolutions]] — extends
 - [[Speech and Audio Generation and Recognition]] — related (later codec-token and flow-matching audio generators)
 - [[Voice Agent Patterns]] — instance-of (modern voice agents build on WaveNet lineage)
 - [[Transformer Architecture]] — alternative-to (autoregressive but attention-based vs convolution-based)
 - [[SoundStream Neural Audio Codec]] — related
+- [[PixelRNN and Gated PixelCNN]] — prerequisite-for
+- [[Jukebox Multi-Scale VQ-VAE Music]] — extends
 - [[VALL-E Neural Codec Language Model TTS]] — related

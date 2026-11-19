@@ -6,6 +6,7 @@ updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-gururangan-2020-dont-stop-pretraining.md
   - data/raw/papers/2026-11-07-azerbayev-2023-llemma.md
+  - data/raw/papers/2026-11-08-qiu-2020-pre-trained-models-natural-language.md
 ---
 
 # Continued Pretraining for Domain Adaptation
@@ -38,13 +39,24 @@ Reported results (self-reported):
 - Contamination check: Matching 30-grams in Proof-Pile-2 exist for roughly 7% of MATH test problems, and for 0.6% of the solutions, and problems with a match are not solved more often (Level 5 at 34B: 6.08% with a match, 6.39% without).
 - Fine-tuned on MetaMathQA, the 7B reaches 25.2% MATH against 19.4% for Llama 2 7B.
 
+## As summarised in the Qiu survey
+
+Section 5.3 of Qiu et al.'s survey of pre-trained NLP models lists two-stage fine-tuning as a way to improve BERT, meaning further pre-training on an in-domain corpus or an intermediate supervised task before the target task. Its related advice is to pick a model whose pre-training task, architecture and corpus fit the target task and data. The survey compiles this from the original papers and runs no experiment.
+
 ## Limits
 
 - DAPT and TAPT: only RoBERTa-base and text classification. The BioMed and CS corpora come from an in-house S2ORC version that cannot be fully released. Domain boundaries blur (reviews and news share 40% of unigrams), and MLM loss measured across domains is a rough stand-in for similarity. HYPERPARTISAN has only 65 test examples and varies a lot by seed (degenerate seeds were thrown out and redrawn). The TAPT-then-DAPT order was not tried, the compute table covers RCT-500 alone, and the expense of curating data for Curated-TAPT is left out. Results do not beat the state of the art on several tasks.
 - Llemma: there is no from-scratch baseline, so gains are measured against the Code Llama starting point. Mixture weights were tuned on MATH training perplexity. The effect of contracting the RoPE base period at 34B is unchecked, and the 7B run ended at 42,000 of a planned 48,000 steps after the loss turned NaN. The memorisation analysis is a lower bound (exact n-grams). Minerva scores are quoted, not rerun; the SFT study is preliminary with no seeds.
+- The Qiu survey (to early 2021) is advice compiled from other papers, with no numbers for this technique.
 
 ## See Also
 - [[Post-Training Reasoning Data Primer]] — related (data for reasoning after pretraining)
 - [[Phi-4 Training Recipe and Pivotal Token Search]] — related (data-centred recipe for a general model)
 - [[Parameter-Efficient Fine-Tuning Methods]] — alternative-to (adapting with few trained parameters rather than continued pretraining)
 - [[RAFT Retrieval-Augmented Fine-Tuning]] — related (domain adaptation for retrieval-based QA)
+- [[Code LLM Training Recipes]] — related
+- [[Minerva Quantitative Reasoning]] — instance-of
+- [[ULMFiT: Universal Language Model Fine-Tuning]] — related
+- [[Domain-Specific Pretraining from Scratch: Galactica and BloombergGPT]] — alternative-to
+- [[Pretraining Data Age, Quality and Toxicity Ablations]] — related
+- [[Dolma Open Pretraining Corpus]] — related

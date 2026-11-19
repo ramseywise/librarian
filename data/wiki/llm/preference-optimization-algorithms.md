@@ -12,6 +12,7 @@ sources:
   - data/raw/papers/2026-11-07-rafailov-2023-dpo.md
   - data/raw/papers/2026-11-07-lambert-2024-tulu-3.md
   - data/raw/papers/2026-11-07-meng-2024-simpo.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch04-alignment.md
 ---
 
 # Preference Optimization Algorithms
@@ -197,6 +198,10 @@ Tie et al. (arXiv 2503.06072v3, preprint, cutoff about March 2025) is a breadth 
 - Lambert et al., the Tulu 3 report (self-reported; Table 18 ablation, one early SFT checkpoint, UltraFeedback only, one run each): length-normalised DPO was the only preference algorithm to beat the SFT base overall. Plain DPO (55.2), PPO (55.5) and SimPO (best 52.9) stayed under the base at 55.7.
 - Meng et al. (self-reported; Llama-3-Instruct v0.2): with ArmoRM as the preference labeller, DPO ties SimPO on raw win rate (47.5 each), so the gaps between algorithms shrink.
 
+## Xiao and Zhu's textbook guidance
+
+Xiao and Zhu prefer DPO where training a reward model and sampling online cost too much, and online RL such as PPO where exploration and generalisation count. Their chapter derives SFT loss masking, the Bradley-Terry reward model, A2C and PPO, and DPO in one notation.
+
 ## Limits
 
 - Kumar et al. (survey): many of its numbers carry a citation and no setup (22% wasted computation, 29% forgetting, 94% on MATH, r=0.34), so do not cite them from here. The extraction found citation errors (the DPO reference points at a different paper), a description of ORPO that does not match the ORPO paper, a DPO loss printed without its log and minus sign, and dubious rows in its model table. It covers R1, o1 and Kimi K1.5 only in outline and predates later GRPO variants.
@@ -204,6 +209,8 @@ Tie et al. (arXiv 2503.06072v3, preprint, cutoff about March 2025) is a breadth 
 - Rafailov et al.: models up to 6B only; GPT-4 win rates depend on the judge prompt; DPO's beta was barely tuned, the PPO baselines lean on the authors' tuning and a public checkpoint, and there are no seeds or significance tests.
 - Lambert et al.: the Table 18 comparison is a single run per row with no variance, on an early checkpoint with one dataset; the authors call the PPO setup untuned (reward model trained once), so PPO might improve with more tuning.
 - Meng et al.: no PPO comparison, offline training only, GPT-4 judges, and seeds and run counts are not stated; the authors note the gains get smaller when the SFT model is stronger or the labels better.
+- Xiao and Zhu's chapter 4 omits GRPO, RLVR, KTO, IPO, SimPO and constitutional AI, presents PPO as the main RLHF algorithm, mentions o1 and o3 only in passing, and gives no hyperparameters. Its notation has slips (the extraction lists a wrong equation cross-reference and inconsistent names for the reference policy).
+
 
 ## See Also
 - [[RLHF Pipeline]] — prerequisite-for (PPO is its Stage 3; every method here is a removal from it)

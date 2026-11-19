@@ -41,3 +41,5 @@ The task is to label hallucinated tokens in a translation or summary without a r
 - [[LLM Hallucination Surveys]] — related (LLM-era surveys that reuse the intrinsic/extrinsic vocabulary)
 - [[Summary Factual Consistency Metrics]] — related (FactCC and QAGS, other proxies for faithfulness)
 - [[Hidden-State Hallucination Probes]] — related (detection from model internals rather than a trained token classifier)
+- [[Webis-TLDR-17 Reddit Summarization Corpus]] — related
+- [[XSum Extreme Summarisation]] — related

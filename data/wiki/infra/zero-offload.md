@@ -2,7 +2,7 @@
 title: ZeRO-Offload
 tags: [infra, concept]
 summary: "ZeRO-Offload keeps fp16 parameters and the forward and backward pass on the GPU while gradients, optimizer states and the Adam update live on the CPU, which the paper reports lets one 32GB V100 train a 13B-parameter model."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-ren-2021-zero-offload.md
 ---
@@ -33,3 +33,4 @@ Ren et al. model mixed-precision Adam training as a weighted dataflow graph and 
 - [[DeepSpeed Inference and ZeRO-Inference]] — extends
 - [[MoE Expert Offloading]] — related
 - [[LLM Inference Economics]] — related
+- [[ZeRO Memory Partitioning]] — prerequisite-for

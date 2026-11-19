@@ -34,3 +34,4 @@ The extraction gives no figure for the headline pipeline accuracy or evidence pr
 - [[RAG Evaluation]] — prerequisite-for
 - [[DrQA Machine Reading at Scale]] — prerequisite-for
 - [[Chain-of-Verification]] — related
+- [[Adversarial NLI and HAMLET Collection]] — related

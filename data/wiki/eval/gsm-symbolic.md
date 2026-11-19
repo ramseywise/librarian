@@ -79,3 +79,4 @@ logical reasoning; they state it as a hypothesis.
 - [[REST Multi-Problem Stress Testing]] — alternative-to (stacks several questions in one prompt)
 - [[Embers of Autoregression]] — related (a reasoning model tested for the same kind of limitation)
 - [[Math Word Problem Benchmarks]] — related
+- [[Verifier Reranking for Math Word Problems]] — related

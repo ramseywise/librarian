@@ -6,6 +6,7 @@ updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--post-training-for-agents.md
   - data/raw/papers/2026-11-06-chen-2023-fireact.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch04-alignment.md
 ---
 
 # Rejection Sampling Fine-Tuning
@@ -34,6 +35,10 @@ reasoning before training matters because SFT bakes noise into the weights.
 ## FireAct as an agent instance
 
 FireAct (a 2023 preprint) is the clearest agent example: GPT-4 few-shot ReAct trajectories on HotpotQA are filtered to the successful ones, then a smaller model is tuned on 500 of them, with chain-of-thought and Reflexion trajectories reformatted as ReAct in the mixed variants. Reward only decides which trajectories to keep. Reported (self-reported, 500 dev questions, Google search tool): Llama-2-7B rose from 14.8 to 26.2 EM and GPT-3.5 from 31.4 to 39.2, which beats GPT-4 with plain prompting but not GPT-4 with chain-of-thought or ReAct. Time per trial dropped from 9.0s to 2.7s, and the tuned agent degraded less under a corrupted search tool (33.6 against 20.8 when half the results were empty). Mixing methods helped some bases and hurt others; picking the right method per question would reach 52.0 against 32.4 for random choice. Single-task LoRA reached 26.2 where full tuning reached 30.2.
+
+## Xiao and Zhu's Best-of-N framing
+
+Xiao and Zhu define Best-of-N as using a reward model to pick the best of N sampled outputs, `y_best = argmax r(x,y)`, and rejection sampling for fine-tuning as taking the top-scoring outputs in N-best lists using the reward model and then fine-tuning the model on them. They present both as cheap alignment and advise keeping the N-best list diverse.
 
 ## Limits
 

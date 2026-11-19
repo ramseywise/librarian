@@ -7,6 +7,7 @@ sources:
   - data/raw/papers/2026-11-07-wang-2023-self-instruct.md
   - data/raw/papers/2026-11-07-honovich-2023-unnatural-instructions.md
   - data/raw/papers/2026-11-07-huyen-ai-engineering-ch08-dataset-engineering.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch04-alignment.md
 ---
 
 # Self-Instruct and Unnatural Instructions
@@ -38,6 +39,10 @@ text-davinci-002 is shown 3 Super-NaturalInstructions demonstrations and writes 
 
 Huyen's chapter describes Alpaca: a Llama-7B tuned with text-davinci-003 pairs (52,000 of them) that came from the 175 Self-Instruct seeds, behaving like the teacher at 4% of its size (reported by the chapter).
 
+## Xiao and Zhu's pipeline description
+
+Xiao and Zhu describe the self-instruct loop as a task pool, sampling instructions from it, generating a new instruction, generating a sample for it, and filtering. For classification tasks they describe input inversion, attributed to the FLAN collection work: generate the input from the instruction plus a chosen output, which avoids class-skewed synthetic data. Alongside it they list other ways to build supervised data: prompt templates over existing labelled NLP datasets, scraped question-answer data and crowdsourcing, and they advise smaller, higher-quality sets chosen by an LLM-based quality rater, heuristics or influence scores rather than sheer volume.
+
 ## Limits
 
 - Self-Instruct: it inherits the language model's tail-phenomena limits, and gains may favour frequent tasks; it may work best only for large models, with no size study; in the sample, 54% of instances are valid throughout, and outputs are the noisiest field; the evaluators were two authors who wrote the instructions; just GPT3 davinci was tried, with no seeds or variance and tuning details hidden behind the API. Inter-rater kappa is 0.57 in the body and 0.58 in Appendix B.2.
@@ -51,3 +56,4 @@ Huyen's chapter describes Alpaca: a Llama-7B tuned with text-davinci-003 pairs (
 - [[UltraChat and LaMini Instruction Datasets]] — extends
 - [[Autodata Agentic Self-Instruct]] — related
 - [[Synthetic Instruction Data: Curation and Verification]] — related
+- [[Supervised Instruction Fine-Tuning of GPT-2 with an LLM Judge]] — related (training on instruction pairs, with a small worked run)

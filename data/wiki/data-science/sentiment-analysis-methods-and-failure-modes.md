@@ -7,6 +7,7 @@ sources:
   - data/raw/repos/learn-ai-engineering/data-science--03-nlp--notes--06-sentiment-analysis.md
   - data/raw/papers/2026-11-08-text-analytics-with-python-ch07-semantic-sentiment-analysis.md
   - data/raw/papers/2026-11-07-building-ai-agents-llms-rag-kgs-ch01-analyzing-text-data-deep-learning.md
+  - data/raw/papers/2026-11-08-maas-2011-learning-word-vectors-sentiment-analysis.md
 ---
 
 # Sentiment Analysis Methods and Failure Modes
@@ -51,6 +52,14 @@ According to the text, the lexicons recall many positives but with low precision
 
 Raieli and Iuculano's chapter ends in a GRU classifier on a binary movie-review set (average review 230 words). Setup: 300-d embeddings, 256 hidden units, 3 layers, 0.5 dropout, Adam with learning rate 0.001, binary cross-entropy, batches of 50, a vocabulary cut to the 1,000 most frequent words, and a stratified 80/20 train/test split with a tenth of train kept for validation. The text gives no accuracy figure, only plots. The authors prefer LSTM or GRU to a plain RNN against vanishing gradients, and call GRU lighter but more prone to overfitting.
 
+## Sentiment-supervised word vectors and the IMDB benchmark (Maas et al., 2011; results self-reported)
+
+Maas and colleagues test whether word vectors can capture semantic and sentiment similarity at once when trained on unlabelled documents together with documents carrying sentiment labels. A log-bilinear latent-mixture document model (word matrix R, biases b, per-document theta by MAP) is fitted jointly with a logistic-regression sentiment predictor applied to each word vector, alternating between the two. A document is represented as R times its bag-of-words vector and classified by a linear SVM, against LSA, LDA and several bag-of-words weightings.
+
+- **Benchmark.** They release a 50,000-review IMDB set: balanced polarised reviews (positive score at least 7 of 10, negative at most 4, neutral excluded), at most 30 reviews per movie, 25,000 train and 25,000 test with disjoint movies. In the 2,000-review Pang and Lee set (PL04), 1,299 reviews have another review of the same movie, 249 of 406 movies with several reviews have a single polarity throughout, and about half the test reviews in the published random folds have a training review of the same movie and label.
+- **IMDB test (linear SVM, 50-d vectors, 5,000-word vocabulary).** The full model trained on labelled data only gets 87.44, where LSA gets 83.96 and LDA 67.42. A delta-idf weighted bag of words reaches 88.23, leaving the best vector-plus-bag-of-words configuration (using 50,000 extra unlabelled reviews) only about 0.7 points ahead.
+- **Other sets.** On PL04 (10-fold cross-validation) the best configuration reaches 88.90, below 90.20 for an appraisal-taxonomy method and above 87.15 for the Pang and Lee bag-of-words SVM. On subjectivity (10,000 sentences) the best combined model gets 88.58, short of Pang and Lee's bag-of-words SVM at 90.00.
+
 ## The inference-length bug
 
 An LSTM trained on length-120 sequences was fed length-20 padded inputs. It runs without error because recurrent layers accept any length. Four hand-written reviews barely moved (for instance 0.989 to 0.992) because they fit in 20 tokens, so a spot check passes. On 2,500 real held-out reviews accuracy fell from 0.782 to 0.672: the model saw only each opening. Silent train/serve skew shows up only if accuracy is measured through the serving path. Use identical preprocessing, ideally inside the model as one code path.
@@ -65,6 +74,7 @@ An LSTM trained on length-120 sequences was fed length-20 padded inputs. It runs
 - The chapter 7 numbers are one split of one dataset with no seeds or repeated runs. The split takes the leading 35,000 rows of a pooled file, not the original 25,000/25,000 split used above, so these figures are not directly comparable with the table in section 1 or the supervised figures in section 2.
 - Its lexicon thresholds (0.1 for VADER and Pattern) came from trying values against the test data, which makes the lexicon scores optimistic; the tuning-on-train advice above avoids this.
 - The comparison has no neural or transformer model, and its code is Python 2 with older NLTK.
+- Maas et al.: no variance, seeds or significance tests (the low-variance argument rests on the 25,000-example test set alone); the values of lambda, nu and SVM C, the iteration counts and the compute are missing, so the model cannot be rebuilt from the paper; the best vector results stay below the best published PL04 and subjectivity numbers; the vocabulary is capped at 5,000 words; the authors call their qualitative evidence an impressionistic look at a few cases; how many of the 50,000 unlabelled reviews are neutral is not reported; differences between the top IMDB rows are small (87.80 to 88.89).
 - The GRU chapter is conceptual: epochs, seed and hardware are not specified, and its claims about LSTM memory and GRU against LSTM are asserted without citation.
 
 ## See Also
@@ -72,3 +82,5 @@ An LSTM trained on length-120 sequences was fed length-20 padded inputs. It runs
 - [[Linear Text Classifiers and the TF-IDF Baseline]] — prerequisite-for
 - [[Text Preprocessing and the Stop-Word Negation Trap]] — prerequisite-for
 - [[Semantic Analysis, WordNet and Lexical Ambiguity]] — related (SentiWordNet scores WordNet synsets)
+- [[Recursive Neural Tensor Network and the Stanford Sentiment Treebank]] — extends
+- [[UDA: Unsupervised Data Augmentation]] — related

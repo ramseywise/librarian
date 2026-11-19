@@ -9,6 +9,7 @@ sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--06-evaluating-agents.md
   - data/raw/papers/2026-11-05-yehudai-2025-survey-evaluation-llm-based-agents.md
   - data/raw/papers/2026-11-07-building-applications-with-ai-agents-ch09-validation-measurement.md
+  - data/raw/papers/2026-11-07-learning-langchain-ch10-testing-evaluation-monitoring.md
 ---
 
 # Trajectory Over Outcome
@@ -149,6 +150,8 @@ Trajectory checks come in strictness levels:
 | **Any order** | Expected calls all appear | Independent lookups |
 | **Subset / superset** | Calls ⊆ (or ⊇) an allowed set | "Never call outside this set" / "must at least call these" |
 
+Oshin and Campos (*Learning LangChain*, ch. 10) list the same three trajectory checks (any order, in order, exact match) beside two coarser levels, a final-response check with an LLM judge and a single-step check with a binary tool-selection score; see [[LangSmith Platform]].
+
 Outcome should be checked by **end state** (the record in the database), not by what the agent says it did.
 
 The reverse failure exists too: a strict trajectory check can fail a run that did *better* than the
@@ -169,6 +172,7 @@ The chapter's illustrative deployment criterion for a support agent is 95% tool 
 
 ## Limits
 
+- Learning LangChain ch. 10's SQL agent dataset has 5 examples and no judge-agreement figures; its JavaScript order check does not test order.
 The chapter runs no experiments and all its numbers are illustrative. Its code listing scores recall and precision as 1.0 when no calls are expected, even if the agent called tools anyway, and its example evaluation row has an input order that does not match the order in the expected refund call (A89268 against A12345). The code listings are truncated in the extraction.
 
 ## See Also

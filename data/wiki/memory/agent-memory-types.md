@@ -2,7 +2,7 @@
 title: Agent Memory Types
 tags: [memory, langgraph, concept]
 summary: Three-tier memory taxonomy (semantic/episodic/procedural) with storage patterns, context window strategies, reflection pattern, and SQLite preference store for assistant agents — backed by LangGraph BaseStore.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/playground/docs/archived/agentic-rag-copilot-research.md
   - data/raw/claude-docs/playground/docs/archived/librarian-components.md
@@ -11,6 +11,7 @@ sources:
   - data/raw/claude-docs/playground/docs/research/agentic-ai/memory-architecture.md
   - data/raw/agent-skills/langchain-rag/references/advanced-patterns.md
   - data/raw/claude-docs/playground/docs/components.md
+  - data/raw/papers/2026-11-08-learning-langchain-ch04-langgraph-memory-chatbot.md
 ---
 
 # Agent Memory Types
@@ -241,6 +242,18 @@ overlap: keep last 4 messages after compaction
 model: Haiku (cost-efficient, targeted)
 ```
 
+### Message helpers for short-term history (Learning LangChain, ch. 4)
+
+The book's ch. 4 begins from the fact that an LLM keeps no state, so past turns must go back into every prompt. Their LangGraph chatbot holds state as a message list under an `add_messages` reducer (which appends rather than overwrites), has a checkpointer save it after each step, and labels each conversation with a `thread_id`. On checkpointers it advises in-memory for examples, SQLite for local work and tests, and Postgres for large-scale apps, with memories kept in durable storage such as a relational database. It also advises updating memory in one step after each exchange, so a failure never leaves just the question or just the answer recorded, and using `get_state` and `update_state` to inspect or change state outside the LLM call.
+
+Three helpers decide what is sent back in the prompt:
+
+- `trim_messages` set to keep the last messages (`include_system=True`, `start_on="human"`), which never keeps an AI reply without the question it answers. In the example (`max_tokens=65`, `allow_partial=False`, gpt-4o as token counter) the system message and the last 6 of 11 messages survive.
+- `filter_messages` removes messages by type, id or name, such as example messages.
+- `merge_message_runs` joins consecutive same-type messages, for models like Anthropic chat that refuse them.
+
+The chapter's summary promises trimming, filtering and summarising, yet it has no summarisation code; the summarization node above covers that.
+
 ## ADK vs LangGraph: State Access
 
 | | ADK | LangGraph |
@@ -326,6 +339,11 @@ In nodes, access via `runtime.store` (Deep Agents) or `config["store"]` (plain L
 ## Deep Agents Memory Backends
 
 For Deep Agents, memory is surfaced through pluggable backends rather than direct `BaseStore` access. See [[Deep Agents Memory Backends]] for the `StateBackend` / `StoreBackend` / `CompositeBackend` pattern.
+
+## Limits
+
+- Learning LangChain ch. 4 covers short-term, per-thread memory only: one message list saved by a checkpointer, and nothing on long-term or cross-thread memory, retrieving memories, or separating semantic from episodic.
+- The chapter measures nothing; it asserts, without evidence, that surplus prompt information can distract the model into hallucinating. The checkpointer list is as of the book's writing.
 
 ## See Also
 - [[Multi-Session Agent Benchmarks]] — related

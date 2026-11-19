@@ -8,6 +8,7 @@ sources:
   - data/raw/papers/2026-11-07-sanh-2021-multitask-prompted-training-enables-zero.md
   - data/raw/papers/2026-11-07-wang-2022-super-naturalinstructions.md
   - data/raw/papers/2026-11-07-min-2022-metaicl.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch04-alignment.md
 ---
 
 # Multitask Prompted Instruction Tuning (FLAN, T0, Super-NaturalInstructions, MetaICL)
@@ -62,6 +63,10 @@ GPT-2 Large (770M) is meta-trained by drawing a task, drawing k+1 examples, conc
 - Size: FLAN saw instruction tuning hurt at 8B and below; the T0 extraction records T0 finding gains at 3B; MetaICL saw plain multitask zero-shot fail to help at 770M. The extractions say direct comparison is hard because model type, size and splits differ.
 - Super-NaturalInstructions reports a log-linear size effect against ZeroPrompt's claim.
 
+## Xiao and Zhu's dataset figures
+
+Xiao and Zhu cite the FLAN instruction-tuning collection (Longpre et al. 2023) as built from 1,836 tasks and holding 15 million samples, and describe earlier academic-task instruction datasets as spanning more than 100 NLP tasks and over a million samples, all in one format.
+
 ## Limits
 
 - FLAN: assigning tasks to clusters is subjective; only short, usually one-sentence instructions were tried; the scaling ablation used one cluster split; context was 1024 tokens and data mostly English; tasks phrased as language modeling (commonsense, coreference) did not benefit; zero-shot DROP and SQuADv2 numbers for GPT-3 use same-passage exemplars and are not comparable.
@@ -76,3 +81,9 @@ GPT-2 Large (770M) is meta-trained by drawing a task, drawing k+1 examples, conc
 - [[LIMA: Small Curated Instruction Data]] — alternative-to (1,000 curated examples against large task mixtures)
 - [[Few-Shot Prompting]] — prerequisite-for
 - [[RLHF Pipeline]] — related (InstructGPT's SFT stage)
+- [[UnifiedQA Format-Agnostic QA]] — related
+- [[T5 Text-to-Text Transfer Transformer]] — prerequisite-for (the text-to-text base)
+- [[MT-DNN Multi-Task Learning and Ensemble Distillation]] — related (earlier multi-task fine-tuning on GLUE)
+- [[T-Few and (IA)3 Few-Shot PEFT]] — extends (PEFT on T0)
+- [[Natural Instructions and PromptSource Prompt Collections]] — related
+- [[CrossFit NLP Few-Shot Gym]] — related

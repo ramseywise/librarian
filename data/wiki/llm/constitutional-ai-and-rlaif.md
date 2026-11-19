@@ -162,3 +162,4 @@ The Constitutional AI paper (Bai et al. 2022) asks if a helpful and harmless ass
 - [[Self-Rewarding Language Models]] — alternative-to (the judge is the policy itself rather than a fixed feedback model)
 - [[UltraFeedback Scaled AI Feedback Dataset]] — related (GPT-4 feedback data at scale)
 - [[BeaverTails Decoupled Safety Preference Dataset]] — related (separate harmlessness and helpfulness annotation)
+- [[Helpful-Harmless RLHF and Iterated Online Training]] — related (the human-label HH RLHF baseline compared against)

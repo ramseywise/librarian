@@ -61,3 +61,6 @@ Winder's chapter 5 compares the variants on CartPole with a linear four-weight p
 - [[Thompson Sampling and Bandit Regret]] — related (other bandit methods)
 - [[Preference Optimization Algorithms]] — related (another family built on a baseline-style signal)
 - [[Reinforcement Learning Foundations]] — prerequisite-for
+- [[MIXER Sequence-Level Training and Exposure Bias]] — instance-of
+- [[Deep RL Dialogue Generation Rewards]] — instance-of
+- [[Policy Gradient Theorem and Compatible Function Approximation]] — extends

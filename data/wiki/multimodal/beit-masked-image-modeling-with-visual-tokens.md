@@ -33,3 +33,4 @@ BEiT carries BERT-style masked prediction over to images. A ViT sees an image wh
 - [[Masked Autoencoders Pixel Reconstruction]] — alternative-to (reconstructs pixels with a high masking ratio)
 - [[Contrastive Self-Supervised Pretraining]] — related (contrastive baselines such as DINO)
 - [[VQGAN Taming Transformers]] — related (a discrete image-token tokenizer)
+- [[Vision Transformer ViT Patch Tokens and Scaling]] — prerequisite-for

@@ -69,3 +69,4 @@ describes has since moved on.
 - [[Visual Question Answering Benchmarks]] — related
 - [[MMMU]] — related
 - [[MM-Vet]] — related
+- [[NLI Annotation Artifacts and Hard/Easy Splits]] — related (shortcuts in NLI data)

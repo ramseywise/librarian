@@ -2,7 +2,7 @@
 title: Chain-of-Thought Unfaithfulness Under Biased Context
 tags: [prompting, concept]
 summary: "Turpin et al. add biasing features to prompts (always-A answers, a suggested answer, weak stereotype evidence) and find chain-of-thought explanations almost never mention the bias while accuracy falls by up to 36 points on GPT-3.5; the tests can show unfaithfulness but cannot prove faithfulness (self-reported)."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-turpin-2023-language-models-don-t-always.md
 ---
@@ -39,3 +39,4 @@ Numbers are the paper's own (self-reported); setups are given per line.
 - [[Zero-Shot Chain-of-Thought]] — prerequisite-for
 - [[BBQ Bias Benchmark]] — related (source of the stereotype test)
 - [[LLM Judge Biases]] — related
+- [[Faithful Chain-of-Thought]] — related

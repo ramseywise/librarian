@@ -2,7 +2,7 @@
 title: Coconut Continuous Latent Reasoning
 tags: [prompting, concept]
 summary: Training method that feeds the model's last hidden state back as the next input embedding instead of decoding a token, using a multi-stage curriculum; reported to match or beat CoT on ProsQA with far fewer tokens but not on GSM8k (self-reported).
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-hao-2024-training-large-language-models-reason.md
 ---
@@ -33,3 +33,4 @@ GPT-2, greedy decoding, unless noted.
 ## See Also
 - [[Overthinking and Concise Reasoning]] — related (token-cost side of reasoning)
 - [[LLM Reasoning Surveys and the Can-LLMs-Reason Debate]] — related
+- [[Recurrent-Depth Latent Reasoning (Huginn)]] — related

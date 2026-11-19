@@ -5,6 +5,7 @@ summary: "Writing one change to two systems leaves them permanently different ab
 updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--02-ingest-and-modelling--notes--01-ingest.md
+  - data/raw/papers/2026-11-07-llm-engineers-handbook-ch04-rag-feature-pipeline.md
 ---
 
 # Change Data Capture and the Dual-Write Problem
@@ -44,6 +45,10 @@ Costs: more moving parts than a nightly query; real logs are truncated, so a con
 - A **command** is a request that can still be refused; once validated it becomes an event, a fact consumers may not reject.
 
 A pipeline can trust an event log in a way it cannot trust a stream of commands, so ask which of the three a source emits.
+
+## Handbook position (LLM Engineer's Handbook, ch. 4)
+
+Iusztin and Labonne define CDC as capturing any CRUD operation on a source database and replicating it on a target, and prefer the log-based form at scale: it adds no I/O load on the source, has low latency and sees every CRUD operation, but needs a queue and a streaming pipeline. Their own RAG feature pipeline uses a naive full pull with no deletes handled, and CDC is discussed but not implemented.
 
 ## See Also
 - [[High-Watermark Incremental Extraction and Its Blind Spots]] — alternative-to

@@ -4,6 +4,7 @@ tags: [data-science, concept]
 summary: "SHAP splits one prediction into a baseline plus per-feature log-odds that sum exactly; it explains the model, not the world, and studies show explanations help only for some tasks and people."
 updated: 2026-11-19
 sources:
+  - data/raw/papers/2026-11-07-bansal-2021-ai-explanations-team-performance.md
   - data/raw/papers/2026-11-06-huang-2023-can-large-language-models-explain.md
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--08-model-interpretability.md
   - data/raw/papers/2026-11-07-1901-07694v1.md
@@ -46,6 +47,17 @@ LIME fits a small linear model on perturbed copies of one input, weighted by clo
 
 Evidence on the human step is sobering. People want explanations that are contrastive, selected and causal, which a default bar chart is not. A perceived-fairness study (Dodge and colleagues, IUI 2019: 160 MTurk raters, six predictions each, a logistic regression on COMPAS data, four explanation styles) found local styles widened rating gaps more than global ones, with marginal significance (p = 0.07) and no decision outcomes measured. The extraction notes the study had no no-explanation control, and the three-way interaction the authors expected became significant only once individual-difference terms (race position, ML position) were added post hoc. A study of four explanation types on two tasks found that on the low-expertise task no type improved understanding, spotting uncertainty and calibrated trust all at once; feature contributions helped with more expertise and counterfactuals did not improve calibrated trust. Test an explanation on the person it is for, and evaluate decisions made with it, not satisfaction with it.
 
+## Explanations and human-AI team accuracy
+
+Bansal and colleagues (2021; self-reported) ran between-subject MTurk studies with 1,626 users over Beer and Amzbook sentiment tasks and LSAT questions; study samples were picked so AI accuracy matched human accuracy. Explanations came from LIME highlights on RoBERTa or from experts. Arms: human alone, team given confidence only, and teams given a top-1, top-2 or adaptive explanation (the other class is explained only when confidence is low).
+
+- A confidence-only team outperformed both the AI and unaided people on Beer (RoBERTa at 0.84, about 100 participants). Relative gain over unassisted workers was 20.1% on LSAT and 2.2% on Amzbook.
+- No explanation arm significantly beat confidence only. Top-1 vs confidence on Beer; top-1 vs top-2 on Beer, Amzbook (z=0.81, p=.42) and LSAT (z=0.42, p=.68); adaptive vs confidence on Beer and Amzbook, and LSAT with expert adaptive (z=0.16, p=.87). Expert adaptive explanations also did not significantly beat AI-made ones on Beer.
+- Explanation helped accuracy when the AI was correct and hurt when it was wrong, so net change was minimal. Only on Amzbook did top-1 explanation lift accuracy (by 5% over confidence) on AI-wrong items.
+- Around 70% of Beer participants called the AI useful with adaptive expert explanations, against 57% with confidence (Likert, untested). The commonest coded strategy was using the AI as a prior guide (47%); 11% (LSAT), 23% (Beer) and 30% (Amzbook) largely ignored it.
+- The authors point out that every earlier study in their table had an AI that beat the human team.
+
+
 ## When the model explains itself
 
 A 2023 preprint (Huang and colleagues; no venue stated in the text) asked ChatGPT to rate how much each word of a movie-review sentence mattered to its own sentiment label, then compared those self-explanations with occlusion and LIME. The setup was narrow: 100 random sentences from the Stanford Sentiment Treebank, greedy decoding, an unspecified API version, and the confidence number the model writes standing in for a prediction score because there are no logits. Two orderings were tried, explanation before prediction (E-P) and prediction before explanation (P-E).
@@ -58,6 +70,10 @@ A 2023 preprint (Huang and colleagues; no venue stated in the text) asked ChatGP
 
 Limits the authors state: sentiment and word attribution only, one model, no human study, no confidence intervals or repeated runs (so gaps of a few hundredths are within noise), and metrics that may not separate good explanations from bad.
 
+## Limits
+
+- Bansal et al.: only decision accuracy was measured; tasks are low-stakes crowd tasks; user expertise is untested; two presentation styles only (highlights and natural-language arguments); the AI answer is shown before the human decides, risking anchoring; the adaptive threshold is a simple median; subjective ratings were analysed post hoc; the explainer-comparison study is in an appendix missing from the PDF; the explanation sources date from 2020 and no LLM-written explanations were tried.
+
 ## See Also
 - [[Tree Ensemble Interpretation Beyond Impurity Importance]] — prerequisite-for
 - [[LIME Local Surrogate Explanations and Submodular Pick]] — prerequisite-for
@@ -66,3 +82,5 @@ Limits the authors state: sentiment and word attribution only, one model, no hum
 - [[Error Analysis by Confusion-Matrix Cell]] — related
 - [[EK-FAC Influence Functions for LLMs]] — related (attributing outputs to training data rather than features)
 - [[Lipton's Notions of Interpretability]] — prerequisite-for
+- [[Integrated Gradients]] — related (gradient-path attribution)
+- [[Influence Functions for Black-Box Predictions]] — related (attribution to training points)

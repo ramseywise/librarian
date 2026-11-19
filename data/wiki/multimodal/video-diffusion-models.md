@@ -34,3 +34,6 @@ Continuous-time Gaussian diffusion predicting noise (or v) with a 3D U-Net built
 - [[Diffusion and GAN Image Generation]] — related
 - [[Denoising Diffusion Probabilistic Models]] — prerequisite-for
 - [[Classifier-Free Diffusion Guidance]] — prerequisite-for
+- [[LingBot-World Open-Source World Model]] — extends
+- [[Video Latent Diffusion (Align Your Latents)]] — alternative-to
+- [[AnimateDiff Motion Module]] — related

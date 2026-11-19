@@ -42,3 +42,4 @@ First an EfficientNet teacher is fitted to labeled ImageNet. It then labels a fi
 - [[ImageNet-A and ImageNet-O Natural Adversarial Examples]] — related (a robustness set it is scored on)
 - [[Sequence-Level Knowledge Distillation]] — related
 - [[Compound Scaling of Depth, Width and Resolution (EfficientNet)]] — prerequisite-for
+- [[UDA: Unsupervised Data Augmentation]] — related

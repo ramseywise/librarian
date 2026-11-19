@@ -6,6 +6,7 @@ updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-huang-2023-survey-hallucination-large-language-models.md
   - data/raw/papers/2026-11-08-zhang-2025-sirens-song-ai-ocean.md
+  - data/raw/papers/2026-11-06-zhang-2023-one-small-step-generative-ai.md
 ---
 
 # LLM Hallucination Surveys
@@ -41,12 +42,17 @@ Zhang covers mitigation across pre-training, supervised fine-tuning, RLHF and de
 
 Huang attributes hallucination in retrieval-augmented systems to retrieval failure (queries, sources, retriever) and a generation bottleneck (contextual awareness and contextual alignment). It lists noisy context, context conflict and poor use of mid-context information ([[Lost in the Middle]]) under awareness, and source attribution and faithful decoding under alignment. On knowledge conflicts it contrasts reader models that trust parametric memory with later LLM work finding high receptivity to coherent external evidence; see [[Knowledge Conflicts Taxonomy]].
 
+## Early ChatGPT evidence in Zhang et al. (2023)
+
+The 2023 ChatGPT survey by Zhang et al. (a different Zhang from the 2025 survey above) sorts ChatGPT's weaknesses into incorrect, illogical, inconsistent (prompt-sensitive) and unconscious. It blames training on human demonstrations, which rewards a convincing tone over correctness. It cites one study that requested 10 landmark medical papers with DOIs, five times over: just 8 of the 50 DOIs were real. The model version is not named.
+
 ## Limits
 
 - Neither survey gives its own experimental result; neither recommends one grounding metric or compares detectors quantitatively.
 - Huang: FELM is given as 817 samples in the text but 3,948 in Table 4; its Table 1 example of a logical inconsistency prints x=3 while the text says the answer is x=4. Literature stops in 2024.
 - Huang concedes that RAG still suffers from irrelevant retrieval and shallow retriever-generator interaction, that post-editing self-correction may be unreliable, and that probing methods for internal beliefs are not yet reliable.
 - Zhang: Table 6 scores are not comparable across columns; the text attributes the external-knowledge summary to Table 4, though it sits in Table 11; automatic metrics for generation benchmarks align imperfectly with human labels; coverage is mostly English and fact-conflicting; reasoning models get one short paragraph.
+- The 2023 Zhang survey is an unreviewed preprint of early-2023 literature and news, and its hallucination figure is a single secondhand medical-domain study.
 
 ## See Also
 - [[TruthfulQA]] — related (a benchmark both surveys describe)
@@ -57,3 +63,4 @@ Huang attributes hallucination in retrieval-augmented systems to retrieval failu
 - [[Knowledge Conflicts Taxonomy]] — related (context versus memory conflicts)
 - [[Summarization and Translation Hallucination Studies]] — related (the pre-LLM studies behind the intrinsic/extrinsic vocabulary)
 - [[Intrinsic vs Extrinsic Hallucination]] — related
+- [[HaluEval]] — instance-of (the detection benchmark the survey describes)

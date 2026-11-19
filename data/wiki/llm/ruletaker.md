@@ -5,6 +5,7 @@ summary: "Clark et al. fine-tune RoBERTa-large on synthetic natural-language fac
 updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-clark-2020-transformers-as-soft-reasoners-over.md
+  - data/raw/papers/2026-11-08-islam-2023-comprehensive-survey-applications-transformers-deep.md
 ---
 
 # RuleTaker
@@ -27,12 +28,17 @@ All numbers are the paper's own (self-reported); the extraction records only pro
 - Swapping every word for a random one lowers accuracy from 99.3% to 83.3%, which the extraction reads as pretrained knowledge mattering.
 - A depth-0 model falls below chance beyond depth 2 because it predicts false for anything not given. On one hand-written rulebase (Electricity4) models trained deeper score a little below the depth-1 model.
 
+## Follow-up figures in the Islam survey
+
+Islam et al.'s survey of transformer applications reports 98% on the RuleTaker test set for a RoBERTa-large reasoner. Trained on that data, T5 scored just 57.7 and RoBERTa 59.6 on the harder SAT-derived instances of Richardson and Sabharwal (2022). The survey gives both figures without a setup (reported).
+
 ## Limits
 
 - Small theories (under 20 facts and 10 rules), small domains and at most one quantified variable per rule; templated language, with the paraphrase test only a first step.
 - The authors leave open whether the transformer reasons or emulates input-output behaviour.
 - Closed-world semantics clash with natural language inference intuitions; the perturbation analysis excludes negation.
 - Training hyperparameters, compute and seeds are not stated, and the work predates few-shot prompting of language models.
+- The Islam survey gives 98% on the RuleTaker test set, while this page's abstract-level figure is about 99% on the synthetic data; the survey gives no model or setup detail, so the two are not reconciled.
 
 ## See Also
 - [[Selection-Inference]] — related (prompted alternative on rule-based deduction tasks)

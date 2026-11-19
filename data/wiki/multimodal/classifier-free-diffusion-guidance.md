@@ -40,3 +40,4 @@ One class-conditional network is trained in which each training example has its 
 - [[Make-A-Scene Scene-Based Text-to-Image Generation]] — extends
 - [[Make-An-Audio Text-to-Audio Latent Diffusion]] — instance-of
 - [[Voicebox Flow-Matching Speech Infilling]] — related
+- [[GLIGEN Grounded Text-to-Image]] — related

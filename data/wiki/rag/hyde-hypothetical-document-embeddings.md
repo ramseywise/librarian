@@ -2,7 +2,7 @@
 title: HyDE Hypothetical Document Embeddings
 tags: [rag, concept]
 summary: HyDE swaps the query for an LLM-written hypothetical passage before embedding it with an unsupervised encoder, so dense retrieval needs no relevance labels and no training.
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-gao-2023-precise-zero-shot-dense-retrieval.md
 ---
@@ -38,3 +38,4 @@ For each query the LM (text-davinci-003, temperature 0.7) receives a task-specif
 - [[Query2doc LLM Query Expansion]] — alternative-to (also uses LLM pseudo-documents, but concatenates them with the query)
 - [[Generate-then-Read Contextual Documents]] — related (an LLM as a source of context)
 - [[Agentic RAG — Advanced Patterns]] — extends (practitioner HyDE note and latency tradeoff)
+- [[Advanced RAG Retriever: Self-Query, Query Expansion, Filtered Search and Rerank]] — related (a retrieval chain that lists HyDE among its pre-retrieval options)

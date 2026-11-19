@@ -32,3 +32,4 @@ Li and colleagues evaluated a March-to-April 2023 ChatGPT through its API on sev
 - [[Logprobs as Confidence Signal]] — alternative-to (probabilities rather than a written confidence number)
 - [[LLM-as-Judge Evaluation]] — related (self-judged quality inflated against human checking)
 - [[ChatGPT Zero-Shot NLP and Annotation Studies]] — related (same zero-shot approach on extraction)
+- [[CoNLL-2003 NER Shared Task]] — related

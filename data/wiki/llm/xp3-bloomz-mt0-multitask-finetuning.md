@@ -37,3 +37,6 @@ The paper tests whether multitask prompted finetuning of multilingual models yie
 ## See Also
 - [[Multitask Prompted Instruction Tuning (FLAN, T0, Super-NaturalInstructions, MetaICL)]] — prerequisite-for
 - [[Flan-PaLM Instruction Finetuning Scaling]] — related (another instruction-finetuning scale study, English-centred)
+- [[XGLM Multilingual Few-Shot Language Models]] — related
+- [[Multilingual Pretraining: XLM, XLM-R, mBART and mT5]] — prerequisite-for (mT5 base)
+- [[Open Pretrained Model Reports Comparison]] — related

@@ -45,3 +45,4 @@ A 2026 survey in the same group of sources proposes three levels of world model 
 - [[DECKARD LLM-Hypothesized World Model]] — related
 - [[ScienceWorld Benchmark]] — related
 - [[KnowAgent Action Knowledge Base]] — alternative-to (planning knowledge hand-written rather than learned)
+- [[LingBot-World Open-Source World Model]] — related

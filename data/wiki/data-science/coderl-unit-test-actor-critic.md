@@ -35,3 +35,4 @@ The extraction lost most pass@k values, so these are given by direction and by t
 - [[Code Generation Prompting]] — related
 - [[Repository-Level Coding Benchmarks]] — related
 - [[AlphaCode Sample, Filter and Cluster]] — alternative-to
+- [[Planning-Guided Transformer Decoding (PG-TD)]] — related

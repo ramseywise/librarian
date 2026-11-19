@@ -16,6 +16,7 @@ sources:
   - data/raw/papers/2026-11-05-guo-2023-evaluating-large-language-models.md
   - data/raw/papers/2026-11-06-albayaydh-2026-beyond-leaderboard.md
   - data/raw/papers/2026-11-05-shevlane-2023-model-evaluation-extreme-risks.md
+  - data/raw/papers/2026-11-08-llm-engineers-handbook-ch07-evaluating-llms.md
 ---
 
 # Eval Contamination Defenses
@@ -98,6 +99,10 @@ verbatim; scores drop on paraphrased versions.
   warns that if developers train models to pass an evaluation, it can no longer indicate risk;
   it suggests private held-out evaluations ([[Extreme-Risk Model Evaluation]]).
 
+## A heuristic from a handbook (LLM Engineer's Handbook, ch. 7)
+
+Iusztin and Labonne say, with no data, that fine-tuning a base model is unlikely to lift MMLU by 10 points and that such a jump points to contaminated instruction data. They compare base and tuned scores on one benchmark. For multiple choice they prefer scoring generated text to scoring log-likelihood, since weak models do better than they should under likelihood scoring.
+
 ## See Also
 - [[HELM Holistic Evaluation]] — related (flags only disclosed contamination; a later survey asserts static-benchmark memorisation without measuring it)
 - [[SWE-Lancer]] — related (private holdout)
@@ -127,3 +132,7 @@ verbatim; scores drop on paraphrased versions.
 - [[Dynabench]] — related (saturation and fresh adversarial data)
 - [[DS-1000]] — instance-of (perturbation as a memorisation probe)
 - [[CCNet Web Crawl Corpus Pipeline]] — related
+- [[Adversarial Filtering and AFLite]] — related
+- [[GPT-4 Technical Report and Predictable Scaling]] — related
+- [[Deduplicating Training Data (ExactSubstr and NearDup)]] — related (train-test overlap in C4, RealNews and released models)
+- [[Dolma Open Pretraining Corpus]] — related (whole benchmark test sets found inside a pretraining corpus)

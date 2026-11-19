@@ -5,6 +5,7 @@ summary: "LDA, QDA and naive Bayes model each class's predictors and apply Bayes
 updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-islp-ch04-classification.md
+  - data/raw/papers/2026-11-08-islp-ch01-introduction.md
 ---
 
 # LDA, QDA and Naive Bayes Generative Classifiers

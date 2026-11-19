@@ -2,7 +2,7 @@
 title: Prompt Templates and Variables
 tags: [prompting, llm, concept]
 summary: Separating the fixed instruction skeleton from variable content so one prompt can be reused, versioned, and tested across inputs.
-updated: 2026-10-30
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt--prompt-engineering.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--02-prompt-anatomy.md
@@ -65,3 +65,4 @@ input-level prompts, keeping personality consistent in multi-turn conversations.
 - [[Prompt Injection]] — related (mitigates)
 - [[Prompt Optimization]] — prerequisite-for
 - [[Prompt Assembly as Snippet Packing]] — extends
+- [[Irrelevant and Misleading Prompt Templates]] — related

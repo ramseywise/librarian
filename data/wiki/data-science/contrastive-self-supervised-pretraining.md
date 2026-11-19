@@ -48,3 +48,5 @@ NT-Xent plus a linear probe on digits lost to a supervised CNN at 20, 50 and 100
 - [[W2V-BERT Contrastive and Masked Speech Pretraining]] — instance-of
 - [[SimCLRv2 Pretrain, Fine-Tune, Distill]] — instance-of
 - [[Colorization as Classification over Quantised Colour Bins]] — related
+- [[Contrastive Visual Representations: SimCLR, MoCo, CPC v2 and PIRL]] — extends (the four image recipes compared)
+- [[wav2vec 2.0 Contrastive Speech Pretraining]] — instance-of (speech)

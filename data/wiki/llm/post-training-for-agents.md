@@ -314,3 +314,6 @@ on a sample? Reuse benchmark *environments* for training, never benchmark *items
 - [[AgentSkiller Cross-Domain Trajectory Synthesis]] — instance-of (synthesised trajectories for SFT)
 - [[Demystifying Agentic RL (DemyAgent-4B)]] — instance-of (empirical agentic RL recipe)
 - [[SEM First-Answer-Gated Search Reward]] — instance-of (reward that teaches when to search)
+- [[GLM-4.5 Expert Iteration and RL Recipe]] — related
+- [[WebGPT Browser-Assisted Question Answering]] — instance-of
+- [[TALM Tool-Augmented Language Models]] — instance-of

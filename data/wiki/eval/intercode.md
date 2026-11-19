@@ -34,3 +34,4 @@ Try Again feeds back a reward computed against the gold output and stops automat
 - [[Verification Loops]] — related (feedback from execution)
 - [[Repository-Level Coding Benchmarks]] — related
 - [[EvalPlus and HumanEval+]] — related
+- [[MBPP and MathQA-Python]] — prerequisite-for

@@ -2,7 +2,7 @@
 title: Analogical Prompting
 tags: [prompting, pattern]
 summary: One prompt asks the model to recall relevant example problems (optionally with a tutorial) and then solve the target problem, replacing hand-labelled few-shot exemplars; helps larger models, hurts small ones.
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-yasunaga-2023-large-language-models-as-analogical.md
 ---
@@ -34,3 +34,4 @@ Analogical prompting asks the model, inside a single prompt, to recall several d
 - [[Zero-Shot Chain-of-Thought]] — alternative-to
 - [[Self-Consistency]] — related
 - [[Prompt Optimization]] — related
+- [[Emergent Analogical Reasoning in GPT-3]] — related

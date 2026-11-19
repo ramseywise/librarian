@@ -2,7 +2,7 @@
 title: DIET Architecture
 tags: [llm, concept]
 summary: Dual Intent and Entity Transformer (Rasa, 2020) — a multi-task NLU architecture for joint intent classification and entity recognition that outperforms fine-tuned BERT while being 6x faster to train, using plug-and-play pre-trained embeddings with sparse features.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/pdfs/2020-04-01-rasa-dual-intent-entity-transformer.md
   - data/raw/papers/2026-11-07-liu-2016-attention-based-recurrent-neural-network.md
@@ -103,3 +103,4 @@ DIET's two-task setup follows earlier joint models of intent and slot tags, all 
 - [[Open-Domain Dialogue Systems]] — instance-of
 - [[Transformer Architecture]] — prerequisite-for
 - [[Named Entity Recognition and Sequence Tagging]] — prerequisite-for
+- [[Position Encodings — Relative, Rotary, ALiBi and CAPE]] — related

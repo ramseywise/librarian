@@ -47,3 +47,5 @@ On English-German test data, the 2x500 Seq-KD student puts 16.9% of its probabil
 - [[Straight-Through Estimator]] — related
 - [[Model Compression with MUNGE Mimic Nets]] — related (ensemble compression into a small net)
 - [[Knowledge Distillation with Soft Targets]] — prerequisite-for (the word-level soft-target loss it builds on)
+- [[Back-Translation at Scale]] — related
+- [[Encoder-Decoder Translation Before the Transformer]] — related

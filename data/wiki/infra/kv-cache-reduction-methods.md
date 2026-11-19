@@ -6,6 +6,7 @@ updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-xu-2024-survey-resource-efficient-llm-multimodal.md
   - data/raw/papers/2026-11-07-ai-agents-definitive-guide-ch04-models-behind-agents-capabilities-optimization.md
+  - data/raw/papers/2026-11-07-llm-engineers-handbook-ch08-inference-optimization.md
 ---
 
 # KV Cache Reduction Methods
@@ -30,6 +31,10 @@ The survey states that most sparse attention designs target computational comple
 
 Koenigstein (ch. 4) reads the config of Qwen2.5-7B-Instruct-1M: 28 query heads share 4 key/value heads, a 7x grouping, which the chapter says shrinks KV cache memory and decode bandwidth by about 7x (reported from the model config, not measured). Operational advice: watch cache hit ratio and memory pressure; any structural change to the context should trigger selective cache invalidation; keep static system prompts first so part of the cache survives; as the context limit approaches, apply a sliding window or trim the prefix, which the chapter says also eases the haystack problem (a flattened softmax at long context).
 
+## Static cache and its size (LLM Engineer's Handbook, ch. 8)
+
+Iusztin and Labonne say that for a typical 7B model in 16-bit, the KV cache passes 2 GB once sequences run beyond 2,048 tokens (layers and heads not given). They claim that pre-allocating the cache (static) and using torch.compile in Hugging Face transformers gives up to a 4x speedup of the forward pass, with no model, hardware or batch size for the figure; their demo uses google/gemma-2b-it. A chapter-level claim that this plus continuous batching and speculative decoding gives 2-4x or more with no quality loss comes with no measurement.
+
 ## Limits
 
 - Every number is quoted from the cited papers with hardware, models and baselines mostly unstated in the survey; they are not comparable across rows.
@@ -46,3 +51,4 @@ Koenigstein (ch. 4) reads the config of Qwen2.5-7B-Instruct-1M: 28 query heads s
 - [[Declarative Attention]] — instance-of
 - [[Speculative Decoding]] — related (the survey's other decode-side lever)
 - [[PagedAttention and vLLM KV Cache Paging]] — extends
+- [[Sliding Window Attention and Rolling Buffer Cache (Mistral 7B)]] — related

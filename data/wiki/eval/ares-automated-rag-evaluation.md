@@ -5,6 +5,7 @@ summary: ARES fine-tunes small judges on synthetic data for context relevance, a
 updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-2311-09476v2.md
+  - data/raw/papers/2026-11-08-llm-engineers-handbook-ch07-evaluating-llms.md
 ---
 
 # ARES Automated RAG Evaluation
@@ -27,6 +28,10 @@ Self-reported.
 - A judge fine-tuned on NQ transfers poorly, with tau of 0.33 on XGLUE, 0.28 on CodeSearchNet and 0.38 on T-Rex.
 - Judge and generator need about 32GB of GPU memory.
 
+## Handbook note (LLM Engineer's Handbook, ch. 7)
+
+Iusztin and Labonne describe ARES as synthetic data generation, fine-tuned classifier training and RAG evaluation, with google/flan-t5-xxl and microsoft/deberta-v3-large as defaults for the generator and the classifier. They describe it only and run none of it.
+
 ## Limits
 
 - Needs roughly 150-300 human-labelled datapoints, possibly from domain experts, and a 32GB GPU with hours of fine-tuning.
@@ -39,3 +44,4 @@ Self-reported.
 - [[RAG Eval Metrics Suite]] — prerequisite-for
 - [[LLM-as-Judge Evaluation]] — prerequisite-for
 - [[Promptagator Few-Shot Synthetic Retrieval Data]] — prerequisite-for (source of its query-filtering step)
+- [[SuperGLUE and CoLA Language Understanding Benchmarks]] — related

@@ -417,3 +417,33 @@ The setups differ (F1 against judge-scored metrics, each paper's own re-implemen
 **Status:** Unresolved — needs human review
 **Impact:** Whether the memory design guidance should default to storing raw traces with search, or to distilling facts at write time; [[Memory Lifecycle]], [[Designed Memory vs Raw-Record Search]], [[Memory Architecture]].
 **Would settle it:** One harness run on LoCoMo (and one longer-context set) with a fixed reader, a fixed top-k and one metric, comparing a specified raw-text retriever, Mem0, A-Mem, AtomMem and Zero-Mem, with seeds and intervals and a no-memory arm (neither paper has one).
+
+## Conflict: Do sinusoidal and rotary position encodings extrapolate past the trained length? — 2026-11-19
+
+**Claim A** (from `[[Positional Encoding]]`, sourced from `data/raw/pdfs/2017-06-12-attention-is-all-you-need.md`):
+> "This also allows extrapolation to sequence lengths longer than those seen during training." (on sinusoidal encodings)
+>
+> "RoPE (Rotary Position Embedding): applies rotation to query/key vectors based on position, enabling length extrapolation"
+
+The cited Vaswani source itself hedges: sinusoids "may allow" the model to extrapolate.
+
+**Claim B** (from new sources `data/raw/papers/2026-11-07-press-2021-train-short-test-long.md` and `data/raw/papers/2026-11-07-su-2023-roformer.md`, recorded in `[[Position Encodings — Relative, Rotary, ALiBi and CAPE]]`):
+> A sinusoidal model trained on 512 tokens does not extrapolate: its validation score improves only up to k=20, holds to k=50 and then worsens (WikiText-103, Baevski and Auli model). The RoFormer extraction states the paper has no test of extrapolation beyond the trained length.
+
+Claim A states extrapolation as a property of the design; Press et al. measured no extrapolation for sinusoidal encodings (trained at L=512) and poor or slow extrapolation for rotary (test perplexity 19.28 against ALiBi 18.30 at length 3072); the RoFormer paper itself has no extrapolation test.
+
+**Status:** Unresolved
+**Impact:** Whether [[Positional Encoding]] should present extrapolation as a benefit of sinusoidal encodings and RoPE; [[Position Interpolation]], [[Position Encodings — Relative, Rotary, ALiBi and CAPE]].
+
+## Conflict: How far does HumanEval pass@k fall under EvalPlus's extra tests? — 2026-11-19
+
+**Claim A** (from `[[EvalPlus and HumanEval+]]`, sourced from `data/raw/papers/2026-11-07-liu-2023-your-code-generated-chatgpt-really.md`):
+> Across 26 LLMs, pass@k falls by up to 19.3-28.9% depending on k once the extended HumanEval+ tests are used (self-reported).
+
+**Claim B** (from new source `data/raw/papers/2026-11-08-fan-2023-large-language-models-software-engineering.md`, recorded in `[[EvalPlus and HumanEval+]]`):
+> A software-engineering survey reports a HumanEval pass@k drop of up to 15% for 14 popular LLMs, GPT-4 and ChatGPT among them, once generated tests are added.
+
+Fan's maximum (15%) is below Liu's minimum (19.3%), so the different model counts alone do not explain the gap. Fan reports the result second-hand and does not say which EvalPlus version it cites, and neither extraction says whether the drops are relative or absolute.
+
+**Status:** Unresolved
+**Impact:** Which drop figure [[EvalPlus and HumanEval+]] and [[HumanEval and pass@k]] should quote for how much the original HumanEval tests overstate correctness.

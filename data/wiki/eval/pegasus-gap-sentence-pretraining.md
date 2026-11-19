@@ -2,7 +2,7 @@
 title: PEGASUS Gap-Sentence Pretraining
 tags: [eval, pattern]
 summary: "PEGASUS pre-trains an encoder-decoder by masking the whole sentences that score highest in ROUGE1-F1 against the rest of the document and generating them as a pseudo-summary; the 568M model beat BART on XSum ROUGE-2 and fine-tuned from 1,000 examples beat the previous best on 6 of 12 datasets (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-zhang-2019-pegasus.md
 ---
@@ -35,3 +35,4 @@ Zhang and colleagues (ICML 2020) test whether a pre-training objective that rese
 - [[UL2 Mixture of Denoisers]] — related (another pre-training objective study)
 - [[BARTScore]] — related (scores summaries with a BART model)
 - [[Summary Factual Consistency Metrics]] — related (the factuality check this paper lacks)
+- [[Denoising Seq2Seq Pretraining: BART, MASS and GLM]] — alternative-to

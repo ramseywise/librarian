@@ -7,6 +7,7 @@ sources:
   - data/raw/papers/2026-11-08-ai-systems-performance-engineering-ch16-profiling-debugging-tuning-inference-sca.md
   - data/raw/papers/2026-11-08-ai-systems-performance-engineering-ch19-dynamic-adaptive-inference-engine-optimi.md
   - data/raw/papers/2026-11-07-ai-systems-performance-engineering-ch17-scaling-disaggregated-prefill-decode-inf.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch05-inference.md
 ---
 
 # Chunked Prefill and Adaptive Batching
@@ -32,10 +33,16 @@ Chapter 16's example: with two GPUs and six prompts (two of 6K tokens and four o
 
 Quantizing KV from INT8 to INT4 halves KV memory (arithmetic); quantized KV gives 2-4x reduction (claim). The chapter suggests an 80% GPU memory high-watermark that triggers 8-bit KV compression (no data). Without a good allocator fragmentation is put at 20-30%, which paging cuts to a few percent (claim). Offloading KV to CPU memory while prefetching a layer early carries a modest throughput cost (illustrative).
 
+## Xiao and Zhu on continuous batching
+
+Xiao and Zhu distinguish request-level scheduling, where a sent batch cannot be interrupted, from iteration-level scheduling (Orca), where the scheduler talks to the engine at each token step and sequences join or leave between iterations. A sequence then takes n+1 iterations: one prefill and n decode steps. The scheme is prefill-prioritised, which raises throughput at the cost of latency. In their two-sequence figure, chunked prefilling a three-chunk prefill runs alongside three decode steps rather than one. They advise continuous batching for throughput, chunked prefilling to bound decode latency, and bucketing requests by length to cut padding.
+
 ## Limits
 
 - Chapter 16 says its metric tables are illustrative; chapter 19's tables 19-2 and 19-3 are approximate with no model, hardware or dataset. Chapter 19 code listings are truncated in the extraction.
 - Cited speedups (SARATHI, FlashAttention-3) come without reference entries.
+- Xiao and Zhu leave serving shallow by design and give no throughput or latency numbers; their chunked-prefill figure is a worked example.
+
 
 ## See Also
 - [[Disaggregated Prefill-Decode Serving]] — alternative-to

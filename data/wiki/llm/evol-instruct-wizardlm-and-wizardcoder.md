@@ -43,3 +43,4 @@ Code Alpaca (about 20k examples) is evolved for several rounds by gpt-3.5-turbo 
 - [[OSS-Instruct (Magicoder)]] — alternative-to (code-seeded generation, combined with Evol-Instruct in MagicoderS)
 - [[UltraChat and LaMini Instruction Datasets]] — related (UltraLM is compared with WizardLM)
 - [[Synthetic Instruction Data: Curation and Verification]] — related
+- [[Code LLM Training Recipes]] — prerequisite-for

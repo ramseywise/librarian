@@ -7,6 +7,7 @@ sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--01-ab-testing.md
   - data/raw/repos/learn-ai-engineering/data-analytics--03-experimentation-and-causality--notes--03-experimentation-at-scale.md
   - data/raw/papers/2026-11-08-statistics-done-wrong-ch06-double-dipping-data.md
+  - data/raw/papers/2026-11-08-bandit-algorithms-ch03-stochastic-processes-markov-chains.md
 ---
 
 # Peeking and Sequential Testing
@@ -43,10 +44,15 @@ Chapter 6 shows the same effect in a simulation with no true difference: startin
 - Either way keep whole weeks, and allow early stops for guardrail failure.
 - A Bayesian posterior does not make peeking free either.
 
+## Stopping-time results in Bandit Algorithms chapter 3
+
+Chapter 3 of Lattimore and Szepesvari's Bandit Algorithms covers Doob's optional stopping theorem: for a martingale and a stopping time, E[X_tau] = E[X_0] if any one of three conditions holds (bounded tau; finite E[tau] with bounded conditional increments; a bounded stopped process), while super- and submartingales yield inequalities. Their Rademacher-coin gambler example says a fair gambler cannot turn the expected winnings positive through a stopping rule unless E[tau] is infinite. A non-negative supermartingale ever exceeds epsilon with probability at most E[X0]/epsilon, a sharpening of Markov's inequality, and a matching bound for finite-horizon non-negative submartingales is an exercise. The authors advise testing the three conditions first and reaching for the maximal inequality when they fail.
+
 ## Limits
 
 - Reinhart's 29% figure for early-stopped trials rests on a footnote not in the extract (chapter 6).
 - The chapter names no sequential-analysis procedure to use instead.
+- The Bandit Algorithms chapter is measure-theoretic background in discrete time with no testing or experiment content; its proofs are mostly left as exercises, and the authors themselves expect many readers to skip it initially.
 
 ## See Also
 - [[A/B Test Lifecycle and Interval Decisions]] — prerequisite-for

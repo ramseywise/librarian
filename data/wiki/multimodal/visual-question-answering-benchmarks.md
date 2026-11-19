@@ -85,3 +85,4 @@ Each VQA benchmark in the wiki was built to remove one shortcut or to test one s
 - [[ILSVRC ImageNet Challenge]] — related
 - [[MMBench]] — alternative-to
 - [[VLM Benchmark Shortcuts]] — related
+- [[VQA Open-Ended Dataset and LSTM-CNN Baseline]] — related

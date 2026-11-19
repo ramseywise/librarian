@@ -45,3 +45,4 @@ Only 238 passages, mostly about individuals; there are no locations or objects. 
 - [[Self-Consistency]] — related (sampling consistency applied to reasoning answers)
 - [[Output Length Confounds Reference Metrics]] — related (a later re-scoring of hallucination detectors with a judge instead of ROUGE)
 - [[LLM Hallucination Surveys]] — related (surveyed as a sampling-consistency detector)
+- [[HaluEval]] — related (uses SelfCheckGPT's divergent-response idea to pick queries)

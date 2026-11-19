@@ -2,12 +2,13 @@
 title: LangSmith Platform
 tags: [infra, eval, concept]
 summary: "LangSmith mechanics — auto-instrumentation for LangGraph vs manual @traceable wiring for ADK, datasets, evaluator functions, annotation queues, and experiment comparison; the counterpart to Langfuse Platform."
-updated: 2026-11-02
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/playground/docs/frameworks/langsmith.md
   - data/raw/repos/learn-ai-engineering/generative-ai--04-agentic-frameworks--notes--langsmith.md
   - data/raw/claude-docs/project-g/docs/stakeholders/agent-comparison-findings.md
   - data/raw/claude-docs/project-g/docs/frameworks/langsmith.md
+  - data/raw/papers/2026-11-07-learning-langchain-ch10-testing-evaluation-monitoring.md
 ---
 
 # LangSmith Platform
@@ -164,6 +165,21 @@ replicating in either platform:
   `@observe` spans — for a standalone ADK service, consider Langfuse even when the rest of
   the stack is on LangSmith.
 
+## A three-stage testing cycle (Learning LangChain, ch. 10)
+
+Oshin and Campos arrange testing around LangSmith in three stages. Design covers runtime assertions that go back to the LLM, for example a self-corrective RAG graph where an LLM grades the relevance of retrieved text and web search takes over when it falls short. Preproduction covers regression checks before release. Production covers monitoring whose findings flow back into design. Their guidance by topic:
+
+- **Datasets.** Draw on hand-picked examples, application logs and synthetic data. A small starting set, they say, is 10 to 50 good examples, grown later with production edge cases (an assertion with no empirical basis). Types are `kv` (default, most flexible), `llm` and `chat`. Their agent examples run three times each, since results vary between runs.
+- **Evaluators.** Begin with heuristic checks, add human review, then use an LLM judge to automate the human step. Judge prompts should be simple and repeatable, without 0-to-10 scales whose points blur. Human fixes to judge verdicts can be stored as few-shot examples for later judge prompts. Pairwise evaluation (comparing two versions' outputs side by side) suits cases where ranking is easier than scoring.
+- **Regression testing.** Pick a baseline run and compare experiments with it. The authors expect AI test suites may never score perfectly, so scores are followed over time.
+- **Agent tests at three granularities:** the final response (LLM judge), one step (a binary tool-selection score) and the whole trajectory (any-order, in-order and exact-match comparisons; see [[Trajectory Over Outcome]]). The sample SQL agent dataset holds 5 question-answer pairs.
+- **Production.** Turn tracing on through environment variables and review how many traces there are, how often they error, and their latency, token use and spend. Online evaluation needs no reference and runs live, because production has no grounded answers. Explicit or implicit user feedback can be linked to any trace or span, and an LLM judge can tag traces when labels are absent. Feed production errors back into the test dataset and roll out to beta users in phases to build ground truth.
+
+## Limits
+
+- Ch. 10 of Learning LangChain gives workflow guidance with no experiments or measured results, and no judge-agreement or cost numbers.
+- Its code relies on APIs since superseded (the prompt hub pull, `get_relevant_documents` and the pydantic v1 shim in core), and its JavaScript ordered check verifies only that calls are present, unlike the Python subsequence check.
+
 ## See Also
 - [[Langfuse ADK Tracing Patterns]] <!-- auto-linked -->
 - [[Langfuse Platform]] — alternative-to (the same capabilities, self-hostable; the default choice here)
@@ -172,3 +188,4 @@ replicating in either platform:
 - [[HITL Annotation Pipeline]] — related (annotation queues as the review surface)
 - [[Eval Suite Maintenance]] — prerequisite-for (trace-seeded datasets as the fixture source)
 - [[ADK vs LangGraph Comparison]] — instance-of (the cross-framework comparison experiments enable)
+- [[LangGraph Platform Data Model and Double-Texting]] — related (the hosted runtime that tracing and evaluation attach to)

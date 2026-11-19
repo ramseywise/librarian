@@ -45,3 +45,4 @@ The benchmark and leaderboard facts date from 2023 and 2024; the chapter notes H
 - [[Eval-Driven Development (EDD)]] — prerequisite-for (the define-criteria-first rule this applies to model choice)
 - [[Benchmark Prompt Format Sensitivity]] — related
 - [[TruthfulQA]] — related (a benchmark the chapter uses for factual consistency)
+- [[AI Application Planning: Usefulness Threshold and Milestones]] — related (setting milestones from existing models)

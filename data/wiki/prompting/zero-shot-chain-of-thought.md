@@ -2,10 +2,11 @@
 title: Zero-Shot Chain-of-Thought
 tags: [prompting, concept]
 summary: A trigger sentence appended to the question, plus a second call to extract the answer, elicits step-by-step reasoning with no exemplars; strong on arithmetic and symbolic tasks, flat on commonsense.
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-kojima-2022-large-language-models-zero-shot.md
   - data/raw/papers/2026-11-08-zhao-2023-enhancing-zero-shot-chain-thought.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch03-prompting.md
 ---
 
 # Zero-Shot Chain-of-Thought
@@ -25,6 +26,10 @@ Zero-shot-CoT (Kojima et al.) uses two prompts. The first is the question follow
 ## Variant: Logical Thoughts
 
 Zhao et al. start from a zero-shot-CoT chain and verify each step: the model writes post hoc explanations for the step and for its negation, then picks the more plausible, revising the step (and regenerating later steps) if the negation wins. Two variants, Cmps-LoT and Adpt-LoT, differ in how the explanations are compared. Evaluation was zero-shot on 8 datasets using Vicuna at three sizes, GPT-3.5-turbo and GPT-4. Gains are described as largest for bigger models; Vicuna-7b got no consistent benefit and dropped on AQuA. In a GPT-3.5-turbo GSM8K ablation, Cmps-LoT scored 77.67 and LoT 80.15 (self-reported), with a plain self-check below CoT. GPT-3.5-turbo revised 32% of steps on Date, the highest rate reported (self-reported).
+
+## Xiao and Zhu on the second prompt
+
+Xiao and Zhu describe Kojima et al.'s trigger as improving several reasoning tasks, giving no figures, and advise a second prompt that extracts the answer from the reasoning text.
 
 ## Limits
 

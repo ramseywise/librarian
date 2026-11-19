@@ -37,3 +37,5 @@ Fan, Lewis and Dauphin ask whether a two-step model, a prompt followed by a stor
 - [[Sampling Parameters]] — related (top-k sampling as a decoding choice)
 - [[Scheduled Sampling]] — related (another fix for generation quality in sequence models)
 - [[Seq2seq Bottleneck and Attention]] — prerequisite-for
+- [[Temperature, Top-k and Test-Time Sampling]] — related (top-k sampling worked on toy logits)
+- [[Nucleus Sampling and Text Degeneration]] — related (evaluates top-k sampling as a baseline)

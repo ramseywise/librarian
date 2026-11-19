@@ -5,6 +5,7 @@ summary: "Gallegos et al.'s survey (Computational Linguistics 50:3) organises LL
 updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-gallegos-2024-bias-fairness-large-language-models.md
+  - data/raw/papers/2026-11-08-blodgett-2020-language-technology-power.md
 ---
 
 # LLM Bias and Fairness Survey
@@ -19,6 +20,16 @@ Gallegos, Rossi, Barrow and colleagues (arXiv 2309.00770, Computational Linguist
 - **Group fairness:** a statistical outcome measure that is approximately equal across groups, within a tolerance epsilon. **Individual fairness:** similar individuals get similar treatment.
 - **Representational harms** demean or subordinate a group (for example derogatory language, stereotyping, erasure, misrepresentation, toxicity, exclusionary norms, or uneven system performance), whereas **allocational harms** spread resources or opportunities unevenly. The taxonomy covers 7 representational and 2 allocational harms.
 - **Local bias** concerns associations between a word and its context; **global bias** concerns a whole stretch of text.
+
+## Blodgett et al. 2020 on what "bias" papers mean
+
+Blodgett, Barocas, Daume et al. (ACL 2020) surveyed 146 papers on "bias" in written-text NLP systems (found by keyword search of the ACL Anthology up to May 2020 plus following citations; speech work left out), classing motivations and techniques with an allocational and representational harms taxonomy. The categories overlap, so the counts add up to more than 146. The counts are the authors' own manual categorisation.
+
+- Just 4 of the 146 papers offer techniques aimed at allocational harms, yet 21% cite such harms as motivation.
+- 16% give only vague motivations or none, and 32% show no visible normative concern and concentrate on system performance. 33% give several motivations, and 16% pair immediate representational harms with more remote allocational ones, usually without measuring downstream effects.
+- The task studied most is embeddings (54 papers), followed by coreference resolution (20) and then language modelling or dialogue generation (17).
+- By motivation the counts are 50 papers on stereotyping, 52 on other representational harms and 47 on questionable correlations. By technique the same three categories have 58, 43 and 42, with 4 for allocational harms and none vague.
+- The authors recommend (R1) grounding bias work in non-NLP scholarship about how language relates to social hierarchies, and counting representational harms as harms in themselves; (R2) spelling out the normative reasoning for why the behaviours labelled bias do damage, what kind and to whom; and (R3) examining language use in practice with the lived experience of affected communities and the power relations between technologists and those communities. They further raise the question of whether a given system ought to be built in the first place. A case study on African-American English uses the raciolinguistic framing.
 
 ## Taxonomy of metrics
 
@@ -52,6 +63,7 @@ Pair any embedding or probability metric with a task-level evaluation. Report th
 
 ## Limits
 
+- Blodgett et al. 2020 covers written text up to May 2020, reports no inter-annotator agreement for its categorisation, measures no system, and has nothing to say about curating pretraining data or about hallucination. GAP shared-task papers were excluded from its vague and technique counts.
 - The authors concede a technical-solutionist framing; the taxonomies follow implementation rather than downstream harm or context.
 - Scope is model training and evaluation only, leaving out problem formulation, data collection and deployment, and English-language papers only.
 - Few empirical comparisons of in-training mitigations exist, and few studies compare techniques across stages.
@@ -63,3 +75,8 @@ Pair any embedding or probability metric with a task-level evaluation. Report th
 - [[Group Fairness Criteria and the Impossibility Results]] — prerequisite-for
 - [[LLM Judge Biases]] — related (a different sense of bias: in the evaluator)
 - [[LM Red Teaming]] — related
+- [[Stereotype and Gender Bias Benchmarks]] — instance-of (four benchmarks, with their scores and limits)
+- [[Detoxification Trade-offs]] — instance-of (mitigation costs measured for toxicity)
+- [[Bias Amplification and Mitigation Methods]] — instance-of (three mitigations with measured costs)
+- [[PALMS Values-Targeted Fine-Tuning]] — related
+- [[Model Cards]] — related

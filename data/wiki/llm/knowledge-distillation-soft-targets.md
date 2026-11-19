@@ -42,3 +42,7 @@ A 2025 post-training survey (Tie et al.) describes the DeepSeek-R1 distillation 
 - [[Distilling Step-by-Step]] — extends (a task-distillation baseline it builds on)
 - [[Model Compression with MUNGE Mimic Nets]] — related (earlier ensemble compression)
 - [[Model Compression Landscape]] — related
+- [[Pretrained Transformer OOD Robustness Benchmark]] — related (distillation can reduce robustness)
+- [[BERT Distillation: DistilBERT and TinyBERT]] — extends (applies soft targets to BERT students)
+- [[MT-DNN Multi-Task Learning and Ensemble Distillation]] — extends (ensemble to single multi-task student)
+- [[DeiT Data-Efficient Image Transformers]] — related (distillation token)

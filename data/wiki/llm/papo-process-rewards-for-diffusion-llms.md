@@ -32,3 +32,5 @@ Setup: LLaDA-8B-Instruct trained by RL with no SFT stage, LoRA rank 128, on 8 A1
 - [[GRPO Group Relative Policy Optimization]] — prerequisite-for (the base algorithm)
 - [[Outcome vs Process Reward Models]] — related (step-level reward, here not a learned model)
 - [[SDPO Self-Distillation Policy Optimization]] — related (another dense-credit alternative to scalar rewards)
+- [[LLaDA Large Language Diffusion Model]] — related
+- [[Block Diffusion Language Models]] — related

@@ -36,3 +36,4 @@ Offline k-means supplies one label per frame, first from MFCC features and later
 - [[W2V-BERT Contrastive and Masked Speech Pretraining]] — alternative-to (end-to-end codebook instead of offline re-clustering)
 - [[Contrastive Self-Supervised Pretraining]] — prerequisite-for
 - [[Real-Time Multimodal Agents]] — related (HuBERT units appear as speech-decoder targets in LLaMA-Omni)
+- [[wav2vec 2.0 Contrastive Speech Pretraining]] — prerequisite-for

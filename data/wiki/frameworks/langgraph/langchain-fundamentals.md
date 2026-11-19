@@ -2,9 +2,10 @@
 title: LangChain Fundamentals — create_agent, Tools, Structured Output
 tags: [frameworks, langgraph, llm, concept]
 summary: LangChain 1.0's core agent-building primitives — the create_agent() loop, the @tool decorator, checkpointer-based persistence, and structured output — a framework that runs on the LangGraph runtime, over integration packages that sit beneath both.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/agent-skills/langchain-fundamentals/SKILL.md
+  - data/raw/papers/2026-11-07-learning-langchain-ch01-llm-fundamentals-with-langchain.md
 ---
 
 # LangChain Fundamentals — create_agent, Tools, Structured Output
@@ -111,6 +112,22 @@ print(result["structured_response"])  # ContactInfo(name='John', ...)
 - **Reading `result.content` directly:** the agent result is a dict; the answer is `result["messages"][-1].content`, not `result.content`.
 - **Vague tool descriptions:** hurts tool-selection accuracy; always document `Args:` in the tool docstring.
 
+## Runnables and composition (Learning LangChain, ch. 1)
+
+Oshin and Campos describe the Runnable interface as three methods: `invoke` turns one input into one output, `batch` turns several inputs into several outputs efficiently, and `stream` yields output from a single input as it is produced. Two composition styles sit on top of it. Imperative composition calls components directly (`model.invoke(...)` inside a function decorated with `@chain`); declarative composition uses LangChain Expression Language, as in `chatbot = template | model`. Their comparison table says that parallel execution, streaming and async need hand-written code in the imperative style but come for free in the declarative one (LangChain Python and JS). They suggest imperative for custom logic and declarative for wiring up existing components with little customisation.
+
+Their other advice for model calls:
+
+- The usual parameters are `model`, `temperature` and `max_tokens`; setting `max_tokens` too low can cut the output off.
+- Temperature: around 0.1 for structured output, around 0.9 for creative writing.
+- `with_structured_output` accepts a Pydantic or Zod schema and checks the output against it; output parsers handle formats like CSV or XML and provide format instructions.
+- Begin a new application from LangChain's prebuilt patterns, then see whether their results are good enough as they come.
+
+## Limits
+
+- The ch. 1 listings use gpt-3.5-turbo and early-2025 imports; the Runnable example takes `ChatOpenAI` from `langchain_openai.llms`, which the extraction marks as the wrong module, and some listings are cut off.
+- Nothing is measured, so the automatic parallelism, streaming and async of the declarative style come with no latency or cost data.
+
 ## See Also
 - [[Graph Topology Primitives]] <!-- auto-linked -->
 - [[Deep Agents Memory Backends]] <!-- auto-linked -->
@@ -120,3 +137,4 @@ print(result["structured_response"])  # ContactInfo(name='John', ...)
 - [[LangChain RAG Implementation Patterns]]
 - [[Deep Agents Framework]]
 - [[LangGraph Advanced Patterns]]
+- [[LangGraph Platform Data Model and Double-Texting]] — extends (hosted deployment of the same graphs)

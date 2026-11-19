@@ -6,6 +6,7 @@ updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-dao-2022-flashattention.md
   - data/raw/papers/2026-11-07-dao-2023-flashattention-2.md
+  - data/raw/papers/2026-11-07-llm-engineers-handbook-ch08-inference-optimization.md
 ---
 
 # FlashAttention and FlashAttention-2
@@ -32,6 +33,10 @@ The hypothesis is that the first version's inefficiency comes from work partitio
 - Training GPT-style 1.3B and 2.7B models at 2k or 8k context on 8 A100s: the best end-to-end speedup is 2.8x without FlashAttention as the reference and 1.3x against FlashAttention; the 2.7B model at 8k context sustains up to 225 TFLOPs/s on each A100, 72% model FLOPs utilisation (self-reported).
 - H100 80GB SXM5, forward plus backward, head dim 128, no Hopper-specific instructions: up to 335 TFLOPs/s (self-reported).
 
+## In the serving engines (LLM Engineer's Handbook, ch. 8)
+
+Iusztin and Labonne advise enabling FlashAttention-2 through the attn_implementation argument in transformers. Their 2024 feature table lists FlashAttention-2 as supported in TGI, vLLM and TensorRT-LLM (the check-mark columns were reconstructed from positions in the PDF text layer). The chapter reports no timing for it.
+
 ## Limits
 
 - FlashAttention needs a fresh hand-coded CUDA kernel for each attention variant and does not carry over between GPU architectures; speedup is smaller on T4 and at head dim 128; the IO optimality is up to constants on one GPU and the multi-GPU analysis is open.
@@ -47,3 +52,4 @@ The hypothesis is that the first version's inefficiency comes from work partitio
 - [[GPU Kernel Tuning Workflow]] — related
 - [[Torch Compile and Triton Stack]] — related
 - [[PagedAttention and vLLM KV Cache Paging]] — related
+- [[Selective Activation Recomputation and Sequence Parallelism]] — related

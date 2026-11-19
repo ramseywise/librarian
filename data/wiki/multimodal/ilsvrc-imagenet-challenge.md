@@ -34,3 +34,5 @@ Russakovsky et al. (arXiv v3, January 2015) describe the ImageNet Large Scale Vi
 - [[Microsoft COCO]] — related (the newer benchmark with segmentation)
 - [[Food-101 and Car-197 Fine-Grained Datasets]] — related
 - [[VGG Depth with Stacked 3x3 Filters]] — related
+- [[AlexNet ReLU, Dropout and the Two-GPU ConvNet]] — related
+- [[Inception-v3 Factorized Convolutions and Label Smoothing]] — related

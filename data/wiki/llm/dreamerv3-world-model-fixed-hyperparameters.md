@@ -56,3 +56,4 @@ Murphy's model-based RL chapter credits DreamerV3 as the earliest method to coll
 - [[Deep Q-Network, Target Network and Experience Replay]] — alternative-to (model-free value-based agent on the same Atari suite)
 - [[Arcade Learning Environment]] — prerequisite-for
 - [[Dyna Planning]] — related (the imagined-experience idea Dreamer cites)
+- [[LingBot-World Open-Source World Model]] — related

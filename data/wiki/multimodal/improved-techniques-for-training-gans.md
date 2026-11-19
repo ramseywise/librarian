@@ -37,3 +37,5 @@ Salimans et al. (preprint) ask how to make GAN training and samples better and h
 - [[Spectral Normalization for GANs]] — extends
 - [[BigGAN Large-Scale GAN Training]] — extends
 - [[DCGAN Architectural Constraints for Stable GANs]] — prerequisite-for
+- [[Progressive Growing of GANs]] — extends
+- [[Generative Adversarial Nets Minimax Game]] — prerequisite-for

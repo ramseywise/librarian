@@ -5,6 +5,7 @@ summary: "Segment Anything defines promptable segmentation, an MAE-pretrained Vi
 updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-kirillov-2023-segment-anything.md
+  - data/raw/papers/2026-11-08-prompt-engineering-for-generative-ai-ch09-advanced-image-generation-stable-diffu.md
 ---
 
 # Segment Anything SAM and SA-1B
@@ -21,6 +22,10 @@ The paper proposes a promptable segmentation task (return a valid mask for any p
 - 94% of automatic masks exceed 90% IoU with professionally corrected versions (500 images, about 50k masks).
 - With the image embedding precomputed, the prompt encoder and the decoder take about 50 ms on a CPU, in a browser. Training took 256 A100 GPUs for 68 hours.
 - Geography: 54.0% of SA-1B images come from high-income countries, against 89.1% for COCO and 87.5% for Open Images. Clothing segmentation shows a gender gap at one point (76.3 against 81.0) that closes at three points.
+
+## SAM inside a Stable Diffusion workflow (Phoenix and Taylor)
+
+Phoenix and Taylor (*Prompt Engineering for Generative AI*, chapter 9) cite SAM (11 million images, 1.1 billion masks) as a source of masks for inpainting, but admit that passing SAM masks into inpainting proved unreliable when they tried it.
 
 ## Limits
 

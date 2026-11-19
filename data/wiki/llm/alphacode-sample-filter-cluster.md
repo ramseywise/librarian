@@ -42,3 +42,6 @@ Li et al. (DeepMind) ask if a big code transformer can solve unseen competition 
 - [[CodeRL Unit-Test Actor-Critic]] — alternative-to
 - [[AlphaCodium Flow Engineering]] — extends
 - [[EvalPlus and HumanEval+]] — related
+- [[Code LLM Training Recipes]] — prerequisite-for
+- [[CodeT Generated-Test Reranking]] — alternative-to (generated tests with dual agreement; its replication of AlphaCode's clustering scores lower)
+- [[Planning-Guided Transformer Decoding (PG-TD)]] — alternative-to

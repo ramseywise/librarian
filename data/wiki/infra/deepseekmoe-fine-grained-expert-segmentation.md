@@ -2,7 +2,7 @@
 title: DeepSeekMoE Fine-Grained Expert Segmentation
 tags: [infra, concept]
 summary: "DeepSeekMoE splits each feed-forward expert into many smaller ones, activates proportionally more of them, and keeps a few shared experts always on; the paper reports a 16B model matching dense 7B models at about 40% of the computation."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-dai-2024-deepseekmoe.md
 ---
@@ -35,3 +35,4 @@ Dai et al. argue that conventional top-K mixture-of-experts layers (GShard) suff
 - [[MoE Expert Offloading]] — related
 - [[MoE-LLaVA and MoE-Tuning]] — related
 - [[Transformer Architecture]] — prerequisite-for
+- [[Mixture-of-Experts Routing and Scaling]] — prerequisite-for

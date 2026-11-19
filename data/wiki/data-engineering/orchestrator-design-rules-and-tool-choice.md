@@ -6,6 +6,8 @@ updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--03-transform-and-orchestrate--notes--02-orchestrate.md
   - data/raw/repos/learn-ai-engineering/data-engineering--03-transform-and-orchestrate--notes--05-dagster-and-airflow.md
+  - data/raw/papers/2026-11-07-llm-engineers-handbook-ch02-tooling-and-installation.md
+  - data/raw/papers/2026-11-07-llm-engineers-handbook-ch11-mlops-and-llmops.md
 ---
 
 # Orchestrator Design Rules and Tool Choice
@@ -36,6 +38,10 @@ The tools are equivalent in capability for ordinary pipelines. Course cohorts us
 - Reading the clock in a task; retrying non-idempotent work; a sensor with no timeout.
 - Business logic inside decorated functions, which ties it to one tool.
 - Treating a green run as correct data.
+
+## Handbook practice (LLM Engineer's Handbook, ch. 2 and 11)
+
+Iusztin and Labonne keep application logic in a module separate from the orchestrator's step and pipeline code so the orchestrator can be swapped, and adopt an orchestrator from the first day, even locally, which they say pushes pipelines apart so they share data only via storage. They advise running each pipeline separately and linking them by triggers; their deployed CT pipeline is a monolith only because a free-trial cap allows three pipelines.
 
 ## See Also
 - [[Orchestrator Core Loop, Logical Dates and Retries]] — prerequisite-for

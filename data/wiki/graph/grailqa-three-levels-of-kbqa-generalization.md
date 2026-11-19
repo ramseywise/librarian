@@ -2,7 +2,7 @@
 title: GrailQA Three Levels of KBQA Generalization
 tags: [graph, reference]
 summary: "GrailQA is a 64K-question Freebase dataset that tests knowledge-base QA at three levels (i.i.d., compositional, zero-shot); the accompanying BERT ranking model scored 50.6 EM overall and its zero-shot results depended heavily on BERT (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-gu-2021-beyond-i-i-d.md
 ---
@@ -38,3 +38,4 @@ The dataset pairs 64,331 questions with logical forms, drawn over Freebase Commo
 - [[Knowledge Graph Retrieval]] — prerequisite-for
 - [[Reasoning on Graphs]] — related
 - [[Text-to-Cypher]] — related (logical-form generation against a graph)
+- [[WEBQUESTIONS and Semantic Parsing on Freebase]] — related

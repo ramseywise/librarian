@@ -73,3 +73,4 @@ effect on output quality nobody measured.
 - [[Ranker Weight Sensitivity Sweep]] — alternative-to (perturbing parameters of a pure function instead of inputs to a model)
 - [[XYEval]] — related (perturbs a benchmark task with a wrong suggestion)
 - [[Self-Supervised LLM Evaluation by Text Transformations]] — related (another perturb-and-compare design)
+- [[PAWS Word-Swapping Paraphrase Adversaries]] — related

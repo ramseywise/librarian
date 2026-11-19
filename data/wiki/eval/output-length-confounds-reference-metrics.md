@@ -79,3 +79,5 @@ The authors themselves say almost every metric they tried, the GPT-4 judge inclu
 - [[MEDEC]] — related (correction scored with reference metrics)
 - [[Long-Form QA Evaluation Hurdles]] — related (ROUGE-L tested with trivial baselines and truncation)
 - [[Text Metrics Beyond N-gram Overlap]] — related (metrics that replace word overlap)
+- [[ROUGE Overlap Metrics for Summaries]] — related
+- [[BLEU, Brevity Penalty and SacreBLEU]] — related

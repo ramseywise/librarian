@@ -2,7 +2,7 @@
 title: Bi-Mamba Binarized State Space Model
 tags: [infra, concept]
 summary: "Bi-Mamba binarizes the input and output projections of Mamba-2 to 1-bit weights with learnable scale and shift, trained from scratch with distillation from a LLaMA2-7B teacher, and keeps most of full-precision accuracy where post-training binarization collapses."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-tang-2024-bi-mamba.md
 ---
@@ -32,3 +32,4 @@ Tang et al. swap the linears for the input and output projections in Mamba-2 (78
 - [[Straight-Through Estimator]] — prerequisite-for
 - [[Model Compression Landscape]] — related
 - [[RWKV Linear-Time Recurrent Language Model]] — related (another attention-free architecture)
+- [[Mamba-2 and Structured State Space Duality]] — prerequisite-for

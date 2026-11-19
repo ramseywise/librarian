@@ -30,3 +30,4 @@ Flan-U-PaLM 540B at temperature 0 (greedy), one call per case, returned the corr
 - [[Neural Turing Machine]] — related (external memory with a controller)
 - [[Memory Architecture]] — related
 - [[Transformer Architecture]] — related
+- [[Neural GPU Convolutional GRU]] — related (the Neural GPU paper also describes its architecture as computationally universal)

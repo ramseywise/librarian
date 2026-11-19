@@ -2,7 +2,7 @@
 title: ModernBERT Encoder Backbone
 tags: [rag, concept]
 summary: ModernBERT is an encoder-only model with RoPE, GeGLU, alternating global and local attention and unpadding, trained on 2T tokens with 8192-token context, evaluated as a fine-tuned backbone for retrieval, code and classification.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-warner-2024-smarter-better-faster-longer.md
 ---
@@ -34,3 +34,4 @@ Self-reported; single run per cell.
 ## See Also
 - [[RAG Retrieval Strategies]] — related
 - [[GTR Large Dual Encoders]] — related (earlier dense-encoder backbone study)
+- [[BERT Masked-LM Pretraining and Its Refinements]] — prerequisite-for

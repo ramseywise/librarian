@@ -11,6 +11,9 @@ sources:
   - data/raw/papers/2026-11-07-stiennon-2020-learning-summarize-human-feedback.md
   - data/raw/papers/2026-11-07-ouyang-2022-training-language-models-follow-instructions.md
   - data/raw/papers/2026-11-08-murphy-rl-ch06-llms-rl.md
+  - data/raw/papers/2026-11-07-huyen-ai-engineering-ch02-understanding-foundation-models.md
+  - data/raw/papers/2026-11-07-building-ai-agents-llms-rag-kgs-ch03-exploring-llms-as-powerful-ai-engine.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch04-alignment.md
 ---
 
 # RLHF Pipeline
@@ -44,6 +47,8 @@ carries almost no gradient information. SFT concentrates the distribution on pla
 responses first, and only then is preference optimization discriminating between things
 worth discriminating between. It also becomes the **reference policy** the KL penalty in
 Stage 3 anchors to, so its quality bounds the whole pipeline.
+
+Other textbooks describe the same stage. Huyen calls the (prompt, response) examples demonstration data and notes InstructGPT's 13,000 pairs, which at $10 per pair come to $130,000. Raieli and Iuculano put the supervised set for RLHF at 10,000 to 100,000 human-written pairs (claim, no model named). For a worked fine-tuning on pairs see [[Supervised Instruction Fine-Tuning of GPT-2 with an LLM Judge]].
 
 ## Stage 2 — Reward model
 
@@ -96,6 +101,10 @@ rewards runs keep it for stability; [[DAPO]] and Open-Reasoner-Zero drop it, whi
 DeepSeek-R1-Zero's GRPO keeps it. The SFT-memorizes / RL-generalizes framing behind this is
 in [[Post-Training for Agents]].
 
+Huyen calls the Stage 2 data comparison data, (prompt, winning_response, losing_response). Her reported figures: about 73% agreement between InstructGPT labelers on pairwise rankings; a Llama 2 comparison cost $3.50 against $25 for writing a response (per Thomas Scialom, Discord talk); LMSYS comparisons took three to five minutes each. She also reports more hallucination from InstructGPT's RLHF model than from SFT alone, even though labelers liked the RLHF model better. Raieli and Iuculano list the stages as SFT, then a reward model trained from rankings, then PPO under a KL penalty, and recommend DPO as a way to skip the reward model and the RL step.
+
+In Xiao and Zhu's chapter 4 the reward model is a decoder topped by a linear layer that reads the final token's state, fit with the Bradley-Terry pairwise loss. For RL, the reward and value models start from the pretrained LLM, whereas the policy and reference models start from the instruction-tuned one.
+
 ## Practical cost
 
 Stage 3 holds **four models simultaneously** — policy, reference, reward model, and
@@ -125,6 +134,8 @@ The pipeline above descends from four papers. Each number is (self-reported) and
 - Ziegler 2019: no error bars; the evaluation relied on the same Scale labelers who trained the model; online collection proved hard to debug; the online-versus-offline difference could be mostly noise; sharing parameters between reward model and policy failed because the data was unbalanced (60k against 2M); compute is unstated.
 - Stiennon 2020: no baseline of SFT on an equal volume of high-quality demonstrations; about two-thirds of TL;DR is posts about relationships; the 6.7B reward model leans toward longer outputs; the labeler pool skews White and American.
 - Ouyang 2022: alignment is to roughly 40 contractors' preferences, not to wide human values; one contractor labelled most comparisons; training favoured helpfulness while evaluation favoured truthfulness and harmlessness; PPO-ptx remains behind GPT-3 on DROP, SQuADv2 and translation; the authors thank Owain Evans and Stephanie Lin for pointing out that automatic TruthfulQA metrics exaggerated PPO's gains.
+- Xiao and Zhu ch04: no experiments of its own and no hyperparameters for any method; the authors concede no satisfactory solution to reward overoptimisation exists; the text has notation slips (equation and figure references, theta_ref against theta_old).
+- Huyen ch02 and Raieli and Iuculano ch03: the numbers are relayed from other work (Huyen's are time-bound), and no experiments are run.
 
 ## See Also
 - [[Data Engineering Foundations]] <!-- auto-linked -->
@@ -147,3 +158,9 @@ The pipeline above descends from four papers. Each number is (self-reported) and
 - [[Multitask Prompted Instruction Tuning (FLAN, T0, Super-NaturalInstructions, MetaICL)]] — related (supervised instruction tuning on task collections)
 - [[Trust Region and Clipped Surrogate Policy Optimization]] — prerequisite-for (the PPO step)
 - [[Knowledge Distillation with Soft Targets]] — related (teacher-student training without a reward)
+- [[LLaMA 1 and Llama 2 Open Foundation Models]] — instance-of
+- [[GPT-4 Technical Report and Predictable Scaling]] — related
+- [[Supervised Instruction Fine-Tuning of GPT-2 with an LLM Judge]] — prerequisite-for (a worked SFT run, the first stage)
+- [[Helpful-Harmless RLHF and Iterated Online Training]] — extends (separate harmlessness data and iterated online collection)
+- [[HHH Assistant Alignment Baselines]] — related (prompting, context distillation and preference-model pre-training before RLHF)
+- [[WebGPT Browser-Assisted Question Answering]] — instance-of (behaviour cloning, reward model and PPO or best-of-n applied to browsing)

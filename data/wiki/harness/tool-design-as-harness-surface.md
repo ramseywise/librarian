@@ -2,7 +2,7 @@
 title: Tool Design as Harness Surface
 tags: [llm, agents, mcp, concept]
 summary: "Tools are designed for a reader with no docs and no follow-up question — capability form and granularity, the five-section contract whose negative sections do the work, parameter fidelity, output discipline, and the four gating questions that decide confirmation, retry, and serialization."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--03-tool-design.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--03-tool-design.md
@@ -10,6 +10,7 @@ sources:
   - data/raw/papers/2026-11-07-building-applications-with-ai-agents-ch04-tool-use.md
   - data/raw/papers/2026-11-08-liang-2023-taskmatrix-ai.md
   - data/raw/papers/2026-11-06-zhang-2023-igniting-language-intelligence.md
+  - data/raw/papers/2026-11-08-prompt-engineering-for-generative-ai-ch06-autonomous-agents-memory-tools.md
 ---
 
 # Tool Design as Harness Surface
@@ -276,6 +277,17 @@ Limits of this section:
 
 - The extraction notes that the survey covers ReAct and tool use only briefly: no ReAct benchmark numbers, nothing on function-calling schemas, and no analysis of how tool agents fail.
 - Its coverage stops at late 2023, so it predates standard function calling and MCP.
+
+## Tool naming, arguments and monitoring (Phoenix and Taylor)
+
+Phoenix and Taylor (*Prompt Engineering for Generative AI*, chapter 6) want descriptive function names and descriptions on each Python tool so the right one gets chosen, and warn that an agent given many tools may get confused. They add: validate arguments through a pydantic `args_schema`, state the expected input shape and a reply instruction in the docstring, split work sensibly across tools, and track each tool's usage and quality.
+
+- **Callbacks.** Constructor callbacks log for the whole agent, request callbacks stream one request, and verbose mode belongs to local debugging only.
+- **Token counting.** `get_openai_callback` reports tokens, cost and request counts for prompt tuning. In the chapter's tiny example one call used 25 tokens, and repeating it doubled that to 50 (default ChatOpenAI, model unnamed).
+
+## Limits
+
+- The Phoenix and Taylor chapter is guidance with no experiments, written against 2023-24 LangChain APIs, and its comparison table of agent approaches records the authors' judgments, not measurements.
 
 ## See Also
 - [[Agentic Engineering and the New SDLC]] <!-- auto-linked -->

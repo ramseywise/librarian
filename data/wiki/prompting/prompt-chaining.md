@@ -2,13 +2,17 @@
 title: Prompt Chaining
 tags: [prompting, llm, agents, concept]
 summary: Decomposing a complex task into simpler prompts with fixed I/O contracts — trading a general/weak prompt for strong single-job steps wired as a pipeline or (by default) a DAG; the boundary case between prompting and harness engineering.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt--prompt-engineering.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--06-chaining-and-workflows.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--03-core-techniques.md
   - data/raw/papers/2026-11-08-wu-2022-ai-chains.md
   - data/raw/papers/2026-11-08-wu-2022-promptchainer.md
+  - data/raw/papers/2026-11-07-prompt-engineering-for-generative-ai-ch01-five-principles-of-prompting.md
+  - data/raw/papers/2026-11-07-prompt-engineering-for-generative-ai-ch03-standard-practices-text-generation.md
+  - data/raw/papers/2026-11-07-prompt-engineering-for-generative-ai-ch04-advanced-text-generation-langchain.md
+  - data/raw/papers/2026-11-07-prompt-engineering-for-generative-ai-ch10-building-ai-powered-applications.md
 ---
 
 # Prompt Chaining
@@ -108,6 +112,16 @@ Limits: two researcher-authored Chains on tasks that decompose naturally; tasks 
 ## PromptChainer: authoring chains visually
 
 Wu et al. (CHI '22 extended abstract) built a node-and-edge editor with three node kinds (LLM, helper, communication) and three debugging modes: unit, end-to-end and breakpoints. Four participants at one company built their own chains on LaMDA 137B, and all four finished a chain in the session. Across the user-study and pilot chains (8 in total), pre-defined helper nodes were used at three times the rate of custom JS nodes. Of 27 LLM nodes, 7 categorize, 13 source information and 7 re-organize, coded by one author. Parallel paragraphs generated independently reduced coherence in one story chain. Limits: four participants, qualitative only, participants pre-drafted prompts, tasks may be easy to decompose, and no baseline tool comparison.
+
+## Divide Labor in Phoenix and Taylor
+
+Phoenix and Taylor (*Prompt Engineering for Generative AI*, chapters 1, 3, 4 and 10) make dividing the work their fifth principle. Chapter 1 chains a name-generation call into a rating call and splits the rating into clarity, memorability and a unique selling point. Chapter 3 describes least-to-most as a chain where each prompt starts from the previous answer, with each answer checked before use. Chapter 4 assigns a strong model to ideation and a cheaper one to generation, and builds LangChain sequential chains: one run of its story chain for the genre Fantasy returned five characters and nine scenes. They call sequential chains incremental but slow, hence better for server-side jobs (unmeasured). Chapter 10 breaks blog writing into chained steps, each run through LangChain for logging, and keeps only the model's own messages in memory so retrieved text does not swell it.
+
+For long documents, chapter 4 offers four chain strategies: stuff everything into one request, refine the output document by document, map a chain over the documents then combine, or map and re-rank by each answer's confidence. It also covers query planning, which converts a query with several intents into a dependency graph of steps.
+
+## Limits
+
+- The Phoenix and Taylor chapters give no measurement of what chaining gains or costs. Chapter 4's story chain is one run on LangChain's default chat model, and its chain code uses 2023-24 LangChain APIs.
 
 ## See Also
 - [[Loop Detection and the Two-Retry Rule]] <!-- auto-linked -->

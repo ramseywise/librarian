@@ -50,3 +50,4 @@ A later textbook chapter describes the NTM as a controller network (usually an R
 - [[LSTM Forget-Gate Bias and Vanishing Gradients]] — related (the baseline and one controller)
 - [[Seq2seq Bottleneck and Attention]] — related (the attention idea the heads build on)
 - [[Stored Instruction Computer LLM Memory Universality]] — related
+- [[Graves Sequence Generation: Soft Window and Dynamic Evaluation]] — related

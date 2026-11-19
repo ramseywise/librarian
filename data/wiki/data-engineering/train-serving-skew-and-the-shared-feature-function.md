@@ -6,6 +6,9 @@ updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--06-ml-platform--notes--01-feature-stores.md
   - data/raw/papers/2026-11-08-ml-engineering-in-action-ch15-quality-acceptance-testing.md
+  - data/raw/papers/2026-11-07-llm-engineers-handbook-ch01-llm-twin-concept-and-architecture.md
+  - data/raw/papers/2026-11-07-llm-engineers-handbook-ch04-rag-feature-pipeline.md
+  - data/raw/papers/2026-11-07-llm-engineers-handbook-ch10-inference-pipeline-deployment.md
 ---
 
 # Train-Serving Skew and the Shared Feature Function
@@ -40,6 +43,10 @@ assert prepare_features_v2(train_row) == prepare_features_v2(served_row)
 
 Wilson (*Machine Learning Engineering in Action*, chapter 15) defines training and inference skew as offline training data and online serving data disagreeing, either on which features exist or on how they are processed. In his warehouse scenario, features added at retraining are absent from the online store. He describes two outcomes: the missing feature is imputed, losing variance and possibly doing worse than the original model, or it raises exceptions so every prediction goes to the fallback service. He advises validating before release that each inference feature is available online within the SLA, and checking offline and online consistency with a scheduled statistical job or a feature store. This is his experience-based scenario, not a measurement.
 
+## Handbook: skew in an LLM product
+
+Iusztin and Labonne (*LLM Engineer's Handbook*) describe skew as a gap between how training and serving compute features. In their RAG system the user query is cleaned, chunked and embedded with the same functions and model as the documents, which they give as the way to avoid it. They ask for the same pre- and post-processing at training and at serving, and say versioned features in a feature store keep the two sides matched ([[FTI Pipelines and the Logical Feature Store]]). These are design arguments; no chapter measures skew.
+
 ## Limits
 
 One shared function suffices for one team, one language and one model. It stops sufficing when training is a Spark job, serving is a Go service and several teams have each written their own "rides in the last hour"; that is when [[Feature Stores: Parts and When You Need One]] earn their keep. Skew can also hide inside a healthy-looking score; see [[Drift Types and What Monitors Can See]].
@@ -50,3 +57,4 @@ One shared function suffices for one team, one language and one model. It stops 
 - [[Drift Types and What Monitors Can See]] — related
 - [[Categorical Encoding Choices]] — related
 - [[Pipelines Prevent Preprocessing Leakage]] — related
+- [[FTI Pipelines and the Logical Feature Store]] — extends

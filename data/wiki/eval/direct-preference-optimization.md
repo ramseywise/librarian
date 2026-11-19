@@ -6,6 +6,7 @@ updated: 2026-11-19
 sources:
   - data/raw/claude-docs/playground/docs/research/evaluation-and-learning/self-learning-agents.md
   - data/raw/papers/2026-11-05-whitehouse-2025-j1.md
+  - data/raw/papers/2026-11-07-llm-engineers-handbook-ch06-preference-alignment.md
 ---
 
 # Direct Preference Optimization (DPO)
@@ -60,6 +61,10 @@ DPO is not applicable. Use this stack instead:
 | Inference-time | Chain of Thought, self-critique |
 | Session-time | [[Agent Memory Types]] reflection, procedural memory update |
 | Operational | [[Copilot Learning Loop]], HITL annotation |
+
+## A worked run (LLM Engineer's Handbook, ch. 6)
+
+Iusztin and Labonne build a 1,467-pair preference set for style imitation, with blog extracts as chosen answers and GPT-4o-mini generations as rejected ones, and DPO-fine-tune TwinLlama-3.1-8B with LoRA. They split the data 95%/5%. They use beta 0.5 where they call 0.1 the usual value, a learning rate of 2e-6 (3e-4 in their SFT run), and 1 epoch (3 in SFT). Over 20 models were trained to choose hyperparameters, compared on qualitative outputs. The evidence for the result is one sample answer on one prompt; the chapter says automating style evaluation is not its purpose. Their stated observation, with no data, is that DPO makes models more verbose and formal. They assert the RLHF versus DPO comparison without citing results.
 
 ## Maturity Gate
 

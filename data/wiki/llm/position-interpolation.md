@@ -6,6 +6,7 @@ updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-chen-2023-extending-context-window-large-language.md
   - data/raw/papers/2026-11-06-liu-2024-world-model-million-length-video.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch02-generative-models.md
 ---
 
 # Position Interpolation
@@ -25,6 +26,10 @@ RoPE models trained at a window L fail when run beyond it: on LLaMA 7B trained a
 
 LWM (Liu et al., ICLR 2025) grows a LLaMA-2 7B window in stages (32K, 128K, 256K, 512K, 1M tokens, on 4.8B, 12B, 12B, 3B and 1.8B tokens), raising the RoPE base from 1M to 50M at the last stage, with each stage starting from the previous. It serves 1M tokens with Blockwise RingAttention across a TPU slice (minimum v4-128). Single-needle retrieval is described as near-perfect, and at 1M the multi-needle scores were 0.67, 0.84 and 0.69 against 0.84, 0.97 and 0.84 at 32K (self-reported). MMLU slipped from 0.39 to 0.35 at 1M, which, the extraction notes, sits uneasily with the paper's "no negative effects" wording. Tuning the chat-to-retrieval data mix traded MT-Bench (2.42 to 5.8) against needle accuracy (100% to 31%).
 
+## Xiao and Zhu's formulas
+
+Xiao and Zhu write RoPE with angles `theta_k = 10000^(-2(k-1)/d)`. For a model trained to length m_l and used at length m, linear interpolation maps positions in [0, m] into the trained range [0, m_l] by dividing the position index by m/m_l. NTK-aware scaling rescales the RoPE base b by a factor `lambda = (m/m_l)^(d/(d-2))`, with d the embedding dimension. For length generalisation they favour relative or rotary position schemes to learned absolute embeddings, and fine-tuning on longer sequences after pre-training.
+
 ## Limits
 
 - PI applies to RoPE models, and the passkey task is synthetic with a 20% success threshold. No reasoning or multi-hop long-context test. Attention cost at long length is not measured. Models are from 2023.
@@ -36,3 +41,5 @@ LWM (Liu et al., ICLR 2025) grows a LLaMA-2 7B window in stages (32K, 128K, 256K
 - [[Why Context Is Finite]] — related
 - [[IN2 Training and VAL Probes]] — related (RoPE base suggestion for long-context tuning)
 - [[Context Window Budgeting]] — related (nominal versus effective window)
+- [[Fill-in-the-Middle and Infilling Code Models]] — related
+- [[Position Encodings — Relative, Rotary, ALiBi and CAPE]] — prerequisite-for

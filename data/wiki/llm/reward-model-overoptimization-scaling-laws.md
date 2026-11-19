@@ -44,3 +44,4 @@ One fixed 6B gold reward model labels comparisons, and those labels train smalle
 - [[RLHF Pipeline]] — prerequisite-for (the KL-penalised PPO stage the fits describe)
 - [[DPO Loss and Implicit Reward]] — related (leaves open whether over-optimisation occurs under DPO)
 - [[RLOO REINFORCE Leave-One-Out]] — related (does not study over-optimisation)
+- [[Scaling Laws: Kaplan, Chinchilla and Error Landscapes]] — related

@@ -7,6 +7,7 @@ sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--rlhf-pipeline.md
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--preference-optimization.md
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--constitutional-ai.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch04-alignment.md
 ---
 
 # Bradley-Terry Preference Model
@@ -56,6 +57,14 @@ observed choices, systematically biased labels produce a confidently biased rewa
 This is the mechanism behind the verbosity and sycophancy failures in
 [[Reward Hacking and Overoptimization]] — the model is not malfunctioning, it is fitting
 the preferences it was actually shown.
+
+## Xiao and Zhu's reward-model account
+
+Xiao and Zhu (a textbook chapter) build the reward model from a decoder with a linear head over the last-token state, fit with a pairwise loss that is the negative expected log-probability that the preferred output beats the other. They extend the pairwise model to rankings of many outputs with the Plackett-Luce model, in which an output's worth is `exp(r(x,y))`, and give a listwise loss that averages the pairwise log-likelihood over all ordered pairs in an N-item ranking. Their advice is to train rewards pairwise or listwise rather than by pointwise regression because human scores are noisy, and to keep pointwise training for cases with abundant, consistent labels.
+
+## Limits
+
+- Xiao and Zhu's chapter 4 is a textbook with no experiments and gives no hyperparameters.
 
 ## See Also
 - [[RLHF Pipeline]] — related (part of; the Stage 2 reward-model objective)

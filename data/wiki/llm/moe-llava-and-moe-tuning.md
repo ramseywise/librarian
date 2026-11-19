@@ -39,3 +39,4 @@ The router is linear with top-2 of 4 experts, placed in every other layer, with 
 - [[DeepSeekMoE Fine-Grained Expert Segmentation]] — related
 - [[LLaVA Visual Instruction Tuning]] — prerequisite-for (the dense baseline it builds on)
 - [[V-MoE Sparse Mixture of Experts for Vision]] — related
+- [[Mixture-of-Experts Routing and Scaling]] — prerequisite-for

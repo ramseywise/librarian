@@ -2,13 +2,15 @@
 title: Speculative Decoding
 tags: [infra, concept]
 summary: "Speculative decoding has a cheap drafter propose several tokens that the target model verifies in one parallel pass, with the rejection rule keeping outputs identical; this page collects the survey's reported speedups and three drafter variants that avoid a second model."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-xu-2024-survey-resource-efficient-llm-multimodal.md
   - data/raw/papers/2026-11-07-liu-2025-tidar.md
   - data/raw/papers/2026-11-08-monea-2023-pass.md
   - data/raw/papers/2026-11-07-bercovich-2026-nemotron-labs-3-puzzle-75b.md
   - data/raw/papers/2026-11-08-lakshmanan-hapke-genai-design-patterns-ch08-addressing-constraints.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch05-inference.md
+  - data/raw/papers/2026-11-07-llm-engineers-handbook-ch08-inference-optimization.md
 ---
 
 # Speculative Decoding
@@ -29,12 +31,23 @@ The survey's figures are the cited papers' own claims, with hardware and baselin
 
 With vLLM, Gemma 2 9B as target and Gemma 2 2B as draft at num_speculative_tokens=5, the chapter reads about 14.2% faster than the target alone (self-reported, read from a figure); hardware, prompts and run count are not stated (the numbers come from a repo script). The authors concede setting num_speculative_tokens too high can make it slower than running the target by itself, so it should be tuned.
 
+## Xiao and Zhu's description
+
+Xiao and Zhu describe the greedy version: a draft model with distribution q proposes tau tokens (tau=5 in their figure) and the verifier p checks them; a token is accepted if q <= p, otherwise rejected with probability 1 - p/q (attributed to Leviathan et al.). The accepted length n_a is the position before the first rejection, or tau if all pass. They advise picking a draft model that balances its cost against the acceptance length.
+
+## LLM Engineer's Handbook demo
+
+The handbook's own demo (Qwen1.5-1.8B-Chat as the main model, Qwen1.5-0.5B-Chat as the assistant, free Colab T4, one prompt "What is 2+2?" with sampling on) showed no significant speedup and reported no timing. Its statement that a draft model matching the large model 90% of the time could give a 3-4x speedup is an assumption with no model or hardware behind it.
+
 ## Limits
 
 - Three of the five sources are single-paper claims on their own setups; the survey is secondary.
 - The extraction notes the survey's description has a notation slip (it says the large model drafts) and that it covers work only to early 2024, using Medusa and lookahead as its examples.
 - The acceptance-length and wall-time numbers behind these methods depend on model, temperature and batch size; PaSS reports larger gains at lower temperature.
 - Worked vLLM example: single run, unstated hardware; the vLLM speculative_model argument has since changed.
+- Xiao and Zhu describe only the greedy version, say so for simplicity, and give no speedup numbers.
+- The handbook's speculative-decoding demo is qualitative only: one prompt, no timings and no accuracy numbers, and its 3-4x figure is unmeasured.
+
 
 ## See Also
 - [[LLM Inference Economics]] — prerequisite-for (where the draft-and-verify lever sits among serving levers)

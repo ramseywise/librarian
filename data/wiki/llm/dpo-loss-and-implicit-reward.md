@@ -5,6 +5,8 @@ summary: "Direct Preference Optimization rewrites the Bradley-Terry preference l
 updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-rafailov-2023-dpo.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch04-alignment.md
+  - data/raw/papers/2026-11-07-llm-engineers-handbook-ch06-preference-alignment.md
 ---
 
 # DPO Loss and Implicit Reward
@@ -42,6 +44,14 @@ Further observations:
 - Unlikelihood training emitted repeated-token gibberish on summarisation and dialogue, so it serves only as a sentiment baseline.
 - DPO outputs can be wordy and invent facts, and GPT-4 occasionally judged wrongly on the HH examples the paper shows.
 
+## LLM Engineer's Handbook DPO run
+
+The LLM Engineer's Handbook DPO run on TwinLlama-3.1-8B (preference data mlabonne/llmtwin-dpo, blog-style imitation) set beta to 0.5 where 0.1 is the usual value, a learning rate of 2e-6 against 3e-4 for its SFT run, and 1 epoch against 3.
+
+## Xiao and Zhu on DPO
+
+Xiao and Zhu derive DPO in the same notation as their Bradley-Terry reward model and PPO sections, and advise it where training a reward model and sampling online cost too much.
+
 ## Limits
 
 - The largest model is 6B; behaviour at larger scale is untested.
@@ -51,6 +61,8 @@ Further observations:
 - Beta received little tuning, so the authors suggest DPO is understated. Seeds, significance tests, compute and hardware are absent.
 - The PPO baselines depend on the authors' own tuning plus a public checkpoint, which leaves their strength uncertain.
 - The method presumes the preference data came from pi_SFT; when it did not, pi_ref is estimated by fitting the chosen completions with maximum likelihood.
+- The handbook judges its DPO result from a single qualitative sample on one prompt, with no metric; its hyperparameters were chosen by comparing the outputs of over 20 trained models on a set of questions.
+
 
 ## See Also
 - [[Bradley-Terry Preference Model]] — prerequisite-for (the pairwise loss DPO rewrites over the policy)

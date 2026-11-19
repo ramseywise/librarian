@@ -34,3 +34,5 @@ The GPT-2 runs (0.1B to 1.5B) first pretrained on AMPS and then fine-tuned on MA
 - [[GSM-Symbolic]] — related
 - [[OlympiadBench]] — related
 - [[s1 Budget Forcing]] — related
+- [[Minerva Quantitative Reasoning]] — extends
+- [[Early GPT-4 Probing and Planning Limits (Sparks of AGI)]] — related

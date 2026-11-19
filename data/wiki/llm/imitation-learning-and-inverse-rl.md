@@ -45,3 +45,4 @@ Offline RL learns from a fixed logged dataset with no interaction, and the main 
 - [[Reinforcement Learning Foundations]] — prerequisite-for
 - [[RL Reward and State Engineering]] — related (IRL as an alternative to hand-designed rewards)
 - [[Hierarchical Reinforcement Learning]] — related
+- [[Decision Transformer Return-Conditioned Sequence Modeling]] — related

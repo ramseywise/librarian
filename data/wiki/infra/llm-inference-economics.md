@@ -2,7 +2,7 @@
 title: LLM Inference Economics
 tags: [infra, llm, concept]
 summary: Why prompt tokens and output tokens have different unit costs — the prefill/decode split — and the four levers (quantization, distillation, speculative decoding, output-length discipline) that move serving cost and latency.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--guides--2-llm-fundamentals--interview-guide.md
   - data/raw/repos/sisyphus/interviewing--guides--2-llm-fundamentals--interview-guide.md
@@ -116,3 +116,4 @@ Limits of this section:
 - [[DeepSpeed Inference and ZeRO-Inference]] — related
 - [[Model Compression Landscape]] — related
 - [[ZeRO-Offload]] — related (training-side offload to CPU)
+- [[AI Application Planning: Usefulness Threshold and Milestones]] — related (cost and latency as planning inputs)

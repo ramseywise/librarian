@@ -12,6 +12,8 @@ sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--08-prompt-optimization.md
   - data/raw/papers/2026-11-08-song-2023-pre-trained-large-language-models.md
   - data/raw/papers/2026-11-08-dong-2024-survey-context-learning.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch03-prompting.md
+  - data/raw/papers/2026-11-08-min-2022-rethinking-role-demonstrations.md
 ---
 
 # Few-Shot Prompting
@@ -59,12 +61,12 @@ teach that ratings are integers 1–5, the exact line format, and the *distribut
 ratings. That makes few-shot good for "I know it when I see it" categories and a cheap way
 to pin down format.
 
-What matters in the examples (Min et al., 2022):
+Which parts of the examples drive the gain (Min et al., 2022; k=16 demonstrations, 12 model variants on 26 classification and multi-choice datasets, self-reported):
 
-- **Label space and input distribution** matter more than per-example label correctness —
-  random labels still beat no examples.
-- **Format** matters a lot; a consistent format with random labels still helps.
-- Sampling labels from the true distribution beats a uniform spread.
+- **Label correctness** matters little: swapping in random labels lowered scores by just 0-5% absolute for nearly every model. In an ablation, GPT-J on classification dropped nearly 10% with always-incorrect labels but stayed above no demonstrations.
+- **Input distribution and label space** matter: out-of-distribution inputs cut performance by 3-16% absolute for most models tested, and direct models lost 5-16% when random English words replaced the labels.
+- **Format** matters: dropping the labels, or keeping only labels, leaves results near or below the no-demonstration level.
+- Drawing the random labels from the true label distribution shrank the gap to gold labels more, shown for channel MetaICL on classification only.
 
 ## Three Drawbacks (Berryman & Ziegler)
 
@@ -140,6 +142,14 @@ Limits of this section:
 - The authors' own experiment is small (8 demonstrations, four models of at most 8B, five classification datasets) and excludes agent, planning and tool-use settings. The caption of Table 5 says the test set has 10k items, while Appendix B gives 1000 items for some datasets, an internal conflict.
 - Distilling demonstrations to fix efficiency needs parameter access, which closed models do not give.
 
+## Xiao and Zhu on demonstrations
+
+Xiao and Zhu note that demonstrations teach the output format as well as the task, for example the GSM8K answer marker `####`. They argue, without an experiment, that few-shot gains depend on prompt quality and on pre-training: when a language was missing from pre-training (their example is Inuktitut), further training does better than improved prompts.
+
+## Limits
+
+- Xiao and Zhu's chapter 3 reports no experiments; the Inuktitut point is a qualitative argument, not a measured result.
+
 ## See Also
 - [[Prompt Engineering]] — related (part of)
 - [[XML Prompt Structuring]] — prerequisite-for
@@ -164,3 +174,6 @@ Limits of this section:
 - [[RAG+ Application-Aware Retrieval]] — related
 - [[HiAR-ICL Thought Cards]] — extends
 - [[Multitask Prompted Instruction Tuning (FLAN, T0, Super-NaturalInstructions, MetaICL)]] — related (MetaICL meta-trains for few-shot in-context learning)
+- [[Contextual Calibration]] — extends
+- [[Random-Label Demonstration Ablations]] — extends
+- [[In-Context Explanations for Few-Shot Examples]] — extends

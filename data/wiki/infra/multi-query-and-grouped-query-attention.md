@@ -2,11 +2,12 @@
 title: Multi-Query and Grouped-Query Attention
 tags: [infra, concept]
 summary: "Sharing one key-value head (multi-query) or a few key-value groups (grouped-query) across all query heads shrinks the key-value cache and the data loaded per decoding step; grouped-query can be reached by uptraining a multi-head checkpoint on a small fraction of pre-training compute."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-shazeer-2019-fast-transformer-decoding.md
   - data/raw/papers/2026-11-07-ainslie-2023-gqa.md
   - data/raw/papers/2026-11-07-deepseek-ai-2024-deepseek-v2.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch02-generative-models.md
 ---
 
 # Multi-Query and Grouped-Query Attention
@@ -36,11 +37,17 @@ Grouped-query attention sits between the two extremes, with a middle count of ke
 
 In dense models of about 7B parameters trained on 1.33T tokens, with layers adjusted so parameter counts match, MHA scored 45.2 on 5-shot MMLU against 41.2 for GQA with 8 groups and 37.9 for MQA (setup from the DeepSeek-V2 report; self-reported). That report presents this as motivation for [[Multi-Head Latent Attention]].
 
+## Xiao and Zhu's cache-size formulas
+
+Xiao and Zhu give the KV cache size, for L layers, tau heads, per-head dimension d_h and m cached tokens, as O(L*tau*d_h*m) for multi-head attention, O(L*d_h*m) for multi-query, and O(L*n_g*d_h*m) for grouped-query with n_g key-value groups; n_g = tau recovers multi-head and n_g = 1 multi-query. Their model table lists GPT-3 175B with 96 query and 96 key-value heads and Llama3/3.1 405B with 128 query and 8 key-value heads (grouped-query). They advise grouped-query attention to trade cache size against expressiveness via n_g.
+
 ## Limits
 
 - Shazeer's experiments use one small configuration (a 211M WMT14 EN-DE model and a 192M Billion-Word model, each trained for a few hours) and include no large-scale or decoder-only quality tests; single runs, no variance; the speed test uses fixed padded shapes.
 - Ainslie et al. test only encoder-decoder models; no GQA-XXL was trained from scratch, so how uptraining compares with scratch training is unknown; ROUGE is a flawed measure; ablation values appear only in figures and on three tasks; no variance except a 3-run average for unstable MQA tasks.
 - The 7B dense comparison is single-run and from a paper whose subject is a different method.
+- The extraction flags Xiao and Zhu's model table as having values that look wrong in places (a listed Gemma2 size, and equal query and key-value head counts for models reported elsewhere to use grouped- or multi-query attention); the check uses outside knowledge and is unverified, so verify before citing.
+
 
 ## See Also
 
@@ -51,3 +58,4 @@ In dense models of about 7B parameters trained on 1.33T tokens, with layers adju
 - [[Disaggregated Prefill-Decode Serving]] — related (KV size per token)
 - [[Partitioning Layouts for Transformer Inference]] — extends (shards multiquery attention over batch)
 - [[Medusa Decoding Heads]] — related
+- [[Sliding Window Attention and Rolling Buffer Cache (Mistral 7B)]] — related (Mistral 7B pairs GQA with a sliding window)

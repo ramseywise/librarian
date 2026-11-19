@@ -2,13 +2,15 @@
 title: RAG Reranking
 tags: [rag, concept]
 summary: Reranking strategies for RAG pipelines — cross-encoder vs LLM listwise, confidence scoring, and when each is appropriate.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/playground/docs/archived/rag-tradeoffs.md
   - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
   - data/raw/claude-docs/playground/docs/archived/rag-agent-template-research.md
   - data/raw/agent-skills/langchain-rag/references/rag-strategies.md
   - data/raw/papers/2026-11-08-lakshmanan-hapke-genai-design-patterns-ch04-adding-knowledge-syncopation.md
+  - data/raw/papers/2026-11-07-llm-engineers-handbook-ch04-rag-feature-pipeline.md
+  - data/raw/papers/2026-11-07-llm-engineers-handbook-ch09-rag-inference-pipeline.md
 ---
 
 # RAG Reranking
@@ -83,7 +85,12 @@ The chapter's Pattern 10 inserts a step between retrieval and generation. Option
 Limits of this section:
 - Every example is one illustrative query on one corpus; no metric or baseline. The claim that rerankers beat embedding models is uncited.
 
+## Handbook: bi-encoder then cross-encoder
+
+Iusztin and Labonne (*LLM Engineer's Handbook*, ch. 4 and 9) retrieve with a bi-encoder and rerank with a cross-encoder, because a cross-encoder is too costly at the first stage. In their chain they retrieve more than K chunks across expanded queries, deduplicate, and rerank down to K. They report no measurement of the reranker's effect. See [[Advanced RAG Retriever: Self-Query, Query Expansion, Filtered Search and Rerank]].
+
 ## See Also
+- [[Advanced RAG Retriever: Self-Query, Query Expansion, Filtered Search and Rerank]] — instance-of (a worked retrieval chain ending in a cross-encoder rerank)
 - [[Text-to-SQL as a Retrieval Strategy]] <!-- auto-linked -->
 - [[Agentic RAG — Advanced Patterns]] <!-- auto-linked -->
 - [[LangGraph CRAG Pipeline]]

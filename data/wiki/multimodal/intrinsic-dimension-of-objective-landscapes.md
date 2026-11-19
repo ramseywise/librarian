@@ -36,3 +36,4 @@ Parameters are written theta(D) = theta0(D) + P theta(d). Both the starting vect
 ## See Also
 - [[DoRA Weight-Decomposed Low-Rank Adaptation]] — related (low-dimensional adaptation of large models; this paper does not study it)
 - [[Black-Box Tuning for Language-Model-as-a-Service]] — instance-of (uses a low-dimensional random subspace for prompt search)
+- [[Intrinsic Dimension of Fine-Tuning]] — extends

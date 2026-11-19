@@ -11,6 +11,7 @@ sources:
   - data/raw/papers/2026-11-08-akter-2023-depth-look-gemini-s-language.md
   - data/raw/papers/2026-11-08-bommasani-2023-holistic-evaluation-language-models.md
   - data/raw/papers/2026-11-06-he-2024-does-prompt-formatting-have-any.md
+  - data/raw/papers/2026-11-07-huyen-ai-engineering-ch01-introduction-building-ai-applications-foundation-model.md
 ---
 
 # Benchmark Prompt Format Sensitivity
@@ -65,6 +66,8 @@ on WebArena. The numbers (self-reported) are the authors' own:
   hyperparameter-identical.
 - Differences of 1 to 4 points are common, and data leakage was not measured.
 
+Huyen (*AI Engineering*, chapter 1) gives a headline case: changing the prompting technique raised Gemini Ultra's MMLU from 83.7% to 90.04% (Gemini technical report, December 2023; 5-shot against CoT@32), and she advises comparing models under equal prompting conditions.
+
 ## Other variance sources
 
 - **Run-to-run noise.** A single run on a small set misleads; HumanEval has only 164 items.
@@ -114,3 +117,4 @@ numbers are not comparable to Google's. HELM's format results (see [[HELM Holist
 - [[XML Prompt Structuring]] — related (prompt-format study with JSON, Markdown, YAML and plain text on 2023 GPT models)
 - [[FormatSpread]] — related (measures format spread with a bandit)
 - [[PromptBench]] — related (adversarial prompts as sensitivity probes)
+- [[MMLU, C-Eval and CMMLU Knowledge Exams]] — related

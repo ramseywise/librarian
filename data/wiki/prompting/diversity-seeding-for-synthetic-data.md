@@ -59,3 +59,4 @@ model trained on comparable human labels. See [[Synthetic Dataset Generation for
 - [[Evaluating Prompts]] — prerequisite-for
 - [[Few-Shot Prompting]] — extends
 - [[Impossible Distillation]] — related (filtering sampled pairs for diversity)
+- [[TinyStories Synthetic Corpus and GPT-Eval]] — instance-of

@@ -45,3 +45,6 @@ Because 437 of 817 questions were filtered against GPT-3-175B, its results are b
 - [[Intrinsic vs Extrinsic Hallucination]] — related
 - [[LLM Hallucination Surveys]] — related (surveys that describe this benchmark)
 - [[Model-Written Evaluations]] — related (its sandbagging test reuses these questions)
+- [[Adversarial Filtering and AFLite]] — related
+- [[HaluEval]] — related (recognition rather than generation of falsehoods)
+- [[WebGPT Browser-Assisted Question Answering]] — related

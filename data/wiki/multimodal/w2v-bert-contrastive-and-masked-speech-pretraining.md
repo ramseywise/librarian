@@ -35,3 +35,4 @@ Three parts are pre-trained jointly on unlabeled speech: a conformer feature enc
 - [[Conformer Convolution-Augmented Transformer for ASR]] — prerequisite-for (the building block)
 - [[Contrastive Self-Supervised Pretraining]] — prerequisite-for
 - [[SeamlessM4T Multilingual Speech Translation]] — extends (w2v-BERT 2.0 is its speech encoder pretraining)
+- [[wav2vec 2.0 Contrastive Speech Pretraining]] — prerequisite-for

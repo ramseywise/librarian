@@ -8,6 +8,8 @@ sources:
   - data/raw/papers/2026-11-08-ml-engineering-in-action-ch09-modularity-ml-writing-testable-legible-code.md
   - data/raw/papers/2026-11-08-ml-engineering-in-action-ch10-standards-coding-creating-maintainable-ml-code.md
   - data/raw/papers/2026-11-08-ml-engineering-in-action-ch15-quality-acceptance-testing.md
+  - data/raw/papers/2026-11-07-llm-engineers-handbook-ch11-mlops-and-llmops.md
+  - data/raw/papers/2026-11-07-llm-engineers-handbook-ch12-mlops-principles.md
 ---
 
 # Testing an ML System Beyond Its Code
@@ -49,6 +51,10 @@ Wilson (*Machine Learning Engineering in Action*, chapter 15) advises always hav
 For release review he ranks release review as: experts judging real users' predictions first, then company-wide dogfooding, then the team testing its own work, with about 50 users per genre in his music example, using unseen-data prediction distributions and random samples rather than handcrafted ones. Dogfooding still carries bias, since employee accounts are unrepresentative. He advises adding explanations before they are needed, using SHAP summary plots for overall feature impact and waterfall plots to explain the most extreme past cases (his wildfire example plots the five largest burn areas). He cautions that SHAP explains the model, not reality, and should be explained to the business first; see [[SHAP Attributions and the Limits of Explanations]].
 
 Limits: no experiments, every number is an illustrative scenario; the shap API details may have dated since 2022; an assert in his `validate_row` listing is written as a tuple and so can never fail.
+
+## The handbook's test list (LLM Engineer's Handbook, appendix)
+
+Iusztin and Labonne list six kinds of test (unit, integration, system, acceptance, regression, stress), with regression applying at every level. Their model tests check tensor shapes, that loss falls after a batch, that a small batch can be overfit toward zero loss, that the model runs on CPU and GPU, and that early stopping and checkpoints work; they run the costly ones only when model code changes. The appendix reports no measurements. In the LLM Twin repository itself the CI holds only a dummy test.
 
 ## See Also
 - [[ML Test Score: Scoring Production Readiness by the Minimum]] — related

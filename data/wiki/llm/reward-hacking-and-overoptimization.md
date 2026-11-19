@@ -13,6 +13,7 @@ sources:
   - data/raw/papers/2026-11-07-yuan-2024-self-rewarding-language-models.md
   - data/raw/papers/2026-11-08-sutton-barto-rl-ch17-frontiers.md
   - data/raw/papers/2026-11-08-murphy-rl-ch06-llms-rl.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch04-alignment.md
 ---
 
 # Reward Hacking and Overoptimization
@@ -114,11 +115,17 @@ and the most commonly missed).
 - Sutton and Barto (ch. 17, conceptual discussion with no experiments, written 2018 before RLHF, so the link to reward models is by analogy) warn that an agent may discover unexpected, undesirable or even dangerous routes to reward, and that rewards usually get adjusted by designers through trial and error. Extra subgoal rewards can steer behaviour off the real goal; they suggest keeping the reward unchanged and setting the initial value function, an approach Wiewiora (2003) proved equivalent to potential-based shaping.
 - Murphy's RL chapter on LLMs (a survey, claims reported) notes that best-of-N sampling reaches the best reward against KL trade-off, yet reward can fall as N grows. It also recommends the k2 KL estimator whenever gradients are used, because k3 gives a biased gradient, and putting the KL penalty into the token-level reward rather than the advantage.
 
+## Xiao and Zhu on overoptimisation
+
+Xiao and Zhu define overoptimisation as over-aligning a model to an imperfect reward proxy so that performance falls, and quote Goodhart's law for it. They advise combining several reward models (ensembles, aspect-specific models, off-the-shelf LLMs) to reduce it, and cite Eisenstein et al. for a regulariser that penalises the squared sum of the two rewards in a preference pair. They concede that no fully satisfactory solution exists.
+
 ## Limits
 
 - Gao et al. use a synthetic gold reward model, a single InstructGPT environment and two policy sizes; their KL-penalty result may be hyperparameter sensitive, and adversarial Goodhart is not captured.
 - Ziegler et al. report no error bars, and the Stiennon over-optimisation values appear only in a figure, not in the text.
 - Constitutional AI reports its results as Elo plots without printed values; the self-rewarding paper has no length-controlled metric.
+- Xiao and Zhu's chapter is a textbook with no experiments of its own; its overoptimisation advice is argued, not measured, and it gives no hyperparameters for the regulariser or the ensembles.
+
 
 ## See Also
 - [[RLHF Pipeline]] — related (part of; the Stage 3 failure modes)
@@ -139,3 +146,4 @@ and the most commonly missed).
 - [[Subliminal Learning]] — related (hidden trait transfer through filtered data)
 - [[MACHIAVELLI Benchmark]] — instance-of (reward-driven harm in text games)
 - [[RL Reward and State Engineering]] — related (reward design in classic RL)
+- [[Helpful-Harmless RLHF and Iterated Online Training]] — related (train and test PM divergence under RL, and an alignment tax only for small models)

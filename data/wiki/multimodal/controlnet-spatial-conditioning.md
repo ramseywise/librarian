@@ -5,6 +5,7 @@ summary: "ControlNet adds spatial conditions such as edges, depth, pose or segme
 updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-zhang-2023-adding-conditional-control-text-image.md
+  - data/raw/papers/2026-11-08-prompt-engineering-for-generative-ai-ch09-advanced-image-generation-stable-diffu.md
 ---
 
 # ControlNet Spatial Conditioning
@@ -24,6 +25,10 @@ The pretrained Stable Diffusion U-Net stays frozen. A trainable copy of its 12 e
 - The authors describe "sudden convergence": control is learned abruptly, usually in under 10K steps (example at step 6133) (self-reported).
 - Swapping zero convolutions for Gaussian-initialized ones lowers quality to roughly ControlNet-lite (6 samples per setting, no metric). Training does not collapse on 1k images and improves with more data (1k, 50k and 3m images for one prompt) (self-reported).
 
+## In Stable Diffusion tooling (Phoenix and Taylor)
+
+Phoenix and Taylor (*Prompt Engineering for Generative AI*, chapter 9) advise matching the ControlNet preprocessor to its model and Stable Diffusion version, starting with Canny, and note that the ControlNet models they use are for SD 1.5 only. The advice is "in our experience", not tested.
+
 ## Limits
 
 - The user studies are small and their plus-minus values are undefined; the ablation is qualitative and has no metric.
@@ -36,3 +41,5 @@ The pretrained Stable Diffusion U-Net stays frozen. A trainable copy of its 12 e
 - [[Classifier-Free Diffusion Guidance]] — prerequisite-for
 - [[Make-A-Scene Scene-Based Text-to-Image Generation]] — related (segmentation tokens as a control mechanism)
 - [[InstructPix2Pix Instruction-Based Image Editing]] — related (both condition Stable Diffusion on an image)
+- [[GLIGEN Grounded Text-to-Image]] — related
+- [[Image Prompting Practices for Diffusion Models]] — extends

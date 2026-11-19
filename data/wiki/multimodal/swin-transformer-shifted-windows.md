@@ -32,3 +32,4 @@ Swin is designed as a general-purpose backbone for classification, detection and
 - [[NFNet Adaptive Gradient Clipping]] — alternative-to
 - [[V-MoE Sparse Mixture of Experts for Vision]] — related
 - [[ConvNeXt and ConvNeXt V2 Modernising a ResNet]] — alternative-to
+- [[Vision Transformer ViT Patch Tokens and Scaling]] — prerequisite-for

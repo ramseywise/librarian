@@ -58,3 +58,4 @@ Over 8 fixed plus 8 held-out workloads at 5 studies of 20 trials, scoring one su
 ## See Also
 - [[Adam, AdamW and Decoupled Weight Decay]] — prerequisite-for
 - [[Hyperparameter Search Budgets and Selection Optimism]] — related
+- [[Adafactor Factored Second Moments]] — related

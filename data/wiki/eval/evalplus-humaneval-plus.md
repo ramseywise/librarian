@@ -1,10 +1,11 @@
 ---
 title: EvalPlus and HumanEval+
-tags: [eval, code, benchmark]
+tags: [eval, code, benchmark, conflict]
 summary: "EvalPlus grows HumanEval's tests about 80x by mutating ChatGPT-written seed inputs and checking against re-implemented ground truths; across 26 LLMs pass@k falls by up to 19.3-28.9% and 18 of 164 original reference solutions turn out defective (self-reported)."
 updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-liu-2023-your-code-generated-chatgpt-really.md
+  - data/raw/papers/2026-11-08-fan-2023-large-language-models-software-engineering.md
 ---
 
 # EvalPlus and HumanEval+
@@ -32,6 +33,10 @@ Setup: 26 LLMs, HumanEval versus HumanEval+, 200 samples per temperature and the
 - Of the 164 original reference solutions, 18 (11%) are defective: five miss an edge case, ten have faulty logic and three are too slow.
 - Small k favours a low sampling temperature and large k a higher one; the best temperatures stay mostly the same after augmentation.
 
+## How a survey cites it
+
+A software-engineering survey (Fan et al., mid-2023) reports a drop in HumanEval pass@k of up to 15% for 14 popular LLMs once generated tests are added including GPT-4 and ChatGPT, and treats it as evidence that original test suites give false positives. It recommends strengthened test suites, and reports that GPT-4's zero-shot HumanEval pass@1 was 67% in its technical report while a later leaderboard showed about 80%, so rankings go stale quickly. The 15% figure is below the 19.3-28.9% above (26 LLMs) and is flagged as an unresolved conflict.
+
 ## Limits
 
 - Only HumanEval is augmented; the authors name MBPP and other benchmarks as future work.
@@ -44,3 +49,5 @@ Setup: 26 LLMs, HumanEval versus HumanEval+, 200 samples per temperature and the
 - [[AlphaCode Sample, Filter and Cluster]] — related (cited as a benchmark with the same weak-test limitation)
 - [[PIE Performance-Improving Edits Benchmark]] — related
 - [[InterCode]] — related
+- [[ODEX Open-Domain Execution-Based Code Evaluation]] — related (one random test overstates pass@1 when a problem has three or more tests)
+- [[HumanEval and pass@k]] — prerequisite-for

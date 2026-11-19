@@ -40,3 +40,4 @@ The base is a self-attention GAN with a class-conditional ResNet generator and d
 - [[Frechet Inception Distance and the Two Time-Scale Update Rule]] — prerequisite-for
 - [[Classifier Guidance and the ADM Architecture]] — related (the diffusion paper compares its FID against this GAN)
 - [[Improved Techniques for Training GANs]] — prerequisite-for
+- [[Progressive Growing of GANs]] — related

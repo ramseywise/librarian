@@ -90,3 +90,4 @@ For a linear model with squared error, Efron and Hastie (Computer Age Statistica
 - [[Weight Initialisation and Activation Scale]] — related
 - [[Batch Normalization]] — related
 - [[Dropout and Input Distortion as Ridge Regression]] — extends
+- [[Dropout, Thinned Networks and Weight Scaling]] — instance-of

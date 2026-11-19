@@ -36,3 +36,5 @@ Zero-shot, greedy decoding with the call started when it is in the top k=10 toke
 - [[Rejection Sampling Fine-Tuning]] — related (keep-what-helps filtering of self-generated data)
 - [[LLM Reasoning Surveys and the Can-LLMs-Reason Debate]] — related
 - [[ViperGPT Visual Inference via Python Execution]] — related (tool composition for vision)
+- [[TALM Tool-Augmented Language Models]] — alternative-to
+- [[WebGPT Browser-Assisted Question Answering]] — alternative-to

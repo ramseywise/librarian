@@ -2,7 +2,7 @@
 title: Prefix Caching
 tags: [llm, context-management, infra, concept]
 summary: Claude's automatic KV cache reuse for repeated prompt prefixes — cuts latency and cost by 90% for static system prompts and long tool schemas.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/playground/docs/support-agents/invocation-flow.md
   - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
@@ -22,6 +22,7 @@ sources:
   - data/raw/repos/diskoe/.claude--docs--plans--2026-08-27-b63-spend-observability.md
   - data/raw/repos/playground/.claude--docs--plans--2026-08-27-b63-spend-observability.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--context-management.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch05-inference.md
 ---
 
 # Prefix Caching
@@ -99,6 +100,14 @@ tokens, so nothing was ever cached.
   nothing reads proves no more than having no metric.
 - The regression gate named for the reorder was a fixture eval that never calls the model.
   See Fixture Eval Blind to the Swapped Component.
+
+## Xiao and Zhu on prefix caching
+
+Xiao and Zhu advise caching the KV states of common prefixes, keyed by a hash of the prefix tokens, with least-recently-used eviction.
+
+## Limits
+
+- Xiao and Zhu's chapter 5 reports no experiments or speedup numbers and leaves serving shallow by design.
 
 ## See Also
 - [[ADK Context Engineering]]

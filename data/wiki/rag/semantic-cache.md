@@ -2,13 +2,14 @@
 title: Semantic Cache for RAG Agents
 tags: [rag, infra, pattern]
 summary: Zero-retrieval-cost path for RAG agents — embed the query, cosine-match against a grader-validated golden seed, and short-circuit the full CRAG pipeline on high-similarity hits.
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/playground/docs/rag/semantic-cache.md
   - data/raw/claude-docs/project-g/docs/rag/semantic-cache.md
   - data/raw/claude-docs/project-g/docs/stakeholders/agent-comparison-findings.md
   - data/raw/papers/2026-11-06-li-2025-plan-reuse-mechanism-llm-driven.md
   - data/raw/papers/2026-11-08-lakshmanan-hapke-genai-design-patterns-ch08-addressing-constraints.md
+  - data/raw/papers/2026-11-08-genai-for-dummies-ch04-bringing-llm-apps-into-production.md
 ---
 
 # Semantic Cache for RAG Agents
@@ -154,6 +155,8 @@ AgentReuse (the plan-reuse section above):
 - The extraction notes internal inconsistencies: the request count appears as 2,664 and as 2,644; a line says other overhead does not exceed 1 ms next to values of 5.228 ms; and one passage calls the 60.61% latency reduction "60.61 percentage points" although it is a relative reduction.
 Limits of this section:
 - All figures in this section are reported from vendors or unsourced call-centre examples.
+- A vendor primer (Snowflake special edition, chapter 4) describes semantic caching as precomputing query embeddings; its extraction notes real semantic caches look up stored responses by embedding similarity, and the primer gives no latency or cost numbers.
+
 
 ## See Also
 - [[RAG Evaluation]] <!-- auto-linked -->

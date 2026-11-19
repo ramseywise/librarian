@@ -39,3 +39,5 @@ The network is a ResNet-v2 using GroupNorm and Weight Standardization in place o
 - [[Batch Normalization]] — alternative-to (GroupNorm with Weight Standardization replaces it)
 - [[Noisy Student Self-Training]] — alternative-to (concurrent specialist method)
 - [[Adam, AdamW and Decoupled Weight Decay]] — related (weight decay and effective learning rate)
+- [[Instagram Hashtag Weakly Supervised Pretraining]] — related
+- [[Vision Transformer ViT Patch Tokens and Scaling]] — alternative-to

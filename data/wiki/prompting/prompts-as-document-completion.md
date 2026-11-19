@@ -2,7 +2,7 @@
 title: Prompts as Document Completion
 tags: [prompting, llm, concept]
 summary: An LLM is a document-completion engine, so a prompt is the opening of a document whose most plausible continuation is the answer — five properties (tokens, autoregression, left-to-right attention, truth bias, chat-as-transcript) explain nearly every prompting rule.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--01-how-models-read-prompts.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--README.md
@@ -121,3 +121,4 @@ never sees. Synthetic `assistant` turns are treated as things the model said.
 - [[Why Context Is Finite]] — extends
 - [[Prompt Assembly as Snippet Packing]] — related
 - [[Code Generation Prompting]] — extends
+- [[Prompt Programming and Task Location]] — extends

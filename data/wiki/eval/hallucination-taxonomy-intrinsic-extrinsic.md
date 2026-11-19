@@ -45,3 +45,4 @@ Treat n-gram overlap metrics as inadequate for hallucination and pick a metric f
 - [[SelfCheckGPT]] — related (the sampling-agreement approach for black-box models)
 - [[Summary Factual Consistency Metrics]] — related
 - [[RAG Evaluation]] — prerequisite-for
+- [[HaluEval]] — related (a benchmark with QA, dialogue and summarization hallucination patterns)

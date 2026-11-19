@@ -2,7 +2,7 @@
 title: "Pre-Norm vs Post-Norm and Warm-Up"
 tags: [data-science, comparison]
 summary: "Post-norm keeps large output-layer gradients that need learning-rate warm-up (without it BLEU 8.45 vs about 34; at lr 0.01 accuracy stuck at 0.101), while pre-norm's gradients shrink with depth and train without warm-up."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--05b-transformer-encoders.md
 ---
@@ -33,3 +33,5 @@ ViT is pre-norm and still warms up for 10k steps, and it reports no run without;
 - [[Residual Connections and the Degradation Problem]] — related
 - [[Choosing an Encoder vs CNN vs LSTM]] — related
 - [[Adam, AdamW and Decoupled Weight Decay]] — related
+- [[Layer Normalization]] — prerequisite-for
+- [[GLU Variants and GELU]] — related

@@ -35,3 +35,4 @@ Two named ablations: **Always Sampling** feeds only the model's own predictions;
 - [[Seq2seq Bottleneck and Attention]] — related (the decoder setting scheduled sampling trains)
 - [[Sampling Parameters]] — related (decoding-time sampling, not training-time)
 - [[Hierarchical Story Generation]] — related (decoding with top-k sampling)
+- [[MIXER Sequence-Level Training and Exposure Bias]] — alternative-to

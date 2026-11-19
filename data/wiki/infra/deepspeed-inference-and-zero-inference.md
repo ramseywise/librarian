@@ -2,7 +2,7 @@
 title: DeepSpeed Inference and ZeRO-Inference
 tags: [infra, concept]
 summary: "DeepSpeed Inference combines fused small-batch GPU kernels, tensor and pipeline parallelism for dense models, expert/data/tensor parallelism for mixture-of-experts models, and ZeRO-Inference, which streams weights from CPU memory or NVMe to run huge models on few GPUs."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-aminabadi-2022-deepspeed-inference.md
 ---
@@ -38,3 +38,4 @@ Aminabadi et al. target latency-critical, throughput-oriented and GPU-poor infer
 - [[MoE Expert Offloading]] — alternative-to (another way to serve MoE models beyond GPU memory)
 - [[ZeRO-Offload]] — related (the training-side offload that ZeRO-Inference adapts)
 - [[Disaggregated Prefill-Decode Serving]] — related
+- [[ZeRO Memory Partitioning]] — prerequisite-for

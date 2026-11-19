@@ -7,6 +7,7 @@ sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--post-training-for-agents.md
   - data/raw/papers/2026-11-06-liao-2026-multi-turn-policy-distillation-prefix.md
   - data/raw/papers/2026-11-06-shen-2026-geometry-policy-distillation.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch06-reasoning.md
 ---
 
 # On-Policy Distillation
@@ -75,6 +76,14 @@ ReOPD (Microsoft Research and Amsterdam, a July 2026 preprint) adapts on-policy 
 - Prefixes from the teacher's own model beat prefixes from a smaller or larger generator.
 
 **Limits.** The geometry study covers only controlled Qwen3-family reasoning settings, one main run per method and no error bars; SFT ran about 5K steps from base against 299 for OPD and 1,023 for RLVR, each from a different origin, so the comparison mixes stage and scale; the sparsity measure depends on bf16 precision; and the extraction flags an unresolved mismatch between a 30% random baseline and alpha=0.5 in the mask definition. For ReOPD: one fixed kappa, Qwen3 models only, students up to 8B, tool-call caps of 16 and 4, no seeds or intervals, and gains of a tenth or two are called "on par". The bound in the paper uses teacher support as a stand-in for unmeasured reliability.
+
+## Xiao and Zhu's definition
+
+Xiao and Zhu define on-policy distillation as the student learning on trajectories it generates itself instead of ones sampled from the teacher, with the teacher supplying a token-level distribution at each step. Their loss is the expected, over student samples, sum of per-position KL divergences from the student's next-token distribution to the teacher's. They advise it to teach recovery from the student's own deviations, accepting that the teacher stays in the loop and adds cost.
+
+## Limits
+
+- Xiao and Zhu's chapter 6 gives almost no empirical numbers, and its extraction has no reference list.
 
 ## See Also
 - [[Post-Training for Agents]] — instance-of (the dense-signal option in the post-training toolkit)

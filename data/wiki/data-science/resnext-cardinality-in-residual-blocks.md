@@ -43,3 +43,4 @@ Training cost: with Torch's built-in grouped convolution on 8 M40 GPUs, a ResNeX
 - [[Compound Scaling of Depth, Width and Resolution (EfficientNet)]] — related (scales depth, width and resolution; compares B3 with ResNeXt-101)
 - [[VGG Depth with Stacked 3x3 Filters]] — related (the depth axis)
 - [[Faster R-CNN]] — related (the COCO detector used here)
+- [[Instagram Hashtag Weakly Supervised Pretraining]] — related (ResNeXt-101 pretrained on up to 3.5B hashtag images)

@@ -7,6 +7,8 @@ sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--02-probability-and-statistics--notes--07-data-generating-process.md
   - data/raw/papers/2026-11-08-islp-ch06-linear-model-selection-regularization.md
   - data/raw/papers/2026-11-08-islp-ch03-linear-regression.md
+  - data/raw/papers/2026-11-08-computer-age-statistical-inference-ch14-statistical-inference-methodology-postwa.md
+  - data/raw/papers/2026-11-08-islp-ch01-introduction.md
 ---
 
 # Model Selection Criteria
@@ -36,10 +38,15 @@ Best subset needs 2^20 = 1,048,576 fits for p = 20 where forward stepwise needs 
 
 The authors advise CV over Cp, AIC, BIC and adjusted R-squared now that compute is cheap, because it needs no estimate of sigma2 or of degrees of freedom. When selection is combined with CV, the whole selection is redone inside each training fold. Cp, AIC, BIC and adjusted R-squared break down when p >= n, since the variance estimate comes out as 0 there, and in high dimensions training SSE, p-values and R-squared should not be reported as evidence of fit.
 
+## Computation and inferential affinity (Efron and Hastie, chapter 14)
+
+In Efron and Hastie's postwar scorecard, BIC, AIC and Cp were built to sidestep heavy computing. AIC and Cp give unbiased estimates of frequentist prediction error, and BIC supports Bayesian model choice. Cross-validation is strongly frequentist and returned to favour when computers got fast. They add that ridge regression rests on a stronger Bayesian argument than James-Stein does, since no strong frequentist theorem backs it. The ISLP introduction (chapter 1) names cross-validation and the bootstrap as the tools for estimating accuracy and picking among methods.
+
 ## Limits
 
 - ISLP concedes that the justifications for Cp, AIC and BIC are asymptotic and beyond the book's scope, and that adjusted R-squared is less well motivated in theory.
 - The Hitters lab's 5-fold CV standard error is only a rough guide, as the folds' training sets share data.
+- The Efron and Hastie placements are an informal scorecard the authors call imprecise, and the ISLP introduction is a chapter-map statement with no experiment behind it.
 
 ## See Also
 - [[Data Generating Process Simulation Check]] — related

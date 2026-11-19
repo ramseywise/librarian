@@ -38,3 +38,4 @@ Setup: nine fine-tuned Chinese transformers, test score from the best dev run of
 - [[BIG-bench]] — related
 - [[AGIEval]] — related
 - [[Eval Contamination Defenses]] — related
+- [[MMLU, C-Eval and CMMLU Knowledge Exams]] — related

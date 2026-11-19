@@ -2,7 +2,7 @@
 title: Dilated Causal Convolutions
 tags: [data-science, concept]
 summary: Convolutions with exponentially increasing dilation factors that preserve temporal causality while growing the receptive field exponentially with depth — the key architectural innovation in WaveNet for modeling long-range audio dependencies efficiently.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/pdfs/2016-09-12-wavenet.md
 ---
@@ -52,3 +52,4 @@ Dilated convolutions offer exponential growth like pooling but without losing te
 ## See Also
 - [[WaveNet — Autoregressive Audio Generation]] — prerequisite-for
 - [[Transformer Architecture]] — alternative-to (both solve the long-range dependency problem differently)
+- [[PixelRNN and Gated PixelCNN]] — related

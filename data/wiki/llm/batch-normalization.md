@@ -113,3 +113,6 @@ All figures below are the authors' own results on ImageNet (self-reported).
 - [[Big Transfer (BiT) Generalist Pretraining]] — related
 - [[Convolution, Shift Sensitivity and Parameter Sharing]] — related (a textbook CNN that uses it)
 - [[DCGAN Architectural Constraints for Stable GANs]] — related (uses it as a component)
+- [[Weight Normalization Reparameterisation]] — alternative-to
+- [[Layer Normalization]] — alternative-to
+- [[Inception-v3 Factorized Convolutions and Label Smoothing]] — related

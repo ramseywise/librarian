@@ -6,6 +6,7 @@ updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-zhou-2023-lima.md
   - data/raw/papers/2026-11-07-huyen-ai-engineering-ch08-dataset-engineering.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch04-alignment.md
 ---
 
 # LIMA: Small Curated Instruction Data
@@ -29,6 +30,10 @@ The base is LLaMa 65B, tuned for 15 epochs on 1,000 curated examples: 750 taken 
 
 Huyen's chapter quotes the 43% figure and says LIMA is less robust than products. Her advice is to begin with a small, carefully made set, say 50 examples; in her words, finetuning on 50 to 100 examples nearly always shows improvement, and if 50 show nothing, a larger set rarely helps, though hyperparameters and prompts deserve a check first (author's guidance, no experiment cited). She also mentions the Yi team's report that 10K carefully crafted instructions outperform hundreds of thousands of noisy ones (reported, no number given).
 
+## Xiao and Zhu on the same result
+
+Xiao and Zhu cite a 1,000-sample instruction set that sufficed to fine-tune LLaMa 65B to a level matching or beating models fine-tuned on far more, and use it to introduce the superficial alignment hypothesis: learning happens mainly in pre-training, and later fine-tuning adds little to the knowledge base.
+
 ## Limits
 
 - The authors admit that building such examples takes real effort and is hard to scale.
@@ -44,3 +49,7 @@ Huyen's chapter quotes the 43% figure and says LIMA is less robust than products
 - [[Multitask Prompted Instruction Tuning (FLAN, T0, Super-NaturalInstructions, MetaICL)]] — alternative-to
 - [[Synthetic Instruction Data: Curation and Verification]] — related
 - [[Post-Training Reasoning Data Primer]] — related (small curated sets in reasoning post-training)
+- [[Textbook-Quality Data: phi-1 and phi-3]] — related (small, curated data for pretraining)
+- [[LLaMA 1 and Llama 2 Open Foundation Models]] — related
+- [[Supervised Instruction Fine-Tuning of GPT-2 with an LLM Judge]] — related
+- [[PALMS Values-Targeted Fine-Tuning]] — related (80 hand-written samples for values rather than instruction following)

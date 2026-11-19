@@ -11,6 +11,7 @@ sources:
   - data/raw/papers/2026-11-08-murphy-rl-ch05-multi-agent-rl.md
   - data/raw/papers/2026-11-08-murphy-rl-ch06-llms-rl.md
   - data/raw/papers/2026-11-07-winder-reinforcement-learning-ch06-beyond-policy-gradients.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch04-alignment.md
 ---
 
 # Trust Region and Clipped Surrogate Policy Optimization
@@ -69,6 +70,10 @@ Winder's book chapter on off-policy and trust-region methods defines trust-regio
 - Citing Henderson et al., he reports that whether ACKTR or TRPO comes out ahead varies by environment; TRPO wins on Swimmer-v1 and loses on HalfCheetah-v1 (MuJoCo).
 - Servo example (one simulated and one real servo, stable-baselines PPO2): for the fixed-goal task the default learning rate (2.5e-4) was much too low, and 0.05 solved it within a few updates. Most runs used minibatch size 2 or 4 and 32 or 64 steps per update. The random-goal task needed about 1,000 steps before the policy was reasonably stable. He advises tuning in a simulator before real hardware and using several episodes per update.
 
+## Xiao and Zhu's RLHF recipe
+
+For RLHF, Xiao and Zhu start the reward and value models from the pretrained LLM, while the reference and policy models begin from the instruction-tuned model. The PPO step subtracts a value-function baseline (the advantage, written as the temporal-difference error), clips the importance ratio, and subtracts a penalty for distance to the reference policy, written as the sum of log-probabilities under the policy minus the same under the reference.
+
 ## Limits
 
 - PPO's ε and KL settings were tuned on a small base (seven MuJoCo tasks, three seeds, 1M timesteps). The paper reports no significance tests or baseline hyperparameters, and its wall-time, simplicity and robustness claims have no timing figures.
@@ -77,6 +82,8 @@ Winder's book chapter on off-policy and trust-region methods defines trust-regio
 - TRPO's monotonic-improvement proof covers the penalised form with the theory's large coefficient. The practical constrained algorithm ignores advantage-estimation error, and the authors claim only that it tends to improve monotonically. The Atari results are single runs without error statistics, vine needs resettable simulators, the max-KL variant was tried only on cart-pole, and TRPO estimates Q by Monte Carlo with no learned value function.
 - Murphy's chapter is a survey with no experiments of its own, and the agent-book chapter's RLHF coverage is a few paragraphs.
 - Winder's only benchmark of his own is a one-servo toy task with no seeds, error bars or network sizes; his equations are images and his algorithm boxes were not recoverable. His chapter covers 2020-era continuous control, offers no LLM guidance, and labels some of its own explanations as speculation.
+- Xiao and Zhu's chapter calls the reference policy theta_ref in prose but theta_old in a figure, writes the clipped objective without the baseline-subtracted clip in one equation, and its penalty is a sequence log-ratio rather than a per-token KL; the extraction also notes sign conventions differ between its gradient and loss forms.
+
 
 ## See Also
 - [[Reinforcement Learning Foundations]] — prerequisite-for
@@ -85,3 +92,4 @@ Winder's book chapter on off-policy and trust-region methods defines trust-regio
 - [[Preference Optimization Algorithms]] — alternative-to (critic-free and direct alternatives to PPO)
 - [[DAPO]] — extends (asymmetric clipping)
 - [[Multi-Agent Reinforcement Learning]] — extends (MAPPO, PPO in zero-sum games)
+- [[Policy Gradient Theorem and Compatible Function Approximation]] — prerequisite-for

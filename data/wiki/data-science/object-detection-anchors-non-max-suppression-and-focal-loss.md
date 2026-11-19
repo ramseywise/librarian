@@ -31,3 +31,5 @@ The extraction notes that the paper's runs are single, so gains of 0.2-0.4 AP ar
 - [[Weight Initialisation and Activation Scale]] — related
 - [[Microsoft COCO]] — related (the benchmark its detectors are scored on)
 - [[R-CNN Region Proposals with CNN Features]] — prerequisite-for
+- [[DETR Set Prediction Object Detection]] — alternative-to (set prediction removes anchors and NMS)
+- [[Feature Pyramid Networks]] — extends

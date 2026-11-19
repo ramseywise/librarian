@@ -40,3 +40,5 @@ Several rows in the extraction lack their values; those are omitted here.
 - [[Make-A-Scene Scene-Based Text-to-Image Generation]] — extends
 - [[StyleGAN Style-Based Generator]] — alternative-to (GAN route to high-resolution synthesis)
 - [[DALL-E and Parti Autoregressive Text-to-Image]] — related
+- [[Latent Diffusion Models]] — extends
+- [[CogView Text-to-Image Transformer]] — related

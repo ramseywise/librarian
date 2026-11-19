@@ -2,7 +2,7 @@
 title: Self-Attention Mechanism
 tags: [infra, llm, concept]
 summary: Self-attention (intra-attention) relates different positions of a single sequence to compute a representation — the core primitive enabling Transformers to model long-range dependencies in O(1) path length.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/pdfs/2017-06-12-attention-is-all-you-need.md
   - data/raw/pdfs/2020-10-01-rasa-dialogue-transformers.md
@@ -62,3 +62,8 @@ This is more suitable than RNNs for multi-turn dialogue because conversations co
 - [[FlashAttention and FlashAttention-2]] — extends (exact attention computed blockwise in SRAM)
 - [[Efficient Attention Approximations]] — extends (Performer, BigBird, Routing Transformer)
 - [[Star Attention]] — extends (blockwise-local context encoding across hosts)
+- [[GPT From Scratch: Block, Weight Tying and Shortcuts]] — instance-of (causal multi-head attention coded step by step)
+- [[Linear Attention (Transformers Are RNNs)]] — extends
+- [[Sparse Transformer Factorized Attention]] — extends
+- [[Longformer Sliding-Window and Global Attention]] — extends
+- [[Attention for Neural Machine Translation (Bahdanau, Luong, Decomposable)]] — prerequisite-for

@@ -8,6 +8,8 @@ sources:
   - data/raw/papers/2026-11-08-ml-engineering-in-action-ch02-data-science-could-use-some-engineering.md
   - data/raw/papers/2026-11-08-ml-engineering-in-action-ch08-experimentation-action-finalizing-mvp-mlflow-runti.md
   - data/raw/papers/2026-11-08-shankar-2022-operationalizing-machine-learning.md
+  - data/raw/papers/2026-11-07-llm-engineers-handbook-ch11-mlops-and-llmops.md
+  - data/raw/papers/2026-11-07-llm-engineers-handbook-ch12-mlops-principles.md
 ---
 
 # MLOps Maturity Levels and CT vs CI/CD
@@ -37,6 +39,7 @@ In a survey of 551 respondents rating workflow stages on six dimensions, an inde
 Wilson (*Machine Learning Engineering in Action*) defines MLOps as DevOps with additions: tracking of parameters and metrics, registering models, A/B tests and bandits, and monitoring of prediction accuracy and retraining. On version control he says practice is the same as in traditional software engineering: one branch per story, unit tests and an end-to-end integration test, then a merge by reviewed pull request. He advises retraining on a daily, weekly or monthly schedule so models do not go stale (his opinion). These are experience claims, not data.
 
 ## See Also
+- [[FTI Pipelines and the Logical Feature Store]] — instance-of (the pipeline split the LLM Engineer's Handbook builds continuous training on)
 - [[ML Test Score: Scoring Production Readiness by the Minimum]] — extends
 - [[Testing an ML System Beyond Its Code]] — extends
 - [[Passive Retraining and the Promotion Gate]] — related

@@ -40,3 +40,4 @@ Setup: ImageNet class-conditional, 227M parameters, no top-k, nucleus sampling o
 - [[Classifier Guidance and the ADM Architecture]] — related (diffusion baseline it is compared with)
 - [[BEiT Masked Image Modeling with Visual Tokens]] — related
 - [[Masked Autoencoders Pixel Reconstruction]] — related
+- [[LLaDA Large Language Diffusion Model]] — related

@@ -5,6 +5,7 @@ summary: "Ragas scores a RAG pipeline on faithfulness, answer relevance and cont
 updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-es-2023-ragas.md
+  - data/raw/papers/2026-11-08-llm-engineers-handbook-ch07-evaluating-llms.md
 ---
 
 # Ragas Reference-Free RAG Metrics
@@ -26,6 +27,10 @@ Setup for every row: WikiEval, a pairwise choice between two answers or two cont
 | Context relevance | 0.70 | 0.63 | 0.52 |
 
 Context relevance is the weakest dimension; the authors observe that ChatGPT struggles to pick the crucial sentences, especially from longer contexts. Before discussion, two annotators agreed on roughly 95% of faithfulness and context-relevance cases and roughly 90% of answer-relevance cases.
+
+## The handbook's description of the toolkit (LLM Engineer's Handbook, ch. 7)
+
+Iusztin and Labonne describe Ragas with four metrics: faithfulness (verifiable claims over all claims), answer relevancy (average cosine similarity of questions an LLM writes from the answer to the original question), context precision (relevant items placed near the top of the retrieved contexts) and context recall (agreement of the retrieved context with the annotated reference answer). They advise Ragas for fast iteration and ARES for deeper checks at key stages. They report no run of either tool.
 
 ## Limits
 

@@ -33,3 +33,6 @@ DINOv2 asks whether self-supervised learning on enough curated data gives frozen
 - [[CLIP Contrastive Language-Image Pretraining]] — alternative-to (text-supervised features)
 - [[BYOL Bootstrap Your Own Latent]] — prerequisite-for
 - [[DINOv3 Gram Anchoring Self-Supervised Backbone]] — extends
+- [[Instagram Hashtag Weakly Supervised Pretraining]] — related
+- [[DINO and iBOT Self-Distillation for Vision Transformers]] — prerequisite-for
+- [[Vision Transformer Registers and High-Norm Tokens]] — extends

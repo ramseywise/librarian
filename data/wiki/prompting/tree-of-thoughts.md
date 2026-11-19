@@ -2,10 +2,11 @@
 title: Tree of Thoughts
 tags: [prompting, llm, concept]
 summary: Generalizes chain-of-thought into search — a propose prompt generates candidate intermediate steps, a value prompt rates each (sure/maybe/impossible), and a code controller runs BFS/DFS with backtracking; GPT-4 went from 4% (CoT) to 74% on Game of 24.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--03-core-techniques.md
   - data/raw/papers/2026-11-07-yao-2023-tree-thoughts.md
+  - data/raw/papers/2026-11-08-prompt-engineering-for-generative-ai-ch06-autonomous-agents-memory-tools.md
 ---
 
 # Tree of Thoughts
@@ -42,11 +43,17 @@ Setup for each: GPT-4 chat, single run, unless stated (NeurIPS 2023 paper).
 - **Creative Writing** (100 inputs): ToT gets a better coherency score than IO and CoT, but GPT-4 does the scoring and belongs to the same model family as the generator; in a blind comparison by some of the authors, ToT passages were preferred in 41 of 100 pairs, CoT in 21, tie in 38.
 - **GSM8K and StrategyQA** (100 questions each, zero-shot ToT): 90 against 86 for CoT, and 83 against 82.
 
+## Quoted in Phoenix and Taylor
+
+Phoenix and Taylor (*Prompt Engineering for Generative AI*, chapter 6) repeat the Game of 24 figures (GPT-4 chain-of-thought 4%, Tree of Thoughts 74%) as a reported result, with no citation, prompts, sample size or settings. They present ToT as searching over coherent chunks of text with self-evaluation, lookahead and backtracking, going past a straight chain of thought.
+
 ## Limits
 
 - The authors concede that deliberate search may be unneeded for tasks GPT-4 already handles, that only three fairly simple tasks were tried, ToT costs more than sampling, and the state evaluator is imperfect (it pruned valid rare words in crosswords).
 - Best-of-k baselines are oracles and the refine baseline uses ground-truth feedback; one run per configuration, with no variance or significance tests.
 - The extraction notes that the tasks were built to be hard for GPT-4 as it stood in May 2023, and that reasoning models released since carry out much of this search internally; only BFS and DFS were explored.
+
+- The chapter 6 quotation of the 4% and 74% figures adds no setup, so the setup above is the one to rely on.
 
 ## See Also
 - [[Self-Consistency]] — extends

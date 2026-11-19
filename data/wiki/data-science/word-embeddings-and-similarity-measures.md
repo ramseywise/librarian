@@ -10,6 +10,8 @@ sources:
   - data/raw/papers/2026-11-08-fundamentals-of-deep-learning-ch07-models-sequence-analysis.md
   - data/raw/papers/2026-11-08-text-analytics-with-python-ch06-text-similarity-clustering.md
   - data/raw/papers/2026-11-07-building-ai-agents-llms-rag-kgs-ch01-analyzing-text-data-deep-learning.md
+  - data/raw/papers/2026-11-08-pennington-2014-glove.md
+  - data/raw/papers/2026-11-07-bojanowski-2017-enriching-word-vectors-subword-information.md
 ---
 
 # Word Embeddings and Similarity Measures
@@ -26,7 +28,7 @@ Skip-gram with negative sampling is two embedding tables, a dot product and a si
 
 ## GloVe and FastText
 
-- **GloVe** factorises the log word co-occurrence matrix; pretrained vectors (50 to 300 dimensions) are widely shipped.
+- **GloVe** factorises the log word co-occurrence matrix; pretrained vectors (50 to 300 dimensions) are widely shipped. In its own paper, 300-d GloVe on 42B tokens reached 75.0% total analogy accuracy and beat word2vec on a shared 6B-token corpus (self-reported); details in [[GloVe Global Vectors]].
 - **FastText** is word2vec over character n-grams: a word's vector is the sum of its n-gram vectors (3- to 6-grams hashed into 2M buckets). It answers for unseen words and typos: "fatherr" finds "father", though "kingly" finds "singly", so subwords carry form first. On a rare-words similarity set it scored 47 against 43 for skip-gram and CBOW; Czech syntactic analogies rose from 52.8% to 77.8%, but semantic analogies did not improve (German fell from 66.5% to 62.3%).
 
 ## Geometry, analogies and bias
@@ -104,3 +106,8 @@ The first chapter of a 2025 book on LLM agents, RAG and knowledge graphs (Raieli
 - [[Semantic Analysis, WordNet and Lexical Ambiguity]] — related
 - [[Cosine Similarity Rescaling Freedom]] — extends
 - [[Seq2seq Bottleneck and Attention]] — related (frozen versus jointly learned embeddings in the same textbook)
+- [[Word2vec: CBOW, Skip-gram and Negative Sampling]] — extends
+- [[GloVe Global Vectors]] — extends
+- [[FastText Subword Skip-gram]] — extends
+- [[ELMo and TagLM: Contextual Embeddings from Bidirectional LMs]] — extends
+- [[CoVe: Contextualised Word Vectors from MT Encoders]] — extends

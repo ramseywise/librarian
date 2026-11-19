@@ -65,3 +65,6 @@ Defines non-Markovian inference processes that keep the DDPM training objective,
 - [[Diffusion Transformers (DiT)]] — extends
 - [[Diffusion Model Training-Data Extraction]] — related
 - [[SDEdit Guided Image Synthesis]] — extends
+- [[Deep Unsupervised Learning Using Nonequilibrium Thermodynamics]] — related
+- [[Score-Based Generative Modeling Through SDEs]] — extends
+- [[Latent Diffusion Models]] — extends

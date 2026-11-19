@@ -2,9 +2,11 @@
 title: LangChain RAG Implementation Patterns
 tags: [frameworks, langgraph, llm, rag, reference]
 summary: LangChain-specific RAG implementation surface — document loaders, RecursiveCharacterTextSplitter, vector store classes (Chroma/FAISS/Pinecone), similarity/MMR search, metadata filtering, and wrapping a retriever as an agent tool; the API layer beneath the conceptual choices in RAG Retrieval Strategies.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/agent-skills/langchain-rag/SKILL.md
+  - data/raw/papers/2026-11-07-learning-langchain-ch02-rag-indexing-your-data.md
+  - data/raw/papers/2026-11-07-learning-langchain-ch03-rag-chatting-with-your-data.md
 ---
 
 # LangChain RAG Implementation Patterns
@@ -121,6 +123,32 @@ This is the LangChain-level version of the Self-RAG `[Retrieve]`/`[No Retrieve]`
 - **FAISS deserialization error** — `FAISS.load_local` requires `allow_dangerous_deserialization=True` explicitly; it will not load without it.
 - **Dimension mismatch at the vector store level** — e.g. creating a Pinecone index with `dimension=1536` but embedding at `dimensions=512` raises an error at write time, not at store-creation time.
 
+## Indexing a changing corpus and three indexing optimisations (Learning LangChain, ch. 2)
+
+Oshin and Campos run the same load, split, embed, store pipeline on a tutorial example. The Tesla 2022 annual report, read with `PyPDFLoader`, exceeds 100,000 characters, more than most context windows hold, so it is split with `RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)` (20% overlap; separators `\n\n`, `\n`, space). Their advice:
+
+- Pass many documents to one `embed_documents` call; do not mix embeddings from different models; store the original text alongside each embedding because embeddings lose information.
+- Hand `create_documents` a list of metadata so every chunk remembers its source, and overlap less for code than for prose.
+- Weigh vector stores on five axes: multitenancy, metadata filtering, speed, price and scale; pgvector is offered as an option for avoiding a separate database.
+
+**Indexing API.** A `RecordManager` logs every write (a hash of content and metadata, the write time and a source id). Calling `index(docs, record_manager, vectorstore, cleanup="incremental", source_id_key="source")` skips re-embedding unchanged documents and prevents duplicates when documents change.
+
+**MultiVectorRetriever.** Embed a summary of each chunk and keep the raw chunk in a docstore linked by id; the book suggests this for documents containing tables. Its example summarises 1,000-character chunks using gpt-3.5-turbo (temperature 0).
+
+**RAPTOR.** Documents are summarised, embedded and clustered, and each cluster is summarised again, recursively; summaries and originals are indexed together (Sarthi et al., 2024). The chapter gives it one paragraph and no code.
+
+**ColBERT.** Each token gets its own contextual embedding, and a document scores the sum, over query tokens, of the best match among its tokens. The example runs `colbert-ir/colbertv2.0` through RAGatouille with `max_document_length=180` and `k=3` on one Wikipedia page.
+
+## Retrieval settings in the book's RAG example (ch. 3)
+
+The retriever's `k` is the number of documents fetched (`k=2` in the example). The authors favour a low `k`: they say extra documents slow the app, enlarge the prompt, raise cost and add irrelevant chunks that provoke hallucination, with no measurement. The chapter's query transformation, routing and construction are on [[Agentic RAG — Advanced Patterns]].
+
+## Limits
+
+- Chapters 2 and 3 have no experiments or retrieval-quality measurements. Each setting is a tutorial example rather than a tuned value, and the statement that naive splitting leads to inconsistent retrieval and more hallucination is unsupported.
+- The listed vector-store drawbacks are asserted, not measured.
+- Code uses 2024-2025 import paths and gpt-3.5-turbo, and has typos (for example `db.delete(ids=[1])`).
+
 ## See Also
 - [[LangGraph CRAG Pipeline]] <!-- auto-linked -->
 - [[LangGraph BaseStore]] <!-- auto-linked -->
@@ -130,3 +158,4 @@ This is the LangChain-level version of the Self-RAG `[Retrieve]`/`[No Retrieve]`
 - [[LangChain Fundamentals — create_agent, Tools, Structured Output]]
 - [[LangChain Dependency Management]]
 - [[Reciprocal Rank Fusion (RRF)]]
+- [[LangGraph Platform Data Model and Double-Texting]] — related (deployment walkthrough with a pgvector store)

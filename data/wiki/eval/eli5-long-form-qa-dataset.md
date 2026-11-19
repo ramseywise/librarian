@@ -35,3 +35,5 @@ All self-reported.
 - [[Long-Form QA Evaluation Hurdles]] — related
 - [[RAG Evaluation]] — prerequisite-for
 - [[DrQA Machine Reading at Scale]] — related (factoid counterpart with Wikipedia as evidence)
+- [[Webis-TLDR-17 Reddit Summarization Corpus]] — related (another Reddit-derived dataset)
+- [[Early LM Training Corpora]] — related (the Pushshift Reddit dump)

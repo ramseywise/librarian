@@ -2,7 +2,7 @@
 title: Implicit Weight-Patch Theory of In-Context Learning
 tags: [prompting, concept]
 summary: Dherin et al. show algebraically that the effect of a prompt on a transformer block equals a rank-1 patch of the first MLP weight matrix, plus a bias patch with skip connections; the equivalence is exact but shown only on toy models.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-dherin-2025-learning-without-training.md
   - data/raw/papers/2026-11-07-bigelow-2025-belief-dynamics-reveal-dual-nature.md
@@ -45,3 +45,4 @@ Block outputs of a 10-layer pre-LN transformer trained on in-context linear regr
 - [[Mixtures of In-Context Learners]] — related
 - [[Symbol Tuning]] — related
 - [[Flipped-Label In-Context Learning]] — related
+- [[In-Context Learning as Gradient Descent and Ridge Regression]] — related

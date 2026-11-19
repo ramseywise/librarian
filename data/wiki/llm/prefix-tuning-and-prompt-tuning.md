@@ -6,6 +6,7 @@ updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-li-2021-prefix-tuning.md
   - data/raw/papers/2026-11-07-lester-2021-power-scale-parameter-efficient-prompt.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch03-prompting.md
 ---
 
 # Prefix-Tuning and Prompt Tuning
@@ -34,6 +35,10 @@ A p-by-embedding-size prompt matrix is prepended to the embedded input fed to a 
 - Domain shift: trained on SQuAD, prompt tuning beat model tuning by 12.5 F1 on TextbookQA (66.8 against 54.3) but lost on DROP (67.1 against 68.9) and DuoRC. QQP to MRPC transfer gained 3.2 accuracy and 3.1 F1.
 - A five-prompt ensemble on XXL scored 91.3 against 91.0 for the best single prompt and 90.5 on average.
 
+## Xiao and Zhu's soft-prompt overview
+
+Xiao and Zhu contrast hard prompts (explicit text) with soft prompts (continuous vectors in the model's hidden space). Prefix fine-tuning adds trainable vectors in front of the input at every Transformer layer while base weights stay frozen, adding L x n x d trainable parameters for L layers, n prefixes and dimension d (no counts given); prompt tuning adds trainable pseudo embeddings only at the embedding layer. They also cover context distillation, where a student shown a simplified instruction is trained toward a teacher shown the full context, with loss `KL(Pt || Ps_theta)`, and the compression of soft prompts.
+
 ## Limits
 
 - Prefix-tuning was evaluated only on GPT-2 (largest 774M) and BART Large; larger models are proposed as future work, not tested. The paper calls the reason for its better extrapolation an open question. Low-data and extrapolation numbers are small-sample averages without significance tests, and seed counts for full-data runs are not given.
@@ -45,3 +50,4 @@ A p-by-embedding-size prompt matrix is prepended to the embedded input fed to a 
 - [[LLaMA-Adapter Zero-Initialized Attention]] — extends (layer-wise prompts with a gate)
 - [[Black-Box Tuning for Language-Model-as-a-Service]] — extends (tunes a prompt without gradients)
 - [[BitFit Bias-Term Fine-Tuning]] — alternative-to (trains bias terms instead of added vectors)
+- [[Continuous Prompts: P-Tuning, WARP and Soft-Prompt Mixtures]] — related (concurrent continuous-prompt methods)

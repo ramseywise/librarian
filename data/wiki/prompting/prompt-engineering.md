@@ -2,7 +2,7 @@
 title: Prompt Engineering
 tags: [prompting, llm, concept]
 summary: The innermost layer of the agent stack — the instructions and examples themselves, grounded in the document-completion mental model; ends where decisions about what to include in the window begin.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt--prompt-engineering.md
   - data/raw/papers/2026-11-07-huyen-ai-engineering-ch05-prompt-engineering.md
@@ -15,6 +15,8 @@ sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--06-chaining-and-workflows.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--11-applications.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--prompt-library.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch03-prompting.md
+  - data/raw/papers/2026-11-08-genai-for-dummies-ch03-llm-app-project-lifecycle.md
 ---
 
 # Prompt Engineering
@@ -124,6 +126,15 @@ Prompt injection — manipulating behaviour via adversarial input embedded in us
 is the primary security concern for any system with external inputs. See
 [[Prompt Injection]].
 
+## Textbook and primer notes
+
+Xiao and Zhu advise describing the task clearly and specifically with audience and length limits, giving reference information and allowing a "no answer" reply when it is insufficient, and attending to format (fields, XML tags, delimiters), and noting that minor edits or reordered sentences may alter outputs. They close that simple prompts may suffice for stronger models while smaller models need careful design and often fine-tuning. A vendor primer (Snowflake special edition) lists an adaptation ladder in the order prompt engineering, in-context learning, retrieval-augmented generation, fine-tuning, RLHF; its extraction notes the primer is promotional and loose in places, for example it describes in-context learning as a way of training a model on a data set.
+
+## Limits
+
+- Xiao and Zhu's chapter 3 reports no experiments and concedes that suitable prompts vary by LLM.
+- The Snowflake primer is promotional and loose in places (see the textbook and primer notes above); it gives no measurements.
+
 ## See Also
 - [[Context Engineering]] — extends
 - [[Few-Shot Prompting]] — instance-of
@@ -142,3 +153,6 @@ is the primary security concern for any system with external inputs. See
 - [[Controllable Text Generation Taxonomy]] — related
 - [[Analogical Prompting]] — instance-of
 - [[Context-Faithful Prompting]] — instance-of
+- [[Prompt-Based Learning Survey Typology]] — related
+- [[Prompt Programming and Task Location]] — extends
+- [[Image Prompting Practices for Diffusion Models]] — related (the five principles applied to image models)

@@ -41,3 +41,5 @@ Hermann and colleagues (NIPS 2015) built a supervised reading dataset from news 
 - [[Output Length Confounds Reference Metrics]] — related (uses SQuAD as a test set)
 - [[Wizard of Wikipedia]] — related (used as multi-task training data)
 - [[LAMA Knowledge Probe]] — related
+- [[SQuAD 2.0 Unanswerable Questions]] — extends
+- [[Reading Comprehension and Conversational QA Datasets]] — related

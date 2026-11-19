@@ -2,10 +2,12 @@
 title: Vector Database Comparison
 tags: [rag, infra, comparison]
 summary: Side-by-side of vector stores used across RAG pipelines — DuckDB (embedded local), ChromaDB, pgvector, OpenSearch (Bedrock), Pinecone, GCP Discovery Engine — with when-to-use guidance and migration notes.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/playground/docs/rag/vector-databases.md
   - data/raw/claude-docs/project-g/docs/rag/vector-databases.md
+  - data/raw/papers/2026-11-07-llm-engineers-handbook-ch02-tooling-and-installation.md
+  - data/raw/papers/2026-11-07-llm-engineers-handbook-ch03-data-engineering.md
 ---
 
 # Vector Database Comparison
@@ -101,6 +103,14 @@ Best for: fully managed RAG on GCP. Two modes: Agentic RAG (Gemini ADK agentic l
 - **Any → GCP Discovery Engine:** Only viable if GCP-native. Retrieval is a black box — lose score calibration, chunk boundary visibility.
 
 ---
+
+## LLM Engineer's Handbook store choice
+
+In the LLM Twin project the authors of the LLM Engineer's Handbook keep crawled raw data in MongoDB and processed data for GenAI use in Qdrant, and choose Qdrant as the vector database for its trade-off between requests per second, latency and index time.
+
+## Limits
+
+- The handbook's Qdrant choice is the authors' assertion; the chapter shows no benchmark numbers for requests per second, latency or index time.
 
 ## See Also
 - [[GCP Vertex AI Search vs AWS Bedrock KB]]

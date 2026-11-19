@@ -24,6 +24,7 @@ sources:
   - data/raw/papers/2026-11-08-gu-2024-survey-llm-as-judge.md
   - data/raw/papers/2026-11-07-yuan-2024-self-rewarding-language-models.md
   - data/raw/papers/2026-11-08-cui-2023-ultrafeedback.md
+  - data/raw/papers/2026-11-08-llm-engineers-handbook-ch07-evaluating-llms.md
 ---
 
 # LLM-as-Judge Evaluation
@@ -155,6 +156,10 @@ Cui et al. (400 pairs, 3 student annotators, ties counted, chance level 33%, sel
 ## Limits
 
 - The two preference-tuning figures above come from single papers, each with its own setup and no variance reported; they are not comparable with each other.
+
+## A small case study (LLM Engineer's Handbook, ch. 7)
+
+Iusztin and Labonne generate one sampled answer per prompt (temperature 0.8) from three 8B models on 334 test prompts from the llmtwin split, then score accuracy and style on 1-3 scales with a GPT-4o-mini judge and average (self-reported). Llama-3.1-8B-Instruct scores highest on accuracy, the SFT and DPO versions of TwinLlama are about equal to each other, and the DPO version has the best style while Llama-3.1-8B-Instruct is lowest, described as verbose and formal. The authors credit the accuracy edge to Llama's larger post-training data, which they did not test. The setup has one judge, no seeds, no human agreement check and no confidence intervals, and the judge and the data-generation model are both from the GPT-4o-mini family. The authors advise multiple judges and combined metrics against judge bias, and ground-truth answers in the prompt when available.
 
 ## See Also
 - [[Generative Search Engine Verifiability Audit]] — related (human audit of citation support)

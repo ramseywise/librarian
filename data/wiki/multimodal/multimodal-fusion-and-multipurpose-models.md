@@ -37,3 +37,4 @@ Chapter 4 of Multimodal Deep Learning (Moldovan, Schulte, Koch et al.) extends p
 - [[V-MoE Sparse Mixture of Experts for Vision]] — related
 - [[Multimodal Architectures Survey (Image-Text)]] — related
 - [[PaLM-E Embodied Multimodal Language Model]] — related
+- [[Training Energy and Carbon Estimates]] — related (the Strubell training-cost figures it cites)

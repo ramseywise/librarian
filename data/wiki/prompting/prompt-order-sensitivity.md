@@ -2,7 +2,7 @@
 title: Prompt Order Sensitivity and Entropy Probing
 tags: [prompting, concept]
 summary: "The order of the same few-shot examples can swing GPT-2 and GPT-3 classification accuracy from about 85% to about 50%; Lu et al. rank orderings without labels by the entropy of predictions on a model-generated probing set (GlobalE, LocalE), reporting gains (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-lu-2022-fantastically-ordered-prompts-where-find.md
 ---
@@ -42,3 +42,4 @@ The top 4 of 24 orderings are evaluated on 11 classification datasets. The autho
 - [[FormatSpread]] — related (the same sensitivity along the format axis)
 - [[Benchmark Prompt Format Sensitivity]] — related
 - [[LM-BFF and PET Prompt-Based Fine-Tuning]] — related
+- [[Contextual Calibration]] — extends

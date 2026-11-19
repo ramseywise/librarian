@@ -2,7 +2,7 @@
 title: Agentic RAG — Advanced Patterns
 tags: [rag, pattern]
 summary: Self-RAG vs CRAG distinction, Adaptive RAG complexity tiers, GraphRAG for relationship traversal, HyDE for lexical gap, Multi-Query RAG-Fusion, agentic latency budgets, A2A protocol mapping to LangGraph, and the production-readiness gate.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/playground/docs/research/rag/agentic-rag-patterns.md
   - data/raw/agent-skills/advanced-rag-patterns/SKILL.md
@@ -15,6 +15,7 @@ sources:
   - data/raw/papers/2026-11-06-dong-2025-talk-before-you-retrieve.md
   - data/raw/papers/2026-11-06-he-2022-rethinking-retrieval.md
   - data/raw/papers/2026-11-06-jiao-2025-hirag.md
+  - data/raw/papers/2026-11-07-learning-langchain-ch03-rag-chatting-with-your-data.md
 ---
 
 # Agentic RAG — Advanced Patterns
@@ -209,8 +210,19 @@ All figures are self-reported by the papers, each on its own setup.
 - **Hierarchical-thought instruction tuning (HIRAG).** Train in three stages (filter, combine, RAG-specific reasoning), each with its own chain-of-thought format. Llama3-8B scored 66.6 on PopQA, 49.2 on HotpotQA and 27.8 on MuSiQue, zero-shot with fixed documents; a 1:2:2 data ratio lifted RGB-int from 48.0 (1:0:0) to 66.0 while RGB-noise stayed flat. It does not beat the large models everywhere (GPT-4o-mini scored 54.2 on HotpotQA).
 - **A-RAG** (three retrieval tools for an agent) and the finding that graph and workflow baselines did not consistently beat plain chunk RAG: see [[Graph-R1 Agentic GraphRAG]].
 
+## Query transformation, routing and construction in a LangChain book (ch. 3)
+
+Oshin and Campos sort the steps before retrieval into three families and build each as its own chain so they can be combined. Their examples are single illustrative queries on gpt-3.5-turbo and a PGVector index.
+
+- **Query transformation** changes the user's input. *Rewrite-Retrieve-Read* has an LLM reword a badly phrased query first, costing two LLM calls in sequence. *Multi-query* asks the LLM for variants (five in the book's prompt) and removes duplicates by content. *RAG-Fusion* is multi-query followed by reranking with reciprocal rank fusion (four queries in the book's prompt): each document scores the sum of 1/(rank + k), default k=60, and a larger k lets lower-ranked documents count for more. *HyDE* embeds a passage the LLM invents in answer to the query rather than the query itself; see [[HyDE Hypothetical Document Embeddings]].
+- **Query routing** sends a query to the right data source. *Logical routing* relies on a function-calling schema when the sources form a fixed list; *semantic routing* embeds prompts that stand for each source beside the query and takes the closest one by cosine similarity. The book advises forgiving matching of the model's answer (lowercase, substring) in case it strays from the script.
+- **Query construction** converts natural language into the target store's own language: a metadata filter for a vector store, or SQL (see [[Text-to-SQL as a Retrieval Strategy]]).
+
+The variant counts are prompt settings in the book, not tuned values; the page's own multi-query section above reports a different sweet spot (3 variants) from a different source.
+
 ## Limits
 
+- The ch. 3 techniques are shown with one illustrative query each, with no benchmarks or measured accuracy, and the code uses APIs the extraction notes as since deprecated (`get_relevant_documents`, `langchain_core.pydantic_v1`).
 - ReaLM-Retrieve's own method is tuned on its evaluation setup. Removing its efficiency components changes F1 by just 0.2 to 0.4 points (the extraction's reading of Table 6). The abstract's 10.1% is an absolute F1 figure, and the paper gives 47% fewer calls in one place and 57% in another; an o1 comparison is unverified and its table citation is wrong.
 - Discuss-RAG gives no seeds or significance test, and the motivating study is three hand-picked questions.
 - RR's Table 3 labels a column "Tabular" where the text says temporal; its temporal set has 169 examples, and a 2022 model was used.

@@ -2,7 +2,7 @@
 title: Intelligence per Watt
 tags: [infra, concept]
 summary: "Intelligence per Watt (IPW) divides mean task accuracy by mean power and Intelligence per Joule adds latency; Saad-Falcon et al. use both to compare local and cloud inference, reporting a 5.3x per-watt gain from 2023 to 2025 and a per-watt and per-joule picture that disagrees (self-reported, with several internal inconsistencies)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-saad-falcon-2025-intelligence-per-watt.md
 ---
@@ -33,3 +33,4 @@ Saad-Falcon et al. (Stanford and Together AI, preprint v7) propose two efficienc
 - [[LLM Inference Economics]] — prerequisite-for (the serving levers these metrics score)
 - [[Cheap-First Gating and Model Cascades]] — related (the routing arm of the savings estimate)
 - [[Local-Only Deployment]] — related
+- [[Training Energy and Carbon Estimates]] — related

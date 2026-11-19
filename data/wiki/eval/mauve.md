@@ -43,3 +43,4 @@ Self-reported by the paper, on the setups named.
 - [[Text Metrics Beyond N-gram Overlap]] — related (other embedding-based text metrics)
 - [[Perplexity and Bits-per-Byte]] — alternative-to (generation perplexity is the baseline MAUVE is compared with)
 - [[ALCE Citation Benchmark]] — related (uses MAUVE as its fluency metric)
+- [[Grover and Neural Fake News]] — related (one of the two generators MAUVE was validated on)

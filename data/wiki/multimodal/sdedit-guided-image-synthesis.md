@@ -36,3 +36,4 @@ The guide is a full-resolution image made of manipulated RGB pixels. Forward SDE
 - [[SR3 and Palette Image-to-Image Diffusion]] — alternative-to (trained image-to-image diffusion)
 - [[Pivotal Tuning Inversion]] — alternative-to (GAN inversion editing)
 - [[Make-An-Audio Text-to-Audio Latent Diffusion]] — related
+- [[Consistency Models]] — related

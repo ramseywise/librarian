@@ -38,3 +38,5 @@ Ren et al. (arXiv v3, January 2016, extending the NIPS 2015 paper to journal len
 - [[Microsoft COCO]] — related (a detection benchmark here)
 - [[ILSVRC ImageNet Challenge]] — related
 - [[R-CNN Region Proposals with CNN Features]] — prerequisite-for
+- [[DETR Set Prediction Object Detection]] — alternative-to
+- [[Feature Pyramid Networks]] — extends

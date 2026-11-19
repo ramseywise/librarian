@@ -5,6 +5,7 @@ summary: "Huyen's dataset-engineering chapter frames post-training data by quali
 updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-huyen-ai-engineering-ch08-dataset-engineering.md
+  - data/raw/papers/2026-11-08-llm-engineers-handbook-ch05-supervised-fine-tuning.md
 ---
 
 # Synthetic Instruction Data: Curation and Verification
@@ -46,6 +47,10 @@ Her definition of quality: data that is relevant, aligned with the task, consist
 - Model collapse means irreversible defects from recursive training on AI-generated data. The chapter says it cannot be avoided when the whole training set is synthetic, that mixing in real data averts it, and that no paper gives a ratio. Imitating a proprietary model carries over its style but may not carry its factual accuracy or generalization beyond the training data.
 - Annotations made in the later half of a session are lower in quality, probably from fatigue (no numbers). One Pixel Attack: changing one pixel alone causes errors on 16.04% of ImageNet test images and on 67.97% of CIFAR-10 ones.
 
+## An instruction set built from crawled articles (LLM Engineer's Handbook, ch. 5)
+
+Iusztin and Labonne used GPT-4o-mini over 1,000 to 2,000 character chunks of their crawled articles to produce 3,335 instruction-answer pairs, for under 0.5 dollars (self-reported). They rate instruction data for accuracy, diversity and complexity, and prefer comparative judge scoring with randomised answer order, length normalisation and a jury of several models, aiming for about 80% judge-human agreement. They add the evaluation set to the deduplication stage to decontaminate automatically. They recommend sets of 1 million or more samples for a general instruct model, 100 to 100,000 for a task-specific one, and as few as 1,000 high-quality samples for models around 70B (citing LIMA); the chapter gives Yi, OpenHermes and Dolphin, and Llama 3 as the basis. The worked fine-tune is not evaluated in the chapter.
+
 ## Limits
 
 - This is a book chapter. Most figures come from other work, and many have a sentence of setup or none; the Databricks 20% and 60% names no model, dataset or metric.
@@ -59,3 +64,6 @@ Her definition of quality: data that is relevant, aligned with the task, consist
 - [[Autodata Agentic Self-Instruct]] — related
 - [[LIMA: Small Curated Instruction Data]] — instance-of
 - [[Self-Instruct and Unnatural Instructions]] — instance-of
+- [[Back-Translation with Monolingual Data]] — related
+- [[GPT3Mix: LLM Text Augmentation]] — related
+- [[TinyStories Synthetic Corpus and GPT-Eval]] — related (synthetic pretraining corpus rather than instruction data)

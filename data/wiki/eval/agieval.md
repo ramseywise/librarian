@@ -73,3 +73,4 @@ five demonstrations.
 - [[BIG-bench]] — alternative-to (a community-built task set of the same period)
 - [[CLUE Chinese Benchmark]] — related
 - [[SciBench]] — related (college-level exam problems)
+- [[MMLU, C-Eval and CMMLU Knowledge Exams]] — alternative-to

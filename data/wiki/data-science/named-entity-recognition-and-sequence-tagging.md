@@ -64,3 +64,5 @@ In the NLTK book's extraction chapter, Bird, Klein and Loper caution that a gaze
 - [[DIET Architecture]] — related (joint intent and slot models)
 - [[N-gram Taggers, Backoff and Brill Transformation Rules]] — prerequisite-for
 - [[NP Chunking with IOB Tags: Regexp, N-gram and Classifier Chunkers]] — prerequisite-for
+- [[Conditional Random Fields and Label Bias]] — prerequisite-for
+- [[ELMo and TagLM: Contextual Embeddings from Bidirectional LMs]] — related

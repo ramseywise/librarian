@@ -6,6 +6,7 @@ updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-shao-2024-deepseekmath.md
   - data/raw/papers/2026-11-08-murphy-rl-ch06-llms-rl.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch06-reasoning.md
 ---
 
 # GRPO Group Relative Policy Optimization
@@ -45,6 +46,10 @@ Murphy's RL textbook chapter on LLMs says GRPO samples roughly 8 answers for eac
 
 The chapter also notes that the claim that RL produced R1's emergent abilities is disputed: it cites Liu et al. 2025b, Yue et al. 2025 and Gan et al. 2025a for the view that the base model already held chain-of-thought-style patterns (see [[RLVR Pass@k Reasoning Boundary]]).
 
+## Xiao and Zhu's step-level form
+
+Xiao and Zhu list GRPO group standardisation next to the temporal-difference error as ways to cut the variance of a step-level training signal. Their step-level form sums standardised step scores over the later steps, a sum over later steps k of (v_k - mu) / sigma, per sampled path i, where `v` are step scores from a process model.
+
 ## Limits
 
 - The authors say the model trails closed models on geometry and theorem proving, and that few-shot prompting does no better than zero-shot (unlike GPT-4). Their arXiv finding was not checked on other tasks, with other data mixes or at larger scale.
@@ -52,6 +57,8 @@ The chapter also notes that the claim that RL produced R1's emergent abilities i
 - Hardware, compute, seeds, numeric precision and the clip epsilon are not given, the number of RL steps is missing, and the reward model is described only by reference to another paper.
 - DPO and RFT are analysed in the unified view; the RL comparison figure has RFT, Online RFT and GRPO, with no DPO run.
 - The one-stage code-and-math mixture lowered no-tool math at 1.3B; the authors conjecture limited capacity.
+- Xiao and Zhu's chapter 6 gives almost no empirical numbers, and its extraction has no reference list.
+
 
 ## See Also
 - [[Trust Region and Clipped Surrogate Policy Optimization]] — prerequisite-for (the PPO clipped objective GRPO modifies)
@@ -63,3 +70,5 @@ The chapter also notes that the claim that RL produced R1's emergent abilities i
 - [[SDPO Self-Distillation Policy Optimization]] — alternative-to (token-level credit from a feedback-conditioned self-teacher)
 - [[RLVR Pass@k Reasoning Boundary]] — related (pass@k study of GRPO-trained models)
 - [[Outcome vs Process Reward Models]] — related
+- [[Qwen and Qwen2.5 Technical Reports]] — related (GRPO as the online RL stage)
+- [[GLM-4.5 Expert Iteration and RL Recipe]] — related

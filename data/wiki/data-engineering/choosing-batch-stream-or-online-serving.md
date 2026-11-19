@@ -6,6 +6,7 @@ updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--06-ml-platform--notes--03-batch-and-online-serving.md
   - data/raw/papers/2026-11-08-ml-engineering-in-action-ch16-production-infrastructure.md
+  - data/raw/papers/2026-11-07-llm-engineers-handbook-ch04-rag-feature-pipeline.md
 ---
 
 # Choosing Batch, Stream or Online Serving
@@ -56,6 +57,10 @@ Wilson (*Machine Learning Engineering in Action*, chapter 16) advises the least 
 - For bulk external delivery he advises gating egress to a fixed time (in his illustration, ungated weekly volumes finished anywhere between 6:01 a.m. and 4:32 p.m.) and checking predicted class counts, outliers and expert bounds first.
 
 Limits: traffic tiers and latency figures are heuristics without sources; the tools are 2022-era.
+
+## A handbook default (LLM Engineer's Handbook, ch. 4)
+
+Iusztin and Labonne advise starting with a batch pipeline and moving to streaming later for cost and experience. They judge batch scheduling every minute acceptable for their RAG feature pipeline because the warehouse holds thousands of records. This is design rationale with no measurement.
 
 ## See Also
 - [[Model Rollout: Shadow, Canary and A/B]] — extends

@@ -35,3 +35,4 @@ Self-reported results (MS-COCO 2014 val, 30,000 samples): zero-shot FID 7.23 for
 - [[BEiT Masked Image Modeling with Visual Tokens]] — prerequisite-for (reuses the dVAE tokenizer)
 - [[CLIP Contrastive Language-Image Pretraining]] — prerequisite-for (reranker)
 - [[GLIDE Text-Guided Diffusion]] — alternative-to
+- [[CogView Text-to-Image Transformer]] — alternative-to

@@ -2,7 +2,7 @@
 title: FP8-LM Mixed-Precision FP8 Training
 tags: [infra, concept]
 summary: "FP8-LM extends FP8 beyond matrix multiplies to gradients, optimizer states and distributed communication in three add-on levels; the paper reports GPT-175B training 75% faster than BF16 Megatron-LM with 39% less memory and matching loss curves."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-peng-2023-fp8-lm.md
 ---
@@ -32,3 +32,6 @@ Peng et al. ask whether most training variables can use 8-bit floating point, no
 - [[Scaling Laws for Precision]] — related
 - [[Model Compression Landscape]] — related
 - [[ZeRO-Offload]] — related
+- [[Mixed-Precision Training and Loss Scaling]] — prerequisite-for
+- [[Tensor, Pipeline and Data Parallelism for Large Transformers]] — prerequisite-for
+- [[Large-Batch Recipes: Linear LR Scaling, Warmup and Growing the Batch]] — related

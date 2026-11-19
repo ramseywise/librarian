@@ -2,12 +2,14 @@
 title: Model Compression Landscape
 tags: [infra, reference]
 summary: "A survey-level map of language-model compression, pruning, quantization, distillation and low-rank methods, plus two measurement studies, post-training quantization across 1B to 405B Llama models and dropping layers from pre-trained encoders."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-park-2024-comprehensive-survey-compression-algorithms-language.md
   - data/raw/papers/2026-11-08-ding-2023-efficiency-spectrum-large-language-models.md
   - data/raw/papers/2026-11-08-lee-2024-exploring-trade-offs.md
   - data/raw/papers/2026-11-08-sajjad-2022-effect-dropping-layers-pre-trained.md
+  - data/raw/papers/2026-11-07-building-ai-agents-llms-rag-kgs-ch03-exploring-llms-as-powerful-ai-engine.md
+  - data/raw/papers/2026-11-07-llm-engineers-handbook-ch08-inference-optimization.md
 ---
 
 # Model Compression Landscape
@@ -32,11 +34,21 @@ Four sources, two surveys and two measurement studies. Numbers in surveys are qu
 
 Six strategies for dropping encoder layers from pre-trained BERT, RoBERTa, ALBERT, XLNet and DistilBERT, then fine-tuning on GLUE for three epochs (self-reported): removing the upper 6 of 12 layers reduces BERT and RoBERTa parameters by about 40% (BERT 110M to 66M), halves inference time and costs 0.89-2.91 points on average; top-layer dropping beats the other strategies and bottom dropping is worst. QQP on XLNet stays within 1% with 9 of 12 layers dropped. Pruned 6-layer models are competitive with distilled ones (RoBERTa-6 QQP 90.91 against DistilRoBERTa 89.40, baselines copied from other papers).
 
+## Pruning figures from a book overview
+
+In chapter 3 of their agents book, Raieli and Iuculano report that a number of one-shot pruning algorithms break the LLM once more than 10% of the weights are removed, while SparseGPT is said to have compressed up to 60% on models of 170 billion parameters (size as printed; reported, no setup). Quantization is defined there as converting weights from a higher-precision data type to a lower one, and for a narrow task they suggest taking a small model, whether trained from scratch, distilled, quantized or pruned. The chapter relays other work and its quantization formula does not extract.
+
+## Quantization formats in practice (LLM Engineer's Handbook, chapter 8)
+
+The book claims a 70B model fits on one 24 GB GPU when quantized with EXL2 at 2.55 bits (through ExLlamaV2; it gives no quality figure). It also says quantizing a 7B model (EvolCodeLlama-7b) to GGUF Q4_K_M with llama.cpp can take about an hour on a free Colab T4 (claim). Its practice: GGUF for CPU or mixed inference, EXL2 or GPTQ for GPU-only speed, and AWQ for broad inference-engine support.
+
 ## Limits
 
 - The surveys run no experiments of their own; their rows mix models, calibration sets and hardware, and Park et al. mix memory reduction with FLOPs reduction as "compression rate". Park et al. omit KV-cache compression, speculative decoding and FP8/FP4; Ding et al. omit serving and hardware.
 - Lee et al.: single runs, no error bars; many deltas below 1 point; tools and calibration sets differ across rows, so method and tool effects are confounded; no latency, throughput or memory measurements, and the FP8 speed and KV-cache-halving remarks are asserted, not measured; the 405B FP16 and most GPTQ configurations were not run (over 30 days). The extraction notes inconsistencies: the body text and Appendix C.1 name different MT-Bench categories as the biggest decliners, and the abstract cites 13 datasets where Appendix A lists 12 plus MT-Bench.
 - Sajjad et al.: base-size models only, GLUE classification only, default hyperparameters, single runs apparently, small RTE and MRPC dev sets; the depth is static for all inputs; ALBERT keeps parameters shared so memory is not saved.
+- LLM Engineer's Handbook ch08: almost all of its speedup and size figures name no model, hardware or workload, its own speculative decoding demo shows no significant speedup, and the EXL2 and GGUF figures are claims.
+- Raieli and Iuculano ch03: the pruning and quantization figures are relayed from other work with no setup, and the size printed for SparseGPT is kept as it appears.
 
 ## See Also
 
@@ -45,3 +57,4 @@ Six strategies for dropping encoder layers from pre-trained BERT, RoBERTa, ALBER
 - [[Deep Compression Pipeline]] — related
 - [[BitNet b1.58 Ternary Weights]] — related
 - [[LLM Inference Economics]] — related
+- [[BERT Distillation: DistilBERT and TinyBERT]] — instance-of (distillation of BERT-base)

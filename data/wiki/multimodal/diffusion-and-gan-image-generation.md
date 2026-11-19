@@ -4,6 +4,26 @@ tags: [multimodal, diffusion-and-image-generation, concept]
 summary: "Map of the image-generation methods compiled from the multimodal engineering papers: diffusion foundations, guidance, text-to-image systems, editing and personalisation, GANs and their metrics, and token-based generators."
 updated: 2026-11-19
 sources:
+  - data/raw/papers/2026-11-07-arriola-2025-block-diffusion.md
+  - data/raw/papers/2026-11-07-blattmann-2023-align-your-latents.md
+  - data/raw/papers/2026-11-07-dhariwal-2020-jukebox.md
+  - data/raw/papers/2026-11-07-goodfellow-2014-generative-adversarial-networks.md
+  - data/raw/papers/2026-11-07-guo-2023-animatediff.md
+  - data/raw/papers/2026-11-07-kingma-2013-auto-encoding-variational-bayes.md
+  - data/raw/papers/2026-11-07-li-2023-gligen.md
+  - data/raw/papers/2026-11-07-nie-2025-large-language-diffusion-models.md
+  - data/raw/papers/2026-11-07-oord-2016-conditional-image-generation-pixelcnn-decoders.md
+  - data/raw/papers/2026-11-07-oord-2016-pixel-recurrent-neural-networks.md
+  - data/raw/papers/2026-11-07-oord-2016-wavenet.md
+  - data/raw/papers/2026-11-07-rombach-2021-high-resolution-image-synthesis-latent.md
+  - data/raw/papers/2026-11-07-shi-2023-mvdream.md
+  - data/raw/papers/2026-11-07-sohldickstein-2015-deep-unsupervised-learning-using-nonequilibrium.md
+  - data/raw/papers/2026-11-07-song-2020-score-based-generative-modeling-through.md
+  - data/raw/papers/2026-11-07-song-2023-consistency-models.md
+  - data/raw/papers/2026-11-08-2017-gan-generative-adversarial-nets.md
+  - data/raw/papers/2026-11-08-ding-2021-cogview.md
+  - data/raw/papers/2026-11-08-karras-2017-progressive-growing-gans-improved-quality.md
+  - data/raw/papers/2026-11-08-karras-2020-analyzing-improving-image-quality-stylegan.md
   - data/raw/papers/2026-11-07-brock-2018-large-scale-gan-training-high.md
   - data/raw/papers/2026-11-07-brooks-2023-instructpix2pix.md
   - data/raw/papers/2026-11-07-chang-2022-maskgit.md
@@ -42,10 +62,15 @@ This page orders the image-generation papers in this wiki by the question each a
 
 ## Diffusion foundations
 
+- Origins: [[Deep Unsupervised Learning Using Nonequilibrium Thermodynamics]] introduced the forward-noising and learned-reverse chain; [[Score-Based Generative Modeling Through SDEs]] recasts score and DDPM models as SDEs; [[Consistency Models]] map noise to data in one step.
 - Noise prediction and sampling: [[Denoising Diffusion Probabilistic Models]] covers DDPM, the score-based NCSN line, Improved DDPM and DDIM.
 - Steering samples: [[Classifier Guidance and the ADM Architecture]] uses a separate classifier's gradient; [[Classifier-Free Diffusion Guidance]] drops the classifier by mixing conditional and unconditional predictions.
 - Scaling resolution: [[Cascaded Diffusion Models]] chain a base model and super-resolution stages; [[SR3 and Palette Image-to-Image Diffusion]] apply diffusion to super-resolution and general image-to-image tasks.
 - Backbone and modality: [[Diffusion Transformers (DiT)]] swap the U-Net for a transformer; [[Video Diffusion Models]] extend the model across time.
+- Latent space: [[Latent Diffusion Models]] run the diffusion in an autoencoder's latent space.
+- Video from an image model: [[Video Latent Diffusion (Align Your Latents)]] trains temporal layers on a frozen image LDM; [[AnimateDiff Motion Module]] trains a motion module that transfers to personalised checkpoints.
+- Extra conditioning and 3D: [[GLIGEN Grounded Text-to-Image]] adds box and keypoint grounding to a frozen model; [[MVDream Multi-View Diffusion]] denoises several views jointly as a 3D prior.
+- Diffusion for text: [[LLaDA Large Language Diffusion Model]] and [[Block Diffusion Language Models]] apply masked diffusion to language.
 
 ## Text-to-image systems
 
@@ -57,13 +82,14 @@ This page orders the image-generation papers in this wiki by the question each a
 
 ## GANs and their metrics
 
-- Scale and stability: [[BigGAN Large-Scale GAN Training]] and [[Spectral Normalization for GANs]].
+- Origin: [[Generative Adversarial Nets Minimax Game]].
+- Scale and stability: [[Progressive Growing of GANs]], [[BigGAN Large-Scale GAN Training]] and [[Spectral Normalization for GANs]].
 - Evaluation and training rule: [[Frechet Inception Distance and the Two Time-Scale Update Rule]].
-- Architecture: [[StyleGAN Style-Based Generator]] (with the alias-free and self-distilled follow-ups) and [[pix2pix Conditional Adversarial Image Translation]] for paired translation.
+- Architecture: [[StyleGAN Style-Based Generator]] (with the StyleGAN2, alias-free and self-distilled follow-ups) and [[pix2pix Conditional Adversarial Image Translation]] for paired translation.
 
-## Token-based generation
+## Token-based and autoregressive generation
 
-[[VQGAN Taming Transformers]] makes a discrete image vocabulary and an autoregressive transformer over it; [[MaskGIT Masked Generative Image Transformer]] decodes the same tokens in parallel.
+[[VQGAN Taming Transformers]] makes a discrete image vocabulary and an autoregressive transformer over it; [[MaskGIT Masked Generative Image Transformer]] decodes the same tokens in parallel; [[CogView Text-to-Image Transformer]] trains one such transformer on text and image tokens. [[PixelRNN and Gated PixelCNN]] model raw pixels autoregressively, and [[Auto-Encoding Variational Bayes]] is the variational-autoencoder baseline. For audio, see [[WaveNet Autoregressive Generation]] and [[Jukebox Multi-Scale VQ-VAE Music]].
 
 ## How the methods relate
 
@@ -105,3 +131,20 @@ Several extractions flag weak evidence: ControlNet, InstructPix2Pix and Prompt-t
 - [[Improved Techniques for Training GANs]] — instance-of
 - [[LPIPS Perceptual Similarity]] — instance-of
 - [[DCGAN Architectural Constraints for Stable GANs]] — instance-of
+- [[Deep Unsupervised Learning Using Nonequilibrium Thermodynamics]] — instance-of
+- [[Score-Based Generative Modeling Through SDEs]] — instance-of
+- [[Consistency Models]] — instance-of
+- [[Latent Diffusion Models]] — instance-of
+- [[Video Latent Diffusion (Align Your Latents)]] — instance-of
+- [[AnimateDiff Motion Module]] — instance-of
+- [[GLIGEN Grounded Text-to-Image]] — instance-of
+- [[MVDream Multi-View Diffusion]] — instance-of
+- [[CogView Text-to-Image Transformer]] — instance-of
+- [[PixelRNN and Gated PixelCNN]] — instance-of
+- [[Auto-Encoding Variational Bayes]] — instance-of
+- [[Generative Adversarial Nets Minimax Game]] — instance-of
+- [[Progressive Growing of GANs]] — instance-of
+- [[Jukebox Multi-Scale VQ-VAE Music]] — related
+- [[LLaDA Large Language Diffusion Model]] — related
+- [[Block Diffusion Language Models]] — related
+- [[Image Prompting Practices for Diffusion Models]] — extends

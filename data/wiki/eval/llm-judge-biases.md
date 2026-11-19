@@ -12,6 +12,7 @@ sources:
   - data/raw/papers/2026-11-06-chen-2026-two-level-meta-rubrics-evaluating.md
   - data/raw/papers/2026-11-08-wang-2024-large-language-models-not-fair.md
   - data/raw/papers/2026-11-08-gu-2024-survey-llm-as-judge.md
+  - data/raw/papers/2026-11-08-llm-engineers-handbook-ch07-evaluating-llms.md
 ---
 
 # LLM Judge Biases
@@ -90,6 +91,10 @@ cycles before trusting the ranking.
 
 The pattern extends to other modalities — TTS via an audio model (or ASR then a text judge),
 UI agents from screenshots, video from sampled frames — each with its own calibration set.
+
+## Handbook note (LLM Engineer's Handbook, ch. 7)
+
+Iusztin and Labonne state, with no measurements, three judge faults: a preference for assertive or verbose answers, thin domain expertise and inconsistency. They suggest several judges and other metrics as mitigation. Their own case study uses a single GPT-4o-mini judge, and the chapter does not discuss self-preference even though the answers' data-generation model is from the same family.
 
 ## See Also
 - [[Shepherd Critic Model]] — related (GPT-4 Likert versus pairwise against human ratings)

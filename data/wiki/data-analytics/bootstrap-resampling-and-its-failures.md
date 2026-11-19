@@ -10,6 +10,7 @@ sources:
   - data/raw/papers/2026-11-08-computer-age-statistical-inference-ch01-algorithms-inference.md
   - data/raw/papers/2026-11-08-computer-age-statistical-inference-ch02-frequentist-inference.md
   - data/raw/papers/2026-11-08-islp-ch05-resampling-methods.md
+  - data/raw/papers/2026-11-08-computer-age-statistical-inference-ch14-statistical-inference-methodology-postwa.md
 ---
 
 # Bootstrap Resampling and Its Failures
@@ -57,11 +58,16 @@ In chapter 2 of *Practical Statistics for Data Scientists* (R, `boot` package), 
 - Simulated portfolio problem (100 pairs, true alpha 0.6, 1,000 resamples): the bootstrap standard error of the estimate is close to the one from 1,000 fresh simulated data sets, whose estimates average 0.5996. The extraction does not record the two SE values.
 - Auto data (392 cars, 1,000 resamples), mpg on horsepower: for the straight-line fit the formula SE of the slope is 0.006 against a bootstrap SE of 0.0074, and the intercept 0.717 against 0.85. The authors attribute the gap to a misspecified linear model; for the quadratic fit the two agree closely.
 
+## Where the bootstrap sits in the postwar scorecard (Efron and Hastie, chapter 14)
+
+Efron and Hastie arrange fifteen postwar methods on a Bayesian, frequentist and Fisherian triangle, colouring each by its reliance on computing; machine speed grew a thousandfold twice over in the period. They name the bootstrap the model computer-intensive method, a frequentist technique carrying Fisherian devices (plug-in accuracy estimates and arguments for why its confidence intervals are correct). The jackknife, which produces frequentist standard errors and biases, needs little electronic computing. Cross-validation is a thoroughly frequentist tool that only became popular once computers were fast.
+
 ## Limits
 
 - Practical Statistics ch02: its formulas were lost in extraction, its text prints no author names (the Bruce attribution comes from the book's known authorship), and a small sample is not rescued by bootstrapping it.
 - Computer Age chapter 10: with n = 22 the bootstrap SE of 0.075 is imprecise, since resampling the replications puts its own SE at 0.022; the moving-blocks block length is only said to be large enough; the parametric SE (0.070) is doubtful because of the outlier.
 - Introduction to Statistical Learning ch05: the bootstrap appears only as a standard-error tool, with no .632 or out-of-bag error, and the full author list is not printed in the extraction.
+- Efron and Hastie's chapter 14 placements are an informal scorecard that the authors call not very precise; where each method sits and how it is coloured is the authors' judgment, not a measurement.
 
 ## See Also
 - [[Permutation Test]] — related (resampling for a null distribution rather than a standard error)

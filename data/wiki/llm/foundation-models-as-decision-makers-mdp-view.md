@@ -39,3 +39,5 @@ Numbers in the survey are all cited from other work: a generalist agent trained 
 - [[Post-Training for Agents]] — related
 - [[Dyna Planning]] — related (planning with a learned model)
 - [[N-Step Bootstrapping]] — related
+- [[Foundation Models: Homogenization and Emergence]] — related
+- [[Decision Transformer Return-Conditioned Sequence Modeling]] — related

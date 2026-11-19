@@ -57,3 +57,4 @@ The survey by Akkus et al. reports 400M pairs for CLIP and, for the objective, t
 - [[LAION-5B Open CLIP-Filtered Image-Text Dataset]] — related
 - [[Multimodal Architectures Survey (Image-Text)]] — related
 - [[InternVL Scaled Vision Encoder with QLLaMA]] — related
+- [[Vision Transformer ViT Patch Tokens and Scaling]] — prerequisite-for

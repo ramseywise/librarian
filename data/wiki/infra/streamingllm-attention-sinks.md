@@ -2,7 +2,7 @@
 title: StreamingLLM Attention Sinks
 tags: [infra, concept]
 summary: "StreamingLLM keeps the cached keys and values of the first few tokens plus a rolling recent window, which the paper reports stops perplexity collapsing on streams of millions of tokens without fine-tuning; it does not extend the usable context."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-xiao-2023-efficient-streaming-language-models-attention.md
 ---
@@ -33,3 +33,4 @@ Xiao et al. ask whether a model trained with a finite attention window can run o
 - [[Multi-Query and Grouped-Query Attention]] — related (another way to cut cache cost)
 - [[Self-Attention Mechanism]] — prerequisite-for
 - [[Prefix Caching]] — related
+- [[Sliding Window Attention and Rolling Buffer Cache (Mistral 7B)]] — related

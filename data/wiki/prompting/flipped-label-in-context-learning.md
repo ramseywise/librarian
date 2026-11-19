@@ -2,7 +2,7 @@
 title: Flipped-Label In-Context Learning
 tags: [prompting, concept]
 summary: Experiments flipping or replacing in-context labels show that overriding semantic priors and learning arbitrary input-label mappings both emerge with model scale, and that instruction tuning strengthens priors.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-wei-2023-larger-language-models-do-context.md
 ---
@@ -32,3 +32,4 @@ Wei et al. probe how models use exemplars with two manipulations. In the first, 
 - [[Symbol Tuning]] — extends
 - [[Few-Shot Prompting]] — prerequisite-for
 - [[Implicit Weight-Patch Theory of In-Context Learning]] — related
+- [[Random-Label Demonstration Ablations]] — related

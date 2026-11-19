@@ -2,7 +2,7 @@
 title: Text-to-SQL as a Retrieval Strategy
 tags: [rag, llm, pattern]
 summary: "Querying structured data as the second half of a hybrid retriever — dynamic schema subsetting, a semantic layer of retrieved few-shot SQL examples, mechanical validation that replaced a deleted LLM reviewer, and bounded error-as-context retry."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-huyen-ai-engineering-ch06-rag-agents.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--reliable-agents.md
@@ -10,6 +10,7 @@ sources:
   - data/raw/repos/learn-ai-engineering/interviewing--notes--reliable-agents.md
   - data/raw/papers/2026-11-06-biswal-2024-text2sql-not-enough.md
   - data/raw/papers/2026-11-06-bechard-2024-reducing-hallucination-structured-outputs-retrieval.md
+  - data/raw/papers/2026-11-07-learning-langchain-ch03-rag-chatting-with-your-data.md
 ---
 
 # Text-to-SQL as a Retrieval Strategy
@@ -142,10 +143,15 @@ All figures are self-reported.
 
 An AI-engineering text names text-to-SQL as the route for tabular RAG: generate the query, run it, and pass the result to the answering model. It cites Chameleon at +11.37% on ScienceQA and +17% on TabMWP as reported by that work (second-hand).
 
+## Prompt contents and safe execution in a LangChain book
+
+Oshin and Campos (ch. 3) demonstrate text-to-SQL on the Chinook SQLite database with gpt-4 at temperature 0. They suggest putting the `CREATE TABLE` statements, some sample rows and few-shot question-and-query pairs in the prompt, citing Rajkumar et al. (2022) for the first two. Model-written SQL is risky in production, they warn, and name three controls: a database user with read-only rights, access limited to needed tables, and a query time-out. They admit the list is incomplete.
+
 ## Limits
 
 - TAG: the 80 queries are a small, modified benchmark; the extraction notes the abstract and conclusion word the 20 to 65 point gain loosely ("higher accuracy"), and notes a typo in the paper: Appendix B says 80B while the body says 70B.
 - Retrieval for workflows: one domain, one run per cell, no variance reported.
+- LangChain book ch. 3: one illustrative query, no accuracy measurement, and the security list is stated as not exhaustive.
 
 ## See Also
 - [[RAG Knowledge Preparation]] <!-- auto-linked -->

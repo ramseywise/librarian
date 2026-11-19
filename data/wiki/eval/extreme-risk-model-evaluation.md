@@ -74,3 +74,4 @@ catastrophe this century comparable to a full nuclear war.
 - [[LM Red Teaming]] — related (automated test-case generation against a target model)
 - [[Goal-Directedness Measure]] — related (a measured propensity score, and a position paper on agentic harms)
 - [[LM Red Teaming]] — related (automated test-case generation against a target model)
+- [[Model Cards]] — related

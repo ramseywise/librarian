@@ -2,9 +2,10 @@
 title: Least-to-Most Prompting
 tags: [prompting, pattern]
 summary: Two-stage few-shot prompting that first lists easier subproblems and then solves them in order, feeding earlier answers forward; large gains on length generalisation, small ones on GSM8K.
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-zhou-2022-least-most-prompting-enables-complex.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch03-prompting.md
 ---
 
 # Least-to-Most Prompting
@@ -28,6 +29,10 @@ Least-to-most prompting splits reasoning into two prompts. A decomposition promp
 
 Standard few-shot prompting scored 0.0 at every list length from 4 to 12 words. A 2-shot least-to-most prompt (123 tokens) beat an 8-shot CoT prompt (573 tokens) at 12 words, 74.0 against 38.4. On SCAN with text-davinci-002 on 100 commands, least-to-most scored 76.0 against 0.0 for CoT. In the paper's failure analysis, of 13 code-davinci-002 SCAN errors, 6 misread repeats after "around" and 7 read "after" as "and"; of 20 DROP failures, 4 were wrong decompositions, 13 wrong solving and 3 wrong labels.
 
+## Xiao and Zhu on decomposition
+
+Xiao and Zhu present least-to-most as the detailed example of problem decomposition: a prompted LLM generates sub-problems, then each is solved in order with all earlier question-answer pairs in context. They place it beside outline-then-fill for writing and splitting long documents into segments, view retrieval-augmented generation as decomposition done before inference, and tool use as the same pattern with calls made during it.
+
 ## Limits
 
 - The authors report that a decomposition prompt written for math did not work for commonsense questions, and that generalising decomposition is hard even within one domain.
@@ -35,6 +40,8 @@ Standard few-shot prompting scored 0.0 at every list length from 4 to 12 words. 
 - Strong last-letter and SCAN results are attributed by the authors to decomposition being easy there.
 - Performance depends on the model: code-davinci-001 was far weaker (19.6 against 96 on four-word last-letter, 4-shot). No open models, decoding settings, seeds or intervals; GPT-3 variant sizes and the DROP test size for code-davinci-002 are not stated.
 - Per-split SCAN numbers other than the length split are not printed.
+- Xiao and Zhu state these limits for chain-of-thought prompting, which they treat as the base of decomposition: it needs multi-step demonstrations, there is no standard way to decompose, and intermediate errors propagate. Their chapter reports no experiments.
+
 
 ## See Also
 

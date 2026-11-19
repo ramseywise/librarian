@@ -2,7 +2,7 @@
 title: Open-Domain Dialogue Systems
 tags: [infra, concept]
 summary: Survey of frameworks for open-domain conversation — retrieval-based (score candidates), generation-based (seq2seq/PLM), and hybrid methods — with two key goals (informative via knowledge grounding, controllable via persona/strategy/safety).
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/pdfs/2020-01-01-conversational-ai.md
   - data/raw/papers/2026-11-07-adiwardana-2020-towards-human-like-open-domain.md
@@ -96,3 +96,4 @@ Modern agent architectures inherit concepts from dialogue systems:
 - [[Open-Domain Chatbot Recipes (BST and Minimum-Length Beam)]] — extends (recipe study: fine-tuning data, retrieval and decoding choices)
 - [[Build it Break it Fix it (Dialogue Safety)]] — related (offensive-language detection for dialogue)
 - [[Wizard of Wikipedia]] — instance-of
+- [[Dialogue Pretrained Models (DialoGPT, LaMDA, BlenderBot 3)]] — extends

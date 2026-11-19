@@ -2,10 +2,11 @@
 title: Dynamic Tool Discovery
 tags: [llm, agents, mcp, pattern]
 summary: "Eagerly loading every tool schema can spend ~30% of a window before the first message — three lighter alternatives (retrieval pre-filter, proactive discovery via a tool_search meta-tool, skills as a greppable catalog) and the KV-cache rule for where a newly loaded schema goes."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--03-tool-design.md
   - data/raw/papers/2026-11-06-lumer-2025-tool-agent-retrieval.md
+  - data/raw/papers/2026-11-07-learning-langchain-ch06-agent-architecture.md
 ---
 
 # Dynamic Tool Discovery
@@ -23,6 +24,7 @@ subtraction in [[Tool Design as Harness Surface]].
 1. **Retrieval pre-filter.** Embed tool descriptions; inject the top-k for the user's query.
    *Limitation:* it matches **once**, against the opening request. "Debug the file" can turn
    into a cross-domain tool chain nobody predicted.
+   Oshin and Campos (*Learning LangChain*, ch. 6) describe this form for a LangGraph agent: embed the tool descriptions, retrieve a subset per query, and use it only when performance drops with added tools, since it adds latency. They assert, without an experiment, that planning quality starts to suffer past about 10 tools.
 2. **Proactive discovery.** The agent declares a capability gap mid-task; the system matches
    and injects tools. Two-level matching (server first, then tool), as in MCP-Zero, reports
    ~98% fewer tokens than full injection across ~2,800 tools; dynamic discovery is reported to
@@ -58,6 +60,7 @@ When tools belong to agents or MCP servers, retrieving tools alone drops what th
 
 ## Limits
 
+- The "roughly a hundred tools" figure above and the ch. 6 claim of trouble past about 10 tools disagree; the book's figure is an unmeasured assertion with no model named.
 - One benchmark, no intervals, no ablation of tool-only against agent-only against joint, and no end-to-end task success, latency or token saving, though token cost motivates the work. Its per-model table compares against MCP-Zero only, and its Recall@5 column averages about 0.85 against Table 1's 0.83 (the extraction notes this as its own computation, unexplained by the paper). The extraction notes that the abstract and the contributions list assign the 19.4% and 17.7% gains to opposite metrics. The authors also wrote ScaleMCP, so some baselines are their own.
 
 ## See Also

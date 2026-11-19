@@ -48,3 +48,4 @@ Its IMDB sentiment model (30,000-word vocabulary, length 500, 512-d embedding le
 - [[Sequence Models vs Hand-Built Event Windows]] — related
 - [[Weight Initialisation and Activation Scale]] — related
 - [[Neural Turing Machine]] — related
+- [[LSTM: Constant Error Carousel and Gated Memory Cells]] — related

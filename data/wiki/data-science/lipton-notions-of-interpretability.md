@@ -4,6 +4,7 @@ tags: [data-science, concept]
 summary: "Lipton argues interpretability has no single meaning and splits it into transparency (simulatability, decomposability, algorithmic transparency) and post-hoc explanation (text, visualisation, local explanation, example); on his conceptual argument linear models are not automatically more interpretable than deep nets."
 updated: 2026-11-19
 sources:
+  - data/raw/papers/2026-11-07-miller-2019-explanation-in-ai-social-sciences.md
   - data/raw/papers/2026-11-07-misfiled-lipton-2016-mythos-of-model-interpretability.md
 ---
 
@@ -35,14 +36,25 @@ Lipton (WHI 2016) holds that interpretability is several ideas under one word. T
 
 Lipton advises settling on one definition before calling a model interpretable. A post-hoc claim should name its objective and offer evidence that the explanation meets it. He cautions against trading away predictive power for transparency without a reason, and against explanations tuned to sound plausible. Explanations given to people affected by a decision should offer falsifiable reasoning that can be contested.
 
+## Miller's social-science review
+
+Miller (2019) reviews philosophy, cognitive and social psychology on how people explain and judge explanations; over 250 publications were surveyed, with a subset chosen by "currency and relevance" and no stated search protocol. He takes Biran and Cotton's definition of interpretability (how far an observer can grasp the cause of a decision), treats it as the same as explainability, and counts explanation as post-hoc interpretability. His four findings: explanations are contrastive (why P rather than Q, P being the fact and Q the foil), chosen in a biased way (one or two causes), social (knowledge passed on in conversation), and less about probability than cause. Studies he cites include explanatory debugging of song recommendations, where completeness outweighed soundness, and a vignette where 82% judged a harm intentional against 23% for a help. For explainable AI he proposes treating causal attribution as one part of explanation, supporting contrastive questions, valuing simplicity, generality and coherence next to likelihood, and making explanation interactive.
+
 ## Limits
 
 - There is no experiment or dataset; the case rests on examples from the literature.
 - Supervised learning only; reinforcement learning is left for later.
 - Lipton concedes the line between transparency and post-hoc methods is not sharp, and that what a right to explanation should look like, and how to show an explanation is correct, are still open.
 - The paper predates most later post-hoc methods, such as SHAP, and the work on explanation faithfulness.
+- Miller's XAI points are mostly his own proposals, untested on ML users; the paper is not a survey of existing explainable-AI methods.
+- His subset of over 250 publications was chosen by "currency and relevance", with no search protocol and no pooled effect sizes; scope is everyday explanation for lay explainees.
+- Contrastiveness is disputed: Van Bouwel and Weber deny an implicit foil for every plain-fact question.
+- He concedes the ideas are not feasible for all applications.
+- A persuasive but less probable explanation may raise trust without making it calibrated.
+- The text dates from 2018 and predates SHAP and LLM explanation studies.
 
 ## See Also
 - [[SHAP Attributions and the Limits of Explanations]] — extends
 - [[LIME Local Surrogate Explanations and Submodular Pick]] — related
 - [[Tree Ensemble Interpretation Beyond Impurity Importance]] — related
+- [[Attention Head Roles, Pruning and Faithfulness]] — related (faithfulness of attention as explanation)

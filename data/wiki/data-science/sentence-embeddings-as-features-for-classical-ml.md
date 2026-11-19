@@ -2,7 +2,7 @@
 title: "Sentence Embeddings as Features for Classical ML"
 tags: [data-science, pattern]
 summary: "A pretrained sentence encoder turns text into a cached matrix for ordinary scikit-learn heads; it beats TF-IDF most when labels are few, at about 50 times the encoding cost."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--03-nlp--notes--07-llm-embeddings-as-features.md
 ---
@@ -68,3 +68,4 @@ A hosted embedding model changes only the function that fills the matrix. Texts 
 - [[Word Embeddings and Similarity Measures]] — prerequisite-for
 - [[Bootstrap Resampling and Its Failures]] — related
 - [[RAG Retrieval Strategies]] — related
+- [[Skip-Thought Vectors]] — related

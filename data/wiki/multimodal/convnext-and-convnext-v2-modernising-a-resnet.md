@@ -70,3 +70,4 @@ ConvNeXt V2:
 - [[ResNeXt Cardinality in Residual Blocks]] — prerequisite-for (grouped and depthwise convolution)
 - [[Early and Late Dropout]] — related (reports late stochastic depth gave ConvNeXt-B no gain)
 - [[DINOv3 Gram Anchoring Self-Supervised Backbone]] — related (distils into ConvNeXt students)
+- [[Vision Transformer ViT Patch Tokens and Scaling]] — related

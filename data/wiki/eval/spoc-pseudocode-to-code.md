@@ -36,3 +36,6 @@ Kulal and colleagues (NeurIPS 2019) ask whether long programs that behave correc
 - [[Code Generation Prompting]] — related
 - [[DS-1000]] — related (execution-based code benchmark)
 - [[Eval Metric Interpretation Pitfalls]] — related
+- [[HumanEval and pass@k]] — extends
+- [[APPS Coding Challenge Benchmark]] — related
+- [[CodeSearchNet Challenge]] — related

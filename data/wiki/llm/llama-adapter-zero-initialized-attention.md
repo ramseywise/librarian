@@ -36,3 +36,4 @@ Learnable prompts of length K are prepended to the word tokens in the top L laye
 - [[Parameter-Efficient Fine-Tuning Methods]] — prerequisite-for (the family overview)
 - [[Prefix-Tuning and Prompt Tuning]] — prerequisite-for (layer-wise prompts that this adds a gate to)
 - [[LLaVA Visual Instruction Tuning]] — alternative-to (a competing way to give LLaMA visual instruction following)
+- [[AdapterDrop Efficient Adapters]] — related

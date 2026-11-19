@@ -2,7 +2,7 @@
 title: MoE Expert Offloading
 tags: [infra, concept]
 summary: "Running Mixtral-8x7B on a 12-16 GB GPU by keeping an LRU cache of experts on the GPU, prefetching with the next layer's gate, and quantizing experts harder than attention; 2.1-3.1 tok/s with 2-bit experts at batch 1 (self-reported)."
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-eliseev-2023-fast-inference-mixture-experts-language.md
 ---
@@ -36,3 +36,4 @@ Quality (Table 1, base model, MMLU 5-shot): FP16 70.51%, 4-bit attention with 2-
 - [[Straight-Through Estimator]] — related (gated conditional computation)
 - [[DeepSpeed Inference and ZeRO-Inference]] — alternative-to (streams weights from CPU or NVMe)
 - [[DeepSeekMoE Fine-Grained Expert Segmentation]] — related
+- [[Mixture-of-Experts Routing and Scaling]] — prerequisite-for

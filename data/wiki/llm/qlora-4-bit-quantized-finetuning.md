@@ -6,6 +6,7 @@ updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-dettmers-2023-qlora.md
   - data/raw/papers/2026-11-07-huyen-ai-engineering-ch07-finetuning.md
+  - data/raw/papers/2026-11-08-llm-engineers-handbook-ch05-supervised-fine-tuning.md
 ---
 
 # QLoRA 4-Bit Quantized Finetuning
@@ -30,6 +31,10 @@ The forward pass is Y = X doubleDequant(c1, c2, W_NF4) + X L1 L2, with the LoRA 
 - Data: on chatbot quality the small OASST1 set (9K samples) outperformed a 450K-sample FLAN v2 subsample, yet FLAN v2 was best on MMLU and worst on Vicuna, so the two measures track each other only partly. Training on the target alone beat source plus target for MMLU.
 - In LLaMA 7B, 7.5% of hidden units fail the Shapiro-Wilk test of normality (5% significance), exceeding the expected false-positive rate by 2.5 points.
 
+## Handbook figures (LLM Engineer's Handbook, ch. 5)
+
+Iusztin and Labonne give QLoRA fine-tuning memory for a 7B model as 9.3 GB against 15.6 GB for LoRA (about 40% less), and initialisation memory as 9.1 GB against 14 GB (35%). They say training with QLoRA is about 30% slower than with LoRA, with small quality differences. The chapter names no source or setup for these figures and cites none. Their guidance is LoRA when memory allows and QLoRA when memory-bound. Their own SFT run used LoRA, not QLoRA.
+
 ## Limits
 
 - At 33B and 65B the authors did not show that QLoRA equals 16-bit finetuning. They used just the MMLU, Vicuna and OA benchmarks, with no other bit widths or adapter methods.
@@ -41,3 +46,4 @@ The forward pass is Y = X doubleDequant(c1, c2, W_NF4) + X L1 L2, with the LoRA 
 - [[DoRA Weight-Decomposed Low-Rank Adaptation]] — alternative-to (another LoRA refinement; the DoRA page cites a third-party quantised variant)
 - [[LLM.int8 Outlier-Aware Quantization]] — related (another quantisation scheme for large models)
 - [[Scaling Laws for Precision]] — related
+- [[LoRA Low-Rank Adaptation]] — prerequisite-for (the adapter method QLoRA builds on)

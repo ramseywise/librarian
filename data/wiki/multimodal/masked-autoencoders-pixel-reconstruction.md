@@ -5,6 +5,7 @@ summary: "MAE masks 75% of image patches, encodes only the visible ones and reco
 updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-he-2022-masked-autoencoders-scalable-vision-learners.md
+  - data/raw/papers/2026-11-08-zhou-2024-comprehensive-survey-pretrained-foundation-models.md
 ---
 
 # Masked Autoencoders Pixel Reconstruction
@@ -21,12 +22,17 @@ MAE starts from the observation that images are spatially redundant, so a very h
 - Predicting dVAE tokens is no better than predicting normalized pixels, in statistical terms. MAE beats supervised pretraining on COCO box AP (Mask R-CNN, ViT-L) (self-reported).
 - ImageNet-A: 68.2 for MAE ViT-H against 33.1 for supervised ViT-H. Training ViT-L for 1600 epochs takes 31 hours against 36 hours for MoCo v3 at 300 epochs.
 
+## As restated in the Zhou survey
+
+Section 4.4 of Zhou et al.'s survey of pretrained foundation models contrasts MAE's 75% patch masking with the roughly 15% typical of BERT, and says its ablation found higher ratios help both fine-tuning and linear probing. It also notes that UM-MAE draws 25% of patches in each block before masking, so MAE can be used with a hierarchical ViT. The survey quotes these from the cited works (reported).
+
 ## Limits
 
 - Pixels are not semantic entities; the authors hypothesise that semantics emerge.
 - No seeds, error bars or significance tests; COCO configurations are not given in the text.
 - Vanilla ViT only. No saturation was seen at 1600 epochs, so the numbers may understate.
 - Authors note it reflects dataset biases and may generate content that does not exist.
+- The Zhou survey runs no experiment of its own; its MAE and UM-MAE figures are quoted from the cited papers.
 
 ## See Also
 - [[Contrastive and Masked Vision-Language Pretraining]] — related (the family comparison)
@@ -36,3 +42,4 @@ MAE starts from the observation that images are spatially redundant, so a very h
 - [[MaskGIT Masked Generative Image Transformer]] — related (masked prediction over image tokens)
 - [[SAM 2 Promptable Video Segmentation]] — related (uses an MAE-pretrained Hiera encoder)
 - [[ConvNeXt and ConvNeXt V2 Modernising a ResNet]] — extends
+- [[Vision Transformer ViT Patch Tokens and Scaling]] — prerequisite-for

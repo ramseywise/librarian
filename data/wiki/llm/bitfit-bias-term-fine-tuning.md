@@ -35,3 +35,4 @@ Frozen: every weight matrix in BERT or RoBERTa, plus the layer-norm gains. Train
 - [[Parameter-Efficient Fine-Tuning Methods]] — prerequisite-for (the family overview)
 - [[Prefix-Tuning and Prompt Tuning]] — alternative-to (adds vectors instead of training existing biases)
 - [[LoReFT Representation Finetuning]] — related (the ReFT paper lists BitFit among its baselines)
+- [[Diff Pruning Sparse Task Difference Vectors]] — alternative-to

@@ -77,3 +77,6 @@ Setup: DPG target, 280B red LM, classifier above, unless noted.
 - [[XSTest]] — related (checks for over-refusal after red-team hardening)
 - [[LLM Trustworthiness Taxonomy]] — related (red teaming probes several of its dimensions)
 - [[Model-Written Evaluations]] — extends (model-generated test sets scaled up from the red-teaming generator idea)
+- [[Extracting Training Data from Language Models]] — related (memorised personal data in GPT-2)
+- [[ToxiGen]] — related (another LM-generated adversarial test set)
+- [[RealToxicityPrompts]] — related (a fixed prompt set for toxic continuation)

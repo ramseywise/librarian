@@ -39,3 +39,4 @@ A counter-example explanation model that retrieves the image it believes has a d
 - [[VLM Benchmark Shortcuts]] — related
 - [[GQA Benchmark]] — related (also argues VQA sets are prior-biased)
 - [[VizWiz Grand Challenge]] — related (evaluates VQA v2 models off the shelf)
+- [[VQA Open-Ended Dataset and LSTM-CNN Baseline]] — prerequisite-for

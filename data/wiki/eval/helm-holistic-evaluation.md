@@ -4,6 +4,7 @@ tags: [eval, language-tasks, reference]
 summary: "HELM scores 30 language models on 42 scenarios under one standardized prompting setup across seven metric categories, so that accuracy, robustness, fairness and cost can be read side by side; the paper's own ablations show prompt format and in-context examples changing accuracy, with the best adaptation method differing by model (self-reported)."
 updated: 2026-11-19
 sources:
+  - data/raw/papers/2026-11-07-bommasani-2021-opportunities-risks-foundation-models.md
   - data/raw/papers/2026-11-08-bommasani-2023-holistic-evaluation-language-models.md
   - data/raw/papers/2026-11-08-chang-2023-survey-evaluation-large-language-models.md
 ---
@@ -64,6 +65,10 @@ fair evaluation, without measuring contamination. Their human-evaluation rubric 
 helpful, honest, harmless rule into six criteria: accuracy, relevance, fluency, transparency,
 safety and human alignment. LLM-as-judge is only mentioned in the survey, not assessed for bias.
 
+## An earlier call for broader evaluation
+
+The 2021 foundation-model report (Bommasani et al., see [[Foundation Models: Homogenization and Emergence]]) argues that evaluation should combine intrinsic evaluation of the model with extrinsic evaluation of adapted models, count the adaptation resources used, and go beyond accuracy to robustness, fairness, efficiency and environmental impact. It also says that automatic metrics may capture generative qualities, factual correctness among them, only poorly, and that keeping humans in the evaluation loop may serve better. These are position statements, not experiments.
+
 ## Limits
 
 - Contamination is not verified: HELM flags only cases the model builders disclosed (its Table 13),
@@ -88,3 +93,5 @@ safety and human alignment. LLM-as-judge is only mentioned in the survey, not as
 - [[Self-Supervised LLM Evaluation by Text Transformations]] — related (a label-free complement to multi-metric benchmarks)
 - [[CLUE Chinese Benchmark]] — related (GLUE-style leaderboard design)
 - [[PromptBench]] — alternative-to (another evaluation framework)
+- [[RealToxicityPrompts]] — related (the prompt set behind HELM's Perspective-scored toxicity metric)
+- [[LLM vs Fine-Tuned Model Practitioner Survey]] — related

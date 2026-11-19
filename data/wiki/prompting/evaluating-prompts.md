@@ -2,11 +2,15 @@
 title: Evaluating Prompts
 tags: [prompting, eval, concept]
 summary: Prompt-level evaluation — build the eval before the prompt; match test style to what changes (model, single prompt, composition); climb from a git-diffed example suite to an automated harness by solving sample sourcing and scoring independently; then A/B online with success and guardrail metrics fixed up front.
-updated: 2026-11-08
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--09-evaluating-prompts.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--08-prompt-optimization.md
   - data/raw/papers/2026-11-06-yeadon-2024-comparison-human-gpt-3-5.md
+  - data/raw/papers/2026-11-07-prompt-engineering-for-generative-ai-ch01-five-principles-of-prompting.md
+  - data/raw/papers/2026-11-07-prompt-engineering-for-generative-ai-ch03-standard-practices-text-generation.md
+  - data/raw/papers/2026-11-07-prompt-engineering-for-generative-ai-ch04-advanced-text-generation-langchain.md
+  - data/raw/papers/2026-11-07-prompt-engineering-for-generative-ai-ch10-building-ai-powered-applications.md
 ---
 
 # Evaluating Prompts
@@ -91,6 +95,19 @@ Clavié et al. (2023), job-posting classification, one modification at a time:
 ## A course-marking study
 
 Yeadon et al. (2024) compared students with GPT-4 on a university coding course, using a marker for scoring. Students averaged 91.9% (the body text says 91.1%, an internal inconsistency in the extraction) against 81.1% for GPT-4 with prompt engineering. Prompt engineering moved GPT-4 from 71.9 to 81.1 and GPT-3.5 from 30.9 to 48.8; a mixed condition scored 76.0. Marker accuracy was 85.3% with an ICC of 0.932 (all self-reported). Limits: one course, small samples, 2024-era models.
+
+## Phoenix and Taylor's evaluation advice
+
+Phoenix and Taylor (*Prompt Engineering for Generative AI*, chapters 1, 3, 4 and 10) replace blind trial and error with blind, shuffled thumbs ratings across several runs of each prompt variant. In their chapter 1 example, a zero-shot prompt and a two-example prompt for shoe product names were each run five times on gpt-3.5-turbo, and the few-shot variant won (one rater, no significance test). When ground truth exists they suggest scripted checks (cost, latency, classification, reasoning, hallucination, safety, refusals, similarity by BLEU/ROUGE or vector distance), recycling rated outputs as examples or fine-tuning data, and Elo to rank models. A shorter prompt that scores the same saves cost and latency, and many prompt parts turn out to be unnecessary.
+
+- **Run counts.** Chapter 1 puts the number of runs needed to expose a prompt's flaw at under ten (author experience, no data). Chapter 10 recommends at least ten runs per case, since outputs vary, yet does not state its own count.
+- **LLM as evaluator.** Chapter 3 claims model-based grading is about ten times cheaper than human grading and takes minutes, not days or weeks (no data), while conceding that evidence on LLM graders is mixed. Its example had gpt-4 label ten gpt-3.5-turbo replies to one question as concise or not; the labels agreed with the known alternating styles on all ten. Advice: grade a weak model with a stronger one, probe the grader with false-positive and false-negative cases, and try cheap code checks such as reply length first.
+- **Cheaper model against GPT-4 labels.** Chapter 4's mistral-small (Mixtral 8x7b) matched GPT-4's labels exactly on 77.5% of bank transactions (type and category; transaction count unstated). It also says to read a pairwise judge's stated reasons yourself, because GPT-4 can misjudge tasks it handles badly.
+- **Style-rewrite test.** Chapter 10 scored prompts on three test cases by embedding distance to a hand-written rewrite (smaller is closer), with scores shown only in a figure. It cites an OpenAI suggestion of 50 or more samples when fine-tuning for a writing style.
+
+## Limits
+
+- The Phoenix and Taylor material rests on 2023-24 models. Chapter 1's only quantitative test is five samples per variant with one rater, and the authors admit hand rating is laborious and may not reflect the target audience. Chapter 3's evaluator example is a single transcript whose printed script passes the reply as a second system message. Chapter 4's 77.5% is against GPT-4 labels, not human ones. Chapter 10's experiment is three test cases with no run count or spread, and the authors call their own evaluation advice haphazard and messy.
 
 ## See Also
 - [[SOMA Judge Rubric]] — extends

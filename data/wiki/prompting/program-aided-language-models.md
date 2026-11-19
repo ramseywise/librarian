@@ -2,7 +2,7 @@
 title: Program-Aided Language Models (PAL)
 tags: [prompting, llm, concept]
 summary: The model writes a program and an interpreter computes the answer — few-shot examples are code with the reasoning in comments, so exact computation (dates, arithmetic) moves out of the token predictor; only safe with a sandbox, and today usually a code-execution tool.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--03-core-techniques.md
   - data/raw/papers/2026-11-06-imani-2023-mathprompter.md
@@ -67,3 +67,6 @@ One dataset, and a failure case where both expressions agree and are wrong, so a
 - [[Scratchpads and Self-Notes]] — related
 - [[Math Word Problem Benchmarks]] — related
 - [[ViperGPT Visual Inference via Python Execution]] — related (generated programs call vision modules)
+- [[CoCoGen Code Prompts for Structured Commonsense]] — related
+- [[Faithful Chain-of-Thought]] — alternative-to
+- [[Code as Policies Language Model Programs]] — related

@@ -12,6 +12,8 @@ sources:
   - data/raw/papers/2026-11-06-wu-2024-reft.md
   - data/raw/papers/2026-11-07-sun-2022-black-box-tuning-language-model.md
   - data/raw/papers/2026-11-07-dettmers-2023-qlora.md
+  - data/raw/papers/2026-11-07-building-ai-agents-llms-rag-kgs-ch03-exploring-llms-as-powerful-ai-engine.md
+  - data/raw/papers/2026-11-08-llm-engineers-handbook-ch05-supervised-fine-tuning.md
 ---
 
 # Parameter-Efficient Fine-Tuning Methods
@@ -43,6 +45,10 @@ Huyen (*AI Engineering*, chapter 7, a 2024 text) defines PEFT as getting close t
 - Inference memory for a 13B model stored at 2 bytes per weight is 31.2 GB, assuming activations plus the key-value cache add 20% over the weights.
 - Gradients plus optimiser states for 13B trainable parameters at 2 bytes come to 78 GB; if only 1B parameters are trainable the figure is 6 GB.
 
+## Figures from a second book (Raieli and Iuculano, chapter 3)
+
+Raieli and Iuculano's agents book (chapter 3) calls LoRA and adapters the PEFT methods in widest use and prefers them to full fine-tuning when models are very large. It reports that LoRA trains 17.5 million out of GPT-3's 175 billion parameters, and adapters (1024 to 24 to 1024, under 50K parameters each) matching full BERT fine-tuning with 3.6% more parameters. Both differ from the figures above: Hu et al.'s 4.7M and 18M budgets are other configurations, and Huyen gives 3% for adapters where the second book gives 3.6%. The chapter relays other work and runs no experiments.
+
 ## Practitioner guidance
 
 - Huyen advises starting with LoRA and trying full finetuning afterwards, noting that with only a few hundred examples full finetuning may give no gain over LoRA.
@@ -52,12 +58,18 @@ Huyen (*AI Engineering*, chapter 7, a 2024 text) defines PEFT as getting close t
 - Case evidence in the chapter: zero-shot GPT-4-0314 beat the 50B BloombergGPT on FiQA sentiment and ConvFinQA, a model that needed 1.3 million A100 GPU hours (estimated $1.3M to $2.6M for compute alone). Grammarly's finetuned Flan-T5 models, 60 times smaller and trained on 82,000 pairs, outperformed a specialised GPT-3 variant.
 - Model merging (task vectors, TIES and DARE pruning before merging, depthwise scaling, as in SOLAR 10.7B, which grew a 7B model from 32 to 48 layers) is described as experimental.
 
+## A practitioner's LoRA recipe (LLM Engineer's Handbook, chapter 5)
+
+The authors suggest starting LoRA at a moderate rank with alpha set to twice the rank, targeting all linear layers, and raising the rank to 64 or 128 if the model underfits (rules of thumb, no source given). Their worked run fine-tuned Llama 3.1 8B with r=32, 3 epochs, an effective batch of 16 and a 2048 maximum sequence length, using Unsloth and TRL; it took 50 minutes on one A100 (self-reported). The setup is one run with seed 0 and no ablation of rank, learning rate or data mix.
+
 ## Limits
 
 - Many of the chapter's tables are reproduced from other papers; its one experiment is a count of open issues in huggingface/peft.
 - Written in 2024; the author states LoRA does not reach full finetuning and focuses on LoRA over attention matrices, which later work revised. Merging methods are called experimental and may become outdated.
 - The chapter covers supervised and adapter finetuning; preference finetuning is only mentioned in the overview.
 - Method pages cite single-paper results on different models and tasks, so the rows above are not a controlled comparison.
+- LLM Engineer's Handbook ch05: the 50-minute run shows only loss curves (one run, seed 0, no ablations), the authors state that the run is a quick check and not a proper evaluation, and its hyperparameter ranges are rules of thumb without sources.
+- Raieli and Iuculano ch03: figures are relayed from other work with no experiments.
 
 ## See Also
 - [[DoRA Weight-Decomposed Low-Rank Adaptation]] — instance-of (a LoRA variant)
@@ -70,3 +82,12 @@ Huyen (*AI Engineering*, chapter 7, a 2024 text) defines PEFT as getting close t
 - [[S-LoRA Multi-Adapter Serving]] — related (serving many LoRA adapters)
 - [[Intrinsic Dimension of Objective Landscapes]] — related (why few parameters can suffice)
 - [[Fine-Tuning as Prompt Compression]] — related
+- [[Intrinsic Dimension of Fine-Tuning]] — related (why few parameters can suffice)
+- [[T5 Text-to-Text Transfer Transformer]] — related (compares adapters with full fine-tuning)
+- [[Classification Fine-Tuning a GPT: Replace the Output Head]] — related (freezing most of a model and training a new head)
+- [[LoRA Low-Rank Adaptation]] — instance-of (the low-rank method in the table, with its own page)
+- [[T-Few and (IA)3 Few-Shot PEFT]] — instance-of (rescaling vectors on keys, values and feed-forward activations)
+- [[Diff Pruning Sparse Task Difference Vectors]] — instance-of (a learned sparse difference vector)
+- [[AdapterDrop Efficient Adapters]] — instance-of (adapter efficiency and layer dropping)
+- [[Continuous Prompts: P-Tuning, WARP and Soft-Prompt Mixtures]] — related
+- [[LLM vs Fine-Tuned Model Practitioner Survey]] — related

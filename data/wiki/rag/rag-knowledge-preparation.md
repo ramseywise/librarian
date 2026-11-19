@@ -2,7 +2,7 @@
 title: RAG Knowledge Preparation
 tags: [rag, infra, concept]
 summary: The process of transforming human-readable documentation into machine-retrievable knowledge units — chunking, metadata tagging, rewriting for self-containment, and enforcing consistency.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-huyen-ai-engineering-ch06-rag-agents.md
   - data/raw/papers/2026-11-07-building-ai-agents-llms-rag-kgs-ch06-advanced-rag-techniques-information-retriev.md
@@ -16,6 +16,10 @@ sources:
   - data/raw/papers/2026-11-07-context-engineering-multi-agent-systems-ch03-building-context-aware-multi-agent-.md
   - data/raw/papers/2026-11-08-lakshmanan-hapke-genai-design-patterns-ch03-adding-knowledge-bass.md
   - data/raw/papers/2026-11-07-context-engineering-multi-agent-systems-ch07-high-fidelity-rag-defense-nasa-insp.md
+  - data/raw/papers/2026-11-07-prompt-engineering-for-generative-ai-ch05-vector-databases-faiss-pinecone.md
+  - data/raw/papers/2026-11-07-prompt-engineering-for-generative-ai-ch04-advanced-text-generation-langchain.md
+  - data/raw/papers/2026-11-07-prompt-engineering-for-generative-ai-ch10-building-ai-powered-applications.md
+  - data/raw/papers/2026-11-07-prompt-engineering-for-generative-ai-ch03-standard-practices-text-generation.md
 ---
 
 # RAG Knowledge Preparation
@@ -160,12 +164,27 @@ A practitioner chapter, with one toy run and no metrics. It keeps ingestion sepa
 
 One chapter gives a chunking example of 2,048 characters with 20 characters of overlap and says inverted-file indexes group vectors into clusters of roughly 100 to 10,000. Another reports that embedding inversion recovered over 70% of words from stored vectors and notes a 32K-token limit for one embedder (dated); it also cites a 2024 best-practice guideline without numbers. None of these chapters reports an experiment of its own.
 
+## Embeddings, chunking and FAISS in Phoenix and Taylor (chapters 3-5, 10)
+
+In Phoenix and Taylor's *Prompt Engineering for Generative AI*, retrieval means chunking documents, indexing them, searching by vector and placing the hits into the prompt. The chapter 5 examples are toys (an invented employee handbook of four or nine sentences), so the figures below illustrate rather than measure.
+
+- **Dimensions.** text-embedding-ada-002 yields 1,536-dimensional vectors, hence a Pinecone index created at dimension 1536. The all-MiniLM-L6-v2 model from Sentence Transformers (open source), called through the Hugging Face inference API, yields 384. Vectors from different models or versions cannot be compared, so use one model for documents and queries alike.
+- **Cost.** At the book's dated 2024 list price of $0.0004 per 1,000 tokens, ada-002 would charge about $1.60 to embed the King James Bible (roughly 800,000 words, or 4,000,000 tokens). Per token, gpt-4-1106-preview is ten times the price of gpt-3.5-turbo, which is the reason given for retrieving relevant context instead of sending long prompts.
+- **Context budget.** The 8,192-token limit of gpt-4-0613 covers template, inserted chunks and the completion together. In the example, around 3,000 tokens go to prompt and response, leaving room for five chunks of 1,000 tokens.
+- **Chunk size.** With no experiment behind it, the chapter claims that an oversized chunk's embedding drifts toward the average and says little, whereas tiny chunks cut mid-sentence lose their meaning; it calls chunking a large part of the craft of vector databases. The splitter keeps paragraphs and then sentences whole (a recursive character splitter sized by tokens, chunk_size 100 and overlap 20 in the example). In chapter 4, a TokenTextSplitter at 500 tokens and overlap 50 cut a 497-page marketing PDF into 776 Document objects, and a CharacterTextSplitter at chunk_size 50 made 3 chunks on its example text, or 6 once overlap 48 was added. Chapter 4 holds that no chunk size is ideal, so begin from heuristics and assemble a test set. Chapter 3 says short, simple or single-topic documents need no chunking, and that overlapping sliding windows fit when preserving semantic context outweighs saving tokens or requests.
+- **Toy embedding comparison.** The test used six sentences plus three that were repeated ten times. Gensim word2vec (vector_size 100, window 5, seed 36) scored cake/lie at 0.2342; the author fixed the seed to pick a run in which "lie" reached the top five. TF-IDF with cosine similarity gave cake/lie 0.8926 and cake/sing 0.0106 on the same text. The chapter recommends TF-IDF for small collections, because word2vec wants tens of millions of words, and a custom embedding model where domain vocabulary departs from everyday usage.
+- **FAISS.** IndexFlatL2 reports squared L2 distances. The toy unicorn-rides query had a best-chunk squared distance of 0.3289 (100-token chunks, overlap 20, ada-002 vectors, k=1). Saving with write_index and loading with read_index avoids recomputing vectors. The system message instructs the model to answer solely from the supplied context and to say it does not know otherwise.
+- **Hosted store and metadata.** For Pinecone the chapter recommends batched upserts that retry after rate-limit errors (10 per batch in the example, 100 in real workloads), and a metadata design as careful as the chunking design, with metadata filters narrowing the similarity search. A self-querying retriever derives a filter from the user's query and applies it alongside the similarity search, at temperature 0 so the filter comes out the same each time. When comparing hosted options, maintenance, scalability, reliability, support and security are weighed against runaway cost, lock-in to a vendor and privacy. The chapter also contrasts dense vectors with sparse ones (100,000 or more dimensions, mostly zeros) and defines hybrid search as combining the two.
+- **When to skip it.** Many cases do not need vector search, the chapter says, since a conventional database query or web browsing may do. It adds that under heavy load the fixed cost of fine-tuning can undercut the recurring cost of prompts, embeddings and vector storage, and advises checking that the extra context repays its cost and latency.
+- **Blog-writing pipeline.** In chapter 10, the top three Google results are split into chunks of 1,500 tokens with overlap 400 (RecursiveCharacterTextSplitter, temperature 0, one topic). For each subheading, up to five documents come from a Chroma retriever, with k reduced when a call fails.
+
 ## Limits
 
 - One domain and one query type. A 32B model fine-tuned on reasoning traces scored 0.56 against 0.54 with retrieval alone, within about 2 standard deviations (the extraction's caution), so most of the gain came from retrieval.
 Limits of this section:
 - Chapter 3 has no experiments of its own; MTEB ranks and context sizes have dated. Fig 3-11 (degradation with index size) is a schematic with no data. The chapter's pattern numbering is inconsistent, and its table example uses StandardScaler though the text says min-max.
 - Book-chapter section (Packt chapter and Rothman ch. 3): the extraction notes the first has no experiments (its formulas are images) and that the demo has no evaluation; the second's demo has 2 knowledge chunks and 3 blueprints, and it neither measures retrieval quality, latency or cost nor sets a score threshold on retrieval.
+- Phoenix and Taylor chapters 4 and 5 run no experiment on chunk size, overlap, embedding model or vector store. Prices, the standing of ada-002 and Pinecone, and gpt-4-1106-preview reflect the time of writing. The word2vec example depends on a hand-picked seed. Merging FAISS indexes with reconstruct_n is limited to flat indexes and keeps no IDs; only brute-force IndexFlatL2 appears, with no approximate index, recall or latency figures. Chapter 4's chunk counts come from truncated example text, and chapter 10's printed retry loop never writes the section when it fails.
 
 ## See Also
 - [[Librarian RAG Architecture]] <!-- auto-linked -->

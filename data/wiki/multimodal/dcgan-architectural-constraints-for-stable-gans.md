@@ -37,3 +37,4 @@ The constraints: strided and fractionally-strided convolutions (some recent pape
 - [[Improved Techniques for Training GANs]] — related
 - [[Frechet Inception Distance and the Two Time-Scale Update Rule]] — related (reports FID for DCGAN)
 - [[BigGAN Large-Scale GAN Training]] — related
+- [[Generative Adversarial Nets Minimax Game]] — prerequisite-for

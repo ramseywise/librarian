@@ -63,3 +63,4 @@ Loper and Bird's NLTK paper shows the same idea at course scale: `ChunkRule('<NN
 - [[N-gram Taggers, Backoff and Brill Transformation Rules]] — prerequisite-for
 - [[Named Entity Recognition and Sequence Tagging]] — related (BIO tagging of entities)
 - [[Chart Parsing, PCFGs and Structural Ambiguity]] — alternative-to
+- [[CoNLL-2003 NER Shared Task]] — related

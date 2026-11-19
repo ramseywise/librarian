@@ -52,3 +52,7 @@ It also describes skip-thought vectors (a single encoder feeding two decoders, o
 - [[Multi-News]] — related (pointer-generator summarisation benchmark)
 - [[End-to-End Memory Networks]] — related
 - [[Word Embeddings and Similarity Measures]] — related
+- [[Attention for Neural Machine Translation (Bahdanau, Luong, Decomposable)]] — extends
+- [[Encoder-Decoder Translation Before the Transformer]] — extends
+- [[Pointer-Generator Network and Coverage]] — extends
+- [[MMI Objective for Generic Responses]] — related (a decode-time objective for seq2seq chatbots)

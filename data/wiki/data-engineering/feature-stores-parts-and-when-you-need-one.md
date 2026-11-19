@@ -7,6 +7,8 @@ sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--06-ml-platform--notes--01-feature-stores.md
   - data/raw/papers/2026-11-08-ml-engineering-in-action-ch15-quality-acceptance-testing.md
   - data/raw/papers/2026-11-08-ml-engineering-in-action-ch16-production-infrastructure.md
+  - data/raw/papers/2026-11-07-llm-engineers-handbook-ch01-llm-twin-concept-and-architecture.md
+  - data/raw/papers/2026-11-07-llm-engineers-handbook-ch04-rag-feature-pipeline.md
 ---
 
 # Feature Stores: Parts and When You Need One
@@ -42,8 +44,13 @@ Evaluation criteria: sync to the online store, accessibility, batch and streamin
 
 Wilson (*Machine Learning Engineering in Action*, chapters 15 and 16) advises defining each feature once in a store with ACID storage and a low-latency serving layer, using a denormalised key-value layout that consumers can only read. He advises that a change to a key metric's definition goes through a change process with every producing and consuming group and then syncs to the store by ETL, and that teams avoid private data silos. In his Databricks example registering the model through the store's API bundles the feature engineering with the model artifact, and batch scoring then calls just `score_batch`. His evaluation list matches the criteria above. These are practitioner recommendations; his code is Databricks-, Spark- and MLflow-specific and he warns that feature store APIs may change significantly.
 
+## A logical feature store (LLM Engineer's Handbook)
+
+Iusztin and Labonne use no specialised store for their LLM product. Their logical feature store is a vector DB plus some extra logic and versioned artifacts, chosen where a specialised store would cost more than it gives. The feature pipeline keeps two snapshots in it, one after cleaning (for fine-tuning) and one after chunking and embedding (for RAG). See [[FTI Pipelines and the Logical Feature Store]]. This is a design argument, not a measured comparison.
+
 ## See Also
 - [[Point-in-Time As-Of Join for Features]] — prerequisite-for
 - [[Train-Serving Skew and the Shared Feature Function]] — prerequisite-for
 - [[Data Engineering Foundations]] — related
 - [[ML Stage Layering with Typed Contracts]] — related
+- [[FTI Pipelines and the Logical Feature Store]] — extends (the lighter variant: a vector DB plus versioned artifacts)

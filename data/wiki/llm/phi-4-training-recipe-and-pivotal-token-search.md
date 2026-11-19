@@ -41,3 +41,4 @@ A pivotal token is one whose generation changes the probability of a correct ans
 - [[Continued Pretraining for Domain Adaptation]] — related (another data-centred route to capability)
 - [[Outcome vs Process Reward Models]] — related (process supervision, of which PTS is a token-level analogue)
 - [[Post-Training Reasoning Data Primer]] — related
+- [[Textbook-Quality Data: phi-1 and phi-3]] — prerequisite-for (the earlier phi reports)

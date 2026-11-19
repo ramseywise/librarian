@@ -46,3 +46,4 @@ Ye et al. (2025, COLM) propose the LIMO hypothesis: if pretraining has encoded a
 - [[Post-Training Reasoning Data Primer]] — related (reasoning-data selection)
 - [[GRPO Group Relative Policy Optimization]] — alternative-to (RL route to long reasoning)
 - [[Tree of Thoughts]] — related
+- [[Recurrent-Depth Latent Reasoning (Huginn)]] — related

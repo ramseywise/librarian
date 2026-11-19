@@ -75,3 +75,5 @@ Goyal, Li and Durrett (2022 preprint) compare zero-shot text-davinci-002 with BR
 - [[MAUVE]] — instance-of
 - [[BARTScore]] — instance-of (a likelihood-based metric)
 - [[PEGASUS Gap-Sentence Pretraining]] — related (ROUGE-based claims)
+- [[BLEU, Brevity Penalty and SacreBLEU]] — related (the n-gram overlap metric these replace)
+- [[ROUGE Overlap Metrics for Summaries]] — related

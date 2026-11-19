@@ -5,6 +5,7 @@ summary: The Transformer model architecture (Vaswani et al., 2017) — encoder-d
 updated: 2026-11-19
 sources:
   - data/raw/pdfs/2017-06-12-attention-is-all-you-need.md
+  - data/raw/papers/2026-11-07-vaswani-2017-attention-all-you-need.md
 ---
 
 # Transformer Architecture
@@ -73,9 +74,13 @@ Self-attention connects all positions with O(1) sequential operations — faster
 
 ## Results
 
-- **WMT 2014 EN-DE**: 28.4 BLEU (new SOTA, +2 BLEU over best ensembles)
-- **WMT 2014 EN-FR**: 41.8 BLEU (new single-model SOTA, <1/4 training cost of previous SOTA)
-- **English constituency parsing**: 92.7 F1 (semi-supervised), competitive with task-specific models
+All numbers are the paper's own (self-reported).
+
+- **WMT 2014 EN-DE** (newstest2014): the big model, trained 3.5 days on 8 P100 with the final 20 checkpoints averaged and beam size 4, reaches 28.4 BLEU, over 2 BLEU ahead of every earlier model, ensembles included (ConvS2S ensemble as the baseline).
+- **WMT 2014 EN-FR** (newstest2014, big model, dropout 0.1): 41.8 BLEU, a new best for a single model over the MoE baseline, for under a quarter of the previous best's training cost. The base model gets 38.1 on EN-FR after 100K steps (about 12 hours), short of earlier single models; on EN-DE the base model already outscores all earlier models and ensembles at an estimated 3.3e18 FLOPs.
+- **Ablations** (base model on the EN-DE newstest2013 dev set, without checkpoint averaging): at fixed computation one head lands 0.9 BLEU below the top setting, and an excess of heads costs quality as well; smaller d_k lowers quality; bigger models and dropout help.
+- **English constituency parsing** (WSJ section 23): a 4-layer Transformer gets 91.3 F1 from WSJ data alone and 92.7 F1 semi-supervised on roughly 17M sentences, with little task-specific tuning.
+- The sqrt(d_k) scaling is argued, not ablated: assuming independent q and k components of mean 0 and variance 1, dot-product variance rises with d_k.
 
 ## Why It Matters for Agent Engineering
 
@@ -83,6 +88,14 @@ The Transformer is the foundation of every LLM used in agent systems. Understand
 - **Context management**: understanding why context windows have quadratic cost
 - **Prompt engineering**: leveraging attention patterns for effective instruction placement
 - **Architecture decisions**: when to use encoder-decoder vs decoder-only variants
+
+## Limits
+
+- Only two translation tasks and one parsing task are tested; the authors leave language modelling and other modalities as future work.
+- Each configuration has a single run, with no seeds or significance testing.
+- For the EN-FR big model the abstract and Table 2 print 41.8 BLEU while section 6.1 prints 41.0; the paper never reconciles them, and this page quotes 41.8.
+- FLOPs come from GPU time and nominal capacity rather than measurement, and perplexities are per wordpiece, so they cannot be set beside per-word numbers.
+- The interpretability evidence for attention consists of hand-picked examples.
 
 ## See Also
 - [[Self-Attention Mechanism]] — extends
@@ -100,3 +113,29 @@ The Transformer is the foundation of every LLM used in agent systems. Understand
 - [[Cut Cross-Entropy]] — extends (loss layer for large vocabularies)
 - [[UL2 Mixture of Denoisers]] — related (a pretraining objective mix on the encoder-decoder transformer)
 - [[Conformer Convolution-Augmented Transformer for ASR]] — related
+- [[Code Encoder and Encoder-Decoder Pretraining]] — extends
+- [[Edge Probing and Layer Localisation in BERT]] — related (layer-wise probing of a Transformer encoder)
+- [[Attention Head Roles, Pruning and Faithfulness]] — related (analyses of what attention heads do)
+- [[Mixture-of-Experts Routing and Scaling]] — extends
+- [[Tensor, Pipeline and Data Parallelism for Large Transformers]] — related
+- [[BERT Masked-LM Pretraining and Its Refinements]] — extends (encoder-only pretraining)
+- [[T5 Text-to-Text Transfer Transformer]] — extends (encoder-decoder transfer study)
+- [[Scaling Laws: Kaplan, Chinchilla and Error Landscapes]] — related
+- [[Recurrent-Depth Latent Reasoning (Huginn)]] — extends
+- [[Word2vec: CBOW, Skip-gram and Negative Sampling]] — related
+- [[LSTM: Constant Error Carousel and Gated Memory Cells]] — related
+- [[GPT-3 and Few-Shot In-Context Learning]] — extends
+- [[Open Pretrained Model Reports Comparison]] — extends
+- [[Qwen and Qwen2.5 Technical Reports]] — related (open-weight decoder family reports)
+- [[GPT From Scratch: Block, Weight Tying and Shortcuts]] — instance-of (a from-scratch decoder-only implementation)
+- [[Byte Pair Encoding and Sliding-Window Batches]] — related (how text becomes the model's input tokens)
+- [[Transformer-XL Segment Recurrence]] — extends
+- [[Mamba Selective State Space Model]] — alternative-to
+- [[GLU Variants and GELU]] — extends (feed-forward non-linearity variants)
+- [[Layer Normalization]] — prerequisite-for
+- [[Position Encodings — Relative, Rotary, ALiBi and CAPE]] — extends
+- [[Encoder-Decoder Translation Before the Transformer]] — prerequisite-for
+- [[Attention for Neural Machine Translation (Bahdanau, Luong, Decomposable)]] — prerequisite-for
+- [[Tied Input and Output Embeddings]] — extends
+- [[Back-Translation at Scale]] — related
+- [[Vision Transformer ViT Patch Tokens and Scaling]] — extends

@@ -38,3 +38,6 @@ Self-reported; no fine-tuning, shared vocabulary.
 - [[SQuAD]] — related (source of the cloze QA subset)
 - [[KILT Benchmark]] — extends
 - [[RAG Evaluation]] — prerequisite-for
+- [[Form, Meaning and Understanding in Language Models]] — related (cites the LAMA title as overclaiming terminology)
+- [[LPAQA Prompt Mining and Ensembling]] — extends
+- [[Continuous Prompts: P-Tuning, WARP and Soft-Prompt Mixtures]] — extends

@@ -76,3 +76,5 @@ LLaSM (arXiv 2308.15930) feeds Whisper audio embeddings through a modal adaptor 
 - [[WaveNet — Autoregressive Audio Generation]] — prerequisite-for
 - [[Real-Time Multimodal Agents]] — related
 - [[Voice Agent Paradigms]] — related
+- [[Jukebox Multi-Scale VQ-VAE Music]] — instance-of
+- [[wav2vec 2.0 Contrastive Speech Pretraining]] — related

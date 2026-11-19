@@ -35,3 +35,4 @@ Setup: 1000 training examples per task unless noted.
 ## See Also
 - [[BABILong Benchmark]] — extends (places bAbI-style facts inside long distractor text)
 - [[HotpotQA]] — related (real-text multi-hop counterpart)
+- [[Commonsense Multiple-Choice Benchmarks]] — related

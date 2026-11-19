@@ -2,7 +2,7 @@
 title: RAG Architecture Selection
 tags: [rag, comparison]
 summary: "The nine named RAG architectures as one selection space — what each buys, what it costs, and the decision cheat-sheet — plus Fusion RAG over heterogeneous sources, which is distinct from multi-query RAG-Fusion over one retriever."
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/playground/docs/rag/hc-rag-pipeline.md
   - data/raw/repos/learn-ai-engineering/generative-ai--02-rag-retrieval--rag.md
@@ -178,3 +178,4 @@ Limits of this section:
 - [[Delete an Unfinished RAG Retrofit, Don't Archive It]] — instance-of (the null option: a lookup domain that never justified a vector store)
 - [[RAFT Retrieval-Augmented Fine-Tuning]] — related
 - [[UniversalRAG Modality and Granularity Routing]] — related
+- [[Advanced RAG Retriever: Self-Query, Query Expansion, Filtered Search and Rerank]] — related

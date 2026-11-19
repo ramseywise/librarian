@@ -2,11 +2,12 @@
 title: Agent Trace Anatomy
 tags: [infra, eval, reference]
 summary: "A trace is one request as a tree of spans (invoke_agent, chat, execute_tool, retrieval) carrying inputs, outputs, tokens, latency and versions — complete when it answers six questions, standardized by OpenTelemetry GenAI conventions, and the shared raw material for offline evals, online scoring, cost attribution and new dataset rows."
-updated: 2026-10-30
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--08-tracing-and-observability.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--06-evaluating-agents.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--README.md
+  - data/raw/papers/2026-11-07-llm-engineers-handbook-ch11-mlops-and-llmops.md
 ---
 
 # Agent Trace Anatomy
@@ -85,6 +86,10 @@ detours. Set a per-task cost cap and log thinking tokens separately.
 Traces hold user input, so decide up front: what is redacted before storage, who sees raw
 traces, retention — and whether eval rows derived from traces inherit the same limit and
 consent.
+
+## Prompt traces in an LLM product (LLM Engineer's Handbook, ch. 11)
+
+Iusztin and Labonne advise recording the whole prompt trace, with latency, tokens and cost for each step, tracing the critical functions (the rag and LLM-call functions) first and adding granularity later to avoid noise. They watch the model configuration, total tokens and step duration, and treat a sudden rise in average tokens as a sign of a bug. User feedback and LLM-judge scores are attached to the traces. The chapter reports no measurements from its Opik setup.
 
 ## See Also
 - [[Observability and Runtime Patterns]] — extends (backend choice and tracing setup)

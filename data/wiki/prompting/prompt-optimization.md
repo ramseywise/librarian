@@ -2,7 +2,7 @@
 title: Prompt Optimization
 tags: [prompting, eval, concept]
 summary: Treat the prompt as a versioned artifact searched against a fixed eval set and metric — by hand (cheapest layer first, one change at a time), by an LLM proposer (APE, OPRO, meta-prompting) or by a framework (DSPy, TextGrad); an optimizer without a metric is just a rewriter.
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--08-prompt-optimization.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--07-prompting-reasoning-models.md
@@ -15,6 +15,7 @@ sources:
   - data/raw/papers/2026-11-07-agrawal-2025-gepa.md
   - data/raw/papers/2026-11-07-singh-2026-coding-agents-strong-prompt-optimizers.md
   - data/raw/papers/2026-11-08-shin-2020-autoprompt.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch03-prompting.md
 ---
 
 # Prompt Optimization
@@ -119,6 +120,10 @@ Shin et al. (EMNLP 2020) build prompts for frozen masked language models (BERT-b
 
 The authors' limits: on QQP and RTE the prompts stayed close to chance, labelled training data is needed, the prompts are not interpretable, and the greedy search over a large discrete space is sometimes brittle and mostly raises the majority label on imbalanced data. Only masked models were tested; the SST-2 search took two days on eight GPUs.
 
+## Xiao and Zhu's search framing
+
+Xiao and Zhu frame prompt optimisation as a search with a search space, a performance estimate and a search strategy, run as initialise, evaluate on a validation set, prune, and expand. They note that it is costly and that LLM-based search depends on the strength of the LLM.
+
 ## Limits
 
 - OPRO: best instructions picked on test accuracy; Ein-Dor: researcher participants and no comparison with an automatic optimizer.
@@ -140,3 +145,5 @@ The authors' limits: on QQP and RTE the prompts stayed close to chance, labelled
 - [[ACE Agentic Context Engineering Playbooks]] — alternative-to (delta-updated playbook instead of rewriting prompts)
 - [[LM-BFF and PET Prompt-Based Fine-Tuning]] — related (searched templates and label words)
 - [[Controllable Text Generation Taxonomy]] — related
+- [[True Few-Shot Prompt Selection]] — related
+- [[LPAQA Prompt Mining and Ensembling]] — related

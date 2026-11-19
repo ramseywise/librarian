@@ -2,9 +2,11 @@
 title: Self-Refine
 tags: [prompting, concept]
 summary: A training-free loop in which one LLM drafts an output, writes feedback on it and rewrites it; the paper reports about 20 points average gain over one-shot generation (self-reported) but almost none on math without an external correctness signal.
-updated: 2026-11-09
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-07-madaan-2023-self-refine.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch03-prompting.md
+  - data/raw/papers/2026-11-08-xiao-foundations-llms-ch05-inference.md
 ---
 
 # Self-Refine
@@ -27,6 +29,10 @@ All numbers below are the paper's own (self-reported).
 - With GPT-3 and the settings of an earlier trained-corrector paper, GSM8K reaches 55.7 against 45.9 for that Self-Correction baseline.
 - Significance (Wilson intervals): nearly all GPT-4 gains are significant, ChatGPT 4 of 7 and GPT-3.5 3 of 7.
 
+## Xiao and Zhu on refinement
+
+Xiao and Zhu describe refinement as predict, collect feedback, refine, repeatable, and advise feedback on specific aspects rather than a bare instruction to refine. Deliberate-then-generate (Li et al.) asks the model to name the error type in an output and refine it in one run. In the inference chapter each new output is a refinement of the previous one given its feedback, a sequential way to scale inference-time compute, set against parallel sampling with a verifier.
+
 ## Limits
 
 - The base model must be able to follow few-shot or instruction prompts well enough; Vicuna-13B could not.
@@ -36,6 +42,8 @@ All numbers below are the paper's own (self-reported).
 - The Fig 4 per-iteration averages pool three models, there are no seeds or repeated runs, many GPT-3.5 and ChatGPT gains are not significant.
 - The baseline is one generation from the same LLM, not compute-matched, apart from the k=4 human test.
 - The extraction lists internal inconsistencies: temperature given as both greedy and 0.7, Table 1 against Tables 7 and 8, 95% versus 99% intervals, 372 versus 342 dialogue instances, and an unfinished TODO line in an appendix.
+- Xiao and Zhu state that earlier errors propagate through refinement and that stopping needs engineering; their chapter gives no measured gains.
+
 
 ## See Also
 - [[Reflexion]] — alternative-to (concurrent prompted refiner; retries with a stored reflection)

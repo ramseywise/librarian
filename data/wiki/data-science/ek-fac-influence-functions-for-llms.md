@@ -2,7 +2,7 @@
 title: EK-FAC Influence Functions for LLMs
 tags: [data-science, pattern]
 summary: EK-FAC approximates the inverse-curvature term in influence functions cheaply enough to trace a language model's outputs back to pretraining sequences at up to 52B parameters.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-06-grosse-2023-studying-large-language-model-generalization.md
 ---
@@ -43,3 +43,4 @@ Plain gradient dot products (no curvature) correlate worse with the ground truth
 - [[SHAP Attributions and the Limits of Explanations]] — related (attribution to inputs rather than to training data)
 - [[OLS Influence and Collinearity]] — related (the classical statistics notion of influence)
 - [[Reward Hacking and Overoptimization]] — related
+- [[Influence Functions for Black-Box Predictions]] — prerequisite-for

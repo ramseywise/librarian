@@ -37,3 +37,4 @@ R2C grounds text in image regions with a BiLSTM, contextualises through attentio
 - [[Visual Question Answering Benchmarks]] — related
 - [[VQA v2 Balanced Dataset]] — related (VQA baselines are evaluated on VCR)
 - [[VLM Benchmark Shortcuts]] — related
+- [[Adversarial Filtering and AFLite]] — related

@@ -88,3 +88,4 @@ Optimize the target; test several doses, not just on/off, to see the dose–resp
 - [[Summary Factual Consistency Metrics]] — related (source-grounded checks in place of reference overlap)
 - [[Perplexity and Bits-per-Byte]] — related (the intrinsic language-model metric and its units)
 - [[WikiQA]] — related (question-level scoring when no answer exists)
+- [[BLEU, Brevity Penalty and SacreBLEU]] — related

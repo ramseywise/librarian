@@ -38,3 +38,4 @@ Setup unless stated: the MineDojo environment, several random seeds, discrete cr
 ## See Also
 - [[World Knowledge Model for Agent Planning]] — related
 - [[Post-Training for Agents]] — related
+- [[LingBot-World Open-Source World Model]] — related
