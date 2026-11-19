@@ -52,10 +52,13 @@ def test_migrations_upgrade_from_empty_and_are_idempotent(raw_engine: Engine) ->
         "audit",
         "rate_limits",
         "feedback",
+        "intakes",
+        "intake_responses",
+        "placements",
         "alembic_version",
     } <= names
     with raw_engine.connect() as conn:
-        assert conn.exec_driver_sql("SELECT version_num FROM alembic_version").scalar() == "0008"
+        assert conn.exec_driver_sql("SELECT version_num FROM alembic_version").scalar() == "0009"
     assert "last_seen_at" in {c["name"] for c in inspect(raw_engine).get_columns("users")}
     cols = {c["name"]: c for c in inspect(raw_engine).get_columns("attempts")}
     assert {"user_id", "ts", "event_key"} <= set(cols)
@@ -289,3 +292,56 @@ def test_burst_guard_is_per_process(tmp_path: Path) -> None:
     with pytest.raises(HTTPException) as e:
         a.admit(settings)
     assert "Too many chat requests" in e.value.detail
+
+
+# --- `librarian db check`: read-only, fails on a pending migration -------------------------------
+
+
+def _revisions() -> list[str]:
+    """The revision ids shipped in db/migrations/versions/, oldest first."""
+    from librarian.db import migrate
+
+    versions = Path(migrate.__file__).parent / "migrations" / "versions"
+    return sorted(p.name.split("_")[0] for p in versions.glob("[0-9]*.py"))
+
+
+def test_pending_lists_every_unapplied_revision_and_changes_nothing(raw_engine: Engine) -> None:
+    from librarian.db.migrate import pending
+
+    todo = pending(raw_engine)
+    assert todo[0] == "0001" and len(todo) == len(_revisions()) and todo == sorted(todo)
+    assert "alembic_version" not in inspect(raw_engine).get_table_names()  # read-only
+    upgrade(raw_engine, "0006")
+    assert pending(raw_engine) == [r for r in _revisions() if r > "0006"]
+    upgrade(raw_engine)
+    assert pending(raw_engine) == []
+
+
+def test_pending_refuses_a_revision_it_does_not_know(raw_engine: Engine) -> None:
+    from librarian.db.migrate import MigrationStateError, pending
+
+    upgrade(raw_engine)
+    with raw_engine.begin() as conn:
+        conn.exec_driver_sql("UPDATE alembic_version SET version_num = '9999'")
+    with pytest.raises(MigrationStateError, match="9999"):
+        pending(raw_engine)
+
+
+def test_db_check_exits_nonzero_until_the_database_is_upgraded(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    assert db_main(["check"]) == 1
+    assert f"{len(_revisions())} pending" in capsys.readouterr().err
+    assert db_main(["check"]) == 1  # a check never migrates, however often it runs
+    assert db_main(["upgrade"]) == 0
+    capsys.readouterr()
+    assert db_main(["check"]) == 0
+    assert "nothing pending" in capsys.readouterr().out
+
+
+def test_db_check_exits_nonzero_when_the_database_cannot_be_read(
+    capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(db_engine, "database_url", lambda: "sqlite:////nonexistent-dir/x.sqlite3")
+    assert db_main(["check"]) == 1
+    assert "cannot read the database" in capsys.readouterr().err

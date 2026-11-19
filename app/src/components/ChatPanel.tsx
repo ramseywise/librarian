@@ -1,4 +1,5 @@
 import { useRef, useEffect, useMemo, useState, type KeyboardEvent } from "react";
+import "./chat/chat.css";
 import type { ChatMessage } from "../hooks/useChatStream";
 import { staleFor, useCitationStatus, type StaleMap } from "../hooks/useCitationStatus";
 import { ChatMarkdown } from "./chat/ChatMarkdown";
@@ -74,7 +75,7 @@ export function ChatPanel({
   return (
     <div className="chat-panel">
       <div className="chat-header">
-        <span>Wiki Agent</span>
+        <span>Ask the Librarian</span>
         <span className="chat-header-meta">
           <span className="chat-hint">ask about the KB</span>
           {onClear && (
@@ -147,7 +148,7 @@ export function ChatPanel({
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKey}
           placeholder="Ask about the wiki…  (Enter to send)"
-          aria-label="Ask the wiki agent"
+          aria-label="Ask the librarian"
           disabled={streaming}
           className="chat-textarea"
           rows={2}

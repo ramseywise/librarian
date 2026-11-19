@@ -457,3 +457,35 @@ def test_run_route_streams_and_refuses_stray_files(
     )
     assert stray.status_code == 422
     assert client.post("/api/courses/lab-runs", json={"lab": "nope"}).status_code == 404
+
+
+def test_run_route_caps_file_count_and_total_request_size(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from librarian.config import get_settings
+    from librarian.courses import labs as labs_module
+
+    monkeypatch.setattr(lab_runner, "runs_enabled", lambda: True)
+    lab_id = f"{MOD}/practice/importance_noise.py"
+
+    too_many = {f"f{i}.py": "x" for i in range(labs_module.MAX_EDITABLE_FILES + 1)}
+    assert (
+        client.post("/api/courses/lab-runs", json={"lab": lab_id, "files": too_many}).status_code
+        == 422
+    )
+
+    monkeypatch.setenv("LIBRARIAN_LAB_RUN_MAX_TOTAL_CHARS", "1000")
+    get_settings.cache_clear()
+    try:
+        big = {f"f{i}.py": "x" * 400 for i in range(3)}  # each file is fine, the sum is not
+        resp = client.post("/api/courses/lab-runs", json={"lab": lab_id, "files": big})
+        assert resp.status_code == 413
+        assert resp.json()["detail"] == "request too large"
+        one = {"f0.py": "x" * 400}  # under the cap: refused later, as a stray file
+        assert (
+            client.post("/api/courses/lab-runs", json={"lab": lab_id, "files": one}).status_code
+            == 422
+        )
+    finally:
+        monkeypatch.undo()
+        get_settings.cache_clear()

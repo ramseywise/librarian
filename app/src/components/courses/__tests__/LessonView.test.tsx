@@ -81,7 +81,7 @@ describe("LessonView parts", () => {
       onMarkDone={vi.fn()} onOpen={vi.fn()} onOpenConcept={vi.fn()} onAsk={vi.fn()} onToc={vi.fn()} onActiveHeading={vi.fn()} />,
   );
 
-  it("opens on the lecture: the deck and the prose, without the code, exercises or review table", () => {
+  it("opens on the lecture: the deck, the objectives and the prose, without the code, exercises or answers", () => {
     renderNote();
     expect(screen.getByRole("tab", { name: "Lecture" })).toHaveAttribute("aria-selected", "true");
     expect(screen.getByRole("link", { name: /Lecture deck: Classical ML/ })).toHaveAttribute("href", "#/slides/programming/ts");
@@ -89,7 +89,8 @@ describe("LessonView parts", () => {
     expect(screen.getByText("The idea in words.")).toBeInTheDocument();
     expect(screen.queryByText(/c = a \+ b/)).toBeNull();
     expect(screen.queryByText("Change b.")).toBeNull();
-    expect(screen.queryByText("Why add?")).toBeNull();
+    expect(screen.getByRole("region", { name: "Objectives" })).toHaveTextContent("Why add?");
+    expect(screen.queryByText("To get three")).toBeNull();
   });
 
   it("puts the levels and the review questions on Study", async () => {
@@ -111,6 +112,16 @@ describe("LessonView parts", () => {
     expect(document.querySelector("details")).toBeNull();
     await userEvent.click(screen.getByRole("button", { name: "Show answers" }));
     expect(screen.getByText("Seven.")).toBeInTheDocument();
+  });
+
+  it("leaves the answers to the flashcards when the note has them", async () => {
+    render(
+      <LessonView lesson={{ ...drill, kind: "reading", drill: undefined, flashcardCount: 1, body }} courseTitle="DS" done={false}
+        onMarkDone={vi.fn()} onOpen={vi.fn()} onOpenConcept={vi.fn()} onAsk={vi.fn()} onToc={vi.fn()} onActiveHeading={vi.fn()} />,
+    );
+    await userEvent.click(screen.getByRole("tab", { name: "Study" }));
+    expect(screen.queryByRole("heading", { name: "Review questions" })).toBeNull();
+    expect(screen.queryByText("To get three")).toBeNull();
   });
 
   it("opens with the lecture made for this note when the module has one", () => {

@@ -19,6 +19,7 @@ import os
 import re
 import time
 from collections import deque
+from collections.abc import Callable
 from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Annotated, Any, NoReturn
@@ -211,25 +212,32 @@ class ChatLimiter:
     def _today() -> date:
         return datetime.now(UTC).date()
 
-    def _read(self, stmt: Select[Any]) -> float:
+    def _read(self, stmt: Select[Any], *, strict: bool = False) -> float:
+        """The statement's number. On a database error: 0.0 (logged), or with `strict` a 503."""
         try:
             with self._db().connect() as conn:
                 return float(conn.execute(stmt).scalar() or 0.0)
         except SQLAlchemyError as e:
-            log.error("chat.spend_read_failed", error=str(e))
+            log.error("chat.spend_read_failed", error=str(e), fail="closed" if strict else "open")
+            if strict:
+                raise HTTPException(
+                    status_code=503, detail="Chat is unavailable right now. Try again shortly."
+                ) from e
             return 0.0
 
-    def spent_usd(self, user_id: str | None = None) -> float:
-        """One user's spend today from the database; 0.0 when it cannot be read (logged)."""
+    def spent_usd(self, user_id: str | None = None, *, strict: bool = False) -> float:
+        """One user's spend today from the database. When it cannot be read: 0.0 (logged) for a
+        display, or with `strict` a 503, which is what the cap uses so it never fails open."""
         t = tables.chat_usage
         return self._read(
-            select(t.c.usd).where(t.c.user_key == (user_id or ""), t.c.day == self._today())
+            select(t.c.usd).where(t.c.user_key == (user_id or ""), t.c.day == self._today()),
+            strict=strict,
         )
 
-    def total_spent_usd(self) -> float:
-        """Everyone's spend today, for the global cap."""
+    def total_spent_usd(self, *, strict: bool = False) -> float:
+        """Everyone's spend today, for the global cap (`strict` as in `spent_usd`)."""
         t = tables.chat_usage
-        return self._read(select(func.sum(t.c.usd)).where(t.c.day == self._today()))
+        return self._read(select(func.sum(t.c.usd)).where(t.c.day == self._today()), strict=strict)
 
     def admit(
         self,
@@ -241,11 +249,14 @@ class ChatLimiter:
     ) -> None:
         """Count one chat request, or raise 429 saying which limit was hit.
 
+        Fails closed: when a spend cap is on and the day's spend cannot be read, 503 (a cap that
+        cannot be checked is not a cap). With both caps at 0 nothing is read.
+
         `user_cap` applies the per-user budget to `user_id` (members; admins have only the global cap).
         """
         now = time.monotonic() if now is None else now
         budget = settings.chat_daily_budget_usd
-        if budget > 0 and self.total_spent_usd() >= budget:
+        if budget > 0 and self.total_spent_usd(strict=True) >= budget:
             raise HTTPException(
                 status_code=429,
                 detail=(
@@ -254,7 +265,7 @@ class ChatLimiter:
                 ),
             )
         mine = settings.chat_user_daily_budget_usd
-        if user_cap and mine > 0 and self.spent_usd(user_id) >= mine:
+        if user_cap and mine > 0 and self.spent_usd(user_id, strict=True) >= mine:
             raise HTTPException(
                 status_code=429,
                 detail=(
@@ -385,6 +396,36 @@ class AuthLimiter:
 
 
 auth_limiter = AuthLimiter()
+
+
+def compute_rate_limit(group: str, *, umap: bool = False) -> Callable[..., None]:
+    """Route dependency factory: 429 with Retry-After when the caller has made too many requests
+    to the `group` of compute routes in the window, counted across workers (`accounts.rate_limits`).
+
+    Keyed by user, so one caller's MCP loop cannot starve another's. Like the feedback limit, it
+    fails open when the database cannot be reached: the routes are read-only and the lookup that
+    names the caller needs the same database anyway. `umap` takes the lower UMAP limit.
+    """
+
+    def check(user: Annotated[User, Depends(require_user)]) -> None:
+        settings = get_settings()
+        limit = settings.umap_rate_limit if umap else settings.compute_rate_limit
+        window = settings.compute_rate_window_s
+        if limit <= 0:
+            return
+        try:
+            shared = rate_limits.hit(get_engine(), f"compute:{group}:{user.id}", window)
+        except SQLAlchemyError as e:
+            log.error("compute.rate_limit_unavailable", group=group, error=str(e), fail="open")
+            return
+        if shared.hits > limit:
+            raise HTTPException(
+                status_code=429,
+                detail=f"Too many requests: {limit} per {window}s. Retry in {shared.retry_after_s}s.",
+                headers={"Retry-After": str(shared.retry_after_s)},
+            )
+
+    return check
 
 
 _INLINE_SCRIPT_RE = re.compile(r"<script(?P<attrs>[^>]*)>(?P<body>.*?)</script>", re.S | re.I)

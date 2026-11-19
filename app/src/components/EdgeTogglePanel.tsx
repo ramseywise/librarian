@@ -1,4 +1,5 @@
 import type { EdgeVisibility } from "../types";
+import "./filter.css";
 
 interface Props {
   visibility: EdgeVisibility;

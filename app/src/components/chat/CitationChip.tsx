@@ -1,4 +1,5 @@
 import type { StaleCitation } from "../../hooks/useCitationStatus";
+import "./chat.css";
 import { CHANGED_LABEL, MISSING_LABEL, UNSUPPORTED_LABEL } from "./groundingLabels";
 
 interface Props {

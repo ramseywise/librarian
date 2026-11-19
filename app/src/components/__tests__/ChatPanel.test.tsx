@@ -24,7 +24,7 @@ describe("ChatPanel", () => {
     expect(screen.queryByRole("button", { name: "Stop generating" })).toBeNull();
     expect(screen.queryByRole("button", { name: "Clear conversation" })).toBeNull();
     expect(screen.getByRole("log")).toHaveAttribute("aria-live", "polite");
-    expect(screen.getByLabelText("Ask the wiki agent")).toBeInTheDocument();
+    expect(screen.getByLabelText("Ask the librarian")).toBeInTheDocument();
   });
 
   it("swaps send for stop while streaming and calls onStop", () => {

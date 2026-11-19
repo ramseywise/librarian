@@ -458,6 +458,28 @@ def test_drill_frontmatter_becomes_drill_lesson(tree: tuple[Path, Path]) -> None
     )
 
 
+def test_depth_fields_survive_the_import_and_illegal_ones_are_dropped(
+    tree: tuple[Path, Path],
+) -> None:
+    source, dest = tree
+    mod = source / "generative-ai" / "01-llm-fundamentals"
+    (mod / "03-tagged.md").write_text(
+        "---\norigin: synthesis\ntier: specialist\ndepth: core\n"
+        "depth_sections:\n  Proof: deep\n  Aside: expert\n"
+        "---\n# Tagged\n\n## Proof\n\nBody.\n"
+    )
+    (mod / "04-wrong.md").write_text("---\ntier: expert\ndepth: senior\n---\n# Wrong\n\nBody.\n")
+    _sync(source)
+    tagged = _front(next(dest.rglob("*tagged*.md")))
+    assert tagged["depth"] == "core" and tagged["depth_sections"] == {"Proof": "deep"}
+    assert tagged["tier"] == "specialist"
+    assert tagged["kind"] == "reading" and "origin" not in tagged
+    wrong = _front(next(dest.rglob("*wrong*.md")))
+    assert "depth" not in wrong and "tier" not in wrong
+    assert "depth" not in _front(next(dest.rglob("*intro*.md")))
+    assert _sync(source)["updated"] == 0  # a tagged note re-imports unchanged
+
+
 # ── pillar layout ─────────────────────────────────────────────
 
 

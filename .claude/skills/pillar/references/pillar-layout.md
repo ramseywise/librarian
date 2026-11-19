@@ -82,8 +82,12 @@ The notes are the product. Everything else in the folder serves them.
     - "Huyen, AI Engineering (O'Reilly, 2025), ch. 6"
   confidence: high             # high | medium | low
   cleaned: 2026-10-31
+  depth: core                  # intro | core | deep; optional until the tagging is done
+  depth_sections:              # optional: only sections whose depth differs; a subsection may override
+    "Why the estimator is biased": deep
   ---
   ```
+  How to choose a depth: [depth-rubric.md](depth-rubric.md).
 - **Prose first**, with claims stated plainly and each number given with the setup it holds
   under ("on SWE-bench Verified", "at 7B").
 - **Code** in fenced blocks, short enough to read in place. A runnable lab goes in

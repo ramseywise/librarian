@@ -1,0 +1,92 @@
+/* The map: canvas, status pill, depth control and the hop field behind a focused level. */
+
+/* ---- Graph -------------------------------------------------------------------- */
+.graph-root { width: 100%; height: 100%; position: relative; display: flex; }
+.graph-canvas { flex: 1; min-width: 0; height: 100%; position: relative; }
+.graph-status {
+  position: absolute;
+  top: var(--space-5);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--z-panel);
+  font-size: var(--fs-sm);
+  background: var(--surface-raised);
+  padding: 3px var(--space-4);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-strong);
+}
+/* Failed loads (the map, course filters, term filters), stacked under the connection status. */
+.graph-notices {
+  position: absolute;
+  top: 44px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--z-panel);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: min(90%, 560px);
+}
+.graph-status--live { color: var(--success); }
+.graph-status--offline { color: var(--offline); }
+.graph-depth { position: absolute; top: 90px; right: var(--space-5); z-index: var(--z-panel); }
+.react-flow .graph-flow-controls { background: var(--surface-raised); border: 1px solid var(--border-strong); }
+
+/* Going from one page's level to the next: cards that stay glide to their new place, and the
+   lines and points come back once they have landed. */
+.graph-canvas.is-moving .react-flow__node { transition: transform var(--dur-glide) ease; }
+/* A card new to the canvas fades in, as a new point does. */
+.graph-canvas .react-flow__node { animation: hop-in var(--dur-hop-in) ease; }
+.graph-canvas .react-flow__edges, .hop-label, .hop-line { transition: opacity var(--dur-slow); }
+.graph-canvas.is-moving .react-flow__edges { opacity: 0; transition: none; }
+.graph-canvas.is-moving .hop-label, .graph-canvas.is-moving .hop-line, .graph-canvas.is-moving .hop-arc { opacity: 0; transition: none; }
+
+/* ---- The wiki around a page's level: points behind the cards (HopField) ---- */
+.graph-canvas .react-flow__viewport-portal { z-index: -1; }
+.hop-field { position: absolute; left: 0; top: 0; overflow: visible; }
+/* Each sector's arc outside the circle of points, bright where the level reaches into it. */
+.hop-arc { fill: none; stroke-width: 6; stroke-linecap: round; opacity: 0.25; cursor: pointer; pointer-events: stroke; transition: opacity var(--dur-glide), stroke-width var(--dur-glide); }
+.hop-arc--lit { stroke-width: 12; opacity: 0.9; }
+.hop-arc:hover, .hop-arc--focus { opacity: 1; stroke-width: 16; }
+/* Lines from a page to the one it is reached through. Further out there are hundreds: each
+   fainter, so together they read as a web across the circle. */
+.hop-line { stroke-width: 1.5; opacity: 0.3; fill: none; pointer-events: none; }
+/* A card to where its page is on the circle. */
+.hop-line--card { stroke-width: 2; opacity: 0.45; stroke-dasharray: 2 6; stroke-linecap: round; }
+.hop-line--h3 { stroke-width: 1; opacity: 0.14; }
+.hop-line--h4 { stroke-width: 1; opacity: 0.07; }
+.hop-chain { fill: none; stroke-width: 2.5; opacity: 0.95; pointer-events: none; }
+/* A page's point keeps its place from one level to the next and grows or fades as its page comes
+   nearer or goes further from the open one. The radius is in CSS so that it can ease. */
+.hop-dot {
+  pointer-events: all;
+  cursor: pointer;
+  r: 5px;
+  opacity: 0.22;
+  transition: transform var(--dur-glide) ease, r var(--dur-glide) ease, opacity var(--dur-glide);
+  animation: hop-in var(--dur-glide) ease;
+}
+.hop-dot--h4 { r: 7px; opacity: 0.5; }
+.hop-dot--h3 { r: 9px; opacity: 0.7; }
+.hop-dot--near { r: 12px; opacity: 0.95; }
+.hop-dot--card { r: 14px; opacity: 1; stroke: var(--text-strong); stroke-width: 2; }
+/* In the sector the view has moved in on, every point is big enough to pick. */
+.hop-dot--focus { r: 9px; opacity: 0.6; }
+.hop-dot--focus.hop-dot--h4 { r: 10px; opacity: 0.75; }
+.hop-dot--focus.hop-dot--h3 { r: 11px; opacity: 0.85; }
+.hop-dot--focus.hop-dot--near { r: 13px; opacity: 1; }
+.hop-dot--focus.hop-dot--card { r: 14px; opacity: 1; }
+.hop-dot:hover { opacity: 1; r: 14px; }
+@keyframes hop-in { from { opacity: 0; } }
+.hop-label {
+  cursor: pointer;
+  pointer-events: all;
+  dominant-baseline: middle;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+/* Side handles carry the cluster layout's sideways edges; they are never dragged from. */
+.react-flow .wiki-node-side { opacity: 0; pointer-events: none; }

@@ -30,7 +30,7 @@ interface Props {
 function LessonImage(props: ImgHTMLAttributes<HTMLImageElement>) {
   const [failed, setFailed] = useState(false);
   if (failed) return null;
-  return <img {...props} loading="lazy" onError={() => setFailed(true)} />;
+  return <img {...props} alt={props.alt ?? ""} loading="lazy" onError={() => setFailed(true)} />;
 }
 
 const Pre = ({ children }: { children?: ReactNode }) => <CodeBlock>{children}</CodeBlock>;
@@ -60,7 +60,7 @@ function CodeBlock({ children }: { children?: ReactNode }) {
   const [copied, setCopied] = useState(false);
   const copy = () => {
     const text = ref.current?.innerText ?? "";
-    navigator.clipboard?.writeText(text).then(() => {
+    void navigator.clipboard?.writeText(text).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 1200);
     });
@@ -69,6 +69,7 @@ function CodeBlock({ children }: { children?: ReactNode }) {
     <div className="lp-code">
       <button className="lp-copy" onClick={copy}>{copied ? "Copied" : "Copy"}</button>
       {/* Focusable so a wide block can be scrolled from the keyboard. */}
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */}
       <pre ref={ref} tabIndex={0}>{children}</pre>
     </div>
   );
@@ -98,6 +99,8 @@ function buildComponents(
       // prefixed them (user-content-x), which scrollToAnchor looks for.
       if (!href) {
         const name = (rest as { name?: string }).name;
+        // A target for in-page links, not a link: it has no href on purpose.
+        // eslint-disable-next-line jsx-a11y/anchor-is-valid
         return <a id={id ?? name}>{children}</a>;
       }
       if (href.startsWith("#wiki:")) {

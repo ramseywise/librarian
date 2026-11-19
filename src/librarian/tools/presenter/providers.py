@@ -10,6 +10,7 @@ from urllib.parse import quote
 import httpx
 import structlog
 
+from librarian.ingest.safe_http import safe_client
 from librarian.tools.presenter._settings import settings
 
 log = structlog.get_logger(__name__)
@@ -24,7 +25,7 @@ def _http_get_with_retry(url: str) -> bytes:
     last_exc: Exception | None = None
     for attempt in range(MAX_RETRIES + 1):
         try:
-            with httpx.Client(timeout=FETCH_TIMEOUT, follow_redirects=True) as client:
+            with safe_client(timeout=FETCH_TIMEOUT) as client:
                 response = client.get(url)
                 response.raise_for_status()
                 return response.content

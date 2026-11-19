@@ -6,6 +6,8 @@ from pathlib import Path
 
 from alembic import command
 from alembic.config import Config
+from alembic.runtime.migration import MigrationContext
+from alembic.script import ScriptDirectory
 from sqlalchemy import Connection, Engine, text
 
 from librarian.log_config import get_logger
@@ -30,3 +32,28 @@ def upgrade(engine: Engine, revision: str = "head") -> None:
             conn.execute(text("SELECT pg_advisory_xact_lock(:id)"), {"id": _LOCK_ID})
         command.upgrade(_config(conn), revision)
     log.info("db.upgraded", revision=revision, dialect=engine.dialect.name)
+
+
+class MigrationStateError(Exception):
+    """The database holds a revision this code does not know (it is ahead of, or from, another build)."""
+
+
+def pending(engine: Engine) -> list[str]:
+    """Revisions this code ships that the database has not applied, oldest first. Read-only.
+
+    A database that was never migrated has them all pending. Raises `MigrationStateError` when the
+    database is at a revision not among this code's: that is not pending work, and an upgrade over
+    it would not be safe either.
+    """
+    cfg = Config()
+    cfg.set_main_option("script_location", str(_HERE / "migrations"))
+    script = ScriptDirectory.from_config(cfg)
+    with engine.connect() as conn:
+        current = MigrationContext.configure(conn).get_current_heads()
+    known = {r.revision for r in script.walk_revisions()}
+    unknown = [r for r in current if r not in known]
+    if unknown:
+        raise MigrationStateError(f"database is at unknown revision(s): {', '.join(unknown)}")
+    applied = {r.revision for c in current for r in script.iterate_revisions(c, "base")}
+    ordered = [r.revision for r in script.walk_revisions()][::-1]  # base first
+    return [rev for rev in ordered if rev not in applied]

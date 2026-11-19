@@ -1,17 +1,10 @@
 import { useEffect, useState } from "react";
+import type { z } from "zod";
+import { feedbackSummaryRowSchema, feedbackSummarySchema } from "../../schemas/account";
 import { apiJson } from "../../utils/api";
 
-interface Row {
-  target: string;
-  count?: number;
-  notes?: string[];
-  misses?: number;
-  miss_rate?: number;
-  read?: number;
-  cited?: number;
-  ungrounded?: number;
-}
-type Summary = Partial<Record<string, Row[]>>;
+type Row = z.output<typeof feedbackSummaryRowSchema>;
+type Summary = Partial<z.output<typeof feedbackSummarySchema>>;
 
 interface Column { head: string; cell: (r: Row) => string }
 
@@ -52,7 +45,7 @@ export function FeedbackSummaryView() {
 
   useEffect(() => {
     let cancelled = false;
-    apiJson<Summary>("/api/admin/feedback/summary")
+    apiJson(feedbackSummarySchema, "/api/admin/feedback/summary")
       .then((s) => !cancelled && setSummary(s ?? {}))
       .catch((e: Error) => !cancelled && setError(e.message));
     return () => {

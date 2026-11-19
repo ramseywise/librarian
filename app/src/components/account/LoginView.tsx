@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuthConfig, type LoginMethod } from "../../hooks/useAuth";
+import { z } from "zod";
 import { postJson, setToken } from "../../utils/api";
 import { pageTitle, useDocumentTitle } from "../courses/useDocumentTitle";
 import "./account.css";
@@ -37,7 +38,7 @@ export function LoginView({ route }: { route: string }) {
     e.preventDefault();
     setEmailError(null);
     try {
-      await postJson("/auth/email", { email: email.trim(), next: serverNext });
+      await postJson(z.unknown(), "/auth/email", { email: email.trim(), next: serverNext });
       setSent(true);
     } catch (err) {
       setEmailError((err as Error).message);

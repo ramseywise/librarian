@@ -186,6 +186,19 @@ def _trim_history(history: Sequence[dict[str, str]]) -> list[dict[str, str]]:
     return turns
 
 
+def _cap(text: str, limit: int) -> str:
+    """`text` cut to `limit` characters (0 = no cap), with a note saying how much was left out."""
+    if limit <= 0 or len(text) <= limit:
+        return text
+    return f"{text[:limit]}\n[... cut: {len(text) - limit} more characters not shown]"
+
+
+def _jsonable(obj: object) -> object:
+    """Fallback for json.dumps over SDK content blocks (pydantic models) in `messages`."""
+    dump = getattr(obj, "model_dump", None)
+    return dump() if callable(dump) else str(obj)
+
+
 def extract_citations(text: str) -> list[str]:
     """Page ids cited as [page:<id>], in first-seen order, deduplicated."""
     return list(dict.fromkeys(m.group(1) for m in CITATION_RE.finditer(text)))
@@ -315,8 +328,10 @@ async def run_agent_stream(
         tool_specs[-1] = {**tool_specs[-1], "cache_control": _CACHE}
     system = [{"type": "text", "text": _SYSTEM, "cache_control": _CACHE}]
     if brief:
+        brief = _cap(brief, settings.agent_brief_max_chars)
         system.append({"type": "text", "text": _BRIEF_FRAME.format(brief=brief)})
     if study:
+        study = _cap(study, settings.agent_study_max_chars)
         system.append({"type": "text", "text": _STUDY_FRAME.format(brief=study)})
     ctx = context or ToolContext(surface=CHAT)
     started = time.monotonic()
@@ -379,6 +394,16 @@ async def run_agent_stream(
                             "gen_ai.request.max_tokens": MAX_TOKENS,
                         },
                     )
+                    if settings.agent_debug_context:
+                        # Exactly what this call sends: holds the user's material, so opt-in.
+                        log.info(
+                            "agent.context",
+                            answer_id=answer_id,
+                            turn=turns,
+                            model=model,
+                            system=json.dumps(system),
+                            messages=json.dumps(messages, default=_jsonable),
+                        )
                     model_started = time.monotonic()
                     # Stream every turn: unlike Gemini, tool_use arrives as its own block
                     # type, so text deltas are never ambiguous with a pending call. Text on
@@ -471,7 +496,7 @@ async def run_agent_stream(
                         tool_result: dict[str, Any] = {
                             "type": "tool_result",
                             "tool_use_id": block.id,
-                            "content": result,
+                            "content": _cap(result, settings.agent_tool_result_max_chars),
                         }
                         if is_error:
                             tool_result["is_error"] = True

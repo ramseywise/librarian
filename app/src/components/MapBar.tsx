@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
+import "./filter.css";
 import { mapPath, parentOf, type Grouping, type MapView } from "../utils/mapRoute";
 
 interface Props {
@@ -25,12 +26,18 @@ interface Props {
   activeCount?: number;
   /** How a focused map is drawn: connections, arrangement, minimap. Absent on the atlas, which draws no lines. */
   map?: ReactNode;
+  /** Under the chat: the connection types, listed inline after the filters rather than in the Map popover. */
+  connections?: ReactNode;
   /** A brief on the sector in the crumbs; no button without it. */
   onBriefSector?: () => void;
+  /** Anything else for the end of the bar: the All nodes button. */
+  extra?: ReactNode;
+  /** Under the chat: no Back, breadcrumb or count, and the filters and connections listed inline. */
+  controlsOnly?: boolean;
 }
 
 /**
- * A button and the panel it opens under it. Escape or a click outside closes it; Escape closes only
+ * A button and the panel it opens over it (the bar sits at the bottom of the screen). Escape or a click outside closes it; Escape closes only
  * the popover, not the level behind it.
  */
 function Popover({ label, children }: { label: string; children: ReactNode }) {
@@ -50,6 +57,8 @@ function Popover({ label, children }: { label: string; children: ReactNode }) {
     <div
       className="map-pop"
       ref={wrap}
+      // Only catches an Escape bubbling up from the Map button and its popover; not a control itself.
+      role="presentation"
       onKeyDown={(e) => {
         if (e.key !== "Escape" || !open) return;
         e.preventDefault();
@@ -77,9 +86,11 @@ function Popover({ label, children }: { label: string; children: ReactNode }) {
 }
 
 /**
- * The map's one bar: the Domain / Wiki switch, search and the Filters popover on every level; on a
+ * The map's bar: the Domain / Wiki switch, search and the Filters popover on every level; on a
  * focused level also the breadcrumb, Back, how much of the level is shown, and a Map popover for
- * connections, arrangement and the minimap (the atlas draws no lines, so none there).
+ * connections, arrangement and the minimap (the atlas draws no lines, so none there). Under the
+ * chat the bar is `controlsOnly`: the switch, then search and the Map popover, then the filters and
+ * the connections inline, broadest first, with no Back or breadcrumb.
  */
 export function MapBar({
   view,
@@ -98,7 +109,10 @@ export function MapBar({
   filters,
   activeCount = 0,
   map,
+  connections,
   onBriefSector,
+  extra,
+  controlsOnly,
 }: Props) {
   const grouping = view.level === "all" ? "domain" : view.grouping;
   const parent = parentOf(view);
@@ -115,26 +129,70 @@ export function MapBar({
     </button>
   );
   const switcher = (
-    <div className="seg" role="group" aria-label="Browse by">
-      {(["domain", "wiki"] as const).map((g) => (
-        <button key={g} type="button" className="seg-btn" aria-pressed={grouping === g} onClick={() => onGrouping(g)}>
-          {g === "domain" ? "Domain" : "Wiki"}
-        </button>
-      ))}
+    <div className="map-browse">
+      <span className="panel-label">Browse by</span>
+      <div className="seg" role="group" aria-label="Browse by">
+        {(["domain", "wiki"] as const).map((g) => (
+          <button key={g} type="button" className="seg-btn" aria-pressed={grouping === g} onClick={() => onGrouping(g)}>
+            {g === "domain" ? "Domain" : "Wiki"}
+          </button>
+        ))}
+      </div>
     </div>
   );
-  const tools = (
+  const more = (
     <>
-      {search}
-      {filters && <Popover label={activeCount ? `Filters (${activeCount})` : "Filters"}>{filters}</Popover>}
-      {map && <Popover label="Map">{map}</Popover>}
+      {nextCap != null && (
+        <button type="button" className="pill-btn" onClick={onExpand}>
+          Show {nextCap}
+        </button>
+      )}
+      {revealedExtra > 0 && (
+        <button type="button" className="pill-btn" onClick={onResetRevealed} title="Drop the pages your clicks revealed">
+          Reset +{revealedExtra}
+        </button>
+      )}
     </>
   );
+  const controls = (
+    <>
+      {filters && <Popover label={activeCount ? `Filters (${activeCount})` : "Filters"}>{filters}</Popover>}
+      {map && <Popover label="Map">{map}</Popover>}
+      {extra}
+    </>
+  );
+  if (controlsOnly) {
+    return (
+      <div className="map-bar map-bar--docked">
+        {switcher}
+        <div className="map-dock-row">
+          {search}
+          {map && <Popover label="Layout">{map}</Popover>}
+          {extra}
+          {more}
+        </div>
+        <div className="map-dock-scroll">
+          {filters && (
+            <section aria-label="Filters" className="map-dock-filters">
+              {filters}
+            </section>
+          )}
+          {connections && (
+            <details className="side-section" open>
+              <summary className="panel-label">Connect by</summary>
+              <div className="side-section-body">{connections}</div>
+            </details>
+          )}
+        </div>
+      </div>
+    );
+  }
   if (atlas) {
     return (
       <div className="map-bar map-bar--atlas">
         {switcher}
-        {tools}
+        {search}
+        {controls}
       </div>
     );
   }
@@ -171,22 +229,14 @@ export function MapBar({
           {view.level === "page" && hops != null && hops > 0 ? ` · ${hops} ${hops === 1 ? "hop" : "hops"}` : ""}
         </span>
       )}
-      {nextCap != null && (
-        <button type="button" className="pill-btn" onClick={onExpand}>
-          Show {nextCap}
-        </button>
-      )}
-      {revealedExtra > 0 && (
-        <button type="button" className="pill-btn" onClick={onResetRevealed} title="Drop the pages your clicks revealed">
-          Reset +{revealedExtra}
-        </button>
-      )}
+      {more}
       {refocus && (
         <button type="button" className="pill-btn map-refocus" onClick={refocus.onClick} title={refocus.title}>
           Focus here
         </button>
       )}
-      {tools}
+      {search}
+      {controls}
     </div>
   );
 }

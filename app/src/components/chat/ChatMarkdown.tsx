@@ -1,4 +1,5 @@
 import { memo, useMemo } from "react";
+import "./chat.css";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { StaleMap } from "../../hooks/useCitationStatus";

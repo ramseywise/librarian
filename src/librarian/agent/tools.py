@@ -33,6 +33,7 @@ from pydantic import BaseModel, Field, ValidationError
 from librarian import retrieval
 from librarian.config import get_settings
 from librarian.retrieval import corpus
+from librarian.tools.codemap import client as codemap
 
 CHAT: Final = "chat"
 MCP: Final = "mcp"
@@ -63,6 +64,9 @@ class Tool:
     fn: Callable[[Any, ToolContext], str]
     surfaces: frozenset[str]
     read_only: bool = True
+    # In `librarian mcp` remote mode a tool is answered by the deployed API (`/api/tools`). The
+    # codemap tools are not: they query the Codemap API the client's own CODEMAP_API_URL names.
+    remote_proxy: bool = True
     # The parameter the telemetry line records for a call (logs/agent.jsonl `tool_calls`).
     log_arg: str = ""
 
@@ -251,6 +255,45 @@ class _McpListPages(BaseModel):
     )
 
 
+_REPO_SCOPE = "Optional repo slug to scope the search (see list_repos)"
+
+
+class _CodemapFindSymbol(BaseModel):
+    name: str = Field(description="Symbol name or substring to search for")
+    repo: str = Field(default="", description=_REPO_SCOPE)
+    limit: int = Field(default=20, description="Max results (default 20)")
+
+
+class _CodemapFileSymbols(BaseModel):
+    repo: str = Field(description="Repo slug (see list_repos)")
+    rel_path: str = Field(description="File path relative to the repo root, e.g. 'etl/manifest.py'")
+
+
+class _CodemapReferences(BaseModel):
+    symbol_or_path: str = Field(description="A symbol name or a repo-relative file path")
+    repo: str = Field(default="", description="Optional repo slug to scope the search")
+
+
+class _CodemapRepoMap(BaseModel):
+    repo: str = Field(description="Repo slug (see list_repos)")
+    limit: int = Field(default=50, description="Max files to include (default 50)")
+
+
+class _CodemapCallers(BaseModel):
+    symbol_name: str = Field(description="The called function/method name to look up")
+    repo: str = Field(default="", description="Optional repo slug to scope the search")
+
+
+class _CodemapSemantic(BaseModel):
+    query: str = Field(description="Natural-language or conceptual description of what to find")
+    repo: str = Field(default="", description="Optional repo slug to scope the search")
+    limit: int = Field(default=10, description="Max results (default 10)")
+
+
+class _CodemapNoArgs(BaseModel):
+    pass
+
+
 # --- MCP tool descriptions, as the old @mcp.tool docstrings sent them (summary only; the
 # argument text lives in the models above, where FastMCP used to lift it from "Args:"). ---
 
@@ -284,6 +327,33 @@ _MCP_BRIEFING_DOC = inspect.cleandoc("""
     Use this before starting work in a domain to load all accumulated patterns,
     decisions, and tradeoffs into context.
     """)
+
+_CM_FIND_SYMBOL_DOC = "Find function/class/method symbols by name across indexed repos."
+_CM_FILE_SYMBOLS_DOC = "List all symbols (functions/classes/methods) defined in one file."
+_CM_REFERENCES_DOC = "Find files that import a given file, or files defining a given symbol name."
+_CM_REPO_MAP_DOC = inspect.cleandoc("""
+    Return a ranked structural overview of a repo — most-referenced files first.
+
+    Mirrors Aider's repo-map: a compact, high-signal orientation view for an
+    agent starting work in an unfamiliar codebase, ranked by inbound import weight.
+    """)
+_CM_CALLERS_DOC = inspect.cleandoc("""
+    Find symbols that call a given symbol name, ranked by weight.
+
+    Complements find_references (file-level, import-based) with
+    function-level "who calls this" answers. Ambiguous callee names
+    (e.g. multiple classes defining the same method name) fan out to
+    multiple results rather than being silently dropped.
+    """)
+_CM_SEMANTIC_DOC = inspect.cleandoc("""
+    Fuzzy/conceptual symbol search using embeddings — a fallback for
+    when find_symbol's exact/substring name match misses relevant results.
+
+    Only available if the Codemap Query API was started in an environment
+    with sentence-transformers installed (uv sync --extra api --extra codemap).
+    Falls back to a clear message if unavailable — use find_symbol instead.
+    """)
+_CM_LIST_REPOS_DOC = "List all repos currently indexed by codemap, with last-indexed timestamp."
 
 _ONLY_CHAT = frozenset({CHAT})
 _ONLY_MCP = frozenset({MCP})
@@ -375,6 +445,78 @@ TOOLS: Final[tuple[Tool, ...]] = (
         fn=lambda p, _ctx: retrieval.domain_briefing(p.domain),
         surfaces=_ONLY_MCP,
         log_arg="domain",
+    ),
+    # Codemap tools: MCP and /api/tools only, never the chat agent. They answer about code in
+    # the repos the owner indexed, which the study assistant has no business reading, and the
+    # chat system prompt and evals assume the four wiki tools. Each is a GET, hence read-only.
+    Tool(
+        name="find_symbol",
+        description=_CM_FIND_SYMBOL_DOC,
+        params=_CodemapFindSymbol,
+        fn=lambda p, _ctx: codemap.find_symbol(p.name, p.repo, p.limit),
+        surfaces=_ONLY_MCP,
+        read_only=True,
+        remote_proxy=False,
+        log_arg="name",
+    ),
+    Tool(
+        name="get_file_symbols",
+        description=_CM_FILE_SYMBOLS_DOC,
+        params=_CodemapFileSymbols,
+        fn=lambda p, _ctx: codemap.get_file_symbols(p.repo, p.rel_path),
+        surfaces=_ONLY_MCP,
+        read_only=True,
+        remote_proxy=False,
+        log_arg="rel_path",
+    ),
+    Tool(
+        name="find_references",
+        description=_CM_REFERENCES_DOC,
+        params=_CodemapReferences,
+        fn=lambda p, _ctx: codemap.find_references(p.symbol_or_path, p.repo),
+        surfaces=_ONLY_MCP,
+        read_only=True,
+        remote_proxy=False,
+        log_arg="symbol_or_path",
+    ),
+    Tool(
+        name="repo_map",
+        description=_CM_REPO_MAP_DOC,
+        params=_CodemapRepoMap,
+        fn=lambda p, _ctx: codemap.repo_map(p.repo, p.limit),
+        surfaces=_ONLY_MCP,
+        read_only=True,
+        remote_proxy=False,
+        log_arg="repo",
+    ),
+    Tool(
+        name="find_callers",
+        description=_CM_CALLERS_DOC,
+        params=_CodemapCallers,
+        fn=lambda p, _ctx: codemap.find_callers(p.symbol_name, p.repo),
+        surfaces=_ONLY_MCP,
+        read_only=True,
+        remote_proxy=False,
+        log_arg="symbol_name",
+    ),
+    Tool(
+        name="semantic_find_symbol",
+        description=_CM_SEMANTIC_DOC,
+        params=_CodemapSemantic,
+        fn=lambda p, _ctx: codemap.semantic_find_symbol(p.query, p.repo, p.limit),
+        surfaces=_ONLY_MCP,
+        read_only=True,
+        remote_proxy=False,
+        log_arg="query",
+    ),
+    Tool(
+        name="list_repos",
+        description=_CM_LIST_REPOS_DOC,
+        params=_CodemapNoArgs,
+        fn=lambda _p, _ctx: codemap.list_repos(),
+        surfaces=_ONLY_MCP,
+        read_only=True,
+        remote_proxy=False,
     ),
 )
 

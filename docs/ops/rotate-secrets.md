@@ -27,3 +27,13 @@ Do one secret at a time, verify, then the next. Where the secret lives: `.env` o
 - `lb users list` still shows the users: the database was not touched.
 - A leaked **user session** is not a secret rotation: use `revoke-user.md`.
 - Never paste a secret into a ticket, chat or the shell history (`read -rs` or write the file with an editor).
+
+## Not verified
+
+- No secret has been rotated by following this page on a host.
+- What each provider's console allows: that Google lets two client secrets exist at once, that GitHub shows only one,
+  and how Resend, Anthropic and Sentry handle old keys. These have not been checked against those products.
+- The "What breaks while it changes" column. It describes behaviour read from the code (for example, that sessions are
+  random database tokens), not behaviour observed during a rotation.
+- That `docker compose up -d librarian` re-reads `.env` while a plain restart does not, on the Docker version a host
+  will run.

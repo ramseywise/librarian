@@ -45,8 +45,9 @@ PROJECT_ROOT_DIRS = {"docs", ".agents"}
 USER_SUBDIRS = {"commands", "scripts"}
 USER_TOP_FILES = {"CLAUDE.md"}
 
-# Skip these project dirs entirely — they're this repo or non-substantive
-SKIP_PROJECTS = {"librarian"}
+# Skip these project dirs entirely: this repo, non-substantive ones, and another author's
+# unlicensed docs (spell) that must not be copied into data/raw/ and compiled into the wiki.
+SKIP_PROJECTS = {"librarian", "spell"}
 
 
 def _copy_file(src: Path, dest: Path, dry_run: bool) -> bool:

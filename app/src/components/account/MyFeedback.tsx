@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { myFeedbackListSchema } from "../../schemas/account";
 import { apiJson } from "../../utils/api";
 import { deleteFeedback, type MyFeedback as Row } from "../../utils/feedback";
 
@@ -11,7 +12,7 @@ export function MyFeedback() {
 
   useEffect(() => {
     let cancelled = false;
-    apiJson<Row[]>("/api/feedback/mine")
+    apiJson(myFeedbackListSchema, "/api/feedback/mine")
       .then((r) => !cancelled && setRows(r))
       .catch((e: Error) => !cancelled && (setError(e.message), setRows([])));
     return () => {

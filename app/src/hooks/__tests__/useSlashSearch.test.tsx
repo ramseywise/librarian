@@ -34,6 +34,7 @@ describe("useSlashSearch", () => {
     ["input", <input key="x" aria-label="other" />],
     ["textarea", <textarea key="x" aria-label="other" />],
     ["select", <select key="x" aria-label="other" />],
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
     ["contenteditable", <div key="x" aria-label="other" contentEditable suppressContentEditableWarning tabIndex={0} />],
   ])("leaves the key alone while focus is in a %s", (_name, field) => {
     render(<Harness>{field}<input {...search} /></Harness>);

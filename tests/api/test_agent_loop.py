@@ -135,6 +135,96 @@ async def test_brief_is_an_uncached_system_block_after_the_prompt(
     assert len(plain.stream_calls[0]["system"]) == 1
 
 
+def _settings_with(monkeypatch: pytest.MonkeyPatch, **fields: bool | int | str) -> None:
+    # _env_file=None: a developer's .env must not decide the caps.
+    monkeypatch.setattr(agent, "get_settings", lambda: Settings(_env_file=None, **fields))
+
+
+@pytest.mark.unit
+def test_cap_cuts_and_says_how_much() -> None:
+    assert agent._cap("abc", 3) == "abc"
+    assert agent._cap("abc", 0) == "abc"  # 0 = no cap
+    cut = agent._cap("abcdef", 4)
+    assert cut.startswith("abcd\n") and "2 more characters" in cut
+
+
+@pytest.mark.unit
+async def test_default_caps_leave_ordinary_context_untouched(
+    wiki: Path, fake_anthropic: type
+) -> None:
+    brief, study = "b" * 20_000, "s" * 10_000
+    client = fake_anthropic(
+        [
+            fake_anthropic.tool_turn(("read_page", {"page_id": "chunking"})),
+            fake_anthropic.text_turn("Done."),
+        ]
+    )
+    await _collect(agent.run_agent_stream("q", client=client, brief=brief, study=study))
+    system = client.stream_calls[0]["system"]
+    assert brief in system[1]["text"] and study in system[2]["text"]
+    assert "cut:" not in system[1]["text"] + system[2]["text"]
+    (result,) = client.stream_calls[1]["messages"][-1]["content"]
+    assert "Chunk by headings." in result["content"] and "cut:" not in result["content"]
+
+
+@pytest.mark.unit
+async def test_brief_study_and_tool_results_are_capped(
+    wiki: Path, fake_anthropic: type, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _settings_with(
+        monkeypatch,
+        agent_brief_max_chars=50,
+        agent_study_max_chars=60,
+        agent_tool_result_max_chars=40,
+    )
+    client = fake_anthropic(
+        [
+            fake_anthropic.tool_turn(("read_page", {"page_id": "chunking"})),
+            fake_anthropic.text_turn("Done."),
+        ]
+    )
+    await _collect(agent.run_agent_stream("q", client=client, brief="b" * 500, study="s" * 500))
+    system = client.stream_calls[0]["system"]
+    assert "b" * 50 in system[1]["text"] and "b" * 51 not in system[1]["text"]
+    assert "s" * 60 in system[2]["text"] and "s" * 61 not in system[2]["text"]
+    assert "more characters not shown" in system[1]["text"]
+    (result,) = client.stream_calls[1]["messages"][-1]["content"]
+    assert len(result["content"]) < 120 and "more characters not shown" in result["content"]
+
+
+@pytest.mark.unit
+async def test_debug_flag_logs_exactly_what_is_sent(
+    wiki: Path, fake_anthropic: type, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from structlog.testing import capture_logs
+
+    client = fake_anthropic(
+        [
+            fake_anthropic.tool_turn(("read_page", {"page_id": "chunking"})),
+            fake_anthropic.text_turn("Done."),
+        ]
+    )
+    with capture_logs() as logs:
+        await _collect(agent.run_agent_stream("quiet", client=client))
+    assert not [e for e in logs if e["event"] == "agent.context"]  # off by default
+
+    _settings_with(monkeypatch, agent_debug_context=True)
+    client = fake_anthropic(
+        [
+            fake_anthropic.tool_turn(("read_page", {"page_id": "chunking"})),
+            fake_anthropic.text_turn("Done."),
+        ]
+    )
+    with capture_logs() as logs:
+        await _collect(agent.run_agent_stream("loud", client=client, brief="my lab"))
+    sent = [e for e in logs if e["event"] == "agent.context"]
+    assert [e["turn"] for e in sent] == [1, 2]
+    assert json.loads(sent[0]["system"]) == client.stream_calls[0]["system"]
+    assert "my lab" in sent[0]["system"]
+    assert json.loads(sent[0]["messages"])[0] == {"role": "user", "content": "loud"}
+    assert "Chunk by headings." in sent[1]["messages"]  # the tool result of turn 1
+
+
 @pytest.mark.unit
 def test_trim_history_caps_turn_count() -> None:
     history = [

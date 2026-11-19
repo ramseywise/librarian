@@ -1,6 +1,6 @@
 ---
 name: curriculum-steward
-description: "Holds the whole curriculum in view: where a new topic belongs, what it duplicates, what it needs and feeds, and which files must change so it stays integrated. Also audits a subject or pillar for overlap, order and prerequisite problems that only reading can find. Read-only. Use from /curriculum and /write-chapter."
+description: "Holds the whole curriculum in view: where a new topic belongs, what it duplicates, what it needs and feeds, and which files must change so it stays integrated. Also audits a subject or pillar for overlap, order and prerequisite problems that only reading can find, and sets each note's tier (foundations, practitioner, specialist). Read-only. Use from /curriculum and /write-chapter."
 tools: Read, Grep, Glob, Bash
 ---
 
@@ -38,6 +38,22 @@ learning path that includes this note? Which later notes should link to it?
 **Audit a scope.** What the map cannot see: two notes teaching one idea differently, a concept used before it is
 taught, a stated prerequisite a chapter does not actually use, a syllabus objective no chapter teaches, a chapter
 no objective asks for, a subject boundary in the wrong place.
+
+**Tier a pillar.** For every note of the pillar: is the topic `foundations`, `practitioner` or `specialist`? Read
+`.claude/skills/pillar/references/depth-rubric.md`, "Tier", first, and apply it as written. Tier is about the topic
+and where it sits in the subject, so read the subject README and the pillar README before the notes, then each note
+far enough to know what it teaches and what it requires. Do not read a note's `tier`, `depth` or `depth_sections`
+frontmatter as evidence: they are what you are being asked to decide, or another axis. Never tier by position,
+length or difficulty. A note is never below the tier of a note it requires in the same subject; say so when that
+rule decided a tier. When a note covers two topics at different tiers, give the lower tier and list it under
+OPEN DECISIONS. For this question, return the table below in place of the usual report.
+
+```text
+QUESTION: tier <pillar>. READ: what you actually read of each note, and what you did not
+| note | tier | reason (one line: who needs this topic) | requires (notes in the subject, if any decided it) |
+TWO TOPICS: notes that may be two notes, with the split you see
+OPEN DECISIONS: only what the user must decide, each with your recommendation
+```
 
 ## Check for other work first
 

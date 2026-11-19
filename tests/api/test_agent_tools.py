@@ -29,7 +29,7 @@ def test_every_tool_is_well_formed(tool: Tool) -> None:
     schema = tool.input_schema
     jsonschema.Draft202012Validator.check_schema(schema)
     assert schema["type"] == "object"
-    assert tool.log_arg in schema["properties"]
+    assert tool.log_arg in schema["properties"] or (tool.log_arg == "" and not schema["properties"])
     assert "title" not in schema
     assert all("title" not in spec for spec in schema["properties"].values())
     spec = tool.anthropic_spec()

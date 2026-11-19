@@ -97,3 +97,11 @@ a new key works; `GET /api/admin/audit` shows `key_revoke` and `key_create`.
 
 Fix every surprise in the runbook it belongs to, and note the change in the results row. Then change the
 `docs/status.md` row from "built" to "drilled" with the date and the staging host, and name the scenarios not run.
+
+## Not verified
+
+- The whole page. No scenario has been run, which the page itself says. The expected alerts are what
+  `deploy/prometheus/alerts.yml` says should fire, not what fired.
+- That the API reconnects to Postgres without a restart after it comes back (scenario 1), and that the master process
+  restarts a killed worker (scenario 2). Both are expectations to be confirmed during the drill.
+- That the Prometheus profile starts at all. It has never been started (`docs/status.md`).

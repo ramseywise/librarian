@@ -18,7 +18,7 @@
   background: var(--surface);
   color: var(--text);
 }
-.account-error { color: var(--danger, #c62828); }
+.account-error { color: var(--danger); }
 .account-hint { color: var(--text-soft); font-size: var(--fs-sm); }
 .account-token summary { cursor: pointer; color: var(--text-secondary); }
 .account-token .account-form { margin-top: var(--space-3); }

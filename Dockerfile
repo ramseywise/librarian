@@ -27,17 +27,24 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # Dependencies from the lockfile, with CPU-only torch: the locked linux torch pulls ~3 GB of CUDA
-# wheels a single-user host cannot use. Torch is installed from the CPU index at the locked
-# version; everything else (minus torch, triton and the nvidia-* wheels) comes from uv.lock.
+# wheels a single-user host cannot use. Everything except torch, triton and the nvidia-*/cuda-*
+# wheels comes from uv.lock with its hashes and is installed with --require-hashes, so a swapped
+# file on the index fails the build. Torch comes from the CPU index; its wheel is a different file
+# from the PyPI one in uv.lock, so its hashes are pinned in docker/requirements-torch-cpu.txt, and
+# the build fails if that file names a different version than uv.lock.
 # A slow link with many parallel downloads makes uv's default 30 s timeout restart big wheels forever.
 ENV VIRTUAL_ENV=/app/.venv PATH="/app/.venv/bin:$PATH" UV_HTTP_TIMEOUT=300 UV_CONCURRENT_DOWNLOADS=4
 COPY pyproject.toml uv.lock ./
+COPY docker/requirements-torch-cpu.txt /tmp/req-torch-cpu.txt
 RUN --mount=type=cache,target=/root/.cache/uv uv venv /app/.venv \
-    && uv export --frozen --extra api --extra observability --no-dev --no-emit-project --no-hashes -o /tmp/req.txt \
-    && TORCH_VERSION=$(sed -n 's/^torch==\([0-9.]*\).*/\1/p' /tmp/req.txt) \
-    && grep -Ev '^(torch|triton|nvidia-|cuda-)' /tmp/req.txt > /tmp/req-nocuda.txt \
-    && uv pip install --no-deps -r /tmp/req-nocuda.txt \
-    && uv pip install --no-deps --index-url https://download.pytorch.org/whl/cpu "torch==${TORCH_VERSION}"
+    && uv export --frozen --extra api --extra observability --no-dev --no-emit-project -o /tmp/req.txt \
+    && LOCK_TORCH=$(sed -n 's/^torch==\([0-9.]*\).*/\1/p' /tmp/req.txt) \
+    && PIN_TORCH=$(sed -n 's/^torch==\([0-9.]*\)+cpu.*/\1/p' /tmp/req-torch-cpu.txt) \
+    && [ -n "${LOCK_TORCH}" ] && [ "${LOCK_TORCH}" = "${PIN_TORCH}" ] \
+        || { echo "torch in uv.lock (${LOCK_TORCH}) and docker/requirements-torch-cpu.txt (${PIN_TORCH}) differ" >&2; exit 1; } \
+    && awk '/^[^ #]/ { skip = ($0 ~ /^(torch|triton|nvidia-|cuda-)/) } !skip' /tmp/req.txt > /tmp/req-nocuda.txt \
+    && uv pip install --no-deps --require-hashes -r /tmp/req-nocuda.txt \
+    && uv pip install --no-deps --require-hashes --index-url https://download.pytorch.org/whl/cpu -r /tmp/req-torch-cpu.txt
 
 # The embedding model, so the container does not download it on first start (readiness waits for it).
 # Before `COPY src`, so a code change keeps this layer. A download that stalls is killed after

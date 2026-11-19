@@ -61,3 +61,14 @@ Verify: `lb release list` marks the good one `*` and `P`; the `X-Librarian-Relea
 the bad release got wrong; `/readyz` is 200.
 
 If `pin` fails (name not in the bucket and not on disk): `stale-search.md`, last section.
+
+## Not verified
+
+- Neither rollback has been run on a host. The upgrade script's automatic rollback is tested against a fake `docker`
+  (`tests/ops/test_wrapper.py`), which proves its control flow only.
+- That the previous image starts on a database the new release has migrated. This is the central claim of the "Image"
+  section, and it depends on the expand-only migration rule being followed in every release. No test starts an old
+  image on a migrated database.
+- The content rollback: `release pin` followed by `/admin/reload` has not been run against a real bucket or a live
+  host, and the content release workflow has never run.
+- The fallback command for when the backup step fails (`docker compose pull` then `up -d --no-build`) was read, not run.

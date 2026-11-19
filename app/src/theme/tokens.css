@@ -14,7 +14,6 @@
   --surface-pager: #151515;
   --surface-field: #1a1a1a;  /* chat textarea, assistant bubble */
   --surface-active: #2a2a2a; /* pressed segment */
-  --surface-tab: #1f1f1f;
   --surface-selected: #1f2a36;
   --surface-user-msg: #1a1a2e;
 
@@ -79,6 +78,27 @@
   --code-bg: #1d1d1d;
   --pre-bg: #141414;
 
+  /* Chat markdown and citation chips */
+  --chat-link: #8fb4e8;
+  --chat-pre-bg: #0b0b0b;
+  --chat-pre-ink: #d6d6d6;
+  --chat-code-bg: #232323;
+  --chat-code-ink: #e0c08a;
+  --cite-border: #2f4f7f;
+  --cite-bg: #16243a;
+  --cite-ink: #8fb4e8;
+  --cite-warn-border: #7a6214;
+  --cite-warn-bg: #2a2310;
+  --cite-warn-ink: #c9a227;
+
+  /* One-offs: map card titles, the tint behind an accent button, ink on a filled control, and the
+     grounds behind lesson images and the fullscreen slide stage (the same in both themes). */
+  --node-title: #e8e8e8;
+  --accent-wash: #2196f322;
+  --on-fill: #ffffff;
+  --media-bg: #ffffff;
+  --stage-bg: #000000;
+
   /* Graph edges */
   --edge-wikilink: #666;
   --edge-wikilink-label: #aaa;
@@ -121,6 +141,27 @@
   --fs-base: 13px;
   --fs-lg: 14px;
   --fs-xl: 15px;
+  /* Larger sizes, for titles and display numbers; 17px is --fs-reading. */
+  --fs-nav: 12.5px;
+  --fs-table: 13.5px;
+  --fs-2xl: 16px;
+  --fs-3xl: 18px;
+  --fs-4xl: 19px;
+  --fs-5xl: 20px;
+  --fs-6xl: 21px;
+  --fs-7xl: 26px;
+  --fs-8xl: 28px;
+  --fs-9xl: 30px;
+
+  /* Motion: every transition and animation takes its time from here, so one override can stop them all. */
+  --dur-fast: 0.15s;
+  --dur-quick: 0.16s;
+  --dur-base: 0.2s;
+  --dur-fade: 0.25s;
+  --dur-map: 0.26s;
+  --dur-slow: 0.3s;
+  --dur-hop-in: 0.5s;
+  --dur-glide: 0.6s;
 
   /* Layout */
   --header-h: 40px;
@@ -128,7 +169,6 @@
   --sidebar-w: 240px;
   --shadow-overlay: 0 8px 40px rgba(0, 0, 0, 0.7);
   --z-panel: 10;
-  --z-detail: 20;
   --z-drawer: 30;
   --z-overlay: 40;
 }
@@ -145,7 +185,6 @@
   --surface-pager: #f2f1ec;
   --surface-field: #efeee9;
   --surface-active: #e2e0d9;
-  --surface-tab: #e9e7e1;
   --surface-selected: #dbe8f5;
   --surface-user-msg: #e7e8f7;
 
@@ -205,6 +244,25 @@
   --code-bg: #eceae4;
   --pre-bg: #f2f1ec;
 
+  /* Chat markdown and citation chips */
+  --chat-link: var(--link);
+  --chat-pre-bg: var(--pre-bg);
+  --chat-pre-ink: var(--text-body);
+  --chat-code-bg: var(--code-bg);
+  --chat-code-ink: #6f4a00;
+  --cite-border: #9fbbe0;
+  --cite-bg: #e4edf8;
+  --cite-ink: #0a4f94;
+  --cite-warn-border: #b89a3a;
+  --cite-warn-bg: #f7efd2;
+  --cite-warn-ink: #6f5200;
+
+  --node-title: var(--text-strong);
+  --accent-wash: #2196f322;
+  --on-fill: #ffffff;
+  --media-bg: #ffffff;
+  --stage-bg: #000000;
+
   /* Graph edges */
   --edge-wikilink: #9a988f;
   --edge-wikilink-label: #4d4d4d;
@@ -214,6 +272,20 @@
   --minimap-mask: rgba(240, 239, 234, 0.7);
 
   --shadow-overlay: 0 8px 40px rgba(0, 0, 0, 0.18);
+}
+
+/* Reduced motion: every duration token drops to zero, so no rule needs its own override. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0s;
+    --dur-quick: 0s;
+    --dur-base: 0s;
+    --dur-fade: 0s;
+    --dur-map: 0s;
+    --dur-slow: 0s;
+    --dur-hop-in: 0s;
+    --dur-glide: 0s;
+  }
 }
 
 /* Breakpoints (CSS custom properties can't be used in media queries, so they're

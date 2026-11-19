@@ -50,6 +50,26 @@ describe("MapBar", () => {
     expect(screen.queryByText("the filters")).toBeNull();
   });
 
+  it("under the chat lists the filters and connections inline, with layout in a popover", () => {
+    const sector = { level: "sector", grouping: "wiki", sector: "rag", cap: 15 } as const;
+    render(
+      <MapBar
+        {...base}
+        controlsOnly
+        view={sector}
+        filters={<p>the filters</p>}
+        connections={<p>the connections</p>}
+        map={<p>the layout</p>}
+      />,
+    );
+    expect(screen.getByRole("region", { name: "Filters" })).toHaveTextContent("the filters");
+    expect(screen.getByText("the connections")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Filters" })).toBeNull();
+    expect(screen.queryByRole("link", { name: "‹ Back" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Layout" }));
+    expect(screen.getByText("the layout")).toBeInTheDocument();
+  });
+
   it("offers the Map popover on focused levels only when it has controls", () => {
     const sector = { level: "sector", grouping: "wiki", sector: "rag", cap: 15 } as const;
     const { rerender } = render(<MapBar {...base} view={sector} />);

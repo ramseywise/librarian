@@ -17,9 +17,11 @@ from typing import Any
 
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.concurrency import run_in_threadpool
+from sqlalchemy.exc import SQLAlchemyError
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from librarian import accounts, release, retrieval
+from librarian.accounts import rate_limits
 from librarian.api.security import authenticate
 from librarian.config import get_settings
 from librarian.db import get_engine
@@ -34,6 +36,9 @@ TIMESTAMP_HEADER = "X-Librarian-Timestamp"
 SIGNATURE_HEADER = "X-Librarian-Signature"
 # A signed request older (or newer) than this is refused, so a captured one can't be replayed later.
 SIGNATURE_MAX_SKEW_S = 300
+# A signature is accepted once. A captured request is valid from (its timestamp - skew) to
+# (its timestamp + skew), so remembering it for twice the skew (plus a second) covers all of it.
+_SEEN_WINDOW_S = 2 * SIGNATURE_MAX_SKEW_S + 1
 # The header reads a symlink; a request burst shares one read.
 _NAME_TTL_S = 2.0
 _name_cache: tuple[float, str | None] = (0.0, None)
@@ -55,6 +60,19 @@ def _signature_ok(request: Request, body: bytes, secret: str) -> bool:
     if skew > SIGNATURE_MAX_SKEW_S:
         return False
     return hmac.compare_digest(given, sign(secret, ts, body))
+
+
+def _claim_signature(signature: str) -> bool:
+    """Record a verified signature as used: True the first time, False for any replay.
+
+    The record is a counter row in `accounts.rate_limits` (key `release-sig:<digest>`), so every
+    worker and replica shares it with no new table. Only signatures that already verified are
+    recorded, so an unauthenticated caller cannot grow the table. Raises `SQLAlchemyError` when
+    the database cannot be reached; the caller refuses the request then, because without the
+    record a replay cannot be told from a first use.
+    """
+    key = "release-sig:" + hashlib.sha256(signature.encode()).hexdigest()
+    return rate_limits.hit(get_engine(), key, _SEEN_WINDOW_S).hits == 1
 
 
 def served_release() -> str | None:
@@ -101,7 +119,8 @@ def get_release() -> dict[str, Any]:
 async def admin_reload(request: Request) -> dict[str, Any]:
     """Pull the latest (or pinned) release and swap the index in. Same as SIGHUP without a release.
 
-    A public path: the caller is a webhook with a valid signature, or a signed-in admin. Requests
+    A public path: the caller is a webhook with a valid, fresh, never-before-used signature, or a
+    signed-in admin. A signature works once (see `_claim_signature`); send a new timestamp to retry. Requests
     already running finish on the old content; later ones see the new.
     """
     secret = get_settings().release_webhook_secret
@@ -110,6 +129,16 @@ async def admin_reload(request: Request) -> dict[str, Any]:
         if not _signature_ok(request, await request.body(), secret):
             log.warning("release.webhook_refused", client=request.client and request.client.host)
             raise HTTPException(status_code=401, detail="Bad or stale signature.")
+        try:
+            first_use = await run_in_threadpool(
+                _claim_signature, request.headers.get(SIGNATURE_HEADER, "")
+            )
+        except SQLAlchemyError as e:
+            log.error("release.replay_check_unavailable", error=str(e), fail="closed")
+            raise HTTPException(status_code=503, detail="Reload is unavailable right now.") from e
+        if not first_use:
+            log.warning("release.webhook_replayed", client=request.client and request.client.host)
+            raise HTTPException(status_code=401, detail="Signature already used.")
     else:
         user = await run_in_threadpool(authenticate, request)
         if not user.is_admin:
@@ -119,7 +148,7 @@ async def admin_reload(request: Request) -> dict[str, Any]:
         result = await run_in_threadpool(_pull_and_swap)
     except release.ReleaseError as e:
         log.error("release.reload_failed", error=str(e))
-        raise HTTPException(status_code=502, detail=f"Release not installed: {e}") from e
+        raise HTTPException(status_code=502, detail="Release not installed.") from e
     accounts.audit(get_engine(), "admin_reload", user_id=user_id, target=served_release())
     return result
 

@@ -1,3 +1,4 @@
+import { ResourceNotice } from "../ResourceNotice";
 import { useMemo, useState } from "react";
 import { useCourseProgress } from "../../hooks/useCourseProgress";
 import { usePracticeDrills } from "../../hooks/useCourses";
@@ -19,7 +20,7 @@ export function PracticeView({ onOpenLesson, onOpenConcept }: Props) {
   const { data: drills, error, retry } = usePracticeDrills();
   const [track, setTrack] = useState("");
   const [difficulty, setDifficulty] = useState("");
-  const { done } = useCourseProgress();
+  const { done, error: progressError, retry: retryProgress } = useCourseProgress();
   useDocumentTitle(pageTitle("Practice"));
 
   const tracks = useMemo(() => [...new Set((drills ?? []).map((d) => d.drill.track))].sort(), [drills]);
@@ -36,6 +37,7 @@ export function PracticeView({ onOpenLesson, onOpenConcept }: Props) {
           Timed drills, by language. Attempt cold, then open the solution.
         </p>
         <FlashcardsDue />
+        {progressError && <ResourceNotice what="Your progress" error={progressError} onRetry={retryProgress} />}
         {error && (
           <div className="practice-error">
             Could not load drills: {error}{" "}

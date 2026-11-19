@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   ApiError,
@@ -80,10 +81,23 @@ describe("api", () => {
 
   it("raises the server's detail and posts JSON", async () => {
     upstream.mockResolvedValueOnce(new Response(JSON.stringify({ detail: "nope" }), { status: 422 }));
-    await expect(apiJson("/api/x")).rejects.toEqual(new ApiError(422, "nope"));
+    await expect(apiJson(z.unknown(), "/api/x")).rejects.toEqual(new ApiError(422, "nope"));
     upstream.mockResolvedValueOnce(new Response(JSON.stringify({ ok: 1 }), { status: 200 }));
-    expect(await postJson("/api/y", { a: 1 })).toEqual({ ok: 1 });
+    expect(await postJson(z.object({ ok: z.number() }), "/api/y", { a: 1 })).toEqual({ ok: 1 });
     expect(sent(1).body).toBe('{"a":1}');
     expect(new Headers(sent(1).headers).get("Content-Type")).toBe("application/json");
+  });
+
+  it("turns a reply that fails the schema into an ApiError, not a crash", async () => {
+    upstream.mockResolvedValueOnce(new Response(JSON.stringify({ ok: "yes" }), { status: 200 }));
+    const err = await apiJson(z.object({ ok: z.number() }), "/api/z").catch((e: unknown) => e);
+    expect(err).toBeInstanceOf(ApiError);
+    expect((err as ApiError).status).toBe(200);
+    expect((err as ApiError).message).toMatch(/^Unexpected reply from the server \(ok: /);
+  });
+
+  it("reports a reply that is not JSON the same way", async () => {
+    upstream.mockResolvedValueOnce(new Response("<html>", { status: 200 }));
+    await expect(apiJson(z.unknown(), "/api/z")).rejects.toBeInstanceOf(ApiError);
   });
 });

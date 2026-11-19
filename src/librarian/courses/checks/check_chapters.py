@@ -19,7 +19,11 @@ Metadata rules, which count as shortfalls and apply everywhere the chapter shape
   ("Huyen, AI Engineering (O'Reilly, 2025), ch. 6"), is a plain string, and names no local PDF;
 - no `~/.claude/`, `~/workspace/` or a macOS home path anywhere in the file, code fences and frontmatter included;
 - the checklist heading is exactly `## Interview checklist`;
-- every arXiv id and DOI the body links is in `sources` (only for lessons that have `sources`).
+- every arXiv id and DOI the body links is in `sources` (only for lessons that have `sources`);
+- `tier`, when present, is foundations, practitioner or specialist;
+- `depth`, when present, is intro, core or deep, and each `depth_sections` entry names a heading of the
+  lesson exactly and changes the depth that section would otherwise have: the lesson's, or that of a
+  marked section above it (`librarian.courses.depth`).
 
 --metadata-only applies those rules and skips the chapter shape, for programming/ modules the layout exempts.
 
@@ -41,6 +45,9 @@ from collections.abc import Sequence
 from fnmatch import fnmatch
 from pathlib import Path
 
+import yaml
+
+from librarian.courses import depth
 from librarian.courses.checks.common import (
     default_root,
     is_private,
@@ -143,6 +150,17 @@ def paper_ids(text: str) -> set[str]:
     }
 
 
+def depth_problems(front: str, headings: Sequence[depth.Heading]) -> list[str]:
+    """The tier and depth fields of a lesson's frontmatter, checked against its headings in order."""
+    if "depth" not in front and "tier" not in front:
+        return []
+    try:
+        meta = yaml.safe_load(front)
+    except yaml.YAMLError:
+        return ["frontmatter is not valid YAML, so depth cannot be read"]
+    return depth.meta_problems(meta, headings) if isinstance(meta, dict) else []
+
+
 def metadata_problems(
     text: str, note: Path, root: Path | None = None, require_origin: bool = False
 ) -> list[str]:
@@ -159,11 +177,10 @@ def metadata_problems(
     for match in sorted(set(PERSONAL_PATH.findall(text))):
         problems.append(f"personal path {match} in a tracked note")
     prose = FENCE.sub("", body)
-    variants = [
-        h
-        for h in re.findall(r"^##+ +(.+?)\s*$", prose, re.M)
-        if re.search(r"interview", h, re.I) and h != CHECKLIST_HEADING
-    ]
+    leveled = [(len(m[0]), m[1]) for m in re.findall(r"^(##+) +(.+?)\s*$", prose, re.M)]
+    problems += depth_problems(front, leveled)
+    headings = [text for _, text in leveled]
+    variants = [h for h in headings if re.search(r"interview", h, re.I) and h != CHECKLIST_HEADING]
     problems += [f"heading '{h}' must be '## {CHECKLIST_HEADING}'" for h in variants]
     if re.search(rf"^###+ +{CHECKLIST_HEADING}\s*$", prose, re.M):
         problems.append(f"'{CHECKLIST_HEADING}' must be an H2")

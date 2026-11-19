@@ -278,3 +278,22 @@ def test_users_and_keys_cli(
     assert cli.main(["keys", "revoke", key_id]) == 0
     assert cli.main(["keys", "revoke", key_id]) == 1
     assert accounts.resolve_key(get_engine(), key) is None
+
+
+def test_keys_revoke_by_whole_key_never_records_the_secret(
+    capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from librarian.accounts import audit_log
+    from librarian.accounts import cli as accounts_cli
+
+    monkeypatch.setattr(accounts_cli, "configure_logging", lambda: None)
+    accounts.add_user(get_engine(), "ada@example.com")
+    info, key = accounts.create_key(get_engine(), "ada@example.com")
+    assert cli.main(["keys", "revoke", key]) == 0  # the old form still works
+    out = capsys.readouterr().out
+    assert key not in out and info.id in out
+    assert cli.main(["keys", "revoke", key]) == 1
+    assert key not in capsys.readouterr().err
+    targets = [e.target for e in audit_log.recent(get_engine())]
+    assert info.id in targets and key not in targets
+    assert accounts.resolve_key(get_engine(), key) is None

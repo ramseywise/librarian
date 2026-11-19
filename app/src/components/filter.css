@@ -1,0 +1,126 @@
+/* Map filters and controls: the chips, curriculum tree and edge toggles that sit in popovers on the map bar. */
+
+.side-section { border-top: 1px solid var(--border); padding-top: var(--space-3); }
+.side-section > summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: 0;
+}
+.side-section > summary::-webkit-details-marker { display: none; }
+.side-section > summary::before { content: "▸"; font-size: var(--fs-2xs); }
+.side-section[open] > summary::before { content: "▾"; }
+.side-section-body { display: flex; flex-direction: column; gap: var(--space-2); margin-top: var(--space-3); }
+.side-sublabel { margin-top: var(--space-2); margin-bottom: 0; }
+.side-chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.side-curriculum { display: flex; flex-direction: column; gap: var(--space-2); }
+.side-search {
+  width: 100%;
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--fs-sm);
+  font-family: inherit;
+  color: var(--text);
+  background: var(--surface-field);
+  border: 1px solid var(--border-strong);
+  border-radius: 5px;
+}
+.side-empty { font-size: var(--fs-sm); color: var(--text-faint); }
+.side-more {
+  background: none; border: none; padding: 2px var(--space-2); cursor: pointer;
+  font-size: var(--fs-sm); color: var(--text-muted);
+}
+.side-more:hover { color: var(--text); }
+/* React Flow's panels are absolutely placed on its canvas; this one sits in the column. */
+.side-minimap .react-flow__panel { position: static; margin: 0; transform: none; }
+.side-minimap .graph-minimap { background: var(--surface); border: 1px solid var(--border-strong); border-radius: 5px; overflow: hidden; }
+
+.graph-edge-panel { display: flex; flex-direction: column; gap: var(--space-2); }
+.edge-row { display: flex; align-items: center; cursor: pointer; }
+.edge-label { font-size: var(--fs-md); margin-left: var(--space-2); }
+.edge-hint { font-size: var(--fs-xs); color: var(--text-muted); margin-left: var(--space-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.side-sub > summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: var(--space-1); }
+.side-sub > summary::-webkit-details-marker { display: none; }
+.side-sub > summary::before { content: "▸"; font-size: var(--fs-2xs); }
+.side-sub[open] > summary::before { content: "▾"; }
+.side-sub > .cur-chips, .side-sub > .side-search { margin-top: var(--space-2); }
+
+.graph-layout-panel { margin-top: var(--space-3); }
+
+.cur-tree, .cur-modules { list-style: none; margin: 0; padding: 0; }
+.cur-modules { margin-left: var(--space-6); }
+.cur-row { display: flex; align-items: center; gap: var(--space-1); }
+.cur-toggle, .cur-action {
+  flex: none;
+  width: 20px;
+  background: transparent;
+  border: none;
+  padding: 2px 0;
+  text-align: center;
+  text-decoration: none;
+  font-size: var(--fs-sm);
+  font-family: inherit;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.cur-toggle:hover, .cur-action:hover { color: var(--text); }
+.cur-filter {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 2px var(--space-2);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  font-size: var(--fs-sm);
+  font-family: inherit;
+  text-align: left;
+  color: var(--text-ghost);
+  cursor: pointer;
+}
+.cur-filter:hover:not(:disabled) { background: var(--surface-active); }
+.cur-filter:disabled { color: var(--text-faint); opacity: 0.6; cursor: not-allowed; }
+.cur-dot { flex: none; width: 8px; height: 8px; border-radius: 50%; }
+.cur-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cur-count { flex: none; color: var(--text-faint); font-variant-numeric: tabular-nums; }
+.cur-chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+/* No ▸ toggle on this row: indent past where one would be. */
+.cur-outside { margin-top: var(--space-2); padding-left: calc(20px + var(--space-1)); }
+.chip {
+  padding: 3px var(--space-3);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid var(--border-emphasis);
+  color: var(--text-ghost);
+}
+.chip[aria-pressed="true"] { background: var(--border-strong); color: var(--text); }
+.chip-group {
+  display: inline-flex; align-items: center; border-radius: var(--radius-pill); overflow: hidden;
+  background: transparent; border: 1px solid var(--border-strong);
+}
+/* --c is the domain colour, set inline by the chip. */
+.chip-group--active { background: color-mix(in srgb, var(--c) 13.3%, transparent); border-color: var(--c); }
+.chip-part {
+  background: transparent;
+  border: none;
+  font-size: var(--fs-sm);
+  font-family: inherit;
+  cursor: pointer;
+  padding: 3px var(--space-3);
+  color: var(--text-ghost);
+}
+.chip-group--active .chip-part { color: var(--c); }
+.chip-part--with-brief { padding: 3px var(--space-1) 3px var(--space-3); }
+.chip-brief {
+  font-size: var(--fs-2xs);
+  padding: 2px var(--space-2);
+  margin: 0 3px 0 0;
+  border-radius: var(--radius-xs);
+  color: var(--text-muted);
+  background: color-mix(in srgb, var(--c) 20%, transparent);
+}

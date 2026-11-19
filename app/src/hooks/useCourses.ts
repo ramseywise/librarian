@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
-import type { Course, LabsList, PracticeDrill, StudyProgress } from "../components/courses/types";
-import { apiFetch } from "../utils/api";
+import type { z } from "zod";
+import { coursesSchema, labsListSchema, practiceDrillsSchema, studyProgressSchema } from "../schemas/courses";
+import { apiFetch, parseJson } from "../utils/api";
+import { errorText, type Resource as ResourceState } from "./resource";
 
 interface Resource<T> {
   data: T | null;
@@ -11,13 +13,14 @@ interface Resource<T> {
  * A GET endpoint fetched once per page load and shared by every component that asks.
  * A failed fetch is forgotten so `retry` (or the next mount) tries again.
  */
-function createResource<T>(url: string) {
+function createResource<S extends z.ZodType>(url: string, schema: S) {
+  type T = z.output<S>;
   const res: Resource<T> = { data: null, promise: null };
 
   function load(force = false): Promise<T> {
     if (res.promise && !force) return res.promise;
     const p = apiFetch(url)
-      .then((r) => (r.ok ? (r.json() as Promise<T>) : Promise.reject(new Error(`HTTP ${r.status}`))))
+      .then((r) => (r.ok ? parseJson(r, schema) : Promise.reject(new Error(`HTTP ${r.status}`))))
       .then(
         (data) => {
           if (res.promise === p) res.data = data;
@@ -41,7 +44,7 @@ function createResource<T>(url: string) {
    * `revalidate`: show the cached copy at once but refetch on mount — for payloads that
    * change outside the app between visits (the drill log behind /api/courses/practice).
    */
-  function useResource({ revalidate = false } = {}) {
+  function useResource({ revalidate = false } = {}): ResourceState<T> {
     const [state, setState] = useState<{ data: T | null; error: string | null }>(() => ({ data: res.data, error: null }));
     const [attempt, setAttempt] = useState(0);
 
@@ -52,7 +55,7 @@ function createResource<T>(url: string) {
         (e: unknown) => live && setState((s) => ({
           // Keep showing a cached copy if a background refetch fails.
           data: s.data,
-          error: s.data ? null : e instanceof Error ? e.message : String(e),
+          error: s.data ? null : errorText(e),
         })),
       );
       return () => { live = false; };
@@ -69,10 +72,10 @@ function createResource<T>(url: string) {
   return { useResource, reset };
 }
 
-const courses = createResource<Course[]>("/api/courses");
-const practice = createResource<PracticeDrill[]>("/api/courses/practice");
-const labs = createResource<LabsList>("/api/courses/labs");
-const studyProgress = createResource<StudyProgress>("/api/courses/study-progress");
+const courses = createResource("/api/courses", coursesSchema);
+const practice = createResource("/api/courses/practice", practiceDrillsSchema);
+const labs = createResource("/api/courses/labs", labsListSchema);
+const studyProgress = createResource("/api/courses/study-progress", studyProgressSchema);
 
 /** The course catalog (~290 KB), fetched once per page load. */
 export const useCourses = () => courses.useResource();

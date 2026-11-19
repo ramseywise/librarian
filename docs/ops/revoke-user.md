@@ -45,3 +45,12 @@ curl -s -o /dev/null -w '%{http_code}\n' -H "Authorization: Bearer <their old ke
 Then the audit trail: `curl -s -H "Authorization: Bearer <admin key>" "https://<domain>/api/admin/audit?limit=50"`
 must show `user_disable` with your admin as actor and the target email. Review earlier events for the same account
 (`login`, `key_create`, `promote`) to see what they did before. Their chat spend for the day is under `/api/admin/users`.
+
+## Not verified
+
+- The commands have not been run on a host. The disable logic itself is covered by tests in `tests/api/test_auth.py`,
+  but only on SQLite; `docs/status.md` notes the Postgres path was not run.
+- The `POST /api/admin/users/<email>/disable` form and the audit entries (`user_disable`, `key_create`, `promote`) in
+  the Verify section were read against the code, not exercised on a running server.
+- That a held cookie or key is refused "on the next request" with a second worker running. The workers test described in
+  `docs/status.md` checks shared attempts and spend, not disabling a user.

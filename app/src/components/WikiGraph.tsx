@@ -1,25 +1,29 @@
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   ReactFlow,
   Background,
   Controls,
-  MiniMap,
   useNodesState,
+  useNodesInitialized,
   useReactFlow,
   ReactFlowProvider,
   BackgroundVariant,
-  type FitViewOptions,
-  type Node,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
 import { Atlas, type AtlasPageInfo } from "./atlas/Atlas";
+import { ClusterInset } from "./ClusterInset";
+import { HopField } from "./HopField";
 import { MapBar } from "./MapBar";
 import { MapSearch } from "./MapSearch";
 import { WikiNode, type WikiFlowNode } from "./WikiNode";
-import { EdgeTogglePanel } from "./EdgeTogglePanel";
+import { NodeCardContext, type NodeCard } from "./nodeCard";
 import { FiltersPanel } from "./TagFilterPanel";
-import { LayoutSwitcher } from "./LayoutSwitcher";
+import { MapControls } from "./MapControls";
+import { EdgeTogglePanel } from "./EdgeTogglePanel";
+import { fitPadding, fitToCanvasShape, layoutClusterField, positionsOf } from "./wikiGraphLayout";
+import { ResourceNotice } from "./ResourceNotice";
 import { useCurriculum } from "../hooks/useCurriculum";
 import { useGlossary } from "../hooks/useGlossary";
 import { useHashRoute } from "../hooks/useHashRoute";
@@ -27,6 +31,8 @@ import { useWikiData } from "../hooks/useWikiData";
 import { sectorIdOf, sectorsOf } from "../utils/atlas";
 import { facetPending, facetsOf, isModuleFacet, modulesOf, withCourseGroups } from "../utils/curriculum";
 import { searchMap } from "../utils/glossary";
+import { clusterTree, depthsOf, layoutClusters, skeletonOf, withSideHandles } from "../utils/clusterLayout";
+import { growDir, hopsFrom } from "../utils/hopField";
 import { applyDagreLayout, declutter, placeMissingNodes, type XY } from "../utils/layout";
 import {
   applyView,
@@ -37,6 +43,7 @@ import {
   moduleEdges,
   neighbours,
   pageNeighbourhood,
+  relatedGroups,
   renderIds as computeRenderIds,
   visibleEdges,
   type ViewState,
@@ -56,23 +63,38 @@ import {
 } from "../utils/mapRoute";
 import { useTheme } from "../hooks/useTheme";
 import { domainColor } from "../theme/domains";
+import "./graph.css";
+import "./filter.css";
 import "../theme/atlas.css";
 import type { EdgeVisibility, LayoutMode, SelectedNode, WikiNodeData } from "../types";
 
 const NODE_TYPES = { wikiNode: WikiNode };
 const NO_NODES: WikiFlowNode[] = [];
 const NO_IDS = new Set<string>();
+const NO_CITED = new Set<string>();
 /** At or past this many pages in the filter, a global view carries little: the atlas is the way in. */
 const ALL_NODES_LIMIT = 1000;
-const MAX_STRETCH = 2.2;
 const SEMANTIC_DELAY_MS = 1500;
 const FIRST_NODE_MARK = "graph:first-node";
+/** Flow units kept above a page's level for the bar over the canvas; it fits at about half zoom. */
+/** A little longer than the `.is-moving` transition in graph.css. */
+const MOVE_MS = 650;
 
 interface WikiGraphProps {
+  /** The slot under the chat, for the clusters in view and the map's controls. Without one they sit in the map's corner. */
+  dock?: HTMLElement | null;
   highlightedPages?: Set<string>;
   /** Wiki page to pan/zoom to — set when arriving from a course lesson's concept link. */
   focusPage?: string | null;
   onNodeSelect?: (node: SelectedNode | null) => void;
+  /** The selected page: its node is drawn as an open card. */
+  selectedId?: string | null;
+  /** The question the last chat answer was for, named on the card of a page it cited. */
+  lastQuery?: string;
+  /** A tag on an open card toggles its filter; `activePageTags` are the ones switched on. */
+  onTagClick?: (tag: string) => void;
+  activePageTags?: Set<string>;
+  onOpenLesson?: (lessonId: string) => void;
   /** Called once `focusPage` has been applied (node found, view fitted, node selected). */
   onFocusApplied?: () => void;
   onBrief?: (domain: string) => void;
@@ -80,47 +102,17 @@ interface WikiGraphProps {
   onActiveTagsChange: (tags: Set<string>) => void;
 }
 
-/** Fit padding that clears the status pill and level bar over the top of the canvas. */
-function fitPadding(padding: number): FitViewOptions["padding"] {
-  return { top: "110px", right: padding, bottom: padding, left: padding };
-}
-
-/**
- * A subset of a semantic layout keeps its wide shape, which leaves a nearly square canvas half
- * empty and cards small. Stretch it vertically: distances between pages were never exact, and
- * the same subset always gets the same shape.
- */
-function fitToCanvasShape(positions: Record<string, XY>, ids: Set<string>): Record<string, XY> {
-  let minY = Infinity;
-  let maxY = -Infinity;
-  let minX = Infinity;
-  let maxX = -Infinity;
-  for (const id of ids) {
-    const p = positions[id];
-    if (!p) continue;
-    minX = Math.min(minX, p.x);
-    maxX = Math.max(maxX, p.x);
-    minY = Math.min(minY, p.y);
-    maxY = Math.max(maxY, p.y);
-  }
-  const height = maxY - minY;
-  if (!(height > 0)) return positions;
-  const stretch = Math.min(MAX_STRETCH, Math.max(1, (maxX - minX) / height));
-  if (stretch === 1) return positions;
-  const out: Record<string, XY> = {};
-  for (const [id, p] of Object.entries(positions)) out[id] = { x: p.x, y: minY + (p.y - minY) * stretch };
-  return out;
-}
-
-function positionsOf(nodes: Node[]): Record<string, XY> {
-  return Object.fromEntries(nodes.map((n) => [n.id, n.position]));
-}
-
 function WikiGraphInner({
   highlightedPages,
   focusPage,
   onNodeSelect,
+  selectedId = null,
+  lastQuery = "",
+  onTagClick,
+  activePageTags,
+  onOpenLesson,
   onFocusApplied,
+  dock,
   onBrief,
   activeTags,
   onActiveTagsChange,
@@ -153,6 +145,8 @@ function WikiGraphInner({
     loadUmapPositions,
     connected,
     full,
+    error: mapError,
+    retry: retryMap,
   } = useWikiData({ tagShared: edgeVis["tag-shared"], live: !onAtlas });
   const [layout, setLayout] = useState<LayoutMode>("umap-semantic");
   const onAll = mapView.level === "all";
@@ -162,14 +156,16 @@ function WikiGraphInner({
   const deferredSearch = useDeferredValue(searchText);
   /** Pages revealed by clicks since the level changed; they stay rendered. */
   const [revealed, setRevealed] = useState<Set<string>>(() => new Set());
+  /** The page whose click revealed each of them: where the cluster layout hangs it. */
+  const revealedFrom = useRef(new Map<string, string>());
   const [focusNodeId, setFocusNodeId] = useState<string | null>(null);
   const [loadingSemantic, setLoadingSemantic] = useState(false);
-  const { fitView } = useReactFlow();
+  const { fitView, fitBounds } = useReactFlow();
 
   const hasNodes = baseNodes.length > 0;
   const theme = useTheme();
-  const curriculum = useCurriculum(baseNodes, hasNodes);
-  const glossary = useGlossary(baseNodes, hasNodes);
+  const { data: curriculum, error: curriculumError, retry: retryCurriculum } = useCurriculum(baseNodes, hasNodes);
+  const { data: glossary, error: glossaryError, retry: retryGlossary } = useGlossary(baseNodes, hasNodes);
   const facets = useMemo(() => facetsOf(curriculum, baseNodes, glossary, areas), [curriculum, baseNodes, glossary, areas]);
   /** Pages some lesson links; the atlas draws the rest faint. Null until the curriculum is in. */
   const taught = useMemo(() => (curriculum ? new Set(Object.keys(curriculum.primaryCourse)) : null), [curriculum]);
@@ -325,8 +321,9 @@ function WikiGraphInner({
       facets,
       anchorId,
       searchIds: search?.lit ?? null,
+      openId: selectedId,
     }),
-    [chatHighlight, focusNodeId, focusIds, filterIds, activeTags, facets, anchorId, search],
+    [chatHighlight, focusNodeId, focusIds, filterIds, activeTags, facets, anchorId, search, selectedId],
   );
 
   const rendered = useMemo(
@@ -335,41 +332,69 @@ function WikiGraphInner({
     [onAtlas, onAll, filterIds, scopeIds, revealed, view],
   );
 
+  // A page's level arranged by similarity was 25 cards with every link between them. It is laid
+  // out as clusters instead: the page, its top related pages, and what each of those leads to.
+  // "By links" still gives the top-down tree.
+  const clusters = useMemo(() => {
+    if (layout !== "umap-semantic" || !anchorId || !rendered?.has(anchorId)) return null;
+    const parent = clusterTree(anchorId, rendered, [wikilinkEdges, semanticEdges], degree, revealedFrom.current);
+    return { positions: layoutClusters(anchorId, parent, growDir(sectors, anchorId)), skeleton: skeletonOf(parent), depth: depthsOf(anchorId, parent) };
+  }, [layout, anchorId, rendered, wikilinkEdges, semanticEdges, degree, sectors]);
+  const skeleton = clusters?.skeleton ?? null;
+  const edgeView = useMemo<ViewState>(() => ({ ...view, skeleton }), [view, skeleton]);
+
   // UMAP positions overlap where pages are similar; spread just the rendered cards.
   // Dagre output never overlaps, so a dagre-laid-out filter subgraph is left alone.
   const placed = useMemo(() => {
     if (!positions || layout !== "umap-semantic") return positions;
+    if (clusters) return { ...positions, ...clusters.positions };
     const spread = { ...positions, ...declutter(positions, rendered ?? baseNodes.map((n) => n.id)) };
     return scopeIds ? fitToCanvasShape(spread, scopeIds) : spread;
-  }, [positions, layout, rendered, baseNodes, scopeIds]);
+  }, [positions, layout, clusters, rendered, baseNodes, scopeIds]);
 
+  const depth = clusters?.depth;
   const pageNodes = useMemo(() => {
     if (!placed || onAtlas) return NO_NODES;
     const laidOut = baseNodes
       .filter((n) => !rendered || rendered.has(n.id))
-      .map((n) => ({ ...n, position: placed[n.id] ?? n.position }));
+      .map((n) => ({
+        ...n,
+        position: placed[n.id] ?? n.position,
+        data: depth ? { ...n.data, depth: depth.get(n.id) } : n.data,
+      }));
     return withCourseGroups(applyView(laidOut, view), curriculum, theme);
-  }, [placed, onAtlas, baseNodes, rendered, view, curriculum, theme]);
+  }, [placed, onAtlas, baseNodes, rendered, depth, view, curriculum, theme]);
+
+  // Behind the clusters, the wiki around them: every page a point in a circle, sector by sector,
+  // sized by how many links it is from the open page.
+  const reach = useMemo(
+    () => (clusters && anchorId ? hopsFrom(anchorId, wikilinkEdges) : null),
+    [clusters, anchorId, wikilinkEdges],
+  );
+  const field = useMemo(() => {
+    if (!clusters || !reach) return null;
+    return layoutClusterField(clusters.positions, clusters.depth, reach, sectors, anchorId);
+  }, [clusters, reach, sectors, anchorId]);
+  const frame = field?.frame ?? null;
 
   const sameModule = useMemo(
     () => (edgeVis.module ? moduleEdges(pageNodes.map((n) => n.id), pageModules, degree) : []),
     [edgeVis.module, pageNodes, pageModules, degree],
   );
-  const edges = useMemo(
-    () =>
-      visibleEdges(
-        {
-          wikilink: wikilinkEdges,
-          semantic: semanticEdges,
-          tagShared: tagSharedEdges,
-          module: sameModule,
-        },
-        edgeVis,
-        pageNodes,
-        view,
-      ),
-    [wikilinkEdges, semanticEdges, tagSharedEdges, sameModule, edgeVis, pageNodes, view],
-  );
+  const edges = useMemo(() => {
+    const shown = visibleEdges(
+      {
+        wikilink: wikilinkEdges,
+        semantic: semanticEdges,
+        tagShared: tagSharedEdges,
+        module: sameModule,
+      },
+      edgeVis,
+      pageNodes,
+      edgeView,
+    );
+    return clusters ? withSideHandles(shown, clusters.positions) : shown;
+  }, [wikilinkEdges, semanticEdges, tagSharedEdges, sameModule, edgeVis, pageNodes, edgeView, clusters]);
 
   // --- Sync derived nodes into React Flow state (keeps node dragging working) -----------
   // A new `positions` object means a relayout: take the new positions and refit. A new
@@ -409,18 +434,60 @@ function WikiGraphInner({
     });
   }, [pageNodes, positions, placed, filterIds, scopeIds, onAll, setNodes]);
 
-  useEffect(() => {
-    if (!pendingFit.current || !nodes.length) return;
-    pendingFit.current = false;
+  const refit = useCallback(() => {
     const ids = filterIds;
     requestAnimationFrame(() => {
       if (ids) {
         void fitView({ nodes: [...ids].map((id) => ({ id })), padding: fitPadding(0.3), duration: 400 });
+      } else if (frame) {
+        // The clusters and the circle of points around them.
+        void fitBounds({ x: frame.x, y: frame.y, width: frame.w, height: frame.h }, { padding: 0.03, duration: 300 });
       } else {
         void fitView({ padding: fitPadding(0.08), duration: 300 });
       }
     });
-  }, [nodes, filterIds, fitView]);
+  }, [filterIds, frame, fitView, fitBounds]);
+  const refitRef = useRef(refit);
+  useEffect(() => {
+    refitRef.current = refit;
+  });
+  // Cards the semantic edges place late grow the clusters without a relayout: fit again.
+  const lastBounds = useRef("");
+  useEffect(() => {
+    const bounds = frame ? `${frame.x},${frame.y},${frame.w},${frame.h}` : "";
+    if (bounds && lastBounds.current && bounds !== lastBounds.current) pendingFit.current = true;
+    lastBounds.current = bounds;
+    if (!pendingFit.current || !nodes.length) return;
+    pendingFit.current = false;
+    refit();
+  }, [nodes, refit, frame]);
+  // React Flow's own first fit (the `fitView` prop) runs once the cards are measured and takes in
+  // the cards only: fit to the frame after it.
+  const measured = useNodesInitialized();
+  useEffect(() => {
+    if (measured && frame) refitRef.current();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- once per mount of the cards
+  }, [measured]);
+
+  // The canvas changes width when the sidebar or the chat slides: fit the level to the new room.
+  const canvasRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = canvasRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    let width = el.clientWidth;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const observer = new ResizeObserver(() => {
+      if (el.clientWidth === width) return;
+      width = el.clientWidth;
+      clearTimeout(timer);
+      timer = setTimeout(() => refitRef.current(), 250);
+    });
+    observer.observe(el);
+    return () => {
+      observer.disconnect();
+      clearTimeout(timer);
+    };
+  }, []);
 
   // --- focusPage (arriving from a lesson, or a chat citation): go to that page's level ----
   const hasRenderedNodes = nodes.length > 0;
@@ -446,11 +513,40 @@ function WikiGraphInner({
     if (!hasNodes || appliedLevel.current === key) return;
     appliedLevel.current = key;
     setRevealed(new Set());
+    revealedFrom.current = new Map();
     setFocusNodeId(null);
     setSearchText("");
     const node = anchorId ? baseNodes.find((n) => n.id === anchorId) : null;
     onNodeSelect?.(node ? { id: node.id, data: node.data } : null);
   }, [key, hasNodes, anchorId, baseNodes, onNodeSelect]);
+
+  // From one page's level to another's, the cards that stay glide to their new places.
+  // Picking a sector on the circle moves the view in on that part of it; the level itself, and
+  // so the circle and the cards, stay as they are. Picking it again goes back out.
+  const [focusSector, setFocusSector] = useState<string | null>(null);
+  const pickSector = useCallback(
+    (id: string) => {
+      const arc = field?.arcs.find((a) => field.sectors[a.sector].id === id);
+      if (!arc || id === focusSector) {
+        setFocusSector(null);
+        return refit();
+      }
+      setFocusSector(id);
+      void fitBounds({ x: arc.box.x, y: arc.box.y, width: arc.box.w, height: arc.box.h }, { padding: 0.12, duration: 700 });
+    },
+    [field, focusSector, refit, fitBounds],
+  );
+  const [moving, setMoving] = useState(false);
+  const lastLevel = useRef<string | null>(null);
+  useEffect(() => {
+    const first = lastLevel.current === null;
+    lastLevel.current = key;
+    setFocusSector(null);
+    if (first || !anchorId) return;
+    setMoving(true);
+    const timer = setTimeout(() => setMoving(false), MOVE_MS);
+    return () => clearTimeout(timer);
+  }, [key, anchorId]);
 
   // Coming back to the atlas, the camera eases out of where you were.
   const lastFocused = useRef<{ sector: string; page?: string } | null>(null);
@@ -508,23 +604,29 @@ function WikiGraphInner({
   }, [hasRenderedNodes, connected, edgeVis.semantic, hasSemanticEdges, handleLoadSemantic]);
 
   // Clicking a node focuses it and keeps its neighbours on the canvas, so the graph can be
-  // walked outward click by click. Clicking it again unfocuses.
+  // walked outward click by click. Clicking it again unfocuses. In a clustered level the walk is
+  // a move instead: the clicked page becomes the middle, with its own clusters around it.
+  const clustered = clusters !== null;
   const handleNodeClick = useCallback(
     (_: React.MouseEvent, node: WikiFlowNode) => {
+      if (clustered && node.id !== anchorId) return openPageRef.current(node.id);
       setFocusNodeId((prev) => (prev === node.id ? null : node.id));
+      const found = reveal(node.id);
+      for (const id of found) if (!revealedFrom.current.has(id)) revealedFrom.current.set(id, node.id);
       setRevealed((prev) => {
         const next = new Set(prev);
         next.add(node.id);
-        for (const id of reveal(node.id)) next.add(id);
+        for (const id of found) next.add(id);
         return next.size === prev.size ? prev : next;
       });
       onNodeSelect?.({ id: node.id, data: node.data as WikiNodeData });
     },
-    [onNodeSelect, reveal],
+    [onNodeSelect, reveal, clustered, anchorId],
   );
 
   const handleResetRevealed = useCallback(() => {
     setRevealed(new Set());
+    revealedFrom.current = new Map();
     setFocusNodeId(null);
   }, []);
 
@@ -539,6 +641,33 @@ function WikiGraphInner({
     [atlasPages, grouping, areas, navigate],
   );
 
+  const openPageRef = useRef(openPage);
+  useEffect(() => {
+    openPageRef.current = openPage;
+  });
+  const titleOf = useCallback((id: string) => pageInfo.get(id)?.title ?? id, [pageInfo]);
+
+  // What an open card shows and does. Its related pages are the page's wikilinks by kind of link.
+  const closeCard = useCallback(() => onNodeSelect?.(null), [onNodeSelect]);
+  const nodeCard = useMemo<NodeCard>(
+    () => ({
+      related: (id) =>
+        relatedGroups(id, wikilinkEdges, degree).map((g) => ({
+          label: g.label,
+          pages: g.ids.map((p) => ({ id: p, title: pageInfo.get(p)?.title ?? p })),
+          more: g.more,
+        })),
+      cited: highlightedPages ?? NO_CITED,
+      lastQuery,
+      activeTags: activePageTags,
+      onClose: closeCard,
+      onOpenPage: openPage,
+      onTagClick,
+      onOpenLesson,
+    }),
+    [wikilinkEdges, degree, pageInfo, highlightedPages, lastQuery, activePageTags, closeCard, openPage, onTagClick, onOpenLesson],
+  );
+
   const handleNodeDoubleClick = useCallback(
     (_: React.MouseEvent, node: WikiFlowNode) => openPage(node.id),
     [openPage],
@@ -548,6 +677,7 @@ function WikiGraphInner({
     (id: string) => navigate(mapPath({ level: "sector", grouping, sector: id, cap: DEFAULT_CAP })),
     [navigate, grouping],
   );
+  const openAtlas = useCallback(() => navigate(mapPath({ level: "atlas", grouping })), [navigate, grouping]);
   const openPageLevel = useCallback(
     (id: string, page: string) => navigate(mapPath({ level: "page", grouping, sector: id, page, cap: PAGE_CAP })),
     [navigate, grouping],
@@ -602,6 +732,7 @@ function WikiGraphInner({
       : "● live";
 
   const pageCount = nodes.length;
+  const shownIds = useMemo(() => pageNodes.map((n) => n.id), [pageNodes]);
   const atlasMatches = primaryIds;
   const atlasLit = useMemo(() => {
     if (search) return search.lit;
@@ -626,7 +757,7 @@ function WikiGraphInner({
 
   // Offered only when the filter is small enough to draw; a disabled button is just noise.
   const allNodes = !onAll && allNodesAllowed && (
-    <div className={`graph-all-nodes seg${onAtlas ? " graph-all-nodes--atlas" : ""}`}>
+    <div className="seg">
       <button
         type="button"
         className="seg-btn"
@@ -641,78 +772,97 @@ function WikiGraphInner({
   // Connections, arrangement and the minimap act on the page canvas. The atlas draws no lines, so
   // the bar has no Map popover there rather than disabled controls.
   const mapControls = !onAtlas && (
-    <>
-      <EdgeTogglePanel
-        visibility={edgeVis}
-        onChange={setEdgeVis}
-        onLoadSemantic={handleLoadSemantic}
-        loadingSemanticEdges={loadingSemantic}
-      />
-      <LayoutSwitcher
-        current={layout}
-        onChange={setLayout}
-        loadingUmap={loadingUmap}
-        umapUnavailable={layout === "umap-semantic" && umapFailed}
-      />
-      {/* Outside <ReactFlow>, inside its provider: it reads the same store. The theme's colours are
-          passed in because its CSS variables are scoped to the canvas. */}
-      <div className="panel-label panel-label--spaced">Minimap</div>
-      <div className="side-minimap">
-        <MiniMap
-          nodeColor={miniMapColor}
-          className="graph-minimap"
-          bgColor="var(--surface)"
-          maskColor="var(--minimap-mask)"
-          maskStrokeColor="var(--border-pressed)"
-          style={{ width: 240, height: 150 }}
-          pannable
-          zoomable
-          ariaLabel="Minimap"
+    <MapControls
+      edgeVis={edgeVis}
+      onEdgeVis={setEdgeVis}
+      onLoadSemantic={handleLoadSemantic}
+      loadingSemantic={loadingSemantic}
+      layout={layout}
+      onLayout={setLayout}
+      loadingUmap={loadingUmap}
+      umapFailed={umapFailed}
+      miniMapColor={miniMapColor}
+      withEdges={!dock}
+    />
+  );
+  // Under the chat the connections are listed inline, after the filters.
+  const connections = !onAtlas && dock && (
+    <EdgeTogglePanel
+      visibility={edgeVis}
+      onChange={setEdgeVis}
+      onLoadSemantic={handleLoadSemantic}
+      loadingSemanticEdges={loadingSemantic}
+    />
+  );
+  // Under the chat the bar is the map's controls only, below the clusters in view.
+  const bar = hasNodes && (
+    <MapBar
+      controlsOnly={!!dock}
+      view={mapView}
+      sectorLabel={sector?.label}
+      pageTitle={anchorId ? pageInfo.get(anchorId)?.title : undefined}
+      shown={scope ? shownCount : onAll ? pageCount : undefined}
+      total={scope ? scope.total : onAll ? baseNodes.length : undefined}
+      hops={scope?.hops}
+      revealedExtra={revealedExtra}
+      onResetRevealed={handleResetRevealed}
+      nextCap={nextCap}
+      onExpand={expandCap}
+      refocus={clickedPage ? { title: `Focus on ${pageInfo.get(clickedPage)?.title ?? clickedPage}`, onClick: () => openPage(clickedPage) } : null}
+      onGrouping={(g) => {
+        if (g === grouping) return;
+        // On a page's level the page stays open and only its clusters regroup.
+        const page = anchorId ? atlasPages.find((p) => p.id === anchorId) : undefined;
+        navigate(
+          page
+            ? mapPath({ level: "page", grouping: g, sector: sectorIdOf(page, g, areas), page: page.id, cap: PAGE_CAP })
+            : mapPath({ level: "atlas", grouping: g }),
+        );
+      }}
+      search={<MapSearch value={searchText} onChange={setSearchText} result={search} onOpenPage={openPage} />}
+      filters={
+        <FiltersPanel
+          areas={areas}
+          curriculum={curriculum}
+          glossary={glossary}
+          facets={facets}
+          activeTags={activeTags}
+          onChange={onActiveTagsChange}
+          onBrief={onBrief}
         />
-      </div>
-    </>
+      }
+      activeCount={activeTags.size}
+      map={mapControls || undefined}
+      connections={connections || undefined}
+      onBriefSector={briefScope && onBrief ? () => onBrief(briefScope) : undefined}
+      extra={allNodes || undefined}
+    />
+  );
+  const inset = !onAtlas && (
+    <ClusterInset
+      sectors={sectors}
+      pageIds={shownIds}
+      anchorId={anchorId}
+      onOpenSector={openSectorLevel}
+      onOpenAtlas={openAtlas}
+      around={field ? { near: field.near, far: field.far, beyond: field.beyond } : undefined}
+    />
   );
   return (
     <div className="graph-root">
-      <div className="graph-canvas">
+      <div ref={canvasRef} className={`graph-canvas${moving ? " is-moving" : ""}`}>
         {/* Connection status, shown only while it is not the normal live state */}
         {statusText !== "● live" && statusText !== "● ready" && (
           <div className={`graph-status ${ready ? "graph-status--live" : "graph-status--offline"}`}>{statusText}</div>
         )}
 
-        {hasNodes && (
-          <MapBar
-            view={mapView}
-            sectorLabel={sector?.label}
-            pageTitle={anchorId ? pageInfo.get(anchorId)?.title : undefined}
-            shown={scope ? shownCount : onAll ? pageCount : undefined}
-            total={scope ? scope.total : onAll ? baseNodes.length : undefined}
-            hops={scope?.hops}
-            revealedExtra={revealedExtra}
-            onResetRevealed={handleResetRevealed}
-            nextCap={nextCap}
-            onExpand={expandCap}
-            refocus={clickedPage ? { title: `Focus on ${pageInfo.get(clickedPage)?.title ?? clickedPage}`, onClick: () => openPage(clickedPage) } : null}
-            onGrouping={(g) => g !== grouping && navigate(mapPath({ level: "atlas", grouping: g }))}
-            search={<MapSearch value={searchText} onChange={setSearchText} result={search} onOpenPage={openPage} />}
-            filters={
-              <FiltersPanel
-                areas={areas}
-                curriculum={curriculum}
-                glossary={glossary}
-                facets={facets}
-                activeTags={activeTags}
-                onChange={onActiveTagsChange}
-                onBrief={onBrief}
-              />
-            }
-            activeCount={activeTags.size}
-            map={mapControls || undefined}
-            onBriefSector={briefScope && onBrief ? () => onBrief(briefScope) : undefined}
-          />
+        {(mapError || curriculumError || glossaryError) && (
+          <div className="graph-notices">
+            {mapError && <ResourceNotice what="The map" error={mapError} onRetry={retryMap} />}
+            {curriculumError && <ResourceNotice what="The course filters" error={curriculumError} onRetry={retryCurriculum} />}
+            {glossaryError && <ResourceNotice what="The term filters" error={glossaryError} onRetry={retryGlossary} />}
+          </div>
         )}
-
-        {allNodes}
 
         {onAtlas ? (
           hasNodes && (
@@ -731,6 +881,7 @@ function WikiGraphInner({
             />
           )
         ) : (
+          <NodeCardContext.Provider value={nodeCard}>
           <ReactFlow
             className="map-fade-in"
             nodes={nodes}
@@ -749,8 +900,23 @@ function WikiGraphInner({
           >
             <Background variant={BackgroundVariant.Dots} color="var(--border)" gap={20} />
             <Controls className="graph-flow-controls" />
+            {field && <HopField field={field} titleOf={titleOf} onOpenPage={openPage} focus={focusSector} onPickSector={pickSector} />}
           </ReactFlow>
+          </NodeCardContext.Provider>
         )}
+
+        <div className="map-corner">
+          {!dock && inset}
+          {!dock && bar}
+        </div>
+        {dock &&
+          createPortal(
+            <>
+              {inset}
+              {bar}
+            </>,
+            dock,
+          )}
       </div>
     </div>
   );

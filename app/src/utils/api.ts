@@ -5,6 +5,8 @@
  * and sends it as a bearer token. A 401 on /api sends the page to `#/login?next=<where it was>`.
  * In open mode (local dev) the server never answers 401, so none of this fires.
  */
+import type { z } from "zod";
+
 const TOKEN_KEY = "librarian.apiToken";
 const CSRF_COOKIE = "lb_csrf";
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
@@ -94,25 +96,57 @@ export class ApiError extends Error {
   }
 }
 
-/** JSON from the API, or an ApiError carrying the server's `detail` when it gives one. */
-export async function apiJson<T>(input: string, init: RequestInit = {}): Promise<T> {
-  const resp = await apiFetch(input, init);
-  if (!resp.ok) {
-    let detail = `HTTP ${resp.status}`;
-    try {
-      const body = (await resp.json()) as { detail?: unknown };
-      if (typeof body.detail === "string") detail = body.detail;
-    } catch {
-      /* not JSON */
-    }
-    throw new ApiError(resp.status, detail);
-  }
-  return (await resp.json()) as T;
+/** Where a reply stopped matching its schema: the first few issues, by path. */
+function describeIssues(error: z.ZodError): string {
+  return error.issues
+    .slice(0, 3)
+    .map((i) => `${i.path.join(".") || "(root)"}: ${i.message}`)
+    .join("; ");
 }
 
-/** POST a JSON body. */
-export function postJson<T>(input: string, body: unknown): Promise<T> {
-  return apiJson<T>(input, {
+/**
+ * The one place an API reply becomes typed data. A body that is not JSON, or does not match
+ * `schema`, throws an ApiError (status of the reply) like any failed request, so callers show
+ * it through the error path they already have.
+ */
+export async function parseJson<S extends z.ZodType>(resp: Response, schema: S): Promise<z.output<S>> {
+  let body: unknown;
+  try {
+    body = await resp.json();
+  } catch {
+    throw new ApiError(resp.status, "The server's reply was not JSON");
+  }
+  const parsed = schema.safeParse(body);
+  if (!parsed.success) throw new ApiError(resp.status, `Unexpected reply from the server (${describeIssues(parsed.error)})`);
+  return parsed.data;
+}
+
+/** `Error` for a non-2xx reply: an ApiError carrying the server's `detail` when it gives one. */
+export async function failure(resp: Response): Promise<ApiError> {
+  let detail = `HTTP ${resp.status}`;
+  try {
+    const body = (await resp.json()) as { detail?: unknown };
+    if (typeof body.detail === "string") detail = body.detail;
+  } catch {
+    /* not JSON */
+  }
+  return new ApiError(resp.status, detail);
+}
+
+/** JSON from the API, validated against `schema`; throws an ApiError otherwise. */
+export async function apiJson<S extends z.ZodType>(
+  schema: S,
+  input: string,
+  init: RequestInit = {},
+): Promise<z.output<S>> {
+  const resp = await apiFetch(input, init);
+  if (!resp.ok) throw await failure(resp);
+  return parseJson(resp, schema);
+}
+
+/** POST a JSON body; the reply is validated against `schema`. */
+export function postJson<S extends z.ZodType>(schema: S, input: string, body: unknown): Promise<z.output<S>> {
+  return apiJson(schema, input, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),

@@ -10,14 +10,15 @@ enough. Arguments are the query string; pydantic coerces "10" and "true".
 
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.requests import Request
 from fastapi.responses import PlainTextResponse
 
 from librarian.agent.tools import MCP, ToolContext, tools_for
-from librarian.api.security import SignedIn
+from librarian.api.security import SignedIn, compute_rate_limit
 
-router = APIRouter()
+# One shared budget for listing and running, so a loop over either is capped.
+router = APIRouter(dependencies=[Depends(compute_rate_limit("tools"))])
 
 _TOOLS = {t.name: t for t in tools_for(MCP) if t.read_only}
 

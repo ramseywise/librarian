@@ -75,6 +75,11 @@ describe("parseGraphMessage", () => {
     expect(parseGraphMessage("{not json")).toBeNull();
     expect(parseGraphMessage(JSON.stringify({ type: "ping" }))).toBeNull();
     expect(parseGraphMessage(JSON.stringify({ type: "graph_update", data: { nodes: 1 } }))).toBeNull();
+    const why: string[] = [];
+    expect(parseGraphMessage(JSON.stringify({ type: "graph_update", data: { nodes: 1 } }), (r) => why.push(r))).toBeNull();
+    expect(why).toHaveLength(1);
+    // A malformed message must not be reported as a valid update with defaults.
+    expect(parseGraphMessage(JSON.stringify({ data: { nodes: [], edges: [] } }))).toBeNull();
   });
 });
 
@@ -113,23 +118,37 @@ describe("useWikiData socket lifecycle", () => {
   it("connects to /ws on the page origin and keeps one live socket under StrictMode", () => {
     const wrapper = ({ children }: { children: ReactNode }) => <StrictMode>{children}</StrictMode>;
     const { unmount } = renderHook(() => useWikiData(), { wrapper });
-    act(() => vi.advanceTimersByTime(10_000));
+    act(() => {
+      vi.advanceTimersByTime(10_000);
+    });
     expect(open()).toHaveLength(1);
     expect(open()[0].url).toBe(`ws://${window.location.host}/ws`);
     unmount();
-    act(() => vi.advanceTimersByTime(10_000));
+    act(() => {
+      vi.advanceTimersByTime(10_000);
+    });
     expect(open()).toHaveLength(0);
   });
 
   it("reconnects after a drop, but not after unmount", () => {
     const { unmount } = renderHook(() => useWikiData());
-    act(() => FakeWebSocket.instances[0].drop());
-    act(() => vi.advanceTimersByTime(2_000));
+    act(() => {
+      FakeWebSocket.instances[0].drop();
+    });
+    act(() => {
+      vi.advanceTimersByTime(2_000);
+    });
     expect(FakeWebSocket.instances).toHaveLength(2);
 
-    act(() => FakeWebSocket.instances[1].drop());
+    act(() => {
+
+      FakeWebSocket.instances[1].drop();
+
+    });
     unmount(); // pending reconnect timer must be cancelled
-    act(() => vi.advanceTimersByTime(10_000));
+    act(() => {
+      vi.advanceTimersByTime(10_000);
+    });
     expect(FakeWebSocket.instances).toHaveLength(2);
   });
 
@@ -141,7 +160,9 @@ describe("useWikiData socket lifecycle", () => {
       domains: ["eval", "rag"],
       areas: [],
     };
-    act(() => FakeWebSocket.instances[0].onmessage?.({ data: JSON.stringify({ type: "graph_update", data }) }));
+    act(() => {
+      FakeWebSocket.instances[0].onmessage?.({ data: JSON.stringify({ type: "graph_update", data }) });
+    });
     expect(result.current.domains).toEqual(["eval", "rag"]);
     expect(result.current.tagSharedEdges.map((e) => e.id)).toEqual(["ts:a->b"]);
   });
@@ -152,15 +173,21 @@ describe("useWikiData socket lifecycle", () => {
       window.dispatchEvent(new CustomEvent(RELEASE_EVENT, { detail: "content-b" }));
     });
     expect(FakeWebSocket.instances[0].closed).toBe(true);
-    act(() => FakeWebSocket.instances[0].onclose?.()); // the browser reports the close
-    act(() => vi.advanceTimersByTime(2_000));
+    act(() => {
+      FakeWebSocket.instances[0].onclose?.();
+    }); // the browser reports the close
+    act(() => {
+      vi.advanceTimersByTime(2_000);
+    });
     expect(open()).toHaveLength(1);
     expect(FakeWebSocket.instances).toHaveLength(2);
   });
 
   it("ignores malformed messages", () => {
     const { result } = renderHook(() => useWikiData());
-    act(() => FakeWebSocket.instances[0].onmessage?.({ data: "garbage" }));
+    act(() => {
+      FakeWebSocket.instances[0].onmessage?.({ data: "garbage" });
+    });
     expect(result.current.baseNodes).toEqual([]);
   });
 });

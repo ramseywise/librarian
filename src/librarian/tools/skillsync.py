@@ -106,6 +106,14 @@ VARS: dict[str, dict[str, str]] = {
         ),
         "CURR_MAP": "`librarian courses check curriculum`, over `data/courses/`",
         "CURR_CMD": "uv run librarian courses check curriculum",
+        "TIER_CHECK": (
+            "Check the result after the user has imported the change. An illegal value fails the "
+            "first; `no_tier` lists a note that was missed.\n\n"
+            "```bash\n"
+            "uv run librarian courses check chapters <pillar>\n"
+            "uv run librarian courses check curriculum issues --pillar <pillar> --kind no_tier\n"
+            "```"
+        ),
         "CONCEPT_HOMES": "data/concept_homes.json",
         "PRACTICE_DIR": "interviewing/",
     },
@@ -123,6 +131,10 @@ VARS: dict[str, dict[str, str]] = {
         "CURR_INTRO": "Paths are relative to the repo root. ",
         "CURR_MAP": "`scripts/curriculum_map.py`",
         "CURR_CMD": "python3 scripts/curriculum_map.py",
+        "TIER_CHECK": (
+            "This repo's scripts do not read `tier`: the checks for it run in the librarian repo, "
+            "after the user has imported the change. Say so in the report."
+        ),
         "CONCEPT_HOMES": "scripts/concept_homes.json",
         "PRACTICE_DIR": "practice/",
     },

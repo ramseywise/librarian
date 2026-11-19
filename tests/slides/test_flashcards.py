@@ -238,6 +238,87 @@ def test_a_module_with_checklists_and_no_deck_gets_cards(tmp_path: Path) -> None
     assert {c["lesson"] for c in meta["cards"]} == {"data-science/01-ml/notes/01-estimation"}
 
 
+def test_a_slide_can_add_a_longer_answer_a_depth_and_references(
+    courses: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    deck = courses / "data-analytics" / "02-statistics" / "slides" / "deck.yaml"
+    recall = 'recall: "What does **MLE** do?"\n'
+    extra = (
+        "        more: >-\n          It is consistent, and biased\n          in small samples.\n"
+        "        depth: deep\n"
+        "        refs:\n"
+        "          - Casella and Berger, Statistical Inference (2002), ch. 7\n"
+        '          - "[The paper](https://example.org/p) and [our note](notes/01-estimation.md)"\n'
+    )
+    deck.write_text(deck.read_text().replace(recall, recall + extra))
+    fc.build(courses)
+    cards = _front(courses / "data-analytics" / "02-statistics" / "_flashcards.md")["cards"]
+    assert cards[0] == {
+        "front": "What does **MLE** do?",  # unchanged, so the card keeps its schedule
+        "back": "Maximises the `likelihood` of the data.",
+        "more": "It is consistent, and biased in small samples.",
+        "depth": "deep",
+        "sources": [
+            "Casella and Berger, Statistical Inference (2002), ch. 7",
+            "[The paper](https://example.org/p) and our note",
+        ],
+        "lesson": "data-analytics/02-statistics/notes/01-estimation",
+    }
+    assert set(cards[1]) == {"front", "back"}  # a card with none of them is written as before
+
+    deck.write_text(deck.read_text().replace("depth: deep", "depth: senior"))
+    fc.build(courses)
+    cards = _front(courses / "data-analytics" / "02-statistics" / "_flashcards.md")["cards"]
+    assert "depth" not in cards[0] and "'senior' is not a depth" in capsys.readouterr().err
+
+
+WIDE_CHECKLIST = """# Estimation
+
+## Interview checklist
+
+| Question | Short answer | In depth | Depth | Sources |
+|---|---|---|---|---|
+| What is bias? | The gap between the estimate's mean and the truth | It trades against variance: $a \\| b$ | core | Hastie et al., ESL (2009), ch. 7; [ISLR](https://example.org/islr) |
+| What is variance? | How much the estimate moves between samples | | | |
+| Too many | cells | a | intro | b | c |
+"""
+
+
+def test_a_checklist_can_carry_the_same_three_in_named_columns(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    root = tmp_path / "courses"
+    mod = root / "data-science" / "01-ml"
+    _write(mod / "notes" / "01-estimation.md", WIDE_CHECKLIST)
+    fc.build(root)
+    lesson = "data-science/01-ml/notes/01-estimation"
+    assert _front(mod / "_flashcards.md")["cards"] == [
+        {
+            "front": "What is bias?",
+            "back": "The gap between the estimate's mean and the truth",
+            "more": "It trades against variance: $a | b$",
+            "depth": "core",
+            "sources": ["Hastie et al., ESL (2009), ch. 7", "[ISLR](https://example.org/islr)"],
+            "lesson": lesson,
+        },
+        {
+            "front": "What is variance?",
+            "back": "How much the estimate moves between samples",
+            "lesson": lesson,
+        },
+    ]
+    assert "'Too many' has more cells than the header" in capsys.readouterr().err
+
+
+def test_a_third_column_with_another_name_is_still_part_of_the_answer(tmp_path: Path) -> None:
+    root = tmp_path / "courses"
+    note = "# N\n\n## Interview checklist\n\n| Question | Answer | Notes |\n|---|---|---|\n| Q? | A | B |\n"
+    _write(root / "data-science" / "01-ml" / "notes" / "01-n.md", note)
+    fc.build(root)
+    cards = _front(root / "data-science" / "01-ml" / "_flashcards.md")["cards"]
+    assert cards[0]["back"] == "A | B"
+
+
 def test_real_courses_are_up_to_date() -> None:
     """The committed _flashcards.md files match their specs (run `make flashcards` if not)."""
     assert fc.build(fc.COURSES_DIR, check=True)["written"] == 0

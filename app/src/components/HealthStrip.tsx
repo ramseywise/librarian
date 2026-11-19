@@ -1,15 +1,9 @@
 import { useEffect, useState } from "react";
-import { apiFetch } from "../utils/api";
+import type { z } from "zod";
+import { healthSnapshotSchema } from "../schemas/account";
+import { apiFetch, parseJson } from "../utils/api";
 
-interface Metric {
-  value: number;
-  status: string;
-}
-
-interface Snapshot {
-  date: string | null;
-  metrics: Record<string, Metric>;
-}
+type Snapshot = z.output<typeof healthSnapshotSchema>;
 
 const LABELS: Record<string, string> = {
   orphan_rate: "orphans",
@@ -37,7 +31,7 @@ export function HealthStrip() {
   useEffect(() => {
     let cancelled = false;
     apiFetch("/api/wiki/health")
-      .then((r) => (r.ok ? (r.json() as Promise<Snapshot>) : Promise.reject(new Error(`HTTP ${r.status}`))))
+      .then((r) => (r.ok ? parseJson(r, healthSnapshotSchema) : Promise.reject(new Error(`HTTP ${r.status}`))))
       .then((body) => {
         if (!cancelled) setSnapshot(body);
       })

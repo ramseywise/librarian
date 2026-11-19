@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from librarian.config import Settings
+import difflib
+
+from librarian.config import Settings, known_env_names, unknown_env_vars
 from librarian.pricing import PRICES, price_for
 
 
@@ -42,7 +44,19 @@ def find_problems(
             else:
                 errors.append(f"{line} (set one, or pass --insecure to serve unauthenticated)")
     errors.extend(find_login_problems(settings))
+    warnings.extend(find_unknown_env_warnings())
     return errors, warnings
+
+
+def find_unknown_env_warnings() -> list[str]:
+    """One warning per `LIBRARIAN_*` variable nothing reads, with the closest known name."""
+    known = sorted(known_env_names())
+    out = []
+    for name in unknown_env_vars():
+        near = difflib.get_close_matches(name, known, n=1)
+        hint = f" (did you mean {near[0]}?)" if near else ""
+        out.append(f"unknown environment variable {name}: ignored{hint}")
+    return out
 
 
 def find_login_problems(settings: Settings) -> list[str]:

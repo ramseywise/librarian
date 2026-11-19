@@ -9,7 +9,7 @@ const note = [
   "```mermaid", "graph TD", "A-->B", "B-->C", "C-->D", "```", "",
   "## Pitfalls", "", "- One.", "",
   "## Try it", "", "1. Do it.", "", ...code, "", "---", "",
-  "## Interview checklist", "", "| Prompt | Answer |", "|---|---|", "| Q | A |", "", "---", "",
+  "## Interview checklist", "", "| Prompt | Answer |", "|---|---|", "| Q | A |", "| `a \\| b`? | Either |", "", "---", "",
   "## Next", "", "On to the next.",
 ].join("\n");
 
@@ -38,13 +38,17 @@ describe("splitLesson", () => {
     expect(parts.exercises).toMatch(/^## Try it/);
     expect(parts.exercises).toContain("c = a + b");
     expect(parts.exercises).not.toContain("---");
-    expect(parts.review).toBe("## Review questions\n\n| Prompt | Answer |\n|---|---|\n| Q | A |");
+    expect(parts.review).toBe("## Review questions\n\n| Prompt | Answer |\n|---|---|\n| Q | A |\n| `a \\| b`? | Either |");
     expect(parts.lecture).not.toContain("Do it.");
     expect(parts.lecture).not.toContain("| Q | A |");
   });
 
+  it("lists the checklist's questions as the note's objectives", () => {
+    expect(parts.objectives).toBe("1. Q\n2. `a \\| b`?");
+  });
+
   it("returns empty parts for a note with only prose", () => {
-    expect(splitLesson("## A\n\nText.")).toEqual({ lecture: "## A\n\nText.", review: "", exercises: "", code: "", codeCount: 0 });
+    expect(splitLesson("## A\n\nText.")).toEqual({ lecture: "## A\n\nText.", objectives: "", review: "", exercises: "", code: "", codeCount: 0 });
   });
 });
 

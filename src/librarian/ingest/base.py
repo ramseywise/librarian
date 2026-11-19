@@ -41,6 +41,9 @@ import structlog
 
 from librarian.config import get_settings
 from librarian.ingest.manifest import ManifestSession
+from librarian.ingest.safe_http import (
+    safe_client as safe_client,  # re-exported: the outbound client scrapers use
+)
 from librarian.log_config import configure_logging
 
 REPO_ROOT = get_settings().root

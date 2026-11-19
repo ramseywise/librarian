@@ -4,7 +4,8 @@ import { InlineMarkup } from "./FlashcardsView";
 import { quizOrder } from "./studyQueue";
 import { pageTitle, useDocumentTitle } from "./useDocumentTitle";
 import "./courses.css";
-import { apiFetch } from "../../utils/api";
+import { quizSchema, quizAnswerResultSchema, quizRevealSchema } from "../../schemas/courses";
+import { apiFetch, parseJson } from "../../utils/api";
 import type { StudyChatContext } from "../../hooks/useChatStream";
 
 function shuffled<T>(items: T[]): T[] {
@@ -54,8 +55,8 @@ export function QuizView({
     setQuiz(null);
     setError(null);
     apiFetch(`/api/courses/quiz/${quizId}`)
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(r.status === 404 ? "No quiz here" : `HTTP ${r.status}`))))
-      .then((q: Quiz) => {
+      .then((r) => (r.ok ? parseJson(r, quizSchema) : Promise.reject(new Error(r.status === 404 ? "No quiz here" : `HTTP ${r.status}`))))
+      .then((q) => {
         if (cancelled) return;
         // The route's level is the whole quiz for this view: counts and restarts stay inside it.
         const questions = level ? q.questions.filter((x) => (x.kind ?? "choice") === level) : q.questions;
@@ -111,7 +112,7 @@ export function QuizView({
         return;
       }
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      const graded = (await r.json()) as QuizAnswerResult;
+      const graded = await parseJson(r, quizAnswerResultSchema);
       setResult(graded);
       if (graded.correct && !assisted) setRight((n) => n + 1);
       if (!graded.logged) setSaveFailed(true);
@@ -130,7 +131,7 @@ export function QuizView({
         body: JSON.stringify({ quiz: quiz.id, question: question.id, what }),
       });
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      const shown = (await r.json()) as { hint?: string; answer?: string; explanation?: string; logged: boolean };
+      const shown = await parseJson(r, quizRevealSchema);
       setAssisted(true);
       if (!shown.logged) setSaveFailed(true);
       if (what === "hint") {

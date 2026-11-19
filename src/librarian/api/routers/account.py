@@ -25,7 +25,7 @@ from librarian import accounts, experiments
 from librarian.accounts import User, audit
 from librarian.api.security import Admin, SignedIn, chat_limiter
 from librarian.config import get_settings
-from librarian.courses import progress
+from librarian.courses import intake, progress
 from librarian.db import get_engine
 
 router = APIRouter()
@@ -71,6 +71,7 @@ def me(user: SignedIn, request: Request) -> dict[str, Any]:
             override=request.headers.get(experiments.VARIANT_HEADER),
         ),
         "progress": {"done": done["done"], "modules": done["modules"], "last": done["last"]},
+        "intake": intake.status(user.id),  # none | in_progress | done
         "chat": {
             "spent_today_usd": round(chat_limiter.spent_usd(user.id), 4),
             # Admins have only the global cap.

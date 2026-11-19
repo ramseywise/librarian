@@ -10,18 +10,26 @@ that is not a `statement` and has a `takeaway`: front is `recall`, else `title`;
 `answer` (what the question asks for, written for the card), else `takeaway`; `card: false`
 leaves the slide out. If `source:`
 names a lesson file (relative to the folder that holds `slides/`) the card carries that
-lesson's id, otherwise it belongs to the module. A card whose front already
+lesson's id, otherwise it belongs to the module. Three optional slide keys add to a card and
+leave its front alone: `more` (the in-depth explanation behind the short answer), `depth` (the
+card's own depth: intro, core or deep; `librarian.courses.depth`) and `refs` (the references the
+answer rests on, one string or a list). A card whose front already
 appeared in the module is dropped: the Leitner log keys a card on its module and front text,
 so two cards with one front would share a schedule.
 
 After the deck cards, every row of a lesson's `## Interview checklist` table is a card of that
 lesson: front is the first cell, back the second, with links reduced to their text. Lessons go
 in path order, and a row whose question a deck card (or an earlier row) already asks is dropped
-by the same repeated-front rule, so deck cards keep their place and their schedule.
+by the same repeated-front rule, so deck cards keep their place and their schedule. A table may
+add columns after the answer, named in its header: `More` or `In depth`, `Depth`, and `Source`
+or `Sources` (references separated by `;`). A table with any other third column is read as
+before, everything after the question being the answer.
+
+A card's tier is not written here: it is its lesson's, read when the catalog loads.
 
 A spec that does not parse warns and yields no cards. A module with no cards has no file. The
 tool only deletes a file it wrote, which carries `generated_by` in its frontmatter.
-Standard library plus PyYAML.
+Standard library, PyYAML and `librarian.courses.depth`.
 """
 
 from __future__ import annotations
@@ -31,8 +39,11 @@ import os
 import re
 import sys
 from pathlib import Path
+from typing import Any
 
 import yaml
+
+from librarian.courses.depth import depth_of
 
 COURSES_DIR = Path(__file__).resolve().parents[4] / "data" / "courses"
 FLASHCARD_FILE = "_flashcards.md"
@@ -42,6 +53,15 @@ _SLUG_RE = re.compile(r"[^a-z0-9]+")
 CHECKLIST_HEADING = "## Interview checklist"
 _CELL_SPLIT_RE = re.compile(r"(?<!\\)\|")
 _LINK_RE = re.compile(r"\[([^\]]+)\]\([^)]*\)")
+_LOCAL_LINK_RE = re.compile(r"\[([^\]]+)\]\((?!https?://)[^)]*\)")
+# Optional checklist columns after the answer, by header text: card field for each.
+EXTRA_COLUMNS = {
+    "more": "more",
+    "in depth": "more",
+    "depth": "depth",
+    "source": "sources",
+    "sources": "sources",
+}
 _SEPARATOR_RE = re.compile(r"^[\s:|-]+$")
 
 
@@ -116,7 +136,31 @@ def _card_lesson(source: object, base: Path, courses: Path, index: dict[str, str
     return index.get(_slug(rel.as_posix()))
 
 
-def spec_flashcards(spec: Path, courses: Path, index: dict[str, str]) -> list[dict[str, str]]:
+def _references(value: object) -> list[str]:
+    """References as card text, from one string or a list. A web link is kept as written, since
+    it is the reference; a link to a local file is reduced to its text, since a card is not shown
+    beside the lesson the path was relative to."""
+    items = value if isinstance(value, list) else [value]
+    refs = [_card_text(_LOCAL_LINK_RE.sub(r"\1", str(item))) for item in items if item is not None]
+    return [r for r in refs if r]
+
+
+def _extras(more: object, depth: object, refs: object, where: str) -> dict[str, Any]:
+    """The optional fields of a card, each present only when it was given and is usable."""
+    out: dict[str, Any] = {}
+    if _card_text(more):
+        out["more"] = _card_text(more)
+    if _card_text(depth):
+        if depth_of(_card_text(depth)):
+            out["depth"] = _card_text(depth)
+        else:
+            _warn(f"{where}: depth {_card_text(depth)!r} is not a depth, left out")
+    if _references(refs):
+        out["sources"] = _references(refs)
+    return out
+
+
+def spec_flashcards(spec: Path, courses: Path, index: dict[str, str]) -> list[dict[str, Any]]:
     """Cards from one spec. A spec that does not parse yields none and a warning, so one
     half-written deck never stops the build."""
     try:
@@ -125,7 +169,7 @@ def spec_flashcards(spec: Path, courses: Path, index: dict[str, str]) -> list[di
         _warn(f"{spec}: unparseable ({e})")
         return []
     parts = data.get("parts") if isinstance(data, dict) else None
-    cards: list[dict[str, str]] = []
+    cards: list[dict[str, Any]] = []
     for part in parts if isinstance(parts, list) else []:
         slides = part.get("slides") if isinstance(part, dict) else None
         for slide in slides if isinstance(slides, list) else []:
@@ -141,7 +185,10 @@ def spec_flashcards(spec: Path, courses: Path, index: dict[str, str]) -> list[di
             back = _card_text(slide.get("answer")) or _card_text(slide.get("takeaway"))
             if not front or not back:
                 continue
-            card = {"front": front, "back": back}
+            card: dict[str, Any] = {"front": front, "back": back}
+            card |= _extras(
+                slide.get("more"), slide.get("depth"), slide.get("refs"), f"{spec}: {front!r}"
+            )
             # deck.yaml sits in slides/, a lecture in slides/lectures/; `source:` is relative to
             # the folder that holds slides/.
             slides_dir = spec.parent.parent if spec.parent.name == "lectures" else spec.parent
@@ -158,16 +205,22 @@ def _cell_text(cell: str) -> str:
     return _card_text(_LINK_RE.sub(r"\1", cell.replace("\\|", "|")))
 
 
-def checklist_rows(text: str) -> list[tuple[str, str]]:
-    """(question, answer) for each row of the `## Interview checklist` table, header and
-    separator skipped. A pipe inside the answer that was not escaped stays part of the answer."""
-    rows: list[tuple[str, str]] = []
+def _cells(row: str) -> list[str]:
+    return _CELL_SPLIT_RE.split(row.strip().strip("|"))
+
+
+def checklist_rows(text: str, where: str = "") -> list[dict[str, Any]]:
+    """A card (front, back and any optional fields) for each row of the `## Interview checklist`
+    table, header and separator skipped. In a two-column table, or one whose later columns are
+    not all EXTRA_COLUMNS, a pipe inside the answer that was not escaped stays part of the answer."""
+    rows: list[dict[str, Any]] = []
     inside = False
-    header_seen = False
+    # None until the header is read, then the card field of each column after the answer.
+    extras: list[str] | None = None
     for line in text.splitlines():
         stripped = line.strip()
         if stripped == CHECKLIST_HEADING:
-            inside, header_seen = True, False
+            inside, extras = True, None
             continue
         if not inside:
             continue
@@ -175,21 +228,42 @@ def checklist_rows(text: str) -> list[tuple[str, str]]:
             break
         if not stripped.startswith("|"):
             continue
-        if not header_seen:  # the column titles
-            header_seen = True
+        if extras is None:  # the column titles
+            named = [EXTRA_COLUMNS.get(c.strip().lower(), "") for c in _cells(stripped)[2:]]
+            extras = named if all(named) else []
             continue
         if _SEPARATOR_RE.match(stripped):
             continue
-        cells = _CELL_SPLIT_RE.split(stripped.strip("|"))
-        question, answer = _cell_text(cells[0]), _cell_text("|".join(cells[1:]))
-        if question and answer:
-            rows.append((question, answer))
+        cells = _cells(stripped)
+        question = _cell_text(cells[0])
+        if not extras:
+            answer = _cell_text("|".join(cells[1:]))
+            if question and answer:
+                rows.append({"front": question, "back": answer})
+            continue
+        if len(cells) > 2 + len(extras):
+            _warn(f"{where}: {question!r} has more cells than the header (escape a pipe as \\|)")
+            continue
+        answer = _cell_text(cells[1]) if len(cells) > 1 else ""
+        if not question or not answer:
+            continue
+        given = dict(zip(extras, cells[2:], strict=False))
+        sources = [s for s in given.get("sources", "").split(";") if s.strip()]
+        rows.append(
+            {"front": question, "back": answer}
+            | _extras(
+                _cell_text(given.get("more", "")),
+                given.get("depth"),
+                [s.replace("\\|", "|") for s in sources],
+                f"{where}: {question!r}",
+            )
+        )
     return rows
 
 
-def checklist_flashcards(module: Path, courses: Path) -> list[dict[str, str]]:
+def checklist_flashcards(module: Path, courses: Path) -> list[dict[str, Any]]:
     """One card per interview-checklist row of every lesson below the module, in path order."""
-    cards: list[dict[str, str]] = []
+    cards: list[dict[str, Any]] = []
     for dp, dns, fns in os.walk(module):
         dns[:] = sorted(d for d in dns if not d.startswith(".") and d not in SKIP_DIRS)
         for fn in sorted(fns):
@@ -202,15 +276,15 @@ def checklist_flashcards(module: Path, courses: Path) -> list[dict[str, str]]:
                 _warn(f"{path}: unreadable ({e})")
                 continue
             lesson = path.relative_to(courses).with_suffix("").as_posix()
-            cards += [{"front": q, "back": a, "lesson": lesson} for q, a in checklist_rows(text)]
+            cards += [row | {"lesson": lesson} for row in checklist_rows(text, str(path))]
     return cards
 
 
-def module_flashcards(module: Path, courses: Path) -> tuple[list[Path], list[dict[str, str]]]:
+def module_flashcards(module: Path, courses: Path) -> tuple[list[Path], list[dict[str, Any]]]:
     """The module's specs and its cards, deck cards then checklist rows, first card per front kept."""
     specs = find_specs(module)
     index = lesson_index(module, courses)
-    cards: list[dict[str, str]] = []
+    cards: list[dict[str, Any]] = []
     seen: set[str] = set()
     found = [card for spec in specs for card in spec_flashcards(spec, courses, index)]
     for card in found + checklist_flashcards(module, courses):
@@ -221,7 +295,7 @@ def module_flashcards(module: Path, courses: Path) -> tuple[list[Path], list[dic
     return specs, cards
 
 
-def render(specs: list[Path], cards: list[dict[str, str]], courses: Path) -> str:
+def render(specs: list[Path], cards: list[dict[str, Any]], courses: Path) -> str:
     meta = {
         "generated_by": GENERATED_BY,
         "decks": [s.relative_to(courses).as_posix() for s in specs],

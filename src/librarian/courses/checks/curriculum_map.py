@@ -26,6 +26,11 @@ Issue kinds, most actionable first:
     concept_unlinked     the lesson uses a maths concept from data/concept_homes.json and links none of its
                          homes (information: passing mentions are fine, a first use that needs the idea is not)
     no_cross_links       the module readme has neither a Builds on nor a Feeds into table
+    no_unit_at_depth     a module with tagged lessons has nothing at intro, core or deep (information: until
+                         the tagging is done; `librarian.courses.depth`). An untagged module raises none.
+    no_tier              a lesson has no tier in a module where another lesson has one (information)
+    depth_order          a tagged lesson's sections step back down in depth, so it is not yet written
+                         intro, then core, then deep (information: the lesson's rebuild list)
 """
 
 from __future__ import annotations
@@ -42,8 +47,19 @@ from collections.abc import Sequence
 from pathlib import Path
 from urllib.parse import unquote
 
+import yaml
+
 from librarian.config import get_settings
 from librarian.courses.checks.common import default_root, split_front
+from librarian.courses.depth import (
+    DEPTHS,
+    TIERS,
+    covered,
+    depth_of,
+    order_breaks,
+    sections_of,
+    tier_of,
+)
 
 SUBJECTS = (
     "programming",
@@ -54,12 +70,13 @@ SUBJECTS = (
     "ai-engineering",
 )
 SKIP_PARTS = {"practice", "sources", "slides", "checkpoints", "__pycache__", ".ipynb_checkpoints"}
-INFO_KINDS = {"no_inbound", "concept_unlinked"}
+INFO_KINDS = {"no_inbound", "concept_unlinked", "no_unit_at_depth", "no_tier", "depth_order"}
 
 FENCE = re.compile(r"^```.*?^```", re.S | re.M)
 LINK = re.compile(r"\[[^\]]*\]\(([^)\s#]+)(?:#[^)]*)?\)")
 H1 = re.compile(r"^# +(.+)$", re.M)
 H2 = re.compile(r"^## +(.+)$", re.M)
+LEVELED = re.compile(r"^(##+) +(.+?)\s*$", re.M)  # every heading below the title, with its level
 NEXT = re.compile(r"^## +Next\b[^\n]*\n(.*?)(?=^## |\Z)", re.S | re.M)
 NUMBER = re.compile(r"^(\d+)([a-z]?)[-_.]")  # 13b is a deliberate second note beside 13
 CROSS = re.compile(r"^(?:#+ +|\*\*)(?:Builds on|Feeds into)\b", re.M | re.I)
@@ -92,6 +109,31 @@ STOPWORDS = {
 def front_value(front: str, key: str) -> str | None:
     match = re.search(rf"^{key}:\s*(.+?)\s*(?:#.*)?$", front, re.M)
     return match.group(1).strip("\"'") if match else None
+
+
+def classification(front: str, prose: str) -> dict:
+    """A lesson's tier and depth from its frontmatter: `tier`, `depth` (the default for its
+    sections), `depths` (every depth it has something at) and `depth_order` (the sections that step
+    back down). All empty for a lesson that carries neither field."""
+    empty = {"tier": "", "depth": "", "depths": [], "depth_order": []}
+    if "depth" not in front and "tier" not in front:
+        return empty
+    try:
+        meta = yaml.safe_load(front)
+    except yaml.YAMLError:
+        return empty
+    if not isinstance(meta, dict):
+        return empty
+    own = depth_of(meta.get("depth"))
+    sections = sections_of(meta.get("depth_sections"))
+    found = covered(own, sections)
+    headings = [(len(marks), text) for marks, text in LEVELED.findall(prose)]
+    return {
+        "tier": tier_of(meta.get("tier")),
+        "depth": own,
+        "depths": [d for d in DEPTHS if d in found],
+        "depth_order": order_breaks(own, sections, headings),
+    }
 
 
 def links_in_order(text: str, source: Path, root: Path) -> list[str]:
@@ -139,6 +181,7 @@ def read_note(path: Path, root: Path) -> dict:
         "status": front_value(front, "status"),
         "origin": front_value(front, "origin"),
         "confidence": front_value(front, "confidence"),
+        **classification(front, prose),
         "headings": [h.strip() for h in H2.findall(prose)],
         "links": sorted(links_from(body, path, root)),
         "next": sorted(links_from(next_section.group(1), path, root)) if next_section else None,
@@ -258,6 +301,21 @@ def build(root: Path, ledger: Path | None = None, concepts: Path | None = None) 
                 )
                 if not follows_readme and not closes_pillar:
                     add("next_out_of_order", path, f"## Next does not link to {ordered[index + 1]}")
+
+        tagged = [p for p in members if notes[p]["depths"]]
+        pillar["depths"] = {d: sum(d in notes[p]["depths"] for p in members) for d in DEPTHS}
+        pillar["untagged"] = len(members) - len(tagged)
+        for depth in DEPTHS if tagged else ():
+            if not pillar["depths"][depth]:
+                add("no_unit_at_depth", name, f"no lesson or section at {depth}")
+        pillar["tiers"] = {t: sum(notes[p]["tier"] == t for p in members) for t in TIERS}
+        for path in members:
+            if any(pillar["tiers"].values()) and not notes[path]["tier"]:
+                add("no_tier", path, "no tier, and another lesson of the module has one")
+            if notes[path]["depth_order"]:
+                add(
+                    "depth_order", path, "steps back down: " + "; ".join(notes[path]["depth_order"])
+                )
 
         deck = root / name / "slides" / "deck.yaml"
         pillar["has_deck"] = deck.is_file()

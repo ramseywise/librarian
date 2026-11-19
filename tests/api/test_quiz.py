@@ -141,5 +141,43 @@ def test_check_quiz_run_reads_module_quizzes_and_their_lessons(tmp_path: Path) -
     assert check_quiz.main(["--root", str(tmp_path)]) == 1
 
 
+def test_depth_subject_and_topic_are_kept_and_never_sent(tmp_path: Path) -> None:
+    body = (
+        "- {prompt: Tagged?, options: [a, b], answer: a, depth: deep, "
+        "subject: programming, topic: hashing}\n"
+        "- {prompt: Plain?, options: [a, b], answer: a}\n"
+    )
+    tagged, plain = quiz.load(_file(tmp_path, body), set())
+    assert (tagged.depth, tagged.subject, tagged.topic) == ("deep", "programming", "hashing")
+    assert (plain.depth, plain.subject, plain.topic) == ("", "", "")
+    assert not {"depth", "subject", "topic"} & set(quiz.public_payload(tagged, None))
+
+
+def test_an_illegal_depth_or_unknown_subject_is_a_problem(tmp_path: Path) -> None:
+    body = (
+        "- {prompt: One?, options: [a, b], answer: a, depth: hard}\n"
+        "- {prompt: Two?, options: [a, b], answer: a, subject: cooking}\n"
+    )
+    path = _file(tmp_path, body)
+    lines = quiz.problems_in(path, set(), {"programming"})
+    assert any("question 1: depth 'hard' is not one of intro, core, deep" in p for p in lines)
+    assert any("question 2: subject 'cooking' is not a course" in p for p in lines)
+    # Without the course names the subject is not checked, and the lenient loader drops only the bad depth.
+    assert not any("subject" in p for p in quiz.problems_in(path, set()))
+    assert [q.prompt for q in quiz.load(path, set())] == ["Two?"]
+
+
+def test_check_quiz_takes_subjects_from_the_public_course_folders(tmp_path: Path) -> None:
+    module = tmp_path / "interviewing" / "bank"
+    module.mkdir(parents=True)
+    (tmp_path / "programming").mkdir()
+    (tmp_path / "private" / "secret-course").mkdir(parents=True)
+    _file(module, "- {prompt: P?, options: [a, b], answer: a, subject: programming, depth: core}\n")
+    assert check_quiz.run(tmp_path, []) == (1, [])
+    _file(module, "- {prompt: P?, options: [a, b], answer: a, subject: secret-course}\n")
+    _, lines = check_quiz.run(tmp_path, [])
+    assert len(lines) == 1 and "is not a course" in lines[0]
+
+
 def test_the_seeded_interview_quiz_passes_the_check() -> None:
     assert check_quiz.main(["interviewing"]) == 0

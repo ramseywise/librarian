@@ -1,3 +1,5 @@
+import type { z } from "zod";
+import { feedbackCreatedSchema, type myFeedbackSchema } from "../schemas/account";
 import { apiFetch, postJson } from "./api";
 
 export type FeedbackKind = "answer" | "page" | "lesson";
@@ -10,18 +12,11 @@ export interface FeedbackInput {
   body?: string;
 }
 
-export interface MyFeedback {
-  id: string;
-  ts: string;
-  kind: string;
-  target: string;
-  rating: number | null;
-  body: string | null;
-}
+export type MyFeedback = z.output<typeof myFeedbackSchema>;
 
 /** POST /api/feedback. Returns the new row id; throws ApiError on failure. */
 export async function sendFeedback(input: FeedbackInput): Promise<string> {
-  const r = await postJson<{ id: string }>("/api/feedback", input);
+  const r = await postJson(feedbackCreatedSchema, "/api/feedback", input);
   return r.id;
 }
 

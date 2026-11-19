@@ -62,6 +62,21 @@ describe("AppNav", () => {
     expect(container.querySelector(".check")).toBeNull();
   });
 
+  it("lists the folders of a course's only module under it, each opening on its readme", async () => {
+    const inRound = (id: string, title: string, section: string) => ({ ...lesson(`iv/rounds/${id}`, title), section });
+    const rounds = [{ ...courses[0], id: "iv", title: "Interviewing", modules: [{ ...courses[0].modules[0], id: "rounds", title: "Rounds", lessons: [
+      inRound("behavioral/readme", "Behavioral Round", "Behavioral"), inRound("case-study/readme", "Case Study", "Case study"),
+      inRound("behavioral/questions", "Questions", "Behavioral"), inRound("case-study/examples/a", "A", "Case study / Examples"),
+    ] }] }];
+    vi.stubGlobal("fetch", vi.fn(async (url: string) =>
+      new Response(JSON.stringify(url === "/api/courses" ? rounds : {}), { status: 200 })));
+    renderNav("/courses/iv/rounds/case-study/examples/a");
+    const group = within(await screen.findByRole("group", { name: "Interviewing" }));
+    expect(group.getByRole("link", { name: "Behavioral" })).toHaveAttribute("href", "#/courses/iv/rounds/behavioral/readme");
+    expect(group.getByRole("link", { name: "Case study" })).toHaveClass("is-current");
+    expect(group.getByRole("link", { name: "Behavioral" })).not.toHaveClass("is-current");
+  });
+
   it("fills the current module's row, and marks it as the page only on the module page", async () => {
     const { unmount } = renderNav("/courses/ds/01-ml/notes/trees");
     expect(await screen.findByRole("link", { name: "Classical ML" })).toHaveClass("is-current");

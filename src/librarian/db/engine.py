@@ -74,6 +74,15 @@ def get_engine(url: str | None = None) -> Engine:
     return engine
 
 
+def open_engine(url: str | None = None) -> Engine:
+    """A fresh engine for `url` that is not cached and migrates nothing (`librarian db check`).
+
+    The caller disposes it. `get_engine` upgrades a SQLite file on first use, which would hide
+    the very thing a check looks for.
+    """
+    return _build(url or database_url())
+
+
 def reset_engines() -> None:
     """Dispose every cached engine (tests, and a changed `DATABASE_URL`)."""
     with _lock:

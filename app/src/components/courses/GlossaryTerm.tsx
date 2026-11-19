@@ -63,6 +63,8 @@ export function GlossaryTerm({ label, def, children }: { label: string; def: str
     <span
       ref={ref}
       className="gloss-term"
+      // Focus opens the definition (aria-describedby), so keyboard users need to reach the term.
+      // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
       tabIndex={0}
       aria-describedby={id}
       onMouseEnter={show}

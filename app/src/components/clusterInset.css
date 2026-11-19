@@ -1,0 +1,66 @@
+/* The clusters-in-view inset (ClusterInset), bottom right of a focused level. */
+
+/* ---- Clusters in view: the atlas in small, bottom right of a focused level ---- */
+/* The map's bottom right corner: the inset and, when the chat column is closed, the bar under it. */
+.map-corner {
+  position: absolute;
+  right: var(--space-5);
+  bottom: var(--space-5);
+  z-index: var(--z-panel);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-3);
+  max-width: calc(100% - 96px);
+  pointer-events: none;
+}
+.map-corner > * { pointer-events: auto; }
+.cluster-inset {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-5) var(--space-3) var(--space-3);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+}
+.cluster-inset-ring { background: none; border: none; padding: 0; cursor: pointer; line-height: 0; border-radius: 50%; flex-shrink: 0; }
+.cluster-inset-ring svg { display: block; width: 132px; height: 132px; }
+.cluster-inset-arc { fill: none; stroke-width: 3; opacity: 0.28; }
+.cluster-inset-arc--lit { stroke-width: 6; opacity: 1; }
+.cluster-inset-tick { stroke-width: 1.5; stroke-linecap: round; }
+.cluster-inset-anchor { fill: var(--text-strong); stroke: var(--surface-raised); stroke-width: 1.5; }
+.cluster-inset-list { display: flex; flex-direction: column; gap: 2px; width: 172px; }
+.cluster-inset-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: none;
+  border: none;
+  padding: 2px 0;
+  font-size: var(--fs-md);
+  font-family: inherit;
+  color: var(--text-soft);
+  text-align: left;
+  cursor: pointer;
+}
+.cluster-inset-row:hover, .cluster-inset-row:focus-visible { color: var(--text-strong); }
+.cluster-inset-swatch { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+.cluster-inset-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cluster-inset-count { color: var(--text-faint); font-variant-numeric: tabular-nums; }
+.cluster-inset-around { margin-top: var(--space-1); font-size: var(--fs-sm); color: var(--text-faint); white-space: nowrap; }
+.cluster-inset-point {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-left: var(--space-2);
+  border-radius: 50%;
+  border: 1px dotted var(--text-soft);
+}
+.cluster-inset-point:first-child { margin-left: 0; }
+.cluster-inset-point--near { border: none; background: var(--text-soft); }
+
+/* Below 760px the list goes; the ring stays. */
+@media (max-width: 759px) {
+  .cluster-inset-list { display: none; }
+}

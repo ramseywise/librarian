@@ -32,7 +32,7 @@ import structlog
 from bs4 import BeautifulSoup
 
 from librarian.config import get_settings
-from librarian.ingest.base import ScraperBase, request_with_retry
+from librarian.ingest.base import ScraperBase, request_with_retry, safe_client
 
 log = structlog.get_logger(__name__)
 
@@ -422,7 +422,7 @@ def fetch_recent(
         if not source.enabled:
             log.info("feeds.skipped_disabled", feed=source.key, note=source.note)
 
-    with httpx.Client(timeout=30, follow_redirects=True, headers=HEADERS) as client:
+    with safe_client(timeout=30, headers=HEADERS) as client:
         for i, source in enumerate(active):
             if i > 0:
                 time.sleep(RATE_LIMIT_SLEEP)

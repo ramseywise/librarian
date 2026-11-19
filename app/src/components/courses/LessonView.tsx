@@ -1,3 +1,4 @@
+import { ResourceNotice } from "../ResourceNotice";
 import { useEffect, useMemo, useRef, useState, type ComponentProps, type MouseEvent } from "react";
 import type { Lesson, Deck, LabOutline } from "./types";
 import { useGlossary } from "../../hooks/useGlossary";
@@ -51,8 +52,8 @@ export function LessonView({ lesson, courseTitle, decks = [], done, onMarkDone, 
   const proseRef = useRef<HTMLDivElement>(null);
   const body = stripDuplicateH1(lesson.body, lesson.title);
   const parts = lesson.kind === "drill" ? splitSolution(body) : null;
-  // A note is read, then tested, then run: its review table and its code sit on their own tabs. A drill is
-  // one exercise, shown whole.
+  // A note is read, then tested, then run: its questions open the lecture as its objectives, their answers are
+  // its flashcards, and its code sits on its own tab. A drill is one exercise, shown whole.
   const split = useMemo(() => (lesson.kind === "drill" ? null : splitLesson(body)), [lesson.kind, body]);
   const hasStudy = !!(split?.review || lesson.quizCount || lesson.flashcardCount || lesson.problemCount);
   const hasLabs = !!(split?.exercises || split?.code || lesson.labs?.length);
@@ -66,7 +67,7 @@ export function LessonView({ lesson, courseTitle, decks = [], done, onMarkDone, 
   const deck = decks.find((d) => d.id.split("/").pop() === lesson.id.split("/").pop())
     ?? decks.find((d) => lesson.id.startsWith(`${d.id}/`));
   const exercises = split?.exercises ? splitSolution(split.exercises) : null;
-  const glossary = useGlossary(null, true);
+  const { data: glossary, error: glossaryError, retry: retryGlossary } = useGlossary(null, true);
   useEffect(() => {
     setShowSolution(false);
     setTab("lecture");
@@ -124,6 +125,7 @@ export function LessonView({ lesson, courseTitle, decks = [], done, onMarkDone, 
             {lesson.section && <> · {lesson.section}</>}
           </div>
           <h1 className="lesson-title">{lesson.title}</h1>
+          {glossaryError && <ResourceNotice what="The glossary" error={glossaryError} onRetry={retryGlossary} />}
           {lesson.drill && (
             <div className="lesson-drill">
               <DrillBadges drill={lesson.drill} />
@@ -169,12 +171,21 @@ export function LessonView({ lesson, courseTitle, decks = [], done, onMarkDone, 
                     <span className="lesson-lab-purpose">{deck.subtitle || "The idea and the objectives, as slides. Start here."}</span>
                   </a>
                 )}
+                {split.objectives && (
+                  <section className="lesson-objectives" aria-label="Objectives">
+                    <h2 className="section-label">After this note you can answer</h2>
+                    <div className="lesson-prose">{md(split.objectives)}</div>
+                  </section>
+                )}
+                {/* Delegated click: the "Code N" links inside are real anchors, so the keyboard already reaches them. */}
+                {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
                 <div className="lesson-prose" onClick={openCode}>{md(split.lecture)}</div>
               </>
             ) : tab === "study" ? (
               <>
                 <StudyLevels {...levels} />
-                {split.review && <div className="lesson-prose">{md(split.review)}</div>}
+                {/* The rows are the note's flashcards; without any, the table is the only place the answers are. */}
+                {split.review && !lesson.flashcardCount && <div className="lesson-prose">{md(split.review)}</div>}
                 {!hasStudy && <p className="lesson-empty">No review questions for this lesson yet.</p>}
               </>
             ) : (

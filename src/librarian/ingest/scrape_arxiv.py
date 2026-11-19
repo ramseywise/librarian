@@ -24,7 +24,7 @@ import httpx
 import structlog
 
 from librarian.config import get_settings
-from librarian.ingest.base import ScraperBase, request_with_retry
+from librarian.ingest.base import ScraperBase, request_with_retry, safe_client
 
 log = structlog.get_logger(__name__)
 
@@ -219,7 +219,7 @@ def fetch_recent(
     seen_ids: set[str] = set()
     papers: list[Paper] = []
 
-    with httpx.Client(timeout=30, follow_redirects=True) as client:
+    with safe_client(timeout=30) as client:
         for i, category in enumerate(categories):
             if i > 0:
                 time.sleep(RATE_LIMIT_SLEEP)

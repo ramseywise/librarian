@@ -1,10 +1,11 @@
-import { useState, useCallback, useEffect, useMemo, useRef, lazy, Suspense } from "react";
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { WikiGraph } from "./components/WikiGraph";
+import { CourseLayer } from "./CourseLayer";
 import { AppNav } from "./components/AppNav";
 import { ChatPanel } from "./components/ChatPanel";
-import { NodeDetailPanel } from "./components/NodeDetailPanel";
 import { pageTitle, useDocumentTitle } from "./components/courses/useDocumentTitle";
 import { useChatStream, type ChatContext, type LabChatContext, type StudyChatContext } from "./hooks/useChatStream";
+import { parseRoute } from "./routes";
 import { useHashRoute } from "./hooks/useHashRoute";
 import { useSlashSearch } from "./hooks/useSlashSearch";
 import { ThemeToggle } from "./components/ThemeToggle";
@@ -12,45 +13,29 @@ import { UserMenu } from "./components/account/UserMenu";
 import { useAuthConfig, useMe } from "./hooks/useAuth";
 import type { SelectedNode } from "./types";
 import { tagFacet } from "./utils/curriculum";
-import "./theme/tokens.css";
-import "./theme/components.css";
 
 /** Below this width the chat panel overlays the main area instead of sitting beside it.
- *  Keep in sync with the 1099px media queries in theme/components.css. */
+ *  Keep in sync with the 1099px media queries in theme/ui.css. */
 const NARROW_QUERY = "(max-width: 1099px)";
 const isNarrow = () =>
   typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia(NARROW_QUERY).matches;
 
-// Courses, Practice and Labs pull in react-markdown + KaTeX (Labs, CodeMirror); load them only when opened.
-const CoursesView = lazy(() =>
-  import("./components/courses/CoursesView").then((m) => ({ default: m.CoursesView }))
-);
-const FlashcardsView = lazy(() =>
-  import("./components/courses/FlashcardsView").then((m) => ({ default: m.FlashcardsView }))
-);
-const SlidesView = lazy(() =>
-  import("./components/courses/SlidesView").then((m) => ({ default: m.SlidesView }))
-);
-const QuizView = lazy(() =>
-  import("./components/courses/QuizView").then((m) => ({ default: m.QuizView }))
-);
-const StudyHome = lazy(() =>
-  import("./components/courses/StudyHome").then((m) => ({ default: m.StudyHome }))
-);
-const PracticeView = lazy(() =>
-  import("./components/courses/PracticeView").then((m) => ({ default: m.PracticeView }))
-);
-const LabsView = lazy(() =>
-  import("./components/courses/LabsView").then((m) => ({ default: m.LabsView }))
-);
-const LabWorkspace = lazy(() =>
-  import("./components/courses/LabWorkspace").then((m) => ({ default: m.LabWorkspace }))
-);
-const LoginView = lazy(() => import("./components/account/LoginView").then((m) => ({ default: m.LoginView })));
-const AdminView = lazy(() => import("./components/account/AdminView").then((m) => ({ default: m.AdminView })));
-const PrivacyView = lazy(() =>
-  import("./components/account/PrivacyView").then((m) => ({ default: m.PrivacyView }))
-);
+const NAV_HIDDEN_KEY = "librarian:nav-hidden";
+// Storage can be blocked (private window); the sidebar then just starts open.
+function readFlag(key: string): boolean {
+  try {
+    return localStorage.getItem(key) === "1";
+  } catch {
+    return false;
+  }
+}
+function writeFlag(key: string, on: boolean) {
+  try {
+    localStorage.setItem(key, on ? "1" : "0");
+  } catch {
+    // Not remembered.
+  }
+}
 
 export default function App() {
   const [highlightedPages, setHighlightedPages] = useState<Set<string>>(new Set());
@@ -59,8 +44,19 @@ export default function App() {
   // Open beside the graph on wide screens; on narrow ones it would cover the page on load.
   const [chatOpen, setChatOpen] = useState(() => !isNarrow());
   const chatToggleRef = useRef<HTMLButtonElement>(null);
-  // Narrow screens only: the navigation is a drawer behind the Menu button (CSS shows it otherwise).
+  // The slot under the chat that the map's bar is drawn in; null while the chat is closed.
+  const [mapDock, setMapDock] = useState<HTMLElement | null>(null);
+  // Narrow screens: the navigation is a drawer behind the Menu button. Wide ones: a sidebar the
+  // same button slides away, which is remembered.
   const [navOpen, setNavOpen] = useState(false);
+  const [navHidden, setNavHidden] = useState(() => readFlag(NAV_HIDDEN_KEY));
+  const toggleNav = () => {
+    if (isNarrow()) return setNavOpen((o) => !o);
+    setNavHidden((h) => {
+      writeFlag(NAV_HIDDEN_KEY, !h);
+      return !h;
+    });
+  };
   const navToggleRef = useRef<HTMLButtonElement>(null);
   const mainRef = useRef<HTMLElement>(null);
   const [focusPage, setFocusPage] = useState<string | null>(null);
@@ -69,25 +65,14 @@ export default function App() {
   useSlashSearch();
   const authConfig = useAuthConfig();
   const me = useMe();
-  const inLogin = route === "/login" || route.startsWith("/login?");
-  const inAdmin = route === "/admin";
-  const inPrivacy = route === "/privacy";
-  const inAccount = inLogin || inAdmin || inPrivacy;
-  const inPractice = route === "/practice";
-  const inLabs = route === "/labs" || route.startsWith("/labs/");
-  const labId = route.startsWith("/labs/") ? route.slice("/labs/".length) : "";
-  const inFlashcards = route.startsWith("/flashcards/");
-  const inStudy = route === "/study";
-  const inSlides = route.startsWith("/slides/");
-  const inQuiz = route.startsWith("/quiz/");
+  const page = parseRoute(route);
+  const inLogin = page?.page === "login";
   // Every page drawn over the graph; the graph stays mounted underneath.
-  const inCourses =
-    route === "/courses" || route.startsWith("/courses/") || inPractice || inLabs || inFlashcards || inStudy || inSlides || inQuiz || inAccount;
-  const courseRoute = route.replace(/^\/courses\/?/, "");
+  const inCourses = page !== null;
   // Course views set their own titles; the graph's is set here.
   useDocumentTitle(inCourses ? null : pageTitle("Graph"));
 
-  // A tag on the page panel is the same filter as its chip in the map sidebar.
+  // A tag on a page's open card is the same filter as its chip in the map sidebar.
   const handleTagClick = useCallback((tag: string) => {
     const id = tagFacet(tag);
     setActiveTags((prev) => {
@@ -127,7 +112,7 @@ export default function App() {
   const handleSend = useCallback(
     (query: string) => {
       lastQueryRef.current = query;
-      sendQuery(query, chatContextRef.current?.() ?? null);
+      void sendQuery(query, chatContextRef.current?.() ?? null);
     },
     [sendQuery]
   );
@@ -235,9 +220,9 @@ export default function App() {
             ref={navToggleRef}
             type="button"
             className="pill-btn app-menu-btn"
-            aria-expanded={navOpen}
+            aria-expanded={isNarrow() ? navOpen : !navHidden}
             aria-controls="app-sidenav"
-            onClick={() => setNavOpen((o) => !o)}
+            onClick={toggleNav}
           >
             Menu
           </button>
@@ -264,44 +249,21 @@ export default function App() {
       </header>
 
       <div className="app-body">
-        {!inLogin && <AppNav id="app-sidenav" route={route} open={navOpen} />}
-        {navOpen && <div className="app-sidenav-backdrop" onClick={() => setNavOpen(false)} />}
+        {!inLogin && <AppNav id="app-sidenav" route={route} open={navOpen} hidden={navHidden} />}
+        {navOpen && <div className="app-sidenav-backdrop" aria-hidden="true" onClick={() => setNavOpen(false)} />}
         <main className="app-main" ref={mainRef}>
-          {inCourses && (
-            <div className="app-course-layer">
-              <Suspense fallback={<div className="app-loading">Loading…</div>}>
-                {inLogin ? (
-                  <LoginView route={route} />
-                ) : inAdmin ? (
-                  <AdminView />
-                ) : inPrivacy ? (
-                  <PrivacyView />
-                ) : inStudy ? (
-                  <StudyHome />
-                ) : inSlides ? (
-                  <SlidesView deckId={route.slice("/slides/".length)} onAsk={askAbout} />
-                ) : inQuiz ? (
-                  <QuizView quizId={route.slice("/quiz/".length)} onChatContext={setStudyContext} />
-                ) : labId ? (
-                  <LabWorkspace
-                    key={labId}
-                    labId={labId}
-                    onOpenLesson={openLesson}
-                    onBack={() => navigate("/labs")}
-                    onAsk={askAbout}
-                    onChatContext={setLabContext}
-                  />
-                ) : inLabs ? (
-                  <LabsView onOpenLab={openLab} onOpenLesson={openLesson} onOpenDrills={() => navigate("/practice")} />
-                ) : inPractice ? (
-                  <PracticeView onOpenLesson={openLesson} onOpenConcept={openConcept} />
-                ) : inFlashcards ? (
-                  <FlashcardsView deckId={route.slice("/flashcards/".length)} onChatContext={setStudyContext} />
-                ) : (
-                  <CoursesView route={courseRoute} navigate={navigate} onOpenConcept={openConcept} onAsk={askAbout} />
-                )}
-              </Suspense>
-            </div>
+          {page && (
+            <CourseLayer
+              page={page}
+              route={route}
+              navigate={navigate}
+              openLesson={openLesson}
+              openLab={openLab}
+              openConcept={openConcept}
+              askAbout={askAbout}
+              setLabContext={setLabContext}
+              setStudyContext={setStudyContext}
+            />
           )}
 
           {/* Graph panel — stays mounted (and sized, so React Flow can measure) under courses. */}
@@ -310,24 +272,18 @@ export default function App() {
             <WikiGraph
               highlightedPages={highlightedPages}
               onNodeSelect={setSelectedNode}
+              selectedId={selectedNode?.id ?? null}
+              lastQuery={lastQueryRef.current}
+              onTagClick={handleTagClick}
+              activePageTags={activePageTags}
+              onOpenLesson={openLesson}
               onBrief={handleBrief}
               activeTags={activeTags}
               onActiveTagsChange={setActiveTags}
               focusPage={inCourses ? null : focusPage}
               onFocusApplied={clearFocus}
+              dock={mapDock}
             />
-            {selectedNode && (
-              <NodeDetailPanel
-                nodeId={selectedNode.id}
-                data={selectedNode.data}
-                highlighted={highlightedPages.has(selectedNode.id)}
-                lastQuery={lastQueryRef.current}
-                onClose={() => setSelectedNode(null)}
-                onTagClick={handleTagClick}
-                activeTags={activePageTags}
-                onOpenLesson={openLesson}
-              />
-            )}
           </div>
         </main>
 
@@ -343,6 +299,7 @@ export default function App() {
               onStop={stop}
               onClear={clear}
             />
+            <div ref={setMapDock} className="app-map-dock" hidden={inCourses} />
           </aside>
         )}
       </div>

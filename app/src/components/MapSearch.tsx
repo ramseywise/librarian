@@ -79,6 +79,8 @@ export function MapSearch({ value, onChange, result, onOpenPage }: Props) {
       <ul id={listId} role="listbox" aria-label="Search results" className="map-search-list" hidden={!showList}>
         {hits.length === 0 && showList && <li className="map-search-none">No matches</li>}
         {hits.map((hit, i) => (
+          // Keyboard use goes through the combobox input (aria-activedescendant), so options take no key events.
+          // eslint-disable-next-line jsx-a11y/click-events-have-key-events
           <li
             key={`${hit.kind}:${hit.id}`}
             id={`${listId}-${i}`}

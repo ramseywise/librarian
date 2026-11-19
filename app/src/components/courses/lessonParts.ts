@@ -1,10 +1,14 @@
-/** A lesson note split by what the reader does with each part: read it (lecture), answer it (review) or run it
- * (exercises and code). The notes are written as one file: prose with code after each idea, then `## Try it`
- * and `## Interview checklist`. Each part is markdown, empty when the note has none of it. */
+/** A lesson note split by what the reader does with each part: read it (lecture), answer it (objectives and
+ * review) or run it (exercises and code). The notes are written as one file: prose with code after each idea, then
+ * `## Try it` and `## Interview checklist`. Each part is markdown, empty when the note has none of it. */
 export interface LessonParts {
   /** The prose. A code block that moved to `code` leaves a `[Code N in Labs →](#code-N)` link in its place. */
   lecture: string;
-  /** The `## Interview checklist` table, under the heading "Review questions". */
+  /** The questions of the `## Interview checklist` table as a numbered list: what the note leaves you able to
+   * answer. The answers are the note's flashcards. */
+  objectives: string;
+  /** The `## Interview checklist` table, under the heading "Review questions": shown only for a note whose rows
+   * are not flashcards, so its answers are still somewhere. */
   review: string;
   /** The `## Try it` exercises, as written. */
   exercises: string;
@@ -22,6 +26,15 @@ const MIN_CODE_LINES = 4;
 const FENCE_RE = /^ {0,3}(`{3,}|~{3,})\s*([\w+#.-]*)/;
 const HEADING_RE = /^(#{2,3})\s+(.+?)\s*#*\s*$/;
 const RULE_RE = /^ {0,3}(?:-{3,}|\*{3,}|_{3,})\s*$/;
+
+const CELL_SPLIT_RE = /(?<!\\)\|/;
+const SEPARATOR_RE = /^[\s:|-]+$/;
+
+/** The first cell of each row of the review table, header and separator aside. */
+function prompts(review: string[]): string[] {
+  const rows = review.filter((line) => line.trimStart().startsWith("|") && !SEPARATOR_RE.test(line));
+  return rows.slice(1).map((row) => row.split(CELL_SPLIT_RE)[1]?.trim() ?? "").filter(Boolean);
+}
 
 type Bucket = "lecture" | "review" | "exercises";
 
@@ -100,6 +113,7 @@ export function splitLesson(body: string): LessonParts {
 
   return {
     lecture: trimEnd(out.lecture),
+    objectives: prompts(out.review).map((q, i) => `${i + 1}. ${q}`).join("\n"),
     review: trimEnd(out.review),
     exercises: trimEnd(out.exercises),
     code: code.length ? `## Code from this lesson\n\n${trimEnd(code)}` : "",

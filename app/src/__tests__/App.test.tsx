@@ -60,7 +60,9 @@ describe("App", () => {
     window.location.hash = "#/courses";
     await renderApp();
     await waitFor(() => expect(window.location.hash).toBe(`#/login?next=${encodeURIComponent("/courses")}`));
-    act(() => window.dispatchEvent(new HashChangeEvent("hashchange")));
+    act(() => {
+      window.dispatchEvent(new HashChangeEvent("hashchange"));
+    });
     const google = await screen.findByRole("link", { name: "Continue with Google" });
     expect(google).toHaveAttribute("href", `/auth/login/google?next=${encodeURIComponent("/#/courses")}`);
     expect(screen.getByLabelText("Email me a sign-in link")).toBeInTheDocument();

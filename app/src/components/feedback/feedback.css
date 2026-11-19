@@ -15,7 +15,7 @@
 .rate-btn:disabled { opacity: 0.6; cursor: default; }
 .feedback-link { font-size: var(--fs-sm); }
 .feedback-status { color: var(--text-soft); }
-.feedback-error { color: var(--danger, #c62828); margin-top: var(--space-1); }
+.feedback-error { color: var(--danger); margin-top: var(--space-1); }
 .feedback-form { display: flex; gap: var(--space-2); align-items: flex-start; margin-top: var(--space-2); }
 .feedback-form--stack { flex-direction: column; align-items: stretch; }
 .feedback-textarea {

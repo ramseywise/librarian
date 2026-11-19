@@ -1,0 +1,231 @@
+/* UI primitives and the app shell. Values come from tokens.css; import order is tokens.css, then this
+   file, both from main.tsx only. Component styles live beside their components (graph.css, filter.css,
+   card.css, clusterInset.css, chat/chat.css, atlas.css, courses/*.css). Data-driven colours reach
+   a rule as the --c custom property, set inline by the component.
+
+   Class catalogue
+   Utilities     .grow  .text-success  .text-concept  .sr-only
+   Buttons       .pill-btn (+ --accent)   .toggle-btn   .seg > .seg-btn   .btn-row
+   Notices       .resource-notice (a failed load and its Retry button)
+   Labels        .panel-label (+ --spaced)   .float-panel   .check (+ .is-on)
+   Shell         .app  .app-header  .app-brand  .app-header-actions  .app-menu-btn  .app-body
+                 .app-sidenav (+ .is-open .is-hidden)  .app-sidenav-backdrop  .sidenav-*
+                 .app-main  .app-course-layer  .app-graph-layer  .app-loading
+                 .app-chat  .app-map-dock  .map-browse
+   Breakpoints   below 1100px the navigation is a drawer and the chat overlays the main area;
+                 keep in sync with NARROW_QUERY in App.tsx. */
+
+/* ---- Utilities ---------------------------------------------------------------- */
+.grow { flex: 1; }
+.text-success { color: var(--success); }
+.text-concept { color: var(--concept); }
+
+/* ---- Buttons ----------------------------------------------------------- */
+.pill-btn {
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  color: var(--text-secondary);
+  font-size: var(--fs-sm);
+  padding: 3px var(--space-4);
+  cursor: pointer;
+}
+.pill-btn--accent {
+  background: var(--accent-wash);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ---- Notices ------------------------------------------------------------------ */
+.resource-notice {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  color: var(--error-note);
+  font-size: var(--fs-sm);
+  padding: var(--space-3) var(--space-5);
+}
+
+/* ---- App shell ---------------------------------------------------------------- */
+.app { width: 100vw; height: 100vh; display: flex; flex-direction: column; }
+.app-header {
+  height: var(--header-h);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-7);
+  font-size: var(--fs-base);
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+.app-brand { color: var(--text); font-weight: 600; margin-right: var(--space-3); }
+.app-header-actions { margin-left: auto; display: flex; gap: var(--space-3); align-items: center; }
+
+.app-body { flex: 1; overflow: hidden; display: flex; position: relative; }
+/* The one navigation, down the left of every page. Nothing in it is opened by hand. */
+.app-sidenav {
+  width: var(--sidebar-w); flex-shrink: 0; overflow-y: auto; padding: var(--space-4) 0 var(--space-8);
+  border-right: 1px solid var(--border); background: var(--surface-sidebar);
+}
+.sidenav-item {
+  display: flex; align-items: center; gap: var(--space-3); padding: 5px var(--space-6); line-height: 1.4;
+  border-left: 2px solid transparent; color: var(--text-soft); font-size: var(--fs-nav); text-decoration: none;
+}
+.sidenav-item:hover { color: var(--text); }
+.sidenav-item--top { color: var(--text); font-size: var(--fs-base); font-weight: 600; padding-top: var(--space-3); padding-bottom: var(--space-3); }
+.sidenav-item--module { font-size: var(--fs-xl); color: var(--text); padding: 5px var(--space-5) 5px var(--space-6); margin: 0 var(--space-3); border-left: 0; border-radius: var(--radius-md, 6px); }
+.sidenav-item--module:hover { background: var(--surface-raised); }
+.sidenav-item--section { font-size: var(--fs-md); padding: 3px var(--space-5) 3px var(--space-8); margin: 0 var(--space-3); border-left: 0; border-radius: var(--radius-md, 6px); }
+.sidenav-item--section:hover { background: var(--surface-raised); }
+.sidenav-item.is-within { color: var(--text); font-weight: 600; }
+.sidenav-item[aria-current="page"], .sidenav-item.is-current { background: var(--surface-selected); border-left-color: var(--accent); color: var(--accent-text); }
+.sidenav-item--module.is-current, .sidenav-item--module[aria-current="page"] { font-weight: 600; }
+/* A course: an uppercase group label, a link to the course's page. */
+.sidenav-group { margin-top: var(--space-6); }
+.sidenav-label {
+  display: block; padding: 2px var(--space-6) var(--space-2) var(--space-8); font-size: var(--fs-md); letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--text-faint); text-decoration: none;
+}
+.sidenav-label:hover, .sidenav-label.is-within, .sidenav-label[aria-current="page"] { color: var(--text); }
+/* "Core" and "Advanced" inside a course that sorts its modules. */
+.sidenav-sublabel { padding: var(--space-2) var(--space-6) 1px var(--space-8); font-size: var(--fs-sm); color: var(--text-faint); }
+.sidenav-count { margin-left: auto; color: var(--text-faint); font-size: var(--fs-md); font-variant-numeric: tabular-nums; }
+.app-sidenav-backdrop { display: none; }
+.app-menu-btn { margin-right: var(--space-4); }
+/* Wide screens: the Menu button slides the navigation away, and the page takes its width. */
+@media (min-width: 1100px) {
+  .app-sidenav { transition: margin-left var(--dur-base) ease, visibility var(--dur-base); }
+  .app-sidenav.is-hidden { margin-left: calc(-1 * var(--sidebar-w)); visibility: hidden; }
+}
+.check {
+  flex-shrink: 0; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border-emphasis); background: transparent; color: var(--success); line-height: 1;
+}
+.check.is-on { border-color: var(--success); background: color-mix(in srgb, var(--success) 20%, transparent); }
+/* Below 1100px the navigation is a drawer behind the Menu button. */
+@media (max-width: 1099px) {
+  .app-sidenav {
+    position: absolute; top: 0; bottom: 0; left: 0; width: min(var(--sidebar-w), 85%); z-index: var(--z-drawer);
+    transform: translateX(-100%); visibility: hidden; transition: transform var(--dur-base) ease, visibility var(--dur-base);
+    box-shadow: var(--shadow-overlay);
+  }
+  .app-sidenav.is-open { transform: none; visibility: visible; }
+  .app-sidenav-backdrop { display: block; position: absolute; inset: 0; z-index: calc(var(--z-drawer) - 1); background: rgba(0, 0, 0, 0.5); }
+}
+.app-main { flex: 1; overflow: hidden; position: relative; min-width: 0; }
+.app-course-layer { position: absolute; inset: 0; z-index: 1; background: var(--bg); }
+.app-graph-layer { position: absolute; inset: 0; overflow: hidden; }
+.app-loading { padding: var(--space-9); color: var(--text-muted); font-size: var(--fs-base); }
+.app-loading .pill-btn { margin-top: var(--space-5); }
+.app-chat {
+  width: var(--chat-w);
+  border-left: 1px solid var(--border);
+  flex-shrink: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.app-chat > .chat-panel { flex: 1; min-height: 0; height: auto; }
+/* Under the chat: the clusters in view, then the map's controls (WikiGraph portals them here while
+   the chat column is open). */
+.app-map-dock {
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  /* The chat keeps at least the rest; the filters scroll inside the dock, not the column. */
+  max-height: 62%;
+  min-height: 0;
+}
+/* The ring small, its list beside it, so the filters under it get the room. */
+.app-map-dock .cluster-inset { background: none; border: none; padding: 0; flex-shrink: 0; }
+.app-map-dock .cluster-inset-ring svg { width: 112px; height: 112px; }
+.app-map-dock .cluster-inset-list { width: auto; flex: 1; min-width: 0; }
+.map-browse { display: flex; align-items: center; gap: var(--space-3); }
+.map-browse .panel-label { display: none; margin: 0; white-space: nowrap; }
+.app-map-dock .map-browse { flex-basis: 100%; }
+.app-map-dock .map-browse .panel-label { display: block; }
+.app-map-dock .map-browse .seg { flex: 1; }
+.app-map-dock .map-browse .seg-btn { flex: 1; padding: var(--space-2) var(--space-4); font-size: var(--fs-md); }
+.app-map-dock .map-browse .seg-btn[aria-pressed="true"] { background: var(--accent-fill); color: var(--on-fill); font-weight: 600; }
+@media (max-height: 820px) {
+  .app-map-dock .cluster-inset-ring svg { width: 88px; height: 88px; }
+}
+.app-map-dock:empty, .app-map-dock[hidden] { display: none; }
+
+/* ---- Controls and labels ------------------------------------------------------ */
+.float-panel {
+  position: absolute;
+  z-index: var(--z-panel);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-6);
+}
+.panel-label {
+  width: 100%;
+  font-size: var(--fs-xs);
+  color: var(--text-faint);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 2px;
+}
+.panel-label--spaced { margin-bottom: var(--space-3); }
+.btn-row { display: flex; gap: var(--space-2); }
+.toggle-btn {
+  padding: var(--space-1) var(--space-4);
+  border-radius: 5px;
+  font-size: var(--fs-md);
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--text-faint);
+}
+.toggle-btn[aria-pressed="true"] {
+  background: var(--surface-active);
+  border-color: var(--border-pressed);
+  color: var(--text);
+}
+
+.seg {
+  display: flex;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.seg-btn {
+  padding: 5px var(--space-6);
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  color: var(--text-ghost);
+}
+.seg-btn[aria-pressed="true"] { background: var(--surface-active); color: var(--text); }
+
+/* ---- Breakpoint: below 1100px the chat overlays the main area ----------------- */
+@media (max-width: 1099px) {
+  .app-chat {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(var(--chat-w), 100%);
+    z-index: var(--z-overlay);
+    box-shadow: var(--shadow-overlay);
+  }
+}
+
+/* Visually hidden, still announced by screen readers. */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}

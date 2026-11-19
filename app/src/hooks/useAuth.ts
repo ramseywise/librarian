@@ -1,30 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { z } from "zod";
+import { authConfigSchema, loginMethodSchema, meSchema } from "../schemas/account";
 import { apiFetch, apiJson, setToken } from "../utils/api";
 
-export type LoginMethod = "google" | "github" | "email";
-
-export interface AuthConfig {
-  methods: LoginMethod[];
-  open: boolean; // no token and no login configured: everyone is the owner (local use)
-}
-
-export interface Me {
-  id: string;
-  email: string;
-  name: string | null;
-  role: "admin" | "member";
-  timezone: string;
-  scopes: string[];
-  /** Active experiment variant for this user; may be empty. */
-  experiment?: string;
-  chat: { spent_today_usd: number; daily_budget_usd: number | null };
-}
+export type LoginMethod = z.output<typeof loginMethodSchema>;
+export type AuthConfig = z.output<typeof authConfigSchema>;
+export type Me = z.output<typeof meSchema>;
 
 export function useAuthConfig(): AuthConfig | null {
   const [config, setConfig] = useState<AuthConfig | null>(null);
   useEffect(() => {
     let cancelled = false;
-    apiJson<AuthConfig>("/api/auth/config")
+    apiJson(authConfigSchema, "/api/auth/config")
       .then((c) => !cancelled && setConfig(c))
       .catch(() => !cancelled && setConfig({ methods: [], open: false }));
     return () => {
@@ -41,7 +28,7 @@ export function useMe(): Me | null {
   useEffect(() => {
     let cancelled = false;
     const load = () =>
-      apiJson<Me>("/api/me")
+      apiJson(meSchema, "/api/me")
         .then((m) => {
           known.current = true;
           if (!cancelled) setMe(m);

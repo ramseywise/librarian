@@ -1,0 +1,10 @@
+# Copy to envs/staging.tfvars (gitignored) and edit. Contains no secret.
+# A separate host for staging. docs/ops/staging.md also describes a second stack on the
+# production host, which needs no second host: then you do not need this file.
+region          = "eu-west-1"
+environment     = "staging"
+architecture    = "x86_64"
+instance_type   = "t3.large" # unmeasured; staging runs the same image and the same services
+volume_size_gb  = 40
+domain          = "staging.librarian.example.org"
+route53_zone_id = null

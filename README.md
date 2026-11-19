@@ -311,7 +311,7 @@ module/lesson sidebar with progress, rendered lessons (GFM, KaTeX math, images, 
 code), on-page TOC, and lesson search. Lessons are linked to wiki pages — explicit
 `wiki: [page-id]` frontmatter, inline `[[wikilinks]]`, and verbatim mentions of multi-word
 wiki titles — so "Concepts in the graph" jumps to the node in the graph, and a graph
-node's detail panel lists the lessons that cover it. Progress is per-browser (localStorage).
+node's open card lists the lessons that cover it. Progress is per-browser (localStorage).
 
 Content is plain markdown, laid out `<course>/<module>/[section dirs/]<lesson>.md` with
 `_course.md` / `_module.md` frontmatter (`title`, `summary`, `order`). Lessons are authored

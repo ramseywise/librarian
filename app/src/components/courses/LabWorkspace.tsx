@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { LabChatContext } from "../../hooks/useChatStream";
 import { outputText, useLabRun, type LabRunMode } from "../../hooks/useLabRun";
 import { useTheme } from "../../hooks/useTheme";
+import { labDetailSchema } from "../../schemas/courses";
 import { apiJson } from "../../utils/api";
 import { changedFiles, languageLabel, moduleLabel, runVerdict } from "../../utils/labs";
 import type { LabDetail } from "./types";
@@ -54,7 +55,7 @@ export function LabWorkspace({ labId, onOpenLesson, onBack, onAsk, onChatContext
   // App keys this component by lab id, so the state above is always this lab's.
   useEffect(() => {
     let live = true;
-    apiJson<LabDetail>(`/api/courses/labs/${labId}`).then(
+    apiJson(labDetailSchema, `/api/courses/labs/${labId}`).then(
       (d) => {
         if (!live) return;
         setLab(d);

@@ -24,3 +24,13 @@ If a release did break that rule, rolling back the image is not enough: `./libra
 
 Content (wiki, courses) is separate: `./librarian content push`. Previous images stay on the host (nothing here prunes
 them); do not prune the two named in `.ops/image.prev` and `.ops/image.prev2`.
+
+## Not verified
+
+- `./librarian upgrade` has never run on a host or against real Docker and a real registry. A test runs it against a
+  fake `docker` and shows an image that never answers `/readyz` is replaced by the old tag; that proves the script's
+  control flow, not that an old image still starts on a migrated database.
+- The 300-second readiness wait: no cold start has been timed on a real host.
+- That a backup younger than 15 minutes can be taken from the `backup` service against a real bucket. No bucket is
+  configured.
+- That `production` and `sha-` tags exist and are pullable (see the note in `deploy.md`).

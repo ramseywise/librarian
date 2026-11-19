@@ -176,6 +176,67 @@ export function moduleEdges(
 const WEAK_RELATIONSHIPS = new Set(["related"]);
 const isStrong = (e: Link) => !!e.data?.relationship && !WEAK_RELATIONSHIPS.has(e.data.relationship);
 
+export interface RelatedGroup {
+  label: string;
+  /** Best-linked first, at most `RELATED_CAP`. */
+  ids: string[];
+  /** Pages in the group past the cap. */
+  more: number;
+}
+
+/** Most pages one group of a card's related list names. */
+export const RELATED_CAP = 6;
+
+/**
+ * How a typed link reads from each end. `- [[X]] — type` is written on the page X relates to, so
+ * an edge runs from that page to X: `out` is the label on the page holding the link, `in` the
+ * label on X. In the order the groups are listed.
+ */
+const RELATED_LABELS: [type: string, out: string, into: string][] = [
+  ["prerequisite-for", "Understand first", "Leads to"],
+  ["extends", "Built on by", "Builds on"],
+  ["instance-of", "Examples", "Instance of"],
+  ["alternative-to", "Alternatives", "Alternatives"],
+  ["contradicts", "Disagrees with", "Disagrees with"],
+  ["supersedes", "Superseded by", "Replaces"],
+];
+const RELATED_ORDER = [
+  "Understand first", "Builds on", "Built on by", "Leads to", "Examples", "Instance of",
+  "Alternatives", "Disagrees with", "Superseded by", "Replaces", "Related",
+];
+
+/**
+ * A page's wikilink neighbours, grouped by how they relate to it: the typed See Also links by
+ * type and direction, then everything else as "Related". A page is listed once, under its typed
+ * group when it has one.
+ */
+export function relatedGroups(
+  id: string,
+  edges: Link[],
+  degree: Map<string, number>,
+  cap = RELATED_CAP,
+): RelatedGroup[] {
+  const labelOf = new Map<string, string>();
+  for (const e of edges) {
+    const out = e.source === id;
+    if ((!out && e.target !== id) || e.source === e.target) continue;
+    const other = out ? e.target : e.source;
+    const typed = RELATED_LABELS.find(([type]) => type === e.data?.relationship);
+    const label = typed ? typed[out ? 1 : 2] : "Related";
+    if (label !== "Related" || !labelOf.has(other)) labelOf.set(other, label);
+  }
+  const groups = new Map<string, string[]>();
+  for (const [other, label] of labelOf) {
+    const list = groups.get(label);
+    if (list) list.push(other);
+    else groups.set(label, [other]);
+  }
+  return RELATED_ORDER.filter((label) => groups.has(label)).map((label) => {
+    const ids = groups.get(label)!.sort((a, b) => (degree.get(b) ?? 0) - (degree.get(a) ?? 0) || a.localeCompare(b));
+    return { label, ids: ids.slice(0, cap), more: Math.max(0, ids.length - cap) };
+  });
+}
+
 export interface Neighbourhood {
   ids: Set<string>;
   /** Hops out from the page that are in `ids`, whole or in part. */
@@ -265,6 +326,13 @@ export interface ViewState {
   anchorId?: string | null;
   /** Pages the map's search matches, while it has a query: the rest dim. */
   searchIds?: Set<string> | null;
+  /** The page whose card is open on the canvas. */
+  openId?: string | null;
+  /**
+   * Pairs (`a|b`, sorted) a cluster layout joins. With nothing focused only these are drawn; a
+   * click still shows every link of the clicked page.
+   */
+  skeleton?: Set<string> | null;
 }
 
 /**
@@ -307,7 +375,9 @@ export function applyView(nodes: GraphNode[], v: ViewState): GraphNode[] {
     const inSearch = v.searchIds?.has(n.id) ?? false;
     const highlighted = (hasChat ? inChat : fn ? inFocus : inTagFilter) || inSearch || n.id === v.anchorId;
     const dimmed = v.searchIds ? !inSearch : hasChat ? !inChat : fn ? !inFocus : false;
-    return { ...n, data: { ...n.data, highlighted, dimmed, enlarged: inChat } };
+    const expanded = n.id === v.openId;
+    // An open card sits over its neighbours, above a selected node's own lift.
+    return { ...n, zIndex: expanded ? 2000 : n.zIndex, data: { ...n.data, highlighted, dimmed, enlarged: inChat, expanded } };
   });
 }
 
@@ -334,7 +404,8 @@ export interface EdgeSources {
  * - The toggled-on types only. Tag-shared is off by default: it was ~19k of the edges under
  *   a large filter and froze the tab for over a second.
  * - Chat highlight: only edges touching a highlighted page. Focus: only edges touching
- *   the focused node. Filter: only edges with both ends in the subgraph.
+ *   the focused node. Cluster layout: only the pairs it joins. Filter: only edges with both ends
+ *   in the subgraph.
  * - Tag-shared edges are additionally pruned to those with at least one *emphasised*
  *   endpoint: a highlighted node, or else a non-dimmed node when some are dimmed. With
  *   nothing highlighted or dimmed (no filter/focus/chat) none are emphasised, so no
@@ -375,6 +446,8 @@ export function visibleEdges(
       if (!hp.has(e.source) && !hp.has(e.target)) continue;
     } else if (focusId) {
       if (e.source !== focusId && e.target !== focusId) continue;
+    } else if (v.skeleton) {
+      if (!v.skeleton.has(e.source < e.target ? `${e.source}|${e.target}` : `${e.target}|${e.source}`)) continue;
     } else if (fm) {
       if (!fm.has(e.source) || !fm.has(e.target)) continue;
     }

@@ -16,8 +16,10 @@ const DATA: WikiNodeData = {
 };
 
 function lessons(n: number) {
-  const ls = Array.from({ length: n }, (_, i) => ({ id: `ai/rag/l${i}`, title: `Lesson ${i}`, course: "AI" }));
-  const fetchMock = vi.fn<(url: string) => Promise<Response>>(async () => new Response(JSON.stringify(ls), { status: 200 }));
+  const ls = Array.from({ length: n }, (_, i) => ({ id: `ai/rag/l${i}`, title: `Lesson ${i}`, section: "s", kind: "reading", summary: "", course: "AI" }));
+  const fetchMock = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(async (_url, init) =>
+    new Response(JSON.stringify(init?.method === "POST" ? { id: "f1" } : ls), { status: 200 }),
+  );
   vi.stubGlobal("fetch", fetchMock);
   return fetchMock;
 }
@@ -51,6 +53,22 @@ describe("NodeDetailPanel", () => {
     expect(screen.getByText(/Referenced while answering: "what is rrf"/)).toBeInTheDocument();
     rerender(<NodeDetailPanel nodeId="rrf-fusion" data={DATA} highlighted={false} lastQuery="what is rrf" onClose={vi.fn()} />);
     expect(screen.queryByText(/Referenced while answering/)).toBeNull();
+  });
+
+  it("groups its related pages by kind of link and opens one", () => {
+    lessons(0);
+    const onOpenPage = vi.fn();
+    render(
+      <NodeDetailPanel nodeId="rrf-fusion" data={DATA} highlighted={false} lastQuery="" onClose={vi.fn()} onOpenPage={onOpenPage}
+        related={[
+          { label: "Understand first", pages: [{ id: "bm25", title: "BM25" }], more: 0 },
+          { label: "Related", pages: [{ id: "chunking", title: "Chunking" }], more: 3 },
+        ]} />,
+    );
+    expect(screen.getByText("Understand first")).toBeInTheDocument();
+    expect(screen.getByText("+3 more")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "BM25" }));
+    expect(onOpenPage).toHaveBeenCalledWith("bm25");
   });
 
   it("lists up to six lessons that teach the concept and opens one", async () => {

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { citationCheckSchema } from "../schemas/account";
 import { RELEASE_EVENT, postJson } from "../utils/api";
 import type { ChatMessage, CitedSource } from "./useChatStream";
 
@@ -71,7 +72,8 @@ export function useCitationStatus(messages: ChatMessage[]): Record<string, Citat
       try {
         for (let i = 0; i < sources.length; i += CHECK_BATCH) {
           const batch = sources.slice(i, i + CHECK_BATCH);
-          const body = await postJson<{ citations: ({ id: string } & CitationState)[] }>(
+          const body = await postJson(
+            citationCheckSchema,
             "/api/chat/citations/check",
             { citations: batch },
           );

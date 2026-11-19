@@ -11,7 +11,8 @@ Tools:
   get_domain_briefing  — return all pages in a domain as a structured reference briefing
 
 This module is only the FastMCP setup; the wiki tools come from the shared registry
-(`librarian.agent.tools`) and the code tools from `apps.mcp.codemap_tools`; indexing, ranking and rendering
+(`librarian.agent.tools`), as are the code tools (find_symbol, get_file_symbols, find_references,
+repo_map, find_callers, semantic_find_symbol, list_repos; client in `librarian.tools.codemap.client`); indexing, ranking and rendering
 live in `librarian.retrieval` (see its docstring), shared with the chat agent and the evals.
 
 Remote mode: with LIBRARIAN_API_KEY set (and LIBRARIAN_API_URL, default http://localhost:8000)
@@ -37,7 +38,6 @@ from librarian.agent.tools import MCP, Tool, ToolContext, tools_for
 from librarian.config import get_settings
 from librarian.log_config import configure_logging, get_logger
 from librarian.mcp import remote
-from librarian.mcp.codemap_tools import register_codemap_tools
 from librarian.retrieval import corpus, embeddings
 
 load_dotenv(get_settings().dotenv_file)
@@ -56,7 +56,7 @@ def _register(tool: Tool) -> None:
 
     def adapter(**kwargs: Any) -> str:  # noqa: ANN401
         settings = get_settings()
-        if settings.remote_api_key:
+        if settings.remote_api_key and tool.remote_proxy:
             return remote.call(settings, tool.name, kwargs)
         return tool.run(kwargs, ToolContext(surface=MCP))
 
@@ -86,8 +86,6 @@ def _register(tool: Tool) -> None:
 
 for _tool in tools_for(MCP):
     _register(_tool)
-
-register_codemap_tools(mcp)
 
 
 def main(argv: list[str] | None = None) -> int:

@@ -1,0 +1,8 @@
+# Copy to envs/prod.tfvars (gitignored) and edit. Contains no secret.
+region          = "eu-west-1"
+environment     = "prod"
+architecture    = "x86_64"
+instance_type   = "t3.large" # unmeasured starting point: see README.md "Instance size"
+volume_size_gb  = 40
+domain          = "librarian.example.org"
+route53_zone_id = null # or "Z0123456789ABC" to have Terraform create the A record

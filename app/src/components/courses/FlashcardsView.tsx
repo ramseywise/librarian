@@ -4,7 +4,8 @@ import { StudyFilter } from "./StudyFilter";
 import { studyOrder, type StudyMode } from "./studyQueue";
 import { pageTitle, useDocumentTitle } from "./useDocumentTitle";
 import "./courses.css";
-import { apiFetch } from "../../utils/api";
+import { flashcardDeckSchema } from "../../schemas/courses";
+import { apiFetch, parseJson } from "../../utils/api";
 import type { StudyChatContext } from "../../hooks/useChatStream";
 
 /** Deck text allows `**bold**` and `code` and nothing else (deck-spec.md), so no Markdown parser. */
@@ -57,8 +58,8 @@ export function FlashcardsView({
     setDeck(null);
     setError(null);
     apiFetch(`/api/courses/flashcards/${deckId}`)
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(r.status === 404 ? "No flashcards here" : `HTTP ${r.status}`))))
-      .then((d: FlashcardDeck) => {
+      .then((r) => (r.ok ? parseJson(r, flashcardDeckSchema) : Promise.reject(new Error(r.status === 404 ? "No flashcards here" : `HTTP ${r.status}`))))
+      .then((d) => {
         if (cancelled) return;
         const start = query === "due" ? "due" : "all";
         setDeck(d);

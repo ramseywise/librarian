@@ -1,19 +1,22 @@
 import { useCallback, useEffect, useState } from "react";
+import { z } from "zod";
+import {
+  adminUsersSchema,
+  auditEventsSchema,
+  inviteResultSchema,
+  invitesSchema,
+  type adminUserSchema,
+  type auditEventSchema,
+  type inviteSchema,
+} from "../../schemas/account";
 import { apiJson, postJson } from "../../utils/api";
 import { pageTitle, useDocumentTitle } from "../courses/useDocumentTitle";
 import { FeedbackSummaryView } from "./FeedbackSummary";
 import "./account.css";
 
-interface AdminUser {
-  id: string;
-  email: string;
-  name: string | null;
-  role: "admin" | "member";
-  last_seen_at: string | null;
-  chat_spent_today_usd: number;
-}
-interface Invite { email: string; created_at: string | null; used_at: string | null }
-interface AuditEvent { ts: string | null; email: string | null; action: string; target: string | null }
+type AdminUser = z.output<typeof adminUserSchema>;
+type Invite = z.output<typeof inviteSchema>;
+type AuditEvent = z.output<typeof auditEventSchema>;
 
 const when = (iso: string | null) => (iso ? new Date(iso).toLocaleString() : "never");
 
@@ -30,9 +33,9 @@ export function AdminView() {
   const load = useCallback(async () => {
     try {
       const [u, i, a] = await Promise.all([
-        apiJson<AdminUser[]>("/api/admin/users"),
-        apiJson<Invite[]>("/api/admin/invites"),
-        apiJson<AuditEvent[]>("/api/admin/audit?limit=100"),
+        apiJson(adminUsersSchema, "/api/admin/users"),
+        apiJson(invitesSchema, "/api/admin/invites"),
+        apiJson(auditEventsSchema, "/api/admin/audit?limit=100"),
       ]);
       setUsers(u);
       setInvites(i);
@@ -47,7 +50,7 @@ export function AdminView() {
     e.preventDefault();
     setNotice(null);
     try {
-      const r = await postJson<{ email: string; added: boolean }>("/api/admin/invites", { email: email.trim() });
+      const r = await postJson(inviteResultSchema, "/api/admin/invites", { email: email.trim() });
       setNotice(r.added ? `Invited ${r.email}.` : `${r.email} was already invited.`);
       setEmail("");
       await load();
@@ -58,7 +61,7 @@ export function AdminView() {
 
   const setRole = async (u: AdminUser, role: AdminUser["role"]) => {
     try {
-      await postJson(`/api/admin/users/${encodeURIComponent(u.email)}/role`, { role });
+      await postJson(z.unknown(), `/api/admin/users/${encodeURIComponent(u.email)}/role`, { role });
       await load();
     } catch (err) {
       setNotice((err as Error).message);

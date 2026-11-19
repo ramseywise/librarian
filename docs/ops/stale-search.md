@@ -38,3 +38,11 @@ reloaded). The release you expect not being listed means the pull failed: `docke
 
 Query a phrase that exists only in the new content; `X-Librarian-Release` shows the expected name on five requests in
 a row; `/readyz` is 200 with `"index":"ready"`.
+
+## Not verified
+
+- The diagnosis table. It was read from the release and index code, not observed: no host has served a content
+  release, because the release workflow has never run and no bucket exists.
+- That workers disagree about the current release in the way described (different `X-Librarian-Release` values across
+  calls) and that `/admin/reload` reaches every worker. The multi-worker test checks shared attempts and spend (`docs/status.md`); nothing in it reloads content.
+- The commands, on a host.

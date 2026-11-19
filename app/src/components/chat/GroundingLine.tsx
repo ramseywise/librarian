@@ -1,4 +1,5 @@
 import type { Grounding } from "../../hooks/useChatStream";
+import "./chat.css";
 import type { StaleMap } from "../../hooks/useCitationStatus";
 import { CitationChip } from "./CitationChip";
 import {

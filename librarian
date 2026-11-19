@@ -11,7 +11,7 @@
 #   backup                      one encrypted backup to the bucket now
 #   restore <object|latest> [--replace] [--identity FILE]
 #                               stop the API, restore into a new database, check it, swap, start
-#   upgrade <image-tag>         backup, pull, up, wait for /readyz, roll back on failure (host only)
+#   upgrade <image-tag>         db check, backup, pull, up, wait for /readyz, roll back on failure (host only)
 #   content push                rsync wiki and courses to DEPLOY_HOST:DEPLOY_PATH (never private/)
 #
 # --local (or LIBRARIAN_MODE=local) adds docker-compose.local.yml: API on 127.0.0.1:8000, no TLS,
@@ -201,6 +201,10 @@ cmd_upgrade() {
     echo "== upgrade $prev -> $next"
     export LIBRARIAN_IMAGE="$prev"
     use_backup_profile
+    # Read-only, on the image now serving: a database that is not at that image's head (a
+    # half-applied migration, or a revision it does not know) is not a state to upgrade over.
+    # The new image's own migrations are not checked here: they are pending by design.
+    compose run --rm backup librarian db check || die "database check failed (see above); nothing was changed" 3
     # The gate runs on the image now serving: no backup younger than the window, no upgrade.
     ops upgrade "$next" || die "backup gate failed; nothing was changed" 3
 

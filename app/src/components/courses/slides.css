@@ -109,7 +109,7 @@
 /* image */
 .sf-body--image .sf-single, .sf-body--image .sf-split { flex: 1; }
 .sf-figure { display: flex; flex-direction: column; gap: 0.8em; min-height: 0; height: 100%; align-items: center; }
-.sf-img { display: block; max-width: 100%; flex: 1; min-height: 0; object-fit: contain; border-radius: 0.4em; background: #fff; }
+.sf-img { display: block; max-width: 100%; flex: 1; min-height: 0; object-fit: contain; border-radius: 0.4em; background: var(--media-bg); }
 .sf-img--loading { width: 100%; background: var(--surface-field); }
 .sf-figure figcaption { font-size: 1.3em; color: var(--text-soft); text-align: center; }
 
@@ -140,7 +140,7 @@
 
 /* ── the viewer ── */
 .slide-stage--frame { background: var(--slide-bg); }
-.slide-stage:fullscreen { display: flex; align-items: center; justify-content: center; border: 0; border-radius: 0; margin: 0; background: #000; }
+.slide-stage:fullscreen { display: flex; align-items: center; justify-content: center; border: 0; border-radius: 0; margin: 0; background: var(--stage-bg); }
 .slide-stage:fullscreen .sf { max-height: 100vh; max-width: calc(100vh * 16 / 9); }
 .slide-progress { height: 4px; background: var(--border-strong); border-radius: 2px; margin-bottom: var(--space-3); overflow: hidden; }
 .slide-progress i { display: block; height: 100%; background: var(--course, var(--accent)); }
@@ -158,7 +158,7 @@
 .slide-part > button { background: none; border: 0; padding: var(--space-2) 0; color: var(--text); font: inherit; font-size: var(--fs-base); text-align: left; cursor: pointer; }
 .slide-part > button[aria-current="true"] { color: var(--text-strong); font-weight: 600; }
 .slide-thumbs { display: flex; flex-wrap: wrap; gap: 4px; }
-.slide-thumb { width: 26px; height: 18px; padding: 0; border: 0; border-radius: 2px; background: var(--bf); color: var(--on); font-size: 10px; font-weight: 700; font-variant-numeric: tabular-nums; cursor: pointer; opacity: 0.55; }
+.slide-thumb { width: 26px; height: 18px; padding: 0; border: 0; border-radius: 2px; background: var(--bf); color: var(--on); font-size: var(--fs-xs); font-weight: 700; font-variant-numeric: tabular-nums; cursor: pointer; opacity: 0.55; }
 .slide-thumb:hover, .slide-thumb[aria-current="true"] { opacity: 1; }
 .slide-thumb[aria-current="true"] { outline: 2px solid var(--text-strong); outline-offset: 1px; }
 .slide-next { margin-top: var(--space-7); border-top: 1px solid var(--border); padding-top: var(--space-5); }

@@ -1,4 +1,5 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState, type CSSProperties, type ReactNode } from "react";
+import "./filter.css";
 import { useTheme } from "../hooks/useTheme";
 import { areaColor, courseColor, domainColor, tagColor } from "../theme/domains";
 import type { Area, Curriculum, CurriculumCourse, Facets, Glossary } from "../types";
@@ -30,18 +31,14 @@ export function Chip({ id, label, count, color, active, onToggle, briefScope, on
     <div
       role="group"
       aria-label={label}
-      className="chip-group"
-      style={{
-        background: active ? color + "22" : "transparent",
-        border: `1px solid ${active ? color : "var(--border-strong)"}`,
-      }}
+      className={`chip-group${active ? " chip-group--active" : ""}`}
+      style={{ "--c": color } as CSSProperties}
     >
       <button
         type="button"
         aria-pressed={active}
         onClick={() => onToggle(id)}
         className={`chip-part${canBrief ? " chip-part--with-brief" : ""}`}
-        style={{ color: active ? color : "var(--text-ghost)" }}
       >
         {label}
         {count != null && " "}
@@ -54,7 +51,6 @@ export function Chip({ id, label, count, color, active, onToggle, briefScope, on
           title={`Brief me on ${label}`}
           onClick={() => onBrief(briefScope)}
           className="chip-part chip-brief"
-          style={{ color: active ? color : "var(--text-muted)", background: color + "33" }}
         >
           ↗
         </button>
@@ -71,7 +67,8 @@ interface CourseRowProps {
 }
 
 function CourseRow({ course, activeTags, onToggle, onBrief }: CourseRowProps) {
-  const [open, setOpen] = useState(false);
+  // Open on the course whose module is filtered, so the active row is in sight.
+  const [open, setOpen] = useState(() => [...activeTags].some((t) => t.startsWith(`module:${course.id}/`)));
   useTheme();
   const color = courseColor(course.id);
   const id = courseFacet(course.id);
@@ -365,7 +362,11 @@ function labelOfActive(tag: string, curriculum: Curriculum | null, areas: Area[]
 }
 
 const LISTED = /^(dir|tag|term|gap):/;
-const isListed = (tag: string) => LISTED.test(tag) || (tag.startsWith("beyond:") && tag !== OUTSIDE_COURSES);
+/** Ids a section below lists; courses and modules only once the curriculum tree is there to list them. */
+const isListed = (tag: string, curriculum: Curriculum | null) =>
+  LISTED.test(tag) ||
+  (tag.startsWith("beyond:") && tag !== OUTSIDE_COURSES) ||
+  (!!curriculum && (tag.startsWith("course:") || tag.startsWith("module:")));
 
 interface FiltersProps {
   areas: Area[];
@@ -378,9 +379,10 @@ interface FiltersProps {
 }
 
 /**
- * The map's filters, for the Filters popover: any filter set by a link that nothing below lists
- * (a module, from the topic page), then the pages no lesson links yet, the wiki directories, the
- * glossary terms and the topic tags.
+ * The map's filters, broadest first, in the Filters popover or inline under the chat: any filter set
+ * by a link that nothing below lists, then course › module (the curriculum's levels), the wiki
+ * directories (the domains), the glossary terms, the topic tags, and last the pages no lesson links
+ * yet.
  */
 export function FiltersPanel({ areas, curriculum, glossary, facets, activeTags, onChange, onBrief }: FiltersProps) {
   useTheme();
@@ -391,7 +393,7 @@ export function FiltersPanel({ areas, curriculum, glossary, facets, activeTags, 
     onChange(next);
   };
   const hasTags = [...facets.keys()].some((k) => k.startsWith("tag:"));
-  const unlisted = [...activeTags].filter((t) => !isListed(t)).sort();
+  const unlisted = [...activeTags].filter((t) => !isListed(t, curriculum)).sort();
   const row = { facets, activeTags, onToggle: toggle, onBrief };
 
   return (
@@ -409,22 +411,31 @@ export function FiltersPanel({ areas, curriculum, glossary, facets, activeTags, 
           ))}
         </div>
       )}
-      {curriculum && (
-        <Section title="Not yet in a lesson" defaultOpen={isActive(activeTags, "gap:") || isActive(activeTags, "beyond:")}>
-          <GapFilters areas={areas} {...row} />
+      {curriculum && curriculum.courses.length > 0 && (
+        <Section title="Course › module">
+          <ul className="cur-tree" role="group" aria-label="Filter by curriculum">
+            {curriculum.courses.map((c) => (
+              <CourseRow key={c.id} course={c} activeTags={activeTags} onToggle={toggle} onBrief={onBrief} />
+            ))}
+          </ul>
         </Section>
       )}
-      <Section title="Directories">
+      <Section title="Domain">
         <DirectoryFilters {...row} />
       </Section>
       {glossary && (
-        <Section title="Glossary" defaultOpen={isActive(activeTags, "term:")}>
+        <Section title="Glossary term" defaultOpen={isActive(activeTags, "term:")}>
           <GlossaryFilters glossary={glossary} activeTags={activeTags} onToggle={toggle} />
         </Section>
       )}
       {hasTags && (
-        <Section title="Tags" defaultOpen={isActive(activeTags, "tag:")}>
+        <Section title="Tag" defaultOpen={isActive(activeTags, "tag:")}>
           <TopicTagFilters {...row} />
+        </Section>
+      )}
+      {curriculum && (
+        <Section title="Not yet in a lesson" defaultOpen={isActive(activeTags, "gap:") || isActive(activeTags, "beyond:")}>
+          <GapFilters areas={areas} {...row} />
         </Section>
       )}
     </div>

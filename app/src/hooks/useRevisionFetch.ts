@@ -10,6 +10,8 @@ export function useRevisionFetch(
   load: (alive: () => boolean) => Promise<void>,
   revision: unknown,
   enabled: boolean,
+  /** Bump to run `load` again at the same revision (a retry). */
+  attempt = 0,
 ): void {
   const loadRef = useRef(load);
   const state = useRef({ running: false, queued: false, mounted: true });
@@ -41,5 +43,5 @@ export function useRevisionFetch(
       } while (s.queued && s.mounted);
       s.running = false;
     })();
-  }, [revision, enabled]);
+  }, [revision, enabled, attempt]);
 }

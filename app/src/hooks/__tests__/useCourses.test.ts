@@ -5,16 +5,18 @@ import { resetCourseCachesForTests, useCourses } from "../useCourses";
 beforeEach(() => resetCourseCachesForTests());
 afterEach(() => vi.unstubAllGlobals());
 
+const COURSE = { id: "c1", title: "C", summary: "", order: 1, lessonCount: 0, modules: [] };
+
 describe("useCourses", () => {
   it("fetches the catalog once per page load", async () => {
-    const fetchMock = vi.fn(async () => new Response(JSON.stringify([{ id: "c1" }]), { status: 200 }));
+    const fetchMock = vi.fn(async () => new Response(JSON.stringify([COURSE]), { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);
     const first = renderHook(() => useCourses());
-    await waitFor(() => expect(first.result.current.data).toEqual([{ id: "c1" }]));
+    await waitFor(() => expect(first.result.current.data).toEqual([COURSE]));
     first.unmount();
     const second = renderHook(() => useCourses());
     // Cached data is available on the first render of a remount: no loading flash.
-    expect(second.result.current.data).toEqual([{ id: "c1" }]);
+    expect(second.result.current.data).toEqual([COURSE]);
     await waitFor(() => expect(second.result.current.loading).toBe(false));
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });

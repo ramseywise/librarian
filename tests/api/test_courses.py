@@ -264,6 +264,25 @@ def test_practice_lists_drills_with_filters_and_concepts(client: TestClient) -> 
     assert "drill" not in client.get("/api/courses/lessons/basics/01-python/vars").json()
 
 
+def test_a_lesson_carries_its_depth_only_when_tagged(client: TestClient) -> None:
+    _write(
+        courses.COURSES_DIR / "basics" / "01-python" / "tagged.md",
+        "---\ntitle: Tagged\ntier: specialist\ndepth: core\n"
+        "depth_sections:\n  Proof: deep\n  Aside: expert\n"
+        "---\n\n## Proof\n\nBody.\n",
+    )
+    _write(
+        courses.COURSES_DIR / "basics" / "01-python" / "mistagged.md",
+        "---\ntitle: Mistagged\ntier: expert\ndepth: senior\n---\n\nBody.\n",
+    )
+    tagged = client.get("/api/courses/lessons/basics/01-python/tagged").json()
+    assert tagged["depth"] == "core" and tagged["depthSections"] == {"Proof": "deep"}
+    assert tagged["tier"] == "specialist"
+    for lesson in ("mistagged", "vars"):
+        detail = client.get(f"/api/courses/lessons/basics/01-python/{lesson}").json()
+        assert not {"tier", "depth", "depthSections"} & set(detail)
+
+
 def test_practice_attaches_attempts_from_an_imported_drill_log_without_notes(
     client: TestClient, tmp_path: Path, owner: User
 ) -> None:
@@ -325,6 +344,12 @@ def test_semantic_neighbours_rank_after_explicit_and_mentions(
     assert [c["id"] for c in intro["concepts"]] == ["context-engineering", "hybrid-search"]
     loop = client.get("/api/courses/lessons/gen-ai/02-agents/loop").json()
     assert [c["id"] for c in loop["concepts"]] == ["context-engineering"]
+    # The syllabus tells the two apart: only the loop's link came from the embedder.
+    lessons = courses.catalog().lessons
+    assert (lessons["gen-ai/01-rag/intro"].semantic, lessons["gen-ai/02-agents/loop"].semantic) == (
+        0,
+        1,
+    )
     # The by-concept index (graph → course direction) sees semantic links too.
     hits = client.get("/api/courses/concept/context-engineering").json()
     assert "gen-ai/02-agents/loop" in [h["id"] for h in hits]
@@ -369,6 +394,9 @@ def test_semantic_failure_degrades_instead_of_failing(
         raise OSError("cache locked")
 
     monkeypatch.setattr(librarian.retrieval.embeddings, "compute_embeddings", boom)
+    # The failure stamps a module-level retry time: restored here, or a test a minute later
+    # is served the previous test's catalog.
+    monkeypatch.setattr(courses, "_semantic_failed_at", None)
     assert _REAL_NEIGHBOURS(["some lesson"], ["hybrid-search"]) is None
 
 
@@ -485,6 +513,29 @@ def test_cold_start_waits_for_the_first_build(monkeypatch: pytest.MonkeyPatch) -
 
 
 # ── flashcards ───────────────────────────────────────────────────────────────
+
+
+def test_a_card_carries_its_longer_answer_depth_sources_and_its_lessons_tier(
+    client: TestClient,
+) -> None:
+    _write(
+        courses.COURSES_DIR / "basics" / "01-python" / "tiered.md",
+        "---\ntitle: Tiered\ntier: specialist\n---\n\nBody.\n",
+    )
+    _write(
+        courses.COURSES_DIR / "basics" / "01-python" / "_flashcards.md",
+        "---\ncards:\n"
+        "- {front: Q1, back: Short., more: The long version., depth: deep, "
+        "sources: ['A book, ch. 2', ''], lesson: basics/01-python/tiered}\n"
+        "- {front: Q2, back: Short., depth: senior, sources: one string}\n"
+        "---\n",
+    )
+    first, second = client.get("/api/courses/flashcards/basics/01-python").json()["cards"]
+    assert first["back"] == "Short." and first["more"] == "The long version."
+    assert first["depth"] == "deep" and first["tier"] == "specialist"
+    assert first["sources"] == ["A book, ch. 2"]
+    # nothing usable, nothing sent: an illegal depth, sources that are not a list, no lesson
+    assert not {"more", "depth", "tier", "sources"} & set(second)
 
 
 def _write_cards(cards: str) -> None:

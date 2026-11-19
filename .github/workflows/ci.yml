@@ -161,3 +161,21 @@ jobs:
           name: sbom
           path: sbom/*.cdx.json
           if-no-files-found: error
+
+  infra:
+    # Terraform in infra/: formatting and validity only. No AWS credentials here, no plan, no apply;
+    # `init -backend=false` skips the S3 backend, and downloads only the public AWS provider.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: hashicorp/setup-terraform@5e8dbf3c6d9deaf4193ca7a8fb23f2ac83bb6c85 # v4.0.0
+        with:
+          terraform_version: 1.10.5
+          terraform_wrapper: false
+      - run: terraform fmt -check -recursive -diff infra
+      - name: Validate infra and infra/bootstrap
+        run: |
+          for dir in infra infra/bootstrap; do
+            terraform -chdir="$dir" init -backend=false -input=false
+            terraform -chdir="$dir" validate
+          done

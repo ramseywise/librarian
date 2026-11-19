@@ -72,19 +72,21 @@ def test_restore_fences_stops_api_first_and_passes_replace() -> None:
     assert lines[2].endswith("up -d --no-build librarian")
 
 
-def test_upgrade_gates_on_a_backup_before_pulling_and_resolves_a_bare_tag() -> None:
+def test_upgrade_checks_the_database_then_gates_on_a_backup_before_pulling() -> None:
     out = _run(
         "--dry-run", "upgrade", "sha-abc", env={"LIBRARIAN_IMAGE": "ghcr.io/me/librarian:sha-old"}
     ).stdout
     lines = [ln for ln in out.splitlines() if ln.startswith("+ docker")]
-    assert "ops upgrade ghcr.io/me/librarian:sha-abc" in lines[0]
-    assert lines[1].endswith("pull librarian")
-    assert lines[2].endswith("up -d --no-build")
+    assert lines[0].endswith("backup librarian db check")  # read-only, before anything changes
+    assert "ops upgrade ghcr.io/me/librarian:sha-abc" in lines[1]
+    assert lines[2].endswith("pull librarian")
+    assert lines[3].endswith("up -d --no-build")
 
 
 FAKE_DOCKER = """#!/bin/sh
 # Stands in for docker: logs the image and arguments; /readyz (compose exec) fails on a "bad" image.
 echo "$LIBRARIAN_IMAGE|$*" >> "$FAKE_DOCKER_LOG"
+case "$*" in *"db check"*) [ -z "$FAKE_DB_CHECK_FAIL" ] || exit 1 ;; esac
 case "$*" in *" exec "*) case "$LIBRARIAN_IMAGE" in *bad*) exit 1 ;; esac ;; esac
 exit 0
 """
@@ -134,12 +136,24 @@ def test_upgrade_to_an_image_that_never_gets_ready_goes_back_to_the_old_one(
     assert r.returncode == 1
     assert f"{old} is serving again" in r.stderr and "ROLLBACK FAILED" not in r.stderr
     # The backup gate ran on the old image before anything was pulled.
-    assert log[0].startswith(f"{old}|") and f"ops upgrade {bad}" in log[0]
-    assert log[1].startswith(f"{bad}|") and log[1].endswith("pull librarian")
+    assert log[0].startswith(f"{old}|") and log[0].endswith("librarian db check")
+    assert log[1].startswith(f"{old}|") and f"ops upgrade {bad}" in log[1]
+    assert log[2].startswith(f"{bad}|") and log[2].endswith("pull librarian")
     ups = [line.split("|")[0] for line in log if line.endswith("up -d --no-build")]
     assert ups == [bad, old]  # the last `up` is the old image
     assert log[-1].startswith(f"{old}|") and " exec " in log[-1]  # and it answered /readyz
     assert not (tmp_path / ".ops" / "image").exists()  # the failed tag is never recorded
+
+
+def test_upgrade_stops_before_the_backup_when_the_database_check_fails(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("FAKE_DB_CHECK_FAIL", "1")
+    old = "ghcr.io/me/librarian:sha-old"
+    r, log = _real_upgrade(tmp_path, "sha-new", image=old)
+    assert r.returncode == 3 and "database check failed" in r.stderr
+    assert len(log) == 1 and log[0].endswith("librarian db check")  # no backup, no pull, no up
+    assert not (tmp_path / ".ops" / "image").exists()
 
 
 def test_upgrade_records_the_two_previous_tags(tmp_path: Path) -> None:

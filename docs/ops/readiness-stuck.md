@@ -57,3 +57,10 @@ upgrade, roll back first (`rollback.md`), read logs second.
 
 `curl -s https://<domain>/readyz` is 200 with every check true; `./librarian status` says ready; one search and one
 chat message succeed.
+
+## Not verified
+
+- Every fix. The page describes `/readyz` behaviour read from the code (`docs/status.md`, Runbooks row); none of the
+  failing states was produced on a running stack and none of the commands was run on a host.
+- The 300-second start period and the `degraded: embeddings_unavailable` behaviour in the `embeddings` paragraph were
+  read from configuration and code, and were not seen on a cold start.

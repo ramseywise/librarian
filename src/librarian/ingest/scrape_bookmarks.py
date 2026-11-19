@@ -29,7 +29,7 @@ from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 
 from librarian.config import get_settings
-from librarian.ingest.base import ScraperBase, request_with_retry
+from librarian.ingest.base import ScraperBase, request_with_retry, safe_client
 
 load_dotenv()
 log = structlog.get_logger()
@@ -124,7 +124,7 @@ def scrape_url(url: str, output_dir: Path, dry_run: bool = False) -> bool:
     today = datetime.now(UTC).strftime("%Y-%m-%d")
 
     try:
-        with httpx.Client(headers=HEADERS, follow_redirects=True, timeout=20) as client:
+        with safe_client(headers=HEADERS, timeout=20) as client:
             resp = request_with_retry(client, "GET", url)
     except httpx.HTTPError as exc:
         log.warning("fetch_failed", url=url, error=str(exc))

@@ -14,6 +14,8 @@ from urllib.parse import unquote, urlsplit
 
 import httpx
 
+from librarian.config import get_settings
+from librarian.ingest.safe_http import safe_client
 from librarian.log_config import get_logger
 from librarian.release import paths
 
@@ -38,7 +40,13 @@ def _local(url: str) -> Path | None:
 
 
 def _client() -> httpx.Client:
-    return httpx.Client(timeout=TIMEOUT, transport=transport, follow_redirects=True)
+    # The URL is operator-set, but the bucket can redirect: every hop is checked unless the
+    # operator allows internal addresses (an endpoint inside the VPC).
+    return safe_client(
+        timeout=TIMEOUT,
+        transport=transport,
+        allow_private_addresses=get_settings().release_allow_private_addresses,
+    )
 
 
 def read_text(base: str, name: str) -> str:

@@ -9,6 +9,7 @@ import {
   moduleEdges,
   neighbours,
   pageNeighbourhood,
+  relatedGroups,
   renderIds,
   visibleEdges,
   type ViewState,
@@ -256,5 +257,49 @@ describe("moduleEdges", () => {
     const out = moduleEdges(["a", "b", "c", "lone"], modules, degree);
     expect(out.map((e) => [e.source, e.target])).toEqual([["b", "c"], ["b", "a"]]);
     expect(out.every((e) => e.data?.edgeType === "module")).toBe(true);
+  });
+});
+
+describe("relatedGroups", () => {
+  const typed = (source: string, target: string, relationship?: string) => ({ source, target, data: { relationship } });
+
+  it("reads a typed link from the end it is seen from", () => {
+    const edges = [
+      typed("p", "pre", "prerequisite-for"), // on p: pre comes before p
+      typed("next", "p", "prerequisite-for"), // on next: p comes before next
+      typed("base", "p", "extends"), // on base: p builds on base
+      typed("p", "plain"),
+      typed("p", "pre"), // a second, untyped link doesn't move it to Related
+    ];
+    expect(relatedGroups("p", edges, degreeOf(edges))).toEqual([
+      { label: "Understand first", ids: ["pre"], more: 0 },
+      { label: "Builds on", ids: ["base"], more: 0 },
+      { label: "Leads to", ids: ["next"], more: 0 },
+      { label: "Related", ids: ["plain"], more: 0 },
+    ]);
+  });
+
+  it("caps a group at its best-linked pages and counts the rest", () => {
+    const edges = [typed("p", "a"), typed("p", "b"), typed("p", "c"), typed("c", "x")];
+    expect(relatedGroups("p", edges, degreeOf(edges), 2)).toEqual([{ label: "Related", ids: ["c", "a"], more: 1 }]);
+  });
+});
+
+describe("open card and cluster skeleton", () => {
+  it("marks the open page and lifts it over its neighbours", () => {
+    const [a, b] = applyView([node("a", "rag"), node("b", "rag")], { ...NONE, openId: "a" });
+    expect(a.data.expanded).toBe(true);
+    expect(a.zIndex).toBe(2000);
+    expect(b.data.expanded).toBe(false);
+  });
+
+  it("draws only the skeleton's pairs until a page is focused", () => {
+    const nodes = [node("a", "rag"), node("b", "rag"), node("c", "rag")];
+    const src = { wikilink: [edge("a", "b", "wikilink"), edge("c", "b", "wikilink")], semantic: [], tagShared: [] };
+    const vis: EdgeVisibility = { wikilink: true, semantic: true, module: true, "tag-shared": false };
+    const skeleton = new Set(["a|b"]);
+    expect(visibleEdges(src, vis, nodes, { ...NONE, skeleton }).map((e) => e.id)).toEqual(["wikilink:a->b"]);
+    const focused = { ...NONE, skeleton, focusId: "c", focusIds: new Set(["c", "b"]) };
+    expect(visibleEdges(src, vis, nodes, focused).map((e) => e.id)).toEqual(["wikilink:c->b"]);
   });
 });

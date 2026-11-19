@@ -48,3 +48,15 @@ Record each drill below. Check after it: sign-in works, `users` and `attempts` c
 | Date | Operator | Object restored | Backup size | Restore time (to /readyz) | Result | Notes |
 |---|---|---|---|---|---|---|
 | not yet drilled | | | | | | |
+
+## Not verified
+
+- Every command here. No restore has been run from a real backup object, so the drill table above is empty and the
+  restore row in `docs/status.md` cannot reach "drilled".
+- That `age` and the AWS command line, which are installed in the image, work against a real bucket. Backup and restore
+  code is tested only against fake storage (`tests/ops/`).
+- The Cloudflare R2 details: the endpoint form, region `auto`, and that a lifecycle rule can expire objects after
+  30 days. These describe a provider's console and were not tried.
+- The restore time. No figure exists, so there is no basis for how long the API stays stopped.
+- The rename-based swap on Postgres (`<name>_pre_restore_<time>`) on a real server, and restoring into a populated
+  database with `--replace`.

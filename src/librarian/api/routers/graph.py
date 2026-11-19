@@ -12,11 +12,14 @@ import asyncio
 import contextlib
 from typing import Any, Literal
 
-from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
 
-from librarian.api.security import WS_SUBPROTOCOL
+from librarian.api.security import WS_SUBPROTOCOL, compute_rate_limit
 from librarian.config import get_settings
+from librarian.log_config import get_logger
 from librarian.wiki.parser import parse_wiki, public_page_ids, tag_shared_edges
+
+log = get_logger(__name__)
 
 router = APIRouter()
 
@@ -69,7 +72,7 @@ async def ws_endpoint(ws: WebSocket) -> None:
 
 # Sync route (threadpool): parse_wiki reads every page, which on the event loop stalls all
 # other requests for as long as it takes.
-@router.get("/api/graph")
+@router.get("/api/graph", dependencies=[Depends(compute_rate_limit("graph"))])
 def get_graph(edges: Literal["wikilink", "all"] = "wikilink") -> dict[str, Any]:
     """Same payload as the /ws graph_update. `?edges=all` adds the tag-shared edges the
     UI derives client-side, for scripts that want the full edge set from the server."""
@@ -79,7 +82,7 @@ def get_graph(edges: Literal["wikilink", "all"] = "wikilink") -> dict[str, Any]:
     return graph
 
 
-@router.get("/api/graph/atlas")
+@router.get("/api/graph/atlas", dependencies=[Depends(compute_rate_limit("atlas"))])
 def get_graph_atlas() -> dict[str, Any]:
     """The map's first paint: /api/graph without summaries, paths or edge objects.
 
@@ -116,7 +119,7 @@ def get_graph_atlas() -> dict[str, Any]:
 
 # Sync routes (threadpool): both block on embeddings, and compute_embeddings serialises
 # on a lock the course-catalog build may hold — never wait on it from the event loop.
-@router.get("/api/edges/semantic")
+@router.get("/api/edges/semantic", dependencies=[Depends(compute_rate_limit("semantic"))])
 def get_semantic_edges(threshold: float = 0.65) -> list[dict]:
     from librarian.retrieval.embeddings import semantic_edges
 
@@ -124,7 +127,7 @@ def get_semantic_edges(threshold: float = 0.65) -> list[dict]:
     return [e for e in semantic_edges(threshold) if e["source"] in public and e["target"] in public]
 
 
-@router.post("/api/layout/umap")
+@router.post("/api/layout/umap", dependencies=[Depends(compute_rate_limit("umap", umap=True))])
 def umap_layout() -> dict[str, dict]:
     # Imported lazily: umap-learn pulls in numba, which requires numpy<2.5. When
     # pyproject.toml still pinned numpy>=2.5.1 a module-level import took the entire
@@ -135,9 +138,7 @@ def umap_layout() -> dict[str, dict]:
 
         positions = compute_umap_positions()  # imports umap only when it has to fit
     except ImportError as e:
-        raise HTTPException(
-            status_code=503,
-            detail=f"UMAP layout unavailable — umap-learn/numba vs numpy conflict: {e}",
-        ) from e
+        log.error("graph.umap_unavailable", error=str(e))
+        raise HTTPException(status_code=503, detail="UMAP layout unavailable.") from e
     public = public_page_ids()
     return {pid: xy for pid, xy in positions.items() if pid in public}

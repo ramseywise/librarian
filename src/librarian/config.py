@@ -18,6 +18,7 @@ assigns from here; `get_settings.cache_clear()` rebuilds the object after an env
 from __future__ import annotations
 
 import os
+from collections.abc import Mapping
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -249,6 +250,28 @@ class Settings(BaseSettings):
     feedback_retention_days: int = Field(
         default=180, ge=1, validation_alias=_env("LIBRARIAN_FEEDBACK_RETENTION_DAYS")
     )
+    # Agent log (logs/agent.jsonl: query text and user ids): lines older than this many days are
+    # dropped, daily by the API process and on demand by `librarian ops prune-logs`. 0 keeps all.
+    agent_log_retention_days: int = Field(
+        default=90, ge=0, validation_alias=_env("LIBRARIAN_AGENT_LOG_RETENTION_DAYS")
+    )
+    # Compute routes (/api/tools, /api/graph, /api/layout/umap): requests per user per window,
+    # counted across workers (accounts.rate_limits). The UMAP fit is the dearest, so it has its own
+    # lower limit. 0 turns a limit off.
+    compute_rate_limit: int = Field(
+        default=120, validation_alias=_env("LIBRARIAN_COMPUTE_RATE_LIMIT")
+    )
+    compute_rate_window_s: int = Field(
+        default=60, validation_alias=_env("LIBRARIAN_COMPUTE_RATE_WINDOW_S")
+    )
+    umap_rate_limit: int = Field(default=6, validation_alias=_env("LIBRARIAN_UMAP_RATE_LIMIT"))
+    # Off: /api/tools answers 404, so a deployment can refuse remote MCP clients outright.
+    tools_enabled: bool = Field(default=True, validation_alias=_env("LIBRARIAN_TOOLS_ENABLED"))
+    # Most seconds uvicorn waits for open requests (a chat stream) to finish after SIGTERM. Keep
+    # the compose `stop_grace_period` above it, or Docker kills the process first.
+    shutdown_grace_s: int = Field(
+        default=30, ge=1, validation_alias=_env("LIBRARIAN_SHUTDOWN_GRACE_S")
+    )
     # Experiments and their variants, e.g. `ranking=control,hybrid-union;prompt=v1,v2`
     # (librarian.experiments). Each user is assigned one variant per experiment, stably.
     experiments: str = Field(default="", validation_alias=_env("LIBRARIAN_EXPERIMENTS"))
@@ -277,6 +300,28 @@ class Settings(BaseSettings):
     # Off: the chat route answers 404 and the API key is not required at startup.
     chat_enabled: bool = Field(default=True, validation_alias=_env("LIBRARIAN_CHAT_ENABLED"))
     # Two daily caps: all users together, and each member (admins have only the global one).
+    # The intake (librarian.courses.placement). Subjects offered, comma-separated course names;
+    # questions per block; the share of a block that counts as passing it and as failing it
+    # (between the two is the middle band); days before a learner may sit it again.
+    intake_subjects: str = Field(
+        default="data-analytics,data-science,generative-ai",
+        validation_alias=_env("LIBRARIAN_INTAKE_SUBJECTS"),
+    )
+    intake_block_size: int = Field(
+        default=4, ge=2, validation_alias=_env("LIBRARIAN_INTAKE_BLOCK_SIZE")
+    )
+    intake_pass_share: float = Field(
+        default=0.75, gt=0, le=1, validation_alias=_env("LIBRARIAN_INTAKE_PASS_SHARE")
+    )
+    intake_fail_share: float = Field(
+        default=0.25, ge=0, lt=1, validation_alias=_env("LIBRARIAN_INTAKE_FAIL_SHARE")
+    )
+    intake_retake_days: int = Field(
+        default=7, ge=0, validation_alias=_env("LIBRARIAN_INTAKE_RETAKE_DAYS")
+    )
+    intake_interpret_timeout_s: float = Field(
+        default=20.0, validation_alias=_env("LIBRARIAN_INTAKE_INTERPRET_TIMEOUT_S")
+    )
     chat_daily_budget_usd: float = Field(
         default=5.0, validation_alias=_env("LIBRARIAN_CHAT_DAILY_BUDGET_USD")
     )
@@ -298,6 +343,31 @@ class Settings(BaseSettings):
     # Most characters of a cited page the judge is shown.
     claim_judge_page_chars: int = Field(
         default=20_000, validation_alias=_env("LIBRARIAN_CLAIM_JUDGE_PAGE_CHARS")
+    )
+
+    # What the agent is sent (librarian.agent.loop). Character caps on the open-lab brief, the study
+    # block and each tool result; text over a cap is cut and says so. The defaults sit above
+    # anything the server builds today (a lesson body is at most 400k chars at import, a wiki page
+    # is far under the tool cap). 0 turns a cap off. History has its own bounds in the loop.
+    agent_brief_max_chars: int = Field(
+        default=60_000, ge=0, validation_alias=_env("LIBRARIAN_AGENT_BRIEF_MAX_CHARS")
+    )
+    agent_study_max_chars: int = Field(
+        default=30_000, ge=0, validation_alias=_env("LIBRARIAN_AGENT_STUDY_MAX_CHARS")
+    )
+    agent_tool_result_max_chars: int = Field(
+        default=100_000, ge=0, validation_alias=_env("LIBRARIAN_AGENT_TOOL_RESULT_MAX_CHARS")
+    )
+    # Log the exact `system` and `messages` of each model call (structured log, level debug).
+    # They hold the user's lab code and page text, so it is off unless you are looking.
+    agent_debug_context: bool = Field(
+        default=False, validation_alias=_env("LIBRARIAN_AGENT_DEBUG_CONTEXT")
+    )
+
+    # POST /api/courses/lab-runs: most characters of editor text across all files in one request.
+    # (File count and per-file size are capped in courses.labs.)
+    lab_run_max_total_chars: int = Field(
+        default=1_000_000, ge=1, validation_alias=_env("LIBRARIAN_LAB_RUN_MAX_TOTAL_CHARS")
     )
 
     # Section split (librarian.retrieval.sections) and how much of the best section search returns.
@@ -341,6 +411,15 @@ class Settings(BaseSettings):
     release_url: str = Field(default="", validation_alias=_env("LIBRARIAN_RELEASE_URL"))
     release_poll_s: float = Field(
         default=60.0, ge=0, validation_alias=_env("LIBRARIAN_RELEASE_POLL_S")
+    )
+    # Outbound fetches refuse loopback, private, link-local, multicast and unspecified addresses
+    # (librarian.ingest.safe_http), on every redirect hop. Set these only where an internal
+    # address is meant: a bucket endpoint inside the VPC (release), a scrape of an internal host.
+    release_allow_private_addresses: bool = Field(
+        default=False, validation_alias=_env("LIBRARIAN_RELEASE_ALLOW_PRIVATE_ADDRESSES")
+    )
+    scrape_allow_private_addresses: bool = Field(
+        default=False, validation_alias=_env("LIBRARIAN_SCRAPE_ALLOW_PRIVATE_ADDRESSES")
     )
     # HMAC-SHA256 key for the release webhook (X-Librarian-Signature). Unset: admins only.
     release_webhook_secret: str = Field(
@@ -576,6 +655,57 @@ class Settings(BaseSettings):
     @property
     def dotenv_file(self) -> Path:
         return self.root / ".env"
+
+
+# LIBRARIAN_* names that are not Settings fields: read by code outside `Settings`, by the
+# `./librarian` wrapper or by Compose. A name missing here only costs a false "unknown" warning.
+_OTHER_ENV_NAMES = frozenset(
+    {
+        "LIBRARIAN_API_KEY",
+        "LIBRARIAN_API_URL",
+        "LIBRARIAN_BACKUP_AGE_RECIPIENT",
+        "LIBRARIAN_BACKUP_PING_URL",
+        "LIBRARIAN_BACKUP_URL",
+        "LIBRARIAN_DOMAIN",
+        "LIBRARIAN_DRY_RUN",
+        "LIBRARIAN_ENV_FILE",
+        "LIBRARIAN_EXPERIMENT",
+        "LIBRARIAN_HTTP_PORT",
+        "LIBRARIAN_HTTPS_PORT",
+        "LIBRARIAN_IMAGE",
+        "LIBRARIAN_MODE",
+        "LIBRARIAN_PORT",
+        "LIBRARIAN_RAW_SESSIONS",
+        "LIBRARIAN_READY_TIMEOUT",
+        "LIBRARIAN_RELEASE",
+        "LIBRARIAN_STACK",
+        "LIBRARIAN_TEST_DATABASE_URL",
+        "LIBRARIAN_TRACE_CONTENT",
+        "LIBRARIAN_WIKI_DIR",
+    }
+)
+
+
+def known_env_names() -> frozenset[str]:
+    """Every `LIBRARIAN_*` name the app, the wrapper or Compose reads (and `<SECRET>_FILE` forms)."""
+    names: set[str] = set(_OTHER_ENV_NAMES)
+    for field in Settings.model_fields.values():
+        alias = field.validation_alias
+        choices = alias.choices if isinstance(alias, AliasChoices) else (alias,)
+        names.update(str(c) for c in choices if isinstance(c, str))
+    names.update(f"{n}_FILE" for n in list(names))
+    return frozenset(n for n in names if n.startswith("LIBRARIAN_"))
+
+
+def unknown_env_vars(environ: Mapping[str, str] | None = None) -> list[str]:
+    """`LIBRARIAN_*` names set in the process environment that nothing reads, sorted.
+
+    Settings ignores unknown names, so a typo (`LIBRARIAN_CHAT_RATE_LIMT`) otherwise does nothing
+    without a word. Only the process environment is checked, not the `.env` file.
+    """
+    known = known_env_names()
+    env = os.environ if environ is None else environ
+    return sorted(n for n in env if n.startswith("LIBRARIAN_") and n not in known)
 
 
 @lru_cache(maxsize=1)

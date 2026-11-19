@@ -110,9 +110,14 @@ def list_keys(engine: Engine, email: str | None = None) -> list[KeyInfo]:
     ]
 
 
+def key_id_of(key_or_id: str) -> str:
+    """The id of a key: the id itself, or the id inside a whole `lk_<id>_<secret>` key."""
+    return key_or_id.removeprefix(PREFIX).split("_", 1)[0]
+
+
 def revoke_key(engine: Engine, key_id: str) -> bool:
-    """Revoke a key by its id (`lk_<id>_...`). False if no live key has that id."""
-    key_id = key_id.removeprefix(PREFIX).split("_", 1)[0]
+    """Revoke a key by its id, or by the whole key (`lk_<id>_...`). False if no live key has that id."""
+    key_id = key_id_of(key_id)
     k = tables.api_keys
     with engine.begin() as conn:
         done = conn.execute(

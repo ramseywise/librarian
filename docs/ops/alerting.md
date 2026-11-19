@@ -125,3 +125,16 @@ p90 and max, cards and lessons completed); it never names a user.
 
 - [ ] Schedule `metrics check-release` and test it once by running it with `--previous` set to a
   release you know is worse.
+
+## Not verified
+
+- Everything in the checklists. `docs/status.md` records that nothing is configured outside the repository: no uptime
+  monitor, no Sentry alert rules, no dead-man check.
+- That a failed backup emails the owner through Resend. The code and its tests use a fake mailer; no failure has been
+  forced and no email received, and Resend has not delivered a message from this domain.
+- That `LIBRARIAN_BACKUP_PING_URL` is fetched after a successful nightly backup. This was added on 2026-11-17 and is not
+  yet in a CI run.
+- `metrics check-release` and the crontab line in section 5. The command runs against a temporary log in tests, never
+  against real traffic, and no release has reached 30 answers.
+- The claim that Caddy renews certificates "at about 30 days" and the Let's Encrypt behaviour around it. This is the
+  proxy's documented behaviour, not something observed here.

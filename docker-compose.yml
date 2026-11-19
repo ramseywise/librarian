@@ -110,6 +110,9 @@ services:
       - /app/data/wiki/private
       - /app/data/courses/private
     restart: unless-stopped
+    # Compose's default is 10 s, which can cut a chat stream mid-answer. uvicorn waits up to
+    # LIBRARIAN_SHUTDOWN_GRACE_S (default 30) for open requests; keep this above it.
+    stop_grace_period: 40s
 
   # Nightly encrypted backup of the database to the bucket (`librarian ops schedule`, at
   # LIBRARIAN_BACKUP_AT UTC). A loop in a container instead of a host timer: it ships with the

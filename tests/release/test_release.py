@@ -11,6 +11,7 @@ import time
 from collections.abc import Iterator
 from pathlib import Path
 
+import httpx
 import pytest
 import zstandard
 from fastapi.testclient import TestClient
@@ -226,6 +227,18 @@ def test_a_signed_webhook_pulls_the_new_release(api: TestClient, env: dict[str, 
     assert api.get("/api/release").headers["X-Librarian-Release"] == "content-b"
 
 
+def test_a_failed_reload_is_a_502_without_the_error_text(
+    api: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def fail() -> None:
+        raise release.ReleaseError("secret-bucket-url-detail")
+
+    monkeypatch.setattr(release_routes, "_pull_and_swap", fail)
+    resp = api.post("/admin/reload", content=b"{}", headers=_signed(b"{}"))
+    assert resp.status_code == 502
+    assert resp.json() == {"detail": "Release not installed."}
+
+
 @pytest.mark.parametrize(
     "headers",
     [
@@ -238,6 +251,39 @@ def test_a_signed_webhook_pulls_the_new_release(api: TestClient, env: dict[str, 
 def test_a_bad_or_stale_signature_is_refused(api: TestClient, headers: dict[str, str]) -> None:
     resp = api.post("/admin/reload", content=b"{}", headers=headers)
     assert resp.status_code == 401
+
+
+def test_a_replayed_signature_is_refused(api: TestClient, env: dict[str, Path]) -> None:
+    _wait_for(api, "content-a")
+    headers = _signed(b"{}")
+    assert api.post("/admin/reload", content=b"{}", headers=headers).status_code == 200
+    again = api.post("/admin/reload", content=b"{}", headers=headers)
+    assert again.status_code == 401
+    assert again.json() == {"detail": "Signature already used."}
+    # A new timestamp is a new signature, so a legitimate retry still works.
+    fresh = _signed(b"{}", age_s=1)
+    assert api.post("/admin/reload", content=b"{}", headers=fresh).status_code == 200
+
+
+def test_a_bad_signature_is_not_recorded_as_used(api: TestClient) -> None:
+    good = _signed(b"{}")
+    bad = {**good, "X-Librarian-Signature": "sha256=00"}
+    assert api.post("/admin/reload", content=b"{}", headers=bad).status_code == 401
+    assert api.post("/admin/reload", content=b"{}", headers=good).status_code == 200
+
+
+def test_the_replay_check_failing_refuses_without_error_text(
+    api: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from sqlalchemy.exc import OperationalError
+
+    def down(*_: object, **__: object) -> None:
+        raise OperationalError("stmt", {}, Exception("secret-db-detail"))
+
+    monkeypatch.setattr(release_routes.rate_limits, "hit", down)
+    resp = api.post("/admin/reload", content=b"{}", headers=_signed(b"{}"))
+    assert resp.status_code == 503
+    assert "secret-db-detail" not in resp.text
 
 
 def test_a_signature_over_another_body_is_refused(api: TestClient) -> None:
@@ -257,3 +303,29 @@ def test_paths_check_name_refuses_traversal() -> None:
     for bad in ("../x", "a/b", "", ".hidden", "a..b"):
         with pytest.raises(ValueError):
             paths.check_name(bad)
+
+
+def test_store_refuses_a_redirect_to_an_internal_address(monkeypatch: pytest.MonkeyPatch) -> None:
+    from librarian.config import get_settings
+    from librarian.release import store
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.headers["host"] == "bucket.example":
+            return httpx.Response(302, headers={"location": "http://169.254.169.254/latest"})
+        return httpx.Response(200, text="content-x")
+
+    monkeypatch.setattr(store, "transport", httpx.MockTransport(handler))
+    monkeypatch.setattr(
+        "librarian.ingest.safe_http.system_resolver",
+        lambda host, port: ["169.254.169.254"] if host == "169.254.169.254" else ["93.184.216.34"],
+    )
+    with pytest.raises(store.StoreError, match="LIBRARIAN_RELEASE_ALLOW_PRIVATE_ADDRESSES"):
+        store.read_text("https://bucket.example/rel", "latest")
+
+    monkeypatch.setenv("LIBRARIAN_RELEASE_ALLOW_PRIVATE_ADDRESSES", "1")
+    get_settings.cache_clear()
+    try:
+        assert store.read_text("https://bucket.example/rel", "latest") == "content-x"
+    finally:
+        monkeypatch.undo()
+        get_settings.cache_clear()

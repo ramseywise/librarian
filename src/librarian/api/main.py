@@ -27,6 +27,7 @@ from librarian.api.routers.courses import router as courses_router
 from librarian.api.routers.curriculum import router as curriculum_router
 from librarian.api.routers.feedback import router as feedback_router
 from librarian.api.routers.glossary import router as glossary_router
+from librarian.api.routers.intake import router as intake_router
 from librarian.api.routers.release import ReleaseHeaderMiddleware, poll_releases
 from librarian.api.routers.release import router as release_router
 from librarian.api.routers.spend import router as spend_router
@@ -45,6 +46,8 @@ from librarian.courses.catalog import warm_catalog
 from librarian.courses.curriculum import write_snapshot
 from librarian.log_config import configure_logging, get_logger
 from librarian.observability import setup as setup_observability
+from librarian.ops.logs import prune_agent_log
+from librarian.retrieval import corpus
 
 # At import, not in a main(): uvicorn imports this module as an ASGI app and never
 # calls an entry point of ours. Must precede the first log call from any route.
@@ -57,6 +60,7 @@ WIKI_DIR = get_settings().wiki_dir
 # watcher and catalog rewarm below run only with settings.dev_watch (one dev process).
 # Strong references to fire-and-forget tasks and executor futures so GC can't drop them
 _background_tasks: set[asyncio.Future[Any]] = set()
+_LOG_PRUNE_INTERVAL_S = 24 * 3600
 
 
 # Seconds of wiki quiet before the course catalog is rebuilt. An ingest writes many pages
@@ -161,6 +165,9 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     if get_settings().dev_watch:
         watcher = _start_watcher()
     poller = _start_task(poll_releases()) if get_settings().release_url else None
+    log_pruner = (
+        _start_task(prune_agent_log_daily()) if get_settings().agent_log_retention_days else None
+    )
     if jobs:
         _in_background(lambda: _run_in_order(jobs))
     log.info("api.startup.ready", seconds=round(time.perf_counter() - _PROCESS_T0, 2))
@@ -168,7 +175,24 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
         yield
     finally:
         retrieval.set_handle(None)
-        await _shutdown(watcher, poller)
+        await _shutdown(watcher, poller, log_pruner)
+
+
+async def prune_agent_log_daily() -> None:
+    """Drop agent-log lines past the retention window now, then once a day. Never raises.
+
+    Runs in the API process because that is the one that owns the log's volume (the compose
+    `backup` service does not mount it). Each worker runs it; a lock makes the others skip.
+    """
+    while True:
+        days = get_settings().agent_log_retention_days
+        try:
+            await asyncio.to_thread(prune_agent_log, corpus.LOGS_DIR, days)
+        except asyncio.CancelledError:
+            raise
+        except Exception as e:  # retention must never take the API down
+            log.error("agent_log.prune_failed", error=str(e), error_type=type(e).__name__)
+        await asyncio.sleep(_LOG_PRUNE_INTERVAL_S)
 
 
 def _start_watcher() -> asyncio.Task[None] | None:
@@ -251,9 +275,11 @@ app.include_router(courses_router)
 app.include_router(curriculum_router)
 app.include_router(feedback_router)
 app.include_router(glossary_router)
+app.include_router(intake_router)
 app.include_router(release_router)
 app.include_router(spend_router)
-app.include_router(tools_router)
+if get_settings().tools_enabled:  # LIBRARIAN_TOOLS_ENABLED=false: no remote MCP tool surface
+    app.include_router(tools_router)
 app.include_router(wiki_health_router)
 
 
@@ -266,6 +292,20 @@ def healthz() -> dict[str, str]:
 @app.exception_handler(retrieval.IndexNotReadyError)
 async def _index_not_ready(_: Request, exc: retrieval.IndexNotReadyError) -> JSONResponse:
     return JSONResponse({"detail": str(exc)}, status_code=503, headers={"Retry-After": "5"})
+
+
+@app.exception_handler(Exception)
+async def _unhandled(request: Request, exc: Exception) -> JSONResponse:
+    """Any exception no route handled: log it here, tell the client nothing about it."""
+    log.error(
+        "api.unhandled_exception",
+        method=request.method,
+        path=request.url.path,
+        error=str(exc),
+        error_type=type(exc).__name__,
+        exc_info=exc,
+    )
+    return JSONResponse({"detail": "Internal server error."}, status_code=500)
 
 
 def readiness() -> tuple[bool, dict[str, Any]]:

@@ -54,6 +54,7 @@ from librarian.courses.assets import (
 from librarian.courses.assets import (
     is_private_asset as is_private_asset,
 )
+from librarian.courses.depth import depth_of, sections_of, tier_of
 from librarian.courses.linker import (
     LESSON_PROSE_CHARS as LESSON_PROSE_CHARS,
 )
@@ -392,6 +393,9 @@ def _load(
                             drill=_drill_meta(post, wiki, slugs, hidden)
                             if fm(post).get("kind") == "drill"
                             else {},
+                            tier=tier_of(fm(post).get("tier")),
+                            depth=depth_of(fm(post).get("depth")),
+                            depth_sections=sections_of(fm(post).get("depth_sections")),
                             private=is_under_private(md, private_root),
                         )
                     )
@@ -577,4 +581,6 @@ def _attach_semantic(
         return
     visible = set(wiki)
     for lid, cands in zip(ids, neighbours, strict=True):
+        before = len(lessons[lid].concepts)
         lessons[lid].concepts = _merge_semantic(lessons[lid].concepts, cands, visible)
+        lessons[lid].semantic = len(lessons[lid].concepts) - before

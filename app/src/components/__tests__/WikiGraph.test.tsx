@@ -32,6 +32,10 @@ const DATA = {
   umapFailed: false,
   loadUmapPositions: vi.fn(async () => null),
   connected: true,
+  data: null,
+  error: null,
+  loading: false,
+  retry: vi.fn(),
 };
 
 vi.mock("../../hooks/useWikiData", () => ({ useWikiData: () => DATA }));

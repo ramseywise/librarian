@@ -134,3 +134,13 @@ src/librarian/tools/codemap/repos.local.txt
 
 # ./librarian wrapper state (image in use, the one before it)
 .ops/
+
+# Terraform / OpenTofu (infra/): real variable files and all state stay out of git.
+# The *.tfvars.example files are tracked; .terraform.lock.hcl is tracked on purpose.
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+!*.tfvars.example
+crash.log

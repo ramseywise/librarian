@@ -8,6 +8,7 @@ A question needs a prompt, two or more distinct options, an answer that is one o
 letters, digits, `.`, `_` and `-` (given, or the hash of the prompt) that no other question in the file
 uses, and, when it names a `lesson`, a lesson of the same module. A question with no `options` is a
 worked problem: its answer must be a number, and `tolerance`, when given, a number of 0 or more.
+`depth`, when given, is intro, core or deep, and `subject`, when given, is a public course.
 Whether the answer is right is a judgement for the drill-reviewer agent, not this script.
 """
 
@@ -19,7 +20,7 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from librarian.courses import quiz
-from librarian.courses.checks.common import default_root, public_files
+from librarian.courses.checks.common import PRIVATE, default_root, public_files
 
 
 def module_lessons(root: Path, module_dir: Path) -> set[str]:
@@ -31,17 +32,25 @@ def module_lessons(root: Path, module_dir: Path) -> set[str]:
     }
 
 
+def course_names(root: Path) -> set[str]:
+    """The public courses: what a question's `subject` may name."""
+    return {
+        d.name for d in root.iterdir() if d.is_dir() and d.name != PRIVATE and d.name[0] not in "._"
+    }
+
+
 def run(root: Path, paths: Sequence[str]) -> tuple[int, list[str]]:
     """(quiz files checked, "path: problem" lines) for the public quiz files under `paths`."""
     files = 0
     lines: list[str] = []
+    subjects = course_names(root)
     for path in public_files(root, *paths):
         target = root / path
         if target.name != quiz.QUIZ_FILE or not target.is_file():
             continue
         files += 1
         lessons = module_lessons(root, target.parent)
-        lines += [f"{path}: {p}" for p in quiz.problems_in(target, lessons)]
+        lines += [f"{path}: {p}" for p in quiz.problems_in(target, lessons, subjects)]
     return files, lines
 
 

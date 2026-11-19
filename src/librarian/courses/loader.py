@@ -14,6 +14,7 @@ import frontmatter
 import yaml
 
 from librarian.courses import quiz
+from librarian.courses.depth import depth_of
 from librarian.log_config import get_logger
 from librarian.wiki.common import LinkEntry, LinkIndex, fm, page_aliases
 
@@ -48,7 +49,13 @@ class LessonRec:
     source: str
     body: str
     concepts: list[str] = field(default_factory=list)  # wiki page ids, ranked
+    semantic: int = 0  # how many of `concepts`, at the end, only the embedding merge added
     drill: dict[str, Any] = field(default_factory=dict)  # DRILL_KEYS, kind == "drill" only
+    tier: str = ""  # librarian.courses.depth; "" until the note is tiered
+    depth: str = ""  # the depth of the sections not in depth_sections; "" until the note is tagged
+    depth_sections: dict[str, str] = field(
+        default_factory=dict
+    )  # heading → depth, where it differs
     flashcards: int = 0
     questions: int = 0  # multiple choice
     problems: int = 0  # worked problems
@@ -200,7 +207,9 @@ def _meta(path: Path) -> dict[str, Any]:
 
 def _load_cards(path: Path, recs: dict[str, LessonRec]) -> list[dict[str, Any]]:
     """Well-formed cards from a module's _flashcards.md. A `lesson` not in this module (its
-    source was dropped, or a hand edit) falls back to the module deck."""
+    source was dropped, or a hand edit) falls back to the module deck. A card has a short answer
+    (`back`) and may have an in-depth one (`more`), a depth of its own and source references; its
+    tier is its lesson's."""
     if not path.exists():
         return []
     raw = _meta(path).get("cards")
@@ -209,6 +218,8 @@ def _load_cards(path: Path, recs: dict[str, LessonRec]) -> list[dict[str, Any]]:
         if not isinstance(item, dict) or not item.get("front") or not item.get("back"):
             continue
         rec = recs.get(str(item.get("lesson")))
+        listed = item.get("sources")
+        sources = [str(s) for s in listed if s] if isinstance(listed, list) else []
         cards.append(
             {
                 "id": str(len(cards)),
@@ -216,6 +227,10 @@ def _load_cards(path: Path, recs: dict[str, LessonRec]) -> list[dict[str, Any]]:
                 "back": str(item["back"]),
                 "lesson": rec.id if rec else None,
                 "lessonTitle": rec.title if rec else None,
+                **({"more": str(item["more"])} if item.get("more") else {}),
+                **({"depth": item["depth"]} if depth_of(item.get("depth")) else {}),
+                **({"tier": rec.tier} if rec and rec.tier else {}),
+                **({"sources": sources} if sources else {}),
             }
         )
     return cards
@@ -264,6 +279,9 @@ def _outline(r: LessonRec) -> dict[str, Any]:
         "kind": r.kind,
         "summary": r.summary,
         **({"drill": r.drill} if r.drill else {}),
+        **({"tier": r.tier} if r.tier else {}),
+        **({"depth": r.depth} if r.depth else {}),
+        **({"depthSections": r.depth_sections} if r.depth_sections else {}),
         **({"flashcardCount": r.flashcards} if r.flashcards else {}),
         **({"quizCount": r.questions} if r.questions else {}),
         **({"problemCount": r.problems} if r.problems else {}),

@@ -47,12 +47,16 @@ def main(argv: Sequence[str] | None = None) -> int:
     ls = keys.add_parser("list", help="keys, without their secrets")
     ls.add_argument("email", nargs="?")
     revoke = keys.add_parser("revoke", help="revoke a key by its id")
-    revoke.add_argument("key_id", help="the id `keys list` shows (or the whole key)")
+    revoke.add_argument(
+        "key_id",
+        help="the id `keys list` shows (a whole key still works, but lands in shell history)",
+    )
 
     args = ap.parse_args(list(argv) if argv is not None else None)
     configure_logging()
 
     from librarian import accounts
+    from librarian.accounts.keys import key_id_of
     from librarian.db import get_engine
 
     engine = get_engine()
@@ -107,12 +111,14 @@ def main(argv: Sequence[str] | None = None) -> int:
                     f"created {_when(k.created_at)}\tlast used {_when(k.last_used_at)}\t"
                     f"{k.name or ''}"
                 )
-        elif not accounts.revoke_key(engine, args.key_id):
-            print(f"librarian keys: no live key {args.key_id!r}", file=sys.stderr)
-            return 1
         else:
-            accounts.audit(engine, "key_revoke", target=args.key_id)
-            print(f"revoked {args.key_id}")
+            # Prefer the id: a whole key pasted here must not reach the audit log or the output.
+            key_id = key_id_of(args.key_id)
+            if not accounts.revoke_key(engine, key_id):
+                print(f"librarian keys: no live key {key_id!r}", file=sys.stderr)
+                return 1
+            accounts.audit(engine, "key_revoke", target=key_id)
+            print(f"revoked {key_id}")
     except accounts.AccountError as e:
         print(f"librarian {args.group}: {e}", file=sys.stderr)
         return 1

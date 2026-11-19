@@ -1,0 +1,54 @@
+
+
+export function SourceList({ label, items, count }: {
+  label: string; items: { title: string; source: string; url?: string }[]; count?: number;
+}) {
+  // Without the local private overlay only the count is public.
+  if (!items?.length) {
+    return count ? <p className="course-sources">{label}: {count} (the list is kept locally)</p> : null;
+  }
+  return (
+    <div className="course-sources">
+      <h3 className="course-sources-label">{label}</h3>
+      <ul>
+        {items.map((it) => (
+          <li key={it.source}>
+            {it.url ? <a href={it.url} target="_blank" rel="noreferrer">{it.title}</a>
+              : <span title={it.source}>{it.title}</span>}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+
+export function Centered({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="course-centered">
+      <div>{children}</div>
+    </div>
+  );
+}
+
+export function SearchBox({ value, onChange, placeholder }: {
+  value: string; onChange: (v: string) => void; placeholder: string;
+}) {
+  return (
+    <input
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      data-view-search
+      className="search-box"
+    />
+  );
+}
+
+export function ProgressBar({ value }: { value: number }) {
+  return (
+    <div className="progress-bar">
+      <div className="progress-bar-fill" style={{ width: `${Math.round(value * 100)}%` }} />
+    </div>
+  );
+}

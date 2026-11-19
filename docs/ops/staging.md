@@ -84,3 +84,14 @@ trailing slash), and in the `staging` environment the secret `STAGING_API_TOKEN`
 
 `docker compose -p librarian-staging --env-file .env.staging down -v` removes the staging
 containers and volumes. The project name keeps this from touching production's volumes.
+
+## Not verified
+
+This page already says nothing has run on a host. In particular:
+
+- The staging stack has never been started. Only `./librarian --dry-run --stack staging start` and
+  `docker compose config` were checked.
+- The Promote workflow has never run: no `STAGING_URL`, no staging environment, and no image in the registry to copy.
+- That the registry-side copy (`docker buildx imagetools create`) retags as described.
+- That staging's own Let's Encrypt certificate can be obtained on a shared host, and the forwarded-name arrangement
+  suggested for it.

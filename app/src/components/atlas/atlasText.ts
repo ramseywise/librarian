@@ -10,3 +10,8 @@ export function sectorSummary(sector: AtlasSector, gaps: number | null): string 
   const pages = `${sector.label}: ${sector.pageIds.length} pages`;
   return gaps ? `${pages} · ${gapText(gaps)}` : pages;
 }
+
+export interface AtlasPageInfo {
+  title: string;
+  summary: string;
+}

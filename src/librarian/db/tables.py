@@ -210,3 +210,71 @@ feedback = Table(
     Index("feedback_ts", "ts"),
     Index("feedback_user", "user_id"),
 )
+
+# The intake (librarian.courses.intake). One `intakes` row per sitting: `profile` is the JSON the
+# learner gave (role, goal, subjects, self-rated experience, two free-text answers) and `interests`
+# the JSON read out of the free text. The free text is never logged and goes with the account.
+intakes = Table(
+    "intakes",
+    metadata,
+    Column("id", String(32), primary_key=True),
+    Column(
+        "user_id",
+        String(64),
+        ForeignKey("users.id", name="intakes_user_fk", ondelete="CASCADE"),
+        nullable=False,
+    ),
+    Column("started_at", DateTime(timezone=True), nullable=False),
+    Column("completed_at", DateTime(timezone=True), nullable=True),
+    Column("profile", Text, nullable=False),
+    Column("interests", Text, nullable=True),
+    Index("intakes_user", "user_id", "started_at"),
+)
+
+# One row per question served in a sitting. `result` is null until it is answered, then
+# right | wrong | dont_know. `block` is 1 or 2 within the subject.
+intake_responses = Table(
+    "intake_responses",
+    metadata,
+    Column("id", _ID, primary_key=True, autoincrement=True),
+    Column(
+        "intake_id",
+        String(32),
+        ForeignKey("intakes.id", name="intake_responses_intake_fk", ondelete="CASCADE"),
+        nullable=False,
+    ),
+    Column("subject", String(64), nullable=False),
+    Column("question_key", String(160), nullable=False),
+    Column("depth", String(16), nullable=False),
+    Column("block", SmallInteger, nullable=False),
+    Column("result", String(16), nullable=True),
+    Column("ms", Integer, nullable=True),
+    Column("answered_at", DateTime(timezone=True), nullable=True),
+    UniqueConstraint("intake_id", "question_key", name="intake_responses_once"),
+)
+
+# A learner's tier in one subject. `suggested_tier` is what the sitting (or the goal, for a subject
+# that was not tested) pointed at and `chosen_tier` what the learner is on; `source` is
+# test | goal | override, and `borderline_with` the neighbouring tier when the result was close.
+placements = Table(
+    "placements",
+    metadata,
+    Column(
+        "user_id",
+        String(64),
+        ForeignKey("users.id", name="placements_user_fk", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+    Column("subject", String(64), primary_key=True),
+    Column("suggested_tier", String(16), nullable=False),
+    Column("chosen_tier", String(16), nullable=False),
+    Column("source", String(16), nullable=False),
+    Column("borderline_with", String(16), nullable=True),
+    Column(
+        "intake_id",
+        String(32),
+        ForeignKey("intakes.id", name="placements_intake_fk", ondelete="SET NULL"),
+        nullable=True,
+    ),
+    Column("updated_at", DateTime(timezone=True), nullable=False),
+)

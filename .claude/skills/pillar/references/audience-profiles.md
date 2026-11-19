@@ -30,3 +30,10 @@ The same for every subject, and it comes from `pillar-layout.md`:
 
 A chapter is read alone, so it carries its own context. A slide supports someone talking, so it carries
 the claim and the number and leaves the explanation for the speaker notes. See `deck-spec.md`.
+
+## Audience and depth
+
+A profile says who a subject's default reader is. It does not say how far a note goes: that is the
+note's `depth` (`intro`, `core` or `deep`; [depth-rubric.md](depth-rubric.md)). A subject written for
+working practitioners still needs an `intro` unit in each module for the reader who wants the main
+ideas only, and an `intro` unit assumes none of the profile's prerequisites.

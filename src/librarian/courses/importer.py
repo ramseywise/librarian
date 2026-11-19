@@ -79,6 +79,7 @@ import yaml
 
 from librarian.config import get_settings
 from librarian.courses import overlay
+from librarian.courses.depth import depth_of, sections_of, tier_of
 from librarian.ingest.gitignore import git_ignored as _git_ignored
 from librarian.ingest.gitignore import matches_ignored as _matches_ignored
 from librarian.ingest.scrape_claude_docs import WORKSPACE_DIR
@@ -1265,6 +1266,7 @@ def _plan_lesson(
     imports: dict[str, str] = {}
     kind = "reading"
     drill: dict = {}
+    depth: dict = {}
     if ext == ".mdx":
         body, imports = mdx_to_markdown(raw)
     elif ext == ".ipynb":
@@ -1280,6 +1282,7 @@ def _plan_lesson(
             end = body.find("\n---", 4)
             if end != -1:
                 drill = _drill_meta(body[4:end])  # …except the drill schema
+                depth = _depth_meta(body[4:end], lesson.src)  # …and the depth fields
                 body = body[end + 4 :].lstrip()
         if drill:
             kind = "drill"
@@ -1309,8 +1312,43 @@ def _plan_lesson(
     elif _is_references(lesson):  # own header, or it reads as part of the section above
         meta["section"] = "References"
     meta.update(drill)
+    meta.update(depth)
     meta["source"] = f"{repo}/{lesson.src.relative_to(source)}"
     plan.files[COURSES_DIR / lesson.dest] = render(meta, body)
+
+
+def _depth_meta(head: str, src: Path) -> dict:
+    """The tier and depth fields of a note's frontmatter (`librarian.courses.depth`), legal values only.
+
+    An illegal value is dropped and logged: the mirror never carries a depth the catalog would
+    ignore, and `librarian courses check chapters` reports it at the source.
+    """
+    try:
+        fm = yaml.safe_load(head)
+    except yaml.YAMLError:
+        return {}
+    if not isinstance(fm, dict):
+        return {}
+    out: dict = {}
+    if tier_of(fm.get("tier")):
+        out["tier"] = fm["tier"]
+    if depth_of(fm.get("depth")):
+        out["depth"] = fm["depth"]
+    raw_sections = fm.get("depth_sections")
+    sections = sections_of(raw_sections)
+    if sections:
+        out["depth_sections"] = sections
+    dropped_sections = len(raw_sections) - len(sections) if isinstance(raw_sections, dict) else 0
+    bad = [k for k in ("tier", "depth") if fm.get(k) is not None and k not in out]
+    if bad or dropped_sections:
+        log.warning(
+            "lesson_depth_invalid",
+            path=str(src),
+            tier=repr(fm.get("tier")),
+            depth=repr(fm.get("depth")),
+            dropped_sections=dropped_sections,
+        )
+    return out
 
 
 def _drill_meta(head: str) -> dict:

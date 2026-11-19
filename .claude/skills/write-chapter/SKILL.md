@@ -43,7 +43,7 @@ unread. If evidence on a concept is thin, say so in the chapter and in the repor
 ## Step 3 — Draft
 
 Write `<pillar>/notes/<NN-slug>.md` in the voice of the two neighbouring notes, using the seven chapter parts in order.
-Frontmatter: `origin: synthesis`, `sources:` with every source, `confidence:` by the rule in the layout, `cleaned:` today.
+Frontmatter: `origin: synthesis`, `sources:` with every source, `confidence:` by the rule in the layout, `cleaned:` today, and `depth:` (with `depth_sections:` for sections that differ) by `.claude/skills/pillar/references/depth-rubric.md`.
 
 - Each number comes from an agent's quote, with its setup. If you find yourself writing a number nobody quoted, cut it
   or mark it as your own arithmetic and show the arithmetic.

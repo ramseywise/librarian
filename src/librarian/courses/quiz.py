@@ -15,6 +15,11 @@ Using a hint or showing the solution counts as a miss in the attempts store.
 The three formats are the levels of one topic: multiple choice (1, recognise), flashcards
 (2, recall) and worked problems (3, calculate).
 
+Three optional fields place a question for the intake quiz and the syllabus, and none of them is
+a level: `depth` (`librarian.courses.depth`: intro, core or deep), `subject` (the course the
+question tests, when that is not the course its file sits in, as with the interviewing bank) and
+`topic` (a free label within the subject).
+
 The catalog loads leniently (a malformed question is dropped, with a warning, so one typo cannot
 hide a module's quiz); `check` is strict and is what `librarian courses check quiz` reports.
 """
@@ -30,6 +35,7 @@ from typing import Any
 
 import frontmatter
 
+from librarian.courses.depth import DEPTHS, depth_of
 from librarian.log_config import get_logger
 
 log = get_logger(__name__)
@@ -51,6 +57,9 @@ class Question:
     lesson: str | None = None
     tolerance: float | None = None  # worked problems only
     hint: str = ""  # worked problems only; withheld from the payload until asked for
+    depth: str = ""  # librarian.courses.depth; "" until the question is tagged
+    subject: str = ""  # the course it tests, when not the one its file is in
+    topic: str = ""
 
     @property
     def worked(self) -> bool:
@@ -105,11 +114,12 @@ def is_correct(q: Question, choice: str) -> bool:
 
 
 def parse_question(
-    raw: object, lessons: set[str] | None = None
+    raw: object, lessons: set[str] | None = None, subjects: set[str] | None = None
 ) -> tuple[Question | None, list[str]]:
     """One entry of `questions:` as a Question, and the problems found. No Question when unusable.
 
     With `lessons` given, a `lesson` outside it is a problem; without it the field is not checked.
+    The same goes for `subjects` (the course names) and a question's `subject`.
     """
     if not isinstance(raw, dict):
         return None, ["not a mapping"]
@@ -143,11 +153,27 @@ def parse_question(
     lesson = _text(raw.get("lesson")) or None
     if lesson and lessons is not None and lesson not in lessons:
         problems.append(f"lesson {lesson!r} is not in this module")
+    depth = raw.get("depth")
+    if depth is not None and not depth_of(depth):
+        problems.append(f"depth {depth!r} is not one of {', '.join(DEPTHS)}")
+    subject = _text(raw.get("subject"))
+    if subject and subjects is not None and subject not in subjects:
+        problems.append(f"subject {subject!r} is not a course")
     if problems:
         return None, problems
-    explanation = _text(raw.get("explanation"))
-    hint = _text(raw.get("hint")) if options_raw is None else ""
-    return Question(qid, prompt, tuple(options), answer, explanation, lesson, tolerance, hint), []
+    return Question(
+        id=qid,
+        prompt=prompt,
+        options=tuple(options),
+        answer=answer,
+        explanation=_text(raw.get("explanation")),
+        lesson=lesson,
+        tolerance=tolerance,
+        hint=_text(raw.get("hint")) if options_raw is None else "",
+        depth=depth_of(depth),
+        subject=subject,
+        topic=_text(raw.get("topic")),
+    ), []
 
 
 def _raw_questions(path: Path) -> list[object]:
@@ -179,15 +205,15 @@ def load(path: Path, lessons: set[str]) -> list[Question]:
     return out
 
 
-def problems_in(path: Path, lessons: set[str]) -> list[str]:
-    """Every problem in one `_quiz.md`, as 'question N (id): problem' lines."""
+def problems_in(path: Path, lessons: set[str], subjects: set[str] | None = None) -> list[str]:
+    """Every problem in one `_quiz.md`, as 'question N: problem' lines."""
     raw = _raw_questions(path)
     if path.is_file() and not raw:
         return ["no `questions:` list in the frontmatter"]
     out: list[str] = []
     seen: dict[str, int] = {}
     for i, item in enumerate(raw, 1):
-        q, found = parse_question(item, lessons)
+        q, found = parse_question(item, lessons, subjects)
         out += [f"question {i}: {p}" for p in found]
         if q is not None:
             if q.id in seen:

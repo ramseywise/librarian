@@ -42,3 +42,8 @@ commits). See `.claude/skills/README.md`.
 - `app/` — the React/Vite frontend only (`app/src/`, built to `app/dist/`, served by the API). The single
   `Dockerfile` at the repo root builds it and the API into one image.
 - Cartographer (`src/librarian/tools/cartographer/`: session facts, dashboard, weekly sweep) runs as `uv run cartographer`.
+
+## Not verified
+
+- The Obsidian "Graph Analysis" plugin giving cosine-similarity edges between pages. This describes a third-party
+  plugin and has not been checked.

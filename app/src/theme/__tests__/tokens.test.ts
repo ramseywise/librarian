@@ -3,13 +3,14 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { THEME_STORAGE_KEY } from "../../utils/theme";
 import { contrastRatio, LIGHT_CARD_BG } from "../domains";
+import { stylesheets } from "./stylesheets";
 
 // Read from disk: Vitest empties CSS imports, `?raw` included, under `css: false`.
 const here = import.meta.url;
 const read = (path: string) => readFileSync(decodeURIComponent(new URL(path, here).pathname), "utf8");
+const srcDir = decodeURIComponent(new URL("../../", here).pathname);
 const html = read("../../../index.html");
 const courses = read("../../components/courses/courses.css");
-const components = read("../components.css");
 const source = read("../tokens.css");
 
 function tokensIn(block: string): Record<string, string> {
@@ -28,7 +29,7 @@ const light = { ...dark, ...lightOwn };
 
 const SURFACES = [
   "--bg", "--surface", "--surface-sidebar", "--surface-raised", "--surface-card", "--surface-pager",
-  "--surface-field", "--surface-tab", "--surface-active", "--surface-selected", "--surface-user-msg",
+  "--surface-field", "--surface-active", "--surface-selected", "--surface-user-msg",
 ];
 const TEXT = [
   "--text-strong", "--text", "--text-body", "--text-soft", "--text-dim", "--text-secondary",
@@ -122,7 +123,9 @@ describe("reading typography", () => {
     expect(courses.match(/\.lesson-prose code \{([^}]*)\}/)?.[1]).toMatch(/monospace/);
   });
   it("leaves the app chrome alone", () => {
-    expect(components).not.toContain("--font-reading");
+    for (const { file, css } of stylesheets(srcDir)) {
+      if (!["tokens.css", "courses.css", "slides.css"].includes(file)) expect(css, file).not.toContain("--font-reading");
+    }
     expect(courses.match(/font-reading/g)).toHaveLength(1);
   });
 });

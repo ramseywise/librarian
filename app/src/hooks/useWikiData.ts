@@ -1,9 +1,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Edge, Node } from "@xyflow/react";
-import type { Area, GraphPayload, WikiEdgeData, WikiNodeData } from "../types";
+import type { GraphPayload, WikiEdgeData, WikiNodeData } from "../types";
+import {
+  atlasPayloadSchema,
+  graphSocketMessageSchema,
+  semanticEdgesSchema,
+  umapPositionsSchema,
+  type AtlasPayload,
+} from "../schemas/graph";
 import { tagSharedEdges as computeTagSharedEdges } from "../utils/tagEdges";
-import { RELEASE_EVENT, apiFetch, wsProtocols } from "../utils/api";
+import { RELEASE_EVENT, apiFetch, parseJson, wsProtocols } from "../utils/api";
 import type { XY } from "../utils/layout";
+import { errorText } from "./resource";
 
 const RECONNECT_MS = 2000;
 /** On the atlas, how long after its first paint the full graph is fetched anyway. */
@@ -26,40 +34,37 @@ export function deriveDomains(nodes: Pick<Node<WikiNodeData>, "data">[]): string
 }
 
 /**
- * Parse a `graph_update` WebSocket message into a GraphPayload. Works with both the
- * new server shape (`{nodes, edges, domains}`, wikilink edges only) and the old one
- * (no `domains`, tag-shared edges inline): edges are always narrowed to wikilinks and
- * tag-shared edges are recomputed client-side. Returns null for anything else.
+ * Parse a WebSocket message into a GraphPayload. The socket carries one message type,
+ * `graph_update`, validated as a strict discriminated union: a message that is not JSON, names
+ * another `type` or has the wrong shape yields null, and `onInvalid` hears why. Works with both
+ * the new server shape (`{nodes, edges, domains}`, wikilink edges only) and the old one (no
+ * `domains`, tag-shared edges inline): edges are always narrowed to wikilinks and tag-shared
+ * edges are recomputed client-side.
  */
-export function parseGraphMessage(raw: string): GraphPayload | null {
+export function parseGraphMessage(raw: string, onInvalid?: (reason: string) => void): GraphPayload | null {
   let msg: unknown;
   try {
     msg = JSON.parse(raw);
   } catch {
+    onInvalid?.("the message was not JSON");
     return null;
   }
-  if (!msg || typeof msg !== "object") return null;
-  const { type, data } = msg as { type?: unknown; data?: unknown };
-  if (type !== "graph_update" || !data || typeof data !== "object") return null;
-  const { nodes, edges, domains, areas } = data as Partial<GraphPayload>;
-  if (!Array.isArray(nodes) || !Array.isArray(edges)) return null;
+  const parsed = graphSocketMessageSchema.safeParse(msg);
+  if (!parsed.success) {
+    onInvalid?.(parsed.error.issues[0]?.message ?? "unexpected message");
+    return null;
+  }
+  const { nodes, edges, domains, areas } = parsed.data.data;
   return {
     nodes,
     edges: edges.filter((e) => e.data?.edgeType === "wikilink"),
-    domains: Array.isArray(domains) ? domains.filter((d) => d !== "private") : deriveDomains(nodes),
-    areas: Array.isArray(areas) ? areas : [],
+    domains: domains ? domains.filter((d) => d !== "private") : deriveDomains(nodes),
+    areas: areas ?? [],
   };
 }
 
 /** GET /api/graph/atlas: the pages without summaries, wikilinks as index pairs. */
-export interface AtlasPayload {
-  nodes: { id: string; title: string; domain: string; typeTag: string; tags: string[] }[];
-  links: ([number, number] | [number, number, string])[];
-  domains: string[];
-  /** Absent from an older server: the ring then has a sector per directory. */
-  areas?: Area[];
-  /** Absent from an older server: the sidebar then lists each area on its own. */
-}
+export type { AtlasPayload };
 
 /** The atlas payload as a GraphPayload, with empty summaries until the full graph arrives. */
 export function fromAtlas(a: AtlasPayload): GraphPayload {
@@ -102,6 +107,10 @@ export function useWikiData({ tagShared = true, live = true }: { tagShared?: boo
   const [full, setFull] = useState(false);
   const fullRef = useRef(false);
   const [atlasDone, setAtlasDone] = useState(false);
+  const [atlasError, setAtlasError] = useState<string | null>(null);
+  /** The socket closed, or sent something unreadable, before the full graph arrived. */
+  const [socketError, setSocketError] = useState<string | null>(null);
+  const [attempt, setAttempt] = useState(0);
   const [timedOut, setTimedOut] = useState(false);
   const wantLive = live || timedOut;
   const [semanticEdges, setSemanticEdges] = useState<Edge<WikiEdgeData>[]>([]);
@@ -113,18 +122,25 @@ export function useWikiData({ tagShared = true, live = true }: { tagShared?: boo
 
   useEffect(() => {
     let cancelled = false;
-    apiFetch("/api/graph/atlas")
-      .then((res) => (res.ok ? (res.json() as Promise<AtlasPayload>) : null))
-      .catch(() => null)
+    setAtlasError(null);
+    void apiFetch("/api/graph/atlas")
+      .then((res) => (res.ok ? parseJson(res, atlasPayloadSchema) : Promise.reject(new Error(`HTTP ${res.status}`))))
+      .then(
+        (atlas) => atlas,
+        (e: unknown) => {
+          if (!cancelled) setAtlasError(errorText(e));
+          return null;
+        },
+      )
       .then((atlas) => {
         if (cancelled) return;
-        if (atlas && Array.isArray(atlas.nodes) && !fullRef.current) setGraph(fromAtlas(atlas));
+        if (atlas && !fullRef.current) setGraph(fromAtlas(atlas));
         setAtlasDone(true);
       });
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [attempt]);
 
   // A failed atlas request (an older server) goes straight to the socket.
   useEffect(() => {
@@ -145,13 +161,21 @@ export function useWikiData({ tagShared = true, live = true }: { tagShared?: boo
       sock.onopen = () => setConnected(true);
       sock.onclose = () => {
         setConnected(false);
+        if (!fullRef.current) setSocketError("the live connection closed before the map arrived");
         if (!disposed) timer = setTimeout(connect, RECONNECT_MS);
       };
       sock.onmessage = (e) => {
-        const payload = typeof e.data === "string" ? parseGraphMessage(e.data) : null;
+        const payload =
+          typeof e.data === "string"
+            ? parseGraphMessage(e.data, (why) => {
+                if (!fullRef.current) setSocketError(`unreadable map update (${why})`);
+              })
+            : null;
         if (payload) {
           fullRef.current = true;
           setFull(true);
+          setSocketError(null);
+          setAtlasError(null);
           setGraph(payload);
         }
       };
@@ -173,7 +197,7 @@ export function useWikiData({ tagShared = true, live = true }: { tagShared?: boo
         ws.close();
       }
     };
-  }, [wantLive]);
+  }, [wantLive, attempt]);
 
   // ~42k edges on the current wiki; recomputed only when a new payload arrives.
   const tagSharedEdges = useMemo(
@@ -184,7 +208,7 @@ export function useWikiData({ tagShared = true, live = true }: { tagShared?: boo
   const fetchSemanticEdges = useCallback(async (threshold = 0.65) => {
     const res = await apiFetch(`/api/edges/semantic?threshold=${threshold}`);
     if (!res.ok) throw new Error(`semantic edges: HTTP ${res.status}`);
-    setSemanticEdges((await res.json()) as Edge<WikiEdgeData>[]);
+    setSemanticEdges(await parseJson(res, semanticEdgesSchema));
   }, []);
 
   /** Fetch the UMAP projection once; concurrent and later calls share the result. */
@@ -192,7 +216,7 @@ export function useWikiData({ tagShared = true, live = true }: { tagShared?: boo
     if (!umapRequest.current) {
       setUmapFailed(false);
       umapRequest.current = apiFetch("/api/layout/umap", { method: "POST" })
-        .then((res) => (res.ok ? (res.json() as Promise<Record<string, XY>>) : null))
+        .then((res) => (res.ok ? parseJson(res, umapPositionsSchema) : null))
         .catch(() => null)
         .then((pos) => {
           if (pos) {
@@ -207,7 +231,23 @@ export function useWikiData({ tagShared = true, live = true }: { tagShared?: boo
     return umapRequest.current;
   }, []);
 
+  const hasGraph = graph.nodes.length > 0;
+  // Nothing to draw and both routes in have failed: say why. With a map on screen a failed
+  // refresh stays quiet, as the socket reconnects by itself.
+  const error = hasGraph ? null : atlasError && socketError ? `${atlasError}; ${socketError}` : null;
+  const retry = useCallback(() => {
+    setAtlasError(null);
+    setSocketError(null);
+    setAtlasDone(false);
+    setTimedOut(false);
+    setAttempt((a) => a + 1);
+  }, []);
+
   return {
+    data: hasGraph ? graph : null,
+    error,
+    loading: !hasGraph && !error,
+    retry,
     baseNodes: graph.nodes as Node<WikiNodeData>[],
     wikilinkEdges: graph.edges,
     domains: graph.domains,

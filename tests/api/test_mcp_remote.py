@@ -113,3 +113,42 @@ def test_booleans_go_as_lowercase_query_values(monkeypatch: pytest.MonkeyPatch) 
     remote.call(get_settings(), "search_wiki", {"query": "rrf", "expand": True, "limit": 5})
     assert dict(seen[0]) == {"query": "rrf", "expand": "true", "limit": "5"}
     get_settings.cache_clear()
+
+
+CODEMAP_TOOLS = [
+    "find_symbol",
+    "get_file_symbols",
+    "find_references",
+    "repo_map",
+    "find_callers",
+    "semantic_find_symbol",
+    "list_repos",
+]
+
+
+def test_the_route_lists_and_runs_the_codemap_tools(
+    client: TestClient, read_key: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from librarian.tools.codemap import client as codemap_client
+
+    bearer = {"Authorization": f"Bearer {read_key}"}
+    assert set(CODEMAP_TOOLS) <= set(client.get("/api/tools", headers=bearer).json())
+    monkeypatch.setattr(
+        codemap_client,
+        "transport",
+        httpx.MockTransport(
+            lambda r: httpx.Response(
+                200,
+                json=[
+                    {
+                        "repo_id": "r",
+                        "root_path": "/x",
+                        "language": "python",
+                        "last_indexed_at": "t",
+                    }
+                ],
+            )
+        ),
+    )
+    resp = client.get("/api/tools/list_repos", headers=bearer)
+    assert resp.status_code == 200 and "**r** (`/x`)" in resp.text

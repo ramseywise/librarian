@@ -2,6 +2,9 @@
 
 Needs a Linux host with Docker (Compose v2) and ports 80 and 443 reachable.
 
+The host itself can be created with Terraform or OpenTofu from `infra/` (one instance, SSM shell, no SSH port; written, not
+applied): see [`infra/README.md`](../../infra/README.md). It stops at an empty `/srv/librarian`; the steps below start there.
+
 1. `git clone <repo> /srv/librarian && cd /srv/librarian`
 2. `cp .env.example .env` and set: `LIBRARIAN_DOMAIN`, `LIBRARIAN_PUBLIC_URL`, `POSTGRES_PASSWORD` (URL-safe),
    `LIBRARIAN_SESSION_SECRET`, `ANTHROPIC_API_KEY`, a login method (Google, GitHub, or `RESEND_API_KEY` +
@@ -65,3 +68,16 @@ Run with `docker compose -f docker-compose.yml -f docker-compose.secrets.yml up 
 add the second file). Remove the same names from `.env` or the "both set" error stops the API at start. An empty
 `NAME=` is treated as unset, so clearing in `environment:` works. Check which form is in use without printing a value:
 `docker compose exec librarian sh -c 'env | grep -c _FILE'`. Rotation of each secret: `rotate-secrets.md`.
+
+## Not verified
+
+`docs/status.md` records that no host is live, so none of the following has been checked on a real host.
+
+- The five numbered steps as a sequence: nobody has cloned, configured and started this stack on a Linux host.
+- That Caddy obtains a certificate on the first request after DNS is set. The stack has only been started locally
+  (`./librarian --local start`) and in `make e2e-compose`, which uses Caddy's internal certificate authority.
+- That `LIBRARIAN_IMAGE=ghcr.io/<owner>/librarian:sha-<short>` names an image that can be pulled. The continuous
+  integration job pushes such tags, but nobody has checked that one exists in the registry or pulls without a login.
+- `./librarian content push`: the script exists, but it has never copied content to a host.
+- The secrets-as-files compose example: the settings code that reads `<NAME>_FILE` is covered by 16 tests, but the
+  example file itself has never been started with Docker, and the `env | grep -c _FILE` check has not been run.

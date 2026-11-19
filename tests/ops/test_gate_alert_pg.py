@@ -339,5 +339,12 @@ def test_postgres_scratch_is_dropped_when_the_check_fails(
 
 
 def test_ops_group_is_registered() -> None:
-    assert set(cli.GROUPS["ops"]) == {"backup", "restore", "upgrade", "schedule", "list"}
+    assert set(cli.GROUPS["ops"]) == {
+        "backup",
+        "restore",
+        "upgrade",
+        "schedule",
+        "list",
+        "prune-logs",
+    }
     assert all(v.target == "librarian.ops.cli:main" for v in cli.GROUPS["ops"].values())

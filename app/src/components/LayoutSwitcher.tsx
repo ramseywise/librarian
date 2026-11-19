@@ -1,4 +1,5 @@
 import type { LayoutMode } from "../types";
+import "./filter.css";
 
 interface Props {
   current: LayoutMode;

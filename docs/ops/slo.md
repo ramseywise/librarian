@@ -161,9 +161,14 @@ To review: compare each row with the published prices, fix any difference, then 
 `PRICES_REVIEWED` to today. Run the check from the monthly routine; it is not in CI, because a
 check that goes red when nobody changed anything trains people to ignore CI.
 
-## What none of this proves
+## Not verified
 
 Nothing here has run on a host. The rules pass `promtool check rules`; the Prometheus and
 blackbox configs pass their checkers; the dashboard is valid JSON that has not been opened in
 Grafana. The thresholds (14.4x, 6x, 15% disk, 80% spend) are the textbook values, not tuned on
 this service's traffic; revisit them after a month of real data.
+
+Also not verified: that the blackbox probe, the Grafana provisioning and the observability compose profile start (the
+profile has never been started and there is no Alertmanager, so no alert goes anywhere); that `/metrics` is reachable
+by Prometheus and closed to the internet through Caddy; and the cost figures, which come from a price table and have
+never been compared with a provider invoice.

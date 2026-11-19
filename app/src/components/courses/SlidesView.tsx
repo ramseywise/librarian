@@ -7,7 +7,8 @@ import { canSpeak, sentences, useNarration } from "./useNarration";
 import "./courses.css";
 import "./slides.css";
 import { courseColor } from "../../theme/domains";
-import { apiFetch } from "../../utils/api";
+import { slideDeckSchema } from "../../schemas/courses";
+import { apiFetch, parseJson } from "../../utils/api";
 
 /** While a build runs the viewer asks again at this interval. */
 const POLL_MS = 3000;
@@ -75,7 +76,7 @@ export function SlidesView({ deckId, onAsk }: { deckId: string; onAsk?: (questio
     let cancelled = false;
     // GET only reads. A stale deck says so, and we ask for the build once per tick.
     const load = (url: string, init?: RequestInit): Promise<SlideDeck> =>
-      apiFetch(url, init).then((r) => (r.ok ? r.json() : Promise.reject(new Error(r.status === 404 ? "No slides here" : `HTTP ${r.status}`))));
+      apiFetch(url, init).then((r) => (r.ok ? parseJson(r, slideDeckSchema) : Promise.reject(new Error(r.status === 404 ? "No slides here" : `HTTP ${r.status}`))));
     load(`/api/courses/slides/${id}`)
       // Slides drawn from the yaml need no build. Otherwise a deployment serves prebuilt decks and has no
       // build route (404): keep what GET answered.

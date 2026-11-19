@@ -219,10 +219,24 @@ describe("FiltersPanel", () => {
     expect(screen.getByRole("button", { name: "Clear" })).toBeDisabled();
   });
 
-  it("shows a module set by a link by its title, so it can be switched off", () => {
+  it("lists a module set by a link in the open course tree, so it can be switched off there", () => {
     const { onChange } = setup(new Set(["module:generative-ai/02-rag"]));
-    const active = screen.getByRole("group", { name: "Active filters" });
-    fireEvent.click(within(active).getByRole("button", { name: "RAG" }));
+    expect(screen.queryByRole("group", { name: "Active filters" })).toBeNull();
+    const tree = screen.getByRole("group", { name: "Filter by curriculum" });
+    const row = within(tree).getByRole("button", { name: /^RAG/ });
+    expect(row).toHaveAttribute("aria-pressed", "true");
+    fireEvent.click(row);
     expect(onChange).toHaveBeenCalledWith(new Set());
+  });
+
+  it("orders the sections broadest first: course, domain, term, tag, then gaps", () => {
+    setup();
+    const titles = [...document.querySelectorAll(".side-section > summary")].map((s) => s.textContent);
+    expect(titles).toEqual(["Course › module", "Domain", "Glossary term", "Tag", "Not yet in a lesson"]);
+  });
+
+  it("still names an area set by a link, which no section lists", () => {
+    setup(new Set(["area:programming"]));
+    expect(within(screen.getByRole("group", { name: "Active filters" })).getByRole("button", { name: "Programming" })).toBeInTheDocument();
   });
 });

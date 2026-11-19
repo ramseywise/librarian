@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import "../filter.css";
 import {
-  bandOf,
   bandRadius,
   BANDS,
   hitTest,
@@ -9,9 +9,6 @@ import {
   polar,
   ringGeometry,
   type AtlasSector,
-  type Ring,
-  type RingGeometry,
-  type RingInsets,
   type Spike,
 } from "../../utils/atlas";
 import { DEFAULT_CAP, mapPath, type Grouping } from "../../utils/mapRoute";
@@ -21,7 +18,6 @@ import {
   drawRing,
   homeCamera,
   readPalette,
-  resolveColor,
   SPIKE_DIM,
   SPIKE_FAINT,
   SPIKE_LIT,
@@ -32,12 +28,11 @@ import {
   type RingFrame,
   type SpikeFrame,
 } from "./atlasCanvas";
-import { gapText, sectorSummary } from "./atlasText";
+import { insetsFor, spikeFrame, spikeFrameWithStates, towards } from "./atlasFrames";
+import { gapText, sectorSummary, type AtlasPageInfo } from "./atlasText";
+import { fillSectorTip, fillTip, hideTip, moveTip, TOOLTIP_W } from "./atlasTip";
 
-export interface AtlasPageInfo {
-  title: string;
-  summary: string;
-}
+export type { AtlasPageInfo } from "./atlasText";
 
 interface Props {
   sectors: AtlasSector[];
@@ -63,7 +58,6 @@ const CAMERA_MS = 430;
 const ZOOMED_ALPHA = 0.3;
 const SECTOR_ZOOM = 2.3;
 const PAGE_ZOOM = 4.5;
-const TOOLTIP_W = 300;
 const BAND_LABEL_MIN = 14;
 const WIDE_QUERY = "(min-width: 760px)";
 const MAX_VIEW_ZOOM = 5;
@@ -76,38 +70,6 @@ const reducedMotion = () =>
   typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const isWide = () => typeof window.matchMedia !== "function" || window.matchMedia(WIDE_QUERY).matches;
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
-
-function insetsFor(wide: boolean, grouping: Grouping): RingInsets {
-  return wide
-    ? // The sidebar is its own column now, not a panel over the canvas: nothing to reserve on the left.
-      { left: 0, top: 76, bottom: 10, labelWidth: grouping === "domain" ? 138 : 104 }
-    : { left: 0, top: 96, bottom: 150, labelWidth: 84 };
-}
-
-/** Shortest way round from one angle to another. */
-function towards(from: number, to: number, t: number): number {
-  let d = (to - from) % (Math.PI * 2);
-  if (d > Math.PI) d -= Math.PI * 2;
-  if (d < -Math.PI) d += Math.PI * 2;
-  return from + d * t;
-}
-
-function spikeFrame(ring: Ring, g: RingGeometry, degree: Map<string, number>): SpikeFrame {
-  const n = ring.spikes.length;
-  const frame: SpikeFrame = {
-    angle: new Float64Array(n),
-    tip: new Float64Array(n),
-    color: new Array<string>(n),
-    state: new Uint8Array(n),
-  };
-  const colors = ring.sectors.map((s) => resolveColor(s.color));
-  ring.spikes.forEach((s, i) => {
-    frame.angle[i] = s.angle;
-    frame.tip[i] = bandRadius(g, bandOf(degree.get(s.id) ?? 0));
-    frame.color[i] = colors[s.sector];
-  });
-  return frame;
-}
 
 interface Cursor {
   sector: number;
@@ -747,6 +709,8 @@ export function Atlas({
         ref={hotRef}
         className="atlas-canvas atlas-canvas--hot"
         tabIndex={0}
+        // A canvas has no native semantics; "application" hands arrow keys to the page (labelled below).
+        // eslint-disable-next-line jsx-a11y/no-interactive-element-to-noninteractive-role
         role="application"
         aria-label={`Atlas of ${pageTotal} wiki pages in ${ring.sectors.length} sectors, one spike per page; a longer spike means more links. Left and right arrows step through pages, up and down through sectors, Enter opens. Everything here is also under "Browse as a list".`}
         onPointerMove={onPointerMove}
@@ -879,56 +843,4 @@ export function Atlas({
       </div>
     </div>
   );
-}
-
-/** Same spikes with colours resolved again: a sector on a CSS variable follows the theme. */
-function spikeFrameWithStates(frame: SpikeFrame, ring: Ring): SpikeFrame {
-  const colors = ring.sectors.map((s) => resolveColor(s.color));
-  ring.spikes.forEach((s, i) => {
-    frame.color[i] = colors[s.sector];
-  });
-  return frame;
-}
-
-function hideTip(tip: HTMLElement | null): void {
-  if (tip) tip.hidden = true;
-}
-
-function tipLine(cls: string, text: string): HTMLDivElement {
-  const div = document.createElement("div");
-  div.className = cls;
-  div.textContent = text;
-  return div;
-}
-
-function fillTip(
-  tip: HTMLElement,
-  page: AtlasPageInfo | undefined,
-  sector: AtlasSector,
-  links: number,
-  untaught: boolean,
-): void {
-  const meta = `${sector.label} · ${links} ${links === 1 ? "link" : "links"}`;
-  tip.replaceChildren(
-    tipLine("atlas-tip-title", page?.title ?? ""),
-    tipLine("atlas-tip-summary", page?.summary ?? ""),
-    tipLine("atlas-tip-meta", untaught ? `${meta} · not yet in a lesson` : meta),
-  );
-  tip.hidden = false;
-}
-
-function fillSectorTip(tip: HTMLElement, sector: AtlasSector, gaps: number | null): void {
-  const count = `${sector.pageIds.length} pages`;
-  tip.replaceChildren(
-    tipLine("atlas-tip-title", sector.label),
-    tipLine("atlas-tip-meta", `${gaps ? `${count} · ${gapText(gaps)}` : count} · click to open the best linked`),
-  );
-  tip.hidden = false;
-}
-
-/** Beside the pointer, on the side with room. Uses a transform, so it doesn't trigger layout. */
-function moveTip(tip: HTMLElement, x: number, y: number, g: RingGeometry): void {
-  const left = x + 16 + TOOLTIP_W > g.width ? x - TOOLTIP_W - 16 : x + 16;
-  const top = y > g.height - 150 ? y - 130 : y + 14;
-  tip.style.transform = `translate(${Math.max(4, left)}px, ${Math.max(4, top)}px)`;
 }

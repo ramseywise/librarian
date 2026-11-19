@@ -20,9 +20,10 @@ torch, fastapi) load only for the verbs that need them.
     librarian scrape sessions|docs|repos|feeds|arxiv|bookmarks
     librarian courses import                           mirror learn-ai-engineering coursework into data/courses/
     librarian courses check chapters|curriculum|links|drills|quiz|manifest|crosswalk|smoke-labs
-    librarian courses review findings|signals|score-eval
-    librarian db upgrade|import-attempts|import-drill-log   user-state database (DATABASE_URL)
-    librarian ops backup|restore|upgrade|schedule|list    encrypted backups, fenced restore, upgrade gate
+    librarian courses review findings|signals|score-eval|depth-classify|depth-score
+    librarian courses syllabus [--out FILE]           every module's objectives and notes, with wiki pages
+    librarian db upgrade|check|import-attempts|import-drill-log   user-state database (DATABASE_URL)
+    librarian ops backup|restore|upgrade|schedule|list|prune-logs  encrypted backups, fenced restore, upgrade gate
     librarian eval compare --experiment NAME           per-variant answer metrics from telemetry and ratings
     librarian metrics product|check-release            product numbers; exit 1 if a release hurt grounding or ratings
     librarian pricing check                            print the price table; exit 1 when its review is over 35 days old
@@ -160,6 +161,7 @@ GROUPS: dict[str, dict[str, Verb]] = {
             "upgrade": "backup gate before an image change",
             "schedule": "daily backup loop (the compose backup service)",
             "list": "the backups in the bucket",
+            "prune-logs": "drop agent-log lines past LIBRARIAN_AGENT_LOG_RETENTION_DAYS",
         }.items()
     },
     "feedback": {
@@ -170,6 +172,9 @@ GROUPS: dict[str, dict[str, Verb]] = {
     },
     "db": {
         "upgrade": Verb("librarian.db.cli:main", ("upgrade",), "apply the database migrations"),
+        "check": Verb(
+            "librarian.db.cli:main", ("check",), "read-only: exit 1 on a pending migration"
+        ),
         "import-attempts": Verb(
             "librarian.courses.imports:main",
             ("import-attempts",),
@@ -223,7 +228,14 @@ GROUPS: dict[str, dict[str, Verb]] = {
             help="mirror learn-ai-engineering coursework into data/courses/",
         ),
         "check": Verb("librarian.cli:_run_check", help="chapters|curriculum|links|drills|quiz|..."),
-        "review": Verb("librarian.cli:_run_review", help="findings|signals|score-eval"),
+        "review": Verb(
+            "librarian.cli:_run_review",
+            help="findings|signals|score-eval|depth-classify|depth-score",
+        ),
+        "syllabus": Verb(
+            "librarian.courses.syllabus:main",
+            help="write docs/syllabus.md: every module's objectives and notes with their wiki pages",
+        ),
     },
 }
 
@@ -242,6 +254,8 @@ _REVIEWS: dict[str, str] = {
     "findings": "librarian.courses.review.findings:main",
     "signals": "librarian.courses.review.signals:main",
     "score-eval": "librarian.courses.review.score_eval:main",
+    "depth-classify": "librarian.courses.review.depth_classify:main",
+    "depth-score": "librarian.courses.review.depth_score:main",
 }
 
 
@@ -339,6 +353,8 @@ def _run_api(argv: list[str]) -> int:
         access_log=False,
         proxy_headers=True,
         forwarded_allow_ips=settings.forwarded_allow_ips,
+        # Let a chat stream finish after SIGTERM instead of cutting it (compose: stop_grace_period).
+        timeout_graceful_shutdown=settings.shutdown_grace_s,
     )
     return 0
 

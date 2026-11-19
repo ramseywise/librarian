@@ -14,6 +14,7 @@ from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
 from librarian.api.security import SignedIn
+from librarian.config import get_settings
 from librarian.courses import catalog as lib
 from librarian.courses import lab_runner, labs, progress, slides, sources, study
 
@@ -73,8 +74,13 @@ async def run_lab(body: LabRun, _: SignedIn) -> StreamingResponse:
     lab = labs.get(body.lab)
     if lab is None:
         raise HTTPException(status_code=404, detail="lab not found")
+    # The file count is capped by the model (labs.MAX_EDITABLE_FILES, a 422). Size is capped per
+    # file and over the whole request, since 30 files at the per-file cap would be 6 MB.
     if any(len(text) > labs.MAX_EDITABLE_BYTES for text in body.files.values()):
         raise HTTPException(status_code=413, detail="file too large")
+    total = sum(len(path) + len(text) for path, text in body.files.items())
+    if total > get_settings().lab_run_max_total_chars:
+        raise HTTPException(status_code=413, detail="request too large")
     request = lab_runner.RunRequest(lab, body.mode, body.files)
     runner = lab_runner.get_runner()
     try:
