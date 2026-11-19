@@ -10,6 +10,7 @@ sources:
   - data/raw/repos/galactus/.claude--docs--plans--2026-08-16-fraud-parity.md
   - data/raw/claude-docs/galactus/docs/plans/2026-08-16-credit-reunification.md
   - data/raw/repos/galactus/.claude--docs--plans--2026-08-16-credit-reunification.md
+  - data/raw/papers/2026-11-08-ml-engineering-in-action-ch06-experimentation-action-testing-evaluating-project.md
 ---
 
 # ML Run Reproducibility Bar
@@ -112,6 +113,10 @@ what makes the first run a template for the rest, instead of a one-off design it
 - **A provisional label horizon is recorded as provisional.** A convention-based
   90-days-past-due horizon was adopted, marked "not derived from this extract", and kept
   BLOCKING for any shipped threshold.
+
+## A second view on recording runs
+
+Wilson (*Machine Learning Engineering in Action*) advises recording every agreed metric for every run so earlier runs can be re-judged without rerunning, and notes his reasoning is experience, not data. He also advises code that re-runs from scratch under shared rules across prototyping teams.
 
 ## See Also
 - [[Data Sufficiency Refusal]] — extends (the refuse-not-abort guard this bar ratifies)

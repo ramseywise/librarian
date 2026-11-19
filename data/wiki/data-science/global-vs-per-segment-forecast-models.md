@@ -2,9 +2,11 @@
 title: "Global vs Per-Segment Forecast Models"
 tags: [data-science, comparison]
 summary: "Start with one global model plus the naive row, add the segment as a feature before splitting the data, and split only where later folds confirm it; one eight-fold table gave the wrong answer on synthetic cash-flow data."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--05-time-series-and-recommenders--notes--01-time-series-ml.md
+  - data/raw/papers/2026-11-08-montero-manso-2021-locality-globality.md
+  - data/raw/papers/2026-11-08-bandara-2020-forecasting-across-time-series.md
 ---
 
 # Global vs Per-Segment Forecast Models
@@ -33,7 +35,21 @@ A separate model can still be worth keeping for one segment: on a 161-customer s
 
 ## Literature fit
 
-Random partitioning can help a model constrained in complexity, which shows that similar series are not why global methods work; boosted trees are not so constrained, so random splits mostly cost data. Clustering knowledge can enter as features (a global network with features scored 0.7596 against 0.7632 for clustering by periodicity and 0.8149 plain, on one-step forecasts). Per-cluster recurrent models gained on one dataset (0.93 against 0.95 on 111 ATM series, where simple exponential smoothing at 0.87 beat both) and showed no significant difference on another.
+Two papers bear on the question.
+
+**Montero-Manso and Hyndman** (self-reported) argue that global methods work without similar series. They lag-embed every series, stack them and fit one regression, forecasting one step ahead and scoring MASE on about 17 datasets. One global linear AR(25) over the 617 M1 Monthly series is reported to outperform the leading local methods, using 25 parameters where auto.arima uses about 1600. Splitting a set at random into 10 equal groups and fitting one global linear model per group still helped in most datasets where the global model was complexity-constrained, which they take as evidence that similar series are not the cause; they call it a showcase of theory, not a recommendation. On M4 one-step MASE (AR(12)) the three local methods scored 0.7618 (auto.arima), 0.7644 (ets) and 0.7745 (theta), all ahead of a plain global deep network at 0.8149; splitting M4 by periodicity into one deep network per cluster scored 0.7632, and the best row was a global deep network that took frequency and other features as inputs. The course note gives 0.7596 for that last row; the extraction names 0.7596 only in its Limits, without tying it to a Results row.
+
+**Bandara, Bergmeir and Smyl** (self-reported) train one LSTM per cluster of series, grouped by 18 features and a Snob mixture model, against one LSTM over all series. On NN5 (rolling origin, 56-day horizon, 111 daily ATM series) mean MASE was 0.93 for the clustered LSTM and 0.95 for the single LSTM, while exponential smoothing (ES and ETS) scored 0.87; the clustered model beat the single LSTM significantly (paired Wilcoxon p = 7.22e-4) and never beat the smoothing benchmarks on any measure. On CIF2016 (72 monthly series, fixed origin) its mean sMAPE of 10.53 was the lowest among entrants (10.69 for the single LSTM), but the three LSTM variants were not significantly different (aligned Friedman p = 0.8010).
+
+The two papers pull in different directions: Montero-Manso and Hyndman say similar series are not essential (and put a clustering analysis out of scope, while their own per-periodicity networks beat the plain global one), and Bandara and colleagues report a significant gain from clustering on NN5 but no significant difference on CIF2016.
+
+The course note adds that boosted trees are not complexity-constrained the way a global linear model is, so in this page's setting random splits mostly cost data.
+
+## Limits
+
+- Montero-Manso and Hyndman: the bounds are worst-case and loose, assume independent series, and tighter bounds would not by themselves mean lower out-of-sample error. There are no seeds, repeats or significance tests, and the table differences are small and single-run (0.7596 against 0.7632). The deep network and trees were not tuned. On the dominick and parts (intermittent) datasets longer memory did not help, and the authors have no explanation.
+- Bandara and colleagues: only two datasets (CIF2016, NN5), with M3 excluded by the authors because its series are not similar. CIF2016 holds 48 artificial series, and the clustering applies only to its 57 horizon-12 series. Rolling-origin LSTMs were not re-fitted while the benchmarks were. Significance testing uses sMAPE only, hyperparameters, seeds and run counts are not reported, and the model is an LSTM on a discontinued toolkit, with no M4 or N-BEATS-style comparison.
+- The synthetic cash-flow study above comes from the course note; these two papers do not test that setting.
 
 ## What broke
 

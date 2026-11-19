@@ -54,3 +54,4 @@ A schema calling itself a contract (automated `DESCRIBE`); checks only in the wa
 - [[Kafka Ingest Model, Delivery Semantics and Stream Windows]] — related (schema registry)
 - [[Dimensional Model Grain and the Four Design Steps]] — related (the Unknown row follows the same nothing-disappears rule)
 - [[Data Engineering Foundations]] — related
+- [[Data Mesh Topologies by Domain Granularity and Distribution]] — related

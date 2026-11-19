@@ -6,6 +6,8 @@ updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--07-architecture-and-governance--notes--01-data-architectures-mesh-fabric-mdw.md
   - data/raw/repos/learn-ai-engineering/data-engineering--07-architecture-and-governance--README.md
+  - data/raw/papers/2026-11-08-serra-deciphering-data-architectures-ch13-data-mesh-foundation.md
+  - data/raw/papers/2026-11-08-strengholt-data-mesh-topologies.md
 ---
 
 # Data Mesh as an Ownership Model and Federated Governance
@@ -45,6 +47,8 @@ A global rule on valid values does not catch a *missing* row: dropping one state
 
 Six topologies in the practitioner literature differ on two axes: domain granularity (fine, mixed, coarse) and whether data moves peer to peer or through a central distribution layer. Fine-grained fully federated is the pure form (flexible but duplicates infrastructure and makes cross-domain lookups costly); fine-grained fully governed (multiple workspaces, one shared lake) trades time to market for easier conformance and is close to type 1; hybrid federated suits legacy sources and few engineers; value-chain-aligned fits back-and-forth operational flows; coarse-grained aligned suits firms grown by acquisition but risks bigger silos; coarse-grained governed needs a mature platform team.
 
+Strengholt's scenario-by-scenario account is on [[Data Mesh Topologies by Domain Granularity and Distribution]].
+
 Start with ownership and contracts on the datasets that hurt most, on a shared platform (type 1); decentralise technology last, if ever. Signals for a mesh: many autonomous business units, a backlog at the central team, engineers inside domains, ability to agree global standards. Signals against: one or a few teams, compute or cost as the bottleneck.
 
 ## Skepticism worth keeping
@@ -55,8 +59,18 @@ Start with ownership and contracts on the datasets that hurt most, on a shared p
 - Warehouses mostly fail from people, process or wrong technology choices, not from inability to scale. One analyst firm placed mesh near the hype peak with 5% to 20% market penetration and predicted it would be obsolete before the plateau; one author's informal poll found one or two in a hundred attendees building one. Both are anecdotal.
 - Contracts before decentralisation: ownership without contracts moves the breakage around.
 
+## Serra's chapter 13 framing
+
+Serra, from the skeptics' camp by his own account, treats mesh as a concept and an organisational and cultural shift, not a technology. He lists four problems of centralised architectures (ownership gaps, poor quality, technical scaling, organisational scaling) without mapping them one to one onto the principles. In his reading a central platform team builds the self-serve platform, so not everything in a mesh is decentralised, and a central group of domain representatives and subject experts sets governance standards while the domains implement and monitor. He advises automating policy implementation and monitoring and tagging data. Designing domains (domain-driven design) is, he says, very hard and time-consuming, so he advises designing domains and products before building. He sees type 1 most often, thinks type 3 will never be adopted, believes no company will build a pure mesh, and says there is no universal rule, or defined minimum viable mesh, for when a solution may be called one. He suggests the centralisation spectrum in his Fig 13-4 as a check on whether a solution is mostly central. The 2023 Gartner figures (hype position, 5% to 20% penetration) are quoted second-hand by Serra and have dated.
+
+## Limits
+
+- Serra's poll is informal, by his own admission, with no counts, venues or dates; he calls parts of his outlook guesswork.
+- A later chapter, absent from the extraction, covers suitability for an organisation; the extraction has no title page or author.
+
 ## See Also
 - [[Warehouse, Fabric and Lakehouse: Sizing the Physical Architecture]] — prerequisite-for
 - [[Contract Change Impact Chain and the Same-Name Unit Change]] — extends
 - [[Data Engineering Foundations]] — related (course map)
+- [[Data Mesh Topologies by Domain Granularity and Distribution]] — extends
 - [[Writing a Metric Definition Two Analysts Agree On]] — related

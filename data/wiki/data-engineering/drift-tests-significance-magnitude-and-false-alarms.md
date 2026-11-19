@@ -5,6 +5,7 @@ summary: "KS, chi-squared and PSI answer different questions: p-values go to zer
 updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--06-ml-platform--notes--04-drift.md
+  - data/raw/papers/2026-11-07-rabanser-2018-failing-loudly.md
 ---
 
 # Drift Tests: Significance, Magnitude and False Alarms
@@ -36,7 +37,7 @@ Per-feature tests miss a change in how features relate, the classic sign of a co
 
 ## Which detector by default
 
-A systematic comparison on image data (alpha 0.05, five random splits): aggregated univariate tests did about as well as multivariate ones; the best detector reduced inputs to the softmax outputs of the existing classifier and tested those, reaching detection accuracy 0.19, 0.47, 0.70, 0.79 at 10, 100, 1,000, 10,000 samples against 0.03, 0.36, 0.54, 0.72 without reduction. The domain classifier was weak below about 100 samples but useful for describing a detected shift. Small shifts were hard for all (14% detection at 100 samples, 54% at 10,000). These are image results and may not carry to tabular data; a practical default is to test predictions first, which needs no new infrastructure.
+Rabanser et al.'s comparison on image data (MNIST and CIFAR-10 simulated shifts, alpha 0.05, five random splits; self-reported, with the values as given in the course note, since the paper's extraction lists setups without values; see [[Dimensionality Reduction Plus Two-Sample Tests for Dataset-Shift Detection]]): univariate tests, once aggregated, matched multivariate ones about as well; the top detector reduced inputs to the softmax outputs of the existing classifier and tested those, reaching detection accuracy 0.19, 0.47, 0.70, 0.79 at 10, 100, 1,000, 10,000 samples against 0.03, 0.36, 0.54, 0.72 with no reduction step. With few samples the domain classifier did poorly below about 100 samples but useful for describing a detected shift. Small shifts were hard for all (14% detection at 100 samples, 54% at 10,000). These are image results and may not carry to tabular data; a practical default is to test predictions first, which needs no new infrastructure.
 
 ## See Also
 - [[Population Stability Index]] — prerequisite-for
@@ -44,3 +45,4 @@ A systematic comparison on image data (alpha 0.05, five random splits): aggregat
 - [[Drift Types and What Monitors Can See]] — related
 - [[Multiple Comparisons Corrections]] — related
 - [[Sample Ratio Mismatch]] — related
+- [[Dimensionality Reduction Plus Two-Sample Tests for Dataset-Shift Detection]] — extends

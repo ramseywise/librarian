@@ -2,7 +2,7 @@
 title: "Categorical Encoding Choices"
 tags: [data-science, reference]
 summary: "One-hot, ordinal, frequency and target encoding suit different models and cardinalities; fit the encoder on training data and handle unseen categories."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--03-feature-engineering-and-pipelines.md
 ---
@@ -35,3 +35,4 @@ Result: with the six adult columns, logistic regression reaches 0.811 test accur
 - [[Pipelines Prevent Preprocessing Leakage]] — related
 - [[Weight-of-Evidence Logistic Scorecard]] — instance-of (weight of evidence as a target encoding)
 - [[Clustering Categorical and Mixed Data]] — related
+- [[Ordered Boosting and Ordered Target Statistics]] — instance-of (ordered target statistics)

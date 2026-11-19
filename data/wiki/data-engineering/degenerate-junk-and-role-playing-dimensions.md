@@ -11,6 +11,10 @@ sources:
   - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch08-human-resources-management.md
   - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch09-financial-services.md
   - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch10-telecommunications-utilities.md
+  - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch11-transportation.md
+  - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch13-health-care.md
+  - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch14-electronic-commerce.md
+  - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch15-insurance.md
 ---
 
 # Degenerate, Junk and Role-Playing Dimensions
@@ -39,13 +43,23 @@ The same dimension appears several times in one fact table (order date, requeste
 
 One audit foreign key on the fact can point to a dimension of lineage and quality metadata: the source system, the extract software and allocation logic versions, why a value is null, whether it was altered after load, and outlier flags, all as readable text.
 
+## Further cases in chapters 11 to 15
+
+- **Role-playing as views (ch11, ch13, ch15):** date, time and airport roles are separate logical views on one physical table. Setup: the billing snapshot has seven date keys, so one view per role with relabelled columns, not seven joins to one date table. Insurance does the same for transaction date and effective date, with unique column names.
+- **Superdimension (ch11):** a dimension that merges the attributes of several small ones, as a junk dimension does. Setup: class purchased, class flown and an upgrade indicator have three rows each and are merged into one class-of-service dimension, every pairing of purchased and flown class (9 rows). The authors say to combine only when row counts are tiny or attributes depend on the combination.
+- **Cargo (ch11):** the bill-of-lading number is a degenerate dimension, and consignor, shipper, transporters and consolidators are roles of one business-entity dimension.
+- **Degenerate keys (ch14, ch15):** the session ID on the clickstream page-event fact ([[Clickstream Session and Page-Event Fact Tables]]), and the policy number when the header attributes live in other dimensions.
+- **Audit key (ch15):** each fact row carries a key pointing to when it was extracted, its source table and the software version.
+
 ## Limits
 
 - Guidance from case studies; the extraction notes no measurements, and the sizing figures are worked arithmetic, not data.
 - The text is early-2000s (the extraction infers the 2nd edition, 2002) and does not cover modern warehouse engines.
 - Detail on junk-dimension loading and the multi-currency and unit-of-measure handling that shares chapter 5 is not covered here.
+- Chapter 11's text says the class-of-service dimension has three purchased plus three flown rows, while its figure and the 3 by 3 product give 9; this page uses 9. Chapters 11 to 15 are illustrative case guidance with no measurements.
 
 ## See Also
 - [[Dimensional Model Grain and the Four Design Steps]] — prerequisite-for
 - [[Conformed Dimensions, the Bus Matrix and Drilling Across]] — related (the date dimension shared by every role)
 - [[Transaction, Periodic and Accumulating Snapshot Fact Tables]] — related
+- [[Clickstream Session and Page-Event Fact Tables]] — instance-of

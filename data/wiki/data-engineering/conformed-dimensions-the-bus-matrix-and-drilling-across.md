@@ -9,6 +9,11 @@ sources:
   - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch03-inventory.md
   - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch06-customer-relationship-management.md
   - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch07-accounting.md
+  - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch12-education.md
+  - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch13-health-care.md
+  - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch14-electronic-commerce.md
+  - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch15-insurance.md
+  - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch16-building-data-warehouse.md
 ---
 
 # Conformed Dimensions, the Bus Matrix and Drilling Across
@@ -50,11 +55,20 @@ From chapters 1, 3, 6 and 7 of *The Data Warehouse Toolkit*; the figures and rul
 - **Drilling across:** run one SQL pass per mart and outer-join on a common dimension attribute. Chapter 6 adds that two fact tables of different cardinality must not share one dimension join in a single query; the alternatives are separate passes or a consolidated fact table. Chapter 7 says a consolidated fact table sits at the least common denominator of its dimensions and should be built only when the facts share grain, not forced with artificial facts or dimensions.
 - **Packaged applications:** conform dimensions even when buying a packaged analytic solution or CRM application, which otherwise becomes a stovepipe mart.
 
+## Conformance in chapters 12 to 16
+
+- **Value circle (ch13):** a network of organisations that need the same critical data, here the patient treatment record, whose users have no clear order in time, unlike a value chain. The authors say it works only when each shared dimension conforms: twelve in all, among them patient, payer, provider, treatment, diagnosis and date.
+- **Calendar (ch12):** the term dimension must agree with the calendar date dimension on every attribute they share.
+- **Shrunken dimensions (ch14):** the month table is a subset of the calendar-day table that stays conformed, and a demographic table a subset of customer; aggregates are built on these ([[Clickstream Session and Page-Event Fact Tables]]).
+- **Insurance (ch15):** dimensions are identical or subsets; facts share a definition or take different names. The planning bus matrix stays at high-level business processes, and an implementation matrix lists each fact table with its grain and facts. A consolidated premium-and-claim fact table is built only after the base models are delivered.
+- **Project practice (ch16):** the authors distinguish an opportunity matrix (processes by organisational groups) from a bus matrix. Publishing a dimension from its authority is a kind of synchronous replication ([[Business Dimensional Lifecycle and Dimensional Data Staging]]).
+
 ## Limits
 
 - Opinionated practitioner guidance; the extractions note no measurements. The 90 percent figure carries no data.
 - Early-2000s text (the extraction infers the 2nd edition, 2002; chapter 1 may be earlier than the 3rd). Examples such as 60,000 products and 100 stores are hypothetical, and modern warehouses are not covered.
 - Chapter 3 defers multiple units of measure and heterogeneous products to later chapters, and consolidated marts to other chapters not in this batch.
+- Chapters 12 to 16 are illustrative or practitioner guidance with no measurements, from a 2002-era text.
 
 ## See Also
 - [[Dimensional Model Grain and the Four Design Steps]] — prerequisite-for
@@ -65,3 +79,5 @@ From chapters 1, 3, 6 and 7 of *The Data Warehouse Toolkit*; the figures and rul
 - [[Transaction, Periodic and Accumulating Snapshot Fact Tables]] — related (the three types share conformed dimensions)
 - [[Bridge Tables for Multivalued and Ragged Hierarchy Dimensions]] — related (the same overcounting hazard)
 - [[Degenerate, Junk and Role-Playing Dimensions]] — related (role-playing views over the shared date dimension)
+- [[Clickstream Session and Page-Event Fact Tables]] — instance-of
+- [[Business Dimensional Lifecycle and Dimensional Data Staging]] — related (staging and project practice)

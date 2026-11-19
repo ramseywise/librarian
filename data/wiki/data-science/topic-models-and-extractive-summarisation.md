@@ -2,9 +2,10 @@
 title: "Topic Models and Extractive Summarisation"
 tags: [data-science, concept]
 summary: "LSI, LDA and NMF factor the document-term matrix into readable topics; choose k by coherence plus reading, check seed stability; document clustering and TextRank/LSA summaries share the same machinery."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--03-nlp--notes--03-topic-models-and-summarization.md
+  - data/raw/papers/2026-11-07-grootendorst-2022-bertopic.md
 ---
 
 # Topic Models and Extractive Summarisation
@@ -42,7 +43,7 @@ On the film corpus c_v barely moved (0.347 at 5 topics, 0.346 at 10, 0.318 at 20
 
 **Topic features** as classifier input: 12 NMF proportions gave ROC-AUC 0.637 for detecting Horror against 0.912 for full TF-IDF. They are compact and interpretable, and earn their place when labels are scarce.
 
-**BERTopic** (embed, reduce with UMAP, cluster with HDBSCAN, describe with class-based TF-IDF; see [[Embedding Clustering and Anomaly Detection]]) addresses the bag-of-words limit but assumes one topic per document and its words are still bags. Evidence for short text is one dataset (NPMI 0.066 against 0.009 for NMF and -0.011 for LDA), and it fell to -0.088 with a different embedding.
+**BERTopic** (embed, reduce with UMAP, cluster with HDBSCAN, describe with class-based TF-IDF; see [[BERTopic: Clustering Embeddings with Class-Based TF-IDF]] and [[Embedding Clustering and Anomaly Detection]]) addresses the bag-of-words limit but assumes one topic per document and its words are still bags. Evidence for short text is one dataset (NPMI of 0.066, with NMF at 0.009 and LDA at -0.011), and it fell to -0.088 with a different embedding. Those figures come from the course note. The BERTopic paper itself reports the highest coherence on Trump's tweets, but Top2Vec ahead on 20 NewsGroups and BBC News and CTM ahead on diversity (self-reported, no significance test).
 
 ## Document clustering
 
@@ -70,6 +71,7 @@ On a 29-sentence article both methods opened with the defining sentence and shar
 - [[Collocations and Pointwise Mutual Information]] — prerequisite-for
 - [[Generative Story Models]] — related
 - [[Embedding Clustering and Anomaly Detection]] — extends
+- [[BERTopic: Clustering Embeddings with Class-Based TF-IDF]] — extends
 - [[Clustering Validation Against Named Baselines]] — related
 - [[HDBSCAN with KMeans Fallback]] — related
 - [[Multi-News]] — related (multi-document summarization dataset with extractive baselines)

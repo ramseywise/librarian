@@ -187,8 +187,9 @@ async def test_run_agent_eval_end_to_end(wiki: Path, fake_anthropic: type) -> No
 
     lines = (corpus.LOGS_DIR / "agent.jsonl").read_text().splitlines()
     assert [json.loads(x)["source"] for x in lines] == ["eval", "eval"]
-    # Each answer line says which index, embedding model and weights produced it.
-    assert {"index_build", "embedding_model", "ranking"} <= json.loads(lines[0]).keys()
+    # Each answer line says which index, embedding model, weights and prompt produced it.
+    keys = {"index_build", "embedding_model", "ranking", "prompt_version"}
+    assert keys <= json.loads(lines[0]).keys()
 
 
 @pytest.mark.unit

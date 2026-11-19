@@ -8,6 +8,9 @@ sources:
   - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch04-procurement.md
   - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch06-customer-relationship-management.md
   - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch08-human-resources-management.md
+  - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch13-health-care.md
+  - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch15-insurance.md
+  - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch16-building-data-warehouse.md
 ---
 
 # Slowly Changing Dimensions Types 1, 2 and 3
@@ -66,10 +69,19 @@ From chapters 4, 6 and 8 of *The Data Warehouse Toolkit*; advice is the authors'
 - Chapter 4 says type 2 growth may be inappropriate for dimensions over a million rows; chapter 6 calls it predominant below 100,000. Larger dimensions split the volatile columns into [[Minidimensions for Rapidly Changing Monster Dimensions]].
 - **Time-stamped type 2 (HR):** each row carries effective and expiration timestamps and a transaction description, which lets the dimension be sliced by time without a fact table. The current row gets a far-future expiration rather than null, a most-recent indicator is updated when a new transaction arrives, and source microtransactions are collapsed into one supertransaction. The authors prefer this to a factless transaction table with as many rows as the dimension. A monthly snapshot then keys to the row in force on the last day of the month ([[Transaction, Periodic and Accumulating Snapshot Fact Tables]]).
 
+## Late arrivals, staging and insurance in chapters 13, 15 and 16
+
+- **Late-arriving fact (ch13):** for each dimension, pick the row whose date stamp is the latest on or before the treatment date, swap in the surrogate keys and insert into the correct partition. If the warehouse has to reconcile with the books, keep a treatment date and a booking date on the fact.
+- **Late-arriving dimension row (ch13):** insert a new row, overwrite the later rows, repoint the fact foreign keys and fix begin and end dates. The authors infer that surrogate keys other than date keys cannot be assumed to be in order.
+- **Hospital stays (ch13):** diagnosis groups are made unique per patient, handled as type 2, with begin and end dates on the bridge ([[Bridge Tables for Multivalued and Ragged Hierarchy Dimensions]]).
+- **Insurance (ch15):** type 1 fixes errors such as a date of birth, type 2 tracks ZIP code, and type 3 handles a whole-segment realignment.
+- **Staging (ch16):** each dimension has a standing master cross-reference table holding the surrogate key, operational key, effective and expiration dates, most-recent indicator and CRC; an identical CRC means the row is ignored, type 1 and 3 attributes are overwritten, and a type 2 change adds a row and expires the prior one. Detail is on [[Business Dimensional Lifecycle and Dimensional Data Staging]].
+
 ## Limits
 
 - Design advice from case studies, with no measurements; the two size thresholds above differ and are not reconciled in the extractions.
 - Early-2000s text (the extraction infers the 2nd edition, 2002); no MERGE or columnar engines, and the far-future expiration date and SQL tricks reflect that era. Rapidly changing dimensions and the surrogate-key workflow are deferred to chapters not in this batch.
+- Chapter 15 lists ZIP code as a type 2 attribute and also names ZIP tracking as the reason for a policyholder minidimension; the extraction does not reconcile the two.
 
 ## See Also
 - [[Dimensional Model Grain and the Four Design Steps]] — prerequisite-for
@@ -79,3 +91,4 @@ From chapters 4, 6 and 8 of *The Data Warehouse Toolkit*; advice is the authors'
 - [[Minidimensions for Rapidly Changing Monster Dimensions]] — extends
 - [[Transaction, Periodic and Accumulating Snapshot Fact Tables]] — related (a monthly snapshot keys to the row in force at month end)
 - [[Bridge Tables for Multivalued and Ragged Hierarchy Dimensions]] — related (bridge rows carry effective and expiration dates)
+- [[Business Dimensional Lifecycle and Dimensional Data Staging]] — extends

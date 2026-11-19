@@ -2,7 +2,7 @@
 title: "Supervised Model Families and Complexity Knobs"
 tags: [data-science, reference]
 summary: "Each classical supervised family has one knob that sets its complexity, a typical strength and a typical failure; sweep the knob first and start with a simple model."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--02-supervised-learning.md
 ---
@@ -54,3 +54,5 @@ Gradient descent iterates with a learning rate; the normal equation is closed fo
 - [[Kernel SVM and the Kernel Trick]] — extends
 - [[Random Forests and Bagging]] — extends
 - [[Bias-Variance Decomposition and Model Complexity]] — prerequisite-for
+- [[Kolmogorov-Arnold Networks]] — related
+- [[XGBoost System Design: Sparsity-Aware Splits, Quantile Sketch and Cache-Aware Blocks]] — related

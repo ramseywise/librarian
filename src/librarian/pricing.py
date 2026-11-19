@@ -69,6 +69,11 @@ PRICES: dict[str, ModelPrice] = {
     "claude-sonnet-4-6": ModelPrice(3.00, 15.00, 0.30, 3.75),
     "claude-haiku-5-5": ModelPrice(0.10, 0.50, 0.01, 0.125),  # <=100K prompts
     "claude-haiku-4-5": ModelPrice(1.00, 5.00, 0.10, 1.25),
+    # Gemini (LIBRARIAN_CHAT_PROVIDER=gemini), paid-tier rates from ai.google.dev/gemini-api/docs/pricing;
+    # the free tier bills nothing, so the cap overestimates there. Gemini has no cache-write
+    # charge, so that column is the input rate.
+    "gemini-2.5-flash-lite": ModelPrice(0.10, 0.40, 0.01, 0.10),
+    "gemini-2.5-flash": ModelPrice(0.30, 2.50, 0.03, 0.30),
 }
 
 # The chat agent's default model: the current Sonnet-class model.
@@ -118,7 +123,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
     age = review_age_days()
     print(f"\nlast reviewed: {PRICES_REVIEWED.isoformat()} ({age} days ago; limit {MAX_AGE_DAYS})")
-    configured = get_settings().anthropic_model
+    configured = get_settings().chat_model
     if price_for(configured) is None:
         print(f"FAIL: the configured model {configured!r} is not in the table", file=sys.stderr)
         return 1

@@ -37,3 +37,4 @@ The uncorrected model rejects 42% and is far worse than approving everyone; no r
 - [[Calibrated Score, Deterministic Decision Rule]] — related
 - [[Population Stability Index]] — related
 - [[Newsvendor Critical Ratio]] — related (same cost-ratio logic for quantities)
+- [[SMOTE: Synthetic Minority Over-sampling]] — related

@@ -295,7 +295,7 @@ class ChatLimiter:
         table is used, so the cap errs towards stopping early. The write is an upsert, so
         concurrent workers do not lose adds.
         """
-        model = settings.anthropic_model
+        model = settings.chat_model
         if price_for(model) is None:
             model = max(PRICES, key=lambda m: PRICES[m].output)
         usd = cost_usd(model, usage)

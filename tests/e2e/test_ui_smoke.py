@@ -57,7 +57,8 @@ def page() -> Iterator[Page]:
 def _open_graph(page: Page) -> None:
     """The map opens on the atlas, a canvas ring whose sector labels are real links."""
     page.goto(UI_URL, timeout=15_000)
-    page.wait_for_selector(".atlas-label", timeout=20_000)
+    # The graph payload for ~1,700 pages takes over 20 s on a cold dev server.
+    page.wait_for_selector(".atlas-label", timeout=60_000)
 
 
 def _graph() -> dict[str, Any]:
@@ -105,9 +106,11 @@ def test_graph_tab(page: Page) -> None:
     for label, _ in sectors.values():
         expect(page.locator(".atlas-label", has_text=label).first).to_be_visible()
 
-    # The Filters popover lists every wiki directory with its page count, and nothing private.
-    page.get_by_role("button", name=re.compile(r"^Filters")).click()
-    dirs = page.get_by_role("group", name="Filter by directory")
+    # The filters, docked under the chat, list every wiki directory with its page count under
+    # Browse by: Wiki, and nothing private.
+    filters = page.get_by_role("region", name="Filters")
+    page.get_by_role("button", name="Wiki", exact=True).click()
+    dirs = filters.get_by_role("group", name="Wiki topics", exact=True)
     per_dir = Counter(
         (n["data"].get("path") or "").split("/")[0]
         for n in _graph()["nodes"]
@@ -117,9 +120,7 @@ def test_graph_tab(page: Page) -> None:
     for name, count in per_dir.items():
         expect(dirs.get_by_role("button", name=f"{name} {count}", exact=True)).to_be_visible()
     expect(dirs.get_by_role("button", name=re.compile(r"^Brief me on"))).to_have_count(len(per_dir))
-    expect(
-        page.get_by_role("group", name="Filters").get_by_text("private", exact=True)
-    ).to_have_count(0)
+    expect(filters.get_by_text("private", exact=True)).to_have_count(0)
 
 
 def test_atlas_zooms_in_and_back(page: Page) -> None:
@@ -154,7 +155,8 @@ def test_atlas_zooms_in_and_back(page: Page) -> None:
     expect(page.locator(".map-crumb-page")).to_have_count(0)  # the level has rendered
     page.keyboard.press("Escape")
     expect(page).to_have_url(f"{UI_URL}/#/map/domain", timeout=5_000)
-    page.wait_for_selector(".atlas-label", timeout=20_000)
+    # The graph payload for ~1,700 pages takes over 20 s on a cold dev server.
+    page.wait_for_selector(".atlas-label", timeout=60_000)
 
 
 def test_atlas_switches_to_wiki_and_search_finds_an_alias(page: Page) -> None:

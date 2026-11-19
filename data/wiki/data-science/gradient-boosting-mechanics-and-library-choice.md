@@ -2,10 +2,13 @@
 title: "Gradient Boosting Mechanics and Library Choice"
 tags: [data-science, comparison]
 summary: "Boosting fits shallow trees to loss gradients; the main libraries tie on accuracy within seed noise, so choose by speed, categorical and missing-value handling, and tune rounds by early stopping."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--06-ensembles.md
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--07-boosting-in-practice.md
+  - data/raw/papers/2026-11-07-chen-2016-xgboost.md
+  - data/raw/papers/2026-11-07-prokhorenkova-2017-catboost.md
+  - data/raw/papers/2026-11-08-karbasi-2023-impossibility-parallelizing-boosting.md
 ---
 
 # Gradient Boosting Mechanics and Library Choice
@@ -14,7 +17,7 @@ sources:
 
 Fit a shallow tree, take the negative gradient of the loss at the current prediction (residuals for squared error, y - p for log-loss), fit the next tree to it, add it scaled by a learning rate eta, repeat: gradient descent in function space. Shallow trees (depth 1 to 5) mean high bias, low variance; depth d captures interactions of up to d features. Unlike a forest ([[Random Forests and Bagging]]), too many rounds overfit.
 
-Modern libraries use second-order statistics. With first and second derivatives g and h of the loss, and penalties on leaf count and leaf weight (lambda), a leaf's best weight is minus the sum of g over the sum of h plus lambda: a Newton step. For squared error g is the residual and h is 1, so the weight is a shrunken mean of residuals. A hand computation matched a real one-tree model exactly (-1.1513 and 1.1729 on 472 and 528 rows). Boosting is sequential by nature; theory says fewer rounds forces an exponential increase in training work, so libraries parallelise inside a tree (split finding), never across rounds.
+Modern libraries use second-order statistics. With first and second derivatives g and h of the loss, and penalties on leaf count and leaf weight (lambda), a leaf's best weight is minus the sum of g over the sum of h plus lambda: a Newton step. For squared error g is the residual and h is 1, so the weight is a shrunken mean of residuals. A hand computation matched a real one-tree model exactly (-1.1513 and 1.1729 on 472 and 528 rows). Boosting is sequential by nature. Karbasi and Larsen (2023) prove a worst-case lower bound: a weak-to-strong learner that uses few rounds of weak-learner calls must make exponentially many queries per round to match AdaBoost's error, and their single-round algorithm needs exp(O(d gamma^-2 ln m)) queries, so it is not practical. The result is purely theoretical and leaves out parallelism within a single weak learner, such as parallel split finding in a tree, which is the kind libraries use ([[XGBoost System Design: Sparsity-Aware Splits, Quantile Sketch and Cache-Aware Blocks]] — extends).
 
 ## Benchmark: libraries tie
 
@@ -45,7 +48,7 @@ HistGradientBoosting (features binned into at most 255 values, early stopping on
 
 ## Target leakage in categorical encoding
 
-Replacing a level with its target mean leaks each row's own label; for a per-row unique ID the encoding is the label. With a meaningless ~3,000-level ID: no ID test AUC 0.927; greedy mean encoding train 0.967, test 0.811; ordered encoding (each row encoded from earlier rows in a random order) test 0.925. Any encoding that reads the target must be fitted out of fold; see [[Categorical Encoding Choices]] and [[Pipelines Prevent Preprocessing Leakage]]. Ordered boosting extends the idea to residuals ("prediction shift"), helping most on small data but not free (plain mode had lower log-loss on four of nine datasets, ordered costs about 1.7x time on one).
+Replacing a level with its target mean leaks each row's own label; for a per-row unique ID the encoding is the label. With a meaningless ~3,000-level ID: no ID test AUC 0.927; greedy mean encoding train 0.967, test 0.811; ordered encoding (each row encoded from earlier rows in a random order) test 0.925. An encoding built from the target has to be fitted out of fold; see [[Categorical Encoding Choices]] and [[Pipelines Prevent Preprocessing Leakage]]. Ordered boosting extends the idea to residuals ("prediction shift"), helping most on small data but not free (plain mode had lower log-loss on four of nine datasets, ordered costs about 1.7x time on one); see [[Ordered Boosting and Ordered Target Statistics]] for the mechanism and the paper's setup.
 
 ## Tuning order
 
@@ -55,6 +58,8 @@ Pitfalls: early stopping on the test set; `class_weight` raises log-loss (0.280 
 
 ## See Also
 - [[Random Forests and Bagging]] — alternative-to
+- [[Ordered Boosting and Ordered Target Statistics]] — extends
+- [[XGBoost System Design: Sparsity-Aware Splits, Quantile Sketch and Cache-Aware Blocks]] — extends
 - [[Regularisation Knobs and Early Stopping]] — related
 - [[Hyperparameter Search Budgets and Selection Optimism]] — related
 - [[Tree Ensemble Interpretation Beyond Impurity Importance]] — extends

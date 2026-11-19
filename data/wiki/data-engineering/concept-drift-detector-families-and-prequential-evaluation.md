@@ -48,3 +48,4 @@ Cross-validation does not suit streams, since folds scramble the time order. The
 - [[Error-Stream Detectors and Retraining Policy]] — prerequisite-for (the Page-Hinkley and CUSUM trade-off measured on one stream)
 - [[Drift Tests: Significance, Magnitude and False Alarms]] — related
 - [[Peeking and Sequential Testing]] — related
+- [[Dimensionality Reduction Plus Two-Sample Tests for Dataset-Shift Detection]] — related (input-side shift detection rather than error-stream detection)

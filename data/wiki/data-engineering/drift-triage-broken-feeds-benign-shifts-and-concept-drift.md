@@ -5,6 +5,7 @@ summary: "Input drift can scream while error is flat, and concept drift can doub
 updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--06-ml-platform--notes--04-drift.md
+  - data/raw/papers/2026-11-08-ml-engineering-in-action-ch12-holding-gains-by-watching-drift.md
 ---
 
 # Drift Triage: Broken Feeds, Benign Shifts and Concept Drift
@@ -44,8 +45,19 @@ Trees bucket out-of-range values while linear models extrapolate, so benign drif
 - Ignoring seasonality: compare with a matching window; a reoccurring concept is not a new one.
 - Replaying history under feedback cannot compare adaptation methods properly.
 
+## Wilson's drift types and retraining periods
+
+Wilson (*Machine Learning Engineering in Action*, chapter 12) states that every production model drifts and needs monitoring plus a defined retraining response. His taxonomy has six types, and his definitions differ from the table above (the extraction notes that the taxonomy is his own, not the covariate, prior and concept shift split of the literature): label drift is a shift in the prediction distribution, typically from a shift in several critical features; prediction drift acts like label drift but traces to one feature in the model and is found through feature monitoring and attribution measurement; concept drift is a large latent, uncollected variable that strongly influences predictions; reality drift is a special case of concept drift (a pandemic or black swan); feedback drift is acting on the model's outputs until the data's variance shrinks and little signal remains; feature ignorance is inference data beyond the range the model was trained on.
+
+His fictional ice cream model (monthly passive retraining, no monitoring) loses its revenue lift to a large loss after an upstream feed switches Fahrenheit to Celsius. In a second example, holdout loss stays equal or better while a fixed 90% send threshold admits nearly all customers. For classifiers he advises Fisher's exact test with alpha below 0.01 on windowed prediction class counts against validation predictions from training. For regressors he advises windowed mean, median, standard deviation and IQR of predictions, optionally a fitted distribution compared with Kolmogorov-Smirnov.
+
+His responses: for an obvious ETL fault, repair or rescale the features, retrain and validate on a new holdout; if business impact is significantly negative, stop using the model at once, find the root cause and retire it permanently if the benefit is gone; for reality drift, abandon or rebuild after feature engineering and never ignore it quietly; for feedback drift, record metrics at every retraining and watch for failure to return to acceptable loss. His rough retraining periods, from his experience across industries and loosely approximated, run from hourly or daily for recommendation to semiannual or annual for equipment failure, with fraud biweekly, churn monthly and image labelling every two to six months. Passive and active retraining are on [[Passive Retraining and the Promotion Gate]].
+
+Limits: there is no empirical data and the examples are fictional; no thresholds are given beyond alpha below 0.01; the extraction notes his taxonomy differs from the covariate, prior and concept shift split in the literature (his feature drift is close to covariate shift); no code or drift library, only MLflow tracking.
+
 ## See Also
 - [[Drift Tests: Significance, Magnitude and False Alarms]] — prerequisite-for
 - [[Error-Stream Detectors and Retraining Policy]] — extends
 - [[Drift Types and What Monitors Can See]] — related
 - [[Model Rollout: Shadow, Canary and A/B]] — related
+- [[Dimensionality Reduction Plus Two-Sample Tests for Dataset-Shift Detection]] — extends (detecting a shift and judging it harmful or benign)

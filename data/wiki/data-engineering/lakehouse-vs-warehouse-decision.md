@@ -5,6 +5,7 @@ summary: "A lakehouse puts a transactional metadata layer over open files to avo
 updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--04-warehouse-lakehouse-streaming--notes--03-lakehouse-vs-warehouse.md
+  - data/raw/papers/2026-11-08-zaharia-2021-lakehouse.md
 ---
 # Lakehouse vs Warehouse Decision
 
@@ -41,6 +42,19 @@ The industry outcome looks like convergence: warehouses read and write open form
 | Fits on one machine | DuckDB and Parquet or a local table format |
 
 Pitfalls: a lake of Parquet without a metadata layer is not a lakehouse; lower cost is not guaranteed (warehouse fees swap for engineering time on compaction, vacuum, catalog); migrating does not fix a people problem when nobody owns the data; quoting a vendor benchmark without saying who ran it. See [[Medallion Layers Need Tests]].
+
+## The 2021 position paper
+
+Armbrust, Ghodsi, Xin and colleagues (CIDR 2021, from Databricks, the vendor behind Delta Lake) argue that the warehouse architecture will wane and give way to the lakehouse, which they define by open formats read directly, ML support from the start, and top performance. They describe the first generation as warehouses fed from operational databases with schema on write, and the second as a data lake holding all raw data with a small subset ETLed into a downstream warehouse. They sketch a design with a transactional metadata layer over the object store, format-independent SQL optimisations (caching, auxiliary data, data layout) and declarative DataFrame access for ML. They say the two-tier design is dominant at virtually all Fortune 500 enterprises and that Delta Lake came to account for half of Databricks compute-hours within three years; both claims rest on their own experience with no data shown (self-reported). They name the 86% and 62% analyst-survey figures above as drawn from a Dimensional Research and Fivetran survey.
+
+Their benchmark: Databricks Delta Engine over Parquet against four unnamed cloud data warehouses on TPC-DS (scale factor 30,000, 99 queries), using similar 960-vCPU clusters on the three big clouds, with local SSD and data cached there before the run. They report comparable or better performance at lower price (self-reported), and a cold-cache start only 18% slower than a warm SSD cache (self-reported). Their own list of what is unsolved: each of the three open table formats (Delta Lake, Iceberg, Hudi) commits across one table only, the log on an object store caps transactions per second, and direct access costs data independence since the file format turns into a public API.
+
+## Limits
+
+- The paper's benchmark is a single vendor run against anonymised warehouses, with no repetitions, configuration or tuning details given.
+- The paper is a 2021 prediction, and its forecast that warehouses will fade is not tested in it. Open table format support in warehouses came after the paper.
+- Only the authors' experience supports the Fortune 500 prevalence and Delta Lake adoption claims.
+- Hudi did not support concurrent writers as of 2021.
 
 ## See Also
 - [[Separated Storage and Compute and Warehouse Billing Shapes]] — alternative-to

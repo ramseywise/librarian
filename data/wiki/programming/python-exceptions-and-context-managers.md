@@ -2,9 +2,10 @@
 title: Python Exceptions and Context Managers
 tags: [programming, pattern]
 summary: "Catch only what you can handle, chain re-raised errors with `raise … from err`, give each package one exception base class with fields callers can branch on, and put cleanup in `with`/`finally` — `@contextmanager` turns a try/finally around a `yield` into a reusable resource guard."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/programming--python--03-language-for-engineers--notes--04-errors-and-context-managers.md
+  - data/raw/papers/2026-11-08-ml-engineering-in-action-ch10-standards-coding-creating-maintainable-ml-code.md
 ---
 
 # Python Exceptions and Context Managers
@@ -87,6 +88,10 @@ log.exception("upload failed")                  # inside except: adds the traceb
 
 Per-module loggers (`__name__`), lazy formatting arguments, and `log.exception` inside handlers
 are the three habits.
+
+## Wilson on exception eating in ML code
+
+Wilson (*Machine Learning Engineering in Action*, ch10) calls a blind `try`/`except` with `pass` exception eating. In his example, dividing a list by a string base returned an empty list with no error. Catching only `ZeroDivisionError` dropped the zero element and returned 99 of 100 results; his fixed version substitutes 0.0 for that element and raises a custom `CalculationError` if input and output lengths differ. He advises logging time, exception type, values and function name, re-raising when input is invalid, and replacing print with logs sent to a central, parseable destination such as MLflow or a logging service. He says doing this costs about 30 extra minutes and finds a failure's source in minutes rather than days (his experience, no data). The examples are small synthetic cases.
 
 ## See Also
 - [[Python Foundations Reference]] — prerequisite-for (basic try/except and `with open`)

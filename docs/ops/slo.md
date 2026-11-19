@@ -133,6 +133,10 @@ volume on the same host usually; check `df -h` there too. The metric does not se
 day. At 100% chat stops for everyone until 00:00 UTC. Who is spending: `GET /api/admin/spend`
 (below). Raise the cap or lower a user's cap, or revoke a key (`librarian keys revoke`).
 
+`LibrarianSpendWriteFailing` (ticket) fires when any model call in the last hour could not have its
+cost written (`chat.spend_write_failed` in the logs). Those calls are not charged, so the cap trips
+late. It is almost always Postgres: `./librarian status`.
+
 ## Cost visibility
 
 `GET /api/admin/spend` (admin only; a non-admin gets 403) returns:

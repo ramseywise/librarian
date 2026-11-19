@@ -48,3 +48,4 @@ The central claim is that practitioners face challenges at every stage, not at o
 - [[Testing an ML System Beyond Its Code]] — prerequisite-for (the verification stage in practice)
 - [[Concept-Drift Detector Families and Prequential Evaluation]] — prerequisite-for (the updating stage's drift problem)
 - [[ML Test Score: Scoring Production Readiness by the Minimum]] — related
+- [[ML Deployment Challenges: Interview Study and the Three Vs]] — alternative-to

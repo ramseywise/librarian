@@ -2,9 +2,10 @@
 title: "Per-Group Calibration Offsets by Partial Pooling"
 tags: [data-science, pattern]
 summary: "When groups share one score but differ in base rate, correct each group with one shrunken log-odds offset: a per-group threshold on few labels pays everything when none are positive, one global threshold ignores real differences."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--13-automate-review-or-reject.md
+  - data/raw/papers/2026-11-08-van-den-goorbergh-2022-harm-class-imbalance-corrections.md
 ---
 
 # Per-Group Calibration Offsets by Partial Pooling
@@ -20,6 +21,8 @@ delta_tilde_k = delta_hat_k x tau^2 / (tau^2 + v_k)
 If groups do not differ, tau^2 is near zero and everyone gets the global answer (see [[Partial Pooling and Multilevel Models]]). With true offsets spread at 1.0, tau^2 came out at 0.958. A group with 5,000 labels has v_k near 0.003 and keeps almost all its offset; one with 20 labels has median v_k 0.628 and keeps about 60%.
 
 Zero positives: at a rate near 7%, 19% to 31% of 20-label groups have none, and no finite offset fits; the pooled fit aims at half a problem and drops the group from the tau^2 estimate. Its v_k is about 2.1, so it keeps about 31% of an offset saying "fewer than average": mean -0.321 against -0.115 for groups with one problem. Zero reads as safer than one.
+
+A related single-offset repair appears in the imbalance literature: van den Goorbergh et al. (2022) recalibrated logistic models trained on resampled data with an intercept-only logistic model, logit(recalibrated) = a + logit(original), fitted on the data. In their simulation the median calibration intercepts after this repair fell in a narrow band around zero (-0.07 to 0.03) ([[SMOTE: Synthetic Minority Over-sampling]]).
 
 ## Result (40 generated groups, 20 seeds; regret = extra cost per case over routing on the true probability)
 

@@ -2,7 +2,7 @@
 title: "Tree Ensemble Interpretation Beyond Impurity Importance"
 tags: [data-science, pattern]
 summary: "Impurity importance rewards overfit noise; permutation importance on held-out data fixes that but is fooled by correlated columns, and partial dependence needs ICE lines and describes the model, not causes."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--08-model-interpretability.md
 ---
@@ -39,3 +39,4 @@ Partial dependence sets one column to each grid value for every row, predicts an
 - [[Random Forests and Bagging]] — related
 - [[Gradient Boosting Mechanics and Library Choice]] — related
 - [[Explain vs Predict Modelling]] — related
+- [[LIME Local Surrogate Explanations and Submodular Pick]] — alternative-to (local surrogate instead of global importance)

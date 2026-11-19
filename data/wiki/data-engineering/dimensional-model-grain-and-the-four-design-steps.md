@@ -11,6 +11,10 @@ sources:
   - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch07-accounting.md
   - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch09-financial-services.md
   - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch10-telecommunications-utilities.md
+  - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch11-transportation.md
+  - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch14-electronic-commerce.md
+  - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch15-insurance.md
+  - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch16-building-data-warehouse.md
 ---
 
 # Dimensional Model Grain and the Four Design Steps
@@ -67,11 +71,21 @@ These points come from chapters 1, 2, 5, 7, 9 and 10 of *The Data Warehouse Tool
 
 Related dimension techniques are on [[Degenerate, Junk and Role-Playing Dimensions]], [[Minidimensions for Rapidly Changing Monster Dimensions]], [[Bridge Tables for Multivalued and Ragged Hierarchy Dimensions]] and [[Transaction, Periodic and Accumulating Snapshot Fact Tables]].
 
+## Grain choices in chapters 11 to 16
+
+- **Travel grain:** Kimball and Ross advise choosing the grain by business process and starting at the lowest grain with meaningful metrics, here the segment (the part of a trip on one aircraft), not the leg data. Trip origin and destination are added as extra role-playing airport dimensions on the segment table. A trip-grain aggregate is advised only if segment rollups show obvious problems; setup: a typical trip of three segments gives only about a threefold speedup. Take care summarising to trip level, because fare basis and class of service have no meaning at that level.
+- **Time of day:** the authors keep it out of the date dimension, which would otherwise multiply its rows. A separate time-of-day dimension serves grouping such as 15-minute buckets, hours, AM or PM, or rush periods; without grouping, a numeric fact of minutes or seconds past midnight is enough. For several time zones, carry both local and equalised (GMT or headquarters) date and time.
+- **Superdimension:** role-playing dimensions are merged only if they have very few rows or their attributes depend on the pair (class of service, city pair); the authors call this the exception. If a combined origin and destination dimension is too big, keep two separate dimensions and add a city-pair dimension.
+- **Sessions versus page events:** see [[Clickstream Session and Page-Event Fact Tables]] for a worked choice between two grains.
+- **Insurance:** policy transactions are one business process and one fact table, split into quoting, rating and underwriting tables only if needed. The authors list ten modelling mistakes: putting text in facts, stingy dimension attributes, snowflaked hierarchies, ignoring attribute changes, fixing with hardware where aggregates would do, smart keys in place of integer surrogates, neglecting grain, designing from reports, a normalised presentation area, and facts and dimensions that do not conform.
+- **Loading facts:** staging replaces surrogate keys before load, and an unmatched key gets its own "Description Unknown for Operational Key" row rather than a shared dummy key ([[Business Dimensional Lifecycle and Dimensional Data Staging]]). Large facts are partitioned by date, and aggregates are separate fact tables on shrunken conformed dimensions.
+
 ## Limits
 
 - The guidance above is opinionated practitioner advice from a book; the extractions note no measurements or benchmarks, and the sizes come from hypothetical worked examples.
 - The extraction says chapter 1 may be an earlier edition than the 3rd and uses a 2002-era frame; chapters 2 to 10 are inferred to be the 2nd edition (2002), not the 3rd (2013). Modern cloud columnar warehouses, ELT and lakehouses are outside the text, and the extraction notes that its index and disk-space arguments suit engines of that period.
 - Chapter 1 defines the enterprise data warehouse as staging plus presentation, which differs from other schools' normalised-EDW usage.
+- Chapters 11, 15 and 16 are practitioner guidance with no measurements. Chapter 11 is inconsistent on the class-of-service dimension: its text counts three purchased and three flown rows, but its figure and the 3 by 3 product give 9.
 
 ## See Also
 - [[Slowly Changing Dimensions Types 1, 2 and 3]] — extends
@@ -85,3 +99,6 @@ Related dimension techniques are on [[Degenerate, Junk and Role-Playing Dimensio
 - [[Bridge Tables for Multivalued and Ragged Hierarchy Dimensions]] — extends
 - [[Degenerate, Junk and Role-Playing Dimensions]] — extends
 - [[Core and Custom Schemas for Heterogeneous Products]] — extends
+- [[Factless Fact Tables and Coverage Tables for Non-Events]] — extends
+- [[Clickstream Session and Page-Event Fact Tables]] — instance-of
+- [[Business Dimensional Lifecycle and Dimensional Data Staging]] — related (staging and project practice)

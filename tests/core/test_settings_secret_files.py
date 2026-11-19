@@ -19,8 +19,11 @@ def _alias(field: str) -> str:
 @pytest.fixture(autouse=True)
 def _clean(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     for f in SECRET_FIELDS:
-        monkeypatch.delenv(_alias(f), raising=False)
-        monkeypatch.delenv(f"{_alias(f)}_FILE", raising=False)
+        alias = Settings.model_fields[f].validation_alias
+        assert isinstance(alias, AliasChoices)
+        for name in map(str, alias.choices):  # every alias: GEMINI_API_KEY has a second one
+            monkeypatch.delenv(name, raising=False)
+            monkeypatch.delenv(f"{name}_FILE", raising=False)
     monkeypatch.setitem(Settings.model_config, "env_file", str(tmp_path / "no.env"))
 
 

@@ -10,6 +10,9 @@ sources:
   - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch05-order-management.md
   - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch07-accounting.md
   - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch09-financial-services.md
+  - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch12-education.md
+  - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch13-health-care.md
+  - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch15-insurance.md
 ---
 
 # Transaction, Periodic and Accumulating Snapshot Fact Tables
@@ -45,15 +48,25 @@ Budgets show grain choice at work. Setup: a budget line of 200,000 raised by 40,
 
 A fact table with no measures records only a relationship between keys. The retail chapter uses a promotion-coverage table: 'on promotion but did not sell' is the coverage rows minus the sales rows. The order chapter uses one for sales-rep assignments to customers even when no order occurred.
 
+## Accumulating snapshots in chapters 12, 13 and 15
+
+- **Applicant pipeline (ch12):** one row per prospective student, each milestone a role-playing date key, with surrogate keys standing for unknown dates at first load. The authors advise the type for short-lived processes with standard milestones, such as an applicant or a grant proposal.
+- **Bill line item (ch13):** the authors choose an accumulating snapshot because transaction grain needs roll-forward and a periodic snapshot hides current unpaid status. The row carries seven date keys, and each is one role of a single date dimension, exposed through its own view. Date keys are integer surrogates rather than date stamps, so a Not Applicable value can exist; they are numbered consecutively in date order, with keys for special conditions placed at the high end, and the fact is partitioned on the treatment date key. A companion transaction table holds the detail of messy payments. Rows can be physically reorganised once most have stabilised, for example within 90 days. Activity-based cost facts are added at the same grain, with the authors conceding that allocations are arbitrary.
+- **Insurance (ch15):** a $600 pay-in-advance annual policy written on Jan 1 earns $50 a month; if the policy is cancelled on Mar 31, March's written premium is minus $450. The authors therefore pair a transaction table (one row per policy transaction, one fact) with a monthly snapshot (one row for each coverage and covered item of a policy), and say to read earned premium from the operational system that recognises revenue instead of recomputing it. Claims use an accumulating snapshot, one row per claim on a given policy, coverage and covered item, opened with the claim and updated until it closes. Snapshot facts that differ by line of business are split into physical tables per line instead of one table of nulls.
+
+Keys-only event and coverage tables are on [[Factless Fact Tables and Coverage Tables for Non-Events]].
+
 ## Limits
 
 - The extraction describes the advice as opinionated practitioner guidance with no measurements; all sizes above are the chapters' hypothetical worked examples.
 - The text is from the early 2000s (the extraction infers the 2nd edition, 2002; chapter 1 may be an earlier edition than the 3rd). The storage figures, the SQL average limitation and the index-based arguments reflect engines of that time, and the extraction says columnar and lakehouse engines are not covered.
 - The point-in-time technique needs the transaction table to be complete and accurate; when a row arrives late, later balances and sequence numbers must be incremented in a sweep forward. It is invalid where a balance changes without transactions, such as brokerage valuations; the chapter says to use a snapshot there.
 - The chapters on inventory and orders defer some detail (accumulating snapshot, multiple units of measure) to other chapters not in this batch.
+- Chapters 12, 13 and 15 are design guidance from hypothetical or illustrative cases with no data. Chapter 13 is written for 1990s and 2000s relational warehouses (the extraction cites Oracle block splits), and chapter 12 is 2002-era.
 
 ## See Also
 - [[Dimensional Model Grain and the Four Design Steps]] — prerequisite-for
 - [[Conformed Dimensions, the Bus Matrix and Drilling Across]] — related (the three types share conformed dimensions)
 - [[Degenerate, Junk and Role-Playing Dimensions]] — related (dimensions the order and ledger facts carry)
 - [[Slowly Changing Dimensions Types 1, 2 and 3]] — related (a monthly snapshot can key to the dimension row in force at month end)
+- [[Factless Fact Tables and Coverage Tables for Non-Events]] — extends

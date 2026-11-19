@@ -2,7 +2,7 @@
 title: Calibrated Score, Deterministic Decision Rule
 tags: [data-science, pattern]
 summary: "A ranked score is not a decision: in tabular ML the model supplies a probability and deterministic code turns it into an action with a cost-based threshold. That makes calibration a correctness requirement, puts the target definition (ability vs propensity vs uplift) ahead of model choice, and makes logistic regression the required explainability floor."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/galactus/docs/plans/2026-08-10-ml-capability-parity.md
   - data/raw/repos/galactus/.claude--docs--plans--2026-08-10-ml-capability-parity.md
@@ -84,4 +84,6 @@ compute: the whole run took about 12 seconds.
 - [[Profile Then Select]] — prerequisite-for (the target-definition questions asked before model choice)
 - [[Tabular ML Leakage Taxonomy]] — prerequisite-for (leakage check before the library)
 - [[LightGBM vs CatBoost Comparison]] — extends (Brier/log-loss for calibrated scores)
+- [[Temperature Scaling for Post-Hoc Calibration]] — related (one way to calibrate a network's scores)
+- [[SMOTE: Synthetic Minority Over-sampling]] — related (resampling distorts the probabilities a threshold rule needs)
 - [[ML Stage Layering with Typed Contracts]] — prerequisite-for (training never chooses a threshold)

@@ -2,9 +2,10 @@
 title: "Classification Metrics, Confusion Matrix and Thresholds"
 tags: [data-science, reference]
 summary: "Read accuracy against a dummy baseline, derive precision, recall, F1, balanced accuracy and MCC from the confusion matrix, and move the threshold on validation data."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--04-model-evaluation.md
+  - data/raw/papers/2026-11-08-intro-to-ml-with-python-ch05-model-evaluation-improvement.md
 ---
 
 # Classification Metrics, Confusion Matrix and Thresholds
@@ -36,6 +37,16 @@ Multiclass: the confusion matrix is K by K; average F1 by `macro` (classes equal
 `predict` thresholds `decision_function` at 0 or `predict_proba` at 0.5. Moving it trades precision for recall without retraining: an SVC at threshold 0 has precision 0.978, recall 0.936; at -0.8 precision 0.758, recall 1.0. **Never pick the threshold on the test set**; use validation or CV (`TunedThresholdClassifierCV`).
 
 Adult census example (base rate 0.241 positives): dummy accuracy 0.759, model 0.847, AUC 0.901, AP 0.754. Business rule "at least 80% of flagged must be high earners": a threshold of 0.61 picked on validation gave precision 0.783 and recall 0.484 on test, against 0.725 and 0.584 at 0.5. The validation target of 0.80 landed at 0.783 on test because a threshold picked on one sample is itself an estimate.
+
+## The book chapter's version
+
+On the same 9-vs-rest digits task (test n=450: 403 negative, 47 positive), the chapter reports a confusion matrix for logistic regression (C=0.1) with 401 true negatives, 2 false positives, 8 false negatives and 39 true positives, and precision 0.95, recall 0.83 and F1 0.89 for the 'nine' class. F1 for the majority-class model was 0.00, for a dummy 0.10, for the depth-2 tree 0.55, and for logistic regression 0.89; the chapter says F1 separates models that accuracy barely distinguishes. On 10-class digits, logistic regression had accuracy 0.953, micro F1 0.953 and macro F1 0.954. Lowering an SVC threshold from 0 to -0.8 on blobs (400 vs 50, test n=113) moved class-1 recall from 0.67 up to 1.00 while precision slipped from 0.35 to 0.32. The authors advise choosing the metric closest to the business goal, comparing against a dummy baseline, tuning the threshold on validation data and fixing an operating point such as 90% recall, and passing scoring= to GridSearchCV so selection uses that metric.
+
+## Limits
+
+- The chapter's examples are small and single-split, with neither variance nor significance tests on the metric comparisons; calibration and costs get only a mention, and regression metrics get one paragraph.
+- Its prose and output disagree: the dummy F-score is 0.13 in prose and 0.10 in the output.
+- Its code uses an older scikit-learn API (for example 'mean_squared_error' scorer names, where current names are neg_mean_squared_error).
 
 ## See Also
 - [[Precision-Recall vs ROC and Average Precision]] — extends

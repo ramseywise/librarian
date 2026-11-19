@@ -2,9 +2,12 @@
 title: "Imbalance Remedies Versus a Tuned Threshold"
 tags: [data-science, comparison]
 summary: "On a 3% default book no resampling remedy beat leaving the data alone and setting the threshold from the cost ratio, and every balancing method wrecked the probabilities until recalibrated."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--10-imbalance-errors-and-drift.md
+  - data/raw/papers/2026-11-08-chawla-2002-smote.md
+  - data/raw/papers/2026-11-08-elor-2022-to-smote-or-not.md
+  - data/raw/papers/2026-11-08-van-den-goorbergh-2022-harm-class-imbalance-corrections.md
 ---
 
 # Imbalance Remedies Versus a Tuned Threshold
@@ -28,13 +31,18 @@ Nothing, class weights, random under- and oversampling, SMOTE (interpolate towar
 - At 0.5, a 1:1 training set moves the effective cut to about the base rate (0.03 before resampling, a 32:1 ratio): 298 for undersampling at 5:1 against 150 for nothing, but 433 against 599 at 20:1. Resampling at 0.5 is threshold moving with an unstated cost ratio.
 - Prize is modest: 143.0 against 150.5 approve-all at 5:1 (5%), 419.8 against 601.9 at 20:1 (30%).
 
-SMOTE at 0.5 lost to the tuned threshold beyond noise in 8 of 10 learner/rate/ratio rows and never won; with its own tuned threshold it was within noise in all 10 but worse on average in 9 (a tie leaning one way). A small neural net did worse with SMOTE (ROC-AUC 0.683 against 0.742, lower on all 10 seeds). A 73-dataset study found balancing and threshold tuning comparable except for weak learners; another found imbalance "not a problem in itself" for logistic models. One original SMOTE study favoured it, ranking by ROC area without examining probabilities; rerun here its recipe on a tree was 0.0175 lower than plain undersampling. Conclusion: on this data tune the threshold and leave the data alone.
+At 0.5, SMOTE trailed the tuned threshold by more than noise in eight of ten learner/rate/ratio rows and won none; with its own tuned threshold it was within noise in all 10 but worse on average in 9 (a tie leaning one way). A small neural net did worse with SMOTE: ROC-AUC 0.683 versus 0.742, lower for every one of 10 seeds. Elor and Averbuch-Elor (2022, 73 datasets, seven classifiers) found balancing and threshold optimisation gave comparable F1 for strong classifiers, except for the MLP and SVM, and recommend threshold optimisation as cheaper. van den Goorbergh et al. (2022, logistic regression) conclude imbalance is not a problem in itself. The original SMOTE study (Chawla et al., 2002) favoured it, ranking by ROC area without examining probabilities; rerun here its recipe on a tree was 0.0175 lower than plain undersampling. Mechanism and the three papers: [[SMOTE: Synthetic Minority Over-sampling]]. Conclusion for this data: leave it untouched and tune the threshold.
 
 ## Probabilities after balancing
 
 SMOTE as trained gave mean PD 0.272 (0.305 over seeds) on a 3.0% book, calibration intercept -2.93, and approved 20.6% predicting 11.3% default where about 1.0% occurred; cost at 1/6 was 777 against 143. Repairs fitted on untouched validation data: Platt scaling or intercept recalibration restore mean PD to 0.030 and Brier to 0.028 for every method (see [[Probability Calibration and Reliability Curves]]); isotonic left slopes near 0.8 with only 144 defaulters. Prior-shift correction ([[Prior Shift Correction for Oversampled Defaults]]) is right for undersampling (intercept -0.036) but leaves +0.23 and +0.27 for class weights and oversampling and +0.545 (mean PD 1.8%) for SMOTE, which moves the boundary, not only the prior. After repair every method matches doing nothing, so resampling plus repair cancels out.
 
+## Limits
+
+The numbers above come from the course note's thinned card-default book and its seeds. The three papers add: Elor et al. test binary tabular data only, and one of their classifiers is labelled strong in the abstract and weak in the body; van den Goorbergh et al. test only standard and ridge logistic regression, with a single 20%-prevalence case study; Chawla et al. report no probability metric and pick the best SMOTE amount on the cross-validation results they report.
+
 ## See Also
+- [[SMOTE: Synthetic Minority Over-sampling]] — extends
 - [[Resampling Before the Split Leaks]] — related
 - [[Drift Types and What Monitors Can See]] — related
 - [[Classification Metrics, Confusion Matrix and Thresholds]] — prerequisite-for

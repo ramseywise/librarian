@@ -2,7 +2,7 @@
 title: Confidence-Gated Escalation
 tags: [infra, pattern]
 summary: "A gate that escalates when a cheap model's confidence is low needs its threshold set on one labelled sample and checked on another, because thresholds can overrun their error budget on held-out data and a score measured on one task may not hold on the next."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/web/2026-11-05-jev-independent-evaluations.md
   - data/raw/web/2026-11-05-jev-typesafe-vendor-sources.md
@@ -101,3 +101,4 @@ confidence of 0.96, so the score did not flag the failure. One-line descriptions
 - [[DeepConf Confidence-Filtered Voting]] — related
 - [[AutoMix Self-Verification Routing]] — related (sampled self-verification as the confidence signal, routed by a POMDP)
 - [[Verbalized Probability Calibration and CalibratedMath]] — related (verbalized confidence as a gate input)
+- [[Temperature Scaling for Post-Hoc Calibration]] — related

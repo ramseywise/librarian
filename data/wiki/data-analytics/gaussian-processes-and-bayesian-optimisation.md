@@ -50,3 +50,4 @@ The best setting had a learning rate of 0.447 and 3 leaves. This compares one Ba
 - [[Variational Inference and the ELBO]] — related
 - [[Thompson Sampling and Bandit Regret]] — related (exploration versus exploitation)
 - [[Prior Choice and Prior Predictive Checks]] — related
+- [[Tree-Structured Parzen Estimator (TPE)]] — alternative-to

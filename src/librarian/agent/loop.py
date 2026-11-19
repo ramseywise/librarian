@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import json
 import re
 import time
@@ -13,6 +14,7 @@ from typing import Any, cast
 import anthropic
 
 from librarian.agent import support
+from librarian.agent.gemini import AsyncGemini
 from librarian.agent.tools import CHAT, INVALID_ARGS_PREFIX, Tool, ToolContext, tools_for
 from librarian.config import get_release, get_settings
 from librarian.log_config import get_logger
@@ -31,8 +33,8 @@ log = get_logger(__name__)
 
 
 def default_model() -> str:
-    """The model used when a caller does not pass one (`Settings.anthropic_model`)."""
-    return get_settings().anthropic_model
+    """The model used when a caller does not pass one (`Settings.chat_model`)."""
+    return get_settings().chat_model
 
 
 MAX_TOKENS = 8192
@@ -76,17 +78,23 @@ def _public_page_exists(page_id: str) -> bool:
 def _get_client() -> anthropic.AsyncAnthropic:
     """Lazily build the default client from the environment.
 
-    Only used when run_agent_stream is called without an injected client.
+    Only used when run_agent_stream is called without an injected client. With
+    LIBRARIAN_CHAT_PROVIDER=gemini it is the `agent.gemini` adapter, typed as the Anthropic
+    client because it answers the same `.messages` calls.
     """
     global _client
     if _client is None:
-        api_key = get_settings().anthropic_api_key
-        if not api_key:
+        settings = get_settings()
+        if not settings.chat_api_key:
+            key = "GEMINI_API_KEY" if settings.chat_provider == "gemini" else "ANTHROPIC_API_KEY"
             raise RuntimeError(
-                "ANTHROPIC_API_KEY is not set. "
+                f"{key} is not set. "
                 "Add it to your .env file or export it before starting the server."
             )
-        _client = anthropic.AsyncAnthropic(api_key=api_key)
+        if settings.chat_provider == "gemini":
+            _client = cast("anthropic.AsyncAnthropic", AsyncGemini(settings.chat_api_key))
+        else:
+            _client = anthropic.AsyncAnthropic(api_key=settings.chat_api_key)
     return _client
 
 
@@ -170,6 +178,12 @@ stating which option is correct, unless they ask for the answer outright.
 <studying>
 {brief}
 </studying>"""
+
+# Logged with every answer, so a change in answers can be traced to a prompt edit. The frames
+# are hashed as templates: what the user has open does not change the version.
+PROMPT_VERSION = hashlib.sha256(
+    "\0".join((_SYSTEM, _BRIEF_FRAME, _STUDY_FRAME)).encode()
+).hexdigest()[:12]
 
 
 def _trim_history(history: Sequence[dict[str, str]]) -> list[dict[str, str]]:
@@ -319,7 +333,7 @@ async def run_agent_stream(
     answer_id = uuid.uuid4().hex
     variant = experiment() if variant is None else variant
     settings = get_settings()
-    model = model or settings.anthropic_model
+    model = model or settings.chat_model
     release = release or get_release()
     total = TokenUsage()
     tools: dict[str, Tool] = {t.name: t for t in tools_for(CHAT, tool_names)}
@@ -389,7 +403,7 @@ async def run_agent_stream(
                         parent=turn_span,
                         **{
                             "gen_ai.operation.name": "chat",
-                            "gen_ai.system": "anthropic",
+                            "gen_ai.system": settings.chat_provider,
                             "gen_ai.request.model": model,
                             "gen_ai.request.max_tokens": MAX_TOKENS,
                         },
@@ -575,6 +589,7 @@ async def run_agent_stream(
             release=release,
             model=model,
             **ranking.serving_version(),
+            prompt_version=PROMPT_VERSION,
             usage=asdict(total),
             cost_usd=_cost(model, total),
             query=query,

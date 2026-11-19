@@ -164,3 +164,11 @@ groups:
         annotations:
           summary: "Chat spend today is over 80% of the global daily cap"
           description: "{{ $value | printf \"%.2f\" }} USD so far. At the cap chat stops for everyone. Runbook: docs/ops/slo.md#spend."
+
+      # A model call whose cost was not written is spend the cap never sees.
+      - alert: LibrarianSpendWriteFailing
+        expr: sum(increase(librarian_chat_spend_write_failures_total[1h])) > 0
+        labels: {severity: ticket}
+        annotations:
+          summary: "Chat costs are not being written: the spend cap undercounts"
+          description: "{{ $value | printf \"%.0f\" }} model calls in the last hour were not charged. Runbook: docs/ops/slo.md#spend."

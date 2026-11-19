@@ -2,7 +2,7 @@
 title: "Resampling Before the Split Leaks"
 tags: [data-science, pattern]
 summary: "Resampling then cross-validating puts copies or interpolations of training rows into validation folds, turning a true 0.70 AUC into 0.98; keep the sampler inside the pipeline so it runs only on training folds."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--10-imbalance-errors-and-drift.md
 ---
@@ -31,3 +31,4 @@ Another caution: the pipeline estimate for SMOTE here (0.697) sits below a tuned
 - [[Tabular ML Leakage Taxonomy]] — instance-of
 - [[Imbalance Remedies Versus a Tuned Threshold]] — related
 - [[Cross-Validation Variants and Nested Search]] — related
+- [[SMOTE: Synthetic Minority Over-sampling]] — related

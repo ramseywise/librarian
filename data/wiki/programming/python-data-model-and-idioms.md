@@ -2,9 +2,10 @@
 title: Python Data Model and Idioms
 tags: [programming, concept]
 summary: "Names are labels on objects, not boxes — which explains aliasing, the mutable-default trap and pass-by-assignment; dunder methods map syntax onto your classes; hashability rules decide what can be a key; and a short list of idioms (unpacking, EAFP, dict merge) should be reflexive."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/programming--python--03-language-for-engineers--notes--01-data-model-and-idioms.md
+  - data/raw/papers/2026-11-08-ml-engineering-in-action-ch10-standards-coding-creating-maintainable-ml-code.md
 ---
 
 # Python Data Model and Idioms
@@ -42,6 +43,8 @@ def add(item, bucket=None):    # the fix
 
 The same trap reappears in dataclasses, where the fix is `field(default_factory=list)` — see
 [[Python Type Hints and Dataclasses]].
+
+Wilson (*Machine Learning Engineering in Action*, ch10) gives an ML instance of the mutable default trap: a feature-collection function with `feature_collection=[]`, called with `['a','b','c']` and then `['d','e','f']`, returned all six on the second call and changed the first trial's features too, so two trials that look identically configured silently differ from what was intended. He also shows that reassigning a built-in name such as `tuple` breaks later calls with a `TypeError`.
 
 ## Dunder methods: syntax maps to methods
 

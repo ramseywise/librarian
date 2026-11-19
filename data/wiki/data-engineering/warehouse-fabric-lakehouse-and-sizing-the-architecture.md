@@ -6,6 +6,8 @@ updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--07-architecture-and-governance--notes--01-data-architectures-mesh-fabric-mdw.md
   - data/raw/repos/learn-ai-engineering/data-engineering--07-architecture-and-governance--README.md
+  - data/raw/papers/2026-11-08-serra-deciphering-data-architectures-ch10-modern-data-warehouse.md
+  - data/raw/papers/2026-11-08-serra-deciphering-data-architectures-ch11-data-fabric.md
 ---
 
 # Warehouse, Fabric and Lakehouse: Sizing the Physical Architecture
@@ -40,9 +42,34 @@ Derived copies stay in step by a distributed transaction or by a log with idempo
 
 Limits: a total order needs one leader, so across independent services some cross-domain questions have no single right order. Also separate **timeliness** (a late dashboard; waiting fixes it) from **integrity** (wrong data; waiting does not). Integrity usually matters more, which argues for auditing: read data back, test restores, run end-to-end checks across the whole derived pipeline.
 
+## How data flows through an MDW, and stepping stones toward one
+
+Serra's chapter 10 describes five stages: ingestion, storage, transformation, data modelling and visualisation. Because the lake holds storage and compute is a separate tier, the compute tool can be chosen freely. The relational model in the warehouse is usually third normal form, optionally with a star schema on top for performance and simplicity. In an MDW the lake stages and prepares data, and the warehouse serves it and carries security and compliance. Two exceptions to the flow are named: some presentation-layer lake data stays out of the warehouse, and some source data skips the lake. Bypassing the lake loses the backup, strains the warehouse with cleansing work and breaks the lake as single source of truth.
+
+Serra reports that organisations tried to serve every use case from the lake in the mid-2010s, that this failed, and that the MDW became the most popular architecture; no data is given. He judges the MDW still a good choice under 10 TB, and says very small data certain not to grow may justify an SMP warehouse instead of MPP. His case study is fictitious (a pharmaceutical firm well under 1 TB, projected within 10 TB, that chose a cloud MDW on SMP and finished migrating within a few months) and has no measurements.
+
+Three interim architectures lead toward an MDW; Serra advises choosing among them by needs, infrastructure and budget:
+
+| Stepping stone | What it is |
+|---|---|
+| EDW augmentation | A cloud lake beside a large on-prem EDW for big data; the primary data remains in the EDW |
+| Temporary lake plus EDW | The lake is a short-lived staging and refining area that nobody queries or reports from; aim is a shorter EDW maintenance window |
+| All-in-one | All reporting and querying on the lake with no warehouse; suits startups, small businesses and technical users, with trade-offs in performance, security, referential integrity and user friendliness. Adding a warehouse makes it a stepping stone to an MDW |
+
+## Serra's chapter 11 on fabric
+
+Serra names three of the eight technologies as his cut-off for calling an MDW a fabric, and concedes the boundary is fuzzy. He says new cloud solutions most often use a fabric, especially above 10 TB (no survey given), and describes it as taking in all of an organisation's data. He disagrees with those who require virtualisation, treats it as optional and advises using it for a small number of situations, and says the intelligent fabric Gartner describes, built on knowledge graphs and AI/ML, is not yet buildable, so he advises focusing on fabrics as they exist today. His practices: route every data request through access policies (via APIs, drivers or virtualisation); prefer APIs to connection strings, so that relocating data leaves callers working; wrap reusable cleaning and ingestion code in services; before leaving an MDW, weigh needs, ROI, strategy and the expertise available in-house. Lineage sits in the metadata catalog and serves regulatory compliance and trust.
+
+## Limits
+
+- Chapters 10, 11 and 13 are opinion and author judgement: the 10 TB figure, the three-of-eight cut-off, the pros and cons and the case study carry no measurements.
+- The extracted PDFs print no title page or author; attribution to Serra's *Deciphering Data Architectures* rests on external information. Product names reflect the 2024 market.
+- Figure 11-1 is an image whose content is not in the extraction, and Gartner's definition is quoted without citation or date.
+
 ## See Also
 - [[Data Mesh as an Ownership Model and Federated Governance]] — extends
 - [[Data Catalog Metadata: Push, Pull and Measuring Adoption]] — extends (the fabric's catalog, built out)
 - [[SQL Fan-Out and Source Reconciliation]] — related
 - [[Data Engineering Foundations]] — related (course map)
 - [[Lakehouse vs Warehouse Decision]] — related (lakehouse against warehouse in depth)
+- [[Data Mesh Topologies by Domain Granularity and Distribution]] — related

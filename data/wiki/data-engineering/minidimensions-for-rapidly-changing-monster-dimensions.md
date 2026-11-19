@@ -8,6 +8,9 @@ sources:
   - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch09-financial-services.md
   - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch10-telecommunications-utilities.md
   - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch04-procurement.md
+  - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch11-transportation.md
+  - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch12-education.md
+  - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch15-insurance.md
 ---
 
 # Minidimensions for Rapidly Changing Monster Dimensions
@@ -29,12 +32,19 @@ Type 2 history ([[Slowly Changing Dimensions Types 1, 2 and 3]]) adds a row per 
 
 An outrigger is the contrast case. Setup: a 150-attribute county-demographics table attached to the customer dimension is allowed as a snowflake because its grain (county) differs, it loads at different times and it saves space; the authors call outriggers an exception, and many of them a sign of over-normalisation. The procurement chapter makes the same split for rapidly changing attributes in one line.
 
+## More cases from chapters 11, 12 and 15
+
+- **Frequent flyer (ch11):** the authors expect a big airline's frequent flyer dimension to run to tens of millions of rows, so a profile minidimension holds one row per tier, home airport and club combination.
+- **Students (ch12):** frequently changing attributes such as major and class level are treated as minidimensions.
+- **Insurance (ch15):** the policyholder dimension has over 1 million rows, which motivates a minidimension for ZIP code tracking; fast-changing, closely monitored attributes of policyholder and covered item move to a minidimension keyed from the fact.
+
 ## Limits
 
 - No benchmark numbers for performance gains; all examples are illustrative, and the 100,000-row cap and the 100 million figure are the authors' guidance or reports without data.
 - The authors concede that changing the bands later is hard.
 - The two type 2 size thresholds in this batch differ: chapter 4 says type 2 may be inappropriate above a million rows, chapter 6 calls it predominant below 100,000.
 - Chapters 4, 6, 9 and 10 are early-2000s texts (the extraction infers the 2nd edition, 2002); the bank chapter notes its schemas are not complete industry solutions.
+- Chapter 15 elsewhere lists ZIP code as a type 2 attribute, and the extraction does not reconcile that with the minidimension advice. Chapters 11, 12 and 15 give design guidance without measurements.
 
 ## See Also
 - [[Slowly Changing Dimensions Types 1, 2 and 3]] — prerequisite-for

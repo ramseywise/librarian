@@ -2,9 +2,13 @@
 title: "Hyperparameter Search Budgets and Selection Optimism"
 tags: [data-science, pattern]
 summary: "Random, grid and TPE searches tie when the plateau is wide; the winner's score is optimistic by an amount set by how few rows chose it, so report on untouched rows or nested folds."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--09-training-and-tuning.md
+  - data/raw/papers/2026-11-08-raissi-2023-open-problems-applied-deep-learning.md
+  - data/raw/papers/2026-11-08-bergstra-2012-random-search-hyper-parameter-optimization.md
+  - data/raw/papers/2026-11-08-bergstra-2011-algorithms-hyper-parameter-optimization.md
+  - data/raw/papers/2026-11-08-akiba-2019-optuna.md
 ---
 
 # Hyperparameter Search Budgets and Selection Optimism
@@ -28,11 +32,23 @@ Search/report rows are halves of the validation set. Default settings: 0.9222 se
 
 ## The winner's score is optimistic
 
-Choosing the best of 32 partly selects luck. Selecting on n rows and scoring the winner on others: 100 rows, winner 0.9308 there, 0.9223 elsewhere, optimism 0.0085 (no better than default); 300 rows 0.0046; 1,000 rows 0.0013; 3,256 rows 0.0015. Selection variance can pick a worse model and the bias can be as large as differences between algorithms.
+Choosing the best of 32 partly selects luck. Selecting on n rows and scoring the winner on others: 100 rows, winner 0.9308 there, 0.9223 elsewhere, optimism 0.0085 (no better than default); 300 rows 0.0046; 1,000 rows 0.0013; 3,256 rows 0.0015. The course note credits Cawley and Talbot (JMLR 2010) with showing that the variance of the selection score may choose the worse model, with a resulting bias comparable to the gaps between algorithms.
 
 Honest options: refit the chosen configuration on all development rows and read the test once (tuned AUC 0.9272 against default 0.9263, bootstrap 95% interval 0.9209 to 0.9337, accuracy 0.873 unchanged; logistic 0.9013), or nested cross-validation (5 outer folds, 8 tries, 3 inner folds: outer mean 0.9274, sd 0.0036, 125 fits; inner best 0.9243, lower because inner models train on less data; all folds chose learning rate 0.097). Nested scores a procedure, not a model, so run the search once on all data to ship; it earns its cost with few rows and many tries. Tuning gained 0.0009 while moving from logistic to boosting gained 0.025: choose the family and features first. See [[Cross-Validation Variants and Nested Search]].
 
 Pitfalls: reading test while still deciding; tuning on too few rows; a winner at the edge of its range (use log ranges, widen at bounds).
+
+## Search as a bi-level problem
+
+Raissi's position paper frames the iteration step as a bi-level optimisation: an inner loop minimises training loss over the weights, and an outer loop optimises a validation metric over the hyperparameters. It calls this step the costliest in time and resources of the whole pipeline, and often neglected, offering no data for the claim. It cites neural architecture search for image classification at about 450 GPUs for 3 to 4 days, and parameter sharing (warm-starting from shared weights kept in memory) cutting the cost by up to 1000x, in some cases to about 16 GPU-hours; both numbers are cited from other work. The paper advises keeping the split to train, validation and test rather than fragmenting data further to tune the extra hyperparameters, and says weights for combining several metrics (accuracy with latency or memory) are an open problem.
+
+Limits of this section: the paper is a position paper with no experiments or measurements of its own, written in January 2023; its proposed directions are untested, and it says whether AutoML carries beyond simple supervised problems such as image classification remains to be tested.
+
+## What the original papers measured
+
+Bergstra and Bengio (JMLR 2012) compared random search with grid search on single-hidden-layer networks over 8 datasets, with 256 random trials per dataset subsampled into experiments of 1 to 32 or 64 trials, against published grid results from earlier work averaging 100 trials. In the 7-hyperparameter space, 8 random trials matched or beat the grid; in a 9-hyperparameter space that adds preprocessing, 32 trials were needed to beat it consistently (self-reported). A Gaussian-process fit with per-hyperparameter length scales gave an effective dimension of 1 to 4, varying with the dataset, with the learning rate always among the important ones (self-reported). On a 32-hyperparameter, 3-layer deep belief network (128 random trials against a manual-plus-grid search averaging 41), random search was better on 1 dataset, equal on 4 and worse on 3 (self-reported). Their simulation found latin hypercube sampling no better than random search. Their limits: all strategies studied were non-adaptive, the grid results were not re-run, only shallow networks on small image datasets were used, and exact accuracies appear only in figures.
+
+The sequential comparison and its test errors are on [[Tree-Structured Parzen Estimator (TPE)]]. Optuna's authors report, for a simplified AlexNet on SVHN (one Tesla P100 per study, 4 hours, 40 repeats), about 36 trials per study without pruning for both TPE and random search, and about 1279 (TPE) and 1119 (random search) with asynchronous successive halving pruning, nearly all of them pruned (self-reported). The extraction notes that the gain blends exploring more trials with pruning more of them early, comes from one task, and has no confidence intervals in the text.
 
 ## See Also
 - [[Cross-Validation Variants and Nested Search]] — extends
@@ -40,3 +56,6 @@ Pitfalls: reading test while still deciding; tuning on too few rows; a winner at
 - [[Train, Validation and Test Discipline]] — prerequisite-for
 - [[Gaussian Processes and Bayesian Optimisation]] — alternative-to
 - [[Bootstrap Resampling and Its Failures]] — related
+- [[Tree-Structured Parzen Estimator (TPE)]] — extends
+- [[Scaling Per-Entity Model Tuning: SparkTrials versus Grouped Fits]] — related
+- [[ImageNetV2 and the Adaptivity Gap in Test-Set Reuse]] — related

@@ -5,6 +5,9 @@ summary: "Code tests pass on a correct function fed broken data, so also test da
 updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--06-ml-platform--notes--05-mlops-maturity-and-best-practices.md
+  - data/raw/papers/2026-11-08-ml-engineering-in-action-ch09-modularity-ml-writing-testable-legible-code.md
+  - data/raw/papers/2026-11-08-ml-engineering-in-action-ch10-standards-coding-creating-maintainable-ml-code.md
+  - data/raw/papers/2026-11-08-ml-engineering-in-action-ch15-quality-acceptance-testing.md
 ---
 
 # Testing an ML System Beyond Its Code
@@ -34,6 +37,18 @@ Cheap catches for a run that finishes yet is wrong: check input and output shape
 ## Pitfalls
 
 - A bad record on a stream retries the batch, blocking the shard until expiry or a retry limit; catch it and send it to a dead-letter destination.
+
+## Wilson on testable ML code
+
+Wilson (*Machine Learning Engineering in Action*) advises deciding where to split code by how each block can be tested, with a unit test per public and private method on known mock data, run before merging. He concedes pure test-first development is very hard for non-deterministic ML algorithms; his one shown test is a deterministic check of a distribution's percentile points. He also advises post-condition checks such as input length equal to output length, raising a custom exception. Code-craft detail is in [[Python Foundations Reference]]. This is experience-based advice with no measured benefit.
+
+## Wilson on fallbacks, acceptance review and explanations
+
+Wilson (*Machine Learning Engineering in Action*, chapter 15) advises always having a fallback for model output that breaks a business rule or leaves its range, and testing the fallback repeatedly. His anecdote is a regression-driven controller without one that pushed a chuck from about 2,800 to 15,000 RPM. He advises asking experts and owners of prior art for safe ranges, defaults and past failures first. For cold start he advises a default that is fast, simple and relevant (popularity by region or day, expert-curated, high-inventory) and reusing it as the fallback; his dog-grooming example serves a rule-based answer to users with under three earlier appointments (hypothetical).
+
+For release review he ranks release review as: experts judging real users' predictions first, then company-wide dogfooding, then the team testing its own work, with about 50 users per genre in his music example, using unseen-data prediction distributions and random samples rather than handcrafted ones. Dogfooding still carries bias, since employee accounts are unrepresentative. He advises adding explanations before they are needed, using SHAP summary plots for overall feature impact and waterfall plots to explain the most extreme past cases (his wildfire example plots the five largest burn areas). He cautions that SHAP explains the model, not reality, and should be explained to the business first; see [[SHAP Attributions and the Limits of Explanations]].
+
+Limits: no experiments, every number is an illustrative scenario; the shap API details may have dated since 2022; an assert in his `validate_row` listing is written as a tuple and so can never fail.
 
 ## See Also
 - [[ML Test Score: Scoring Production Readiness by the Minimum]] — related

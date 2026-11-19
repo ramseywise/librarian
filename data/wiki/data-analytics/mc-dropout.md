@@ -2,7 +2,7 @@
 title: MC Dropout
 tags: [data-analytics, pattern]
 summary: Keep dropout switched on at test time and average several stochastic forward passes; the paper argues this approximates Bayesian inference in a deep Gaussian process and gives the spread of the passes as a model-uncertainty signal at no change to training.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-gal-2015-dropout-as-bayesian-approximation.md
 ---
@@ -38,3 +38,4 @@ The theory frames dropout training as variational inference using a Bernoulli di
 - [[Gaussian Processes and Bayesian Optimisation]] — prerequisite-for
 - [[Thompson Sampling and Bandit Regret]] — related (the RL use)
 - [[Probability Calibration and Reliability Curves]] — related (calibration is the check the paper does not run)
+- [[Early and Late Dropout]] — related

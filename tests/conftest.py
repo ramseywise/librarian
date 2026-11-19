@@ -18,6 +18,8 @@ def pytest_configure(config: pytest.Config) -> None:
     os.environ.setdefault("LIBRARIAN_SKIP_WARMUP", "1")
     # Startup validation refuses to start the API without a key while chat is enabled.
     os.environ.setdefault("ANTHROPIC_API_KEY", "test-key")
+    # The suite's fakes speak Anthropic, whichever provider .env picks for `make app`.
+    os.environ["LIBRARIAN_CHAT_PROVIDER"] = "anthropic"
     # ...and don't build an index of the real wiki in the background either.
     os.environ.setdefault("LIBRARIAN_INDEX_AUTOBUILD", "0")
     # Open mode, whatever token .env holds for `make app`; tests that need one set it.

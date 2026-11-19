@@ -5,6 +5,15 @@ summary: "Designing an ML system is a chain of stages from framing to correction
 updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--06-ml-platform--notes--06-ml-system-framing-to-monitoring.md
+  - data/raw/papers/2026-11-08-ml-engineering-in-action-ch01-what-is-machine-learning-engineer.md
+  - data/raw/papers/2026-11-08-ml-engineering-in-action-ch02-data-science-could-use-some-engineering.md
+  - data/raw/papers/2026-11-08-ml-engineering-in-action-ch03-before-you-model-planning-scoping-project.md
+  - data/raw/papers/2026-11-08-ml-engineering-in-action-ch04-before-you-model-communication-logistics-projects.md
+  - data/raw/papers/2026-11-08-ml-engineering-in-action-ch05-experimentation-action-planning-researching-ml-pro.md
+  - data/raw/papers/2026-11-08-ml-engineering-in-action-ch06-experimentation-action-testing-evaluating-project.md
+  - data/raw/papers/2026-11-08-ml-engineering-in-action-ch07-experimentation-action-moving-from-prototype-mvp.md
+  - data/raw/papers/2026-11-08-ml-engineering-in-action-ch13-ml-development-hubris.md
+  - data/raw/papers/2026-11-08-ml-engineering-in-action-ch14-writing-production-code.md
 ---
 
 # ML System Design: Stages and Handoffs
@@ -53,6 +62,42 @@ Offline: field F1 after normalising, exact matches, cost per item on a time-spli
 
 An agent costs 3.00 a ticket (six minutes at 30.00 an hour); a wrong automatic answer 9.00, so send below P(wrong) 0.333. Candidate A answers 60% and is wrong on 25%: cost 2.550. B answers 35% and is wrong on 8%: 2.202, cheaper by 2,088 a week at 6,000 tickets; A's extra tickets are wrong 48.8% of the time, above the cut. A 300-a-week audit adds 0.150 per ticket (B at 2.352) and gives 8% plus or minus 2.6 points; 100 gives plus or minus 4.5. The answer depends on the 9.00.
 
+## Wilson on planning, experimentation and the prototype choice
+
+Wilson (*Machine Learning Engineering in Action*) walks the same chain from the practitioner side. All of it is his experience or invented scenarios, not measurement.
+
+**Where projects fail.** His own rough estimate, from hundreds of projects worked on or advised and not a measured sample, puts planning first and scoping second among causes of failure, with technology and fragility 15% each, cost 10% and hubris 5%. He attributes them mostly to inexperience or poor communication with the business. He advises settling what and why with the sponsor before how or when, asking how the task is done now, and keeping algorithm debate inside the data science team. Simplicity is his foundation: start from a quick win (a chart, an aggregation, one equation), then heuristics, classic ML, and deep learning only if the value is gone.
+
+**Time-boxed experimentation.** He advises two or three heterogeneous candidates, each time-boxed (one to two weeks for standard cases such as forecasting or clustering, about two plus two weeks for a recommender; he says no standard rubric exists), and demos to subject-matter experts per critical feature rather than one at the MVP. His example demo failed on an ALS recommender with RMSE 0.2334 because the metrics meant nothing to the experts and the data had duplicates (an illustrative composite). He advises experts inspect a per-user simulation of predictions, not only metrics.
+
+**Screening rules.** For rapid screening he advises shared rules: same dataset, metrics and forecast period; code that re-runs from scratch; defaults left untuned and marked; every applicable metric logged per run (MAPE, MAE, MSE, RMSE, explained variance and R-squared), so that no earlier run has to be repeated for a missing number. He adds a simple baseline on the holdout, a deterministic chronological split, asserting that rows are neither lost nor duplicated, and a neutral moderator across teams. He reports discarding more than a hundred attempts per shipped production model (self-reported).
+
+**Choosing the prototype.** Rate candidates in a weighted decision matrix: in his recommender example, five criteria scored 1 to 5 gave totals of 53, 73 and 43 for SVD, ALS and deep-plus-SVD (invented scores). His forecasting version adds tuning sensitivity, training and inference cost and team familiarity, with a blind vote on other teams' solutions and a lead's veto on resourcing, complexity and cost. He advises an unbiased reviewer set the ratings, an uninvolved peer draft the comparison (owner bias), and not picking up a new technology on a business project if a familiar one would do. The chosen approach should also be judged on maintainability, retraining cost, testability, auditability and extensibility. His forecasting example picked Holt-Winters because the best ARIMA-family MAPE was 4% worse (single holdout split). Experimental code is throwaway, not the base of the final solution.
+
+**Business rules and attribution.** He advises building business rules as configurable levers rather than hardcoded values, adding a fallback such as global popularity for missing data, agreeing the attribution metric (and an A/B test) during planning so a working model is not cancelled when asked what it earns, and estimating total cost of ownership at the end of experimentation. Deployment cost, in his qualitative diagram, rises with SLA strictness, drift volatility, training complexity and prediction volume. Asking the business when predictions go stale, not how often they are wanted, separates a 4-hour from a 10-millisecond SLA, which he prices at several hundred thousand dollars of infrastructure plus roughly six months of work (experience).
+
+**Meetings.** He advises milestone-driven reviews (experimental update, prototype review, development progress, MVP review with user-acceptance testing, preproduction review) over weekly status meetings. For acceptance testing he advises reviewers not invested in the project, scores normalised per reviewer, and outsiders if all feedback is positive; his example preproduction bar was a load test at ten times peak users and at least a week of steady running in a stress environment (illustrative scenario).
+
+## Wilson on over-engineering and the project wireframe
+
+Wilson (*Machine Learning Engineering in Action*, chapters 13 and 14) frames hubris, meaning technology choices driven by the developer rather than the problem, as a maintenance cost. Everything below is his experience or invented scenarios.
+
+**Complexity.** He advises building only what the problem needs, prototyping in minimal imperative code and moving complexity into modules as the project nears MVP. He matches tool to scale: pandas rather than SparkML at thousands of rows, a containerised Flask app rather than Kubernetes and Seldon at a few requests a minute, and ARIMA on a CPU rather than a GPU LSTM when ARIMA already reaches single-digit RMSE. His ladder of increasing complexity starts at heuristics, moves to linear models or trees, then to tree ensembles explained with SHAP or LIME, and reaches deep or custom algorithms last, with the risk communicated at each rung. He advises defining the problem by two questions: what the solution should do and what will be done with it.
+
+**Frameworks and new tools.** He advises against a custom framework at the start; it is justified once a dozen similar projects share patterns or hundreds of models need it, if it saves at least twice the effort it costs and the team can spare 16 hours a week to maintain it (a heuristic, no data). In his story, a hand-built FP-growth variant cost three months for a 40 percent runtime gain and was reworked after a Spark upgrade. He advises keeping alpha-stage open source out of projects the business depends on, and asking of any new technology whether it solves the problem, can be reproduced, works on your data and is needed now. He warns against copying big-tech tooling without the same data, staff, use case and budget ("cargo cult ML"). He advises optimising only once the code runs end to end, starting with the longest stages; his Fermi-style estimate (not measured) puts about 90 percent of training wall-clock on feature engineering and tuning stages.
+
+**Data first.** Before any code he advises confirming the needed data can be had, with an if/else baseline in mind, and raising four questions with data engineering during exploration (how few tables are needed, what to fix first, access from training and serving layers, whether serving queries meet the SLA). He advises a data catalog that records, per source, how it is loaded, how often it updates, its SCD type and its owner, plus one copy of each department's definitions, and fixing data problems at the source rather than cleansing inside ML code.
+
+**Wireframe.** Right after the prototype he advises a stubbed project template with eight slots (ingestion, feature engineering, training and tuning, logging, registration, inference, tests, decision logic). Registration and inference are optional depending on serving; the other six are hard requirements. See [[Data Catalog Metadata: Push, Pull and Measuring Adoption]].
+
+Limits: no experiments; the generator runtimes give no hardware, the 40 percent and 8.7 percent figures come from a hypothetical story, and the examples are Scala and Spark.
+
+## Limits
+
+- The Wilson material is experience-based advice and illustrative scenarios (airport forecasting, e-commerce recommender); the failure shares have no stated sample or method. Time-box lengths are rules of thumb.
+- The 2020 survey figures the book quotes (Deloitte, IBM) are secondary with unclear per-statistic attribution, and are left out here.
+- Tooling and code in the chapters are dated; the extractions for ch01–06 print no year (ch07 and ch08 give 2022).
+
 ## See Also
 - [[Rolling Out a Decision Router: Partial Shadow and an Audit-Sized Canary]] — extends
 - [[Monitoring Layers and What Each Can See]] — extends
@@ -62,3 +107,4 @@ An agent costs 3.00 a ticket (six minutes at 30.00 an hour); a wrong automatic a
 - [[Microsoft ML Workflow Survey: Nine Stages and an Activity Maturity Index]] — instance-of (a nine-stage workflow from a company survey)
 - [[ML Deployment Challenges by Workflow Stage]] — related
 - [[Four Levels of AI Design Complexity]] — related (why systems that learn after launch are hard to prototype)
+- [[Scaling Per-Entity Model Tuning: SparkTrials versus Grouped Fits]] — extends (the tuning step of the prototype-to-MVP stage)

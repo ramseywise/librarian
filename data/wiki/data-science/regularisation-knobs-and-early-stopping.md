@@ -2,9 +2,11 @@
 title: "Regularisation Knobs and Early Stopping"
 tags: [data-science, pattern]
 summary: "Every family has a complexity-limiting knob whose validation curve peaks in the middle; early stopping is the same penalty in training time, but libraries may keep the rounds waited past the best."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--09-training-and-tuning.md
+  - data/raw/papers/2026-11-08-prechelt-1998-early-stopping-but-when.md
+  - data/raw/papers/2026-11-08-liu-2023-dropout-reduces-underfitting.md
 ---
 
 # Regularisation Knobs and Early Stopping
@@ -35,8 +37,15 @@ Gradient descent on a linear model starts at zero weights and grows them, so sto
 
 **Patience** (rounds without improvement before giving up) exists because validation curves wobble (one published curve had 16 local minima before true overfitting); in published runs slower rules bought about 4% lower test error for about four times the training. Trap: with patience 5, 25, 100 a library stopped at 21, 41, 116 rounds though the best round was 16, and the as-fitted validation loss worsened 0.2960, 0.3083, 0.3561; cut back to the best round all gave 0.2918, against 0.8426 with no stopping. Check whether your library rolls back; keep the best weights. Rows that decide stopping cannot also give the final score; afterwards you may refit on train plus validation.
 
+Prechelt's three families of stopping rule (generalisation loss, progress quotient, successive increases) and his 1296-run comparison are on [[Prechelt's Stopping Criteria: GL, PQ and UP]].
+
+Dropout can also be scheduled: Liu et al. report that, for ViT-T/16 on ImageNet-1K (basic recipe, 300 epochs), switching it on only for early epochs raised accuracy over no dropout while standard dropout at 0.1 lowered it (self-reported) (see [[Early and Late Dropout]]).
+
 ## See Also
+- [[Prechelt's Stopping Criteria: GL, PQ and UP]] — extends
+- [[Early and Late Dropout]] — extends
 - [[Hyperparameter Search Budgets and Selection Optimism]] — related
 - [[Gradient Boosting Mechanics and Library Choice]] — related
 - [[Penalised Linear Models: Ridge, Lasso and Elastic Net]] — related
 - [[Supervised Model Families and Complexity Knobs]] — related
+- [[Soft Inductive Bias, Benign Overfitting and Double Descent]] — related

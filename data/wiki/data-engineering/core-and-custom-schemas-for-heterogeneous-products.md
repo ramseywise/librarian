@@ -6,6 +6,8 @@ updated: 2026-11-19
 sources:
   - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch09-financial-services.md
   - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch03-inventory.md
+  - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch13-health-care.md
+  - data/raw/papers/2026-11-08-data-warehouse-toolkit-ch15-insurance.md
 ---
 
 # Core and Custom Schemas for Heterogeneous Products
@@ -23,11 +25,17 @@ A retail bank sells accounts whose facts and attributes differ by product line. 
 
 The inventory chapter defers heterogeneous products to this chapter.
 
+## Related cases in chapters 13 and 15
+
+- **Insurance lines (ch15):** for heterogeneous lines, each line of business gets its own dimension tables, while transactions need no per-line fact tables; snapshot facts that differ by line are split into separate physical tables rather than one table full of nulls.
+- **Fact dimension (ch13):** for sparse, heterogeneous medical records, an entry-type dimension tells what each fact row stands for and which of its fact columns apply, next to generic columns for an amount, a flag, a comment key and a file name. Setup: an event with 10 numeric measurements becomes 10 fact rows instead of one. As the data gets denser, the authors say to revert to an ordinary fact table. Free text stays out of the fact table through a comment dimension, and image file names are stored rather than blobs, so other tools can read the images, at the cost of keeping a file store in step.
+
 ## Limits
 
 - By its own account the chapter's schemas are partial and not complete industry solutions; it covers retail banking only.
 - The optimiser-ordering advice was not measured; all examples are illustrative. The text is early-2000s (the extraction infers the 2nd edition, 2002), and the extraction dates its Sybase IQ fact-indexing note to that period.
 - The extraction records the pattern as guidance with no performance numbers.
+- Chapters 13 and 15 are illustrative designs with no data; the extraction places chapter 13 in the 1990s and 2000s relational era.
 
 ## See Also
 - [[Conformed Dimensions, the Bus Matrix and Drilling Across]] — prerequisite-for

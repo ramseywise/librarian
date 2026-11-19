@@ -18,7 +18,7 @@ def find_problems(
     """(errors, warnings), one line each. The API refuses to start on any error.
 
     Errors: the wiki or courses directory is missing, the chat model is not in the price table,
-    the chat is enabled with no ANTHROPIC_API_KEY, open mode (no login and no LIBRARIAN_API_TOKEN)
+    the chat is enabled with no key for its provider, open mode (no login and no LIBRARIAN_API_TOKEN)
     where the API is reachable from outside (public mode, or a non-loopback `host` without
     `insecure`), and a login method without LIBRARIAN_PUBLIC_URL or the session secret. Warnings:
     a non-loopback `host` served open under `insecure`.
@@ -30,8 +30,9 @@ def find_problems(
     if not settings.courses_dir.is_dir():
         errors.append(f"courses directory missing: {settings.courses_dir}")
     errors.extend(find_model_problems(settings))
-    if settings.chat_enabled and not settings.anthropic_api_key:
-        errors.append("ANTHROPIC_API_KEY is not set (or set LIBRARIAN_CHAT_ENABLED=false)")
+    if settings.chat_enabled and not settings.chat_api_key:
+        key = "GEMINI_API_KEY" if settings.chat_provider == "gemini" else "ANTHROPIC_API_KEY"
+        errors.append(f"{key} is not set (or set LIBRARIAN_CHAT_ENABLED=false)")
     if settings.open_mode:
         if settings.public_mode:
             errors.append(
@@ -77,9 +78,10 @@ def find_login_problems(settings: Settings) -> list[str]:
 
 def find_model_problems(settings: Settings) -> list[str]:
     """The configured chat model must be in the price table, or the spend cap cannot count it."""
-    if price_for(settings.anthropic_model) is None:
+    if price_for(settings.chat_model) is None:
+        name = "GEMINI_MODEL" if settings.chat_provider == "gemini" else "ANTHROPIC_MODEL"
         return [
-            f"ANTHROPIC_MODEL {settings.anthropic_model!r} has no entry in the price table "
+            f"{name} {settings.chat_model!r} has no entry in the price table "
             f"(librarian.pricing); known: {', '.join(sorted(PRICES))}"
         ]
     return []

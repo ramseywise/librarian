@@ -21,7 +21,7 @@ import os
 from collections.abc import Mapping
 from functools import lru_cache
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from dotenv import dotenv_values
 from pydantic import AliasChoices, Field
@@ -73,6 +73,7 @@ SECRET_FIELDS = (
     "github_client_secret",
     "resend_api_key",
     "anthropic_api_key",
+    "gemini_api_key",
     "remote_api_key",
     "release_webhook_secret",
     "metrics_token",
@@ -391,6 +392,15 @@ class Settings(BaseSettings):
         default=DEFAULT_CHAT_MODEL, validation_alias=_env("ANTHROPIC_MODEL")
     )
     anthropic_api_key: str = Field(default="", validation_alias=_env("ANTHROPIC_API_KEY"))
+    # Which API answers the chat, claim judge and intake: "anthropic" or "gemini" (the
+    # `librarian.agent.gemini` adapter, e.g. to test on Gemini's free tier).
+    chat_provider: Literal["anthropic", "gemini"] = Field(
+        default="anthropic", validation_alias=_env("LIBRARIAN_CHAT_PROVIDER")
+    )
+    gemini_model: str = Field(default="gemini-2.5-flash", validation_alias=_env("GEMINI_MODEL"))
+    gemini_api_key: str = Field(
+        default="", validation_alias=_env("GEMINI_API_KEY", "GOOGLE_API_KEY")
+    )
     # `librarian mcp` remote mode: with a key (an `lk_` key from `librarian keys create` or the
     # account page) every wiki tool call goes to this API instead of the local index.
     remote_api_key: str = Field(default="", validation_alias=_env("LIBRARIAN_API_KEY"))
@@ -457,6 +467,15 @@ class Settings(BaseSettings):
     )
 
     # ── derived locations ────────────────────────────────────────────────────
+
+    @property
+    def chat_model(self) -> str:
+        """The chat model of the configured provider; the spend cap prices it."""
+        return self.gemini_model if self.chat_provider == "gemini" else self.anthropic_model
+
+    @property
+    def chat_api_key(self) -> str:
+        return self.gemini_api_key if self.chat_provider == "gemini" else self.anthropic_api_key
 
     @property
     def data_dir(self) -> Path:

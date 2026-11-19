@@ -70,7 +70,7 @@ async def _interpret(profile: dict[str, Any], settings: Settings, user: User) ->
         chat_limiter.admit(settings, user_id=user.id, user_cap=not user.is_admin)
         resp = await asyncio.wait_for(
             _get_client().messages.create(
-                model=settings.anthropic_model,
+                model=settings.chat_model,
                 max_tokens=INTERPRET_MAX_TOKENS,
                 system=intake.INTERESTS_SYSTEM,
                 messages=[{"role": "user", "content": intake.interests_prompt(profile, modules)}],

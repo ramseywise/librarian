@@ -5,6 +5,8 @@ summary: "A feature store is a point-in-time join with a registry, an offline hi
 updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--06-ml-platform--notes--01-feature-stores.md
+  - data/raw/papers/2026-11-08-ml-engineering-in-action-ch15-quality-acceptance-testing.md
+  - data/raw/papers/2026-11-08-ml-engineering-in-action-ch16-production-infrastructure.md
 ---
 
 # Feature Stores: Parts and When You Need One
@@ -35,6 +37,10 @@ In a local run (Parquet offline, SQLite online, Feast 0.67), historical retrieva
 | Stream features used online and in training | A store with stream ingestion; backfill and online consistency are hard to build |
 
 Evaluation criteria: sync to the online store, accessibility, batch and streaming ingestion, access control (features often derive from personal data), merging just-in-time data with stored features, lineage. Adopting a store for one model means running a registry, an online database and a sync job to solve what one SQL query solves.
+
+## Wilson on feature stores
+
+Wilson (*Machine Learning Engineering in Action*, chapters 15 and 16) advises defining each feature once in a store with ACID storage and a low-latency serving layer, using a denormalised key-value layout that consumers can only read. He advises that a change to a key metric's definition goes through a change process with every producing and consuming group and then syncs to the store by ETL, and that teams avoid private data silos. In his Databricks example registering the model through the store's API bundles the feature engineering with the model artifact, and batch scoring then calls just `score_batch`. His evaluation list matches the criteria above. These are practitioner recommendations; his code is Databricks-, Spark- and MLflow-specific and he warns that feature store APIs may change significantly.
 
 ## See Also
 - [[Point-in-Time As-Of Join for Features]] — prerequisite-for

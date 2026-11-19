@@ -32,6 +32,9 @@ Moved from CLAUDE.md. Runbooks are in [ops/](ops/); what is deployed is in [stat
 
 ```
 ANTHROPIC_API_KEY=       # Required for MCP server and scripts
+LIBRARIAN_CHAT_PROVIDER= # anthropic (default) or gemini: who answers the chat, claim judge and intake
+GEMINI_API_KEY=          # or GOOGLE_API_KEY; required when LIBRARIAN_CHAT_PROVIDER=gemini
+GEMINI_MODEL=            # default gemini-2.5-flash (Flash-Lite returned empty turns after a tool call)
 NOTION_API_KEY=          # Required for Notion ingestion
 LINEAR_API_KEY=          # Required for Linear ingestion
 DROPBOX_PDF_PATH=        # Path to local Dropbox PDF directory

@@ -36,3 +36,4 @@ Across 2,000 simulated experiments with true lifts Normal(0, 0.2) and standard e
 - [[Logistic Regression Separation]] — related
 - [[Adam, AdamW and Decoupled Weight Decay]] — related
 - [[MC Dropout]] — related (dropout reread as approximate Bayesian inference)
+- [[Soft Inductive Bias, Benign Overfitting and Double Descent]] — extends

@@ -112,7 +112,7 @@ def report(engine: Engine, settings: Settings, today: date | None = None) -> dic
             "today_fraction_of_cap": round(tot.today_usd / cap, 4) if cap > 0 else None,
             "user_daily_cap_usd": settings.chat_user_daily_budget_usd or None,
         },
-        "configured_model": settings.anthropic_model,
+        "configured_model": settings.chat_model,
         "users": by_user(engine, today),
         "models": by_model(),
     }

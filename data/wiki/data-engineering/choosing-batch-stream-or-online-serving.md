@@ -5,6 +5,7 @@ summary: "Pick the serving shape by when the consumer needs the answer; batch is
 updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--06-ml-platform--notes--03-batch-and-online-serving.md
+  - data/raw/papers/2026-11-08-ml-engineering-in-action-ch16-production-infrastructure.md
 ---
 
 # Choosing Batch, Stream or Online Serving
@@ -43,6 +44,18 @@ A handler reads batched, base64-encoded records, predicts, writes to an output s
 - Appending batch output on rerun.
 - Precomputing without measuring key coverage.
 - Measuring the model and calling it latency.
+
+## Wilson's serving-architecture framework
+
+Wilson (*Machine Learning Engineering in Action*, chapter 16) advises the least complex and cheapest serving architecture that meets the SLA, volume and recency needs (recency being the delay between feature data being generated and a prediction being actionable), and involving data engineers early for batch and software engineers for real-time. His guidance, from experience and without measurements:
+
+- He sees batch as fitting data whose freshness need runs from hours to weeks, and real-time REST as for predictions acted on at once. In his hotel-deal scenario, precomputed batch lists covered under 5% of sessions, and the A/B test found no booking-rate gap against control.
+- In his experience a Flask microservice copes with a few dozen requests a second at most, and he rules it out for customer-facing, high-volume or latency-sensitive uses. Low-volume REST (tens to thousands of requests a minute) needs only simple deployment and monitoring.
+- Microbatch streaming (Spark Structured Streaming) suits very high volume with a 0.5 to 5 second SLA, or hour-to-day SLAs with burst ingestion.
+- Elastic load balancing over containers (Flask behind Gunicorn) handles bursts and high volume with DevOps involvement and high cost. Edge deployment suits only stationary features such as imaging and lacks monitoring.
+- For bulk external delivery he advises gating egress to a fixed time (in his illustration, ungated weekly volumes finished anywhere between 6:01 a.m. and 4:32 p.m.) and checking predicted class counts, outliers and expert bounds first.
+
+Limits: traffic tiers and latency figures are heuristics without sources; the tools are 2022-era.
 
 ## See Also
 - [[Model Rollout: Shadow, Canary and A/B]] — extends

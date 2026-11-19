@@ -2,7 +2,7 @@
 title: "Pipelines Prevent Preprocessing Leakage"
 tags: [data-science, pattern]
 summary: "Any fitted preprocessing step must be refit inside each CV fold; a Pipeline does that, and feature selection outside the loop turns pure noise into a strong score."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--03-feature-engineering-and-pipelines.md
 ---
@@ -37,3 +37,4 @@ sources:
 - [[Train, Validation and Test Discipline]] — prerequisite-for
 - [[Cross-Validation Variants and Nested Search]] — related
 - [[Feature Representation for Linear Models]] — related
+- [[Ordered Boosting and Ordered Target Statistics]] — related (ordered encoding avoids target leakage)

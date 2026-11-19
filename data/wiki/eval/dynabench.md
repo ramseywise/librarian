@@ -37,3 +37,4 @@ Kiela and colleagues (NAACL 2021) propose replacing static datasets, which satur
 - [[HITL Annotation Pipeline]] — related (human validation of model output)
 - [[Arena-Hard-Auto and BenchBuilder]] — alternative-to (curates a fixed prompt set from crowdsourced data instead of collecting adversarially)
 - [[Eval Contamination Defenses]] — related (saturation and fresh data)
+- [[ImageNet-A and ImageNet-O Natural Adversarial Examples]] — related

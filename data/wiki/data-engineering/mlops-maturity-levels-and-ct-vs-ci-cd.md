@@ -5,6 +5,9 @@ summary: "Maturity models ask how much of the ML lifecycle runs without a human;
 updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--06-ml-platform--notes--05-mlops-maturity-and-best-practices.md
+  - data/raw/papers/2026-11-08-ml-engineering-in-action-ch02-data-science-could-use-some-engineering.md
+  - data/raw/papers/2026-11-08-ml-engineering-in-action-ch08-experimentation-action-finalizing-mvp-mlflow-runti.md
+  - data/raw/papers/2026-11-08-shankar-2022-operationalizing-machine-learning.md
 ---
 
 # MLOps Maturity Levels and CT vs CI/CD
@@ -27,7 +30,11 @@ Treat levels as a continuum. A proof of concept can stay at 0, a business-releva
 
 ## Treat the label with care
 
-In a survey of 551 respondents rating workflow stages on six dimensions, an index correlated with self-assessed effectiveness (Spearman 0.4982 to 0.7627), but it was self-reported, descriptive and without an objective baseline: evidence that habits travel together, not that climbing a level causes success. The same study names three ways ML differs: data is harder to version than code, customising a model needs ML skills, and modularity is hard because models entangle. An interview study found most changes happen at the top of the stack (configuration, runs); anti-patterns include tribal knowledge and a "pipeline jungle" nobody dares change. Automate what the team changes every week first.
+In a survey of 551 respondents rating workflow stages on six dimensions, an index correlated with self-assessed effectiveness (Spearman 0.4982 to 0.7627), but the ratings were the respondents' own, the analysis descriptive and no objective baseline existed: the index shows that the habits co-occur, not that moving up a level produces success. The study lists three differences from ordinary software: versioning data is harder than versioning code, adapting a model takes ML expertise, and entangled models resist modular design. An interview study of 18 ML engineers (Shankar et al., self-reported practices) describes a four-layer tool stack (run, pipeline, component, infrastructure) and reports frequent changes at the run layer and rare ones at the infrastructure layer; see [[ML Deployment Challenges: Interview Study and the Three Vs]]; anti-patterns include tribal knowledge and a "pipeline jungle" nobody dares change. Automate what the team changes every week first.
+
+## Wilson's framing of MLOps
+
+Wilson (*Machine Learning Engineering in Action*) defines MLOps as DevOps with additions: tracking of parameters and metrics, registering models, A/B tests and bandits, and monitoring of prediction accuracy and retraining. On version control he says practice is the same as in traditional software engineering: one branch per story, unit tests and an end-to-end integration test, then a merge by reviewed pull request. He advises retraining on a daily, weekly or monthly schedule so models do not go stale (his opinion). These are experience claims, not data.
 
 ## See Also
 - [[ML Test Score: Scoring Production Readiness by the Minimum]] — extends
@@ -35,3 +42,5 @@ In a survey of 551 respondents rating workflow stages on six dimensions, an inde
 - [[Passive Retraining and the Promotion Gate]] — related
 - [[Data Engineering Foundations]] — related
 - [[Microsoft ML Workflow Survey: Nine Stages and an Activity Maturity Index]] — instance-of (a maturity index without levels)
+- [[Scaling Per-Entity Model Tuning: SparkTrials versus Grouped Fits]] — related
+- [[ML Deployment Challenges: Interview Study and the Three Vs]] — related

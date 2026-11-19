@@ -2,7 +2,7 @@
 title: HDBSCAN with KMeans Fallback
 tags: [data-science, pattern]
 summary: Clustering selection strategy that tries density-based HDBSCAN first and falls back to KMeans when silhouette drops below 0.25 — plus the diagnostic discipline that treats a fallback as a feature-quality signal rather than a resolved choice.
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/claude-docs/atlas/skills/segment-analysis/SKILL.md
   - data/raw/claude-docs/atlas/skills/eval-report/SKILL.md
@@ -71,3 +71,4 @@ They also say to guard UMAP with `n_samples > n_components + 1`.
 - [[Embedding Clustering and Anomaly Detection]] — related (UMAP then HDBSCAN on sentence embeddings, with c-TF-IDF cluster labels)
 - [[Validating Clusters Without Labels]] — related (null control for cluster structure)
 - [[Choosing k and Naming Clusters Honestly]] — related
+- [[BERTopic: Clustering Embeddings with Class-Based TF-IDF]] — related

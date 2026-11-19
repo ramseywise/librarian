@@ -2,7 +2,7 @@
 title: "Embedding Clustering and Anomaly Detection"
 tags: [data-science, pattern]
 summary: "Sentence-embedding matrices cluster and flag outliers far better than TF-IDF, with k-means, UMAP plus HDBSCAN plus c-TF-IDF, and kNN or LOF detectors, but each result needs its setup and a manual look."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--03-nlp--notes--07-llm-embeddings-as-features.md
 ---
@@ -63,3 +63,5 @@ Detectors: **kNN distance** (far from nearest reference neighbours), **local out
 - [[Topic Models and Extractive Summarisation]] — alternative-to
 - [[HDBSCAN with KMeans Fallback]] — related
 - [[Isolation Forest vs Gaussian Anomaly Detection]] — related
+- [[BERTopic: Clustering Embeddings with Class-Based TF-IDF]] — extends
+- [[UMAP Graph Construction and Layout]] — related

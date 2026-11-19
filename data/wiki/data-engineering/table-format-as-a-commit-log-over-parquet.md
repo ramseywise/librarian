@@ -6,6 +6,7 @@ updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--04-warehouse-lakehouse-streaming--notes--02-table-formats.md
   - data/raw/repos/learn-ai-engineering/data-engineering--04-warehouse-lakehouse-streaming--notes--01b-object-storage-and-the-data-lake.md
+  - data/raw/papers/2026-11-08-zaharia-2021-lakehouse.md
 ---
 # Table Format as a Commit Log over Parquet
 
@@ -45,6 +46,8 @@ A format serialises commits; it does not make your pipeline serialisable. Two jo
 - **Vacuuming below the time-travel promise.**
 - **Never compacting.** Streaming writers make many small files per commit ([[Small Files, Prefix Layout and Storage Tiers]]); schedule compaction as a production job.
 - **Hand-copying a table directory** can break absolute paths or lose commit order.
+
+The 2021 lakehouse position paper calls this the metadata layer: a transactional layer over object storage that defines which objects belong to a table version, and which provides transactions, versioning, schema checks, constraints, permissions and an audit trail. It names Hive ACID as the first such layer, tracking files through an OLTP DBMS, and Iceberg as a similar transaction-log design that started at Netflix and supports Parquet and ORC. Its authors, from the Delta Lake vendor, concede that none of Delta Lake, Iceberg or Hudi can commit across more than one table, and say Hudi (started at Uber, streaming ingest) did not support concurrent writers as of 2021.
 
 ## See Also
 - [[Iceberg Metadata Tree and Hidden Partitioning]] — alternative-to

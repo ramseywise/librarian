@@ -2,9 +2,10 @@
 title: "Text Classification Metrics: Macro-F1, Log-Loss and Calibration"
 tags: [data-science, concept]
 summary: "Which metric fits which text task: macro-F1 exposes ignored small classes, log-loss punishes overconfident Naive Bayes, and multi-label needs micro versus macro averages and per-label thresholds."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--03-nlp--notes--02-text-classification.md
+  - data/raw/papers/2026-11-07-guo-2017-calibration-modern-neural-networks.md
 ---
 
 # Text Classification Metrics: Macro-F1, Log-Loss and Calibration
@@ -24,7 +25,7 @@ On a six-genre task (960 test documents, majority share 0.315), accuracy 0.532 h
 
 ## Log-loss and overconfidence
 
-Multiclass log-loss punishes confident mistakes without limit, so clip probabilities (about 1e-15) and renormalise. It can rank models differently from accuracy. In a grid search on the genre task, an SVD-plus-logistic-regression pipeline reached CV log-loss 1.325, while Naive Bayes ranged from 9.303 (alpha 0.01) through 6.025 (0.1) and 5.010 (0.3) to 5.485 (1.0), despite respectable accuracy: Naive Bayes is badly overconfident. In a separate competition ladder, tuning the smoothing alpha gave an 8% log-loss improvement. Tune on the metric you will be judged by. See [[Probability Calibration and Reliability Curves]] if probabilities feed a later decision.
+Multiclass log-loss has no ceiling on the penalty for a confident mistake, so clip probabilities (about 1e-15) and renormalise. It can rank models differently from accuracy. In a grid search on the genre task, an SVD-plus-logistic-regression pipeline reached CV log-loss 1.325, while Naive Bayes ranged from 9.303 (alpha 0.01) through 6.025 (0.1) and 5.010 (0.3) to 5.485 (1.0), despite respectable accuracy: Naive Bayes is badly overconfident. In a separate competition ladder, tuning the smoothing alpha gave an 8% log-loss improvement. Select by whichever metric the model will be judged on. See [[Probability Calibration and Reliability Curves]] if probabilities feed a later decision. In Guo et al. (2017), temperature scaling performed comparably to the other post-hoc calibrators on the text datasets (20 News, Reuters, SST) with typical uncalibrated ECE of 4 to 10% overall and below 1% for Reuters; it did not improve Reuters, which the authors suggest may reflect the split or binning ([[Temperature Scaling for Post-Hoc Calibration]]).
 
 ## Multi-label
 
@@ -33,3 +34,4 @@ Films have several genres, so one-vs-rest logistic regression with one sigmoid p
 ## See Also
 - [[Linear Text Classifiers and the TF-IDF Baseline]] — prerequisite-for
 - [[Tabular ML Leakage Taxonomy]] — related
+- [[Temperature Scaling for Post-Hoc Calibration]] — related

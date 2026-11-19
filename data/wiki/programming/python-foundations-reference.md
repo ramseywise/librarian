@@ -2,7 +2,7 @@
 title: Python Foundations Reference
 tags: [programming, reference]
 summary: "Compact Python-for-Everybody-level reference — types and operators with their traps (floor division, truthiness, short-circuit guards), return-don't-print functions, loop patterns and their built-ins, strings and files, collections and aliasing, regex, HTTP, JSON/XML APIs, classes and sqlite3 — plus the course's rules of thumb."
-updated: 2026-11-10
+updated: 2026-11-19
 sources:
   - data/raw/repos/learn-ai-engineering/programming--python--README.md
   - data/raw/repos/learn-ai-engineering/programming--python--01-foundations--notes--01-values-and-conditionals.md
@@ -15,6 +15,9 @@ sources:
   - data/raw/repos/learn-ai-engineering/programming--python--02-informatics--notes--03-web-data-json-xml.md
   - data/raw/repos/learn-ai-engineering/programming--python--02-informatics--notes--04-objects.md
   - data/raw/repos/learn-ai-engineering/programming--python--02-informatics--notes--05-databases.md
+  - data/raw/papers/2026-11-08-ml-engineering-in-action-ch09-modularity-ml-writing-testable-legible-code.md
+  - data/raw/papers/2026-11-08-ml-engineering-in-action-ch10-standards-coding-creating-maintainable-ml-code.md
+  - data/raw/papers/2026-11-08-ml-engineering-in-action-ch13-ml-development-hubris.md
 ---
 
 # Python Foundations Reference
@@ -126,6 +129,24 @@ The ingest pattern behind py4e's database projects. SQL itself is covered in [[S
 - Wrap the whole load in `with conn:` — one transaction per batch; committing per row is about 100× slower.
 - Values always go through `?` parameters; only code-controlled identifiers (table names) may be interpolated.
 - Crawlers and geocoders should store progress in the database so they resume after a crash or rate limit.
+
+## Wilson on code standards for ML code
+
+Wilson (*Machine Learning Engineering in Action*, ch09 and ch10) gives experience-based advice, not measured results:
+
+- Prototype in notebooks but rewrite as modular code for the MVP. Wrapping logic in functions leaves its complexity unchanged and makes it less complicated to read, debug and test (his distinction); in his example, refactoring a script into a class changed neither runtime nor output.
+- Use descriptive names with no single-letter or abbreviated variables, named constants instead of magic literals, and intermediate variables instead of dense one-liners. Use library functions such as scikit-learn's `mean_squared_error` rather than hand-rolling RMSE.
+- Pull hardcoded tunables into constructor defaults overridable by keyword arguments, or into configuration.
+- Return dictionaries or named tuples rather than positional or nested tuples, so the return structure can change without editing callers. He prefers static methods to global functions, to keep mutable global state out.
+- Avoid wildcard imports, many parameters, and copied boilerplate for train, test and inference features (his "shotgun surgery"). Remove replaced code rather than commenting it out; put large isolated new functionality in a new module.
+- Replace deep `if`/`elif` trees with computed mappings: merging 8 model scores of 5 buckets each needs about 821,570 lines by his formula, against a few lines when each model's score is bucketed and summed (illustrative listing).
+- He allows plain printing for one-off throwaway checks, where tracker logging is not worth it.
+
+Limits: his text has an internal inconsistency (a dictionary approach needing 32,768 conditions for 8 models, where 5 buckets give 5^8 = 390,625), and the listings use deprecated APIs (`squared=False` in `mean_squared_error`, later deprecated in scikit-learn).
+
+## Wilson on over-engineered ML code
+
+Wilson (*Machine Learning Engineering in Action*, ch13) advises writing for the team's skill level and teaching any advanced idioms through documentation, examples and pair programming rather than a style guide linked in a pull request. He sketches five developer personas on one column-casting task: Hacker, Mystic, Show-off, Mad Scientist and Good Samaritan, the last writing concise code that is complex only where needed. He advises explicit type casts over a catch-all String default for unmatched columns, which he says breeds fragile production failures (a Scala listing). He distinguishes premature generalisation (a framework before the patterns exist) from premature optimisation (tuning one stage before the whole runs). In his Scala generator example, `Seq` with positional lookup scaled worse than linearly (5,000 rows 0.6 s; 50 million rows roughly 2 h 54 min) against about 15 minutes after refactoring; hardware is not stated. His fix rate for tightly coupled imperative Spark code was under 40 percent, counting fixes made before predictions lapsed once an upstream column had changed (his experience, not a measurement). Examples are Scala and Spark, not directly reusable in Python, and the tool names are dated.
 
 ## See Also
 - [[Python Data Model and Idioms]] — extends
