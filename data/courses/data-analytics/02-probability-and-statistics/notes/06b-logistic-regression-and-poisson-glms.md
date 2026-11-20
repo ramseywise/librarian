@@ -1,10 +1,11 @@
 ---
-imported_hash: 2954a0ca337256c3
+imported_hash: 6a6b76ccffd0ec73
 title: 6b — Logistic regression and Poisson GLMs
 summary: For a yes/no outcome, a straight line can predict probabilities outside 0 and 1.
 order: 8
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-analytics/02-probability-and-statistics/notes/06b-logistic-regression-and-poisson-glms.md
 ---
 

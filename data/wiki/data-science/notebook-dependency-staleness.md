@@ -1,8 +1,8 @@
 ---
 title: Notebook Dependency Staleness
-tags: [data-science, reference]
+tags: [data-science, classical-ml, reference]
 summary: "Migration maps for the three library breaks that strand old ML notebooks — sklearn 0.20→1.4, TensorFlow 1.x→2.x, PyMC3→PyMC 5 — plus the two-phase triage that distinguishes a mechanical import swap from a genuine rewrite."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--CURRICULUM.md
   - data/raw/claude-docs/learn-ai-engineering/docs/research/2026-07-22_sklearn_migration.md

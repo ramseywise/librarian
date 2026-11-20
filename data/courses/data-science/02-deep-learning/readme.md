@@ -1,5 +1,5 @@
 ---
-imported_hash: 7b2bb2496dd3f415
+imported_hash: 1578f4dd6c4f14aa
 title: 02 — Deep learning
 summary: Neural networks from the forward pass to pre-trained transformers, split along the five courses of Ng's Deep Learning Specialization, with a closing chapter on text models.
 order: 1
@@ -35,6 +35,7 @@ Logistic regression stops at 0.895 on two interleaved moons, because its boundar
 | 4b | [Vision in practice](notes/04b-vision-in-practice.md) | Should you train an image model, or borrow one trained on ImageNet? | Beyond Ng: Bourke, *Learn PyTorch* ch. 03 to 08 |
 | 5 | [Sequence models](notes/05-sequence-models.md) | How does a network carry memory? | Sequence Models |
 | 5b | [Transformer encoders](notes/05b-transformer-encoders.md) | When is an encoder worth choosing over a CNN, an LSTM or a linear model? | Beyond Ng |
+| 5c | [What the encoder papers measured](notes/05c-what-the-encoder-papers-measured.md) | How much of the ViT, DeiT, forecasting, tabular and event-history headlines did the papers measure? | Beyond Ng: read against their setups |
 | 6 | [Neural text models](notes/06-neural-text-models.md) | What does it take for a neural model to beat word counts? | Beyond Ng: Sarkar `Ch10a` notebook, intro-to-nlp |
 
 ## Builds on and feeds into

@@ -1,8 +1,8 @@
 ---
 title: "Semantic Analysis, WordNet and Lexical Ambiguity"
-tags: [data-science, concept]
+tags: [data-science, nlp, concept]
 summary: "WordNet organises senses into synsets with is-a and part-of links, Lesk disambiguates by definition overlap and fails without it, and logic-based semantics evaluates assertions."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--03-nlp--notes--05-semantic-analysis-and-ner.md
   - data/raw/papers/2026-11-08-text-analytics-with-python-ch07-semantic-sentiment-analysis.md

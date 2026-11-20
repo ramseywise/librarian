@@ -1,8 +1,8 @@
 ---
 title: Integrated Gradients
-tags: [data-science, pattern]
+tags: [data-science, deep-learning, pattern]
 summary: "Integrated gradients attributes a network's output to its input features by accumulating gradients along a straight path from a baseline to the input; Sundararajan et al. derive it from two axioms, Sensitivity and Implementation Invariance (self-reported)."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-sundararajan-2017-axiomatic-attribution-deep-networks.md
 ---

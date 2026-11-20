@@ -34,6 +34,21 @@ export function deriveDomains(nodes: Pick<Node<WikiNodeData>, "data">[]): string
 }
 
 /**
+ * Each node's topic within its directory: the one tag it carries from `topics[domain]`, with its
+ * place in that list, so the map can shade the directory colour by topic. Nodes are copied.
+ */
+export function withTopics<N extends Pick<Node<WikiNodeData>, "data">>(nodes: N[], topics: Record<string, string[]>): N[] {
+  if (!Object.keys(topics).length) return nodes;
+  return nodes.map((n) => {
+    const list = topics[n.data.domain[0] ?? ""];
+    if (!list?.length) return n;
+    const topicIndex = list.findIndex((t) => n.data.tags.includes(t));
+    if (topicIndex < 0) return n;
+    return { ...n, data: { ...n.data, topic: list[topicIndex], topicIndex, topicCount: list.length } };
+  });
+}
+
+/**
  * Parse a WebSocket message into a GraphPayload. The socket carries one message type,
  * `graph_update`, validated as a strict discriminated union: a message that is not JSON, names
  * another `type` or has the wrong shape yields null, and `onInvalid` hears why. Works with both
@@ -54,12 +69,13 @@ export function parseGraphMessage(raw: string, onInvalid?: (reason: string) => v
     onInvalid?.(parsed.error.issues[0]?.message ?? "unexpected message");
     return null;
   }
-  const { nodes, edges, domains, areas } = parsed.data.data;
+  const { nodes, edges, domains, areas, topics } = parsed.data.data;
   return {
-    nodes,
+    nodes: withTopics(nodes, topics ?? {}),
     edges: edges.filter((e) => e.data?.edgeType === "wikilink"),
     domains: domains ? domains.filter((d) => d !== "private") : deriveDomains(nodes),
     areas: areas ?? [],
+    topics: topics ?? {},
   };
 }
 
@@ -90,10 +106,17 @@ export function fromAtlas(a: AtlasPayload): GraphPayload {
     const data: WikiEdgeData = relationship ? { edgeType: "wikilink", relationship } : { edgeType: "wikilink" };
     return [{ id: `wl:${source}->${target}`, source, target, data }];
   });
-  return { nodes, edges, domains: a.domains.filter((d) => d !== "private"), areas: a.areas ?? [] };
+  const topics = a.topics ?? {};
+  return {
+    nodes: withTopics(nodes, topics),
+    edges,
+    domains: a.domains.filter((d) => d !== "private"),
+    areas: a.areas ?? [],
+    topics,
+  };
 }
 
-const EMPTY: GraphPayload = { nodes: [], edges: [], domains: [], areas: [] };
+const EMPTY: GraphPayload = { nodes: [], edges: [], domains: [], areas: [], topics: {} };
 const NO_EDGES: Edge<WikiEdgeData>[] = [];
 
 /**
@@ -254,6 +277,7 @@ export function useWikiData({ tagShared = true, live = true }: { tagShared?: boo
     wikilinkEdges: graph.edges,
     domains: graph.domains,
     areas: graph.areas,
+    topics: graph.topics,
     tagSharedEdges,
     semanticEdges,
     fetchSemanticEdges,

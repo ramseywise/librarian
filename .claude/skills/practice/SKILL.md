@@ -1,6 +1,6 @@
 ---
 name: practice
-description: "Author and wire one piece of practice material: a drill in programming/drills/, a coding prompt, or a round file in interviewing/rounds/. Places it by the split rule, applies the schema and units, clears the licence and allowlist, runs the checks and the drill-reviewer, and logs findings. Usage: /practice <path> to wire an existing file, /practice drill <track> <topic> \"<idea>\", or /practice round <round> \"<idea>\". Run from the librarian repo."
+description: "Author and wire one piece of practice material: a drill in programming/drills/, a coding prompt, or a round file in interviewing/rounds/. Places it by the split rule, applies the schema and units, clears the licence and allowlist, runs the checks and the drill-reviewer, and logs findings. Usage: /practice <path> to wire an existing file, /practice drill <track> <topic> \"<idea>\", or /practice round <round> \"<idea>\". Triggers on: '/practice', 'write a drill', 'add a coding prompt', 'add an interview round', 'wire this drill', 'author practice material'. Run from the librarian repo."
 ---
 
 You add one piece of practice material and leave it wired in, checked and reviewed. The checks and the reviewer

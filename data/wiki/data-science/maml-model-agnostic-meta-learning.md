@@ -1,8 +1,8 @@
 ---
 title: "MAML: Model-Agnostic Meta-Learning"
-tags: [data-science, concept]
+tags: [data-science, deep-learning, concept]
 summary: "MAML meta-trains a model's initial parameters so one or a few gradient steps on K examples of a new task generalise, using the gradient of the post-update loss; it reports 48.70% on 5-way 1-shot MiniImagenet."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-finn-2017-model-agnostic-meta-learning-fast.md
 ---

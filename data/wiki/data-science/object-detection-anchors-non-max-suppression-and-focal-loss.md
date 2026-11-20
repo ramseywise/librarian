@@ -1,8 +1,8 @@
 ---
 title: "Object Detection Anchors, Non-Max Suppression and Focal Loss"
-tags: [data-science, concept]
+tags: [data-science, deep-learning, concept]
 summary: "Detectors predict a grid of anchor boxes, then filter by score and non-max suppression; one-stage detectors drown in easy background anchors, which focal loss (1-p_t)^gamma discounts, provided the classifier bias starts every anchor at 1% object probability."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--04-convolutional-networks.md
   - data/raw/papers/2026-11-07-lin-2017-focal-loss-dense-object-detection.md

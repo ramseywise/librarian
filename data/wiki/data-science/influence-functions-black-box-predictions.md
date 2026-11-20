@@ -1,8 +1,8 @@
 ---
 title: Influence Functions for Black-Box Predictions
-tags: [data-science, pattern]
+tags: [data-science, deep-learning, pattern]
 summary: "Koh and Liang trace a prediction back to the training points most responsible using gradients and Hessian-vector products, and check the estimate against leave-one-out retraining on small models (self-reported)."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-koh-2017-understanding-black-box-predictions-influence.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: Clustering Validation Against Named Baselines
-tags: [data-science, eval, pattern]
+tags: [data-science, classical-ml, eval, pattern]
 summary: "Customer clustering is only evidence of structure when its silhouette beats a random partition and the trivial k=2 split computed in the same call, when unsupervised leakage analogues (restated timestamp columns, scaler fit outside resamples, a sum beside its own decomposition) are ruled out by name, and when a value-reading matrix-health rule stops a degenerate matrix escaping through the 'structure is weak' clause."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/claude-docs/galactus/docs/plans/2026-08-14-gal-17-customer-segmentation.md
   - data/raw/repos/galactus/.claude--docs--plans--2026-08-14-gal-17-customer-segmentation.md

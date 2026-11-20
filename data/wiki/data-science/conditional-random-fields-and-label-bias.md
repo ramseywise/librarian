@@ -1,8 +1,8 @@
 ---
 title: "Conditional Random Fields and Label Bias"
-tags: [data-science, concept]
+tags: [data-science, nlp, concept]
 summary: "A CRF models p(y|x) with one exponential model normalised over whole label sequences, which avoids the label bias problem of per-state normalised MEMMs; the original paper pays for it with slower training."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-lafferty-2001-conditional-random-fields.md
 ---

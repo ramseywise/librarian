@@ -1,8 +1,8 @@
 ---
 title: Adafactor Factored Second Moments
-tags: [data-science, concept]
+tags: [data-science, deep-learning, concept]
 summary: "Adafactor keeps Adam's second-moment estimate for a matrix as row and column sums (O(n+m) memory instead of O(nm)), drops momentum, and uses update clipping and a 1 - t^-0.8 decay to stay stable."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-07-shazeer-2018-adafactor.md
   - data/raw/papers/2026-11-07-a-2020-scaling-laws-neural-language-models.md

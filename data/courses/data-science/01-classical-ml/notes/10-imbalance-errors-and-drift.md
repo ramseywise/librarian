@@ -1,10 +1,11 @@
 ---
-imported_hash: d61cc94a09554800
+imported_hash: 7e0b5f6c5dc0d53a
 title: Imbalance, Errors and Drift
 summary: 'The data is Default of Credit Card Clients: 30,000 card customers in Taiwan in 2005, CC BY 4.0, with six months of repayment status, bills and payments, and one label: did they default next month.'
 order: 14
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-science/01-classical-ml/notes/10-imbalance-errors-and-drift.md
 ---
 

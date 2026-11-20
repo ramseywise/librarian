@@ -1,8 +1,8 @@
 ---
 title: Platt Scaling for SVM Probabilistic Outputs
-tags: [data-science, pattern]
+tags: [data-science, classical-ml, pattern]
 summary: "Platt scaling fits a two-parameter sigmoid P(y=1|f)=1/(1+exp(Af+B)) by maximum likelihood on held-out SVM outputs, with smoothed targets, so a sparse SVM yields calibrated posteriors; in 1999 tests it made fewer errors than a raw SVM on some tasks and was neither better nor worse than a regularized-likelihood machine overall (self-reported)."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-platt-1999-probabilistic-outputs-support-vector-machines.md
 ---

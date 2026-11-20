@@ -1,10 +1,11 @@
 ---
-imported_hash: 47658573ead304e6
+imported_hash: cd23eb3531f4eb37
 title: Linear Models
 summary: This note continues Supervised learning, which introduces the other families.
 order: 4
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-science/01-classical-ml/notes/02b-linear-models.md
 ---
 

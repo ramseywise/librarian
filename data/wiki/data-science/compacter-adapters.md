@@ -1,8 +1,8 @@
 ---
 title: Compacter Adapters
-tags: [data-science, concept]
+tags: [data-science, deep-learning, concept]
 summary: "Compacter builds adapter weights from shared Kronecker factors and per-adapter rank-one factors, so a frozen T5-base trains 0.047 to 0.073% of its parameters yet matches full fine-tuning on GLUE and SuperGLUE (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-07-mahabadi-2021-compacter.md
 ---

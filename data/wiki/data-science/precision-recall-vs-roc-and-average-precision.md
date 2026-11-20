@@ -1,8 +1,8 @@
 ---
 title: "Precision-Recall vs ROC and Average Precision"
-tags: [data-science, comparison]
+tags: [data-science, classical-ml, comparison]
 summary: "ROC AUC is a ranking probability unaffected by class balance, while PR curves and average precision track the flagged set on rare positives; the two can disagree and PR points must not be linearly interpolated."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-07-davis-2006-relationship-between-precision-recall-roc.md
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--04-model-evaluation.md

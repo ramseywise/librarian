@@ -1,8 +1,8 @@
 ---
 title: "Forecast Issue Time and Measured Leakage"
-tags: [data-science, pattern]
+tags: [data-science, time-series-and-recommenders, pattern]
 summary: "Fix the issue time, horizon, information set and loss before fitting; every feature lag must be at least the horizon, and three common leaks were measured on one hourly series."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--05-time-series-and-recommenders--notes--01-time-series-ml.md
 ---

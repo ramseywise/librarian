@@ -1,8 +1,8 @@
 ---
 title: Lipton's Notions of Interpretability
-tags: [data-science, concept]
+tags: [data-science, classical-ml, concept]
 summary: "Lipton argues interpretability has no single meaning and splits it into transparency (simulatability, decomposability, algorithmic transparency) and post-hoc explanation (text, visualisation, local explanation, example); on his conceptual argument linear models are not automatically more interpretable than deep nets."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-07-miller-2019-explanation-in-ai-social-sciences.md
   - data/raw/papers/2026-11-07-misfiled-lipton-2016-mythos-of-model-interpretability.md

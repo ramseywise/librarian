@@ -5,123 +5,200 @@ decks:
 cards:
 - front: Which five steps does this lecture take, from the loop to text?
   back: The loop never changes, so each step changes what you check or what the network assumes about the data.
+  depth: intro
   lesson: data-science/02-deep-learning/readme
 - front: Name four things this lecture teaches you to do with a neural network.
   back: You will be able to train a network, tell why it fails, and say which architecture the data asks for.
+  depth: intro
   lesson: data-science/02-deep-learning/readme
 - front: Which call does the chain-rule bookkeeping of backprop for you?
   back: Backprop is the chain rule with bookkeeping, and `backward()` does the bookkeeping.
+  depth: intro
   lesson: data-science/02-deep-learning/notes/01-neural-networks-fundamentals
 - front: Why did ReLU replace sigmoid in hidden layers, and what does it cost?
   back: Its slope is 1 for positive inputs, so depth doesn't shrink the gradient, and it is cheap. The cost is dead units, which Leaky ReLU avoids.
+  depth: core
   lesson: data-science/02-deep-learning/notes/01-neural-networks-fundamentals
 - front: Why must every line of the PyTorch loop stay, when the code still runs without it?
   back: The loop never changes, and each line exists because leaving it out fails quietly.
+  depth: core
   lesson: data-science/02-deep-learning/notes/01-neural-networks-fundamentals
 - front: What can the hidden layer draw that logistic regression cannot, and which PyTorch calls replace Ng's cost, backward and update functions?
   back: The same loop with one hidden layer draws a curve that logistic regression cannot.
+  depth: core
   lesson: data-science/02-deep-learning/notes/01-neural-networks-fundamentals
 - front: Which symptoms in a training run point to a missing zero_grad, an extra softmax or a copied keep_prob?
   back: Learn the symptom of each quiet bug, because the loop runs and the number only looks wrong.
+  depth: core
   lesson: data-science/02-deep-learning/notes/01-neural-networks-fundamentals
 - front: Why does only He initialisation train a 6-layer ReLU network on digits?
   back: Each layer multiplies the signal by its weights, so only an initial scale that holds the activations steady lets a deep network start learning.
+  depth: core
+  sources:
+  - https://arxiv.org/abs/1502.01852
   lesson: data-science/02-deep-learning/notes/02-optimisation-and-regularisation
 - front: Why can `weight_decay=0.1` destroy a run in Adam but not in AdamW?
   back: In Adam the penalty passes through the per-parameter scaling and can destroy the run, so use AdamW.
+  depth: deep
+  sources:
+  - https://arxiv.org/abs/1711.05101
   lesson: data-science/02-deep-learning/notes/02-optimisation-and-regularisation
 - front: What does `eval()` change in batch norm, and what does forgetting it cost?
   back: '`eval()` switches batch norm from batch statistics to running averages, and forgetting it cost 9 points with no error.'
+  depth: core
+  sources:
+  - https://arxiv.org/abs/1502.03167
   lesson: data-science/02-deep-learning/notes/02-optimisation-and-regularisation
 - front: How far can the learning rate move accuracy, compared with the choice of adaptive optimiser?
   back: The rate moves accuracy from chance to 0.96, far more than choosing among adaptive optimisers does.
+  depth: core
   lesson: data-science/02-deep-learning/notes/02-optimisation-and-regularisation
 - front: Why does stopping early help on noisy labels, and what do you need in order to do it?
   back: Networks learn real patterns before the noise, so stop early on a clean validation set, which won here by about 9 points.
+  depth: core
   lesson: data-science/02-deep-learning/notes/02-optimisation-and-regularisation
 - front: Which gap do you fix first, and what do you count before building the fix?
   back: Fix the largest gap first, and count what a fix could win before building it.
+  depth: core
+  sources:
+  - https://www.coursera.org/specializations/deep-learning
   lesson: data-science/02-deep-learning/notes/03-structuring-ml-projects
 - front: How does writing the diagnosis down settle an argument about priorities?
   back: Writing the diagnosis down turns an argument about priorities into a subtraction.
+  depth: intro
+  sources:
+  - https://www.coursera.org/specializations/deep-learning
   lesson: data-science/02-deep-learning/notes/03-structuring-ml-projects
 - front: How did making training data look like production change dev error here?
   back: Adding artificial data that looks like production cut dev error from 63% to 14%, at some cost to training error.
+  depth: core
+  sources:
+  - https://www.coursera.org/specializations/deep-learning
   lesson: data-science/02-deep-learning/notes/03-structuring-ml-projects
 - front: What does transfer learning need in order to help, and what should you run as a control?
   back: Transfer needs a similar task with much more data, so try scratch as the control.
+  depth: core
+  sources:
+  - https://arxiv.org/abs/1411.1792
   lesson: data-science/02-deep-learning/notes/03-structuring-ml-projects
 - front: Which three ideas does a convolutional network take from LeNet-5?
   back: The design goes back to LeNet-5, with local filters, shared weights and subsampling, and one formula gives the output size.
+  depth: intro
+  sources:
+  - https://doi.org/10.1109/5.726791
   lesson: data-science/02-deep-learning/notes/04-convolutional-networks
 - front: Why is a very deep plain network's failure not overfitting, and what fixes it?
   back: Plain depth fails on the training data itself, so it isn't overfitting, and `out + x` makes doing nothing the easy default.
+  depth: core
+  sources:
+  - https://arxiv.org/abs/1512.03385
   lesson: data-science/02-deep-learning/notes/04-convolutional-networks
 - front: What are the two post-processing steps in detection, and what does the threshold trade off?
   back: Detection filters boxes by score and then removes overlaps, and the threshold trades merged cars against duplicates.
+  depth: core
+  sources:
+  - https://arxiv.org/abs/1612.08242
   lesson: data-science/02-deep-learning/notes/04-convolutional-networks
 - front: What do embeddings need to pay off, which a small toy run lacks?
   back: Embeddings need many identities and strong augmentation, so the toy shows the mechanics and the papers the payoff.
+  depth: deep
+  sources:
+  - https://arxiv.org/abs/1503.03832
   lesson: data-science/02-deep-learning/notes/04-convolutional-networks
 - front: At what data size did the scratch CNN draw level with the frozen ResNet-18, and which arm stayed ahead?
   back: Frozen features win with a handful of labels, fine-tuning from a few hundred, and scratch only draws level with plenty of data.
+  depth: core
   lesson: data-science/02-deep-learning/notes/04b-vision-in-practice
 - front: Why does a frozen backbone still change during training, and what fixes it?
   back: Predict through the same transform you tested with, and keep a frozen backbone in eval mode.
+  depth: core
   lesson: data-science/02-deep-learning/notes/04b-vision-in-practice
 - front: Why did vector-valued hidden states take over from the hidden Markov model?
   back: 'A single symbol is a poor memory: 10 bits of context cost 1,024 states, where 10 binary units do.'
+  depth: deep
+  sources:
+  - Bishop, Pattern Recognition and Machine Learning (Springer, 2006), ch. 13
   lesson: data-science/02-deep-learning/notes/05-sequence-models
 - front: What sets how much gradient reaches the first step of an LSTM?
   back: Ten orders of magnitude separate these lines at the first step, set entirely by initialisation.
+  depth: core
   lesson: data-science/02-deep-learning/notes/05-sequence-models
 - front: How do you know your initialisation code actually did something?
   back: Initialisation code can do nothing without any error, so measure its effect afterwards.
+  depth: core
   lesson: data-science/02-deep-learning/notes/05-sequence-models
 - front: What does attention replace the single summary vector with?
   back: Attention replaces one summary vector with a learned lookup, redone at every step.
+  depth: intro
+  sources:
+  - https://arxiv.org/abs/1409.0473
   lesson: data-science/02-deep-learning/notes/05-sequence-models
 - front: On the same data and budget, what did adding attention do to whole-date accuracy?
   back: On the same data and budget, the only change takes whole-date accuracy from 3% to 100%.
+  depth: core
   lesson: data-science/02-deep-learning/notes/05-sequence-models
 - front: Where did the autoencoder beat PCA on reconstruction, and what should you compute first?
   back: At small codes (2, 4 and 8), where it beat PCA. At 16 and 32 PCA is ahead, so compute PCA first.
+  depth: core
+  sources:
+  - Bishop, Pattern Recognition and Machine Learning (Springer, 2006), ch. 12
   lesson: data-science/02-deep-learning/notes/05-sequence-models
 - front: What replaces the bottleneck in a denoising autoencoder, and what does it cost on clean images?
   back: The plain network copies the holes and the denoising one repairs them, paying with a worse rebuild of clean images, 0.545 against 0.077.
+  depth: core
   lesson: data-science/02-deep-learning/notes/05-sequence-models
 - front: Why does a wider code rebuild better and detect worse, and how should you choose its size?
   back: A code wide enough to rebuild everything rebuilds the anomalies too, so choose its size on labelled anomalies if you have some.
+  depth: deep
   lesson: data-science/02-deep-learning/notes/05-sequence-models
 - front: Which position scheme lets an encoder tell upside-down digits from upright ones?
   back: Self-attention is permutation-equivariant, so add position before the first block, and expect the upside-down score to fall once the model reads order.
+  depth: core
+  sources:
+  - https://arxiv.org/abs/1706.03762
   lesson: data-science/02-deep-learning/notes/05b-transformer-encoders
 - front: Test accuracy falls from 0.966 to 0.658 when requests arrive one at a time. What should you suspect?
   back: The model still trains, so score the same examples at batch size 1 and 32 and check that the logits match.
+  depth: core
   lesson: data-science/02-deep-learning/notes/05b-transformer-encoders
 - front: Why does the encoder lose to a linear model at 100 digit labels yet reach 0.973 at 1,257?
   back: An encoder assumes less than a CNN or an LSTM, so it has to learn more from examples. Ask which task you have before reaching for one.
+  depth: deep
+  sources:
+  - https://arxiv.org/abs/2010.11929
   lesson: data-science/02-deep-learning/notes/05b-transformer-encoders
 - front: How do an embedding average, a TextCNN, a BiLSTM and TF-IDF each read a review?
   back: Each learned model has over 160,000 parameters for 5,000 reviews, and all of them must come from those labels.
+  depth: core
   lesson: data-science/02-deep-learning/notes/06-neural-text-models
 - front: Which kind of model won on 5,000 reviews, and did it still lead on 25,000?
   back: The linear model wins here, and a notebook on 25,000 reviews saw 0.87 to 0.89 against about 0.90.
+  depth: core
   lesson: data-science/02-deep-learning/notes/06-neural-text-models
 - front: What does pretraining supply that your labels can't pay for?
   back: Pretraining supplies the representation your labels can't pay for.
+  depth: intro
+  sources:
+  - https://arxiv.org/abs/1810.04805
   lesson: data-science/02-deep-learning/notes/06-neural-text-models
 - front: Why can't you assume a pre-trained encoder will beat your baseline?
   back: A pre-trained encoder isn't one result, so measure it on your own task against the baseline.
+  depth: core
   lesson: data-science/02-deep-learning/notes/06-neural-text-models
 - front: Which approach wins on few labels, which on many, and which loses throughout?
   back: A strong frozen encoder helps on few labels and fine-tuning on many, while the small encoder loses throughout.
+  depth: core
+  sources:
+  - https://arxiv.org/abs/1908.10084
+  - https://arxiv.org/abs/1910.01108
   lesson: data-science/02-deep-learning/notes/06-neural-text-models
 - front: What makes deep learning failures hard to catch, and what do these rules do about it?
   back: Most deep learning failures are silent, so each rule is a way to see one.
+  depth: intro
   lesson: data-science/02-deep-learning/notes/03-structuring-ml-projects
 - front: What should you build next, now that you have seen the reasons for it?
   back: Next, build the Transformer you've now seen the reasons for.
+  depth: intro
   lesson: data-science/02-deep-learning/notes/06-neural-text-models
 - front: Why does a network need a non-linear activation?
   back: Linear layers compose to one linear layer, so without one, depth adds no expressive power.
@@ -177,14 +254,8 @@ cards:
 - front: What is inverted dropout?
   back: Zero units at random with $p$, and divide survivors by $1-p$ so the expected activation matches test time, where nothing is dropped.
   lesson: data-science/02-deep-learning/notes/02-optimisation-and-regularisation
-- front: Dropout in an underfitting model?
-  back: It hurts. Standard dropout lowered accuracy here and on ViT-T in Liu et al. Early dropout can help or at least not harm.
-  lesson: data-science/02-deep-learning/notes/02-optimisation-and-regularisation
 - front: Regularising first, or learning rate first?
   back: Learning rate. Regularisation is for a model that fits and doesn't generalise.
-  lesson: data-science/02-deep-learning/notes/02-optimisation-and-regularisation
-- front: How do you compare two optimisers fairly?
-  back: Several seeds, an equal tuning budget and more than one workload, measured by time to a target. That's the AlgoPerf design.
   lesson: data-science/02-deep-learning/notes/02-optimisation-and-regularisation
 - front: Which regularisation techniques do you know?
   back: Early stopping, weight decay, dropout and more data. Reach for them once training is good and test is poor, after the learning rate and optimiser are tuned.
@@ -204,6 +275,24 @@ cards:
 - front: How does SGD differ from full-batch gradient descent?
   back: Full batch takes one exact step per pass over the data. SGD takes many noisy steps per pass. Gradient noise falls only as 1/√B, so 100 times the batch buys 10 times less noise, and mini-batches win.
   lesson: data-science/02-deep-learning/notes/02-optimisation-and-regularisation
+- front: How do you compare two optimisers fairly?
+  back: Several seeds, an equal tuning budget and more than one workload, measured by time to a target. That's the AlgoPerf design.
+  lesson: data-science/02-deep-learning/notes/02b-what-the-training-papers-measured
+- front: Dropout in an underfitting model?
+  back: It hurts. Standard dropout lowered accuracy here and on ViT-T in Liu et al. Early dropout can help or at least not harm.
+  lesson: data-science/02-deep-learning/notes/02b-what-the-training-papers-measured
+- front: How much of batch norm's speedup is the layer?
+  back: Under half the steps to the baseline's accuracy, 13.3M against 31.0M on Inception. The 14× figure also changed the learning rate, dropout, L2 and the data pipeline, with no breakdown by change.
+  lesson: data-science/02-deep-learning/notes/02b-what-the-training-papers-measured
+- front: Does Adam's paper show that it generalises better?
+  back: No. It reports training cost and no test error, and it tied SGD with Nesterov momentum on MNIST logistic regression.
+  lesson: data-science/02-deep-learning/notes/02b-what-the-training-papers-measured
+- front: What does a learning-rate-free optimiser guarantee?
+  back: D-Adaptation's proof covers convex Lipschitz problems with deterministic gradients. On a small MLP here it failed on one seed in five, so it still needs a control run.
+  lesson: data-science/02-deep-learning/notes/02b-what-the-training-papers-measured
+- front: How is dropout related to ridge regression?
+  back: In linear least squares, dropping predictors with probability $\phi$ and rescaling gives a generalised ridge estimate, which is plain ridge once the variables are standardised. With a nonlinear activation it holds only approximately.
+  lesson: data-science/02-deep-learning/notes/02b-what-the-training-papers-measured
 - front: What is orthogonalisation?
   back: 'Controls that each affect one thing: fit train, then dev, then test, then the real world.'
   lesson: data-science/02-deep-learning/notes/03-structuring-ml-projects
@@ -369,12 +458,6 @@ cards:
 - front: When would you not use a transformer?
   back: Ordinary tables around 10K rows, long-horizon forecasting before a linear baseline has run, little data with strong local structure, or very long raw sequences without patching.
   lesson: data-science/02-deep-learning/notes/05b-transformer-encoders
-- front: Do Transformers work for forecasting?
-  back: Zeng et al. found linear models beat five earlier ones on 9 benchmarks. PatchTST, with patches and independent channels, then beat DLinear on most of its 8 datasets, by under 5% on 13 of 30 wins (my count, MSE). Baseline with linear first.
-  lesson: data-science/02-deep-learning/notes/05b-transformer-encoders
-- front: Would you pre-train an encoder on transaction histories?
-  back: 'At tens of millions of users and several tasks, PRAGMA says it can pay: LoRA beat a frozen probe and training from scratch on six internal tasks, with credit PR-AUC +130.2% over the task baseline at 1B parameters. All gains are relative to unnamed baselines, and AML, a relational task, was 47.1% worse. Keep the task model as the bar.'
-  lesson: data-science/02-deep-learning/notes/05b-transformer-encoders
 - front: Pre-norm or post-norm?
   back: Pre-norm. Post-norm's gradients near the output are large at initialisation, and it needs warm-up with Adam at the rates tested (8.45 against about 34 BLEU in Xiong et al.; RAdam is an exception). Final quality was comparable.
   lesson: data-science/02-deep-learning/notes/05b-transformer-encoders
@@ -387,6 +470,12 @@ cards:
 - front: How do you test a padding mask?
   back: Pad a sequence, and assert that the output doesn't change.
   lesson: data-science/02-deep-learning/notes/05b-transformer-encoders
+- front: Do Transformers work for forecasting?
+  back: Zeng et al. found linear models beat five earlier ones on 9 benchmarks. PatchTST, with patches and independent channels, then beat DLinear on most of its 8 datasets, by under 5% on 13 of 30 wins (my count, MSE). Baseline with linear first.
+  lesson: data-science/02-deep-learning/notes/05c-what-the-encoder-papers-measured
+- front: Would you pre-train an encoder on transaction histories?
+  back: 'At tens of millions of users and several tasks, PRAGMA says it can pay: LoRA beat a frozen probe and training from scratch on six internal tasks, with credit PR-AUC +130.2% over the task baseline at 1B parameters. All gains are relative to unnamed baselines, and AML, a relational task, was 47.1% worse. Keep the task model as the bar.'
+  lesson: data-science/02-deep-learning/notes/05c-what-the-encoder-papers-measured
 - front: Why would TF-IDF beat an LSTM?
   back: With little labelled data, a linear model has few effective parameters and an LSTM must learn its embeddings as well.
   lesson: data-science/02-deep-learning/notes/06-neural-text-models

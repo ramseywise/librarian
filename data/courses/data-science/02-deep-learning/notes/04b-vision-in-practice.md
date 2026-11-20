@@ -1,10 +1,14 @@
 ---
-imported_hash: 101ce9ce63fa9657
+imported_hash: 26b9955ea171a36d
 title: Vision in practice
 summary: Daniel Bourke's free course Learn PyTorch for Deep Learning (learnpytorch.io, code MIT-licensed) teaches this path in chapters 03 to 08, on a 3-class food dataset.
 order: 7
 kind: reading
 section: Notes
+tier: practitioner
+depth: core
+depth_sections:
+  What a transformer would need: deep
 source: learn-ai-engineering/data-science/02-deep-learning/notes/04b-vision-in-practice.md
 ---
 
@@ -281,18 +285,6 @@ Every score above is on ImageNet's own test images, and two papers measure how f
 ![Natural adversarial examples from ImageNet-A and ImageNet-O, with the classifier's confident wrong label](../assets/sources/images/hendrycks-imagenet-a-fig1.png)
 *Image Source: Hendrycks et al., [Natural Adversarial Examples](https://arxiv.org/abs/1907.07174) (2021), Fig. 1*
 
-### What a transformer would need
-
-A Vision Transformer cuts the image into patches and runs an encoder on them ([A token is a design choice](05b-transformer-encoders.md#a-token-is-a-design-choice)). It lacks a CNN's built-in assumptions of locality and translation equivariance, so it has to learn them from data; [05b, at your data size](05b-transformer-encoders.md#at-your-data-size) gives the paper's evidence. The paper pre-trained on random subsets of JFT, Google's internal set of 303 million images in 18,000 classes. ViT-B/32 is slightly faster than a ResNet50, and against it "performs much worse on the 9M subset, but better on 90M+ subsets" ([arXiv:2010.11929](https://arxiv.org/abs/2010.11929) (Dosovitskiy et al., ICLR 2021), §4.3). The score there is few-shot linear accuracy on ImageNet: a linear classifier fitted in closed form on the frozen features of a few labelled images per class. Nine million images is far beyond 3,000. Bourke's chapter 08 shows it at small scale: his ViT-B/16 built from the paper and trained from scratch on 225 food images ended 10 epochs at 0.26, and the ImageNet ViT-B/16 frozen with a new head reached 0.918. [`practice/vit_from_paper.py`](../practice/vit_from_paper.py) repeats this on the shapes:
-
-```text
-ViT-B/16 from the equations: 86,567,656 parameters; torchvision's: 86,567,656; equal: True
-small ViT from scratch: 829,062 parameters, 3,000 images, 2,000 steps, test accuracy 0.352 (31 s)
-ImageNet ViT-B/16, frozen, new head: 4,614 trainable parameters, 3,000 images, 500 steps, test accuracy 0.977 (170 s)
-```
-
-The first line is the check that the equations were read right: a ViT built from the paper's Eq. 1 to 4 (patch embedding with a class token and positions, attention, MLP, final layer norm; [the encoder block](05b-transformer-encoders.md#a-token-is-a-design-choice)) with Table 1's Base sizes (12 layers, width 768, 12 heads) has exactly torchvision's parameter count, so every layer is the right size, though not that it was trained the same way. The second line is the paper's warning at small scale. On all 3,000 images, with the same 2,000 steps that took the scratch CNN to 0.902, a small ViT with 829,062 parameters reached 0.352. Nothing in it says that neighbouring pixels belong together, and 3,000 images aren't enough to learn that. The third line is the same architecture with that learned from ImageNet: only the 4,614-parameter head trains ($768 \times 6 + 6$), and it reaches 0.977. This is one seed, at the weights' own 224-pixel preset rather than the grid's 112, so don't set it against the ResNet rows above; set the two ViT rows against each other, and against the scratch CNN. The full run took about 5 minutes, most of it the 330 MB download and the frozen ViT-B/16 at 224 pixels.
-
 ## Shape, device and dtype errors
 
 Bourke has a page on the three errors that cause most PyTorch failures: shape errors, where "your data's shape is [1, 28, 28] but your first layer takes an input of [10]"; device errors, where "your model is on the GPU … and your data is on the CPU"; and datatype errors, where your data is one type "however the operation you're trying to perform requires another". His examples are FashionMNIST on CUDA. Here are all three on the shapes, on the MacBook's `mps` device, so the messages are the ones you'll see there:
@@ -341,6 +333,18 @@ Bourke's rule of thumb covers all three: "trained models like to predict on data
 Classification gives one label per image. Detection gives a box and a label for each object, and [04's object detection section](04-convolutional-networks.md#object-detection) builds the pieces: anchors, IoU and non-max suppression. You rarely train a detector from scratch either. `torchvision.models.detection` in torchvision 0.29 ships pretrained Faster R-CNN, RetinaNet, FCOS, SSD, Mask R-CNN and Keypoint R-CNN weights on COCO; `FasterRCNN_ResNet50_FPN_V2_Weights.COCO_V1`, for example, has 43,712,278 parameters and a box mAP of 46.7 on COCO val2017, as its own metadata reports. COCO is the standard detection benchmark of everyday photos, and box mAP (mean average precision) averages precision over recall levels, classes and IoU thresholds from 0.5 to 0.95, out of 100. Fine-tuning one follows this chapter's pattern: keep the backbone, replace the head with one for your classes, and expect the dataset class to do more work, because each item returns a dictionary of boxes and labels instead of one integer.
 
 Segmentation goes one step finer and labels every pixel. *Semantic* segmentation gives each pixel a class, so two cars side by side form one region. *Instance* segmentation separates them, which is what Mask R-CNN adds to a detector: a mask inside each box. The output is as large as the image, so these networks downsample to gather context and upsample again. Score them with IoU between the predicted and true masks and not with pixel accuracy, because background pixels dominate.
+
+## What a transformer would need
+
+This goes deeper on [train, borrow, or fine-tune](#train-borrow-or-fine-tune), for a model with no convolutions. A Vision Transformer cuts the image into patches and runs an encoder on them ([A token is a design choice](05b-transformer-encoders.md#a-token-is-a-design-choice)). It lacks a CNN's built-in assumptions of locality and translation equivariance, so it has to learn them from data; [05b, at your data size](05b-transformer-encoders.md#at-your-data-size) gives the paper's evidence. The paper pre-trained on random subsets of JFT, Google's internal set of 303 million images in 18,000 classes. ViT-B/32 is slightly faster than a ResNet50, and against it "performs much worse on the 9M subset, but better on 90M+ subsets" ([arXiv:2010.11929](https://arxiv.org/abs/2010.11929) (Dosovitskiy et al., ICLR 2021), §4.3). The score there is few-shot linear accuracy on ImageNet: a linear classifier fitted in closed form on the frozen features of a few labelled images per class. Nine million images is far beyond 3,000. Bourke's chapter 08 shows it at small scale: his ViT-B/16 built from the paper and trained from scratch on 225 food images ended 10 epochs at 0.26, and the ImageNet ViT-B/16 frozen with a new head reached 0.918. [`practice/vit_from_paper.py`](../practice/vit_from_paper.py) repeats this on the shapes:
+
+```text
+ViT-B/16 from the equations: 86,567,656 parameters; torchvision's: 86,567,656; equal: True
+small ViT from scratch: 829,062 parameters, 3,000 images, 2,000 steps, test accuracy 0.352 (31 s)
+ImageNet ViT-B/16, frozen, new head: 4,614 trainable parameters, 3,000 images, 500 steps, test accuracy 0.977 (170 s)
+```
+
+The first line is the check that the equations were read right: a ViT built from the paper's Eq. 1 to 4 (patch embedding with a class token and positions, attention, MLP, final layer norm; [the encoder block](05b-transformer-encoders.md#a-token-is-a-design-choice)) with Table 1's Base sizes (12 layers, width 768, 12 heads) has exactly torchvision's parameter count, so every layer is the right size, though not that it was trained the same way. The second line is the paper's warning at small scale. On all 3,000 images, with the same 2,000 steps that took the scratch CNN to 0.902, a small ViT with 829,062 parameters reached 0.352. Nothing in it says that neighbouring pixels belong together, and 3,000 images aren't enough to learn that. The third line is the same architecture with that learned from ImageNet: only the 4,614-parameter head trains ($768 \times 6 + 6$), and it reaches 0.977. This is one seed, at the weights' own 224-pixel preset rather than the grid's 112, so don't set it against the ResNet rows above; set the two ViT rows against each other, and against the scratch CNN. The full run took about 5 minutes, most of it the 330 MB download and the frozen ViT-B/16 at 224 pixels.
 
 ## Reading
 

@@ -1,8 +1,8 @@
 ---
 title: HDBSCAN with KMeans Fallback
-tags: [data-science, pattern]
+tags: [data-science, classical-ml, pattern]
 summary: Clustering selection strategy that tries density-based HDBSCAN first and falls back to KMeans when silhouette drops below 0.25 — plus the diagnostic discipline that treats a fallback as a feature-quality signal rather than a resolved choice.
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/claude-docs/atlas/skills/segment-analysis/SKILL.md
   - data/raw/claude-docs/atlas/skills/eval-report/SKILL.md

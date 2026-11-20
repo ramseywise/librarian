@@ -1,8 +1,8 @@
 ---
 title: "Soft Inductive Bias, Benign Overfitting and Double Descent"
-tags: [data-science, concept]
+tags: [data-science, deep-learning, concept]
 summary: "Wilson argues that benign overfitting and double descent are not specific to neural networks: a flexible model with a soft preference for simple solutions, and compressibility-based bounds, account for both."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-06-wilson-2025-deep-learning-not-so-mysterious.md
   - data/raw/papers/2026-11-08-islp-ch10-deep-learning.md

@@ -1,8 +1,8 @@
 ---
-imported_hash: 716d05f8019de29e
+imported_hash: e597e3403b851ab4
 title: Approaching (Almost) Any NLP Problem on Kaggle
 summary: In this post I'll talk about approaching natural language processing problems on Kaggle.
-order: 9
+order: 10
 kind: notebook
 section: Practice
 source: learn-ai-engineering/data-science/03-nlp/practice/approaching-almost-any-nlp-problem-on-kaggle.ipynb

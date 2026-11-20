@@ -1,8 +1,8 @@
 ---
 title: "Latent Class Analysis for Mixed Data"
-tags: [data-science, concept]
+tags: [data-science, classical-ml, concept]
 summary: "Latent class models each group as a recipe of per-column distributions fit by EM; BIC can answer no groups, but correlated columns inside a class break local independence and inflate the class count."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--05b-clustering-categorical-and-mixed-data.md
 ---

@@ -1,0 +1,309 @@
+# imported_hash: 7d6a7f0a52d12dd1
+# Opening lecture of the applied analyses series: the vague question, the shape every analysis shares, the five steps and where each is taught.
+# make slides PILLAR=data-analytics/06-applied-analyses LECTURE=00-overview STRICT=1 PREVIEW=1
+# Levels: a slide with no level is the intro (core), `practice` is the core lesson, `deep` is the optional extension.
+deck:
+  title: Applied Analyses
+  subtitle: From a vague question to a recommendation
+  tagline: "The shape of an analysis · Five steps · The series"
+  reference: "Notes: data-analytics/06-applied-analyses/README.md"
+  output: 00-overview.pptx
+  notes: >-
+    This opening lecture runs no code. It gives you the map: the one shape every analysis in the module has, the five steps
+    that group the fifteen notes, and which lecture teaches each. Everything named here is taught properly later.
+
+lecture:
+  overview: true
+  covers: [data-analytics/06-applied-analyses/README.md]
+  next: [data-analytics/06-applied-analyses/notes/01-forecasting.md]
+  related:
+    - data-analytics/05-visualisation-and-storytelling/README.md
+    - data-science/01-classical-ml/README.md
+
+parts:
+  - title: The shape of an analysis
+    summary: A vague question · Four parts · Fernhill Home · Three habits
+    notes: First, why a module of complete analyses is different from the modules that taught the tools.
+    slides:
+      - layout: statement
+        beat: problem
+        section: The core
+        title: What do you hand back when the question is vague?
+        recall: When is a model unfinished?
+        answer: "When nobody can act on it. The skill lies in what surrounds the method: a baseline, a check against something known, a price on the result and a statement of what it does not establish."
+        kicker: The problem
+        statement: "A manager arrives with a vague question and a decision to make. A model that nobody can act on is unfinished."
+        attribution: Fernhill Home, a fictional online homewares retailer, and the questions it asks in a busy year
+        takeaway: Most of the skill lies in what surrounds the method, not in the method.
+        source: README.md
+        notes: >-
+          The earlier modules teach tools one at a time. Real work arrives as a question from someone with a decision to
+          make. Here each chapter is a complete analysis that goes from that question, through a dataset, to a
+          recommendation.
+
+      - layout: flow
+        beat: fundamentals
+        section: The core
+        title: Four parts in every analysis
+        recall: What four things does every analysis in this module contain?
+        answer: "A question (a decision someone must make), a dataset that bears on it, a check against something known, and a recommendation with its limits."
+        steps:
+          - {label: Question, sub: "a decision to make", accent: "1E3A5F"}
+          - {label: Dataset, sub: "what bears on it", accent: "0F7490"}
+          - {label: Check, sub: "against something known", accent: "0EA5C9"}
+          - {label: Recommendation, sub: "with its limits", accent: "D4621A"}
+        caption: "Chapter 1 is a quarter's staffing, chapter 2 a loan cutoff, chapter 12 a survey. The four parts stay the same."
+        takeaway: Every chapter goes question, dataset, check against something known, then a recommendation with its limits.
+        source: README.md
+        notes: >-
+          The methods differ from chapter to chapter: forecasting, logistic scorecards, cohorts, survival, queues, survey
+          weights. The shape does not. When you meet a new analysis later, look for these four parts first.
+
+      - layout: cards
+        beat: fundamentals
+        section: The core
+        title: Fernhill Home has a busy year
+        recall: Who is Fernhill Home, and what does it ask the analyst?
+        answer: "A fictional online homewares retailer, the running example from the visualisation module. Over a year it asks for a staffing plan, a retention diagnosis, a funnel check, a campaign target, a customer's worth, a stock order and a survey result."
+        cards:
+          - {title: Plan, accent: "1E3A5F", body: "Book warehouse staff for Q4, then stock and packers for a Monday"}
+          - {title: Diagnose, accent: "0F7490", body: "Why retention fell, why a new checkout looks harmless, where growth came from"}
+          - {title: Target, accent: "0EA5C9", body: "Who a win-back campaign should reach, and where next quarter's budget goes"}
+          - {title: Value, accent: "D4621A", body: "When customers will leave, and what a new customer is worth as a range"}
+        takeaway: One retailer's year gives eleven of the twelve questions, which is why the datasets can refer to each other.
+        source: README.md
+        notes: >-
+          Credit scoring is the one visitor from outside the shop: it uses a real dataset of German loans. Every other
+          chapter runs on the seeded Fernhill generator in practice/retail.py, so every number reproduces on your machine.
+
+      - layout: bullets
+        beat: practice
+        section: The core
+        title: Four habits you will see in every chapter
+        recall: Which four habits recur across the applied analyses?
+        answer: "Write the decision down first, check the method against something known, price the result so a rate becomes money, and say what it does not establish."
+        bullets:
+          - "**Decision first.** If no result could change it, stop."
+          - "**Check against something known.** A synthetic truth, a published table or a second implementation."
+          - "**Price the result.** A rate persuades nobody until it becomes money, with its assumptions stated."
+          - "**Say what it does not establish.** Then say what would change the recommendation."
+        takeaway: Name the decision, check against something known, price the result and state the limits.
+        source: README.md
+        notes: >-
+          These are the rules of thumb at the end of the module, shown early because they shape how you read each chapter.
+
+  - title: The five steps
+    summary: Forecast and score · Read the customers · Lifetime and spend · Operations and metrics · Surveys
+    notes: The fifteen notes are grouped into five steps. Each step gets its own lecture.
+    slides:
+      - layout: table
+        beat: problem
+        section: Syllabus
+        title: Fifteen notes in five steps
+        recall: What are the five steps of the applied analyses module?
+        answer: "Forecast and score; read the customers; lifetime and spend; operations and metrics; surveys."
+        header: [Step, Question it answers, Notes]
+        widths: [2.6, 5.4, 1.6]
+        rows:
+          - ["1. Forecast and score", "How many people, and which loans to approve?", "1, 2"]
+          - ["2. Read the customers", "What changed, and who are they?", "3 to 6"]
+          - ["3. Lifetime and spend", "When do they leave, and what are they worth?", "7, 8, 9, 9b"]
+          - ["4. Operations and metrics", "How much stock, how many packers, which metric?", "10, 10b, 11"]
+          - ["5. Surveys", "Who to ask, and how to weight them?", "12, 12b"]
+        highlight: [0]
+        takeaway: Five steps cover fifteen notes, and this series has one lecture per step.
+        source: README.md
+        notes: >-
+          The notes can be read in any order, though 3 to 6 share a dataset and refer to each other. This pilot builds the
+          overview and the lecture for step 1.
+
+      - layout: steps
+        beat: fundamentals
+        section: Syllabus
+        title: Step 1 asks for a number and a cutoff
+        recall: What do the first two analyses decide?
+        answer: "How many warehouse staff to book for Q4 (forecasting), and where to draw the approval line on a loan scorecard (credit scoring)."
+        steps:
+          - {title: Beat a baseline, text: "A model that cannot beat last year's numbers is not a model yet"}
+          - {title: Backtest, text: "Many origins, because one split is one anecdote"}
+          - {title: Check the method, text: "Against a synthetic truth, a published table or a second implementation"}
+          - {title: Price it, text: "A rate persuades nobody until it becomes money", n: "★", accent: "D4621A"}
+        takeaway: Write down the decision, beat a baseline, backtest over many origins and price the result.
+        source: README.md
+        notes: >-
+          Forecasting prices unequal costs of being short and over. Credit scoring finds that the sample is not the
+          population, and that correcting for it changes the decision.
+
+      - layout: compare
+        beat: fundamentals
+        section: Syllabus
+        title: Step 2 splits a change into rate and mix
+        recall: What does step 2 do to a change in an aggregate?
+        answer: "It splits the change into rate and mix before explaining it, and reconciles each total against the source."
+        emphasis: right
+        left:
+          title: What the aggregate shows
+          bullets: ["Retention fell", "Checkout looks harmless", "Growth was strong"]
+        right:
+          title: What step 2 finds
+          bullets: ["Who left, and who was bought", "The broken step behind the headline", "Where the growth came from"]
+        takeaway: Split a change in any aggregate into rate and mix before you explain it, and reconcile each total against the source.
+        source: README.md
+        notes: >-
+          Cohorts, funnels, segmentation and SQL are four views of the same customer table. Segmentations are scored on a
+          later period, otherwise they are a description and not a prediction.
+
+      - layout: bullets
+        beat: fundamentals
+        section: Syllabus
+        title: Step 3 treats a customer who has not left as censored
+        recall: What does a customer who has not churned yet count as?
+        answer: "Censored, not retained. Averaging lifetimes over the churned only is biased."
+        bullets:
+          - "Survival analysis: **censored**, not retained"
+          - "A transition matrix describes the past and forecasts only if the process is **stationary**"
+          - "Attribution allocates credit, and only an experiment or a causal model measures **incrementality**"
+          - "Customer lifetime value becomes a range, not a point"
+        takeaway: Never average lifetimes over the churned only, and check a transition matrix on a holdout period.
+        source: README.md
+        notes: >-
+          Chapter 9 picks up chapter 3's pointer to BG/NBD and sets a fitted lifetime value beside chapter 8's Markov one.
+
+      - layout: steps
+        beat: practice
+        section: Syllabus
+        title: Step 4 runs from the forecast to the floor
+        recall: How do the forecast, the stock order and the roster connect in step 4?
+        answer: "The forecast's error distribution is the input to the stock decision, Little's law ties the queue to the packer roster, and a metric tree defines what to measure."
+        steps:
+          - {title: Forecast error, text: "Chapter 1's forecast starts the stock decision"}
+          - {title: Stock, text: "Use the error distribution, not the point forecast"}
+          - {title: Packers, text: "Little's law ties the queue to the roster"}
+          - {title: Metric tree, text: "A definition, what feeds it and a check against gaming", n: "★", accent: "D4621A"}
+        takeaway: The forecast's error distribution drives the stock decision, and a metric needs a definition, a tree and a check.
+        source: README.md
+        notes: >-
+          Chapter 10 starts from the forecast in chapter 1. Metric trees close the step with the question of what to
+          measure at all.
+
+      - layout: statement
+        beat: pitfalls
+        section: Syllabus
+        title: A margin of error is not the whole error
+        recall: What does a survey's margin of error leave out?
+        answer: "Coverage, nonresponse and the wording of the question. It measures sampling error only."
+        statement: "A margin of error measures sampling error only. It says nothing about coverage, nonresponse or the wording of the question."
+        attribution: Step 5, surveys
+        takeaway: A survey result is an estimate with a stated error only after the design and the weights are set out.
+        source: README.md
+        notes: >-
+          The email blast that says 73% of customers are satisfied is rebuilt in chapter 12 as a survey whose error can be stated.
+
+  - title: Using the series
+    summary: Prerequisites · Levels · Order of study
+    notes: Last, what to bring and how to read a lecture in the series.
+    slides:
+      - layout: table
+        beat: practice
+        section: Builds on and feeds into
+        title: What you should already know
+        card: false
+        recall: Which earlier modules does the applied analyses module build on?
+        answer: "SQL, groupby and joins from module 01, regression and the data generating process from module 02, and A/B test sizing and weighting from module 03."
+        header: [From, You can already]
+        widths: [3.2, 6.4]
+        rows:
+          - ["Programming: SQL", "Write joins, grouping and aggregation"]
+          - ["Module 01", "Get one number per group, and join and reshape tables while counting rows"]
+          - ["Module 02", "Read regression output, and say how the rows got into the table"]
+          - ["Module 03", "Size an A/B test, and weight a sample to match a target population"]
+        takeaway: Nothing in the prerequisites is taught again here, so go back to the linked chapter for any line you cannot tick.
+        source: README.md
+        notes: >-
+          The README has a tick list. Chapter 6 teaches analytics queries on top of joins and aggregation, and chapter 12
+          leans on the data generating process and on matching and weighting.
+
+      - layout: cards
+        beat: practice
+        section: Builds on and feeds into
+        title: Each note runs intro, core, then deep
+        card: false
+        recall: How is each lecture in this series layered?
+        answer: "Intro slides tell the idea to anyone, core slides teach how it is done, and deep slides add the code and the maths. The deep slides are optional."
+        cards:
+          - {title: Intro, accent: "0EA5C9", body: "The concept for any audience. Slides with no level."}
+          - {title: Core lesson, accent: "1E3A5F", body: "How the analysis is done. Slides marked practice."}
+          - {title: Deep, accent: "5B21B6", body: "The code and the maths. Optional, and marked deep."}
+        takeaway: Take the intro and core slides for the lesson and the deep slides only when you need the mechanism.
+        source: README.md
+        notes: >-
+          A build with LEVEL=core draws the short talk and LEVEL=practice adds how it is done. The full lecture is the whole
+          note, so deep slides count towards its length.
+
+      - layout: flow
+        beat: wrap
+        section: Syllabus
+        title: How the series is laid out
+        card: false
+        recall: How is the applied analyses series organised?
+        answer: "An overview lecture, then one lecture per step, each covering every note of its step in the README's reading order."
+        steps:
+          - {label: Overview, sub: "this lecture", accent: "94A3B8"}
+          - {label: Step 1, sub: "forecast and score"}
+          - {label: Step 2, sub: "read the customers"}
+          - {label: Step 3, sub: "lifetime and spend"}
+          - {label: Steps 4 and 5, sub: "operations, surveys"}
+        caption: One lecture per step, notes in the README's order, a lab script per chapter.
+        takeaway: One lecture covers one step, and each chapter has its own script in practice/.
+        source: README.md
+        notes: >-
+          The labs are one script per chapter, split into sections that match the note's code blocks. Every chart is saved to the module's images folder.
+
+  - title: Rules of thumb
+    agenda: false
+    divider: false
+    slides:
+      - layout: bullets
+        beat: wrap
+        section: Rules of thumb
+        title: Rules for forecasting, scoring and reading customers
+        recall: Which rules of thumb come from steps 1 and 2?
+        answer: "Write down the decision first, beat a baseline, backtest over many origins, check against something known, price the result, split a change into rate and mix, score segmentations on a later period and reconcile totals against the source."
+        bullets:
+          - "**Decision first.** If no result could change it, stop"
+          - "**Beat a baseline,** then backtest over many origins"
+          - "**Rate and mix.** Split a change in any aggregate before explaining it"
+          - "**Reconcile.** Check each report's total against the source"
+        takeaway: Write down the decision, beat a baseline, price the result and reconcile every total.
+        source: README.md
+        notes: A before-and-after is not an experiment, so find a comparison group or randomise.
+
+      - layout: cards
+        beat: wrap
+        section: Rules of thumb
+        title: Rules for lifetimes, operations and surveys
+        recall: Which rules of thumb come from steps 3 to 5?
+        answer: "A customer who has not churned is censored, a transition matrix forecasts only if stationary, attribution allocates credit, the error distribution drives stock, and a margin of error measures sampling error only."
+        cards:
+          - {title: "Censored", body: "A customer who has not churned is not retained"}
+          - {title: "Stationary", body: "A transition matrix forecasts only if the process is stable"}
+          - {title: "Error distribution", body: "It is the input to the stock decision"}
+          - {title: "Sampling error only", body: "A margin of error ignores coverage, nonresponse and wording"}
+        takeaway: End with the recommendation, then say what would change it.
+        source: README.md
+        notes: The last rule of thumb in the README is to end with the recommendation and say what would change it.
+
+      - layout: bullets
+        beat: wrap
+        section: Next
+        title: Where to go next
+        card: false
+        recall: Where does the series go from here?
+        bullets:
+          - "Step 1 lecture: forecasting and credit scoring"
+          - "Then the other steps, in the README's order"
+          - "After step 5, go on to data science"
+        takeaway: Start with step 1, forecast and score.
+        source: README.md
+        notes: >-
+          After step 5 you can take a vague business question to a recommendation with its limits stated, and say what would change it.

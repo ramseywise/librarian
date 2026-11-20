@@ -1,10 +1,12 @@
 ---
-imported_hash: 139247000f295b8b
+imported_hash: 899a6ad261b29216
 title: Neural text models
 summary: 'The intro-to-nlp TensorFlow track opened with tensors: rank (0 scalar, 1 vector, 2 matrix, 3+), dtype, shape, conversion with .numpy(), tf.argmax, tf.reduce_max, and the fact that tf.constant is immutable while tf.Variable can be assigned.'
-order: 10
+order: 11
 kind: reading
 section: Notes
+tier: practitioner
+depth: core
 source: learn-ai-engineering/data-science/02-deep-learning/notes/06-neural-text-models.md
 ---
 
@@ -522,7 +524,7 @@ french: Quel âge avez-vous ?
 | Task | Default model family in the notebook | Architecture | Related chapter |
 |---|---|---|---|
 | sentiment-analysis | DistilBERT fine-tuned on SST-2 | Encoder | [NLP sentiment analysis](../../03-nlp/notes/06-sentiment-analysis.md) |
-| ner | BERT fine-tuned on CoNLL-03 | Encoder | [NLP semantic analysis and NER](../../03-nlp/notes/05-semantic-analysis-and-ner.md) |
+| ner | BERT fine-tuned on CoNLL-03 | Encoder | [NLP named entity recognition](../../03-nlp/notes/05b-named-entity-recognition.md) |
 | question-answering | DistilBERT on SQuAD (extractive span) | Encoder | n/a |
 | fill-mask | DistilRoBERTa | Encoder (masked LM) | n/a |
 | summarization, translation | BART / T5 | Encoder–decoder | [NLP topic models](../../03-nlp/notes/03-topic-models-and-summarization.md) |

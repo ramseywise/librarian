@@ -187,7 +187,27 @@ def parse_wiki_uncached() -> dict:
 
     domains = sorted(_domain_tag_set())
     areas = areas_for(domains)
-    return {"nodes": nodes, "edges": edges, "domains": domains, "areas": areas}
+    return {
+        "nodes": nodes,
+        "edges": edges,
+        "domains": domains,
+        "areas": areas,
+        "topics": topic_order(domains),
+    }
+
+
+def topic_order(domains: list[str]) -> dict[str, list[str]]:
+    """Directory → its topics in `_topics.yaml` order, for directories on disk. The map shades a
+    page by its topic within the directory's colour; empty when the file is missing or invalid."""
+    path = WIKI_DIR / "_topics.yaml"
+    if not path.is_file():
+        return {}
+    try:
+        raw = yaml.safe_load(path.read_text()) or {}
+    except yaml.YAMLError:
+        log.warning("topics.unreadable", path=str(path))
+        return {}
+    return {d: list(ts or {}) for d, ts in raw.items() if d in domains and isinstance(ts, dict)}
 
 
 def tag_shared_edges(nodes: list[dict], domains: list[str] | set[str]) -> list[dict]:

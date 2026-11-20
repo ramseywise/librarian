@@ -1,10 +1,11 @@
 ---
-imported_hash: d93920edc91ea385
+imported_hash: 07be09fb09116750
 title: '9b — Customer lifetime value: BG/NBD, Gamma-Gamma and what a customer costs'
 summary: 'def rfm_table(frame, end): """frequency = repeat orders; recency = weeks from first to last order; T = weeks from first order to end.""" frame = frame[frame.order_date <= end] d = frame.groupby("customer_id").order_date.agg(["min", "max", "…'
 order: 11
 kind: reading
 section: Notes
+tier: specialist
 source: learn-ai-engineering/data-analytics/06-applied-analyses/notes/09b-customer-lifetime-value.md
 ---
 

@@ -1,10 +1,11 @@
 ---
-imported_hash: 72b629eaedaa8baf
+imported_hash: b0325defb9ca70fb
 title: Plotting your own data
 summary: A table of a year's daily revenues tells you almost nothing, and one line chart of the same numbers shows the trend, the weekly ripple, the outage and the December jump in a second.
 order: 3
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-analytics/05-visualisation-and-storytelling/notes/01b-plotting-your-own-data.md
 ---
 

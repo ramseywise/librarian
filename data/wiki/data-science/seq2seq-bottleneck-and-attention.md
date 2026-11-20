@@ -1,8 +1,8 @@
 ---
 title: "Seq2seq Bottleneck and Attention"
-tags: [data-science, concept]
+tags: [data-science, deep-learning, concept]
 summary: "Encoding a whole input into one vector bottlenecks long inputs; letting the decoder weight all encoder states at each step fixed date normalisation (0.032 to 1.000 whole dates), and removing the recurrence from this idea gives self-attention."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--05-sequence-models.md
   - data/raw/papers/2026-11-08-fundamentals-of-deep-learning-ch07-models-sequence-analysis.md

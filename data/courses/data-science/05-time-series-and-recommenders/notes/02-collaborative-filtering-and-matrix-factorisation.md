@@ -1,10 +1,11 @@
 ---
-imported_hash: d42ac9c20f591724
+imported_hash: 0a2fdc18a265d74b
 title: Collaborative filtering and matrix factorisation
 summary: A recommender has to rank a large catalogue for each person from a table that is almost entirely empty, using only the traces other people left behind.
 order: 3
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-science/05-time-series-and-recommenders/notes/02-collaborative-filtering-and-matrix-factorisation.md
 ---
 
@@ -14,7 +15,7 @@ A recommender has to rank a large catalogue for each person from a table that is
 
 **In plain words.** A recommender is the "people who liked this also liked" shelf on a shopping or film site. It works like asking friends with similar taste what they enjoyed, except that most people have tried only a tiny part of the catalogue, so the table it learns from is nearly empty. At work the test is whether the few items at the top of the list are good ones, which is why a model that's excellent at guessing star ratings can still lose to a plain list of bestsellers.
 
-The [classical ML pillar](../../01-classical-ml/notes/05-unsupervised-learning.md#recommender-systems-ng-ex8-part-2) introduced the collaborative filtering cost function through Andrew Ng's exercise. Here we go from that derivation to the question a working recommender has to answer: does the thing you trained put good items in the top ten?
+The collaborative filtering cost function, through Andrew Ng's exercise, is worked from scratch [below](#from-scratch-ng-ex8). Here we go from that derivation to the question a working recommender has to answer: does the thing you trained put good items in the top ten?
 
 The running example is [MovieLens 100K](https://grouplens.org/datasets/movielens/100k/) (Harper & Konstan, [*ACM TiiS*, 2015](https://doi.org/10.1145/2827872)): 100,000 ratings from 943 users on 1,682 films. Its licence allows research use and forbids redistribution, so the code downloads it from GroupLens and caches it outside the repo. It is small enough that everything below runs in under a minute on a laptop, which makes it a teaching dataset. Numbers from a dataset this size are a demonstration of method, and the rankings may not survive at scale. The next chapter keeps the same split and extends the same results table.
 
@@ -25,6 +26,7 @@ import urllib.request, zipfile, time
 from pathlib import Path
 import numpy as np, pandas as pd
 from scipy import sparse
+from scipy.io import loadmat
 
 CACHE = Path.home() / ".cache" / "learn-ai-engineering"
 CACHE.mkdir(parents=True, exist_ok=True)
@@ -172,6 +174,47 @@ Star Wars (1977) -> ['Empire Strikes Back, The (1980)', 'Return of the Jedi (198
 Toy Story (1995) -> ['Amistad (1997)', 'Cinderella (1950)', 'Beauty and the Beast (1991)', 'Babe (1995)']
 Fargo (1996) -> ['Big Night (1996)', 'High Noon (1952)', 'Leaving Las Vegas (1995)', 'Mighty Aphrodite (1995)']
 ```
+
+### From scratch: Ng ex8
+
+Collaborative filtering on MovieLens (1,682 movies × 943 users, ratings 1–5, most missing). Learn a feature vector $x^{(i)}$ per movie and a preference vector $\theta^{(j)}$ per user so that $\theta^{(j)} \cdot x^{(i)}$ predicts the rating.
+
+$$J = \tfrac{1}{2}\sum_{(i,j): r(i,j)=1} \left(\theta^{(j)\top} x^{(i)} - y^{(i,j)}\right)^2 + \tfrac{\lambda}{2}\lVert\Theta\rVert^2 + \tfrac{\lambda}{2}\lVert X\rVert^2$$
+
+```python
+def cofi_cost(X, Theta, Y, R, lam):
+    E = (X @ Theta.T - Y) * R                      # only rated entries count
+    J = 0.5 * (E ** 2).sum() + lam / 2 * ((Theta ** 2).sum() + (X ** 2).sum())
+    X_grad = E @ Theta + lam * X
+    Theta_grad = E.T @ X + lam * Theta
+    return J, X_grad, Theta_grad
+
+mov = loadmat("../../01-classical-ml/practice/ng-machine-learning/ex8/data/ex8_movies.mat")
+Y, R = mov["Y"], mov["R"]
+print(Y.shape, "rated", int(R.sum()), f"({R.mean():.1%})")
+
+# A few hundred steps of plain gradient descent on mean-normalised ratings, K=10
+counts = np.maximum(R.sum(1, keepdims=True), 1)
+mean = (Y * R).sum(1, keepdims=True) / counts
+Yn = (Y - mean) * R
+g = np.random.default_rng(0)
+Xm_, Th = g.normal(0, 0.1, (Y.shape[0], 10)), g.normal(0, 0.1, (Y.shape[1], 10))
+for i in range(301):
+    J, Gx, Gt = cofi_cost(Xm_, Th, Yn, R, lam=5.0)
+    Xm_, Th = Xm_ - 0.002 * Gx, Th - 0.002 * Gt
+    if i % 150 == 0: print(i, round(J))
+```
+
+```text
+(1682, 943) rated 100000 (6.3%)
+0 50700
+150 35054
+300 34128
+```
+
+The update is the gradient step from [note 02](../../01-classical-ml/notes/02b-linear-models.md#vectors-matrix-products-and-the-gradient): nudge each parameter against its gradient by a small rate.
+
+Ex8 checks the [gradient](../../01-classical-ml/notes/02b-linear-models.md#vectors-matrix-products-and-the-gradient) numerically, adds a new user's ratings, **mean-normalises** each movie's ratings (otherwise a user with no ratings gets predicted 0 for everything), and optimises with `scipy.optimize.fmin_cg`. This is low-rank matrix factorisation: the same idea as PCA and NMF, fitted only on observed entries. It is the ancestor of the embedding models in [NLP embeddings](../../03-nlp/notes/04-embeddings-and-similarity.md): $x^{(i)}$ is a learned movie embedding.
 
 ## The metric that matters: top-N ranking
 
@@ -391,6 +434,7 @@ You should take from this a working habit more than a verdict on deep learning. 
 - **Copying hyperparameters.** Hu's $\alpha = 40$ is the case above.
 - **Tuning on the test set.** Everything here is picked on `valid`, because with a handful of candidates the test set quickly becomes a training set. [The honest final number](../../01-classical-ml/notes/09-training-and-tuning.md#the-honest-final-number) explains why a search's winner looks better than it is.
 - **Accuracy without coverage.** A model with a high NDCG and a coverage of 4% is a bestseller list. Report both.
+- **No mean normalisation.** A new user with no ratings is predicted 0 for every item. Subtract each item's mean rating, as in the ex8 section.
 - **Popularity feedback.** Logs come from the previous recommender, so popular things get shown, clicked, and shown again. The next chapter addresses this.
 
 ## Try it

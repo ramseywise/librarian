@@ -1,8 +1,8 @@
 ---
 title: Weight Normalization Reparameterisation
-tags: [data-science, concept]
+tags: [data-science, deep-learning, concept]
 summary: "Weight normalization writes each weight vector as w = g v/||v|| and runs SGD on g and v; on its own it matched the ordinary parameterization on CIFAR-10, but paired with mean-only batch normalization it gave the paper's best error and it worked for DQN where batch norm did not."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-salimans-2016-weight-normalization.md
 ---

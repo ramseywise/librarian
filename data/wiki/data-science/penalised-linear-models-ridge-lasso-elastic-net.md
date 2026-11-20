@@ -1,8 +1,8 @@
 ---
 title: "Penalised Linear Models: Ridge, Lasso and Elastic Net"
-tags: [data-science, concept]
+tags: [data-science, classical-ml, concept]
 summary: "L2 shrinks all weights, L1 zeros some, Elastic Net mixes them; alpha raises simplicity while classifier C works the opposite way."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--02-supervised-learning.md
   - data/raw/papers/2026-11-08-intro-to-ml-with-python-ch02-supervised-learning.md

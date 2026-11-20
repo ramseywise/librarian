@@ -1,8 +1,8 @@
 ---
 title: "Global vs Per-Segment Forecast Models"
-tags: [data-science, comparison]
+tags: [data-science, time-series-and-recommenders, comparison]
 summary: "Start with one global model plus the naive row, add the segment as a feature before splitting the data, and split only where later folds confirm it; one eight-fold table gave the wrong answer on synthetic cash-flow data."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--05-time-series-and-recommenders--notes--01-time-series-ml.md
   - data/raw/papers/2026-11-08-montero-manso-2021-locality-globality.md

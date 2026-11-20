@@ -1,8 +1,8 @@
 ---
 title: "Group Fairness Criteria and the Impossibility Results"
-tags: [data-science, concept]
+tags: [data-science, classical-ml, concept]
 summary: "Demographic parity, equal opportunity, equalized odds, calibration and predictive parity ask different questions; with unequal base rates and an imperfect score they cannot all hold, so someone must choose and own the metric."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--15-fairness-in-automated-scoring.md
 ---

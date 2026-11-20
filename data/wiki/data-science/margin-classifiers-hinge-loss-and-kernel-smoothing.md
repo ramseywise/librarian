@@ -1,8 +1,8 @@
 ---
 title: Margin Classifiers, Hinge Loss and Kernel Smoothing
-tags: [data-science, concept]
+tags: [data-science, classical-ml, concept]
 summary: "A support-vector classifier minimises hinge loss plus a ridge penalty and depends on the data only through inner products, so a kernel gives a nonlinear boundary at no extra cost; the same inner-product idea underlies string kernels and kernel smoothing."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-computer-age-statistical-inference-ch19-support-vector-machines-kernel-methods.md
 ---

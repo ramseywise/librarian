@@ -62,9 +62,11 @@ export function LessonView({ lesson, courseTitle, decks = [], done, onMarkDone, 
   const [tab, setTab] = useState<Tab>("lecture");
   const [anchor, setAnchor] = useState<string | null>(null);
   const [showSolution, setShowSolution] = useState(false);
-  // A lecture is named after its note (`lectures/01-x.yaml` for `notes/01-x.md`); a note without one gets the
-  // module's own deck, whose id is the module.
-  const deck = decks.find((d) => d.id.split("/").pop() === lesson.id.split("/").pop())
+  // A lecture is named after its note (`lectures/01-x.yaml` for `notes/01-x.md`) or lists it in `covers`
+  // (one lecture per submodule); a note without one gets the module's own deck, whose id is the module.
+  const stem = lesson.id.split("/").pop();
+  const deck = decks.find((d) => d.id.split("/").pop() === stem)
+    ?? decks.find((d) => !!stem && d.covers?.includes(stem))
     ?? decks.find((d) => lesson.id.startsWith(`${d.id}/`));
   const exercises = split?.exercises ? splitSolution(split.exercises) : null;
   const { data: glossary, error: glossaryError, retry: retryGlossary } = useGlossary(null, true);

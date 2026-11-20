@@ -167,3 +167,14 @@ describe("notes", () => {
     expect(readingOrder).toEqual([["note:ai/rag/notes/01-bm25", "note:ai/rag/notes/03-rerank"]]);
   });
 });
+
+describe("tier facets", () => {
+  it("groups pages by the tier they are first taught at", () => {
+    const f = facetsOf({ ...curriculum, pageTier: { a: "foundations", b: "specialist" } });
+    expect([...(f.get("tier:foundations") ?? [])]).toEqual(["a"]);
+    expect([...(f.get("tier:specialist") ?? [])]).toEqual(["b"]);
+    expect(f.has("tier:practitioner")).toBe(false);
+    expect(isFacetId("tier:foundations")).toBe(true);
+    expect(facetPending("tier:foundations", null, null)).toBe(true);
+  });
+});

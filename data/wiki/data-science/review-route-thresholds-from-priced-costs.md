@@ -1,8 +1,8 @@
 ---
 title: "Review Route Thresholds From Priced Costs"
-tags: [data-science, decision]
+tags: [data-science, classical-ml, decision]
 summary: "Adding an ask-a-person route turns one threshold into two set by where three expected-cost lines cross; it beats a single threshold by a wide margin, but depends on the reviewer's cost and catch rate and on queue capacity."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--13-automate-review-or-reject.md
 ---

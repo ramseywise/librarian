@@ -1,10 +1,11 @@
 ---
-imported_hash: 5b6cb8a9405e4fbd
+imported_hash: 746c8d2e1159c250
 title: Boosting in Practice
 summary: The original benchmarks agree in shape. CatBoost's authors report their library ahead of LightGBM and XGBoost on all nine of their datasets, by about 2% in log-loss on Adult (0.270 against +2.4% and +2.2%), though by their paired t-test the…
 order: 11
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-science/01-classical-ml/notes/07-boosting-in-practice.md
 ---
 

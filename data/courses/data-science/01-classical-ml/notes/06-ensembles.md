@@ -1,10 +1,11 @@
 ---
-imported_hash: 683b4521f5b0a147
+imported_hash: 5843d7600b01992d
 title: Ensembles
 summary: Blocks run top to bottom from this notes/ folder.
 order: 10
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-science/01-classical-ml/notes/06-ensembles.md
 ---
 

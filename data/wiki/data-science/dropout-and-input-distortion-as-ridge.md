@@ -1,8 +1,8 @@
 ---
 title: Dropout and Input Distortion as Ridge Regression
-tags: [data-science, concept]
+tags: [data-science, classical-ml, concept]
 summary: "For linear regression, dropout's expected score equations are a generalised ridge regression and iid noise on the inputs is approximately ordinary ridge, which is why heavily parametrised networks stay usable when regularised."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-computer-age-statistical-inference-ch18-neural-networks-deep-learning.md
 ---

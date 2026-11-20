@@ -68,6 +68,17 @@
   overflow: hidden;
 }
 .atlas-card-actions { display: flex; gap: var(--space-2); margin-top: var(--space-2); }
+/* Beside a Reading slot the hole keeps a few words, sized to the ring (--hole is the card's width). */
+.atlas-card--brief { pointer-events: none; gap: calc(var(--hole) * 0.02); padding: calc(var(--hole) * 0.08); }
+.atlas-card--brief .atlas-card-total { font-size: clamp(var(--fs-7xl), calc(var(--hole) * 0.17), 96px); }
+.atlas-card--brief .atlas-card-note { font-size: clamp(var(--fs-md), calc(var(--hole) * 0.05), 22px); }
+.atlas-card--brief .atlas-card-sector { font-size: clamp(var(--fs-md), calc(var(--hole) * 0.05), 22px); }
+.atlas-card--brief .atlas-card-sector .cur-dot { width: 0.7em; height: 0.7em; }
+.atlas-card--brief .atlas-card-title {
+  font-size: clamp(var(--fs-xl), calc(var(--hole) * 0.075), 36px);
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.atlas-card--brief.atlas-card--compact .atlas-card-sector { display: flex; }
 
 .atlas-tip {
   position: absolute;

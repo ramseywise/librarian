@@ -1,8 +1,8 @@
 ---
 title: "Pre-Norm vs Post-Norm and Warm-Up"
-tags: [data-science, comparison]
+tags: [data-science, deep-learning, comparison]
 summary: "Post-norm keeps large output-layer gradients that need learning-rate warm-up (without it BLEU 8.45 vs about 34; at lr 0.01 accuracy stuck at 0.101), while pre-norm's gradients shrink with depth and train without warm-up."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--05b-transformer-encoders.md
 ---

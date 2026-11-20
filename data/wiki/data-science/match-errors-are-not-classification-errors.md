@@ -1,8 +1,8 @@
 ---
 title: "Match Errors Are Not Classification Errors"
-tags: [data-science, pattern]
+tags: [data-science, time-series-and-recommenders, pattern]
 summary: "Score a matcher on whole lines, not pairs: 99.5% pair accuracy hid 27% wrong lines; a wrong link makes two errors, a one-to-one constraint hurt part payments, a subset-sum search fixes batches, and the margin over the second candidate beats raw score for abstaining."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--05-time-series-and-recommenders--notes--04-entity-matching-and-learning-to-rank.md
 ---

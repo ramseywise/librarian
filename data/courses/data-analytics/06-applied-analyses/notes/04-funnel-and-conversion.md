@@ -1,10 +1,11 @@
 ---
-imported_hash: 5042a678f473d81d
+imported_hash: 92434a6b7f5a8334
 title: 'Funnel and conversion: why a flat headline can hide a broken page'
 summary: Fernhill shipped a new mobile checkout page on 15 September 2025.
 order: 5
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-analytics/06-applied-analyses/notes/04-funnel-and-conversion.md
 ---
 
@@ -128,7 +129,7 @@ This is a close relative of [Simpson's paradox](../../03-experimentation-and-cau
 
 Two questions remain, and they need different tools. The first is whether a 14.8-point drop could be noise. The second is whether the redesign caused it, since before-and-after comparisons are not experiments. Anything else that changed in September would also show up.
 
-The comparison available to us is desktop. It lived through the same weeks, the same season and the same marketing, but not the new page. Subtracting desktop's change from mobile's gives a **difference in differences**, and it removes whatever hit both devices alike. The [causal inference note](../../03-experimentation-and-causality/notes/04-correlation-and-causation.md) covers the assumption this rests on: that without the redesign, mobile's step would have moved in parallel with desktop's.
+The comparison available to us is desktop. It lived through the same weeks, the same season and the same marketing, but not the new page. Subtracting desktop's change from mobile's gives a **difference in differences**, and it removes whatever hit both devices alike. The [causal inference note](../../03-experimentation-and-causality/notes/04b-potential-outcomes-and-quasi-experiments.md#difference-in-differences) covers the assumption this rests on: that without the redesign, mobile's step would have moved in parallel with desktop's.
 
 ```python
 def payment_counts(device, period):

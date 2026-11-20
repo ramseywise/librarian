@@ -1,8 +1,8 @@
 ---
 title: "Learning Curves and Bias-Variance Diagnosis"
-tags: [data-science, pattern]
+tags: [data-science, classical-ml, pattern]
 summary: "Plot train and validation error against training size to tell high bias (more data will not help) from high variance (it will)."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--04-model-evaluation.md
   - data/raw/papers/2026-11-08-python-data-science-handbook-ch05-machine-learning.md

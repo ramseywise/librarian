@@ -1,8 +1,8 @@
 ---
 title: Cost-Complexity Pruning of Decision Trees
-tags: [data-science, concept]
+tags: [data-science, classical-ml, concept]
 summary: "ISLP grows a large tree and prunes it along a one-parameter family of subtrees indexed by alpha, picking alpha by k-fold CV; on its Boston example the pruned single tree has about twice the test MSE of a bagged forest."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-islp-ch08-tree-based-methods.md
 ---

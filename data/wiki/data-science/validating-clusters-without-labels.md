@@ -1,8 +1,8 @@
 ---
 title: "Validating Clusters Without Labels"
-tags: [data-science, pattern]
+tags: [data-science, classical-ml, pattern]
 summary: "Internal indices, stability and classifier accuracy all look good on data with no groups, so compare every one against a shuffled-column control and validate on outcomes from outside the data."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--05b-clustering-categorical-and-mixed-data.md
   - data/raw/papers/2026-11-08-intro-to-ml-with-python-ch03-unsupervised-learning-preprocessing.md

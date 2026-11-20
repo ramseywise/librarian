@@ -1,8 +1,8 @@
 ---
 title: "Learning From Corrections and the Audit Sample"
-tags: [data-science, pattern]
+tags: [data-science, classical-ml, pattern]
 summary: "A review queue only labels what the model chose to show, so silence is not confirmation and correction rate cannot separate a good model from a tired reviewer; measure with a random audit and retrain from audited labels."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--14-learning-from-corrections.md
 ---

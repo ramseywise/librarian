@@ -208,7 +208,7 @@ def _render_skeleton(
     out = session.get("output_tokens", 0)
     cw = session.get("cache_write_tokens", 0)
     cr = session.get("cache_read_tokens", 0)
-    model = session.get("primary_model", "claude-sonnet-4-6")
+    model = session.get("primary_model", "claude-sonnet-5-5")
     est_cost = round(_compute_cost(inp, out, cw, cr, model), 6)
 
     return f"""\

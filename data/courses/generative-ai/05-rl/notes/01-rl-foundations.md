@@ -1,5 +1,5 @@
 ---
-imported_hash: 61ae569742289e99
+imported_hash: f7253be0c39a7e93
 title: 1 — RL Foundations for LLMs
 summary: The treasure-hunt lab from 00 needs about 10,000 games to win a puzzle with an 11-move answer, and yet the same family of ideas now trains models that reason and write code.
 order: 3
@@ -230,7 +230,7 @@ why every practical method clips or constrains them.
 
 **Trust regions.** A policy gradient step that is too large can destroy a good policy, and
 nothing in the gradient tells you how large is too large. TRPO constrains each update to a
-small KL divergence ([KL, defined](../../01-llm-fundamentals/notes/06-pretraining-data-and-objectives.md#entropy-cross-entropy-kl-and-perplexity); [worked derivation](../../../data-analytics/04-bayesian-analysis/notes/06-bayesian-machine-learning.md#variational-inference-and-the-vae-week-5)) from the previous policy, solved with conjugate gradients. It works, but it
+small KL divergence ([KL, defined](../../01-llm-fundamentals/notes/06-pretraining-data-and-objectives.md#entropy-cross-entropy-kl-and-perplexity); [worked derivation](../../../data-analytics/04-bayesian-analysis/notes/06b-variational-inference-and-gaussian-processes.md#variational-inference-and-the-vae-week-5)) from the previous policy, solved with conjugate gradients. It works, but it
 is expensive and awkward with shared policy/value networks. A KL *penalty* with coefficient β is
 simpler but β is hard to tune (*Reinforcement Learning*, ch. 6). RLHF keeps that penalty, but
 against the frozen reference model rather than the previous iterate

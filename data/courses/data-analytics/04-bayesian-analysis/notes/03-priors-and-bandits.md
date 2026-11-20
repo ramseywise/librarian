@@ -1,10 +1,11 @@
 ---
-imported_hash: ad5a98a9f7056cd0
+imported_hash: bad8ca6f58b97db3
 title: 3 — Priors and Empirical Bayes
 summary: The first complaint anyone makes about Bayesian analysis is that the prior is subjective.
 order: 5
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-analytics/04-bayesian-analysis/notes/03-priors-and-bandits.md
 ---
 

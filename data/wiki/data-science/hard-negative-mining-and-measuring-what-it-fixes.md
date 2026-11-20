@@ -1,8 +1,8 @@
 ---
 title: "Hard-Negative Mining and Measuring What It Fixes"
-tags: [data-science, pattern]
+tags: [data-science, time-series-and-recommenders, pattern]
 summary: "Mining hard negatives did not raise recall on a tuned matching encoder but cut look-alikes in the top 10 from 0.494 to 0.363 on every seed; judge mining on what the negatives were meant to fix, keep in-batch negatives, and read a sample of what you mined for false negatives."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--05-time-series-and-recommenders--notes--05-learning-a-similarity-function.md
 ---

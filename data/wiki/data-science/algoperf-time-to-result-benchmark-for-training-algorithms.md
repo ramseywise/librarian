@@ -1,8 +1,8 @@
 ---
 title: "AlgoPerf: Time-to-Result Benchmark for Training Algorithms"
-tags: [data-science, comparison]
+tags: [data-science, deep-learning, comparison]
 summary: "AlgoPerf scores training algorithms by wall-clock time to reach a fixed validation and test target on 8 workloads, with tuning counted inside the protocol; Dahl et al. report that its baselines rank NadamW with tuned beta1 first among the strict-budget runs."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-dahl-2023-benchmarking-neural-network-training-algorithms.md
 ---

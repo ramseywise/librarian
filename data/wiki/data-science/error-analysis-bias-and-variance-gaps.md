@@ -1,8 +1,8 @@
 ---
 title: "Error Analysis, Bias and Variance Gaps"
-tags: [data-science, pattern]
+tags: [data-science, deep-learning, pattern]
 summary: "Diagnose which gap to attack first: human level to train error (avoidable bias), train to train-dev (variance), train-dev to dev (data mismatch), dev to test (overfit to dev); count an error category before building a fix, since its share of mistakes is the ceiling on the gain."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--03-structuring-ml-projects.md
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--README.md

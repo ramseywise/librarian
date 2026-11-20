@@ -1,8 +1,8 @@
 ---
 title: "Pipelines Prevent Preprocessing Leakage"
-tags: [data-science, pattern]
+tags: [data-science, classical-ml, pattern]
 summary: "Any fitted preprocessing step must be refit inside each CV fold; a Pipeline does that, and feature selection outside the loop turns pure noise into a strong score."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--03-feature-engineering-and-pipelines.md
   - data/raw/papers/2026-11-08-intro-to-ml-with-python-ch06-algorithm-chains-pipelines.md

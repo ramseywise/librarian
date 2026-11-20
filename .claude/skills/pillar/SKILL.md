@@ -1,6 +1,6 @@
 ---
 name: pillar
-description: "Bring one pillar (<area>/NN-* in ai-engineering, generative-ai, data-analytics, data-science or data-engineering) to the standard layout and definition of done in .claude/skills/pillar/references/pillar-layout.md: README with reading order, notes/ with frontmatter, references.md, sources/ with flat images/, vendored course snapshots folded into notes and listed for removal. Usage: /pillar generative-ai/02-rag-retrieval, or /pillar new <name> to scaffold a new pillar. Run from the librarian repo."
+description: "Bring one pillar (<area>/NN-* in ai-engineering, generative-ai, data-analytics, data-science or data-engineering) to the standard layout and definition of done in .claude/skills/pillar/references/pillar-layout.md: README with reading order, notes/ with frontmatter, references.md, sources/ with flat images/, vendored course snapshots folded into notes and listed for removal. Usage: /pillar generative-ai/02-rag-retrieval, or /pillar new <name> to scaffold a new pillar. Triggers on: '/pillar', 'standardize this pillar', 'bring the pillar to standard layout', 'scaffold a new pillar', 'is this pillar done'. Run from the librarian repo."
 ---
 
 You are normalising one pillar so it looks and works like the others. Read

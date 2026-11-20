@@ -1,8 +1,8 @@
 ---
 title: "Classification Metrics, Confusion Matrix and Thresholds"
-tags: [data-science, reference]
+tags: [data-science, classical-ml, reference]
 summary: "Read accuracy against a dummy baseline, derive precision, recall, F1, balanced accuracy and MCC from the confusion matrix, and move the threshold on validation data."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--04-model-evaluation.md
   - data/raw/papers/2026-11-08-intro-to-ml-with-python-ch05-model-evaluation-improvement.md

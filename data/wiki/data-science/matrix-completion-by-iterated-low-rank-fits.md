@@ -1,8 +1,8 @@
 ---
 title: Matrix Completion by Iterated Low-Rank Fits
-tags: [data-science, concept]
+tags: [data-science, time-series-and-recommenders, concept]
 summary: "Matrix completion imputes missing entries from a low-rank principal-component fit to the observed ones; ISLP's Algorithm 12.1 does this on USArrests with M = 1 and recovers hidden values with a correlation of 0.63, short of the 0.79 an oracle gets from the complete data."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-islp-ch12-unsupervised-learning.md
 ---

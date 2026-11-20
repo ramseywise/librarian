@@ -1,5 +1,5 @@
 ---
-imported_hash: 8306e2c16fc48e4d
+imported_hash: 20d53a49a086ee2c
 title: 05 — Graph Engineering
 summary: 'Graph engineering is the discipline of designing the topology of a multi-agent system: which nodes exist (agents, deterministic functions, routers, human checkpoints), which transitions between them are permitted, and how the runtime work g…'
 order: 1
@@ -114,7 +114,7 @@ Read the notes in order; each one is earned by the one before. Notes 01–08 are
 | [GA 03/01 Agent fundamentals](../../generative-ai/03-agentic-foundations/notes/01-agent-fundamentals.md) and [GA 03/04 Multi-agent design patterns](../../generative-ai/03-agentic-foundations/notes/04-multi-agent-design-patterns.md) | Multi-agent vocabulary for notes 05-07 |
 | [GA 02/01 The RAG pipeline](../../generative-ai/02-rag-retrieval/notes/01-rag-pipeline.md) | Vector RAG, which note 11 extends with graphs |
 | [DS 01 Classical ML](../../data-science/01-classical-ml/readme.md) and [DS 02/01 Neural networks fundamentals](../../data-science/02-deep-learning/notes/01-neural-networks-fundamentals.md) | Only for notes 13 and 13b (features, classifiers, embeddings) |
-| [DS 03/05 Semantic analysis and NER](../../data-science/03-nlp/notes/05-semantic-analysis-and-ner.md) | Optional background: NER without an LLM |
+| [DS 03/05b Named entity recognition](../../data-science/03-nlp/notes/05b-named-entity-recognition.md) | Optional background: NER without an LLM |
 | [GA 08/03 Eval datasets](../../generative-ai/08-eval/notes/03-eval-datasets.md) | Building the gold set for extraction |
 | [GA 08/07 Evaluating RAG and grounding](../../generative-ai/08-eval/notes/07-evaluating-rag-and-grounding.md) | Scoring KG-RAG |
 

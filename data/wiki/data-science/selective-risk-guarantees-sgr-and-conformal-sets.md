@@ -1,8 +1,8 @@
 ---
 title: "Selective Risk Guarantees: SGR and Conformal Sets"
-tags: [data-science, comparison]
+tags: [data-science, classical-ml, comparison]
 summary: "When a contract names an error rate instead of a price, a binomial-bound threshold search (SGR) keeps the promise but needs many labels; conformal sets are not a good cost router, yet class-conditional ones bound missed positives on any scorer."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--13-automate-review-or-reject.md
 ---

@@ -1,10 +1,11 @@
 ---
-imported_hash: ede39855f6cfa990
+imported_hash: 1ff6ed2e31f0bfc7
 title: Clustering categorical and mixed data
 summary: Tallybook's marketing lead wants customer segments.
 order: 9
 kind: reading
 section: Notes
+tier: specialist
 source: learn-ai-engineering/data-science/01-classical-ml/notes/05b-clustering-categorical-and-mixed-data.md
 ---
 

@@ -222,6 +222,45 @@ def _fable_share_of_cost_pct(rows: list[dict[str, Any]]) -> float | None:
     return round(100 * fable / total, 2)
 
 
+def _agent_calls_typed_ratio_pct(rows: list[dict[str, Any]]) -> float | None:
+    """Share of Agent spawns that name a `subagent_type` (factstore `agent_spawns`).
+
+    Untyped spawns are unattributable in telemetry and default to the most expensive
+    model (global CLAUDE.md §Agents, 2026-11-20). None when no spawn was recorded.
+    """
+    total = 0
+    typed = 0
+    for r in rows:
+        try:
+            spawns = json.loads(r.get("agent_spawns") or "[]")
+        except (TypeError, ValueError):
+            continue
+        if not isinstance(spawns, list):
+            continue
+        for s in spawns:
+            if not isinstance(s, dict):
+                continue
+            total += 1
+            if (s.get("type") or "").strip():
+                typed += 1
+    if not total:
+        return None
+    return round(100 * typed / total, 2)
+
+
+def _compacts_per_session(rows: list[dict[str, Any]]) -> float | None:
+    """Mean of the `compacted` flag over all rows — compactions per session.
+
+    `compacted` is a per-session boolean, so this is the share of sessions that hit a
+    context compaction at least once, expressed as a count-per-session (0..1).
+    """
+    scored = [r for r in rows if r.get("compacted") is not None]
+    if not scored:
+        return None
+    hits = sum(1 for r in scored if r.get("compacted"))
+    return round(hits / len(scored), 4)
+
+
 # Registry keyed by a normalised (lowercased, non-alnum-stripped) signal slug so
 # the ledger's free-text hyphenation does not need to match a Python identifier
 # exactly. Values are (measurement_fn, description) -- description feeds the
@@ -232,6 +271,8 @@ _SIGNAL_METRICS: dict[str, Any] = {
     "execution-sessions-with-skills": _execution_skill_compliance_pct,
     "top-session-cost-concentration": _cost_over_150k_share_pct,
     "fable-tokens-in-non-verdict-skills": _fable_share_of_cost_pct,
+    "agent-calls-typed-ratio": _agent_calls_typed_ratio_pct,
+    "compacts-per-session": _compacts_per_session,
 }
 
 

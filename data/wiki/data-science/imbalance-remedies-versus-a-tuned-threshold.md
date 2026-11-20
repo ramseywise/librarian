@@ -1,8 +1,8 @@
 ---
 title: "Imbalance Remedies Versus a Tuned Threshold"
-tags: [data-science, comparison]
+tags: [data-science, classical-ml, comparison]
 summary: "On a 3% default book no resampling remedy beat leaving the data alone and setting the threshold from the cost ratio, and every balancing method wrecked the probabilities until recalibrated."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--10-imbalance-errors-and-drift.md
   - data/raw/papers/2026-11-08-chawla-2002-smote.md

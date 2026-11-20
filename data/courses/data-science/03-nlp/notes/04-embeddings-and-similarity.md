@@ -1,10 +1,11 @@
 ---
-imported_hash: 24478131b86280ae
+imported_hash: d330ee38cb5306fa
 title: Embeddings and similarity
 summary: To a TF-IDF model, "hotel" and "motel" are exactly as far apart as "hotel" and "banana", because each word is its own axis.
 order: 5
 kind: reading
 section: Notes
+tier: foundations
 source: learn-ai-engineering/data-science/03-nlp/notes/04-embeddings-and-similarity.md
 ---
 
@@ -567,4 +568,4 @@ Neutralising made "receptionist" nearly equally similar to "man" and "woman" (0.
 
 ## Next
 
-[Semantic analysis and NER](05-semantic-analysis-and-ner.md) looks at meaning beyond vectors: WordNet, named entities, taggers and semantic representations.
+[Semantic analysis and NER](05-semantic-analysis-and-ner.md) looks at meaning beyond vectors: WordNet and semantic representations. [Named entity recognition](05b-named-entity-recognition.md) follows it.

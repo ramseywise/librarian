@@ -1,8 +1,8 @@
 ---
 title: "RMSE vs Top-N Ranking in Recommenders"
-tags: [data-science, concept]
+tags: [data-science, time-series-and-recommenders, concept]
 summary: "A recommender is judged on the short list it shows, not on rating error; the model with the best RMSE lost to a popularity list on top-10, so score full-catalogue ranking, split by time, and put popularity and simple linear models in every table."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--05-time-series-and-recommenders--notes--02-collaborative-filtering-and-matrix-factorisation.md
   - data/raw/repos/learn-ai-engineering/data-science--05-time-series-and-recommenders--README.md

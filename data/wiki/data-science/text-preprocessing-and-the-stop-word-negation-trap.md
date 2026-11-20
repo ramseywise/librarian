@@ -1,8 +1,8 @@
 ---
 title: "Text Preprocessing and the Stop-Word Negation Trap"
-tags: [data-science, pattern]
+tags: [data-science, nlp, pattern]
 summary: "Each text-cleaning step decides what a later model can see; default stop-word lists delete negations and flip sentiment, and the order of steps matters."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--03-nlp--notes--01-text-representation.md
   - data/raw/repos/learn-ai-engineering/data-science--03-nlp--README.md

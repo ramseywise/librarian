@@ -1,8 +1,8 @@
 ---
 title: RWKV Linear-Time Recurrent Language Model
-tags: [data-science, concept]
+tags: [data-science, nlp, concept]
 summary: "RWKV replaces query-key attention with a channel-wise time-decay operator that runs in parallel for training and as a fixed-size-state recurrence for decoding; the paper reports parity with similar-sized transformers from 169M to 14B parameters."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-07-peng-2023-rwkv--2023-findings-emnlp-936.md
   - data/raw/papers/2026-11-07-peng-2023-rwkv.md

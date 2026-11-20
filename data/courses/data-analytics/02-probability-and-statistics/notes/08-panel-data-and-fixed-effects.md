@@ -1,10 +1,11 @@
 ---
-imported_hash: af92deab1fac5b39
+imported_hash: 2732248b31b3eea1
 title: 8 — Panel data and fixed effects
 summary: Larkspur sells through 100 garden-centre concessions, and head office wants to know whether deeper discounts sell more.
 order: 10
 kind: reading
 section: Notes
+tier: specialist
 source: learn-ai-engineering/data-analytics/02-probability-and-statistics/notes/08-panel-data-and-fixed-effects.md
 ---
 
@@ -259,7 +260,7 @@ The estimate is 0.901, right where the weighted calculation says it should be. T
 
 ## Difference-in-differences is two-way fixed effects
 
-[Pillar 03's section on difference-in-differences](../../03-experimentation-and-causality/notes/04-correlation-and-causation.md#difference-in-differences) compares a treated group's before-and-after change with an untreated group's. Its regression form is two-way fixed effects, with one treatment dummy. In this simulation, stronger stores tend to get a new display from week 26, so treatment is not random, and the effect builds to 4 units a week.
+[Pillar 03's section on difference-in-differences](../../03-experimentation-and-causality/notes/04b-potential-outcomes-and-quasi-experiments.md#difference-in-differences) compares a treated group's before-and-after change with an untreated group's. Its regression form is two-way fixed effects, with one treatment dummy. In this simulation, stronger stores tend to get a new display from week 26, so treatment is not random, and the effect builds to 4 units a week.
 
 ```text
 post        0       1
@@ -449,4 +450,4 @@ At a tilt of 0.05, the check flags 36% of panels against a 24% false-alarm rate 
 
 ## Next
 
-That closes the pillar. [Pillar 03](../../03-experimentation-and-causality/readme.md) starts with [A/B testing](../../03-experimentation-and-causality/notes/01-ab-testing.md), where hypothesis testing meets product experiments: power, sample size, the two-proportion z-test and peeking. When you cannot randomise, its [causal chapter](../../03-experimentation-and-causality/notes/04-correlation-and-causation.md#when-you-cannot-randomise) returns to difference-in-differences. The fixed-or-random decision continues in [multilevel models and partial pooling](../../04-bayesian-analysis/notes/07-multilevel-models-and-partial-pooling.md). With one observation per unit you lose this tool, and [matching and weighting](../../03-experimentation-and-causality/notes/05-matching-and-weighting.md) can adjust only for what you measured.
+That closes the pillar. [Pillar 03](../../03-experimentation-and-causality/readme.md) starts with [A/B testing](../../03-experimentation-and-causality/notes/01-ab-testing.md), where hypothesis testing meets product experiments: power, sample size, the two-proportion z-test and peeking. When you cannot randomise, its [causal chapter](../../03-experimentation-and-causality/notes/04b-potential-outcomes-and-quasi-experiments.md#when-you-cannot-randomise) returns to difference-in-differences. The fixed-or-random decision continues in [multilevel models and partial pooling](../../04-bayesian-analysis/notes/07-multilevel-models-and-partial-pooling.md). With one observation per unit you lose this tool, and [matching and weighting](../../03-experimentation-and-causality/notes/05-matching-and-weighting.md) can adjust only for what you measured.

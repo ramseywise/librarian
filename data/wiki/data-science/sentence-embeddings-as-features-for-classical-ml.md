@@ -1,8 +1,8 @@
 ---
 title: "Sentence Embeddings as Features for Classical ML"
-tags: [data-science, pattern]
+tags: [data-science, nlp, pattern]
 summary: "A pretrained sentence encoder turns text into a cached matrix for ordinary scikit-learn heads; it beats TF-IDF most when labels are few, at about 50 times the encoding cost."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--03-nlp--notes--07-llm-embeddings-as-features.md
 ---

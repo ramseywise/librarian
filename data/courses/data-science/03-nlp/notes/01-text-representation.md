@@ -1,10 +1,11 @@
 ---
-imported_hash: 28f90b59c4af8ead
+imported_hash: 3869b22f6b0c7d34
 title: Text representation
 summary: A model cannot read. Before any classifier, topic model or neural network sees a film review, somebody has decided how that text becomes numbers, and those decisions quietly set what the model is able to learn.
 order: 2
 kind: reading
 section: Notes
+tier: foundations
 source: learn-ai-engineering/data-science/03-nlp/notes/01-text-representation.md
 ---
 
@@ -161,7 +162,7 @@ print([chunk.text for chunk in parsed.noun_chunks])
 ['The brown fox', 'he', 'the lazy dog']
 ```
 
-These features power the rule-based extraction in [semantic analysis and NER](05-semantic-analysis-and-ner.md) and the keyphrase chunking in [topic models](03-topic-models-and-summarization.md).
+These features power the rule-based extraction in [named entity recognition](05b-named-entity-recognition.md) and the keyphrase chunking in [topic models](03-topic-models-and-summarization.md).
 
 Sarkar's first-edition chapters add the vocabulary and some numbers. A dependency tree is built from words only, with directed head-to-dependent arcs and no word order. A constituency tree adds phrase nodes and keeps the order, so it has more nodes (*Text Analytics with Python*, 1st ed., ch. 1). The two figures below show the same sentence both ways.
 
@@ -173,7 +174,7 @@ Sarkar's first-edition chapters add the vocabulary and some numbers. A dependenc
 
 *Image Source: Sarkar, *Text Analytics with Python* (Apress, 2016), Fig. 1-15*
 
-Chapter 3 measures taggers on NLTK's treebank sample, with the first 3,500 sentences for training and the rest for testing, one run each (*Text Analytics with Python*, 1st ed., ch. 3). Tagging everything as a noun scores 0.145 and a regex tagger 0.240. A unigram tagger scores 0.861 but leaves unseen words untagged. A bigram tagger alone scores 0.135 and a trigram tagger 0.081, because the training n-grams rarely recur in the test set. Chained as trigram, bigram, unigram and a regex tagger, they reach 0.910, and the classifier-based tagger (Naive Bayes) reaches 0.931. The lesson is the backoff: sparse contexts help only when a simpler model catches the misses. For chunking on the same sample, a hand-written regex grammar gets 54.5% IOB accuracy and a bigram chunker over POS tags 99.6%. The same chunker on CoNLL-2000 (7,500 sentences for training) gets 66.8% with an F-score of 57.3 (*Text Analytics with Python*, 1st ed., ch. 3). The book explains the drop by the larger corpus. A harder and more varied test set is more likely, and the chapter does not test it. Compare with the CoNLL-2000 ladder in [semantic analysis and NER](05-semantic-analysis-and-ner.md), where richer features reach 95.9% accuracy.
+Chapter 3 measures taggers on NLTK's treebank sample, with the first 3,500 sentences for training and the rest for testing, one run each (*Text Analytics with Python*, 1st ed., ch. 3). Tagging everything as a noun scores 0.145 and a regex tagger 0.240. A unigram tagger scores 0.861 but leaves unseen words untagged. A bigram tagger alone scores 0.135 and a trigram tagger 0.081, because the training n-grams rarely recur in the test set. Chained as trigram, bigram, unigram and a regex tagger, they reach 0.910, and the classifier-based tagger (Naive Bayes) reaches 0.931. The lesson is the backoff: sparse contexts help only when a simpler model catches the misses. For chunking on the same sample, a hand-written regex grammar gets 54.5% IOB accuracy and a bigram chunker over POS tags 99.6%. The same chunker on CoNLL-2000 (7,500 sentences for training) gets 66.8% with an F-score of 57.3 (*Text Analytics with Python*, 1st ed., ch. 3). The book explains the drop by the larger corpus. A harder and more varied test set is more likely, and the chapter does not test it. Compare with the CoNLL-2000 ladder in [named entity recognition](05b-named-entity-recognition.md), where richer features reach 95.9% accuracy.
 
 ![Shallow parse of the sample sentence](../assets/sources/images/sarkar-text-analytics-fig3-2.png)
 

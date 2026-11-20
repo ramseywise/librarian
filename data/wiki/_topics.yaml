@@ -11,6 +11,12 @@ data-analytics:
   visualisation-and-storytelling: "chart grammar and choice, plotting libraries, interactive and JS charts, dashboards, data stories"
   applied-analyses: "forecasting, credit scoring, retention, funnels, segmentation, analytics SQL, survival, marketing, operations, metric trees, surveys"
 
+data-science:
+  classical-ml: "framing and splits, linear models, trees and boosting, SVMs, unsupervised learning, evaluation, calibration, interpretability, tuning, leakage"
+  deep-learning: "network training and optimisers, regularisation, large-batch and scaling recipes, CNN architectures, attribution and influence, meta and semi-supervised learning"
+  nlp: "text representation, tagging, chunking and parsing, sentence embeddings, sequence models"
+  time-series-and-recommenders: "forecasting, time-aware evaluation, recommender systems, matrix completion, logged-policy bias"
+
 data-engineering:
   storage-and-compute-foundations: "data models, encoding, row and column stores, transactions, replication, distributed failure, consensus, distributed compute, durability, choosing a store"
   ingest-and-modelling: "ingest and CDC, dimensional modelling, data vault and OBT, data contracts"

@@ -186,13 +186,13 @@ flowchart LR
 | [generative-ai/09-llms-from-scratch](generative-ai/09-llms-from-scratch/readme.md) | 0 of 4 | 3 | yes |
 | [data-analytics/01-python-for-data-analysis](data-analytics/01-python-for-data-analysis/readme.md) | 4 of 9 | 8 | yes |
 | [data-analytics/02-probability-and-statistics](data-analytics/02-probability-and-statistics/readme.md) | 0 of 10 | 9 | yes |
-| [data-analytics/03-experimentation-and-causality](data-analytics/03-experimentation-and-causality/readme.md) | 0 of 6 | 5 | yes |
-| [data-analytics/04-bayesian-analysis](data-analytics/04-bayesian-analysis/readme.md) | 0 of 11 | 10 | yes |
+| [data-analytics/03-experimentation-and-causality](data-analytics/03-experimentation-and-causality/readme.md) | 0 of 7 | 6 | yes |
+| [data-analytics/04-bayesian-analysis](data-analytics/04-bayesian-analysis/readme.md) | 0 of 12 | 11 | yes |
 | [data-analytics/05-visualisation-and-storytelling](data-analytics/05-visualisation-and-storytelling/readme.md) | 0 of 9 | 8 | yes |
-| [data-analytics/06-applied-analyses](data-analytics/06-applied-analyses/readme.md) | 0 of 16 | 15 | yes |
+| [data-analytics/06-applied-analyses](data-analytics/06-applied-analyses/readme.md) | 2 of 16 | 15 | yes |
 | [data-science/01-classical-ml](data-science/01-classical-ml/readme.md) | 2 of 19 | 18 | yes |
-| [data-science/02-deep-learning](data-science/02-deep-learning/readme.md) | 0 of 9 | 8 | yes |
-| [data-science/03-nlp](data-science/03-nlp/readme.md) | 0 of 8 | 7 | yes |
+| [data-science/02-deep-learning](data-science/02-deep-learning/readme.md) | 0 of 11 | 10 | yes |
+| [data-science/03-nlp](data-science/03-nlp/readme.md) | 0 of 9 | 8 | yes |
 | [data-science/05-time-series-and-recommenders](data-science/05-time-series-and-recommenders/readme.md) | 0 of 6 | 5 | yes |
 | [data-engineering/01-storage-and-compute-foundations](data-engineering/01-storage-and-compute-foundations/readme.md) | 0 of 11 | 10 | yes |
 | [data-engineering/02-ingest-and-modelling](data-engineering/02-ingest-and-modelling/readme.md) | 0 of 6 | 5 | yes |
@@ -216,6 +216,13 @@ flowchart LR
 | 2 | [Extract](data-analytics/01-python-for-data-analysis/slides/lectures/01-extract.yaml) | Processing Data | Clean |
 | 3 | [Clean](data-analytics/01-python-for-data-analysis/slides/lectures/02-clean.yaml) | Extract, Extract | Summarise |
 | 4 | [Summarise](data-analytics/01-python-for-data-analysis/slides/lectures/03-summarise.yaml) | Clean, Clean | Probability and statistics (data-analytics/02-probability-and-statistics), notes only |
+
+## data-analytics/06-applied-analyses
+
+| # | Lecture | Before it | After it |
+|---|---|---|---|
+| 1 | [Applied Analyses](data-analytics/06-applied-analyses/slides/lectures/00-overview.yaml) | nothing | Forecast and Score |
+| 2 | [Forecast and Score](data-analytics/06-applied-analyses/slides/lectures/01-forecast-and-score.yaml) | Applied Analyses | Cohort and retention: did we lose customers, or buy worse ones?, notes only |
 
 ## data-science/01-classical-ml
 

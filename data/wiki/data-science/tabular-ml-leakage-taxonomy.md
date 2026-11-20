@@ -1,8 +1,8 @@
 ---
 title: Tabular ML Leakage Taxonomy
-tags: [data-science, eval, reference]
+tags: [data-science, classical-ml, eval, reference]
 summary: Six leakage classes for tabular ML — target, temporal, group, fit-before-split, resampling outside the fold, train/serve skew — all answering one question ("at the moment this line runs, what does it know that it would not know at prediction time?"), plus why a leakage verdict needs the person who knows how the data was collected, not a correlation ranking.
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/claude-docs/galactus/skills/review-leakage/SKILL.md
   - data/raw/claude-docs/galactus/skills/prototype-genesis/SKILL.md

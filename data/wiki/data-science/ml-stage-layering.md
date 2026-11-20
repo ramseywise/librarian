@@ -1,8 +1,8 @@
 ---
 title: ML Stage Layering with Typed Contracts
-tags: [data-science, pattern]
+tags: [data-science, classical-ml, pattern]
 summary: "An ML codebase organised by statistical technique (clustering/, regression/) is a function library with no seams, and every consumer of it writes one monolithic run.py; organise by process stage instead (ingest → transform → features → selection → training → evaluation → calibration → monitoring), give every stage boundary a Pydantic schema, and keep technique folders as libraries the stages call."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/claude-docs/ai-project-template/docs/plans/AIT-ml-stage-layering-plan.md
   - data/raw/repos/ai-project-template/.claude--docs--plans--AIT-ml-stage-layering-plan.md

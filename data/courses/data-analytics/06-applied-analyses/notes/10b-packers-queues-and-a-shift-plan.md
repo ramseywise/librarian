@@ -1,10 +1,11 @@
 ---
-imported_hash: b5e7488e9f4906b6
+imported_hash: c963131c71df4dd5
 title: '10b — Packers: queues, Little''s law and a shift plan'
 summary: A queue that a textbook says will wait 3.9 minutes doesn't wait 3.9 minutes when the shift starts with nobody in it, and the busiest day, Monday, isn't the day with the longest wait.
 order: 13
 kind: reading
 section: Notes
+tier: specialist
 source: learn-ai-engineering/data-analytics/06-applied-analyses/notes/10b-packers-queues-and-a-shift-plan.md
 ---
 

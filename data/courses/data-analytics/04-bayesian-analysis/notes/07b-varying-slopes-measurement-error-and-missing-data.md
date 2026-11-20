@@ -1,10 +1,11 @@
 ---
-imported_hash: e31244d4b437e524
+imported_hash: a9bcf864fa6f130c
 title: 7b — Varying slopes, effective parameters, measurement error and missing data
 summary: Chapter 7 gave every market its own intercept and measured what borrowing strength buys.
-order: 11
+order: 12
 kind: reading
 section: Notes
+tier: specialist
 source: learn-ai-engineering/data-analytics/04-bayesian-analysis/notes/07b-varying-slopes-measurement-error-and-missing-data.md
 ---
 

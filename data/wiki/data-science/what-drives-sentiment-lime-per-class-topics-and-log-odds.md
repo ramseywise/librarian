@@ -1,8 +1,8 @@
 ---
 title: "What Drives Sentiment: LIME, Per-Class Topics and Log-Odds"
-tags: [data-science, pattern]
+tags: [data-science, nlp, pattern]
 summary: "A polarity score says how many are unhappy, not why; LIME explains single predictions, NMF per class names the themes, and class log-odds needs a minimum count or a prior because rare words have high variance."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--03-nlp--notes--06-sentiment-analysis.md
   - data/raw/papers/2026-11-07-ribeiro-2016-why-should-i-trust-you.md

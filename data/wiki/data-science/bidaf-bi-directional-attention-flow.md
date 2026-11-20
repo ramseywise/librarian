@@ -1,8 +1,8 @@
 ---
 title: BiDAF Bi-Directional Attention Flow
-tags: [data-science, pattern]
+tags: [data-science, deep-learning, pattern]
 summary: "BiDAF links a question and a paragraph with memory-less attention in both directions and passes per-word vectors on to a modeling layer instead of summarising the paragraph early."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-seo-2016-bidirectional-attention-flow-machine-comprehension.md
 ---

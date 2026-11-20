@@ -1,8 +1,8 @@
 ---
 title: DNC Memory Allocation and Temporal Links
-tags: [data-science, concept]
+tags: [data-science, deep-learning, concept]
 summary: "The DNC extends the Neural Turing Machine with a usage vector, allocation weighting, a retention vector and a temporal link matrix, so a controller can free, reuse and re-read memory in order; a textbook TensorFlow reimplementation reaches 15.78% mean error on 20 bAbI tasks and fails badly on path finding."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-fundamentals-of-deep-learning-ch08-memory-augmented-neural-networks.md
 ---

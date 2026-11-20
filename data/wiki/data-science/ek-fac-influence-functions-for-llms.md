@@ -1,8 +1,8 @@
 ---
 title: EK-FAC Influence Functions for LLMs
-tags: [data-science, pattern]
+tags: [data-science, deep-learning, pattern]
 summary: EK-FAC approximates the inverse-curvature term in influence functions cheaply enough to trace a language model's outputs back to pretraining sequences at up to 52B parameters.
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-06-grosse-2023-studying-large-language-model-generalization.md
 ---

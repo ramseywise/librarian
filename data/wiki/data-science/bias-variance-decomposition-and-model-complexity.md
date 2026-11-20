@@ -1,8 +1,8 @@
 ---
 title: "Bias-Variance Decomposition and Model Complexity"
-tags: [data-science, concept]
+tags: [data-science, classical-ml, concept]
 summary: "Expected squared error splits into bias squared, variance and irreducible noise; complexity trades the first two, and the symptom table says which side to fix."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--01-statistical-foundations.md
   - data/raw/papers/2026-11-08-islp-ch02-statistical-learning.md

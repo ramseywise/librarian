@@ -1,8 +1,8 @@
 ---
 title: "UMAP Graph Construction and Layout"
-tags: [data-science, concept]
+tags: [data-science, classical-ml, concept]
 summary: "UMAP builds a weighted nearest-neighbour graph with a per-point connectivity offset, merges it with a fuzzy union, and lays it out by minimising edge-wise cross entropy; the paper reports it faster than t-SNE, with mixed accuracy results."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-07-mcinnes-2018-umap.md
 ---

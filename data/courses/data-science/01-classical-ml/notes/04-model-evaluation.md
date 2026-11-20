@@ -1,10 +1,11 @@
 ---
-imported_hash: cac811c014f2a832
+imported_hash: 9c9b0437790ed462
 title: Model Evaluation
 summary: 'This is the layer interviews probe hardest: metric interpretation, train/test discipline and leakage are the most common failure modes.'
 order: 6
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-science/01-classical-ml/notes/04-model-evaluation.md
 ---
 

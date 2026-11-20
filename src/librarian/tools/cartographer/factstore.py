@@ -120,6 +120,12 @@ NULLABLE_COLUMNS: dict[str, type] = {
     "errors_tool": int,
     "errors_unknown": int,
     "bash_antipatterns": int,
+    # Agent-call `model:` coverage (retro R14 F1, 2026-11-20). agent_calls = number
+    # of Agent tool calls in the session; agent_calls_model_set = how many named a
+    # `model:`. Guacamayo's `agent-calls-model-set` signal reads the ratio. NULL on
+    # rows written before this column existed (re-parse retained JSONL to backfill).
+    "agent_calls": int,
+    "agent_calls_model_set": int,
     # Ordered tool-call sequence (LIB-125). JSON array of tool names in session
     # order, e.g. '["Read","Glob","Bash","Edit"]'. NULL for pre-migration rows
     # (re-parse retained JSONL to backfill). Empty array [] for sessions with no
@@ -203,6 +209,23 @@ _ERROR_KIND_CATEGORY: dict[str, str] = {
     "file_not_found": ERROR_CATEGORY_CODE,
     "file_too_large": ERROR_CATEGORY_ENV,
     "edit_failed": ERROR_CATEGORY_CODE,
+    # Parser kinds that existed but were never mapped here (retro R14 M6, 2026-11-20).
+    "invalid_tool_input": ERROR_CATEGORY_CODE,
+    "read_before_write": ERROR_CATEGORY_CODE,
+    "stale_read": ERROR_CATEGORY_CODE,
+    "is_a_directory": ERROR_CATEGORY_CODE,
+    "skill_not_invocable": ERROR_CATEGORY_ENV,
+    "cancelled": ERROR_CATEGORY_TOOL,
+    "blocked_by_hook": ERROR_CATEGORY_TOOL,
+    # Kinds added by the R14 M6 taxonomy expansion.
+    "transient_classifier": ERROR_CATEGORY_ENV,
+    "subagent_limit": ERROR_CATEGORY_ENV,
+    "lock_contention": ERROR_CATEGORY_ENV,
+    "tool_unavailable": ERROR_CATEGORY_ENV,
+    "missing_binary": ERROR_CATEGORY_ENV,
+    "skill_not_found": ERROR_CATEGORY_CODE,
+    "invalid_tool_output": ERROR_CATEGORY_CODE,
+    "api_error": ERROR_CATEGORY_ENV,
     "other": ERROR_CATEGORY_UNKNOWN,
 }
 
@@ -766,6 +789,8 @@ def _to_fact_from_jsonl(session: dict[str, Any], source_path: str) -> dict[str, 
         "errors_tool": attributed[ERROR_CATEGORY_TOOL],
         "errors_unknown": attributed[ERROR_CATEGORY_UNKNOWN],
         "bash_antipatterns": session.get("bash_antipatterns", 0),
+        "agent_calls": session.get("agent_calls"),
+        "agent_calls_model_set": session.get("agent_calls_model_set"),
         # tool_sequence: JSON array of ordered tool names (LIB-125). None when
         # the list is absent (pre-migration stored rows); [] serialised as "[]"
         # for sessions that made no tool calls. Use tool_counts["Skill"]=0 (not

@@ -1,8 +1,8 @@
 ---
 title: "Weight Initialisation and Activation Scale"
-tags: [data-science, concept]
+tags: [data-science, deep-learning, concept]
 summary: "Initial weight scale decides whether the signal survives the layers: too small or too large and a deep net never trains, while He (ReLU) and Glorot (tanh) scales keep activation spread stable; measure first-layer and last-layer activation std before blaming the optimiser."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--02-optimisation-and-regularisation.md
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--README.md

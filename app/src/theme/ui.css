@@ -129,9 +129,9 @@
   display: flex;
   flex-direction: column;
 }
-.app-chat > .chat-panel { flex: 1; min-height: 0; height: auto; }
-/* Under the chat: the clusters in view, then the map's controls (WikiGraph portals them here while
-   the chat column is open). */
+/* The chat is pinned at the bottom of the column and keeps room for a few turns and its input. */
+.app-chat > .chat-panel { flex: 1.3 1 0; min-height: 260px; height: auto; border-top: 1px solid var(--border); }
+/* Top of the column: the clusters in view, then the map's controls (WikiGraph portals them here). */
 .app-map-dock {
   border-top: 1px solid var(--border);
   background: var(--surface);
@@ -139,9 +139,11 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  /* The chat keeps at least the rest; the filters scroll inside the dock, not the column. */
-  max-height: 62%;
+  /* The filters scroll inside the dock, not the column; Reading and the chat keep the rest. */
+  flex: 0 1 auto;
+  max-height: 42%;
   min-height: 0;
+  overflow-y: auto;
 }
 /* The ring small, its list beside it, so the filters under it get the room. */
 .app-map-dock .cluster-inset { background: none; border: none; padding: 0; flex-shrink: 0; }
@@ -158,9 +160,35 @@
   .app-map-dock .cluster-inset-ring svg { width: 88px; height: 88px; }
 }
 .app-map-dock:empty, .app-map-dock[hidden] { display: none; }
-/* Chat hidden: the filters have the column to themselves. */
-.app-chat--filters .app-map-dock { flex: 1; max-height: none; border-top: none; overflow-y: auto; }
-/* Chat open: the filters fold to this row under it. */
+/* Chat hidden: the filters and Reading share the column. */
+.app-chat--filters .app-map-dock { max-height: 55%; }
+/* Reading: the selected page, sector or spike, in full. WikiGraph and the atlas portal it here. */
+.app-reading {
+  flex: 1 1 0;
+  min-height: 140px;
+  overflow-y: auto;
+  padding: var(--space-4) var(--space-5);
+  background: var(--surface);
+}
+.app-reading[hidden] { display: none; }
+.app-reading .detail-panel { max-height: none; box-shadow: none; overflow: visible; }
+.app-reading .detail-body { overflow: visible; }
+.app-reading-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-secondary); }
+.reading-atlas { display: flex; flex-direction: column; gap: var(--space-3); }
+.reading-kicker { display: flex; align-items: center; gap: var(--space-2); font-size: var(--fs-md); color: var(--text-secondary); }
+.reading-title { margin: 0; font-size: var(--fs-5xl); line-height: 1.25; color: var(--text-strong); font-weight: 600; }
+.reading-summary { margin: 0; font-size: var(--fs-xl); line-height: 1.5; color: var(--text-body); }
+.reading-meta { font-size: var(--fs-md); color: var(--text-muted); }
+.reading-sub { margin-top: var(--space-2); }
+.reading-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-1); }
+.reading-link {
+  background: none; border: none; padding: var(--space-1) 0; text-align: left; cursor: pointer;
+  font: inherit; font-size: var(--fs-lg); color: var(--link);
+}
+.reading-link:hover { text-decoration: underline; }
+.reading-empty { margin: 0; font-size: var(--fs-lg); line-height: 1.5; color: var(--text-muted); }
+.app-reading .atlas-card-legend { margin-top: 0; max-width: none; font-size: var(--fs-md); }
+/* Each section folds to this row. */
 .app-map-dock-toggle {
   display: flex;
   align-items: center;
@@ -182,6 +210,7 @@
 .app-map-dock-count { color: var(--accent); font-weight: 500; }
 .app-map-dock-chevron { margin-left: auto; color: var(--text-muted); font-size: var(--fs-md); }
 .app-map-dock-toggle + .app-map-dock { border-top: none; }
+.app-chat > .app-map-dock-toggle:first-child { border-top: none; }
 
 /* ---- Controls and labels ------------------------------------------------------ */
 .float-panel {

@@ -1,6 +1,6 @@
 ---
 name: wiki-sync
-description: "Audit wiki taxonomy drift. Compares the data/wiki/ directory structure (the canonical domain list) against the frontend colour map, the backend/MCP domain derivations, and any hardcoded domain list that has crept back in. Read-only by default; --fix applies mechanical changes."
+description: "Audit wiki taxonomy drift. Compares the data/wiki/ directory structure (the canonical domain list) against the frontend colour map, the backend/MCP domain derivations, and any hardcoded domain list that has crept back in. Read-only by default; --fix applies mechanical changes. Triggers on: '/wiki-sync', 'taxonomy drift', 'are the domain lists in sync', 'check the domain colour map', 'did I add a wiki domain'."
 allowed-tools: Read Bash Glob Grep Edit Write
 ---
 

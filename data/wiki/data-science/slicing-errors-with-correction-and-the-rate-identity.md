@@ -1,8 +1,8 @@
 ---
 title: "Slicing Errors With Correction and the Rate Identity"
-tags: [data-science, pattern]
+tags: [data-science, classical-ml, pattern]
 summary: "Slice error cost by nameable subgroups with Wilson intervals, correct the scan for many tests, confirm on unread rows, and expect group error-rate gaps because FPR, PPV and FNR are tied by an identity."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--12-reading-the-errors.md
 ---

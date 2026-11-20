@@ -1,10 +1,11 @@
 ---
-imported_hash: f7bd34233ebda3ee
+imported_hash: 445259f19719cd81
 title: 6 — Regression and GLMs
 summary: Larkspur's A/B test has 20,000 users and an effect that a t-test finds at p = 0.0001.
 order: 7
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-analytics/02-probability-and-statistics/notes/06-regression-and-glms.md
 ---
 

@@ -1,10 +1,11 @@
 ---
-imported_hash: 4a12636817ff050f
+imported_hash: eede9eaafeb7822e
 title: Learning a similarity function
 summary: A pretrained sentence encoder, asked to find other records of the same part in a catalogue of short part descriptions, found 13.4% of them.
 order: 6
 kind: reading
 section: Notes
+tier: specialist
 source: learn-ai-engineering/data-science/05-time-series-and-recommenders/notes/05-learning-a-similarity-function.md
 ---
 

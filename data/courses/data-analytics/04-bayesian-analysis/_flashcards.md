@@ -257,22 +257,22 @@ cards:
   lesson: data-analytics/04-bayesian-analysis/notes/06-bayesian-machine-learning
 - front: What is the ELBO?
   back: 'A lower bound on log evidence: reconstruction minus KL from the prior. The gap to log evidence is the KL to the true posterior'
-  lesson: data-analytics/04-bayesian-analysis/notes/06-bayesian-machine-learning
+  lesson: data-analytics/04-bayesian-analysis/notes/06b-variational-inference-and-gaussian-processes
 - front: Why the reparameterisation trick?
   back: It moves the randomness out of the parameters so gradients can pass through sampling
-  lesson: data-analytics/04-bayesian-analysis/notes/06-bayesian-machine-learning
+  lesson: data-analytics/04-bayesian-analysis/notes/06b-variational-inference-and-gaussian-processes
 - front: VI or MCMC?
   back: VI scales and is fast, and it tends to underestimate variance. MCMC is slower and asymptotically exact
-  lesson: data-analytics/04-bayesian-analysis/notes/06-bayesian-machine-learning
+  lesson: data-analytics/04-bayesian-analysis/notes/06b-variational-inference-and-gaussian-processes
 - front: What makes a VAE amortised?
   back: One encoder network outputs a posterior for any input, rather than fitting one per data point
-  lesson: data-analytics/04-bayesian-analysis/notes/06-bayesian-machine-learning
+  lesson: data-analytics/04-bayesian-analysis/notes/06b-variational-inference-and-gaussian-processes
 - front: What is a Gaussian process?
   back: A distribution over functions where any finite set of values is jointly Normal; a kernel sets the covariance
-  lesson: data-analytics/04-bayesian-analysis/notes/06-bayesian-machine-learning
+  lesson: data-analytics/04-bayesian-analysis/notes/06b-variational-inference-and-gaussian-processes
 - front: What does an acquisition function do?
   back: Turns a surrogate's mean and uncertainty into the next point to try, trading exploration against exploitation
-  lesson: data-analytics/04-bayesian-analysis/notes/06-bayesian-machine-learning
+  lesson: data-analytics/04-bayesian-analysis/notes/06b-variational-inference-and-gaussian-processes
 - front: What is partial pooling?
   back: Each group's estimate is a weighted average of its own mean and the overall mean, with weights set by its noise and the estimated between-group spread
   lesson: data-analytics/04-bayesian-analysis/notes/07-multilevel-models-and-partial-pooling

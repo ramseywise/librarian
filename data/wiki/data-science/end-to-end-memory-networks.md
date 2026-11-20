@@ -1,8 +1,8 @@
 ---
 title: End-to-End Memory Networks
-tags: [data-science, concept]
+tags: [data-science, deep-learning, concept]
 summary: "A softmax-attention form of the Memory Network that stacks several read hops over embedded sentences and trains from question-answer pairs alone; on bAbI it came close to a supervised memory network and on language modeling it edged out LSTM baselines (self-reported)."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-07-sukhbaatar-2015-end-end-memory-networks.md
 ---

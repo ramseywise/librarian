@@ -135,6 +135,8 @@ def decks_in(slides_dir: Path, course: str, module: str) -> list[dict[str, Any]]
                 "title": names["title"] or spec.stem,
                 # the lecture that introduces a series, so the page can name it as the overview
                 **({"overview": True} if _is_overview(spec) else {}),
+                # the note stems it teaches, so each note of a multi-note lecture finds it
+                **({"covers": covers} if (covers := _covered_notes(spec)) else {}),
             }
         )
     return out
@@ -152,6 +154,15 @@ def _load_spec(spec: Path) -> dict[str, Any]:
 def _is_overview(spec: Path) -> bool:
     block = _load_spec(spec).get("lecture")
     return isinstance(block, dict) and bool(block.get("overview"))
+
+
+def _covered_notes(spec: Path) -> list[str]:
+    """Stems of the notes a lecture's `lecture.covers` lists (`.../notes/01-x.md` → `01-x`)."""
+    block = _load_spec(spec).get("lecture")
+    covers = block.get("covers") if isinstance(block, dict) else None
+    if not isinstance(covers, list):
+        return []
+    return [Path(str(c)).stem for c in covers if "/notes/" in str(c)]
 
 
 def _deck_title(spec: Path) -> str:

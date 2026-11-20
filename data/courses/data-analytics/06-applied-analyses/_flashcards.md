@@ -2,6 +2,8 @@
 generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - data-analytics/06-applied-analyses/slides/deck.yaml
+- data-analytics/06-applied-analyses/slides/lectures/00-overview.yaml
+- data-analytics/06-applied-analyses/slides/lectures/01-forecast-and-score.yaml
 cards:
 - front: How should you score a forecast so that one split can't decide the model?
   back: Score it over many rolling origins (eleven here, each forecasting the next 13 weeks), and keep a final exam quarter out of model selection altogether.
@@ -153,6 +155,201 @@ cards:
 - front: Which two survey mistakes does the chapter warn about, and what fixes each?
   back: A plain margin after weighting or clustering is too narrow (multiply by deft and say so); a weighted number is not debiased (state the unmeasured risk and follow up a sample of non-respondents).
   lesson: data-analytics/06-applied-analyses/notes/12b-weighting-the-margin-and-the-question
+- front: What four things does every analysis in this module contain?
+  back: A question (a decision someone must make), a dataset that bears on it, a check against something known, and a recommendation with its limits.
+  lesson: data-analytics/06-applied-analyses/readme
+- front: Who is Fernhill Home, and what does it ask the analyst?
+  back: A fictional online homewares retailer, the running example from the visualisation module. Over a year it asks for a staffing plan, a retention diagnosis, a funnel check, a campaign target, a customer's worth, a stock order and a survey result.
+  lesson: data-analytics/06-applied-analyses/readme
+- front: Which four habits recur across the applied analyses?
+  back: Write the decision down first, check the method against something known, price the result so a rate becomes money, and say what it does not establish.
+  lesson: data-analytics/06-applied-analyses/readme
+- front: What are the five steps of the applied analyses module?
+  back: Forecast and score; read the customers; lifetime and spend; operations and metrics; surveys.
+  lesson: data-analytics/06-applied-analyses/readme
+- front: What do the first two analyses decide?
+  back: How many warehouse staff to book for Q4 (forecasting), and where to draw the approval line on a loan scorecard (credit scoring).
+  lesson: data-analytics/06-applied-analyses/readme
+- front: What does step 2 do to a change in an aggregate?
+  back: It splits the change into rate and mix before explaining it, and reconciles each total against the source.
+  lesson: data-analytics/06-applied-analyses/readme
+- front: What does a customer who has not churned yet count as?
+  back: Censored, not retained. Averaging lifetimes over the churned only is biased.
+  lesson: data-analytics/06-applied-analyses/readme
+- front: How do the forecast, the stock order and the roster connect in step 4?
+  back: The forecast's error distribution is the input to the stock decision, Little's law ties the queue to the packer roster, and a metric tree defines what to measure.
+  lesson: data-analytics/06-applied-analyses/readme
+- front: Which rules of thumb come from steps 1 and 2?
+  back: Write down the decision first, beat a baseline, backtest over many origins, check against something known, price the result, split a change into rate and mix, score segmentations on a later period and reconcile totals against the source.
+  lesson: data-analytics/06-applied-analyses/readme
+- front: Which rules of thumb come from steps 3 to 5?
+  back: A customer who has not churned is censored, a transition matrix forecasts only if stationary, attribution allocates credit, the error distribution drives stock, and a margin of error measures sampling error only.
+  lesson: data-analytics/06-applied-analyses/readme
+- front: What are the two costs in the staffing question?
+  back: About £12 a unit when parcels go out late (short), and £4 a unit for idle staff (over). Both figures are assumptions for the exercise.
+  lesson: data-analytics/06-applied-analyses/notes/01-forecasting
+- front: Which four features of the weekly series will break some forecasting method?
+  back: A trend (units grow 6% to 11% a year), a yearly season, an event that moves (Black Friday) and a hole (the warehouse outage in June 2023).
+  lesson: data-analytics/06-applied-analyses/notes/01-forecasting
+- front: Why is weekly seasonality awkward to model?
+  back: 'The seasonal period is about 52.18 weeks: large and not a whole number, which rules out the classic seasonal methods that want a short integer period.'
+  lesson: data-analytics/06-applied-analyses/notes/01-forecasting
+- front: What two checks come before fitting a model?
+  back: Test stationarity with the augmented Dickey-Fuller test and difference if needed, and take the seasonal period from the calendar, not from the lag count the test reports.
+  lesson: data-analytics/06-applied-analyses/notes/01-forecasting
+- front: What happens if you decompose at the lag count instead of the true period?
+  back: On simulated monthly data, decomposing at 13 instead of 12 leaves a residual SD of 11.62 against 2.47 and a lag-1 autocorrelation of 0.82, the signature of a wrong period.
+  lesson: data-analytics/06-applied-analyses/notes/01-forecasting
+- front: Which four free benchmarks does FPP3 set out, and which one is hardest to beat on a seasonal series?
+  back: Mean, naive (last value), seasonal naive (value one season ago) and drift (first-to-last line extended). The seasonal naive is the one to beat.
+  lesson: data-analytics/06-applied-analyses/notes/01-forecasting
+- front: How do you compute the seasonal naive and drift forecasts?
+  back: Seasonal naive repeats the first 13 weeks of the last 52. Drift extends the line from the first to the last observation.
+  lesson: data-analytics/06-applied-analyses/notes/01-forecasting
+- front: Which three models does the chapter try on weekly data?
+  back: STL plus ETS, dynamic harmonic regression, and Prophet.
+  lesson: data-analytics/06-applied-analyses/notes/01-forecasting
+- front: How does STL plus ETS forecast?
+  back: Fit on the log scale, let STL split trend, season and remainder, forecast the seasonally adjusted part with exponential smoothing and add the season back.
+  lesson: data-analytics/06-applied-analyses/notes/01-forecasting
+- front: How does dynamic harmonic regression model a season, and how is K chosen?
+  back: As K pairs of sines and cosines at the true period of 52.18 weeks plus a trend and a Black Friday flag, with AR(1) errors. K is chosen by minimising AICc, inside each backtest fold.
+  lesson: data-analytics/06-applied-analyses/notes/01-forecasting
+- front: How are the harmonic regression's input columns built?
+  back: Fourier sine and cosine terms at the 52.18-week period, K pairs of them, plus a trend and a Black Friday flag.
+  lesson: data-analytics/06-applied-analyses/notes/01-forecasting
+- front: What did the harmonic regression and Prophet get that a real series would not give you?
+  back: The true Black Friday rule, which is also how the generator builds the series. A real series gives no such guarantee, so be clear what your model was told.
+  lesson: data-analytics/06-applied-analyses/notes/01-forecasting
+- front: How are the twelve rolling origins used?
+  back: Eleven origins, thirteen weeks apart, are for choosing a model and a buffer. The twelfth stays locked as the exam, because a test set that has guided a choice is no longer a test set.
+  lesson: data-analytics/06-applied-analyses/notes/01-forecasting
+- front: What does each error measure reward, and what should you watch for?
+  back: MAE leads to the median, RMSE to the mean, MAPE blows up near zero, MASE scales by the in-sample naive MAE and is unit-free, and bias is the mean of actual minus forecast.
+  lesson: data-analytics/06-applied-analyses/notes/01-forecasting
+- front: Why does the seasonal naive not score exactly 1 on MASE, and why report bias?
+  back: The MASE scale is the seasonal naive's one-step, in-sample error, a harder target than its thirteen-week-ahead error. Bias matters because a consistent shortfall means being understaffed every week.
+  lesson: data-analytics/06-applied-analyses/notes/01-forecasting
+- front: How is the rolling-origin backtest written?
+  back: For each origin, train on the past, compute the in-sample seasonal naive MAE as the MASE scale, call every method for 13 weeks, and record actuals and forecasts. Choose on the first eleven origins and hold the last as the exam.
+  lesson: data-analytics/06-applied-analyses/notes/01-forecasting
+- front: How did the seven methods score across the eleven selection origins?
+  back: Prophet scored a MASE of 0.63 and harmonic regression 0.70, both below the seasonal naive at 1.21. STL plus ETS reached 1.02, and mean, naive and drift scored 1.84, 1.61 and 1.66.
+  lesson: data-analytics/06-applied-analyses/notes/01-forecasting
+- front: Why does STL plus ETS only reach a MASE of 1.02?
+  back: It smears Black Friday across neighbouring weeks. It beats the seasonal naive on scatter and cuts its bias to about 40%, but cannot see the moving event.
+  lesson: data-analytics/06-applied-analyses/notes/01-forecasting
+- front: What share of actuals fell inside each model's nominal 80% interval?
+  back: Harmonic regression 93.0% (too wide), Prophet 74.8% (a little narrow) and STL plus ETS 47.6% (misses badly, as it cannot see Black Friday).
+  lesson: data-analytics/06-applied-analyses/notes/01-forecasting
+- front: Which quantile of demand should the manager staff to, and why?
+  back: 'The 75th percentile. Short costs £12 and over costs £4, so the critical ratio is 12 / (12 + 4) = 0.75: keep adding capacity until the chance a unit is needed falls to 4/16.'
+  lesson: data-analytics/06-applied-analyses/notes/01-forecasting
+- front: How is the staffing buffer read off the backtest?
+  back: 'Take actual divided by forecast at each week of the eleven selection origins and use its 75th percentile as a multiplicative buffer: 1.047 times the forecast.'
+  lesson: data-analytics/06-applied-analyses/notes/01-forecasting
+- front: What did each staffing plan cost on the exam quarter?
+  back: Seasonal naive with no buffer £38,876, Prophet with no buffer £13,272, and Prophet buffered £11,788. Prophet saves about £25,600, the buffer about £1,500 more.
+  lesson: data-analytics/06-applied-analyses/notes/01-forecasting
+- front: How well did the selected model do on the exam quarter?
+  back: Prophet scored a MASE of 0.64 on the exam, so the selection did not mislead. The buffer is 1.047 times the forecast.
+  lesson: data-analytics/06-applied-analyses/notes/01-forecasting
+- front: Why can one quarter not pick a model?
+  back: On eleven origins harmonic regression (0.70) beat STL plus ETS (1.02), but on the single exam quarter STL plus ETS won, 0.85 to 0.90. One quarter reverses the ranking.
+  lesson: data-analytics/06-applied-analyses/notes/01-forecasting
+- front: What is the routine for a forecast someone will act on?
+  back: Run the free baselines, backtest over rolling origins with the last locked, score with a scaled error and bias, test interval coverage, price the error through the cost quantile, and say what the number does not cover.
+  lesson: data-analytics/06-applied-analyses/notes/01-forecasting
+- front: What is the recommendation, and what does it not cover?
+  back: Staff Q4 to the Prophet forecast times 1.047 (the 75th percentile of its backtest errors) and refresh it weekly. It costs about £11,800 in mismatch against about £38,900 from last year's numbers, on one quarter and assumed costs.
+  lesson: data-analytics/06-applied-analyses/notes/01-forecasting
+- front: What are the main forecasting pitfalls?
+  back: Skipping the baseline, random cross-validation, MAPE by default, reusing the exam, selecting on one quarter, untested intervals, staffing to the mean, and treating supply limits as demand.
+  lesson: data-analytics/06-applied-analyses/notes/01-forecasting
+- front: Which three facts about South German Credit change the analysis?
+  back: Bad loans were oversampled (30% in the sample against about 5% in reality), all the loans were approved so repayment is seen only for people who passed the checks, and the credit amount is scrambled by an unknown monotonic transformation.
+  lesson: data-analytics/06-applied-analyses/notes/02-credit-scoring
+- front: How do we confirm the target is read the right way round?
+  back: 'Cross-tabulate the checking-account status against the target and compare with Table 1 of Groemping (2019): no account is 45.00% of bad and 19.86% of good, and it matched.'
+  lesson: data-analytics/06-applied-analyses/notes/02-credit-scoring
+- front: What is weight of evidence, and why use it?
+  back: WoE(class) = ln(share of goods in the class / share of bads in the class). Positive means safer than average. Each class gets its own effect, so no variable needs special care, and it is the log likelihood ratio that Bayes' rule adds to the prior log odds.
+  lesson: data-analytics/06-applied-analyses/notes/02-credit-scoring
+- front: What are the formulas for weight of evidence and information value?
+  back: WoE(class) = ln(share of goods / share of bads). IV = the sum over classes of (share of goods minus share of bads) times WoE(class).
+  lesson: data-analytics/06-applied-analyses/notes/02-credit-scoring
+- front: How is information value usually read, and where do the bands come from?
+  back: Under 0.02 not predictive, 0.02 to 0.1 weak, 0.1 to 0.3 medium, above 0.3 strong. They trace to Siddiqi's book, reported second-hand, and are conventions, not theorems.
+  lesson: data-analytics/06-applied-analyses/notes/02-credit-scoring
+- front: How are the classes and their WoE learned without leaking?
+  back: Quintiles for continuous variables, levels under 5% pooled into one class, and half a count added to each cell so an empty class cannot give an infinite weight. Fit on training data only, so the procedure can be repeated inside cross-validation.
+  lesson: data-analytics/06-applied-analyses/notes/02-credit-scoring
+- front: What does the WoE of the checking-account classes show?
+  back: WoE runs from minus 0.80 for no account through minus 0.38 and 0.50 to plus 1.17 for the highest balance or salary account, in a sensible order. That order is the first thing to check.
+  lesson: data-analytics/06-applied-analyses/notes/02-credit-scoring
+- front: Which characteristics are left out, and why is removing a column not enough?
+  back: Sex and marital status, age and foreign-worker status. It is a decision and not a statistical finding, because lending law restricts them. Removing a column does not remove its proxies, such as housing or job, so test outcomes across groups.
+  lesson: data-analytics/06-applied-analyses/notes/02-credit-scoring
+- front: What is the sign check, and what did it catch?
+  back: The target is bad and a higher WoE is safer, so every coefficient should be negative. Job came out positive, so with an IV of only 0.027 it was dropped.
+  lesson: data-analytics/06-applied-analyses/notes/02-credit-scoring
+- front: How are Gini and KS defined?
+  back: Gini is 2 times AUC minus 1, known to risk teams as the accuracy ratio. KS is the largest vertical distance between the cumulative score distributions of goods and bads. Both measure ranking and not the level of the probability.
+  lesson: data-analytics/06-applied-analyses/notes/02-credit-scoring
+- front: What do the train and test figures say about the model?
+  back: The Gini falls from 0.678 on train to 0.480 on test, a large gap and an honest warning about 700 rows. The bootstrap interval on test is 0.355 to 0.600, so one split is one draw.
+  lesson: data-analytics/06-applied-analyses/notes/02-credit-scoring
+- front: How did the WoE scorecard compare with gradient boosting?
+  back: Over 5-fold cross-validation repeated 4 times, Gini was 0.561 for the WoE logistic, 0.550 for raw codes and 0.570 for gradient boosting. Fold standard deviations are about 0.06, so the scorecard gives up nothing measurable.
+  lesson: data-analytics/06-applied-analyses/notes/02-credit-scoring
+- front: How is the PD corrected for the oversampling?
+  back: Posterior odds are prior odds times the likelihood ratio. Oversampling changes the prior and leaves the likelihood ratio alone, so replace one prior with the other, a constant shift in log odds.
+  lesson: data-analytics/06-applied-analyses/notes/02-credit-scoring
+- front: How is the prior correction coded, and why weight the test set?
+  back: Add the shift to the logit and map back. To evaluate the test set as if it were the population, each good must count for more than each bad, with weights true/sample for bads and (1 minus true)/(1 minus sample) for goods.
+  lesson: data-analytics/06-applied-analyses/notes/02-credit-scoring
+- front: What happened to the PD and the Gini after the correction?
+  back: Mean PD went from 0.265 to 0.047 (population weighted), and the Gini stayed exactly at 0.480, because adding a constant to every log odds preserves the order.
+  lesson: data-analytics/06-applied-analyses/notes/02-credit-scoring
+- front: How is a score built from the log odds?
+  back: Pick a score for reference odds and the points that double the odds (PDO). Here 600 means 30 to 1 and every 20 points doubles the odds, giving factor 28.85 and offset 501.86, with score = offset + factor times the log of the good:bad odds.
+  lesson: data-analytics/06-applied-analyses/notes/02-credit-scoring
+- front: How are the points for a class computed?
+  back: points = -(coefficient times WoE plus alpha divided by n) times factor plus offset divided by n, where alpha is the intercept plus the prior shift.
+  lesson: data-analytics/06-applied-analyses/notes/02-credit-scoring
+- front: Why does the duration line fail the sense check?
+  back: A loan of 24 to 30 months scores 50 and one of 15 to 24 months scores 43, saying a longer loan is safer than a shorter one. It is almost certainly noise from automatic quintiles on 700 rows, so merge classes until the points run in order.
+  lesson: data-analytics/06-applied-analyses/notes/02-credit-scoring
+- front: How is the approval cutoff derived from the costs?
+  back: 'Accept while the expected loss from accepting is below the expected loss from rejecting: PD times 5 less than (1 minus PD) times 1, so PD is below 1/6. That applies only to a calibrated PD, which is where the prior correction pays off.'
+  lesson: data-analytics/06-applied-analyses/notes/02-credit-scoring
+- front: What did each of the four policies cost per application?
+  back: Approve everyone costs 0.250, the sample PD with a 1/6 cutoff costs 0.444 and approves 58.3%, the true-prior PD with 1/6 costs 0.245 and approves 92.8%, and reject everyone costs 0.950.
+  lesson: data-analytics/06-applied-analyses/notes/02-credit-scoring
+- front: What does the cost curve show about the corrected and uncorrected cutoffs?
+  back: The true-prior cutoff approves 93% of applicants at cost 0.245. Ignoring the prior approves only 58% (rejecting 42%) at cost 0.444. The curve minimum of 0.218 was found on the test set, so do not quote it.
+  lesson: data-analytics/06-applied-analyses/notes/02-credit-scoring
+- front: When is a scorecard worth having, according to the cost ratio?
+  back: At a 5% bad rate and 5:1 the scorecard improves on approving everyone by only 2%. At 10:1 the comparison is 0.403 against 0.500, a saving of 19%. The cost ratio is the first number to ask the business for.
+  lesson: data-analytics/06-applied-analyses/notes/02-credit-scoring
+- front: What are PD, LGD, EAD, expected loss, K and RWA?
+  back: PD is the probability of default over a year, LGD the share lost, EAD the amount owed. Expected loss is PD x LGD x EAD. Unexpected loss is covered by capital, K is capital per unit of exposure and RWA is K x 12.5 x EAD, where 12.5 is the reciprocal of 8%.
+  lesson: data-analytics/06-applied-analyses/notes/02-credit-scoring
+- front: What does the IRB capital formula compute?
+  back: A one-factor model treats all borrowers as exposed to one systematic factor with correlation R. It computes the default rate in a very bad state at the 99.9th percentile, and capital covers that loss minus the expected loss.
+  lesson: data-analytics/06-applied-analyses/notes/02-credit-scoring
+- front: Why does capital grow so much more slowly than expected loss as PD rises?
+  back: From a PD of 0.5% to 10%, expected loss rises 20 times and capital only 2.3 times. The loss above expected shrinks as a high PD moves more of the risk into the expected part, and R falls as PD rises. The 60% LGD and 5,000 exposure are assumptions.
+  lesson: data-analytics/06-applied-analyses/notes/02-credit-scoring
+- front: What does the population stability index measure, and what are its rules of thumb?
+  back: How far today's score distribution has moved from the one you built on, summed over bins as (actual minus expected) times ln(actual/expected). Under 0.10 little shift, above 0.25 significant. Train against test gives 0.043, and recoding the safest status class gives 0.252.
+  lesson: data-analytics/06-applied-analyses/notes/02-credit-scoring
+- front: What is the credit recommendation, and what limits it?
+  back: Approve applications scoring above 548, the score at a corrected PD of 1/6, treating the cutoff as provisional until the bank confirms the 5:1 cost ratio. Never use the uncorrected PDs. The data is small and from the 1970s, approved loans only, and at this ratio the scorecard barely beats approving everyone.
+  lesson: data-analytics/06-applied-analyses/notes/02-credit-scoring
+- front: What are the main credit scoring pitfalls?
+  back: Using oversampled PDs, fitting bins on all the data, trusting automatic bins, wrong-sign coefficients, taking the test-best cutoff, ignoring selection, dropping a protected column and calling it fair, and reporting one Gini from one split.
+  lesson: data-analytics/06-applied-analyses/notes/02-credit-scoring
 - front: Why compare against a seasonal naive?
   back: It costs nothing and already knows about the season. If a model cannot beat it, the model adds cost and no information.
   lesson: data-analytics/06-applied-analyses/notes/01-forecasting

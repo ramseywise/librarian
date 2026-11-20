@@ -1,8 +1,8 @@
 ---
 title: "Compound Scaling of Depth, Width and Resolution (EfficientNet)"
-tags: [data-science, pattern]
+tags: [data-science, deep-learning, pattern]
 summary: "Compound scaling grows a ConvNet's depth, width and input resolution together with one coefficient instead of scaling a single dimension; EfficientNet applies it to a searched B0 baseline, and the paper reports 84.3% ImageNet top-1 for B7 with 66M parameters (self-reported)."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-tan-2019-efficientnet.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: Dropout, Thinned Networks and Weight Scaling
-tags: [data-science, concept]
+tags: [data-science, deep-learning, concept]
 summary: "Srivastava et al.'s dropout samples a thinned network per training case with Bernoulli masks and approximates averaging them at test time by scaling outgoing weights by p; gains appear across MNIST, SVHN, CIFAR, ImageNet and TIMIT but not on very small or very large data."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-srivastava-2014-dropout.md
 ---

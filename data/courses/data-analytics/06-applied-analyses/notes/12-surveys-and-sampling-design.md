@@ -1,10 +1,11 @@
 ---
-imported_hash: 54bda9e26f9956a8
+imported_hash: 85dd7fd5c45a5e85
 title: 'Surveys and sampling design: who you ask, and who answers'
 summary: Fernhill emailed everyone it could about their last delivery, and 2,573 people replied.
 order: 15
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-analytics/06-applied-analyses/notes/12-surveys-and-sampling-design.md
 ---
 

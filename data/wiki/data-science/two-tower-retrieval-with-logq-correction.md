@@ -1,8 +1,8 @@
 ---
 title: "Two-Tower Retrieval with logQ Correction"
-tags: [data-science, pattern]
+tags: [data-science, time-series-and-recommenders, pattern]
 summary: "A two-tower model embeds users and items separately so item vectors precompute into an ANN index and new items embed from features; in-batch softmax over-penalises popular items unless log sampling probability is subtracted in training only."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--05-time-series-and-recommenders--notes--03-two-tower-and-evaluation.md
 ---

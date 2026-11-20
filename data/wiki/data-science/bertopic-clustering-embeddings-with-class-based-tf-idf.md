@@ -1,8 +1,8 @@
 ---
 title: "BERTopic: Clustering Embeddings with Class-Based TF-IDF"
-tags: [data-science, concept]
+tags: [data-science, nlp, concept]
 summary: "BERTopic embeds documents, reduces them with UMAP, clusters with HDBSCAN and names each cluster with class-based TF-IDF; the paper reports it competitive with LDA, NMF, CTM and Top2Vec, with no variance or significance tests."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-07-grootendorst-2022-bertopic.md
 ---

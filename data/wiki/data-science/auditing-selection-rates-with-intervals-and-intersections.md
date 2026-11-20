@@ -1,8 +1,8 @@
 ---
 title: "Auditing Selection Rates With Intervals and Intersections"
-tags: [data-science, pattern]
+tags: [data-science, classical-ml, pattern]
 summary: "Report impact ratios with counts and delta-method intervals, never as a pass mark; small groups can read anything, and margins can all clear 0.8 while a pre-chosen crossing fails."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--15-fairness-in-automated-scoring.md
 ---

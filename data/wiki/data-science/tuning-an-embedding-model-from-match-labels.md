@@ -1,8 +1,8 @@
 ---
 title: "Tuning an Embedding Model from Match Labels"
-tags: [data-science, pattern]
+tags: [data-science, time-series-and-recommenders, pattern]
 summary: "A frozen pretrained encoder scored below a character n-gram baseline on code-heavy records; about 1,000 labelled pairs with in-batch softmax lifted recall@10 from 0.134 to 0.908, but a held-out product family dropped it to 0.715, so measure frozen, tuned and held-out against a character baseline."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--05-time-series-and-recommenders--notes--05-learning-a-similarity-function.md
 ---

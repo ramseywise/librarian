@@ -1,8 +1,8 @@
 ---
 title: "Encoder Tokens, Position and Attention Scaling"
-tags: [data-science, concept]
+tags: [data-science, deep-learning, concept]
 summary: "Self-attention plus mean pooling sees a set, so position must be added; a learned table and sinusoids tie, and the choice of what a token is (a single pixel, a row, a patch) matters more: patches matched or beat single pixels at a fraction of the time."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--05b-transformer-encoders.md
 ---

@@ -1,8 +1,8 @@
 ---
-imported_hash: 913b45511fb183eb
+imported_hash: c429ef9579c0efeb
 title: Variational Autoencoder
 summary: In this assignment, you will build Variational Autoencoder, train it on the MNIST dataset, and play with its architecture and hyperparameters.
-order: 16
+order: 17
 kind: notebook
 section: Practice / BayesianML / Week 5
 source: learn-ai-engineering/data-analytics/04-bayesian-analysis/practice/BayesianML/week_5/assignment.ipynb

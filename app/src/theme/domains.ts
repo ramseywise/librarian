@@ -134,6 +134,43 @@ export function courseColor(course: string, theme: Theme = currentTheme()): stri
   return forTheme(COURSE_COLORS[course] ?? PALETTE[hash(course) % PALETTE.length], theme);
 }
 
+/** --surface-field in the dark theme; a topic shade keeps the 4.5:1 rule against it. */
+export const DARK_CARD_BG = "#1a1a1a";
+/** How far topic shades spread around the directory's hue, either side (0-1 turn: about 20 degrees). */
+const TOPIC_HUE_SPREAD = 0.055;
+const topicCache = new Map<string, string>();
+
+/**
+ * A page's colour on the map: its directory's colour shaded by its topic. Topic `index` of
+ * `count` sits at a hue up to about 20 degrees either side of the directory's, alternating a
+ * little lighter and darker, so a directory stays one colour family and its topics separate.
+ * Without a topic (or with only one) it is the directory colour.
+ */
+export function topicColor(
+  domain: string | undefined | null,
+  index: number | undefined,
+  count: number | undefined,
+  theme: Theme = currentTheme(),
+): string {
+  if (!domain || index == null || !count || count < 2) return domainColor(domain, theme);
+  const key = `${domain}|${index}|${count}`;
+  let dark = topicCache.get(key);
+  if (!dark) {
+    const base = domainColor(domain, "dark");
+    const { h, s, l } = hueSat(base);
+    const offset = (index / (count - 1) - 0.5) * 2 * TOPIC_HUE_SPREAD;
+    const shade = index % 2 ? -0.06 : 0.04;
+    let next = Math.min(0.85, Math.max(0.35, l + shade));
+    dark = fromHsl((h + offset + 1) % 1, s, next);
+    while (contrastRatio(dark, DARK_CARD_BG) < 4.6 && next < 0.95) {
+      next += 0.01;
+      dark = fromHsl((h + offset + 1) % 1, s, next);
+    }
+    topicCache.set(key, dark);
+  }
+  return forTheme(dark, theme);
+}
+
 /**
  * An atlas sector in the area grouping: an area is named after its course, so it takes the
  * course colour; a directory in no area keeps its own.

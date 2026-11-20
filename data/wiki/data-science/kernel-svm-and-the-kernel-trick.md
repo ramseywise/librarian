@@ -1,8 +1,8 @@
 ---
 title: "Kernel SVM and the Kernel Trick"
-tags: [data-science, concept]
+tags: [data-science, classical-ml, concept]
 summary: "A kernel SVM is a linear model in an implicit richer feature space; C and gamma must be tuned together and features must be scaled."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--02-supervised-learning.md
   - data/raw/papers/2026-11-07-cortes-1995-support-vector-networks.md

@@ -1,8 +1,8 @@
 ---
 title: "Label Bias, Proxies and the Cost of Mitigation"
-tags: [data-science, pattern]
+tags: [data-science, classical-ml, pattern]
 summary: "When the label is a past human decision every label-based metric inherits its bias and calibration can look clean; dropping the sensitive column leaves proxies, and mitigation costs depend on which label you price them with."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--15-fairness-in-automated-scoring.md
 ---

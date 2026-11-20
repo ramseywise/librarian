@@ -1,10 +1,11 @@
 ---
-imported_hash: 18fb6e667120e07d
+imported_hash: ed42ddf2722324d9
 title: Feature Engineering and Pipelines
 summary: Blocks run top to bottom from this notes/ folder.
 order: 5
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-science/01-classical-ml/notes/03-feature-engineering-and-pipelines.md
 ---
 

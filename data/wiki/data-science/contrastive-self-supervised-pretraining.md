@@ -1,8 +1,8 @@
 ---
 title: "Contrastive Self-Supervised Pretraining"
-tags: [data-science, comparison]
+tags: [data-science, deep-learning, comparison]
 summary: "Learn embeddings without labels by pulling positives together and pushing negatives apart (triplet loss, SimCLR, MoCo) or by avoiding negatives with a predictor plus moving-average target (BYOL), or by masking and reconstructing patches; collapse is the central failure and toy-scale runs do not reproduce paper gains."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--04-convolutional-networks.md
 ---

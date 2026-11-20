@@ -1,8 +1,8 @@
 ---
 title: "Similar vs Interchangeable in Matching"
-tags: [data-science, pattern]
+tags: [data-science, time-series-and-recommenders, pattern]
 summary: "Text similarity rewards both same-part and look-alike pairs, so a matcher's score should propose while extracted attributes decide (clash rejects, all read and agreeing accepts, unread goes to a person); the label chosen is itself a design decision."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--05-time-series-and-recommenders--notes--04-entity-matching-and-learning-to-rank.md
   - data/raw/repos/learn-ai-engineering/data-science--05-time-series-and-recommenders--notes--05-learning-a-similarity-function.md

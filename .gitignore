@@ -33,6 +33,8 @@ dist/
 .claude/settings.local.json
 # Ephemeral planning docs — canonical knowledge belongs in data/wiki/
 .claude/docs/
+# Session handover — working state, overwritten every session
+.claude/notes/
 
 # Node
 node_modules/

@@ -200,25 +200,25 @@ cards:
   lesson: data-analytics/03-experimentation-and-causality/notes/04-correlation-and-causation
 - front: Opt-in users do better. Does the feature work?
   back: Unknown, because of selection. Find an instrument, a rollout for DiD, or at least weight on observables and run a sensitivity analysis.
-  lesson: data-analytics/03-experimentation-and-causality/notes/04-correlation-and-causation
+  lesson: data-analytics/03-experimentation-and-causality/notes/04b-potential-outcomes-and-quasi-experiments
 - front: How do you validate parallel trends?
   back: You can't prove it. Plot the pre-period, test for a slope gap, and try placebo dates.
-  lesson: data-analytics/03-experimentation-and-causality/notes/04-correlation-and-causation
+  lesson: data-analytics/03-experimentation-and-causality/notes/04b-potential-outcomes-and-quasi-experiments
 - front: What are IV's assumptions?
   back: Relevance (testable), exclusion and independence. It estimates the effect for compliers.
-  lesson: data-analytics/03-experimentation-and-causality/notes/04-correlation-and-causation
+  lesson: data-analytics/03-experimentation-and-causality/notes/04b-potential-outcomes-and-quasi-experiments
 - front: What does RD estimate?
   back: The effect at the cutoff. Check for manipulation with a count around it.
-  lesson: data-analytics/03-experimentation-and-causality/notes/04-correlation-and-causation
+  lesson: data-analytics/03-experimentation-and-causality/notes/04b-potential-outcomes-and-quasi-experiments
 - front: What does a propensity score do?
   back: It balances observed covariates, and nothing about unobserved ones.
-  lesson: data-analytics/03-experimentation-and-causality/notes/04-correlation-and-causation
+  lesson: data-analytics/03-experimentation-and-causality/notes/04b-potential-outcomes-and-quasi-experiments
 - front: When is synthetic control the right tool?
   back: One treated unit, many donors, a long pre-period. Inference comes from placebo runs.
-  lesson: data-analytics/03-experimentation-and-causality/notes/04-correlation-and-causation
+  lesson: data-analytics/03-experimentation-and-causality/notes/04b-potential-outcomes-and-quasi-experiments
 - front: What is selection bias?
   back: The part of a naive comparison that comes from the groups already differing in the outcome they would have had untreated. Randomisation makes it zero. Opting in does not.
-  lesson: data-analytics/03-experimentation-and-causality/notes/04-correlation-and-causation
+  lesson: data-analytics/03-experimentation-and-causality/notes/04b-potential-outcomes-and-quasi-experiments
 - front: Why check balance before reading the outcome?
   back: It lets you fix the design without being able to steer towards an answer
   lesson: data-analytics/03-experimentation-and-causality/notes/05-matching-and-weighting

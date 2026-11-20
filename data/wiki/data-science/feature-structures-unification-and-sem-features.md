@@ -1,8 +1,8 @@
 ---
 title: "Feature Structures, Unification and SEM Features"
-tags: [data-science, concept]
+tags: [data-science, nlp, concept]
 summary: "Feature structures replace atomic grammar categories so agreement is shared across a production, and a SEM feature carries a meaning built during parsing, from SQL strings to logic with quantifier scope."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-nlp-with-python-ch09-building-feature-based-grammars.md
   - data/raw/papers/2026-11-08-nlp-with-python-ch10-analyzing-meaning-sentences.md

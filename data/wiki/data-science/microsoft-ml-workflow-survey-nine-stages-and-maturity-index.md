@@ -1,8 +1,8 @@
 ---
 title: "Microsoft ML Workflow Survey: Nine Stages and an Activity Maturity Index"
-tags: [data-science, concept]
+tags: [data-science, classical-ml, concept]
 summary: "A Microsoft interview-and-survey study of software teams building ML describes a nine-stage workflow with feedback loops, finds data management the top challenge at every experience level, and proposes a six-dimension maturity index with no defined levels."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-06-amershi-icse-2019-software-engineering-machine.md
 ---

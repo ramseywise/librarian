@@ -1,10 +1,11 @@
 ---
-imported_hash: cd178a6a77630611
+imported_hash: d0ebd65ebb7d46bf
 title: 'Choosing a Metric: Start from the Target'
 summary: 'This pillar defines most of these metrics where they first came up: DS 01/04 for classification and regression, DS 01/10 for costs on a rare class.'
 order: 15
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-science/01-classical-ml/notes/11-choosing-a-metric.md
 ---
 

@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { createPortal } from "react-dom";
 import "../filter.css";
 import {
   bandRadius,
@@ -50,6 +51,11 @@ interface Props {
   onOpenPage: (sector: string, page: string) => void;
   /** Where the map is coming back from: the camera eases out of it. */
   enterFrom: { sector: string; page?: string } | null;
+  /**
+   * The side column's Reading slot. Given one, the page or sector under the pointer (or the
+   * keyboard cursor) is read there in full, and the hole keeps only a few large words.
+   */
+  reading?: HTMLElement | null;
 }
 
 const MORPH_MS = 720;
@@ -89,6 +95,7 @@ export function Atlas({
   onOpenSector,
   onOpenPage,
   enterFrom,
+  reading = null,
 }: Props) {
   const stageRef = useRef<HTMLDivElement>(null);
   const baseRef = useRef<HTMLCanvasElement>(null);
@@ -99,6 +106,10 @@ export function Atlas({
   const [zooming, setZooming] = useState(enterFrom != null && !reducedMotion());
   const [cursor, setCursor] = useState<Cursor | null>(null);
   const [hoverSector, setHoverSector] = useState<number | null>(null);
+  // The last thing pointed at. It stays when the pointer leaves, so it can still be read in the column.
+  const [peek, setPeek] = useState<Cursor | null>(null);
+  const peekRef = useRef<Cursor | null>(null);
+  peekRef.current = peek;
 
   const ring = useMemo(() => layoutRing(sectors), [sectors]);
   const insets = useMemo(() => insetsFor(size.wide, grouping), [size.wide, grouping]);
@@ -532,6 +543,8 @@ export function Atlas({
       d.hover = spike;
       d.hoverSector = sector;
       paintHot();
+      if (spike) setPeek({ sector: spike.sector, spike: spike.index });
+      else if (sector != null) setPeek({ sector, spike: null });
       if (tip) {
         if (spike) {
           const untaught = taught != null && !taught.has(spike.id);
@@ -634,7 +647,8 @@ export function Atlas({
     (by: number) => {
       const count = ring.spikes.length;
       if (!count) return;
-      setCursor((c) => {
+      setCursor((sel) => {
+        const c = sel ?? peekRef.current;
         const at = c?.spike ?? (c ? ring.sectors.slice(0, c.sector).reduce((n, s) => n + s.pageIds.length, 0) - (by > 0 ? 1 : 0) : by > 0 ? -1 : 0);
         const next = (at + by + count) % count;
         return { sector: ring.spikes[next].sector, spike: next };
@@ -647,7 +661,10 @@ export function Atlas({
     (by: number) => {
       const count = ring.sectors.length;
       if (!count) return;
-      setCursor((c) => ({ sector: c ? (c.sector + by + count) % count : by > 0 ? 0 : count - 1, spike: null }));
+      setCursor((sel) => {
+        const c = sel ?? peekRef.current;
+        return { sector: c ? (c.sector + by + count) % count : by > 0 ? 0 : count - 1, spike: null };
+      });
     },
     [ring],
   );
@@ -684,7 +701,10 @@ export function Atlas({
   );
 
   // A ring from another grouping or wiki state: an index would point at another page.
-  useEffect(() => setCursor(null), [ring]);
+  useEffect(() => {
+    setCursor(null);
+    setPeek(null);
+  }, [ring]);
 
   // --- What's selected, in words --------------------------------------------------------
   const selSector = cursor ? ring.sectors[cursor.sector] : null;
@@ -699,7 +719,111 @@ export function Atlas({
 
   // Always in the hole; a small ring drops the card's secondary lines instead of moving it out.
   const cardSize = g.inner * 1.72;
-  const cardStyle = { left: g.cx - cardSize / 2, top: g.cy - cardSize / 2, width: cardSize, height: cardSize };
+  const cardStyle = {
+    left: g.cx - cardSize / 2,
+    top: g.cy - cardSize / 2,
+    width: cardSize,
+    height: cardSize,
+    // The hole's few words scale with the ring, so a big screen gets big type.
+    "--hole": `${cardSize}px`,
+  } as CSSProperties;
+
+  // With a Reading slot, the column shows the selection, or failing that the last thing pointed at.
+  const readCursor = cursor ?? peek;
+  const readSector = readCursor ? ring.sectors[readCursor.sector] : null;
+  const readSpike = readCursor?.spike != null ? (ring.spikes[readCursor.spike] ?? null) : null;
+  const readInfo = readSpike ? info.get(readSpike.id) : null;
+  const spikeOf = (id: string) => ring.spikes.find((s) => s.id === id) ?? null;
+
+  const actions = (sel: Cursor, spike: Spike | null) => (
+    <div className="atlas-card-actions">
+      <button type="button" className="pill-btn" aria-label="Previous" onClick={() => (spike ? stepSpike(-1) : stepSector(-1))}>
+        ‹
+      </button>
+      <button type="button" className="pill-btn" aria-label="Next" onClick={() => (spike ? stepSpike(1) : stepSector(1))}>
+        ›
+      </button>
+      <button type="button" className="pill-btn pill-btn--accent" onClick={() => zoomInto(sel.sector, spike)}>
+        Open
+      </button>
+    </div>
+  );
+
+  const legend = (
+    <>
+      <div className="atlas-card-legend">Spike length: links to and from a page</div>
+      {taught && <div className="atlas-card-legend">Faint spike: no lesson links the page yet</div>}
+    </>
+  );
+
+  const totals = (
+    <>
+      <div className="atlas-card-total">
+        {matchedTotal != null ? `${matchedTotal} of ${pageTotal}` : pageTotal.toLocaleString("en-US")}
+      </div>
+      <div className="atlas-card-note">{matchedTotal != null ? "pages match" : "wiki pages"}</div>
+      <div className="atlas-card-note">{totalLinks.toLocaleString("en-US")} links</div>
+    </>
+  );
+
+  // The hole beside a Reading slot: only what reads at a glance, sized to the ring.
+  const holeBrief = readSector ? (
+    <>
+      <div className="atlas-card-sector">
+        <span className="cur-dot" style={{ background: readSector.color }} aria-hidden="true" />
+        {readSector.label}
+      </div>
+      <div className="atlas-card-title">{readSpike ? (readInfo?.title ?? readSpike.id) : `${readSector.pageIds.length} pages`}</div>
+      {readSpike && <div className="atlas-card-note">{degree.get(readSpike.id) ?? 0} links</div>}
+    </>
+  ) : (
+    totals
+  );
+
+  // The same selection in full, for the Reading slot.
+  const readingBody = (
+    <div className="reading-atlas">
+      {readSector && readCursor ? (
+        <>
+          <div className="reading-kicker">
+            <span className="cur-dot" style={{ background: readSector.color }} aria-hidden="true" />
+            {readSector.label}
+          </div>
+          {readSpike ? (
+            <>
+              <h2 className="reading-title">{readInfo?.title ?? readSpike.id}</h2>
+              {readInfo?.summary && <p className="reading-summary">{readInfo.summary}</p>}
+              <div className="reading-meta">
+                {degree.get(readSpike.id) ?? 0} links
+                {taught && !taught.has(readSpike.id) && " · not yet in a lesson"}
+              </div>
+            </>
+          ) : (
+            <>
+              <h2 className="reading-title">{readSector.pageIds.length} pages</h2>
+              {gaps?.get(readSector.id) ? <div className="reading-meta">{gapText(gaps.get(readSector.id)!)}</div> : null}
+              <div className="panel-label reading-sub">Best linked</div>
+              <ul className="reading-list">
+                {readSector.pageIds.slice(0, 6).map((id) => (
+                  <li key={id}>
+                    <button type="button" className="reading-link" onClick={() => zoomInto(readCursor.sector, spikeOf(id))}>
+                      {titleOf(id)}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+          {actions(readCursor, readSpike)}
+        </>
+      ) : (
+        <>
+          <p className="reading-empty">Point at a spike or a sector to read about it here. Click to open it.</p>
+          {legend}
+        </>
+      )}
+    </div>
+  );
 
   return (
     <div ref={stageRef} className={`atlas${moving || zooming ? " is-moving" : ""}${viewZoomed ? " is-zoomed" : ""}`}>
@@ -767,61 +891,49 @@ export function Atlas({
         })}
       </svg>
 
-      <div className={`atlas-card${g.cardInside ? "" : " atlas-card--compact"}`} style={cardStyle}>
-        {selSector ? (
-          <>
-            <div className="atlas-card-sector">
-              <span className="cur-dot" style={{ background: selSector.color }} aria-hidden="true" />
-              {selSector.label}
-            </div>
-            {cursorSpike ? (
-              <>
-                <div className="atlas-card-title">{selInfo?.title ?? cursorSpike.id}</div>
-                <div className="atlas-card-summary">{selInfo?.summary}</div>
-                <div className="atlas-card-note">
-                  {degree.get(cursorSpike.id) ?? 0} links
-                  {taught && !taught.has(cursorSpike.id) && " · not yet in a lesson"}
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="atlas-card-title">{selSector.pageIds.length} pages</div>
-                {gaps?.get(selSector.id) ? (
-                  <div className="atlas-card-note">{gapText(gaps.get(selSector.id)!)}</div>
-                ) : null}
-                <div className="atlas-card-summary">
-                  Best linked: {selSector.pageIds.slice(0, 3).map(titleOf).join(", ")}
-                </div>
-              </>
-            )}
-            <div className="atlas-card-actions">
-              <button type="button" className="pill-btn" aria-label="Previous" onClick={() => (cursorSpike ? stepSpike(-1) : stepSector(-1))}>
-                ‹
-              </button>
-              <button type="button" className="pill-btn" aria-label="Next" onClick={() => (cursorSpike ? stepSpike(1) : stepSector(1))}>
-                ›
-              </button>
-              <button
-                type="button"
-                className="pill-btn pill-btn--accent"
-                onClick={() => zoomInto(cursor!.sector, cursorSpike)}
-              >
-                Open
-              </button>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="atlas-card-total">
-              {matchedTotal != null ? `${matchedTotal} of ${pageTotal}` : pageTotal.toLocaleString("en-US")}
-            </div>
-            <div className="atlas-card-note">{matchedTotal != null ? "pages match" : "wiki pages"}</div>
-            <div className="atlas-card-note">{totalLinks.toLocaleString("en-US")} links</div>
-            <div className="atlas-card-legend">Spike length: links to and from a page</div>
-            {taught && <div className="atlas-card-legend">Faint spike: no lesson links the page yet</div>}
-          </>
-        )}
-      </div>
+      {reading ? (
+        <div className={`atlas-card atlas-card--brief${g.cardInside ? "" : " atlas-card--compact"}`} style={cardStyle}>
+          {holeBrief}
+        </div>
+      ) : (
+        <div className={`atlas-card${g.cardInside ? "" : " atlas-card--compact"}`} style={cardStyle}>
+          {selSector && cursor ? (
+            <>
+              <div className="atlas-card-sector">
+                <span className="cur-dot" style={{ background: selSector.color }} aria-hidden="true" />
+                {selSector.label}
+              </div>
+              {cursorSpike ? (
+                <>
+                  <div className="atlas-card-title">{selInfo?.title ?? cursorSpike.id}</div>
+                  <div className="atlas-card-summary">{selInfo?.summary}</div>
+                  <div className="atlas-card-note">
+                    {degree.get(cursorSpike.id) ?? 0} links
+                    {taught && !taught.has(cursorSpike.id) && " · not yet in a lesson"}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="atlas-card-title">{selSector.pageIds.length} pages</div>
+                  {gaps?.get(selSector.id) ? (
+                    <div className="atlas-card-note">{gapText(gaps.get(selSector.id)!)}</div>
+                  ) : null}
+                  <div className="atlas-card-summary">
+                    Best linked: {selSector.pageIds.slice(0, 3).map(titleOf).join(", ")}
+                  </div>
+                </>
+              )}
+              {actions(cursor, cursorSpike)}
+            </>
+          ) : (
+            <>
+              {totals}
+              {legend}
+            </>
+          )}
+        </div>
+      )}
+      {reading && createPortal(readingBody, reading)}
 
       </div>
 

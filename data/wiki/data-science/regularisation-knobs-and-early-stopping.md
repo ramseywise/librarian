@@ -1,8 +1,8 @@
 ---
 title: "Regularisation Knobs and Early Stopping"
-tags: [data-science, pattern]
+tags: [data-science, classical-ml, pattern]
 summary: "Every family has a complexity-limiting knob whose validation curve peaks in the middle; early stopping is the same penalty in training time, but libraries may keep the rounds waited past the best."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--09-training-and-tuning.md
   - data/raw/papers/2026-11-08-prechelt-1998-early-stopping-but-when.md

@@ -1,8 +1,8 @@
 ---
 title: Bottleneck Adapters for Parameter-Efficient Transfer
-tags: [data-science, concept]
+tags: [data-science, deep-learning, concept]
 summary: "Adapters are small trainable modules inserted into a frozen pretrained network: Rebuffi et al. (2017) added residual 1x1-convolution adapters to a ResNet for ten image domains, and Houlsby et al. (2019) added serial bottleneck adapters to BERT, both nearly matching full fine-tuning (all numbers self-reported)."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-07-houlsby-2019-parameter-efficient-transfer-learning-nlp.md
   - data/raw/papers/2026-11-07-rebuffi-2017-learning-multiple-visual-domains-residual.md

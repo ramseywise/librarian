@@ -1,10 +1,11 @@
 ---
-imported_hash: cad7626f5b2b4023
+imported_hash: 8b9a1efdc0c7dc83
 title: Entity matching and learning to rank
 summary: A bank statement says BROKADRU TOOLING B paid 120.41, and somewhere among four thousand invoices is the one that payment settles, if there is one at all.
 order: 5
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-science/05-time-series-and-recommenders/notes/04-entity-matching-and-learning-to-rank.md
 ---
 

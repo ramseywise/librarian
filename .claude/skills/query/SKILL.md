@@ -1,6 +1,6 @@
 ---
 name: query
-description: "Ask a question against the compiled wiki. Gives grounded answers from synthesised knowledge, not raw chunks. Optionally files the answer back as a new wiki page. Use when the question should be answered from the wiki: what it knows about a topic, what a pattern or convention is, or a lookup whose answer may be worth filing as a page. Do NOT use for compiling new sources (/ingest), health checks (/lint), merging or retiring pages (/compact-wiki), or questions the wiki has nothing to do with."
+description: "Ask a question against the compiled wiki. Gives grounded answers from synthesised knowledge, not raw chunks. Optionally files the answer back as a new wiki page. Triggers on: '/query', 'ask the wiki', 'what does the wiki say about', 'what do we know about', 'look this up in the wiki'. Use when the question should be answered from the wiki: what it knows about a topic, what a pattern or convention is, or a lookup whose answer may be worth filing as a page. Do NOT use for compiling new sources (/ingest), health checks (/lint), merging or retiring pages (/compact-wiki), or questions the wiki has nothing to do with."
 allowed-tools:
   - Read
   - Glob

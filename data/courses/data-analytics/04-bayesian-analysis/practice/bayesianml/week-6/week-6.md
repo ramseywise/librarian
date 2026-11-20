@@ -1,8 +1,8 @@
 ---
-imported_hash: c5875807f1c408e4
+imported_hash: 42c34b23cee2b884
 title: Gaussian processes and Bayesian optimization
 summary: In this assignment you will learn how to use <a href="http://sheffieldml.github.io/GPy/">GPy</a> and <a href="http://sheffieldml.github.io/GPyOpt/">GPyOpt</a> libraries to deal with gaussian processes.
-order: 17
+order: 18
 kind: notebook
 section: Practice / BayesianML / Week 6
 source: learn-ai-engineering/data-analytics/04-bayesian-analysis/practice/BayesianML/week_6/week_6.ipynb

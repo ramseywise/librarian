@@ -1,8 +1,8 @@
 ---
 title: "EASE and Item-Based Neighbourhood Recommenders"
-tags: [data-science, concept]
+tags: [data-science, time-series-and-recommenders, concept]
 summary: "EASE is a linear item-item model with a zero diagonal and a closed-form solution from one matrix inverse; with item kNN it led a small-catalogue ranking table, though the cubic inverse limits it to catalogues of tens of thousands."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--05-time-series-and-recommenders--notes--02-collaborative-filtering-and-matrix-factorisation.md
   - data/raw/repos/learn-ai-engineering/data-science--05-time-series-and-recommenders--notes--03-two-tower-and-evaluation.md

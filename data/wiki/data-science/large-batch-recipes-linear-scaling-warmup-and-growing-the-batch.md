@@ -1,8 +1,8 @@
 ---
 title: "Large-Batch Recipes: Linear LR Scaling, Warmup and Growing the Batch"
-tags: [data-science, pattern]
+tags: [data-science, deep-learning, pattern]
 summary: "Goyal et al. scale the learning rate linearly with minibatch size and warm it up to train ResNet-50 at 8192; Smith et al. grow the batch instead of decaying the learning rate; Ott et al. combine FP16, gradient accumulation and a higher learning rate for Transformer translation."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-07-goyal-2017-accurate-large-minibatch-sgd.md
   - data/raw/papers/2026-11-08-smith-2017-don-t-decay-learning-rate.md

@@ -1,10 +1,11 @@
 ---
-imported_hash: 9edf7587dac08a18
+imported_hash: 5931f31e06d5cf25
 title: 2 — MCMC and PyMC
 summary: The Challenger model in chapter 1 has two parameters and the sampler returned an answer in a second.
 order: 4
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-analytics/04-bayesian-analysis/notes/02-mcmc-and-pymc.md
 ---
 
@@ -163,7 +164,7 @@ NUTS, standardised   beta ess_bulk   2591  r_hat 1.00  leapfrog steps/draw   3.1
 
 Metropolis on raw Fahrenheit has an ESS of 5 and an R-hat above 2 after 4,000 draws, which is why BMH runs it for 120,000. NUTS copes, but spends 19 gradient steps per draw on a long narrow ridge, because the intercept and slope are almost perfectly correlated when the temperature is far from zero. Standardising removes the ridge: three steps per draw, and about 2,600 effective samples. Scale your inputs before reaching for more draws.
 
-Other approximations to MCMC exist. The **Laplace approximation** fits a Normal at the MAP, and **variational inference** (`pm.fit(method="advi")`) fits a simple distribution by optimisation. Both are faster and less exact, and [chapter 6](06-bayesian-machine-learning.md) measures how much less. [Blei, Kucukelbir and McAuliffe (JASA, 2017)](https://arxiv.org/abs/1601.00670) illustrate the choice with two scenarios, not experiments: MCMC for a small, expensive dataset where you trust the model and need precise inferences, VI for a text model on a billion documents. Size isn't the only factor. For mixture models where Gibbs sampling is not an option, they note VI may do better than Hamiltonian Monte Carlo even on small data.
+Other approximations to MCMC exist. The **Laplace approximation** fits a Normal at the MAP, and **variational inference** (`pm.fit(method="advi")`) fits a simple distribution by optimisation. Both are faster and less exact, and [chapter 6b](06b-variational-inference-and-gaussian-processes.md) measures how much less. [Blei, Kucukelbir and McAuliffe (JASA, 2017)](https://arxiv.org/abs/1601.00670) illustrate the choice with two scenarios, not experiments: MCMC for a small, expensive dataset where you trust the model and need precise inferences, VI for a text model on a billion documents. Size isn't the only factor. For mixture models where Gibbs sampling is not an option, they note VI may do better than Hamiltonian Monte Carlo even on small data.
 
 ## Worked example: a two-cluster mixture
 

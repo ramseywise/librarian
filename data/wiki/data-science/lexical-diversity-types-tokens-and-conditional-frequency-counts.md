@@ -1,8 +1,8 @@
 ---
 title: "Lexical Diversity: Types, Tokens and Conditional Frequency Counts"
-tags: [data-science, concept]
+tags: [data-science, nlp, concept]
 summary: "Counting tokens against types, and counts split by genre or language with a conditional frequency distribution, with the normalisation steps that change the count and the caveats on raw counts."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-nlp-with-python-ch01-language-processing-python.md
   - data/raw/papers/2026-11-08-nlp-with-python-ch02-accessing-text-corpora-lexical.md

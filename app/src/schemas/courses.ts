@@ -44,6 +44,8 @@ export const deckSchema = z.object({
   subtitle: z.string().optional(),
   /** The lecture that introduces a lecture series. */
   overview: z.boolean().optional(),
+  /** Stems of the notes a lecture teaches; a lecture over several notes serves each of them. */
+  covers: z.array(z.string()).optional(),
 });
 
 /** A wiki page as the topic page lists it. */

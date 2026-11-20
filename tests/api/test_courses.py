@@ -743,3 +743,19 @@ def test_course_front_pages_belong_to_the_course_not_a_module(client: TestClient
     rag = next(m for m in gen_ai["modules"] if m["id"] == "01-rag")
     assert rag["group"] == "core" and rag["objectives"] == ["Chunk a document"]
     assert client.get("/api/courses/lessons/gen-ai/00-start-here/readme").status_code == 200
+
+
+def test_a_lecture_over_several_notes_lists_the_notes_it_covers(tmp_path: Path) -> None:
+    from librarian.courses.slides import decks_in
+
+    lectures = tmp_path / "lectures"
+    lectures.mkdir()
+    (lectures / "01-extract.yaml").write_text(
+        "deck: {title: Extract}\n"
+        "lecture:\n  covers: [da/01-py/notes/01-frames.md, da/01-py/notes/02-loading.md, da/01-py/README.md]\n"
+    )
+    (lectures / "02-clean.yaml").write_text("deck: {title: Clean}\n")
+    assert decks_in(tmp_path, "da", "01-py") == [
+        {"id": "da/01-py/01-extract", "title": "Extract", "covers": ["01-frames", "02-loading"]},
+        {"id": "da/01-py/02-clean", "title": "Clean"},
+    ]

@@ -1,8 +1,8 @@
 ---
 title: "Ranking Metrics as the Confusion Table Along a List"
-tags: [data-science, concept]
+tags: [data-science, classical-ml, concept]
 summary: "Precision and recall at k are the confusion table with k as the threshold; MRR and NDCG summarise across cut-offs and can disagree, so pick by whether one good answer or several are needed."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--11-choosing-a-metric.md
 ---

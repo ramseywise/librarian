@@ -1,8 +1,8 @@
 ---
 title: "Autoencoder Bottleneck vs PCA and Anomaly Scores"
-tags: [data-science, comparison]
+tags: [data-science, deep-learning, comparison]
 summary: "An autoencoder beats PCA on reconstruction only at tight codes (2 to 8 dims) and loses at 32, a denoising variant trades clean accuracy for repair, and the best reconstruction is not the best anomaly detector: compute PCA first."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--05-sequence-models.md
   - data/raw/papers/2026-11-08-fundamentals-of-deep-learning-ch06-embedding-representation-learning.md

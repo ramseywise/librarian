@@ -1,10 +1,12 @@
 ---
-imported_hash: 06c616851de69785
+imported_hash: 2a220c82afb8dcef
 title: Optimisation and regularisation
 summary: 'Three questions run through the chapter, in order: does the signal survive through the layers (initialisation and normalisation), does the optimiser make progress (optimisers and learning rates), and does what it learned generalise (regular…'
 order: 3
 kind: reading
 section: Notes
+tier: practitioner
+depth: core
 source: learn-ai-engineering/data-science/02-deep-learning/notes/02-optimisation-and-regularisation.md
 ---
 

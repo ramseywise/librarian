@@ -1,8 +1,8 @@
 ---
 title: "Choosing an Encoder vs CNN vs LSTM"
-tags: [data-science, comparison]
+tags: [data-science, deep-learning, comparison]
 summary: "Decide by score at your data size, fit to the problem's structure, and cost at your length: a CNN won on small digits at every size, the encoder aced long-range tasks and lost local-pattern ones, and attention cost grows as n squared; take the learning curve on your own data."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--05b-transformer-encoders.md
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--06-neural-text-models.md

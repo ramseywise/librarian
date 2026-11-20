@@ -1,8 +1,8 @@
 ---
 title: "Residual Connections and the Degradation Problem"
-tags: [data-science, concept]
+tags: [data-science, deep-learning, concept]
 summary: "A block that outputs F(x)+x makes the identity the easy default, fixing the optimisation failure of very deep plain networks (62-layer plain net: train 0.379), and makes blocks optional so stochastic depth can drop them as regularisation."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--04-convolutional-networks.md
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--README.md

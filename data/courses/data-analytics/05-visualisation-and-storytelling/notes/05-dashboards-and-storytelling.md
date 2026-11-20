@@ -1,10 +1,11 @@
 ---
-imported_hash: 620ecb755a6d92c4
+imported_hash: 40f161f9f0ad6b33
 title: Dashboards and storytelling with data
 summary: Fernhill's marketing team has had a revenue dashboard for three years.
 order: 7
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-analytics/05-visualisation-and-storytelling/notes/05-dashboards-and-storytelling.md
 ---
 

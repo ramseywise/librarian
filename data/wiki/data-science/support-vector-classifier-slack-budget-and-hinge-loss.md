@@ -1,8 +1,8 @@
 ---
 title: Support Vector Classifier, Slack Budget and Hinge Loss
-tags: [data-science, concept]
+tags: [data-science, classical-ml, concept]
 summary: "A support vector classifier maximises a margin while a slack budget C lets some points fall inside it or across it; the same fit is a hinge loss with a ridge penalty, which explains why it behaves like logistic regression."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-islp-ch09-support-vector-machines.md
 ---

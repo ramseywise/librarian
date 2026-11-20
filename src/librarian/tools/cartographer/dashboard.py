@@ -84,6 +84,7 @@ JULY_ONLY_METRICS = {
     "errors_tool_total",
     "errors_unknown_total",
     "bash_antipatterns_p50",
+    "bash_antipatterns_mean",
 }
 
 # Top N tools to trend individually; everything else is aggregated as "other".
@@ -266,6 +267,13 @@ def _metric_value(metric: str, bucket: list[dict[str, Any]]) -> float | None:
         if not values:
             return None
         return _percentile(values, 50)
+    if metric == "bash_antipatterns_mean":
+        values = [
+            float(r["bash_antipatterns"]) for r in bucket if r.get("bash_antipatterns") is not None
+        ]
+        if not values:
+            return None
+        return sum(values) / len(values)
     # Step 4: input-token series
     if metric == "input_tokens_p50":
         values = [float(r.get("input_tokens") or 0) for r in bucket]
@@ -769,6 +777,14 @@ _FRICTION_HARNESS_ENG = [
         "Bash antipatterns per session (p50)",
         "Shell used where a dedicated tool (Read/Grep/Glob) exists — wastes "
         "context, slower than the native tool.",
+        "",
+        "count",
+    ),
+    (
+        "bash_antipatterns_mean",
+        "Bash antipatterns per session (mean)",
+        "Same count, averaged. The distribution is heavy-tailed, so the mean sits "
+        "well above the median — read the two together (retro R14 F4).",
         "",
         "count",
     ),
@@ -2131,10 +2147,11 @@ def patch_experiments_card(
 
 
 # ---------------------------------------------------------------------------
-# Hook activity (guard-hook fires from ~/.claude/hooks/lib.sh logging)
+# Hook activity (guard-hook fires from the hooks' lib.sh logging)
 # ---------------------------------------------------------------------------
 #
-# Two logs, written by two different lib.sh helpers:
+# Two logs under $CLAUDE_TELEMETRY_DIR (default guacamayo/.sounding/telemetry/, fallback
+# ~/.claude — resolved by paths.py), written by two different lib.sh helpers:
 #   .hook-log.jsonl      -- log_event, carries exit_code (2 = block, 0 = warn)
 #   .hook-pass-log.jsonl -- log_pass, no exit_code, silent OKs, capped by tail
 #
@@ -2285,7 +2302,8 @@ def render_hook_activity_card(event_log: Path, pass_log: Path) -> str:
             '<div class="card">\n'
             '      <div class="card-title">Hook activity</div>\n'
             '      <p class="card-note">No hook fires logged yet. Guard hooks log to '
-            "<code>~/.claude/.hook-log.jsonl</code> via <code>lib.sh</code>.</p>\n"
+            "<code>$CLAUDE_TELEMETRY_DIR/.hook-log.jsonl</code> via <code>lib.sh</code> "
+            f"(read from <code>{event_log}</code>).</p>\n"
             "    </div>"
         )
 

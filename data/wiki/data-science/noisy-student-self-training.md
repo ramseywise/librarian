@@ -1,8 +1,8 @@
 ---
 title: "Noisy Student Self-Training"
-tags: [data-science, pattern]
+tags: [data-science, deep-learning, pattern]
 summary: "Noisy Student trains a teacher on labeled images, pseudo-labels unlabeled images, then trains an equal-or-larger student on both with noise added, and iterates; the paper reports 88.4% ImageNet top-1 and large robustness gains."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-xie-2020-self-training-noisy-student-improves.md
 ---

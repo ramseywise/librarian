@@ -1,8 +1,8 @@
 ---
 title: "Tree Ensemble Interpretation Beyond Impurity Importance"
-tags: [data-science, pattern]
+tags: [data-science, classical-ml, pattern]
 summary: "Impurity importance rewards overfit noise; permutation importance on held-out data fixes that but is fooled by correlated columns, and partial dependence needs ICE lines and describes the model, not causes."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--08-model-interpretability.md
 ---

@@ -1,10 +1,11 @@
 ---
-imported_hash: ce9a30c9e96e6495
+imported_hash: e42dc2555233d496
 title: 5 — Matching and Weighting
 summary: Fernhill Home opened a loyalty club on 1 July 2024, and customers chose whether to join.
-order: 6
+order: 7
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-analytics/03-experimentation-and-causality/notes/05-matching-and-weighting.md
 ---
 
@@ -173,7 +174,7 @@ def nearest_neighbour(lp, D, caliper, replace, seed=SEED):
 
 ### Propensity weighting
 
-This is the method from [chapter 4](04-correlation-and-causation.md#propensity-weighting). For the ATT, every joiner gets weight 1 and every non-joiner gets p/(1−p), so non-joiners who look like joiners count for more. A non-joiner with a score of 0.997 counts as about 330 people.
+This is the method from [chapter 4b](04b-potential-outcomes-and-quasi-experiments.md#propensity-weighting). For the ATT, every joiner gets weight 1 and every non-joiner gets p/(1−p), so non-joiners who look like joiners count for more. A non-joiner with a score of 0.997 counts as about 330 people.
 
 ### Entropy balancing
 

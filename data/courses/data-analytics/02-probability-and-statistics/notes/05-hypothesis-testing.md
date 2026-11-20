@@ -1,10 +1,11 @@
 ---
-imported_hash: 28b2d1bbe650b73a
+imported_hash: 1191e2b9e271da0d
 title: 5 — Hypothesis Testing
 summary: Larkspur's analyst slices a flat experiment by twenty segments and reports that the new checkout works in one of them, at p = 0.04.
 order: 6
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-analytics/02-probability-and-statistics/notes/05-hypothesis-testing.md
 ---
 

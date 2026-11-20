@@ -1,8 +1,8 @@
 ---
 title: "ImageNetV2 and the Adaptivity Gap in Test-Set Reuse"
-tags: [data-science, concept]
+tags: [data-science, classical-ml, concept]
 summary: "Recht and colleagues rebuilt the CIFAR-10 and ImageNet test sets by the original recipe: every model lost accuracy, but the ranking held and later models did not lose more, which points at distribution shift rather than overfitting to the reused test set."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-recht-2019-do-imagenet-classifiers-generalize-imagenet.md
 ---

@@ -1,10 +1,11 @@
 ---
-imported_hash: 57cbc09d3752ce85
+imported_hash: ef17763adc08bd36
 title: 'Segmentation and RFM: who to contact, and who would have bought anyway'
 summary: Fernhill's customer relationship manager has a budget of about £4,000 for one printed win-back catalogue.
 order: 6
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-analytics/06-applied-analyses/notes/05-segmentation-and-rfm.md
 ---
 

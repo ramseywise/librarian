@@ -1,8 +1,8 @@
 ---
 title: "Neural Text Models vs TF-IDF"
-tags: [data-science, comparison]
+tags: [data-science, nlp, comparison]
 summary: "On 5,000 labelled reviews a TF-IDF bigram logistic regression (0.886) beat averaged embeddings (0.847), a text CNN (0.741) and a BiLSTM (0.716), because from-scratch embeddings overfit; truncation and sequence-loss choices also move scores, and generation and masked losses have their own traps."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--06-neural-text-models.md
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--README.md

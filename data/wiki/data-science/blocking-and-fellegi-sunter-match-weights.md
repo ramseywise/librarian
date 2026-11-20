@@ -1,8 +1,8 @@
 ---
 title: "Blocking and Fellegi-Sunter Match Weights"
-tags: [data-science, pattern]
+tags: [data-science, time-series-and-recommenders, pattern]
 summary: "Entity matching first cuts candidate pairs with cheap blocking keys, whose recall caps everything downstream, then scores each pair by summed log(m/u) evidence with a three-way link, review, reject decision."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--05-time-series-and-recommenders--notes--04-entity-matching-and-learning-to-rank.md
 ---

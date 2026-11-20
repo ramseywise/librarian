@@ -1,8 +1,8 @@
 ---
 title: "Chart Parsing, PCFGs and Structural Ambiguity"
-tags: [data-science, concept]
+tags: [data-science, nlp, concept]
 summary: "Why parsers need a chart and probabilities: attachment ambiguity multiplies parses with the Catalan numbers, backtracking recursive descent loops on left recursion, and a PCFG ranks parses by the product of production probabilities."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-nlp-with-python-ch08-analyzing-sentence-structure.md
   - data/raw/papers/2026-11-08-loper-2002-nltk.md

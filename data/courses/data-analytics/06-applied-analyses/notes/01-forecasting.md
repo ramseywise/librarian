@@ -1,10 +1,11 @@
 ---
-imported_hash: 7cc3e17601d49675
+imported_hash: c42794a8579fb056
 title: 'Forecasting: how many people does the warehouse need?'
 summary: It is the last Monday of September, and Fernhill's operations manager has to book temporary warehouse staff for the thirteen weeks that hold Black Friday and Christmas.
 order: 2
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-analytics/06-applied-analyses/notes/01-forecasting.md
 ---
 

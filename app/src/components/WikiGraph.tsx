@@ -19,6 +19,7 @@ import { MapBar } from "./MapBar";
 import { MapSearch } from "./MapSearch";
 import { WikiNode, type WikiFlowNode } from "./WikiNode";
 import { NodeCardContext, type NodeCard } from "./nodeCard";
+import { NodeDetailPanel } from "./NodeDetailPanel";
 import { FiltersPanel } from "./TagFilterPanel";
 import { MapControls } from "./MapControls";
 import { ConnectChips } from "./EdgeTogglePanel";
@@ -65,7 +66,7 @@ import {
   type MapView,
 } from "../utils/mapRoute";
 import { useTheme } from "../hooks/useTheme";
-import { domainColor } from "../theme/domains";
+import { topicColor } from "../theme/domains";
 import "./graph.css";
 import "./filter.css";
 import "../theme/atlas.css";
@@ -86,6 +87,11 @@ const MOVE_MS = 650;
 interface WikiGraphProps {
   /** The slot under the chat, for the clusters in view and the map's controls. Without one they sit in the map's corner. */
   dock?: HTMLElement | null;
+  /**
+   * The side column's Reading slot. Given one, the selected page's card is read there and nodes
+   * on the canvas stay compact; without one the node opens into its card in place.
+   */
+  reading?: HTMLElement | null;
   highlightedPages?: Set<string>;
   /** Wiki page to pan/zoom to — set when arriving from a course lesson's concept link. */
   focusPage?: string | null;
@@ -116,6 +122,7 @@ function WikiGraphInner({
   onOpenLesson,
   onFocusApplied,
   dock,
+  reading = null,
   onBrief,
   activeTags,
   onActiveTagsChange,
@@ -765,7 +772,7 @@ function WikiGraphInner({
   }, [navigate]);
 
   const miniMapColor = useCallback(
-    (n: WikiFlowNode) => n.data.groupColor ?? domainColor(n.data.domain[0], theme),
+    (n: WikiFlowNode) => n.data.groupColor ?? topicColor(n.data.domain[0], n.data.topicIndex, n.data.topicCount, theme),
     [theme],
   );
 
@@ -898,6 +905,26 @@ function WikiGraphInner({
       extra={allNodes || undefined}
     />
   );
+  // The selected page in the Reading slot, with what the canvas card would have shown.
+  const readNode = reading && !onAtlas && selectedId ? baseNodes.find((n) => n.id === selectedId) : undefined;
+  const readingCard = readNode ? (
+    <NodeDetailPanel
+      key={readNode.id}
+      nodeId={readNode.id}
+      data={readNode.data}
+      highlighted={nodeCard.cited.has(readNode.id)}
+      lastQuery={nodeCard.lastQuery}
+      onClose={nodeCard.onClose}
+      onTagClick={nodeCard.onTagClick}
+      activeTags={nodeCard.activeTags}
+      onOpenLesson={nodeCard.onOpenLesson}
+      related={nodeCard.related(readNode.id)}
+      why={nodeCard.why?.(readNode.id)}
+      onOpenPage={nodeCard.onOpenPage}
+    />
+  ) : (
+    <p className="reading-empty">Click a page on the map to read it here. Double-click opens its own level.</p>
+  );
   const inset = !onAtlas && (
     <ClusterInset
       sectors={sectors}
@@ -938,10 +965,11 @@ function WikiGraphInner({
               onOpenSector={openSectorLevel}
               onOpenPage={openPageLevel}
               enterFrom={enterFrom}
+              reading={reading}
             />
           )
         ) : (
-          <NodeCardContext.Provider value={nodeCard}>
+          <NodeCardContext.Provider value={reading ? null : nodeCard}>
           <ReactFlow
             className="map-fade-in"
             nodes={nodes}
@@ -969,6 +997,7 @@ function WikiGraphInner({
           {!dock && inset}
           {!dock && bar}
         </div>
+        {reading && !onAtlas && createPortal(readingCard, reading)}
         {dock &&
           createPortal(
             <>

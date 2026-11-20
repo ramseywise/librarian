@@ -1,8 +1,8 @@
 ---
 title: "Isolation Forest vs Gaussian Anomaly Detection"
-tags: [data-science, comparison]
+tags: [data-science, classical-ml, comparison]
 summary: "A per-feature Gaussian scores how likely a point is, an isolation forest how easy it is to cut off; pick by the shape of normal data, and irrelevant columns wreck the forest."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--05-unsupervised-learning.md
 ---

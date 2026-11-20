@@ -1,8 +1,8 @@
 ---
 title: "NP Chunking with IOB Tags: Regexp, N-gram and Classifier Chunkers"
-tags: [data-science, pattern]
+tags: [data-science, nlp, pattern]
 summary: "Noun-phrase chunking turned into token tagging with IOB labels, so a tag-pattern grammar, an n-gram tagger and a feature-based classifier can be scored on the same CoNLL-2000 split."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-nlp-with-python-ch07-extracting-information-from-text.md
   - data/raw/papers/2026-11-08-loper-2002-nltk.md

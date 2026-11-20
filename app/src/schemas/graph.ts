@@ -28,6 +28,10 @@ export const wikiNodeDataSchema = z.looseObject({
   /** Main course, when a lesson links this page: overrides the directory colour and label. */
   groupColor: z.string().optional(),
   groupLabel: z.string().optional(),
+  /** The page's topic within its directory (`_topics.yaml`), and its place in that list; set client-side. */
+  topic: z.string().optional(),
+  topicIndex: z.number().optional(),
+  topicCount: z.number().optional(),
 });
 export type WikiNodeData = z.output<typeof wikiNodeDataSchema>;
 
@@ -72,6 +76,8 @@ export const graphPayloadSchema = z.object({
   edges: z.array(wikiEdgeSchema),
   domains: z.array(z.string()).optional(),
   areas: z.array(areaSchema).optional(),
+  /** Directory → its topics in order (`_topics.yaml`). Absent from an older server. */
+  topics: z.record(z.string(), z.array(z.string())).optional(),
 });
 
 /** Every message the socket carries. A message of any other `type` is rejected, not guessed at. */
@@ -89,6 +95,7 @@ export const atlasPayloadSchema = z.object({
   domains: z.array(z.string()),
   /** Absent from an older server: the ring then has a sector per directory. */
   areas: z.array(areaSchema).optional(),
+  topics: z.record(z.string(), z.array(z.string())).optional(),
 });
 export type AtlasPayload = z.output<typeof atlasPayloadSchema>;
 
