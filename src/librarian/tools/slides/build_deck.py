@@ -1,8 +1,9 @@
 """Render a YAML deck spec into a .pptx in the course's house style.
 
-The style follows the LangGraph deck (05-graph-engineering/sources/langgraph_extended.pptx):
-navy title bar with an orange edge, a pale breadcrumb strip, white cards with coloured
-stripes, square bullet markers, and a tinted takeaway strip.
+The style is the beat-coloured house style (the "Librarian Slide Colour Mock" artifact): white slides,
+a filled chip naming the slide's beat (the idea, the principle, the application, pitfall, keep), the
+part and position on the right, a bold title, dash bullets in the beat's ink, and a full-width washed
+takeaway band along the bottom edge. Dividers are a solid beat panel with a large part number.
 
     uv run -q --with python-pptx --with pyyaml --with pillow --with resvg-py \
         python src/librarian/tools/slides/build_deck.py data/courses/<course>/<module>/slides/deck.yaml [--preview DIR] [--pdf] [--strict] \
@@ -45,44 +46,124 @@ from librarian.tools.slides import deck_graph, deck_stamp
 # ---------------------------------------------------------------------------
 
 FONT = "Helvetica Neue"
+SERIF = "Charter"  # the reading face for statements; macOS ships it
 MONO = "Menlo"
 
-NAVY = "1E3A5F"
-ORANGE = "D4621A"
-TEAL = "0EA5C9"
-TEAL_DARK = "0F7490"
-PURPLE = "5B21B6"
-GREEN = "166534"
-BG = "F4F6F9"
-PANEL = "E8EDF5"
-TINT = "E8F4F8"
-INK = "1E293B"
-SLATE = "475569"
-MUTED = "94A3B8"
-LIGHT = "CBD5E1"
+# Neutral tokens.
+BG = "F7F6F2"
 WHITE = "FFFFFF"
-ROW_ALT = "F8FAFC"
-CODE_BG = "0F172A"
-CODE_FG = "E2E8F0"
-BORDER = "D5DEEA"
+SURFACE = "EFEEE9"
+BORDER = "DEDBD2"
+BORDER_STRONG = "C4C0B4"
+TEXT = "2D2C28"
+STRONG = "14130F"
+SOFT = "6B685F"
+INDIGO = "4743C4"  # inline code
+# The names the drawing code uses: body text, emphasis (bold runs), secondary.
+SLATE, INK, MUTED = TEXT, STRONG, SOFT
+
+# A beat's colours: ink (text on white), fill (solid panels), on (text on the fill), chip label.
+BEAT_STYLE = {
+    "problem": ("7A5C00", "FFD54F", "1C1700", "The idea"),
+    "fundamentals": ("1F55C4", "1F55C4", "FFFFFF", "The principle"),
+    "practice": ("6A35B8", "6A35B8", "FFFFFF", "The application"),
+    "pitfalls": ("B5560A", "B5560A", "FFFFFF", "Pitfall"),
+    "wrap": ("1D7F63", "1D7F63", "FFFFFF", "Keep"),
+}
+
+
+def mix(hex_: str, pct: float) -> str:
+    """`pct` of the colour mixed into white."""
+    rgb_ = (int(hex_[i : i + 2], 16) for i in (0, 2, 4))
+    return "".join(f"{round(255 + (c - 255) * pct):02X}" for c in rgb_)
+
+
+def style(beat: str) -> dict:
+    """The colours one beat draws with: wash is 14% of the fill in white, tint 34%."""
+    ink, fill, on, label = BEAT_STYLE.get(beat, BEAT_STYLE["fundamentals"])
+    return {
+        "beat": beat,
+        "ink": ink,
+        "fill": fill,
+        "on": on,
+        "label": label,
+        "wash": mix(fill, 0.14),
+        "tint": mix(fill, 0.34),
+    }
+
+
+# The old navy/orange/teal accents, mapped onto the house palette so older specs stay on it.
+LEGACY_ACCENT = {
+    "1E3A5F": "1F55C4",  # navy -> blue
+    "D4621A": "B5560A",  # orange -> orange
+    "0EA5C9": "1D7F63",  # teal -> sea
+    "0F7490": "1D7F63",  # dark teal -> sea
+    "5B21B6": "6A35B8",  # purple -> purple
+    "94A3B8": BORDER_STRONG,
+    "CBD5E1": BORDER,
+}
+
+
+def style_hex(hex_: str) -> dict:
+    """A style from a spec's `accent`, for a card or step that asks for its own. The accent is a beat
+    name (`pitfalls`) or a hex colour; the old navy/orange/teal hexes map onto the house palette."""
+    if str(hex_) in BEAT_STYLE:
+        return style(str(hex_))
+    hex_ = str(hex_).lstrip("#").upper()
+    hex_ = LEGACY_ACCENT.get(hex_, hex_)
+    on = STRONG if is_light(hex_) else WHITE
+    ink = hex_ if not is_light(hex_) else TEXT
+    return {
+        "beat": None,
+        "ink": ink,
+        "fill": hex_,
+        "on": on,
+        "label": "",
+        "wash": mix(hex_, 0.14),
+        "tint": mix(hex_, 0.34),
+    }
+
 
 # Per-slide keys in deck-spec.md. LEVELS is ordered: a build at one level keeps that level and those before it.
-LEVELS = ("core", "practice", "deep")
+LEVELS = ("intro", "core", "deep")  # the notes' tiers; a slide with no level is intro
+# Older specs used core < practice < deep. `practice` still reads as the middle tier.
+LEVEL_ALIASES = {"practice": "core"}
+
+
+def slide_level(sl: dict) -> str:
+    """A slide's level as one of LEVELS (an alias resolved); an unknown value comes back as is."""
+    lv = sl.get("level", LEVELS[0])
+    return LEVEL_ALIASES.get(lv, lv) if isinstance(lv, str) else lv
+
+
 BEATS = deck_frames.BEATS
 PART_BEATS = ("fundamentals", "practice", "pitfalls")
 
-PART_ACCENTS = [ORANGE, NAVY, TEAL_DARK, PURPLE, TEAL, GREEN]
-FLOW_FILLS = [NAVY, TEAL_DARK, TEAL, PURPLE, GREEN]
+
+def part_beat(part: dict) -> str:
+    """A part's beat: its own `beat`, else the commonest beat among its slides (ties go to PART_BEATS order)."""
+    if part.get("beat") in BEATS:
+        return part["beat"]
+    if not part.get("agenda", True):
+        return "wrap"
+    counts = dict.fromkeys(PART_BEATS, 0)
+    for sl in part.get("slides", []):
+        if sl.get("beat") in counts:
+            counts[sl["beat"]] += 1
+    best = max(PART_BEATS, key=lambda b: (counts[b], -PART_BEATS.index(b)))
+    return best if counts[best] else "fundamentals"
+
 
 SLIDE_W, SLIDE_H = 13.333, 7.5
-MARGIN = 0.55
+MARGIN = 0.59
 CONTENT_W = SLIDE_W - 2 * MARGIN
-TITLE_BAR_H = 0.95
-CRUMB_H = 0.36
-CONTENT_TOP = TITLE_BAR_H + CRUMB_H + 0.3
+CHIP_Y, CHIP_H = (
+    0.4,
+    0.34,
+)  # the header row: beat chip, kicker, and the part and position on the right
+TITLE_Y, TITLE_H = 0.86, 0.62
+CONTENT_TOP = 1.68
 CONTENT_BOTTOM = 6.8
-TAKEAWAY_H = 0.65
-TAKEAWAY_PAD = 0.3
 FOOTER_Y = 7.02
 
 WARNINGS: list[str] = []
@@ -169,7 +250,7 @@ def rect(slide, x, y, w, h, fill, line=None, shape=MSO_SHAPE.RECTANGLE, radius=N
     return shp
 
 
-def add_runs(p, s: str, size, color, bold=False, italic=False, font=FONT, code_color=TEAL_DARK):
+def add_runs(p, s: str, size, color, bold=False, italic=False, font=FONT, code_color=INDIGO):
     for chunk in MARKUP.split(str(s)):
         if not chunk:
             continue
@@ -216,8 +297,10 @@ def text(
     align=PP_ALIGN.LEFT,
     anchor=MSO_ANCHOR.TOP,
     spacing=1.1,
-    code_color=TEAL_DARK,
+    code_color=INDIGO,
+    literal=False,
 ):
+    """A text box; `literal` writes each line as one plain run, so code keeps its `**` and backticks."""
     tb = slide.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(h))
     tf = tb.text_frame
     tf.word_wrap = True
@@ -229,6 +312,12 @@ def text(
         p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
         p.alignment = align
         p.line_spacing = spacing
+        if literal:
+            r = p.add_run()
+            r.text = str(ptext)
+            r.font.size, r.font.name, r.font.bold, r.font.italic = Pt(size), font, bold, italic
+            r.font.color.rgb = rgb(color)
+            continue
         add_runs(p, ptext, size, color, bold=bold, italic=italic, font=font, code_color=code_color)
     return tb
 
@@ -285,32 +374,56 @@ def bullet_layout(items, w, h, start, minimum):
     return items, minimum, False
 
 
+def bullets_height(items, w, size) -> float:
+    """Height the bullet list takes at `size`, as bullets() draws it."""
+    items = norm_items(items)
+    sub_size = max(size - 3, 11)
+    gap = size * 0.6 / 72
+    need = -gap if items else 0.0
+    for it in items:
+        need += est_h(it["text"], w - 0.35, size) + gap
+        need += sum(gap * 0.4 + est_h(s, w - 0.7, sub_size) for s in it["sub"])
+    return need
+
+
 def bullets(
-    slide, x, y, w, h, items, ctx, marker=ORANGE, color=INK, start=20, minimum=13, anchor_top=True
+    slide,
+    x,
+    y,
+    w,
+    h,
+    items,
+    ctx,
+    marker=SOFT,
+    color=TEXT,
+    start=20,
+    minimum=13,
+    anchor_top=True,
+    code_color=INDIGO,
 ):
+    """Dash bullets: a short bar in the beat's ink at the first line's middle, the text beside it."""
     items, size, ok = bullet_layout(items, w, h, start, minimum)
     if not ok:
         warn(ctx, f"bullets overflow {w:.1f}x{h:.1f}in even at {minimum}pt — cut text")
     sub_size = max(size - 3, 11)
     gap = size * 0.6 / 72
-    sq = size / 72 * 0.42
+    dash_w = max(0.11, size / 72 * 0.5)
+    dash_h = max(0.026, size / 72 * 0.09)
     cy = y
     if not anchor_top:
-        need = -gap
-        for it in items:
-            need += est_h(it["text"], w - 0.35, size) + gap
-            need += sum(gap * 0.4 + est_h(s, w - 0.7, sub_size) for s in it["sub"])
-        cy = y + max(0, (h - need) / 2)
+        cy = y + max(0, (h - bullets_height(items, w, size)) / 2)
     for it in items:
         th = est_h(it["text"], w - 0.35, size)
-        rect(slide, x, cy + size / 72 * 0.38, sq, sq, marker)
-        text(slide, x + 0.35, cy, w - 0.35, th + 0.1, it["text"], size, color)
+        rect(slide, x, cy + size / 72 * 0.68 - dash_h / 2, dash_w, dash_h, marker)
+        text(
+            slide, x + 0.35, cy, w - 0.35, th + 0.1, it["text"], size, color, code_color=code_color
+        )
         cy += th
         for s in it["sub"]:
             cy += gap * 0.4
             sh = est_h(s, w - 0.7, sub_size)
-            text(slide, x + 0.55, cy, 0.2, sh, "–", sub_size, MUTED)
-            text(slide, x + 0.75, cy, w - 0.75, sh + 0.1, s, sub_size, SLATE)
+            rect(slide, x + 0.55, cy + sub_size / 72 * 0.68 - 0.012, 0.09, 0.024, BORDER_STRONG)
+            text(slide, x + 0.75, cy, w - 0.75, sh + 0.1, s, sub_size, SOFT)
             cy += sh
         cy += gap
     return cy - gap
@@ -329,59 +442,69 @@ def card(
     spec,
     accent,
     ctx,
-    header_style="stripe",
+    variant="wash",
     body_start=17,
     body_min=12,
     center=False,
+    upper=False,
 ):
-    """White card with an accent stripe (or a solid header band) + title + body/bullets + tag.
+    """A card in one of four looks, all drawn from one beat style `st`:
 
+    wash: the beat's wash behind an ink title. fill: the solid fill with on-fill text (the card the row
+    lands on). neutral: the surface colour, for the side of a comparison that loses. win: the wash with
+    an ink outline, for the side that wins. `upper` sets the title in capitals, as a label.
     center places a short body in the middle of the card, so the card reads as full rather than half empty.
     """
-    rect(slide, x, y, w, h, WHITE, line=BORDER)
+    bg = {
+        "wash": accent["wash"],
+        "fill": accent["fill"],
+        "neutral": SURFACE,
+        "win": accent["wash"],
+    }[variant]
+    outline = accent["ink"] if variant == "win" else None
+    rect(slide, x, y, w, h, bg, line=outline, shape=MSO_SHAPE.ROUNDED_RECTANGLE, radius=0.04)
+    on_fill = variant == "fill"
+    title_c = accent["on"] if on_fill else (STRONG if variant == "neutral" else accent["ink"])
+    body_c = accent["on"] if on_fill else TEXT
+    marker = accent["on"] if on_fill else (BORDER_STRONG if variant == "neutral" else accent["ink"])
+    code_c = accent["on"] if on_fill else INDIGO
     title = spec.get("title", "")
-    pad = 0.25
+    if upper:
+        title = plain(title).upper()
+    pad = 0.28
     inner_w = w - 2 * pad
-    title_size = card_title_size(inner_w)
-    if header_style == "band":
-        th = est_h(title, inner_w, title_size, bold=True) + 0.28
-        rect(slide, x, y, w, th, accent)
-        on_dark = accent not in (PANEL, TINT, BG)
+    title_size = card_title_size(inner_w) - (3 if upper else 0)
+    th = est_h(title, inner_w, title_size, bold=True) if title else 0
+    if title:
         text(
             slide,
             x + pad,
-            y,
+            y + 0.24,
             inner_w,
-            th,
+            th + 0.1,
             title,
             title_size,
-            WHITE if on_dark else SLATE,
+            title_c,
             bold=True,
-            anchor=MSO_ANCHOR.MIDDLE,
+            code_color=code_c,
         )
-        cy = y + th + 0.22
-    else:
-        rect(slide, x, y, 0.09, h, accent)
-        th = est_h(title, inner_w, title_size, bold=True) if title else 0
-        if title:
-            text(
-                slide, x + pad + 0.05, y + 0.2, inner_w, th + 0.1, title, title_size, INK, bold=True
-            )
-        cy = y + 0.2 + th + (0.18 if title else 0)
+    cy = y + 0.24 + th + (0.2 if title else 0)
     tag = spec.get("tag")
     tag_h = 0.45 if tag else 0
     body_bottom = y + h - 0.2 - tag_h
-    bx = x + pad + (0.05 if header_style == "stripe" else 0)
+    bx = x + pad
     if spec.get("bullets"):
         bullets(
             slide,
             bx,
             cy,
-            inner_w - 0.05,
+            inner_w,
             body_bottom - cy,
             spec["bullets"],
             ctx,
-            marker=accent if accent not in (PANEL, TINT) else MUTED,
+            marker=marker,
+            color=body_c,
+            code_color=code_c,
             start=body_start,
             minimum=body_min,
             anchor_top=not center,
@@ -397,60 +520,119 @@ def card(
             slide,
             bx,
             cy,
-            inner_w - 0.05,
+            inner_w,
             body_bottom - cy,
             body,
             size,
-            SLATE,
+            body_c,
             anchor=MSO_ANCHOR.MIDDLE if center else MSO_ANCHOR.TOP,
+            code_color=code_c,
         )
     elif spec.get("code"):
         code_block(
-            slide, bx, cy, inner_w - 0.05, body_bottom - cy, spec["code"], ctx, start=14, minimum=10
+            slide,
+            bx,
+            cy,
+            inner_w,
+            body_bottom - cy,
+            spec["code"],
+            ctx,
+            start=14,
+            minimum=10,
+            edge=accent["fill"],
         )
     if tag:
-        rect(slide, x + 0.2, y + h - 0.2 - 0.38, w - 0.4, 0.38, PANEL)
+        tx, tw, ty, tgh = x + 0.2, w - 0.4, y + h - 0.2 - 0.38, 0.38
+        if variant == "win":
+            rect(
+                slide,
+                tx,
+                ty,
+                tw,
+                tgh,
+                accent["fill"],
+                shape=MSO_SHAPE.ROUNDED_RECTANGLE,
+                radius=0.2,
+            )
+            tag_c = accent["on"]
+        elif on_fill:
+            rect(
+                slide,
+                tx,
+                ty,
+                tw,
+                tgh,
+                None,
+                line=accent["on"],
+                shape=MSO_SHAPE.ROUNDED_RECTANGLE,
+                radius=0.2,
+            )
+            tag_c = accent["on"]
+        else:
+            rect(
+                slide,
+                tx,
+                ty,
+                tw,
+                tgh,
+                None,
+                line=BORDER_STRONG,
+                shape=MSO_SHAPE.ROUNDED_RECTANGLE,
+                radius=0.2,
+            )
+            tag_c = SOFT
         text(
             slide,
-            x + 0.3,
-            y + h - 0.2 - 0.38,
-            w - 0.6,
-            0.38,
+            tx + 0.1,
+            ty,
+            tw - 0.2,
+            tgh,
             tag,
             12,
-            SLATE,
+            tag_c,
+            bold=variant == "win",
             anchor=MSO_ANCHOR.MIDDLE,
             align=PP_ALIGN.CENTER,
         )
 
 
-def code_block(slide, x, y, w, h, code, ctx, lang=None, start=16, minimum=10):
+COMMENT = re.compile(r"^\s*(#|//|--)")
+
+
+def code_block(slide, x, y, w, h, code, ctx, lang=None, start=16, minimum=10, edge=SOFT):
+    """Code on the surface colour with a left edge in the beat's fill; whole-line comments go soft."""
     code = str(code).rstrip("\n")
-    pad = 0.25
-    top_pad = 0.45 if lang else pad
+    pad = 0.28
+    top_pad = 0.45 if lang else 0.22
     for size in range(start, minimum - 1, -1):
         need = est_h(code, w - 2 * pad, size, spacing=1.0, mono=True)
-        if need <= h - top_pad - pad:
+        if need <= h - top_pad - 0.22:
             break
     else:
         warn(ctx, f"code block overflows {w:.1f}x{h:.1f}in even at {minimum}pt")
     need = est_h(code, w - 2 * pad, size, spacing=1.0, mono=True)
-    box_h = min(h, need + top_pad + pad + 0.05)
-    rect(slide, x, y, w, box_h, CODE_BG, shape=MSO_SHAPE.ROUNDED_RECTANGLE, radius=0.03)
+    box_h = min(h, need + top_pad + 0.22 + 0.05)
+    rect(slide, x, y, w, box_h, SURFACE)
+    rect(slide, x, y, 0.07, box_h, edge)
     if lang:
-        text(slide, x + pad, y + 0.12, w - 2 * pad, 0.3, lang.upper(), 10, MUTED, bold=True)
-    text(
+        text(slide, x + pad, y + 0.12, w - 2 * pad, 0.3, lang.upper(), 10, SOFT, bold=True)
+    tb = text(
         slide,
         x + pad,
         y + top_pad,
         w - 2 * pad,
-        box_h - top_pad - pad,
+        box_h - top_pad - 0.2,
         code.split("\n"),
         size,
-        CODE_FG,
+        TEXT,
         font=MONO,
         spacing=1.0,
+        literal=True,
     )
+    for p, ln in zip(tb.text_frame.paragraphs, code.split("\n"), strict=False):
+        if COMMENT.match(ln):
+            for r in p.runs:
+                r.font.color.rgb = rgb(SOFT)
     return y + box_h
 
 
@@ -460,107 +642,135 @@ def code_block(slide, x, y, w, h, code, ctx, lang=None, start=16, minimum=10):
 
 
 def chrome(slide, spec, ctx_info):
-    set_bg(slide, BG)
-    rect(slide, 0, 0, SLIDE_W, TITLE_BAR_H, NAVY)
-    rect(slide, 0, 0, 0.14, TITLE_BAR_H, ctx_info["accent"])
-    title = spec.get("title", "")
+    """White slide; a header row (beat chip, kicker, part and position), the title, and a takeaway band.
+
+    The beat sets every colour: the chip is its fill, the kicker its ink, the band its wash.
+    """
+    st = ctx_info["st"]
+    set_bg(slide, WHITE)
+    x = MARGIN
+    label = (st["label"] or "").upper()
+    if label:
+        cw = len(label) * 11 / 72 * 0.66 + 0.36
+        rect(
+            slide, x, CHIP_Y, cw, CHIP_H, st["fill"], shape=MSO_SHAPE.ROUNDED_RECTANGLE, radius=0.5
+        )
+        text(
+            slide,
+            x,
+            CHIP_Y,
+            cw,
+            CHIP_H,
+            label,
+            11,
+            st["on"],
+            bold=True,
+            align=PP_ALIGN.CENTER,
+            anchor=MSO_ANCHOR.MIDDLE,
+        )
+        x += cw + 0.2
+    where = ctx_info["where"]
+    where_w = min(5.0, len(where) * 11 / 72 * 0.55 + 0.3)
     kicker = spec.get("kicker")
-    title_w = CONTENT_W - (3.6 if kicker else 0)
-    size = 28
-    while size > 20 and est_lines(title, title_w, size, bold=True) > 1:
+    if kicker:
+        kw = SLIDE_W - MARGIN - where_w - 0.3 - x
+        if est_lines(kicker, kw, 12, bold=True) > 1 or len(kicker) > 48:
+            warn(ctx_info["ctx"], f"kicker '{kicker}' wraps — keep it under ~40 characters")
+        text(
+            slide, x, CHIP_Y, kw, CHIP_H, kicker, 12, st["ink"], bold=True, anchor=MSO_ANCHOR.MIDDLE
+        )
+    text(
+        slide,
+        SLIDE_W - MARGIN - where_w,
+        CHIP_Y,
+        where_w,
+        CHIP_H,
+        where,
+        11,
+        SOFT,
+        align=PP_ALIGN.RIGHT,
+        anchor=MSO_ANCHOR.MIDDLE,
+    )
+
+    title = spec.get("title", "")
+    size = 30
+    while size > 22 and est_lines(title, CONTENT_W, size, bold=True) > 1:
         size -= 1
     text(
         slide,
         MARGIN,
-        0,
-        title_w,
-        TITLE_BAR_H,
+        TITLE_Y,
+        CONTENT_W,
+        TITLE_H,
         title,
         size,
-        WHITE,
+        STRONG,
         bold=True,
         anchor=MSO_ANCHOR.MIDDLE,
-    )
-    if kicker:
-        ksize = 14
-        while ksize > 11 and est_lines(kicker, 3.5, ksize) > 1:
-            ksize -= 1
-        if est_lines(kicker, 3.5, ksize) > 1:
-            warn(ctx_info["ctx"], f"kicker '{kicker}' wraps — keep it under ~40 characters")
-        text(
-            slide,
-            SLIDE_W - MARGIN - 3.5,
-            0,
-            3.5,
-            TITLE_BAR_H,
-            kicker,
-            ksize,
-            ctx_info["kicker_color"],
-            align=PP_ALIGN.RIGHT,
-            anchor=MSO_ANCHOR.MIDDLE,
-        )
-    rect(slide, 0, TITLE_BAR_H, SLIDE_W, CRUMB_H, PANEL)
-    text(
-        slide,
-        MARGIN,
-        TITLE_BAR_H,
-        8,
-        CRUMB_H,
-        ctx_info["crumb"],
-        11,
-        MUTED,
-        anchor=MSO_ANCHOR.MIDDLE,
-    )
-    # footer
-    if ctx_info.get("source"):
-        text(slide, MARGIN, FOOTER_Y, 9, 0.3, ctx_info["source"], 10, MUTED, italic=True)
-    text(
-        slide,
-        SLIDE_W - MARGIN - 1.5,
-        FOOTER_Y,
-        1.5,
-        0.3,
-        str(ctx_info["number"]),
-        10,
-        MUTED,
-        align=PP_ALIGN.RIGHT,
     )
 
     top = CONTENT_TOP
     lead = spec.get("lead")
     if lead:
         lh = est_h(lead, CONTENT_W, 17)
-        text(slide, MARGIN, top - 0.05, CONTENT_W, lh + 0.1, lead, 17, SLATE)
+        text(slide, MARGIN, top - 0.05, CONTENT_W, lh + 0.1, lead, 17, TEXT)
         top += lh + 0.25
-    bottom = CONTENT_BOTTOM
+    src = ctx_info.get("source")
     tk = spec.get("takeaway")
     if tk:
-        # The strongest line on the slide: as large as a body at 20pt and bold. Two lines at 18pt beat one at 13pt.
-        # A table cannot shrink much, so it gives the strip less room.
-        floor = 16 if spec.get("layout") == "table" else 18
-        size = 20
-        while size > floor and est_lines(tk, CONTENT_W - 0.5, size, bold=True) > 1:
+        # The strongest line on the slide, in a band across the foot in the beat's wash.
+        size = 17
+        tw = CONTENT_W
+        while size > 14 and est_lines(tk, tw, size, bold=True) > 1:
             size -= 1
-        while size > 14 and est_lines(tk, CONTENT_W - 0.5, size, bold=True) > 2:
-            size -= 1
-        th = max(TAKEAWAY_H, est_h(tk, CONTENT_W - 0.5, size, bold=True) + TAKEAWAY_PAD)
-        ty = CONTENT_BOTTOM - th
-        rect(slide, MARGIN, ty, CONTENT_W, th, TINT)
-        rect(slide, MARGIN, ty, 0.12, th, ctx_info["accent"])
+        if est_lines(tk, tw, size, bold=True) > 2:
+            warn(ctx_info["ctx"], "takeaway runs past two lines — shorten it")
+        text_h = est_h(tk, tw, size, bold=True)
+        th = 0.25 + 0.22 + 0.05 + text_h + 0.25
+        ty = SLIDE_H - th
+        rect(slide, 0, ty, SLIDE_W, th, st["wash"])
         text(
             slide,
-            MARGIN + 0.3,
-            ty,
-            CONTENT_W - 0.5,
-            th,
-            tk,
-            size,
-            NAVY,
+            MARGIN,
+            ty + 0.25,
+            3,
+            0.22,
+            "TAKEAWAY",
+            11,
+            st["ink"],
             bold=True,
             anchor=MSO_ANCHOR.MIDDLE,
-            code_color=NAVY,
+        )
+        if src:
+            text(
+                slide,
+                MARGIN + 3,
+                ty + 0.25,
+                CONTENT_W - 3,
+                0.22,
+                src,
+                10,
+                SOFT,
+                align=PP_ALIGN.RIGHT,
+                anchor=MSO_ANCHOR.MIDDLE,
+            )
+        text(
+            slide,
+            MARGIN,
+            ty + 0.52,
+            tw,
+            text_h + 0.1,
+            tk,
+            size,
+            STRONG,
+            bold=True,
+            code_color=st["ink"],
         )
         bottom = ty - 0.25
+    else:
+        if src:
+            text(slide, MARGIN, FOOTER_Y, CONTENT_W, 0.3, src, 10, SOFT)
+        bottom = CONTENT_BOTTOM
     if bottom - top < 1.5:
         warn(
             ctx_info["ctx"],
@@ -577,26 +787,38 @@ def chrome(slide, spec, ctx_info):
 def lay_bullets(slide, spec, top, bottom, ctx, info):
     aside = spec.get("aside")
     w = CONTENT_W if not aside else CONTENT_W * 0.56
+    # A short list grows to fill the room (up to 24pt, readable from the back) and sits in the
+    # middle of it, so the lower third is not left empty.
     bullets(
-        slide, MARGIN, top, w, bottom - top, spec.get("bullets", []), ctx, marker=info["accent"]
+        slide,
+        MARGIN,
+        top,
+        w,
+        bottom - top,
+        spec.get("bullets", []),
+        ctx,
+        marker=info["st"]["ink"],
+        start=24 if not aside else 22,
+        anchor_top=False,
     )
     if aside:
         ax = MARGIN + w + 0.4
         aw = CONTENT_W - w - 0.4
+        st = style_hex(aside["accent"]) if aside.get("accent") else info["st"]
         if aside.get("code") and not aside.get("title"):
-            code_block(slide, ax, top, aw, bottom - top, aside["code"], ctx, lang=aside.get("lang"))
-        else:
-            card(
+            code_block(
                 slide,
                 ax,
                 top,
                 aw,
                 bottom - top,
-                aside,
-                aside.get("accent", TEAL_DARK),
+                aside["code"],
                 ctx,
-                header_style="band",
+                lang=aside.get("lang"),
+                edge=st["fill"],
             )
+        else:
+            card(slide, ax, top, aw, bottom - top, aside, st, ctx, variant="wash")
 
 
 def card_body_fit(c: dict, inner_w: float, h: float, start: int, minimum: int = 12) -> int:
@@ -621,39 +843,19 @@ def lay_compare(slide, spec, top, bottom, ctx, info):
     emph = spec.get("emphasis", "right")
     gap = 0.4
     w = (CONTENT_W - gap) / 2
-    lacc = PANEL if emph == "right" else NAVY
-    racc = NAVY if emph in ("right", "none") else PANEL
+    # The side the slide argues for is "win" (wash, ink outline); the other is neutral.
     if emph == "none":
-        lacc = TEAL_DARK
+        lvar = rvar = "wash"
+    elif emph == "left":
+        lvar, rvar = "win", "neutral"
+    else:
+        lvar, rvar = "neutral", "win"
     # Both cards use one size, or the pair would not read as a comparison.
-    inner_w = w - 0.55
+    inner_w = w - 0.56
     size = min(card_body_fit(c, inner_w, bottom - top, 22) for c in (left, right))
-    card(
-        slide,
-        MARGIN,
-        top,
-        w,
-        bottom - top,
-        left,
-        left.get("accent", lacc),
-        ctx,
-        header_style="band",
-        body_start=size,
-        center=True,
-    )
-    card(
-        slide,
-        MARGIN + w + gap,
-        top,
-        w,
-        bottom - top,
-        right,
-        right.get("accent", racc),
-        ctx,
-        header_style="band",
-        body_start=size,
-        center=True,
-    )
+    for c, cx, var in ((left, MARGIN, lvar), (right, MARGIN + w + gap, rvar)):
+        st = style_hex(c["accent"]) if c.get("accent") else info["st"]
+        card(slide, cx, top, w, bottom - top, c, st, ctx, variant=var, body_start=size)
 
 
 def lay_cards(slide, spec, top, bottom, ctx, info):
@@ -687,7 +889,11 @@ def lay_cards(slide, spec, top, bottom, ctx, info):
         top += rows * (tall - h) / 2
     for i, c in enumerate(cards):
         r, col = divmod(i, cols)
-        acc = c.get("accent") or PART_ACCENTS[i % len(PART_ACCENTS)]
+        # The row lands on its last card, drawn in the solid fill; a card's own accent is a fill too.
+        if c.get("accent"):
+            st, var = style_hex(c["accent"]), "fill"
+        else:
+            st, var = info["st"], ("fill" if i == n - 1 and n > 1 else "wash")
         card(
             slide,
             MARGIN + col * (w + gap),
@@ -695,10 +901,11 @@ def lay_cards(slide, spec, top, bottom, ctx, info):
             w,
             h,
             c,
-            acc,
+            st,
             ctx,
+            variant=var,
             body_start=start,
-            center=True,
+            upper=True,
         )
 
 
@@ -743,7 +950,8 @@ def lay_table(slide, spec, top, bottom, ctx, info):
     if style is None:
         style = tblPr.makeelement(qn("a:tableStyleId"), {})
         tblPr.append(style)
-    style.text = "{5940675A-B579-460E-94D1-54222C63F5DA}"  # "No Style, Table Grid"
+    style.text = "{2D5ABB26-0587-4C30-8999-92F81FD0307C}"  # "No Style, No Grid"
+    st = info["st"]
     for j, wd in enumerate(widths):
         tbl.columns[j].width = Inches(wd)
     for i, cells in enumerate([header, *rows]):
@@ -755,25 +963,47 @@ def lay_table(slide, spec, top, bottom, ctx, info):
             cell.vertical_anchor = MSO_ANCHOR.MIDDLE
             cell.fill.solid()
             if i == 0:
-                cell.fill.fore_color.rgb = rgb(NAVY)
+                cell.fill.fore_color.rgb = rgb(st["wash"])
             elif (i - 1) in highlight:
-                cell.fill.fore_color.rgb = rgb(TINT)
+                cell.fill.fore_color.rgb = rgb(st["tint"])
             else:
-                cell.fill.fore_color.rgb = rgb(WHITE if i % 2 else ROW_ALT)
+                cell.fill.fore_color.rgb = rgb(WHITE)
+            cell_rule(cell, BORDER_STRONG if i == 0 else BORDER)
             tf = cell.text_frame
             tf.word_wrap = True
             p = tf.paragraphs[0]
             p.line_spacing = 1.0
             if i == 0:
-                add_runs(p, val, size, WHITE, bold=True, code_color=TEAL)
-            else:
                 add_runs(
-                    p,
-                    val,
-                    size,
-                    INK if j == 0 else SLATE,
-                    bold=(j == 0 and spec.get("bold_first", True)),
+                    p, plain(val).upper(), min(size, 12), st["ink"], bold=True, code_color=st["ink"]
                 )
+            elif j == 0:
+                add_runs(p, val, size, STRONG, bold=spec.get("bold_first", True))
+            elif j == 1 and ncol >= 3:
+                add_runs(p, val, size, st["ink"], bold=True)
+            elif j == ncol - 1 and ncol >= 3:
+                add_runs(p, val, size, SOFT)
+            else:
+                add_runs(p, val, size, TEXT)
+
+
+def cell_rule(cell, color: str) -> None:
+    """A table cell with a bottom rule only: the left, right and top borders are switched off."""
+    tcPr = cell._tc.get_or_add_tcPr()
+    first_fill = tcPr.find(qn("a:solidFill"))
+    for side, on in (("a:lnL", False), ("a:lnR", False), ("a:lnT", False), ("a:lnB", True)):
+        ln = tcPr.makeelement(qn(side), {"w": "9525" if on else "0"})
+        if on:
+            fill = ln.makeelement(qn("a:solidFill"), {})
+            clr = fill.makeelement(qn("a:srgbClr"), {"val": color})
+            fill.append(clr)
+            ln.append(fill)
+        else:
+            ln.append(ln.makeelement(qn("a:noFill"), {}))
+        if first_fill is not None:
+            first_fill.addprevious(ln)
+        else:
+            tcPr.append(ln)
 
 
 def lay_flow(slide, spec, top, bottom, ctx, info):
@@ -783,9 +1013,10 @@ def lay_flow(slide, spec, top, bottom, ctx, info):
     box_w = min(2.6, (CONTENT_W - gap * (n - 1)) / n)
     total_w = box_w * n + gap * (n - 1)
     x0 = MARGIN + (CONTENT_W - total_w) / 2
-    lab_size = 17 if box_w > 2 else 14
+    lab_size = 18 if box_w > 2 else 15
     sub_size = lab_size - 4
-    box_h = (
+    box_h = max(
+        1.4,
         max(
             est_h(plain(s["label"] if isinstance(s, dict) else s), box_w - 0.3, lab_size, bold=True)
             + (
@@ -795,20 +1026,34 @@ def lay_flow(slide, spec, top, bottom, ctx, info):
             )
             for s in steps
         )
-        + 0.45
+        + 0.45,
     )
-    y = top + 0.1
+    # The row, its loop and what sits under it are centred as one group in the content area,
+    # so a flow with a short caption does not leave the lower third empty.
+    loop_h = 0.9 if spec.get("loop") else 0
+    below_w = CONTENT_W
+    below_room = bottom - top - 0.1 - box_h - loop_h - 0.35
+    if spec.get("bullets"):
+        _, bsize, _ = bullet_layout(spec["bullets"], below_w, below_room, 20, 13)
+        below_h = 0.35 + bullets_height(spec["bullets"], below_w, bsize)
+    elif spec.get("caption"):
+        below_h = 0.35 + est_h(spec["caption"], below_w, 18)
+    else:
+        below_h = 0
+    group_h = box_h + loop_h + below_h
+    y = top + max(0.1, (bottom - top - group_h) / 2)
+    st = info["st"]
     for i, s in enumerate(steps):
         s = s if isinstance(s, dict) else {"label": s}
         x = x0 + i * (box_w + gap)
-        fill = s.get("accent") or (
-            ORANGE
-            if i == n - 1 and spec.get("end_accent", True)
-            else FLOW_FILLS[i % len(FLOW_FILLS)]
-        )
-        rect(slide, x, y, box_w, box_h, fill, shape=MSO_SHAPE.ROUNDED_RECTANGLE, radius=0.12)
+        # Boxes sit in the beat's wash; the one the flow ends on (or one with its own accent) is solid.
+        if s.get("accent"):
+            bs, solid = style_hex(s["accent"]), True
+        else:
+            bs, solid = st, i == n - 1 and spec.get("end_accent", True)
+        fill = bs["fill"] if solid else bs["wash"]
+        rect(slide, x, y, box_w, box_h, fill, shape=MSO_SHAPE.ROUNDED_RECTANGLE, radius=0.08)
         content = [s["label"]] + ([s["sub"]] if s.get("sub") else [])
-        light = is_light(fill)
         tb = text(
             slide,
             x + 0.15,
@@ -817,27 +1062,30 @@ def lay_flow(slide, spec, top, bottom, ctx, info):
             box_h,
             content,
             lab_size,
-            INK if light else WHITE,
+            bs["on"] if solid else STRONG,
             align=PP_ALIGN.CENTER,
             anchor=MSO_ANCHOR.MIDDLE,
-            code_color=TEAL_DARK if light else TINT,
+            code_color=bs["on"] if solid else INDIGO,
         )
         for r in tb.text_frame.paragraphs[0].runs:
             r.font.bold = True
         if s.get("sub"):
             for r in tb.text_frame.paragraphs[1].runs:
                 r.font.size = Pt(sub_size)
-                r.font.color.rgb = rgb(SLATE if light else TINT)
+                r.font.color.rgb = rgb(bs["on"] if solid else SOFT)
         if i < n - 1:
-            line(
+            text(
                 slide,
-                x + box_w + 0.06,
-                y + box_h / 2,
-                x + box_w + gap - 0.06,
-                y + box_h / 2,
-                SLATE,
-                2,
-                arrow=True,
+                x + box_w,
+                y,
+                gap,
+                box_h,
+                "→",
+                22,
+                st["ink"],
+                bold=True,
+                align=PP_ALIGN.CENTER,
+                anchor=MSO_ANCHOR.MIDDLE,
             )
     cy = y + box_h
     loop = spec.get("loop")
@@ -845,9 +1093,9 @@ def lay_flow(slide, spec, top, bottom, ctx, info):
         lx1 = x0 + total_w - box_w / 2
         lx0 = x0 + box_w / 2
         ly = cy + 0.45
-        line(slide, lx1, cy, lx1, ly, GREEN, 1.75)
-        line(slide, lx1, ly, lx0, ly, GREEN, 1.75)
-        line(slide, lx0, ly, lx0, cy + 0.04, GREEN, 1.75, arrow=True)
+        line(slide, lx1, cy, lx1, ly, st["ink"], 1.75)
+        line(slide, lx1, ly, lx0, ly, st["ink"], 1.75)
+        line(slide, lx0, ly, lx0, cy + 0.04, st["ink"], 1.75, arrow=True)
         text(
             slide,
             lx0,
@@ -856,7 +1104,7 @@ def lay_flow(slide, spec, top, bottom, ctx, info):
             0.35,
             loop,
             13,
-            GREEN,
+            st["ink"],
             italic=True,
             align=PP_ALIGN.CENTER,
         )
@@ -870,7 +1118,7 @@ def lay_flow(slide, spec, top, bottom, ctx, info):
             bottom - cy - 0.35,
             spec["bullets"],
             ctx,
-            marker=info["accent"],
+            marker=st["ink"],
             start=19,
         )
     elif spec.get("caption"):
@@ -882,7 +1130,7 @@ def lay_flow(slide, spec, top, bottom, ctx, info):
             bottom - cy - 0.35,
             spec["caption"],
             17,
-            SLATE,
+            SOFT,
             align=PP_ALIGN.CENTER,
         )
 
@@ -913,9 +1161,20 @@ def lay_steps(slide, spec, top, bottom, ctx, info):
         warn(ctx, "steps overflow — shorten the step text")
     for i, it in enumerate(items):
         y = top + i * (row_h + gap)
-        acc = it.get("accent") or PART_ACCENTS[i % len(PART_ACCENTS)]
-        rect(slide, x, y, w, row_h, WHITE, line=BORDER)
-        rect(slide, x + 0.18, y + (row_h - num_d) / 2, num_d, num_d, acc, shape=MSO_SHAPE.OVAL)
+        rs = style_hex(it["accent"]) if it.get("accent") else info["st"]
+        rect(
+            slide,
+            x,
+            y,
+            w,
+            row_h,
+            info["st"]["wash"],
+            shape=MSO_SHAPE.ROUNDED_RECTANGLE,
+            radius=0.06,
+        )
+        rect(
+            slide, x + 0.18, y + (row_h - num_d) / 2, num_d, num_d, rs["fill"], shape=MSO_SHAPE.OVAL
+        )
         text(
             slide,
             x + 0.18,
@@ -924,7 +1183,7 @@ def lay_steps(slide, spec, top, bottom, ctx, info):
             num_d,
             str(it.get("n", i + 1)),
             size - 2,
-            WHITE,
+            rs["on"],
             bold=True,
             align=PP_ALIGN.CENTER,
             anchor=MSO_ANCHOR.MIDDLE,
@@ -990,7 +1249,17 @@ def lay_steps(slide, spec, top, bottom, ctx, info):
 def lay_code(slide, spec, top, bottom, ctx, info):
     side = spec.get("bullets")
     w = CONTENT_W if not side else CONTENT_W * 0.6
-    code_block(slide, MARGIN, top, w, bottom - top, spec["code"], ctx, lang=spec.get("lang"))
+    code_block(
+        slide,
+        MARGIN,
+        top,
+        w,
+        bottom - top,
+        spec["code"],
+        ctx,
+        lang=spec.get("lang"),
+        edge=info["st"]["fill"],
+    )
     if side:
         bullets(
             slide,
@@ -1000,21 +1269,26 @@ def lay_code(slide, spec, top, bottom, ctx, info):
             bottom - top,
             side,
             ctx,
-            marker=info["accent"],
+            marker=info["st"]["ink"],
             start=18,
         )
 
 
 def lay_statement(slide, spec, top, bottom, ctx, info):
     stmt = spec["statement"]
-    size = 36
+    size = 34
     w = CONTENT_W - 1.2
-    while size > 22 and est_h(stmt, w, size, bold=True) > (bottom - top) * 0.7:
+    while size > 22 and est_h(stmt, w, size) > (bottom - top) * 0.7:
         size -= 2
-    h = est_h(stmt, w, size, bold=True)
+    h = est_h(stmt, w, size, spacing=1.15)
     by = top + (bottom - top - h) / 2 - 0.3
     rect(
-        slide, MARGIN + 0.3, by, 0.12, h + (0.6 if spec.get("attribution") else 0.1), info["accent"]
+        slide,
+        MARGIN + 0.3,
+        by,
+        0.1,
+        h + (0.6 if spec.get("attribution") else 0.1),
+        info["st"]["fill"],
     )
     text(
         slide,
@@ -1024,15 +1298,13 @@ def lay_statement(slide, spec, top, bottom, ctx, info):
         h + 0.2,
         stmt,
         size,
-        NAVY,
-        bold=True,
-        spacing=1.05,
-        code_color=TEAL_DARK,
+        STRONG,
+        font=SERIF,
+        spacing=1.15,
+        code_color=INDIGO,
     )
     if spec.get("attribution"):
-        text(
-            slide, MARGIN + 0.8, by + h + 0.15, w, 0.4, spec["attribution"], 17, SLATE, italic=True
-        )
+        text(slide, MARGIN + 0.8, by + h + 0.15, w, 0.4, spec["attribution"], 14, SOFT)
 
 
 def raster(path: Path) -> Path:
@@ -1113,8 +1385,7 @@ def lay_image(slide, spec, top, bottom, ctx, info):
             cap_h,
             cap,
             cap_size,
-            SLATE,
-            italic=True,
+            SOFT,
             align=PP_ALIGN.CENTER,
         )
     if side:
@@ -1126,7 +1397,7 @@ def lay_image(slide, spec, top, bottom, ctx, info):
             bottom - top,
             side,
             ctx,
-            marker=info["accent"],
+            marker=info["st"]["ink"],
             start=20,
             anchor_top=False,
         )
@@ -1153,28 +1424,26 @@ LAYOUTS = {
 def title_slide(prs, deck, parts):
     s = prs.slides.add_slide(prs.slide_layouts[6])
     set_bg(s, BG)
-    rect(s, 8.2, -1.2, 5.6, 5.6, "DCEFF7", shape=MSO_SHAPE.OVAL)
-    rect(s, 9.6, 4.4, 4.4, 4.4, "F6E6DB", shape=MSO_SHAPE.OVAL)
     panel_w = 6.4
-    rect(s, 0, 0, panel_w, SLIDE_H, NAVY)
-    rect(s, 0, 0, 0.18, SLIDE_H, ORANGE)
+    panel_ink, panel_soft = "1C1700", "7A5C00"
+    rect(s, 0, 0, panel_w, SLIDE_H, "FFD54F")
     title = deck["title"]
     size = 60
     while size > 36 and est_h(title, panel_w - 1.0, size, bold=True) > 2.2:
         size -= 2
     th = est_h(title, panel_w - 1.0, size, bold=True, spacing=0.95)
-    text(s, 0.6, 1.1, panel_w - 1.0, th + 0.2, title, size, WHITE, bold=True, spacing=0.95)
+    text(s, 0.6, 1.1, panel_w - 1.0, th + 0.2, title, size, panel_ink, bold=True, spacing=0.95)
     y = 1.1 + th + 0.35
     if deck.get("subtitle"):
         sh = est_h(deck["subtitle"], panel_w - 1.0, 24)
-        text(s, 0.6, y, panel_w - 1.0, sh + 0.1, deck["subtitle"], 24, TEAL)
+        text(s, 0.6, y, panel_w - 1.0, sh + 0.1, deck["subtitle"], 24, panel_soft)
         y += sh + 0.35
-    rect(s, 0.6, y, panel_w - 1.4, 0.05, ORANGE)
+    rect(s, 0.6, y, 1.2, 0.06, panel_ink)
     y += 0.35
     if deck.get("tagline"):
-        text(s, 0.6, y, panel_w - 1.0, 1.6, deck["tagline"], 15, MUTED, spacing=1.25)
+        text(s, 0.6, y, panel_w - 1.0, 1.6, deck["tagline"], 15, panel_soft, spacing=1.25)
     if deck.get("byline"):
-        text(s, 0.6, SLIDE_H - 0.8, panel_w - 1.0, 0.4, deck["byline"], 12, MUTED, italic=True)
+        text(s, 0.6, SLIDE_H - 0.8, panel_w - 1.0, 0.4, deck["byline"], 12, panel_soft)
 
     # part cards
     n = len(parts)
@@ -1185,11 +1454,20 @@ def title_slide(prs, deck, parts):
     y0 = top + (bottom - top - (h * n + gap * (n - 1))) / 2
     for i, p in enumerate(parts):
         y = y0 + i * (h + gap)
-        acc = PART_ACCENTS[i % len(PART_ACCENTS)]
         rect(s, x, y, w, h, WHITE, line=BORDER)
-        rect(s, x, y, 0.1, h, acc)
+        rect(s, x, y, 0.1, h, style(part_beat(p))["fill"])
         ts = 17 if h > 0.9 else 14
-        text(s, x + 0.3, y + 0.14, w - 0.45, 0.4, f"Part {i + 1}: {p['title']}", ts, INK, bold=True)
+        text(
+            s,
+            x + 0.3,
+            y + 0.14,
+            w - 0.45,
+            0.4,
+            f"Part {i + 1}: {p['title']}",
+            ts,
+            STRONG,
+            bold=True,
+        )
         if p.get("summary"):
             text(
                 s,
@@ -1199,49 +1477,68 @@ def title_slide(prs, deck, parts):
                 h - 0.5,
                 p["summary"],
                 ts - 4,
-                SLATE,
+                TEXT,
             )
     if deck.get("reference"):
-        text(
-            s,
-            x,
-            SLIDE_H - 0.55,
-            w,
-            0.3,
-            deck["reference"],
-            11,
-            MUTED,
-            italic=True,
-            align=PP_ALIGN.RIGHT,
-        )
+        text(s, x, SLIDE_H - 0.55, w, 0.3, deck["reference"], 11, SOFT, align=PP_ALIGN.RIGHT)
     s.notes_slide.notes_text_frame.text = deck.get("notes", "")
 
 
-def section_slide(prs, part, idx, number):
+def section_slide(prs, part, idx, number, n_parts):
     s = prs.slides.add_slide(prs.slide_layouts[6])
-    acc = PART_ACCENTS[idx % len(PART_ACCENTS)]
-    set_bg(s, NAVY)
-    rect(s, 0, 0, 0.18, SLIDE_H, acc if acc != NAVY else TEAL)
+    st = style(part_beat(part))
+    set_bg(s, WHITE)
+    panel_w = round(SLIDE_W * 0.38, 2)
+    rect(s, 0, 0, panel_w, SLIDE_H, st["fill"])
+    # "PART n" sits right before the title in shape order: the tests read it as "PART n <title>".
+    text(s, 0.6, 0.7, panel_w - 1.0, 0.4, f"PART {idx + 1}", 16, st["on"], bold=True)
+    x0 = panel_w + 0.6
+    tw = SLIDE_W - x0 - MARGIN
+    tsize = 40
+    while tsize > 28 and est_h(part["title"], tw, tsize, bold=True) > 1.6:
+        tsize -= 2
+    th = est_h(part["title"], tw, tsize, bold=True, spacing=0.95)
+    text(s, x0, 0.9, tw, th + 0.2, part["title"], tsize, STRONG, bold=True, spacing=0.95)
+    text(s, 0.6, 1.1, panel_w - 1.0, 0.4, f"OF {n_parts}", 12, st["on"])
     text(
         s,
-        0.9,
-        1.6,
-        6,
-        0.5,
-        f"PART {idx + 1}",
-        18,
-        ORANGE if acc == NAVY else acc if acc not in (NAVY, TEAL_DARK, PURPLE, GREEN) else TEAL,
+        0.45,
+        SLIDE_H - 3.0,
+        panel_w - 0.8,
+        2.4,
+        str(idx + 1),
+        144,
+        st["on"],
         bold=True,
+        spacing=0.85,
+        anchor=MSO_ANCHOR.BOTTOM,
     )
-    th = est_h(part["title"], 6.0, 50, bold=True)
-    text(s, 0.9, 2.15, 6.0, th + 0.2, part["title"], 50, WHITE, bold=True, spacing=0.95)
-    y = 2.15 + th + 0.3
+    y = 0.9 + th + 0.3
     if part.get("summary"):
-        text(s, 0.9, y, 5.8, 1.5, part["summary"], 20, TEAL)
+        sh = est_h(part["summary"], tw, 18)
+        text(s, x0, y, tw, sh + 0.1, part["summary"], 18, TEXT)
+        y += sh + 0.3
+    # agenda bar: one segment per agenda part, the current one filled
+    if n_parts:
+        gap = 0.08
+        seg = (tw - gap * (n_parts - 1)) / n_parts
+        for k in range(n_parts):
+            rect(
+                s,
+                x0 + k * (seg + gap),
+                SLIDE_H - 0.95,
+                seg,
+                0.1,
+                st["fill"] if k == idx else None,
+                line=None if k == idx else BORDER_STRONG,
+            )
     titles = [plain(sl.get("title", "")) for sl in part.get("slides", []) if sl.get("title")]
     if titles:
-        x, w = 7.4, SLIDE_W - 7.4 - 0.8
-        avail = SLIDE_H - 2.4
+        y += 0.1
+        text(s, x0, y, tw, 0.3, "IN THIS PART", 11, st["ink"], bold=True)
+        y += 0.42
+        x, w = x0, tw
+        avail = SLIDE_H - 1.3 - y
 
         def list_h(size):
             return sum(est_h(t, w, size, spacing=1.0) for t in titles) + size / 72 * 0.7 * (
@@ -1256,22 +1553,10 @@ def section_slide(prs, part, idx, number):
         while len(titles) > 2 and list_h(size) > avail:
             titles = [*titles[: len(titles) - 2], f"and {full - len(titles) + 2} more"]
         total = list_h(size)
-        y0 = (SLIDE_H - total) / 2
-        line(s, x - 0.35, y0, x - 0.35, y0 + total, "3B5A80", 1.5)
-        tb = text(s, x, y0, w, total + 0.2, titles, size, LIGHT, spacing=1.0)
+        tb = text(s, x, y, w, total + 0.2, titles, size, TEXT, spacing=1.0)
         for p in tb.text_frame.paragraphs[1:]:
             p.space_before = Pt(size * 0.7)
-    text(
-        s,
-        SLIDE_W - MARGIN - 1.5,
-        FOOTER_Y,
-        1.5,
-        0.3,
-        str(number),
-        10,
-        "64748B",
-        align=PP_ALIGN.RIGHT,
-    )
+    text(s, SLIDE_W - MARGIN - 1.5, FOOTER_Y, 1.5, 0.3, str(number), 10, SOFT, align=PP_ALIGN.RIGHT)
     s.notes_slide.notes_text_frame.text = part.get("notes", "")
 
 
@@ -1284,7 +1569,7 @@ def check_keys(parts: list[dict]) -> None:
     """Stop the build on a `level` or `beat` the spec does not define. Runs on every build, filtered or not."""
     for part in parts:
         for sl in part.get("slides", []):
-            if sl.get("level", LEVELS[0]) not in LEVELS:
+            if slide_level(sl) not in LEVELS:
                 sys.exit(
                     f"ERROR slide '{sl.get('title')}': unknown level '{sl['level']}' (use {', '.join(LEVELS)})"
                 )
@@ -1296,15 +1581,13 @@ def check_keys(parts: list[dict]) -> None:
 
 def filter_parts(parts: list[dict], level: str) -> list[dict]:
     """The parts a build at `level` draws. Closing parts stay whole; an agenda part left with no slides goes."""
-    limit = LEVELS.index(level)
+    limit = LEVELS.index(LEVEL_ALIASES.get(level, level))
     kept = []
     for part in parts:
         if not part.get("agenda", True):
             kept.append(part)
             continue
-        slides = [
-            sl for sl in part.get("slides", []) if LEVELS.index(sl.get("level", LEVELS[0])) <= limit
-        ]
+        slides = [sl for sl in part.get("slides", []) if LEVELS.index(slide_level(sl)) <= limit]
         if slides:
             kept.append({**part, "slides": slides})
     return kept
@@ -1315,6 +1598,7 @@ def build(spec_path: Path, level: str | None = None, out: Path | None = None) ->
     deck, all_parts = spec["deck"], spec["parts"]
     base = spec_path.parent
     check_keys(all_parts)
+    level = LEVEL_ALIASES.get(level, level) if level else level
     parts = filter_parts(all_parts, level) if level else all_parts
     lecture = (
         deck_graph.lecture_from(spec_path, spec, deck_graph.ROOT) if "lecture" in spec else None
@@ -1326,14 +1610,17 @@ def build(spec_path: Path, level: str | None = None, out: Path | None = None) ->
     prs.slide_width, prs.slide_height = Inches(SLIDE_W), Inches(SLIDE_H)
 
     title_slide(prs, deck, deck_frames.agenda_parts(parts))
-    for step in deck_frames.walk(parts):
+    steps = list(deck_frames.walk(parts))
+    total = steps[-1].number if steps else 1
+    n_agenda = len(deck_frames.agenda_parts(parts))
+    for step in steps:
         part, number = step.part, step.number
-        idx = len(PART_ACCENTS) - 1 if step.agenda_idx is None else step.agenda_idx
         if step.slide is None:
-            section_slide(prs, part, idx, number)
+            section_slide(prs, part, step.agenda_idx or 0, number, n_agenda)
             continue
         sl = step.slide
-        accent = PART_ACCENTS[idx % len(PART_ACCENTS)]
+        st = style(sl.get("beat") or part_beat(part))
+        crumb = deck_frames.crumb(step)
         layout = sl.get("layout", deck_frames.DEFAULT_LAYOUT)
         ctx = f"slide {number} '{plain(sl.get('title', ''))}'"
         if layout not in LAYOUTS:
@@ -1342,10 +1629,12 @@ def build(spec_path: Path, level: str | None = None, out: Path | None = None) ->
         s = prs.slides.add_slide(prs.slide_layouts[6])
         src = sl.get("source")
         info = {
-            "accent": accent if accent != NAVY else ORANGE,
-            "kicker_color": ORANGE if accent in (NAVY, ORANGE) else TEAL,
-            "crumb": deck_frames.crumb(step),
+            "accent": st["ink"],
+            "st": st,
+            "crumb": crumb,
+            "where": f"{crumb} · {number} / {total}" if crumb else f"{number} / {total}",
             "number": number,
+            "total": total,
             "source": f"Source: {src}" if src else "",
             "ctx": ctx,
             "base": base,
@@ -1912,7 +2201,7 @@ def main() -> None:
     )
     ap.add_argument(
         "--level",
-        choices=LEVELS,
+        choices=LEVELS + tuple(LEVEL_ALIASES),
         help="draw only slides at or below this level, to <output>-<level>.pptx",
     )
     ap.add_argument(

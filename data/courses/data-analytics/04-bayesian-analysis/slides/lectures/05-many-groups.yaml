@@ -1,0 +1,1249 @@
+# imported_hash: 7f20c7353a1ab04b
+# Lecture on step 5, Many groups: notes/07-multilevel-models-and-partial-pooling.md and 07b-varying-slopes-measurement-error-and-missing-data.md, in the notes' order.
+# make slides PILLAR=data-analytics/04-bayesian-analysis LECTURE=05-many-groups STRICT=1 PREVIEW=1
+# Levels: a slide with no level is the intro, `core` is the core lesson, `deep` is the optional extension (code and maths).
+deck:
+  title: Many groups
+  subtitle: Multilevel models and partial pooling
+  tagline: "Partial pooling · Clustering · Many segments · Few groups · Slopes · Measurement error · Missing data"
+  reference: "Notes: data-analytics/04-bayesian-analysis, notes 7 and 7b"
+  output: 05-many-groups.pptx
+  notes: >-
+    This is the seventh lecture of the Bayesian analysis series, after the overview, infer, compute and check, decide, and
+    Bayesian machine learning. It covers step 5. By the end you should be able to partially pool many segment effects, choose
+    between clustered standard errors, fixed effects and a multilevel model, say when pooling does not help, and handle
+    varying slopes, measurement error and missing data.
+
+lecture:
+  covers:
+    - data-analytics/04-bayesian-analysis/notes/07-multilevel-models-and-partial-pooling.md
+    - data-analytics/04-bayesian-analysis/notes/07b-varying-slopes-measurement-error-and-missing-data.md
+  requires: [data-analytics/04-bayesian-analysis/notes/06b-variational-inference-and-gaussian-processes.md]
+  next: [data-analytics/05-visualisation-and-storytelling/README.md]
+  related:
+    - data-analytics/02-probability-and-statistics/notes/02-probability-foundations.md
+    - data-analytics/02-probability-and-statistics/notes/06-regression-and-glms.md
+    - data-analytics/02-probability-and-statistics/notes/05-hypothesis-testing.md
+    - data-analytics/02-probability-and-statistics/notes/08-panel-data-and-fixed-effects.md
+
+parts:
+  - title: Partial pooling
+    divider: false
+    summary: Three estimates · The weight · What it buys · The ICC
+    notes: We start with one number per group and the three ways to estimate it, then measure what borrowing strength buys on simulated data with a known truth.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Three ways to estimate one number per group
+        title: Is that market special, or small and lucky?
+        recall: Why is one market with a lift three times the average hard to read?
+        answer: "It may be special, or it may be small and lucky. Treating every market alone believes the luck, and averaging them all ignores any real difference."
+        kicker: The problem
+        statement: "Treating every market alone believes the luck. Averaging them all ignores any real difference."
+        attribution: Larkspur's checkout test in 24 markets
+        takeaway: A multilevel model estimates all the markets together, and each borrows strength in proportion to how little data it has.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          Larkspur runs its checkout test in 24 markets and the dashboard shows one with a lift three times the average. The chapter
+          measures what borrowing strength buys on simulated data where the truth is known, and then measures where it buys nothing.
+
+      - layout: cards
+        beat: fundamentals
+        section: Three ways to estimate one number per group
+        title: Three ways to estimate revenue per user for a market
+        recall: What are the three ways to estimate one number per group?
+        answer: "No pooling uses the market's own mean, complete pooling gives every market the overall mean, and partial pooling takes a weighted average of the two."
+        cards:
+          - {title: No pooling, accent: fundamentals, body: "The market's own mean. **Unbiased**, and noisy when the market is small"}
+          - {title: Complete pooling, accent: practice, body: "The overall mean for every market. **Stable**, and it erases every real difference"}
+          - {title: Partial pooling, accent: pitfalls, body: "A **weighted average** of the two, with the weights learned from the data"}
+        takeaway: Partial pooling sits between the two extremes, and the model decides how far.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          Each user belongs to one market. McElreath frames it as complete pooling underfitting and no pooling overfitting.
+
+      - layout: bullets
+        beat: fundamentals
+        section: Three ways to estimate one number per group
+        level: core
+        title: The weight on a market's own mean
+        recall: What weight does a market with n users put on its own mean?
+        answer: "tau squared divided by tau squared plus sigma squared over n. Tau is the sd of true market means and sigma the sd of users within a market."
+        bullets:
+          - "**weight = tau^2 / (tau^2 + sigma^2 / n)**"
+          - "tau is the sd of true market means, sigma the sd of users within a market"
+          - "sigma^2 / n is how noisy the market's own mean is"
+          - "Noisy markets get little weight, and precise ones keep nearly all of theirs"
+          - "The model estimates tau and sigma, so you do not pick the shrinkage by hand"
+        takeaway: More users, or more real spread between markets, means more weight on the market's own mean.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          MixedLM fits it with REML, restricted maximum likelihood, the usual way to estimate variances without the bias from also
+          estimating the means. Its estimate for each market is called a BLUP, the best linear unbiased prediction.
+
+      - layout: code
+        beat: practice
+        section: Three ways to estimate one number per group
+        level: deep
+        title: Simulate markets, then fit the three estimates
+        recall: How does the chapter produce the three estimates?
+        answer: "It simulates 40 markets of very different sizes, fits a random-intercept MixedLM with REML, and compares the group means, the overall mean and the fitted values."
+        lead: "Users nested in markets of very different sizes."
+        lang: python
+        code: |-
+          fit = smf.mixedlm("y ~ 1", df,
+                            groups="market").fit(reml=True)
+          partial = [fit.fe_params["Intercept"]
+                     + fit.random_effects[g].iloc[0]
+                     for g in groups]
+          none = df.groupby("market")["y"].mean()
+          complete = df["y"].mean()
+          # 40 markets, 2221 users
+          # between-market sd: true 6.0, estimated 5.77
+          # within-market sd:  true 30.0, estimated 29.74
+        bullets:
+          - "**groups** names the grouping"
+          - "The fit recovers both sds close to the truth"
+          - "Market sizes run from 5 to 262 users"
+        takeaway: The model recovers tau and sigma from the data, and those two numbers set every market's weight.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          The simulation draws market sizes from a log-normal clipped between 5 and 1,500. The true sds are 6.0 between markets
+          and 30.0 within them.
+
+      - layout: table
+        beat: practice
+        section: Three ways to estimate one number per group
+        level: core
+        title: Small markets move a lot, large ones barely move
+        recall: How far did the five-user and the 262-user market move?
+        answer: "The five-user market measured 54.26 against a true 45.39, with weight 0.16, so the model pulled it to 42.10. The 262-user market has weight 0.91 and barely moves."
+        header: [Users, True, No pooling, Partial, Weight on own mean]
+        widths: [1.4, 1.6, 2.0, 1.8, 2.8]
+        rows:
+          - ["5", "45.39", "54.26", "42.10", "0.16"]
+          - ["11", "43.88", "36.16", "38.74", "0.29"]
+          - ["44", "32.65", "26.39", "31.44", "0.62"]
+          - ["128", "44.10", "42.03", "41.65", "0.83"]
+          - ["262", "40.72", "36.91", "37.18", "0.91"]
+        highlight: [0]
+        takeaway: The model pulls a market toward the overall mean in proportion to how little data it has.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          The five-user market measured 54.26 dollars against a true 45.39. With weight 0.16 the model pulls it to 42.10 dollars.
+
+      - layout: image
+        beat: practice
+        section: Three ways to estimate one number per group
+        title: The smallest markets move up to about 12 dollars
+        recall: What does the shrinkage plot show against market size?
+        answer: "Each market's own mean and its partially pooled estimate. The smallest markets move up to about 12 dollars towards the overall mean, and the largest barely move."
+        kicker: Shrinkage by size
+        image: ../../assets/sources/images/bayes-multilevel-shrinkage.png
+        caption: "Each market's own mean and its partially pooled estimate, against market size. The smallest markets move up to about 12 dollars and the largest barely move."
+        takeaway: Shrinkage is largest where the data is thinnest.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          The figure is generated by the chapter's practice script from its simulated markets.
+
+      - layout: table
+        beat: practice
+        section: Three ways to estimate one number per group
+        level: core
+        title: Partial pooling wins in every size band
+        recall: Which method has the lowest RMSE in each size band?
+        answer: "Partial pooling, in all of them: 3.54 overall against 5.69 and 5.47. For small markets complete pooling is close (4.61), and for large markets no pooling is (2.31)."
+        header: [This dataset, No pooling, Complete, Partial]
+        widths: [4.0, 1.8, 1.8, 1.8]
+        rows:
+          - ["All markets", "5.69", "5.47", "3.54"]
+          - ["Small, under 30 users (13)", "8.21", "4.61", "4.17"]
+          - ["Middle (24)", "4.11", "5.95", "3.32"]
+          - ["Large, 150 or more (3)", "2.31", "4.82", "2.06"]
+        highlight: [0]
+        takeaway: Partial pooling behaves like the better of the two at each size without being told which that is.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          For small markets no pooling is the worst choice at 8.21. For large markets the order reverses, 2.31 against 4.82.
+
+      - layout: bullets
+        beat: practice
+        section: Three ways to estimate one number per group
+        title: The same result on 200 new datasets
+        recall: How did partial pooling do over 200 new datasets?
+        answer: "RMSE was 3.47 against 5.13 for no pooling and 5.98 for complete pooling. It beat no pooling in 96% of datasets and complete pooling in 100%."
+        bullets:
+          - "**One dataset:** no pooling 5.69, complete pooling 5.47, partial pooling **3.54**"
+          - "**200 new datasets:** no pooling 5.13, complete pooling 5.98, partial pooling **3.47**"
+          - "Partial pooling beat no pooling in **96%** of datasets and complete pooling in **100%**"
+        takeaway: One dataset can flatter, and the replication says the win is not a fluke.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          Every example in the chapter is nested, each user in exactly one market. A user in several markets is a crossed design,
+          and PyMC is the easier route for it.
+
+      - layout: statement
+        beat: problem
+        section: Intraclass correlation is the design effect's input
+        title: An ICC of 3.6% looks ignorable
+        recall: Why does a small ICC still matter?
+        answer: "It applies to every pair of users in a market, so it multiplies the variance of the overall mean by about five."
+        kicker: The intraclass correlation
+        statement: "An ICC of 0.036 sounds ignorable, but it multiplies the variance of the overall mean by about five."
+        attribution: "ICC = tau^2 / (tau^2 + sigma^2)"
+        takeaway: The 3.6% applies to every pair of users in a market, so the clustering cost grows with cluster size.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          The ICC is the share of total variance between groups, and also the correlation between two users in the same market.
+          Probability foundations used it to build the design effect, 1 + (m - 1) rho. Here rho is a parameter the model estimates.
+
+      - layout: bullets
+        beat: practice
+        section: Intraclass correlation is the design effect's input
+        level: core
+        title: Which market size goes into the design effect
+        recall: How do the design effects from different market sizes compare?
+        answer: "The mean size of 56 gives 2.98, the user-weighted size of 104 gives 4.74, close to the exact 4.95. The clustered SE from this one dataset implies 3.85."
+        bullets:
+          - "ICC: true **0.038**, estimated **0.036**"
+          - "Mean market size (56): design effect **2.98**"
+          - "User-weighted size (104): design effect **4.74**"
+          - "Exact, from the true variances and these sizes: **4.95**"
+          - "(Clustered SE / naive SE) squared, one dataset: **3.85**"
+        takeaway: Weight by users, the size the average user sees, and expect one clustered SE to be noisy with 40 markets.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          The naive standard error of the mean is 0.642 and the clustered one 1.258. The textbook formula assumes equal groups.
+
+  - title: Slopes, toolkits and the choice of tool
+    divider: false
+    summary: Random slopes · MixedLM and PyMC · Clustered SEs, fixed effects or multilevel
+    notes: Next we let each group have its own trend, check two toolkits against each other, and choose between three tools.
+    slides:
+      - layout: bullets
+        beat: fundamentals
+        section: Random intercepts, then random slopes
+        title: A random intercept and a random slope
+        recall: What is the difference between a random intercept and a random slope?
+        answer: "A random intercept gives each group its own level. A random slope also gives each group its own effect of a predictor."
+        bullets:
+          - "**Random intercept:** each group has its own level, `groups` names the grouping, and every user shares one trend"
+          - "**Random slope:** each group has its own effect of a predictor, and `re_formula` names what varies by group"
+          - "Example: 150 users, 6 weeks, each with a trend"
+        takeaway: Name the grouping with groups, and name what varies by group with re_formula.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          The example is weekly revenue for 150 users over 6 weeks, where each user has their own level and their own trend.
+
+      - layout: table
+        beat: practice
+        section: Random intercepts, then random slopes
+        level: core
+        title: Same estimate, different standard errors
+        recall: "Why do the four fits share one estimate but not one standard error?"
+        answer: "The panel is balanced, so the estimate is 1.300 in all four. Naive OLS gives 0.296 because week varies only within a user, random intercepts alone say 0.222, and random slopes (0.276) and clustered OLS (0.277) agree."
+        lead: "The week effect is 1.300 in all four fits."
+        header: [Fit, SE of the week effect]
+        rows:
+          - [Naive OLS, "0.296"]
+          - [Random intercepts, "0.222"]
+          - [Random intercepts and slopes, "0.276"]
+          - ["OLS, clustered", "0.277"]
+        highlight: [1]
+        takeaway: Random intercepts alone say 0.222, about 20% below the 0.276 from the model that lets slopes vary.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          The point estimate is the same because the panel is balanced. Naive OLS is higher at 0.296, because week varies only
+          within a user. In psychology, hierarchical regression often means adding blocks of predictors, which is a different thing.
+
+      - layout: code
+        beat: practice
+        section: The same model in two toolkits
+        level: deep
+        title: The PyMC version uses the non-centred form
+        recall: How does the PyMC model draw each user's level and trend?
+        answer: "It draws a correlated pair from an LKJ prior on the covariance, in the non-centred form, then adds each user's level and trend to the fixed effects."
+        lead: "MixedLM is linear only, so this compares on a continuous metric."
+        lang: python
+        code: |-
+          chol, corr, sds = pm.LKJCholeskyCov(
+              "chol", n=2, eta=2,
+              sd_dist=pm.HalfNormal.dist(10),
+              compute_corr=True)
+          raw = pm.Normal("raw", 0, 1,
+                          shape=(n_users, 2))
+          u = pm.Deterministic(
+              "u", pm.math.dot(chol, raw.T).T)
+          pm.Normal("y",
+              intercept + u[user, 0]
+              + (trend + u[user, 1]) * week,
+              sigma, observed=y)
+        bullets:
+          - "**raw** is standard normal, so the sampler avoids the funnel"
+          - "The LKJ prior sets the correlation between level and trend"
+          - "target_accept 0.95"
+        takeaway: The non-centred form from chapter 2 is the default for a multilevel model in PyMC.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          Chapter 2's eight schools example showed why the sampler needs the non-centred form.
+
+      - layout: table
+        beat: practice
+        section: The same model in two toolkits
+        level: core
+        title: MixedLM and PyMC agree when the data carries the signal
+        recall: How close are MixedLM and PyMC on the first run?
+        answer: "Every parameter matches within 0.03 and each user's trend correlates at 1.000. Pooling cuts the error on each user's trend from 2.27 to 1.30."
+        header: [Parameter, Truth, MixedLM, PyMC]
+        widths: [3.2, 1.8, 1.8, 1.8]
+        rows:
+          - ["intercept", "40.0", "40.12", "40.12"]
+          - ["trend", "1.5", "1.30", "1.30"]
+          - ["sd_intercept", "8.0", "6.87", "6.90"]
+          - ["sd_slope", "2.5", "2.25", "2.28"]
+          - ["rho", "0.3", "0.33", "0.33"]
+        takeaway: With clean diagnostics, the two toolkits give the same answer to the cent.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          Diagnostics are clean, max r_hat 1.004, min ess_bulk 819 and no divergences. The largest gap for any user is 17 cents.
+
+      - layout: table
+        beat: pitfalls
+        section: The same model in two toolkits
+        title: Shrink the slope spread and they part ways
+        recall: What happens when the true slope spread falls from 2.5 to 1.0?
+        answer: "The fixed effects still agree, but MixedLM reports a slope sd of 0.46 and a correlation of 1.00 with no warning. PyMC gives 0.68 and 0.28 with a 90% interval of -0.27 to 0.79."
+        header: [Parameter, Truth, MixedLM, PyMC]
+        widths: [3.2, 1.8, 1.8, 1.8]
+        rows:
+          - ["trend", "1.5", "1.33", "1.33"]
+          - ["sd_intercept", "8.0", "6.92", "7.49"]
+          - ["sd_slope", "1.0", "0.46", "0.68"]
+          - ["rho", "0.3", "1.00", "0.28"]
+        highlight: [3]
+        takeaway: A correlation of exactly 1 comes with no warning, and it is the optimiser stopping at the edge.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          PyMC's rho interval runs from -0.27 to 0.79, so the data has said little, and the LKJ prior pulls towards zero. Its minimum
+          bulk ESS fell to 266 with r_hat 1.009.
+
+      - layout: statement
+        beat: pitfalls
+        section: The same model in two toolkits
+        title: Read a correlation of plus or minus 1 as a warning
+        recall: What does a boundary estimate such as a correlation of exactly 1 mean?
+        answer: "The data cannot separate the two random effects and the optimiser has stopped at the edge. The model is too rich for this data."
+        kicker: Boundary estimates
+        statement: "Read a correlation of exactly 1 as: this model is too rich for this data."
+        attribution: The chapter's reading of the MixedLM result
+        takeaway: Simplify the model, or use PyMC with a prior and report the interval.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          The same applies to a between-group sd of zero, which pools completely.
+
+      - layout: table
+        beat: fundamentals
+        section: "Which tool: the decision table"
+        level: core
+        title: Clustered SEs, fixed effects or a multilevel model
+        recall: Which tool answers which question?
+        answer: "Clustered SEs for a population average with groups as a nuisance, fixed effects for a within-group effect that may correlate with the predictor, and a multilevel model when the group estimates themselves matter."
+        header: [The question, Use, Watch for]
+        widths: [3.4, 3.0, 3.0]
+        rows:
+          - ["A population-average effect, groups a nuisance", "Clustered standard errors", "Too few clusters"]
+          - ["An effect within groups, group effect may correlate with the predictor", "Fixed effects, or a within-between random-effects model", "Cannot estimate anything constant within a group"]
+          - ["The group-level estimates, or the spread between groups", "Multilevel model", "Needs exchangeable groups, and enough of them"]
+        highlight: [2]
+        takeaway: Pick the tool from the question you are asking, not from the shape of the data.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          Fixed effects compare each group only with itself, so a fixed difference between groups cannot bias them. They still need
+          clustered SEs. The regression chapter has the clustered-SE mechanics.
+
+      - layout: table
+        beat: practice
+        section: "Which tool: the decision table"
+        level: core
+        title: "A market effect that tracks the discount breaks random effects"
+        recall: What did the four estimators give when the market effect was related to the discount?
+        answer: "Pooled OLS gave 3.04 and random intercepts 2.83, both wrong for a true 2. Fixed effects and within-between stayed at 1.99. In the unrelated case all four were centred on 2."
+        header: [Estimator, Unrelated, Related]
+        widths: [4.6, 2.0, 2.0]
+        rows:
+          - ["Pooled OLS, clustered SE", "2.004", "3.042"]
+          - ["Fixed effects, clustered SE", "1.988", "1.988"]
+          - ["Random intercepts", "2.001", "2.826"]
+          - ["Within-between random intercepts", "1.988", "1.988"]
+        highlight: [0, 2]
+        takeaway: Neither a larger sample nor the standard errors would warn you that plain random intercepts are biased.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          The true within-market effect is 2.0, over 400 datasets. Random intercepts are the most precise when unrelated, actual sd
+          0.213 against 0.266. In 7 of the 400 runs the random-intercept fit returned a missing standard error without an error.
+
+      - layout: cards
+        beat: fundamentals
+        section: "Which tool: the decision table"
+        level: core
+        title: Three papers, three rules for choosing
+        recall: What does each of the three papers add to the choice of tool?
+        answer: "Bell and Jones: split the predictor into a group mean and a deviation, and the within coefficient equals fixed effects. McNeish et al.: clustered SEs or GEE are simpler when you only need clustering. Cameron and Miller: cluster anyway."
+        cards:
+          - {title: Bell and Jones, accent: fundamentals, body: "Split the predictor into a **group mean** and a **deviation**. The within coefficient then equals fixed effects"}
+          - {title: McNeish et al., accent: practice, body: "A multilevel model makes **10** assumptions and clustered SEs **3**. Use it when the clusters themselves matter"}
+          - {title: Cameron and Miller, accent: pitfalls, body: "Fixed effects do not remove within-cluster correlation, so **cluster anyway**. There is no clear definition of few"}
+        takeaway: Reach for the simpler tool unless the groups or their variability are the question.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          The within-between model can still estimate things that do not vary within a group, which fixed effects cannot. The 0.266
+          in the table comes from 400 datasets, and 10,000 give 0.297, matching the theoretical 0.299.
+
+  - title: Reading many segments
+    divider: false
+    summary: The winner's curse · Where pooling does not help · Few groups · Conversion
+    notes: Now the case this pillar cares about, an experiment reporting a lift for each of 24 segments, and then the cases where pooling stops helping.
+    slides:
+      - layout: statement
+        beat: problem
+        section: "The A/B application: reading many segments"
+        title: The raw winner measured +3.17 and was truly +1.25
+        recall: What did the raw winner look like in the one dataset?
+        answer: "Segment 6, with 672 users an arm, measured +3.17 with a true lift of +1.25. Pooling took it to +1.27."
+        kicker: The winner's curse
+        statement: "The raw winner measured +3.17 with a true lift of +1.25. Pooling took it to +1.27."
+        attribution: 24 segments, true lifts around +1.0 with tau 0.5
+        takeaway: Pooling instead picked segment 3, with 8,102 users an arm, which was truly best.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          An experiment reports a lift and a standard error for each of 24 segments. The pooled winner measured +2.42, was pooled to
+          +1.69, and was truly +1.79.
+
+      - layout: flow
+        beat: fundamentals
+        section: "The A/B application: reading many segments"
+        level: core
+        title: Check the fast shortcut against the sampler
+        recall: How does the chapter make thousands of replications cheap and still trust them?
+        answer: "Given tau the normal model has a closed form, so a grid over tau replaces sampling. PyMC checks one dataset, and the largest gap in a segment's mean is 0.014."
+        steps:
+          - {label: Closed form given tau, sub: "normal-normal model", accent: fundamentals}
+          - {label: Integrate tau on a grid, sub: "cheap to replicate", accent: practice}
+          - {label: Check against PyMC, sub: "gap at most 0.014", accent: pitfalls}
+          - {label: Replicate 1,000 times, sub: "the evidence", accent: wrap}
+        caption: "As in chapter 2, check the shortcut against the sampler before you trust it."
+        takeaway: A shortcut earns trust by matching the sampler on one dataset before it runs a thousand.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          The PyMC model uses the non-centred form with a half-normal prior on tau, with max r_hat 1.002 and no divergences.
+
+      - layout: cards
+        beat: practice
+        section: "The A/B application: reading many segments"
+        level: core
+        title: Over 1,000 datasets, pooling fixes how much you claim
+        recall: What did 1,000 simulated experiments show?
+        answer: "RMSE fell from 1.357 to 0.489. The winner's estimate minus its true lift was +2.93 per segment and +0.09 pooled. The segment picked had a true lift of 1.46 pooled against 1.26, and 1.98 for the truly best."
+        cards:
+          - {title: Error, accent: fundamentals, body: "RMSE **1.357** per segment, **0.489** pooled. Coverage **0.90** for both"}
+          - {title: The claim, accent: pitfalls, body: "Winner's estimate minus its true lift: **+2.93** per segment, **+0.09** pooled"}
+          - {title: The pick, accent: practice, body: "True lift of the segment chosen: **1.26** per segment, **1.46** pooled, **1.98** for the truly best"}
+        takeaway: Pooling mostly fixes how much you claim, and only partly which segment you pick.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          The truly best segment has a true lift of 1.98. This is the exaggeration from the hypothesis-testing chapter, which a
+          pooled estimate largely removes in this design. The narrower intervals are not bought by overconfidence.
+
+      - layout: compare
+        beat: fundamentals
+        section: "The A/B application: reading many segments"
+        level: core
+        title: Bonferroni widens intervals, pooling moves estimates
+        recall: How do Bonferroni and partial pooling differ, and what did Gelman, Hill and Yajima find?
+        answer: "Bonferroni keeps estimates where they are and widens intervals, while pooling moves estimates towards each other, more for uncertain ones. In the eight-schools simulation the classical analysis called 7% significant with 63% in the right direction, the Bayesian 0.5% with 89%."
+        emphasis: right
+        left:
+          title: Classical correction
+          bullets: ["Estimates stay where they are", "Intervals widen", "Eight schools: **7%** called significant, **63%** right direction"]
+        right:
+          title: Partial pooling
+          bullets: ["Estimates move towards each other", "More for the uncertain ones", "Eight schools: **0.5%** called, **89%** right direction"]
+        takeaway: The price of more reliable comparisons is to claim confidence in fewer of them.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          Gelman, Hill and Yajima reframe the concern as Type S errors, the wrong sign, and Type M errors, the wrong magnitude. The
+          eight-schools simulation used a group sd of 5.
+
+      - layout: bullets
+        beat: pitfalls
+        section: "The A/B application: reading many segments"
+        title: This simulation is close to a best case
+        recall: Why is the segment simulation close to a best case?
+        answer: "The segments are exchangeable by construction, meaning nothing known distinguishes them in advance, and the prior on tau suits the truth."
+        bullets:
+          - "The segments are **exchangeable** by construction"
+          - "Nothing known distinguishes them in advance"
+          - "The prior on tau suits the truth"
+          - "The next sections take both supports away"
+        takeaway: A result earned under convenient assumptions tells you little about the inconvenient cases.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          The next two sections break the assumptions, one with a true outlier and one with small segments that differ from large ones.
+
+      - layout: table
+        beat: practice
+        section: Where partial pooling does not help
+        level: core
+        title: The same simulation under five settings
+        recall: How much does pooling help under each setting?
+        answer: "The ratio of pooled to raw RMSE is 0.36 at baseline, 0.16 with no real differences, 0.93 and 0.99 when well measured, and 0.55 with only 4 segments."
+        header: [Setting, Raw, Pooled, Ratio, Pooled winner gap]
+        widths: [4.2, 1.2, 1.4, 1.2, 2.2]
+        rows:
+          - ["Baseline, 24 noisy segments, tau 0.5", "1.36", "0.49", "0.36", "0.09"]
+          - ["No real differences, tau 0", "1.36", "0.21", "0.16", "0.29"]
+          - ["Well measured (100x users), tau 0.5", "0.14", "0.13", "0.93", "-0.01"]
+          - ["Well measured (100x users), tau 2.0", "0.14", "0.13", "0.99", "-0.00"]
+          - ["Only 4 segments, tau 0.5", "1.22", "0.67", "0.55", "0.32"]
+        highlight: [2, 3]
+        takeaway: Pooling pays when segments are noisy and similar, and buys almost nothing when they are well measured.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          With no real differences the 90% intervals cover 100% of the time, which means they are too wide. That is the safe
+          direction, but it is a miss in calibration.
+
+      - layout: image
+        beat: practice
+        section: Where partial pooling does not help
+        title: Two scenarios where pooling is worse than raw
+        recall: In which scenarios did pooled RMSE exceed per-segment RMSE?
+        answer: "A true outlier and a too-tight prior on four segments, both at a ratio of 1.25. The ratio is 0.16 with no differences and 0.93 and 0.99 when well measured."
+        kicker: Eight scenarios
+        image: ../../assets/sources/images/bayes-multilevel-scenarios.png
+        caption: "Pooled RMSE as a share of per-segment RMSE across eight scenarios: 0.16 with no differences, 0.36 at baseline, 0.93 and 0.99 well measured, 1.25 for a true outlier and a too-tight prior."
+        takeaway: "Pooling is worse than the raw numbers with a true outlier or a too-tight prior on four segments, where the ratio reaches 1.25."
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          The outlier and wrong-centre rows score only the affected segments, and the too-tight prior row comes from the few-groups section.
+
+      - layout: cards
+        beat: pitfalls
+        section: Where partial pooling does not help
+        title: Three ways partial pooling lets you down
+        recall: What are the three cases where pooling does not help?
+        answer: "A real outlier is pulled down by 3.74, RMSE rising from 3.01 to 3.76. A wrong common centre biases small segments by -1.10, fixed by adding size as a predictor. Well-measured segments gain nothing."
+        cards:
+          - {title: A real outlier, accent: pitfalls, body: "A small segment truly at +5.0 is pulled down by **3.74**. Shrinkage works against the winner you wanted"}
+          - {title: The wrong centre, accent: fundamentals, body: "One mean pulls small segments down by **1.10**. Add size as a predictor and RMSE falls to **0.49**"}
+          - {title: Well measured, accent: practice, body: "With 100 times the users the ratio is **0.93**. Expensive machinery for no gain"}
+        takeaway: Known structure belongs in the model, and a rare real winner needs a follow-up test.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          The other 23 segments improve from 1.25 to 0.49. If only the overall effect matters, group estimates are beside the point.
+          GHY would not model a 2 by 3 by 4 by 5 structure as 120 exchangeable groups.
+
+      - layout: image
+        beat: pitfalls
+        section: Where partial pooling does not help
+        level: core
+        title: Overlapping slopes do not mean no difference
+        recall: Why compare the posterior of the difference, not the intervals?
+        answer: "The two marginal posteriors of the ruggedness slope overlap, yet the probability that the African slope is the smaller is 0.0036."
+        kicker: Statistical Rethinking, Fig. 7.5
+        image: ../../assets/sources/images/statistical-rethinking-fig7-5.png
+        caption: "Posterior of the ruggedness slope for African and non-African nations."
+        bullets:
+          - "The marginals overlap"
+          - "P(African slope is smaller) is **0.0036**"
+          - "Interaction model: **0.97** of the WAIC weight"
+          - "Compare the posterior of the **difference**"
+        takeaway: Fit one model with interactions rather than split data, and read the difference, not two intervals.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          McElreath argues for one model with interactions over split data, because the groups share a residual sigma. The WAIC
+          comparison is 469.6 against 476.4, difference 6.8 with standard error 6.22, over 170 nations.
+
+      - layout: statement
+        beat: problem
+        section: "Few groups: the spread itself is barely known"
+        title: The number of groups is tau's sample size
+        recall: Why is tau poorly known with few groups?
+        answer: "Tau is estimated from the groups, so the number of groups is its sample size, however many users each has."
+        kicker: Few groups
+        statement: "Tau is estimated from the groups, so the number of groups is its sample size, however many users each has."
+        attribution: "True tau is 6.0, REML over 300 simulated datasets"
+        takeaway: With a handful of groups the spread is barely known, and the prior starts to decide the answer.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          Published rules of thumb run from at least 20 clusters (Snijders and Bosker) to 30 clusters of 30 (Kreft), and higher for
+          variance components.
+
+      - layout: table
+        beat: practice
+        section: "Few groups: the spread itself is barely known"
+        level: core
+        title: With 3 markets, a true tau of 6 comes back as 0 or 15
+        recall: How wide is the REML estimate of tau by number of markets?
+        answer: "With 3 markets the 5th to 95th percentile runs from 0 to 15.53 and 11% land at zero. With 50 markets it runs from 4.67 to 7.34."
+        header: [Markets, Median tau, p5, p95, Share at zero]
+        widths: [1.8, 2.0, 1.6, 1.6, 2.2]
+        rows:
+          - ["3", "5.06", "0.00", "15.53", "0.11"]
+          - ["5", "5.02", "0.00", "10.87", "0.08"]
+          - ["8", "5.64", "1.31", "9.91", "0.02"]
+          - ["20", "5.64", "3.25", "8.02", "0.00"]
+          - ["50", "5.99", "4.67", "7.34", "0.00"]
+        highlight: [0, 1]
+        takeaway: At zero the model pools completely, and that happened in 8% to 11% of datasets with 3 or 5 markets.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          At zero every group gets the same estimate.
+
+      - layout: image
+        beat: practice
+        section: "Few groups: the spread itself is barely known"
+        title: The spread tightens only as the groups multiply
+        recall: What does the few-groups plot show?
+        answer: "The distribution of REML estimates of the between-market sd by number of markets. With 3 markets it runs from 0 to 15.5, with 50 markets from 4.7 to 7.3, against a true 6."
+        kicker: 300 datasets at each size
+        image: ../../assets/sources/images/bayes-multilevel-few-groups.png
+        caption: "REML estimates of the between-market sd by number of markets: 3 markets run from 0 to 15.5, 50 markets from 4.7 to 7.3, against a true 6."
+        takeaway: Many users per group do not help, because the sample size for tau is the number of groups.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          The figure is generated by the chapter's practice script from 300 simulated datasets at each size.
+
+      - layout: table
+        beat: practice
+        section: "Few groups: the spread itself is barely known"
+        level: core
+        title: With 4 segments the prior does real work
+        recall: How do three priors compare over many datasets with 4 segments?
+        answer: "A half-normal(0.25) prior when tau is really 2 gives a ratio of 1.25 and 48% coverage. Half-normal(2) gives 0.55 and 0.85, so pooling still beats raw with a sensible prior."
+        header: [True tau, Prior, Ratio, Pooled cover]
+        widths: [1.8, 3.2, 1.8, 2.2]
+        rows:
+          - ["0.5", "half-normal(0.25)", "0.49", "0.82"]
+          - ["0.5", "half-normal(2)", "0.55", "0.94"]
+          - ["0.5", "half-Cauchy(5)", "0.60", "0.95"]
+          - ["2.0", "half-normal(0.25)", "1.25", "0.48"]
+          - ["2.0", "half-normal(2)", "0.85", "0.87"]
+          - ["2.0", "half-Cauchy(5)", "0.86", "0.89"]
+        highlight: [3]
+        takeaway: Few groups does not make pooling lose by itself. It hands control to the prior, so report a range.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          You cannot detect a wrong prior from four segments, because the data barely informs tau. In one four-segment dataset the
+          first segment's estimate ran from 1.00 to 1.39 depending on the prior, and its truth was 0.21.
+
+      - layout: compare
+        beat: practice
+        section: "Few groups: the spread itself is barely known"
+        level: core
+        title: MixedLM gives one number for tau, PyMC gives a range
+        recall: How do MixedLM and PyMC report tau for five markets?
+        answer: "MixedLM gives 2.52 as a single number and treats it as known. PyMC gives a mean of 3.91 with a 90% interval from 0.37 to 9.74, and a posterior sd of 2.54 for the grand mean."
+        emphasis: right
+        left:
+          title: MixedLM
+          bullets: ["Tau **2.52**, no interval", "SE of the mean **1.72**", "Treats tau as known"]
+        right:
+          title: PyMC
+          bullets: ["Tau mean **3.91**, 90% **0.37** to **9.74**", "Posterior sd of the mean **2.54**", "The honest amount of ignorance"]
+        takeaway: The PyMC range depends on its half-normal(10) prior, and one divergence means check it on real data.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          Five markets with sizes 42, 71, 74, 264 and 281, and a sd of their true means of 5.69. The grand mean is 42.46 in MixedLM
+          and 42.35 in PyMC. The run had one divergence at target_accept 0.95.
+
+      - layout: image
+        beat: practice
+        section: "Few groups: the spread itself is barely known"
+        level: core
+        title: McElreath's ponds, partial pooling wins at every size
+        recall: What did McElreath's 60 simulated ponds show?
+        answer: "Partial pooling has the lower average error at every size of pond, and the gap is widest for the 5-tadpole ponds."
+        kicker: Statistical Rethinking, Fig. 12.3
+        image: ../../assets/sources/images/statistical-rethinking-fig12-3.png
+        caption: "Absolute error across 60 simulated ponds of 5, 10, 25 and 35 tadpoles. Partial pooling has the lower average error at every size, and the gap is widest at 5."
+        takeaway: "Partial pooling beats no pooling at every pond size, most for the 5-tadpole ponds, on one dataset."
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          This is one dataset, from chapter 12 of the book.
+
+      - layout: bullets
+        beat: pitfalls
+        section: "Few groups: the spread itself is barely known"
+        title: Gelman qualified his own multiple-comparisons paper
+        recall: What caveat did Gelman add to the 2012 paper?
+        answer: "Gelman and Loken wrote that with few comparisons or a highly structured problem, inference can be sensitive to model assumptions. Pooling also analyses only the comparisons you put in the model."
+        bullets:
+          - "With few comparisons or a structured problem, inference can be **sensitive to model assumptions**"
+          - "Pooling analyses only the comparisons **you put in the model**"
+          - "Segments chosen after seeing the data still need counting"
+          - "Multilevel modelling gets harder for complicated structures"
+          - "A better default than raw numbers or Bonferroni, not a licence to stop worrying"
+        takeaway: Partial pooling is a better default, and it does not replace judgement about how the comparisons were chosen.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          Gelman and Loken, The garden of forking paths, is an unpublished working paper from 2013. Gelman's blog post about the irony
+          is reproduced by Mayo.
+
+      - layout: code
+        beat: practice
+        section: A conversion outcome, in PyMC only
+        level: deep
+        title: A yes-or-no outcome goes to PyMC with a logit link
+        recall: How is the conversion model set up?
+        answer: "Each of 30 markets has its own base rate and its own lift on the log-odds scale, in the non-centred form, with binomial counts for control and treated."
+        lead: "30 markets, each with its own base rate and lift."
+        lang: python
+        code: |-
+          a = pm.Deterministic("a",
+                               alpha + sd_alpha * raw_a)
+          b = pm.Deterministic("b",
+                               beta + sd_beta * raw_b)
+          pm.Binomial("c", users,
+                      pm.math.invlogit(a),
+                      observed=control)
+          pm.Binomial("t", users,
+                      pm.math.invlogit(a + b),
+                      observed=treated)
+        bullets:
+          - "The random effect lives on the **log-odds** scale"
+          - "MixedLM is linear, so it cannot fit this"
+          - "Same non-centred form as before"
+        takeaway: A conversion outcome needs a logit multilevel model, and PyMC is the tool for it here.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          Markets have 156 to 6,637 users an arm, and one has zero control conversions. Diagnostics: max r_hat 1.008, min ess_bulk 565,
+          no divergences.
+
+      - layout: bullets
+        beat: practice
+        section: A conversion outcome, in PyMC only
+        level: core
+        title: Pooling cuts the error on each market's lift
+        recall: How much did pooling cut the conversion errors?
+        answer: "The lift RMSE fell from 1.01 to 0.68 points and the control rate RMSE from 0.83 to 0.71. Both methods picked the same winner and understated it, +5.28 and +5.09 against a true +6.42."
+        bullets:
+          - "Control rate RMSE in points: raw **0.83**, pooled **0.71**"
+          - "Lift RMSE in points: raw **1.01**, pooled **0.68**"
+          - "Both methods pick the same winner, 3,146 users an arm"
+          - "Measured lift: raw **+5.28**, pooled **+5.09**, against a true **+6.42**"
+        takeaway: "Pooling cuts lift RMSE from 1.01 to 0.68 points."
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          This one dataset does not show the exaggeration, and it is too slow in PyMC to replicate. The replicated evidence is the
+          1,000 runs earlier. A lift in points also grows with the base rate.
+
+      - layout: compare
+        beat: pitfalls
+        section: A conversion outcome, in PyMC only
+        level: core
+        title: Within a market and across the population are different
+        recall: What is the difference between the two kinds of logit coefficient?
+        answer: "A multilevel coefficient is a change within a market, and a pooled logit with clustered SEs describes a change across the population. With a common outcome and a large market spread, 0.500 within a market became 0.306 across the population."
+        emphasis: right
+        left:
+          title: Multilevel logit
+          bullets: ["Cluster-specific", "A change **within a market**", "beta 0.164"]
+        right:
+          title: Pooled logit, clustered SEs
+          bullets: ["Population-averaged", "A change **across the population**", "0.183, SE 0.036"]
+        takeaway: Name the scale you report, and convert to probabilities.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          Common outcome (intercept -1, sd 2, effect 0.5): 0.500 within a market, 0.306 population-averaged. With a rare outcome and a
+          fixed effect, 0.150 and 0.145. With the effect varying by market, the population-averaged value was slightly larger, 0.154.
+          So population-averaged is smaller describes a fixed effect, not every model. The two fitted estimates are not in the order the
+          rule predicts, and their uncertainty is larger than the gap.
+
+      - layout: bullets
+        beat: pitfalls
+        section: A conversion outcome, in PyMC only
+        title: Base rates have two answers as well
+        recall: Why do the typical-market rate and the average rate differ?
+        answer: "The rate for a typical market, invlogit(alpha), is 4.89%, but the average across markets is 6.71%, because high-rate markets pull up the mean on the probability scale."
+        bullets:
+          - "Typical market, **invlogit(alpha)**: **4.89%**"
+          - "Average across the market population: **6.71%**"
+          - "High-rate markets pull up the mean on the probability scale"
+          - "Say which one you are reporting"
+        takeaway: A rate on the log-odds scale and a rate on the probability scale are not the same number, so label them.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          The true-parameter lines show the gap between within-market and population-averaged coefficients can be small or large.
+
+      - layout: table
+        beat: pitfalls
+        section: Pitfalls
+        title: "Pitfalls in choosing and fitting the model"
+        recall: "What are the pitfalls in choosing and fitting a multilevel model?"
+        answer: "Shipping the raw winner, fitting a multilevel model only to handle clustering, plain random intercepts when the group effect correlates with the predictor, random intercepts when slopes vary, and trusting a boundary estimate."
+        header: [Pitfall, What goes wrong, Fix]
+        widths: [3.0, 3.4, 3.0]
+        rows:
+          - ["Shipping the raw winner", "Exaggerated by 2.93 here against a true average lift of 1.0", "Partially pool first, and report the pooled number"]
+          - ["A multilevel model only to handle clustering", "Extra assumptions for an answer clustered SEs give directly", "Cluster when groups are a nuisance, model them when they are the question"]
+          - ["Random intercepts, group effect correlates with the predictor", "Biased, 2.83 against a true 2, with no warning", "Fixed effects, or add the group mean of the predictor"]
+          - ["Random intercepts when slopes vary", "Standard error about 20% too small here", "Add re_formula, or cluster"]
+          - ["Trusting a correlation of 1 or a tau of 0", "Boundary estimates, reported without a warning", "Simplify, or use PyMC with a prior and report the interval"]
+        takeaway: Match the tool to the question, and treat a boundary estimate as a sign the model is too rich.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          The remaining five pitfalls are on the next slide.
+
+      - layout: table
+        beat: pitfalls
+        section: Pitfalls
+        title: "Pitfalls with priors, scale and diagnostics"
+        recall: "What are the pitfalls with priors, scale and diagnostics?"
+        answer: "Pooling few groups with one prior, pooling groups known to differ, expecting pooling to find the rare winner, reading logit coefficients across model types, and skipping diagnostics."
+        header: [Pitfall, What goes wrong, Fix]
+        widths: [3.0, 3.4, 3.0]
+        rows:
+          - ["Few groups and one prior", "Tau is barely known, so the prior sets the answer", "Run several priors and report the range"]
+          - ["Pooling groups known to differ", "Shrinks them to the wrong centre, -1.10 here", "Add a group-level predictor"]
+          - ["Expecting pooling to find the rare winner", "A true outlier is pulled down by 3.74 here", "Follow up large raw effects with a new test"]
+          - ["Logit coefficients across model types", "Within-market and population-averaged differ", "Name the scale, and convert to probabilities"]
+          - ["Skipping diagnostics", "A posterior you cannot trust, as in chapter 2", "Check r_hat, ESS and divergences, use the non-centred form"]
+        takeaway: Run several priors, name the scale, and check the sampler on every fit.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          Every fit needs its diagnostics, however familiar the model.
+
+  - title: Varying slopes
+    divider: false
+    summary: pWAIC · Correlated shrinkage · Non-centring
+    notes: The second note follows four questions the first did not answer, starting with why a multilevel model has fewer effective parameters than it has intercepts.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Fewer effective parameters than actual
+        title: 48 intercepts, and fewer than 48 effective parameters
+        recall: Why does a multilevel model use fewer effective parameters than it has?
+        answer: "Its intercepts are not free, because sigma ties them together. WAIC's penalty pWAIC counts how flexible the fit really was."
+        kicker: Effective parameters
+        statement: "The intercepts are not free: sigma ties them together, and pWAIC counts how flexible the fit really was."
+        attribution: McElreath's 48 tadpole tanks, pWAIC 49.4 against 38.0
+        takeaway: Count a multilevel model's parameters by pWAIC, not by the number of intercepts it has.
+        source: notes/07b-varying-slopes-measurement-error-and-missing-data.md
+        notes: >-
+          McElreath's 48 tadpole tanks give pWAIC 49.4 for fixed intercepts and 38.0 for the multilevel model, a WAIC difference of
+          13.1 with standard error 6.54, and a learned sigma of about 1.6.
+
+      - layout: code
+        beat: practice
+        section: Fewer effective parameters than actual
+        level: deep
+        title: WAIC by hand from the pointwise log-likelihood
+        recall: How is WAIC computed in the chapter?
+        answer: "From the pointwise log-likelihood, using logsumexp for the lppd and the variance across draws for pWAIC, because ArviZ 1.x has no az.waic."
+        lead: "One row per tadpole, because WAIC is pointwise."
+        lang: python
+        code: |-
+          ll = i.log_likelihood["s"].stack(
+              n=("chain", "draw")).transpose("n", ...).values
+          lppd = (logsumexp(ll, axis=0)
+                  - np.log(ll.shape[0])).sum()
+          p_waic = ll.var(axis=0).sum()
+          print(f"pWAIC {p_waic:5.1f}  "
+                f"WAIC {-2 * (lppd - p_waic):7.1f}")
+        bullets:
+          - "**lppd** is the log pointwise predictive density"
+          - "**pWAIC** is the variance of the log-likelihood"
+          - "48 tanks of 10, 25 and 35 tadpoles"
+        takeaway: WAIC is pointwise, so the row you define as a point changes the number.
+        source: notes/07b-varying-slopes-measurement-error-and-missing-data.md
+        notes: >-
+          ArviZ 1.x has no az.waic, so it is computed by hand. The simulated tanks are 16 each of 10, 25 and 35 tadpoles, with true
+          intercepts Normal(1.3, 1.6).
+
+      - layout: bullets
+        beat: practice
+        section: Fewer effective parameters than actual
+        level: core
+        title: Tying the intercepts together costs 11 fewer parameters
+        recall: How did pWAIC change between the two models?
+        answer: "48 free intercepts cost 48.3 effective parameters, and the multilevel model dropped that to 36.9 and improved WAIC by 9.6. The learned sigma was 1.39 against a true 1.6."
+        bullets:
+          - "**Fixed intercepts:** pWAIC **48.3**, WAIC **1115.2**"
+          - "**Multilevel:** pWAIC **36.9**, WAIC **1105.6**"
+          - "Learned sigma **1.39**, true **1.6**"
+        takeaway: "Tying the intercepts together lowers pWAIC from 48.3 to 36.9 and WAIC from 1115.2 to 1105.6."
+        source: notes/07b-varying-slopes-measurement-error-and-missing-data.md
+        notes: >-
+          This is one simulated dataset against his real one.
+
+      - layout: cards
+        beat: pitfalls
+        section: Fewer effective parameters than actual
+        level: core
+        title: Three details that change what pWAIC means
+        recall: What three details matter when reading pWAIC for a multilevel model?
+        answer: "The unit, since the aggregated binomial rows gave pWAIC 22.7 for the same model. The sigma prior, where Exponential(1) is suggested for around five clusters. And a new cluster is predicted with a fresh Normal(a, sigma) draw."
+        cards:
+          - {title: The unit, body: "Aggregated rows gave pWAIC 22.7 for the same model"}
+          - {title: No WAIC, body: "Not on beta-binomial or gamma-Poisson models"}
+          - {title: Few clusters, body: "McElreath suggests Exponential(1) on sigma over the half-Cauchy"}
+          - {title: A new cluster, body: "A fresh draw from Normal(a, sigma)"}
+        takeaway: A point in WAIC is whatever row you define, so say which rows you scored.
+        source: notes/07b-varying-slopes-measurement-error-and-missing-data.md
+        notes: >-
+          A new cluster is predicted by drawing from the fitted population, not by reusing any tank's estimate, so interval widths
+          include the between-cluster spread. The beta-binomial's row-level latent parameter ties the likelihood to the aggregation.
+
+      - layout: bullets
+        beat: problem
+        section: "Varying slopes: model the correlation too"
+        title: Busy cafes have more to gain in the afternoon
+        recall: What is McElreath's cafe example?
+        answer: "Morning wait averages 3.5 minutes and the afternoon change averages -1, with sds of 1 and 0.5 and a correlation of -0.7. Busy cafes with long mornings have more to gain."
+        bullets:
+          - "Morning wait averages **3.5** minutes, the afternoon change **-1**"
+          - "Standard deviations **1** and **0.5**, correlation **-0.7**"
+          - "A cafe with a surprisingly large slope pulls its intercept as well"
+          - "The prior on the correlation is **LKJ**, eta = 2, skeptical of extremes"
+        takeaway: Model intercepts and slopes together, because a shrunk slope shifts its intercept.
+        source: notes/07b-varying-slopes-measurement-error-and-missing-data.md
+        notes: >-
+          The model underneath draws the pair from a two-dimensional population with a correlation. The re-run uses 20 cafes, 5
+          morning and 5 afternoon visits each, noise sd 0.5.
+
+      - layout: code
+        beat: practice
+        section: "Varying slopes: model the correlation too"
+        level: deep
+        title: Centred and non-centred versions of the cafe model
+        recall: How do the centred and non-centred cafe models differ in code?
+        answer: "The non-centred form draws a standard normal z and computes mu plus z times the Cholesky factor. The centred form draws the pair directly from MvNormal."
+        lead: "Two forms of the same varying-slopes model."
+        lang: python
+        code: |-
+          chol, corr, sds = pm.LKJCholeskyCov(
+              "chol", n=2, eta=2,
+              sd_dist=pm.Exponential.dist(1.0),
+              compute_corr=True)
+          if noncentered:
+              z = pm.Normal("z", 0, 1, shape=(J, 2))
+              v = pm.Deterministic("v", mu + z @ chol.T)
+          else:
+              v = pm.MvNormal("v", mu, chol=chol,
+                              shape=(J, 2))
+        bullets:
+          - "**LKJCholeskyCov** gives the sds and the correlation"
+          - "Non-centred: v = mu + L z"
+          - "Centred: v drawn from the correlated population"
+        takeaway: The two forms describe the same model, and they behave very differently in the sampler.
+        source: notes/07b-varying-slopes-measurement-error-and-missing-data.md
+        notes: >-
+          The wait is then Normal with mean the morning effect plus the afternoon effect times the afternoon indicator, and sigma
+          Exponential(1).
+
+      - layout: bullets
+        beat: practice
+        section: "Varying slopes: model the correlation too"
+        level: core
+        title: "Pooling cuts the error; the correlation is learned in sign"
+        recall: What did the cafe re-run show?
+        answer: "The correlation posterior mean was -0.42 for a true -0.7, with a 89% interval of -0.74 to -0.03. RMSE fell from 0.233 to 0.192 on intercepts and 0.316 to 0.253 on slopes."
+        bullets:
+          - "RMSE, intercepts: unpooled **0.233**, pooled **0.192**"
+          - "RMSE, slopes: unpooled **0.316**, pooled **0.253**"
+          - "Correlation, true -0.7: posterior mean **-0.42**, 89% interval -0.74 to -0.03"
+        takeaway: Pooling cuts the error by 18% and 20%, and with 20 cafes the sign is learned and the size is not.
+        source: notes/07b-varying-slopes-measurement-error-and-missing-data.md
+        notes: >-
+          The LKJ prior pulls toward zero, and 20 cafes is a small sample for a correlation. This is one dataset, and McElreath uses
+          one seed too.
+
+      - layout: image
+        beat: practice
+        section: "Varying slopes: model the correlation too"
+        level: core
+        title: Shrinkage runs at an angle, not straight to the centre
+        recall: What does McElreath's figure of two-dimensional shrinkage show?
+        answer: "A cafe with an average intercept and an unusually high slope is pulled down on the slope, and because the two are negatively correlated that also moves its intercept, hence the angled lines."
+        kicker: Statistical Rethinking, Fig. 13.5
+        image: ../../assets/sources/images/statistical-rethinking-fig13-5.png
+        caption: "Unpooled intercepts and slopes against their partially pooled estimates."
+        bullets:
+          - "Shrinkage does not run straight at the centre"
+          - "A high slope is pulled down, and the intercept moves with it"
+          - "On the outcome scale it shrinks predicted waits"
+        takeaway: With a correlation, shrinking one parameter moves the other.
+        source: notes/07b-varying-slopes-measurement-error-and-missing-data.md
+        notes: >-
+          The left panels are the parameter scale and the right panels the outcome scale.
+
+      - layout: bullets
+        beat: practice
+        section: "Varying slopes: model the correlation too"
+        level: core
+        title: The varying-slopes model wins on Berkeley admissions
+        recall: Which model had the lowest WAIC for UC Berkeley admissions?
+        answer: "The varying-slopes model, at WAIC 5191.4 with weight 0.99, against 5201.2 and 5201.9, even though the average gender slope is near zero."
+        bullets:
+          - "Varying slope for gender by department: WAIC **5191.4**, weight **0.99**"
+          - "The models without or with a constant gender term: **5201.2** and **5201.9**"
+          - "The average gender slope is near zero"
+          - "Department B, with **25** female applications, is pooled hard"
+          - "Department F, with hundreds of each, barely at all"
+        takeaway: A near-zero average slope can hide slopes that vary a lot by group.
+        source: notes/07b-varying-slopes-measurement-error-and-missing-data.md
+        notes: >-
+          From Statistical Rethinking chapter 13. The sex-specific slope of each department is pooled in proportion to its data.
+
+  - title: Noisy and missing data
+    divider: false
+    summary: When the funnel returns · Noisy inputs · Missing predictors
+    notes: The last part is about the numbers going in, which are not clean, and the sampler trouble that thin data brings back.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Non-centring
+        title: With thin data the funnel returns
+        recall: What happens when groups barely differ or data per group is thin?
+        answer: "The funnel from chapter 2 returns, and the sampler cannot tell a small sigma from a large one."
+        kicker: Non-centring
+        statement: "When groups barely differ or data per group is thin, the sampler cannot tell a small sigma from a large one."
+        attribution: The funnel from chapter 2
+        takeaway: The cure is the same as before, move the scale out of the prior.
+        source: notes/07b-varying-slopes-measurement-error-and-missing-data.md
+        notes: >-
+          McElreath's chimpanzee model with three varying effects over actors and blocks has 54 nominal parameters and about 18
+          effective, pWAIC 18.3, and the centred version raised 559 divergent iterations until he non-centred it.
+
+      - layout: flow
+        beat: fundamentals
+        section: Non-centring
+        level: core
+        title: Draw z, then compute mu plus L z
+        recall: What is non-centring?
+        answer: "Draw standard-normal z and compute mu plus L z, where L is the Cholesky factor of the covariance, so the sampler explores z instead of a funnel."
+        steps:
+          - {label: Draw z, sub: "standard normal", accent: fundamentals}
+          - {label: Scale by L, sub: "Cholesky factor of the covariance", accent: practice}
+          - {label: Add mu, sub: "v = mu + L z", accent: pitfalls}
+          - {label: Sampler explores z, sub: "not the funnel", accent: wrap}
+        caption: "The scale moves out of the prior and into the transformation."
+        takeaway: The same model is explored in a shape the sampler handles.
+        source: notes/07b-varying-slopes-measurement-error-and-missing-data.md
+        notes: >-
+          This is the non-centred form used in every PyMC model of the chapter.
+
+      - layout: table
+        beat: practice
+        section: Non-centring
+        level: core
+        title: "With plenty of data the forms agree; with thin data they do not"
+        recall: How did centred and non-centred forms compare?
+        answer: "With 20 cafes of 10 visits both were fine, though non-centring had the lower ESS, 811 against 1,210. With 30 cafes seen twice, centred gave 203 divergences and ESS 25, and non-centred 8 divergences and ESS 270."
+        header: [Cafes by visits, Form, Divergences, Min ESS, Max r_hat]
+        widths: [2.6, 2.2, 1.8, 1.6, 1.8]
+        rows:
+          - ["20 x 10", "Centred", "1", "1210", "1.003"]
+          - ["20 x 10", "Non-centred", "0", "811", "1.004"]
+          - ["30 x 2", "Centred", "203", "25", "1.130"]
+          - ["30 x 2", "Non-centred", "8", "270", "1.014"]
+        highlight: [2, 3]
+        takeaway: Non-centring improved thin data by a wide margin without fully curing it, and treat it as one lever among several.
+        source: notes/07b-varying-slopes-measurement-error-and-missing-data.md
+        notes: >-
+          The thin-data cafes barely differ, true sds 0.15 and 0.1, with no correlation. McElreath's non-centred chimp model had no
+          divergences. Raise target_accept, tighten the sigma prior or simplify the model as well. Neither form is the default to
+          apply blindly.
+
+      - layout: bullets
+        beat: problem
+        section: Measurement error
+        title: A noisy predictor attenuates the slope
+        recall: What are the two costs of treating noisy segment rates as exact?
+        answer: "A noisy outcome is handled by regression anyway, but a noisy predictor attenuates the slope toward zero. In McElreath's states data the slope is -0.55 with the divorce error modelled, roughly half the version that ignores it."
+        bullets:
+          - "Segment rates arrive with standard errors, **large for small segments**"
+          - "A noisy predictor **attenuates** the slope toward zero"
+          - "States data: slope **-0.55** (sd **0.21**) once divorce error is modelled"
+          - "Each observation is a draw around an unknown true value with known sd"
+          - "His rule: **do not average, model**"
+        takeaway: Ignoring measurement error tends to exaggerate associations between outcomes and predictors.
+        source: notes/07b-varying-slopes-measurement-error-and-missing-data.md
+        notes: >-
+          The mechanism is the shrinkage of chapter 7. The true values become parameters, and the regression line and the estimates pull
+          on each other.
+
+      - layout: code
+        beat: practice
+        section: Measurement error
+        level: deep
+        title: The true values are parameters
+        recall: How does the measurement-error model treat the true values?
+        answer: "The true x and y are parameters, y comes from the regression line around the true x, and each observation is Normal around its true value with its known standard error."
+        lead: "50 units, true slope 1.0, known standard errors on both variables."
+        lang: python
+        code: |-
+          xt = pm.Normal("xt", 0, 1, shape=N)
+          yt = pm.Normal("yt", a + b * xt,
+                         pm.Exponential("s", 1), shape=N)
+          pm.Normal("xo", xt, x_se, observed=x_obs)
+          pm.Normal("yo", yt, y_se, observed=y_obs)
+          # naive: pm.Normal("y", a + b * x_obs, s,
+          #                  observed=y_obs)
+        bullets:
+          - "**xt** and **yt** are the unknown true values"
+          - "The standard errors are data, not parameters"
+          - "The naive model uses x_obs as if exact"
+        takeaway: Give each observation a likelihood around its true value, with the error you know.
+        source: notes/07b-varying-slopes-measurement-error-and-missing-data.md
+        notes: >-
+          The simulation draws the standard errors uniformly, 0.1 to 1.5 on y and 0.1 to 1.0 on x.
+
+      - layout: bullets
+        beat: practice
+        section: Measurement error
+        level: core
+        title: Modelling the error recovers the slope
+        recall: What did the naive and measurement-error models give for a true slope of 1.0?
+        answer: "Ignoring the error gave 0.81 (sd 0.14) with no divergences. Modelling it gave 0.94 (sd 0.10) with 9 divergences."
+        bullets:
+          - "**Ignores the error:** slope **0.81**, sd **0.14**, **0** divergences"
+          - "**Models the error:** slope **0.94**, sd **0.10**, **9** divergences"
+          - "True slope **1.0**"
+        takeaway: "Modelling the error moves the slope toward the true 1.0, from 0.81 to 0.94, at the cost of 9 divergences."
+        source: notes/07b-varying-slopes-measurement-error-and-missing-data.md
+        notes: >-
+          McElreath's own example sets the predictor-error model against an outcome-error model and finds the coefficients essentially
+          unchanged, so the benefit depends on which cases carry the error and how large it is against the variation.
+
+      - layout: image
+        beat: practice
+        section: Measurement error
+        level: core
+        title: Larger standard errors move further
+        recall: What do the two panels of McElreath's measurement-error figure show?
+        answer: "The left panel is shrinkage again, with states of larger standard error moving further. The right panel shows the fitted line moving as well, gray without error and blue with it, with a wider band."
+        kicker: Statistical Rethinking, Fig. 14.2
+        image: ../../assets/sources/images/statistical-rethinking-fig14-2.png
+        caption: "Shrinkage from modelling measurement error, and the regression lines with and without it."
+        bullets:
+          - "Left: states with larger standard errors **move further**"
+          - "Right: the line moves, **gray** without error and **blue** with"
+          - "A wider band with the error modelled"
+        takeaway: Measurement error is shrinkage again, and it moves the line as well as the points.
+        source: notes/07b-varying-slopes-measurement-error-and-missing-data.md
+        notes: >-
+          The left panel plots the estimate minus observed divergence against its standard error.
+
+      - layout: bullets
+        beat: problem
+        section: "Missing predictors: impute inside the model"
+        title: Deleting rows throws away the other columns
+        recall: What does deleting incomplete rows cost, and what is the Bayesian alternative?
+        answer: "McElreath's primate data keeps 17 of 29 species and drops 12 good mass and energy values. The fix treats each missing value as a parameter with a prior, and a model for the predictor does the imputing."
+        bullets:
+          - "Primate milk data: **17 of 29** species kept, **12** dropped"
+          - "Each missing value is a **parameter** with a prior"
+          - "One common mean assumes the predictor is unrelated to everything else"
+          - "Neocortex slope falls from **2.77** to **1.93**, and returns to **2.44** with mass in the model"
+          - "Only missing-completely-at-random is worked, so everything here is MCAR too"
+        takeaway: Give the imputation model the covariates that predict the variable, and say the missingness assumption.
+        source: notes/07b-varying-slopes-measurement-error-and-missing-data.md
+        notes: >-
+          The standard deviations are 0.87, 0.73 and 0.75, and the imputed values tighten from about 0.05 to 0.03-0.04. McElreath gives
+          missing-not-at-random one paragraph.
+
+      - layout: code
+        beat: practice
+        section: "Missing predictors: impute inside the model"
+        level: deep
+        title: PyMC imputes the missing values for you
+        recall: How does the code impute a missing predictor?
+        answer: "It passes the predictor as observed data with NaN where values are missing, models it on body mass, and PyMC imputes the NaNs."
+        lead: "29 species, 12 values missing at random, true slope 0.5."
+        lang: python
+        code: |-
+          nc_obs = np.where(miss, np.nan, nco)
+          nc = pm.Normal("nc", an + g * m, sn,
+                         observed=nc_obs)
+          pm.Normal("k", a + bn * nc + bm * m,
+                    pm.Exponential("s", 1), observed=k)
+        bullets:
+          - "**NaN** entries in observed data become parameters"
+          - "The predictor depends on mass through **g**"
+          - "The outcome then uses the completed predictor"
+        takeaway: The model for the predictor does the imputing, so it must include what predicts the predictor.
+        source: notes/07b-varying-slopes-measurement-error-and-missing-data.md
+        notes: >-
+          The predictor depends on mass in the simulation, and the outcome depends on both.
+
+      - layout: cards
+        beat: practice
+        section: "Missing predictors: impute inside the model"
+        level: core
+        title: A naive imputation model is more confident and more wrong
+        recall: What did the three treatments of the missing predictor give?
+        answer: "Complete cases gave 0.49 (sd 0.31), imputing with no link to mass gave 0.26 (sd 0.22), and letting the predictor depend on mass gave 0.41 (sd 0.26), against a true 0.50."
+        lead: "Slope estimates against a true 0.50."
+        cards:
+          - {title: Complete cases (17), body: "0.49, sd 0.31"}
+          - {title: "Imputed, no link to mass", accent: "D4621A", body: "0.26, sd 0.22"}
+          - {title: "Imputed, linked to mass", body: "0.41, sd 0.26"}
+        takeaway: "With no link to mass the imputed slope is narrower but further off, 0.26 with sd 0.22 against a true 0.50."
+        source: notes/07b-varying-slopes-measurement-error-and-missing-data.md
+        notes: >-
+          In this draw the complete cases happened to land on the truth. The sd falls from 0.31 to 0.26 when the imputation model is
+          right, and the estimate goes wrong when it is not.
+
+      - layout: table
+        beat: pitfalls
+        section: Pitfalls
+        title: "Pitfalls of effective parameters, slopes and thin data"
+        recall: "What are the pitfalls of counting parameters, slopes and thin data?"
+        answer: "Counting parameters by model size, comparing WAIC across likelihoods, fitting slopes and intercepts as independent, reading the correlation posterior as a measurement, and the centred form with thin data."
+        header: [Pitfall, Symptom, Fix]
+        widths: [3.0, 3.4, 3.0]
+        rows:
+          - ["Counting parameters by model size", "50 reported when pWAIC says 37 here", "Report pWAIC, and say which rows WAIC treats as points"]
+          - ["Comparing WAIC across likelihoods or aggregations", "pWAIC 22.7 and 48.3 for the same model", "Same likelihood and same data rows"]
+          - ["Slopes and intercepts as independent", "Shrinkage ignores a -0.7 correlation", "Draw the pair from a multivariate population with an LKJ prior"]
+          - ["Reading the correlation posterior as a measurement", "Mean -0.42 for a true -0.7, with 20 groups", "Report the interval, and expect the prior to pull"]
+          - ["Centred form with thin data", "203 divergences and ESS 25 here", "Non-centre, raise target_accept, simplify, check again"]
+        takeaway: Report effective parameters, keep slopes and intercepts together, and non-centre when data is thin.
+        source: notes/07b-varying-slopes-measurement-error-and-missing-data.md
+        notes: >-
+          The remaining four pitfalls are on the next slide.
+
+      - layout: table
+        beat: pitfalls
+        section: Pitfalls
+        title: "Pitfalls of non-centring, noise and missing data"
+        recall: "What are the pitfalls of non-centring, noisy predictors and missing data?"
+        answer: "Believing non-centring always cures divergences, treating a noisy predictor as exact, imputing with a mean-only model, and dropping incomplete rows silently."
+        header: [Pitfall, Symptom, Fix]
+        widths: [3.0, 3.4, 3.0]
+        rows:
+          - ["Believing non-centring always cures divergences", "8 divergences left after it", "Treat it as one lever among several"]
+          - ["Treating a noisy predictor as exact", "Slope 0.81 against a true 1.0", "Model the measurement error, with its known sd"]
+          - ["Imputing with a mean-only model", "Slope halved with a confident sd", "Give the imputation model the covariates that predict the variable"]
+          - ["Dropping incomplete rows silently", "12 of 29 rows gone", "Impute inside the model, and say the missingness assumption"]
+        takeaway: Model the error and the missingness inside the model, and say what you assumed.
+        source: notes/07b-varying-slopes-measurement-error-and-missing-data.md
+        notes: >-
+          Missing not at random needs a model of the missingness itself, which McElreath names without working it.
+
+      - layout: cards
+        beat: wrap
+        section: Pitfalls
+        title: What to carry away from many groups
+        recall: What are the three habits this lecture builds?
+        answer: "Partially pool many segment effects before reading a winner, run several priors and report the range when groups are few, and give measurement error and missingness a model rather than averaging or deleting."
+        cards:
+          - {title: Pool first, accent: fundamentals, body: "Partially pool segment effects. The raw winner overstated its lift by **2.93**, the pooled winner by **0.09**"}
+          - {title: Few groups, accent: practice, body: "Tau is barely known, so run **several priors** and report the range"}
+          - {title: Model the mess, accent: pitfalls, body: "Do not average or delete. Model the **error** and the **missing values**, and check the sampler"}
+        takeaway: Cluster when groups are a nuisance, and model them when they are the question.
+        source: notes/07b-varying-slopes-measurement-error-and-missing-data.md
+        notes: >-
+          This closes the Bayesian analysis pillar. The next pillar is visualisation and storytelling, which is how you present these
+          answers to the people who decide.

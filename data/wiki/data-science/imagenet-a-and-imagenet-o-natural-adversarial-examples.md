@@ -1,8 +1,8 @@
 ---
 title: "ImageNet-A and ImageNet-O Natural Adversarial Examples"
-tags: [data-science, concept]
+tags: [data-science, deep-learning, concept]
 summary: "Hendrycks and colleagues keep only real images that a ResNet-50 gets wrong, giving test sets on which many unseen models fail; augmentation and extra data help little, architecture helps more."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-hendrycks-2021-natural-adversarial-examples.md
 ---

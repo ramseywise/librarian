@@ -1,8 +1,8 @@
 ---
 title: "Cross-Validation Fold Spread and Choosing the Splitter"
-tags: [data-science, pattern]
+tags: [data-science, classical-ml, pattern]
 summary: "Fold spread sizes up noise but is not a clean standard error; compare models fold by fold, and pick the splitter (stratified, group, forward-in-time) that mimics how new data will arrive."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--09-training-and-tuning.md
   - data/raw/papers/2026-11-08-bengio-2004-no-unbiased-estimator-variance-k-fold.md

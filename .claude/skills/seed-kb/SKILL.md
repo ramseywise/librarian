@@ -1,6 +1,6 @@
 ---
 name: seed-kb
-description: "Seed the KB by scraping Claude Code sessions, Codex sessions, and web bookmarks from the local machine, then ingest any newly captured sources into the wiki."
+description: "Seed the KB by scraping Claude Code sessions, Codex sessions, and web bookmarks from the local machine, then ingest any newly captured sources into the wiki. Triggers on: '/seed-kb', 'seed the knowledge base', 'scrape my sessions', 'import my bookmarks', 'capture local sources into the wiki'."
 allowed-tools: Read Write Edit Bash Glob Grep
 ---
 

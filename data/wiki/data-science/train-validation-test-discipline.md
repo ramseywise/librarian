@@ -1,8 +1,8 @@
 ---
 title: "Train, Validation and Test Discipline"
-tags: [data-science, pattern]
+tags: [data-science, classical-ml, pattern]
 summary: "The test set is touched once; tuning happens on validation or CV folds, and every score is read against the majority-class base rate."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--01-statistical-foundations.md
   - data/raw/papers/2026-11-06-varma-2006-bias-error-estimation-when-using.md

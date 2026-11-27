@@ -1,10 +1,11 @@
 ---
-imported_hash: 51dfd03114892341
+imported_hash: e4e8373e930ea6c1
 title: LLM embeddings as features
 summary: A pretrained sentence encoder turns any text into a few hundred numbers, and once text is numbers, everything from classical ML applies again.
-order: 8
+order: 9
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-science/03-nlp/notes/07-llm-embeddings-as-features.md
 ---
 

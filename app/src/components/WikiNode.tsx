@@ -4,7 +4,7 @@ import { Handle, Position, useStore, type NodeProps } from "@xyflow/react";
 import type { Node } from "@xyflow/react";
 import type { WikiNodeData } from "../types";
 import { useTheme } from "../hooks/useTheme";
-import { domainColor } from "../theme/domains";
+import { topicColor } from "../theme/domains";
 import { NodeDetailPanel } from "./NodeDetailPanel";
 import { NodeCardContext, type NodeCard } from "./nodeCard";
 
@@ -25,7 +25,7 @@ export type WikiFlowNode = Node<WikiNodeData>;
 export function WikiNode({ id, data, selected }: NodeProps<WikiFlowNode>) {
   const theme = useTheme();
   const card = useContext(NodeCardContext);
-  const color = data.groupColor ?? domainColor(data.domain[0], theme);
+  const color = data.groupColor ?? topicColor(data.domain[0], data.topicIndex, data.topicCount, theme);
   const borderStyle = TYPE_BORDER[data.typeTag] ?? "solid";
   const open = !!data.expanded && card != null;
   const size = data.depth === undefined ? "" : ` wiki-node--d${Math.min(data.depth, 3)}`;

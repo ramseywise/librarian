@@ -1,8 +1,8 @@
 ---
-imported_hash: b81c75a56665bbcb
+imported_hash: e413802830d22d2c
 title: References
 summary: ★ = changed a claim in the notes. ⚑ = preprint only.
-order: 12
+order: 13
 kind: reading
 section: References
 source: learn-ai-engineering/data-science/02-deep-learning/references.md
@@ -92,19 +92,19 @@ source: learn-ai-engineering/data-science/02-deep-learning/references.md
 | Devlin et al., [*BERT*](https://arxiv.org/abs/1810.04805) (NAACL 2019) | Most of the pipelines' encoders | Link only | 06 |
 | Sanh et al., [*DistilBERT*](https://arxiv.org/abs/1910.01108) (2019) ⚑ | A smaller distilled encoder | Link only | 06 |
 | ★ Vaswani et al., [*Attention Is All You Need*](https://arxiv.org/abs/1706.03762) (NeurIPS 2017) | The block, position functions, Table 1 complexity. Read in full | Link only | 05b, 06 |
-| ★ Dosovitskiy et al., [*An Image is Worth 16x16 Words*](https://arxiv.org/abs/2010.11929) (ICLR 2021) | What a CNN assumes and an encoder doesn't; pre-training size, Table 5. Text read in full, figures not viewed. §4.3's data-size crossover, and Eq. 1 to 4 built in [`practice/vit_from_paper.py`](practice/vit_from_paper.py) | Link only | 05b, 04b |
-| Touvron et al., [*Training Data-Efficient Image Transformers*](https://arxiv.org/abs/2012.12877) (ICML 2021) | The recipe changes the data requirement: 77.9 → 83.1 at 384 on ImageNet alone, and removing Mixup and CutMix costs 6 points at 224 (81.8 → 75.8, Table 8). 85.2% with distillation at 1,000 epochs, ImageNet only; a convnet teacher beat a transformer teacher (83.1 vs 81.9). Read in full | [PDF](../sources/touvron-2020-training-data-efficient-image-transformers.pdf) | 05b |
+| ★ Dosovitskiy et al., [*An Image is Worth 16x16 Words*](https://arxiv.org/abs/2010.11929) (ICLR 2021) | What a CNN assumes and an encoder doesn't; pre-training size, Table 5. Text read in full, figures not viewed. §4.3's data-size crossover, and Eq. 1 to 4 built in [`practice/vit_from_paper.py`](practice/vit_from_paper.py) | Link only | 05b, 05c, 04b |
+| Touvron et al., [*Training Data-Efficient Image Transformers*](https://arxiv.org/abs/2012.12877) (ICML 2021) | The recipe changes the data requirement: 77.9 → 83.1 at 384 on ImageNet alone, and removing Mixup and CutMix costs 6 points at 224 (81.8 → 75.8, Table 8). 85.2% with distillation at 1,000 epochs, ImageNet only; a convnet teacher beat a transformer teacher (83.1 vs 81.9). Read in full | [PDF](../sources/touvron-2020-training-data-efficient-image-transformers.pdf) | 05c |
 | ★ Xiong et al., [*On Layer Normalization in the Transformer Architecture*](https://arxiv.org/abs/2002.04745) (ICML 2020) | Pre-norm, post-norm and warm-up. Read in full, proofs for their statements | Link only | 05b |
-| ★ Zeng et al., [*Are Transformers Effective for Time Series Forecasting?*](https://arxiv.org/abs/2205.13504) (AAAI 2023) | Linear models beat earlier forecasting Transformers. arXiv version, text read in full | Link only | 05b |
-| Nie et al., [*A Time Series is Worth 64 Words*](https://arxiv.org/abs/2211.14730) (ICLR 2023) | PatchTST: patches and channel independence. Text read in full | Link only | 05b |
-| Gorishniy et al., [*Revisiting Deep Learning Models for Tabular Data*](https://arxiv.org/abs/2106.11959) (NeurIPS 2021) | FT-Transformer: one token per feature, and its cost. Read in full | Link only | 05b |
-| Grinsztajn et al., [*Why do tree-based models still outperform deep learning on typical tabular data?*](https://arxiv.org/abs/2207.08815) (NeurIPS 2022) | Trees at around 10K samples, FT-Transformer as best case. arXiv v1, text read in full | Link only | 05b |
+| ★ Zeng et al., [*Are Transformers Effective for Time Series Forecasting?*](https://arxiv.org/abs/2205.13504) (AAAI 2023) | Linear models beat earlier forecasting Transformers. arXiv version, text read in full | Link only | 05c |
+| Nie et al., [*A Time Series is Worth 64 Words*](https://arxiv.org/abs/2211.14730) (ICLR 2023) | PatchTST: patches and channel independence. Text read in full | Link only | 05b, 05c |
+| Gorishniy et al., [*Revisiting Deep Learning Models for Tabular Data*](https://arxiv.org/abs/2106.11959) (NeurIPS 2021) | FT-Transformer: one token per feature, and its cost. Read in full | Link only | 05b, 05c |
+| Grinsztajn et al., [*Why do tree-based models still outperform deep learning on typical tabular data?*](https://arxiv.org/abs/2207.08815) (NeurIPS 2022) | Trees at around 10K samples, FT-Transformer as best case. arXiv v1, text read in full | Link only | 05c |
 
 ## AI Papers of the Week
 
 | Paper | Why read it | Local | Maps to |
 |---|---|---|---|
-| Ostroukhov et al., [*PRAGMA: Revolut Foundation Model*](https://arxiv.org/abs/2604.08649) (Aug 2026) ⚑ | A masked-modelling encoder over banking events: key, value and time tokens, 26M users, 207B tokens. LoRA beat a frozen probe on six tasks and scratch at 100M; credit PR-AUC +130.2% over the task baseline at 1B, AML 47.1% below. Relative numbers only, baselines unnamed. arXiv v2, read in full | [PDF](../sources/ostroukhov-2026-pragma.pdf) | [05b](notes/05b-transformer-encoders.md#a-token-is-a-design-choice) |
+| Ostroukhov et al., [*PRAGMA: Revolut Foundation Model*](https://arxiv.org/abs/2604.08649) (Aug 2026) ⚑ | A masked-modelling encoder over banking events: key, value and time tokens, 26M users, 207B tokens. LoRA beat a frozen probe on six tasks and scratch at 100M; credit PR-AUC +130.2% over the task baseline at 1B, AML 47.1% below. Relative numbers only, baselines unnamed. arXiv v2, read in full | [PDF](../sources/ostroukhov-2026-pragma.pdf) | [05b](notes/05b-transformer-encoders.md#a-token-is-a-design-choice), [05c](notes/05c-what-the-encoder-papers-measured.md) |
 | Simonyan and Zisserman, [*Very Deep Convolutional Networks for Large-Scale Image Recognition*](https://arxiv.org/abs/1409.1556) (ICLR 2015) | Depth with 3×3 filters only: top-1 val error 29.6% at 11 layers to 25.5% at 19, then flat. 7.3% top-5 test with 7 nets (second place); 6.8% with two nets after the deadline. Single runs. Read in full | [PDF](../sources/simonyan-2014-very-deep-convolutional-networks-large.pdf) | [04](notes/04-convolutional-networks.md#residual-networks) |
 
 ## Courses and videos

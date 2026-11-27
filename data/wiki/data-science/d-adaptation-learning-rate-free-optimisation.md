@@ -1,8 +1,8 @@
 ---
 title: D-Adaptation (Learning-Rate-Free Optimisation)
-tags: [data-science, pattern]
+tags: [data-science, deep-learning, pattern]
 summary: D-Adaptation sets the learning rate by tracking a running lower bound on the distance from the start point to a minimiser, with no line search or extra gradient evaluations.
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-06-defazio-2023-learning-rate-free-learning-d.md
 ---

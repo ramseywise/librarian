@@ -1,0 +1,1271 @@
+# imported_hash: 19a94f4ba1b41d88
+# Lecture on step 1, look and reason: descriptive statistics and EDA, probability rules, distributions and sampling.
+# make slides PILLAR=data-analytics/02-probability-and-statistics LECTURE=01-look-and-reason STRICT=1 PREVIEW=1
+# Levels: a slide with no level is the intro, `core` is the core lesson, `deep` is the optional extension (code and maths).
+deck:
+  title: Look and Reason
+  subtitle: Summaries, probability rules, distributions and samples
+  tagline: "Look first · Probability rules · Distributions and sampling"
+  reference: "Notes: data-analytics/02-probability-and-statistics/notes/01-descriptive-statistics-and-eda.md, 02-probability-foundations.md, 03-distributions-and-sampling.md"
+  output: 01-look-and-reason.pptx
+  notes: >-
+    This lecture is step 1 of the module. It teaches three habits in order: look at the table before summarising it, keep
+    the rules of probability straight, and know what a distribution or a sample can and cannot tell you. The running
+    example is a 20,000-user table with a planted mess.
+
+lecture:
+  covers:
+    - data-analytics/02-probability-and-statistics/notes/01-descriptive-statistics-and-eda.md
+    - data-analytics/02-probability-and-statistics/notes/02-probability-foundations.md
+    - data-analytics/02-probability-and-statistics/notes/03-distributions-and-sampling.md
+  requires:
+    - data-analytics/02-probability-and-statistics/README.md
+  next:
+    - data-analytics/02-probability-and-statistics/notes/04-estimation.md
+  related:
+    - data-science/01-classical-ml/notes/01-statistical-foundations.md
+    - ai-engineering/09-safety-and-security/notes/03-guardrail-models.md
+    - data-analytics/06-applied-analyses/notes/12-surveys-and-sampling-design.md
+    - data-analytics/04-bayesian-analysis/notes/01-bayesian-inference.md
+
+parts:
+  - title: Look first
+    divider: false
+    summary: "Kinds of data · Impossible values · Location and spread · Shape · Groups · A written finding"
+    notes: >-
+      Before any test, look. One table with a planted mess shows how a single summary can mislead.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Why look first
+        kicker: One table, three stories
+        statement: "A mean of 8.10, a median of 0.00 and a maximum of 48,000"
+        recall: Why can one column give a mean of 8.10 and a median of 0.00?
+        answer: "Most users never buy, so the quartiles are all zero, while a few planted bad rows pull the mean up to 8.10 and the maximum to 48,000. Each summary answers a different question."
+        takeaway: Each summary answers a different question, so look at the data before you pick one.
+        source: notes/01-descriptive-statistics-and-eda.md
+        notes: >-
+          This is the describe output on the 20,000-user table. The 25th, 50th and 75th percentiles are all zero because most
+          users never buy, and the maximum is a planted bad row.
+
+      - layout: bullets
+        beat: problem
+        section: Why look first
+        title: What goes wrong when you skip the look
+        recall: Why look at the data before summarising it?
+        answer: "A summary hides what a look would show: impossible values, missing data, a heavy tail and a row that is not the unit you assumed. Look first, then choose the summary the shape allows."
+        bullets:
+          - "Impossible values pass straight into a **mean**"
+          - "A heavy tail makes the mean and the median **disagree**"
+          - "The unit of a row changes every number"
+          - "A rate without its group size **misleads**"
+          - "Count every row you remove, and say why"
+        takeaway: EDA is how you find out what the summary would have hidden.
+        source: notes/01-descriptive-statistics-and-eda.md
+        notes: >-
+          The rest of the part walks one table through these checks, then ends with a seven-line written finding.
+
+      - layout: cards
+        beat: fundamentals
+        level: core
+        section: The data, and what kind of data it is
+        title: What kind of data is each column?
+        recall: How do you classify a column before summarising it?
+        answer: "Sessions is a discrete count, revenue is continuous, device and country are categorical, converted is binary, a 1 to 5 rating is ordinal, and a user ID is meaningless as a number."
+        cards:
+          - {title: "Count or continuous", accent: fundamentals, body: "**sessions** is a discrete count, **revenue** is continuous"}
+          - {title: "Categorical", accent: practice, body: "**device** and **country**, plus binary **converted**"}
+          - {title: "Ordinal", accent: problem, body: "A 1 to 5 rating has an order but no equal gaps"}
+          - {title: "Identifier", accent: pitfalls, body: "A user ID is **meaningless** as a number"}
+        takeaway: The kind of column decides which summaries are legal.
+        source: notes/01-descriptive-statistics-and-eda.md
+        notes: >-
+          Do not average a user ID or a rating without thinking. The type tells you which summary has a meaning.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: The data, and what kind of data it is
+        title: The table we will look at
+        recall: What does the running example look like?
+        answer: "Twenty thousand users with device, country, sessions, converted and revenue. Desktop converts at 0.075 and the rest at 0.038, and spend is lognormal."
+        lead: A synthetic table with a planted mess
+        lang: python
+        code: |-
+          rng = np.random.default_rng(42)
+          n = 20_000
+          users = pd.DataFrame({
+              "device": rng.choice(["mobile", "desktop", "tablet"],
+                                   n, p=[0.62, 0.31, 0.07]),
+              "country": rng.choice(["DE", "UK", "FR", "ES"],
+                                    n, p=[0.45, 0.30, 0.15, 0.10]),
+              "sessions": 1 + rng.poisson(1.4, n),
+          })
+          p_buy = np.where(users.device == "desktop", 0.075, 0.038)
+          users["converted"] = rng.random(n) < p_buy
+          spend = rng.lognormal(mean=3.6, sigma=1.1, size=n)
+          users["revenue"] = np.where(users.converted, spend, 0.0)
+        bullets:
+          - "Shape **(20000, 5)**"
+          - "Then 300 devices blanked, 6 rows set to -19.99 and 2 to 48,000"
+        takeaway: A planted mess lets you check that each habit finds what you put there.
+        source: notes/01-descriptive-statistics-and-eda.md
+        notes: >-
+          The generator is simulated so that the truth is known. The mess is added after the table is built.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: Look for what is impossible
+        title: Describe first, then count the impossible
+        recall: What does describe tell you about the table?
+        answer: "A mean of 8.10 beside a minimum of -19.99, a maximum of 48,000 and quartiles of zero. Counting directly gives 300 missing devices and 6 negative revenue rows."
+        lead: One call exposes the problems
+        lang: python
+        code: |-
+          users.shape                   # (20000, 5)
+          users.revenue.describe()
+          # mean     8.10    std   480.63
+          # min    -19.99    max 48000.00
+          # 25%, 50%, 75%  all 0.00
+
+          users.device.isna().sum()     # 300
+          (users.revenue < 0).sum()     # 6
+        bullets:
+          - "A negative revenue is a **refund or a bug**"
+          - "A standard deviation of 480 beside a mean of 8 is a **tail**"
+        takeaway: "Read describe against common sense: a negative revenue or a 48,000 order is a question, not a number."
+        source: notes/01-descriptive-statistics-and-eda.md
+        notes: >-
+          Do not delete anything yet. Ask what each odd row is first.
+
+      - layout: compare
+        beat: fundamentals
+        level: core
+        section: Look for what is impossible
+        title: Impossible is not the same as large
+        recall: How do you tell an error from a real extreme?
+        answer: "Ask whether the value can exist. Pregnancy lengths under 20 weeks are errors, and above 30 weeks they are probably real. A large value is not a reason to delete a row."
+        emphasis: right
+        left:
+          title: Treat as an error
+          bullets:
+            - "Ten lowest pregnancy lengths: **0, 4, 9, 13, 17, 17, 18, 19, 20, 21** weeks"
+            - "Under **20** weeks is an error"
+        right:
+          title: Probably real
+          bullets:
+            - "Over **30** weeks is probably real"
+            - "Do not delete because it is **large**"
+        takeaway: Remove a value because it cannot exist, never because it is inconvenient.
+        source: notes/01-descriptive-statistics-and-eda.md
+        notes: >-
+          Count and report every row you remove. Sentinel codes such as 0 or 999 are impossible values wearing a number.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: Look for what is impossible
+        title: Clean with a stated rule, and count what went
+        recall: How do you clean and keep an audit trail?
+        answer: "Keep revenue between 0 and 10,000, label missing devices as unknown, and print the count: kept 19,992 of 20,000 rows, 1,003 buyers."
+        lead: A rule you can state, and a count you can report
+        lang: python
+        code: |-
+          clean = users[users.revenue.between(0, 10_000)].copy()
+          clean["device"] = clean.device.fillna("unknown")
+          buyers = clean.loc[clean.revenue > 0, "revenue"]
+
+          print(f"kept {len(clean):,} of {len(users):,}")
+          print(f"{len(buyers):,} buyers")
+          # kept 19,992 of 20,000 rows, 1,003 buyers
+        bullets:
+          - "The rule is **written down**: between 0 and 10,000"
+          - "The count of rows removed goes in the report"
+        takeaway: An undocumented cleaning step is a result nobody can reproduce.
+        source: notes/01-descriptive-statistics-and-eda.md
+        notes: >-
+          The two 48,000 rows and the six negative rows are the eight removed. The 300 missing devices stay, as a labelled group.
+
+      - layout: table
+        beat: fundamentals
+        level: core
+        section: Look for what is impossible
+        title: Is the missingness random?
+        recall: How do you check whether missing values are random?
+        answer: "Compare the missing group with the rest. Mean revenue was 8.21 for devices present against 0.97 for missing, but the gap is entirely the two 48,000 rows, and the country mix is close."
+        header: [Country, "Device present", "Device missing"]
+        widths: [3, 3.3, 3.3]
+        rows:
+          - [DE, "0.444", "0.467"]
+          - [ES, "0.100", "0.087"]
+          - [FR, "0.154", "0.153"]
+          - [UK, "0.302", "0.293"]
+        takeaway: Missing at random shows a similar country mix whether the value is present or missing.
+        source: notes/01-descriptive-statistics-and-eda.md
+        notes: >-
+          Mean revenue was 8.21 for 19,700 rows with a device against 0.97 for the 300 without. Both of the 48,000 rows sit in
+          the missing group, so the gap is not a property of missing devices.
+
+      - layout: statement
+        beat: fundamentals
+        level: core
+        section: "Location: mean, trimmed mean, median"
+        kicker: Pumpkins
+        statement: "1, 1, 1, 3, 3, 591 has a mean of 100"
+        recall: What does the mean of 1, 1, 1, 3, 3, 591 show?
+        answer: "The mean is 100 although five of the six values are at most 3, so one value can run the mean. Report the median beside it."
+        takeaway: When one value runs the mean, report something else beside it.
+        source: notes/01-descriptive-statistics-and-eda.md
+        notes: >-
+          Five of the six values are at most 3 and the mean is 100. The mean describes a pumpkin nobody has, and it is why the
+          next slide gives three measures of location.
+
+      - layout: table
+        beat: fundamentals
+        level: core
+        section: "Location: mean, trimmed mean, median"
+        title: Three locations for the same buyers
+        recall: How far apart are the mean, trimmed mean and median?
+        answer: "For the buyers the mean is 65.86, the 10% trimmed mean is 46.81 and the median is 37.38. The top 1% of buyers hold 10% of revenue."
+        header: [Measure, Value, What it responds to]
+        widths: [3, 1.8, 4.8]
+        rows:
+          - [Mean, "65.86", Every value including the tail]
+          - [10% trimmed mean, "46.81", "Drops the extremes, keeps most data"]
+          - [Median, "37.38", "The middle value, ignores the tail"]
+        highlight: [2]
+        takeaway: A big gap between mean and median says the tail is running the summary.
+        source: notes/01-descriptive-statistics-and-eda.md
+        notes: >-
+          The ratio of mean to median is about 1.76 for buyers. For a lognormal with sigma 1.1 it would be exp(1.1 squared over 2),
+          about 1.83.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: "Location: mean, trimmed mean, median"
+        title: Per user or per buyer changes the answer
+        recall: Why does the unit of the row matter?
+        answer: "Per buyer the mean is 65.86 and the median 37.38. Per user the mean is 3.30 and the median is 0.00, because 95% of users spend nothing."
+        lead: The same revenue column, two units
+        lang: python
+        code: |-
+          from scipy import stats
+
+          buyers.mean()                   # 65.86
+          stats.trim_mean(buyers, 0.10)   # 46.81
+          buyers.median()                 # 37.38
+
+          clean.revenue.mean()            # 3.30   per user
+          clean.revenue.median()          # 0.00   per user
+        bullets:
+          - "Per user, **95%** spend nothing"
+          - "Say which unit every number is in"
+        takeaway: Revenue per user, per session and per order are three different numbers.
+        source: notes/01-descriptive-statistics-and-eda.md
+        notes: >-
+          A median of zero is not wrong, it is what a zero-inflated column looks like. Quoting a mean over it is the first pitfall.
+
+      - layout: compare
+        beat: fundamentals
+        level: core
+        section: "Spread: standard deviation, IQR, MAD"
+        title: One bad row moves the standard deviation, not the MAD
+        recall: Which measures of spread resist outliers?
+        answer: "The median, IQR and MAD resist outliers. Two 48,000 rows move the standard deviation from 93.65 to 2139.32 but the median only from 37.38 to 37.45."
+        emphasis: right
+        left:
+          title: Clean buyers
+          bullets:
+            - "Mean **65.86**, SD **93.65**"
+            - "IQR **60.75**, MAD **24.95**"
+            - "Median **37.38**"
+        right:
+          title: With the two 48,000 rows
+          bullets:
+            - "Mean **161.25**"
+            - "SD **2139.32**"
+            - "Median **37.45**"
+        takeaway: The median, IQR and MAD barely notice a bad row, while the mean and SD are dragged.
+        source: notes/01-descriptive-statistics-and-eda.md
+        notes: >-
+          Percentiles of the clean buyers: 0.5 at 37, 0.9 at 141, 0.95 at 236 and 0.99 at 427. These tell you more than one spread number.
+
+      - layout: cards
+        beat: fundamentals
+        level: deep
+        section: "Spread: standard deviation, IQR, MAD"
+        title: "Census states: the same pattern at another scale"
+        recall: Does the mean-versus-median gap from the buyer table also show up in US state populations?
+        answer: "Yes. For US state populations the mean is 6,162,876, the trimmed mean 4,783,697 and the median 4,436,370, with an SD of 6,848,235 and a MAD of 3,849,870."
+        cards:
+          - {title: Mean, accent: problem, body: "6,162,876, pulled up by the largest states"}
+          - {title: Trimmed mean, accent: practice, body: "4,783,697"}
+          - {title: Median, accent: fundamentals, body: "4,436,370"}
+          - {title: Spread, accent: pitfalls, body: "SD 6,848,235 against MAD 3,849,870"}
+        takeaway: Skewed data gives the same ordering of mean, trimmed mean and median whatever the scale.
+        source: notes/01-descriptive-statistics-and-eda.md
+        notes: >-
+          R's mad function scales by 1.4826 so that it matches the standard deviation for normal data. Check which convention a library uses.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: "Shape: histograms, logs, the CDF"
+        title: Bin the raw and the logged column
+        recall: How does a log scale change what the histogram shows?
+        answer: "Linear bins pile 369 buyers into the first bin and trail off, while log10 bins give a bell shape. Skew is 5.1 raw and 0.01 on the log."
+        lead: Same buyers, two scales
+        lang: python
+        code: |-
+          bins = [0, 25, 50, 100, 200, 400, 800, 1600, 3200]
+          lin, _ = np.histogram(buyers, bins=bins)
+          log, _ = np.histogram(np.log10(buyers), bins=8)
+          # lin: 369 246 215 103  57  11   2   0
+          # log:   2  23 124 266 320 195  64   9
+
+          ecdf = lambda x: (buyers <= x).mean()
+          # <=25 0.368   <=50 0.613   <=100 0.828
+          # <=250 0.956  <=500 0.991
+        bullets:
+          - "Skew **5.1** raw, **0.01** on the log"
+          - "A bell on the log scale means roughly **lognormal**"
+        takeaway: Log the column and the shape often says which family it comes from.
+        source: notes/01-descriptive-statistics-and-eda.md
+        notes: >-
+          The empirical CDF answers questions such as what share of buyers spend 50 or less: 0.613. A box plot puts its whiskers at 1.5 IQR.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: Two columns at a time
+        title: "Groups: show N next to every rate"
+        recall: What does a group table need to be honest?
+        answer: "Users, conversion, revenue per user and median order for each device. Desktop converts at 0.075 against 0.040 for mobile, and the unknown group has only 300 users."
+        header: [Device, Users, Conversion, Rev per user, Median order]
+        widths: [2.2, 1.7, 1.9, 1.9, 1.9]
+        rows:
+          - [desktop, "6160", "0.075", "5.068", "39.880"]
+          - [mobile, "12153", "0.040", "2.623", "35.630"]
+          - [tablet, "1379", "0.033", "1.939", "39.645"]
+          - [unknown, "300", "0.033", "0.974", "23.845"]
+        highlight: [0]
+        takeaway: Desktop converts about twice as often, but this is observational, so do not read it as a cause.
+        source: notes/01-descriptive-statistics-and-eda.md
+        notes: >-
+          Split into 200 arbitrary groups of about 100 users and revenue per user runs from 0.00 to 15.46 around an overall 3.30. Small groups are noisy.
+
+      - layout: compare
+        beat: fundamentals
+        level: core
+        section: Two columns at a time
+        title: Pearson against Spearman
+        recall: When do Pearson and Spearman disagree?
+        answer: "Pearson measures linear association only, and one bad row on 500 points moved it from +0.44 to -0.31. Spearman works on ranks and barely moved."
+        emphasis: right
+        left:
+          title: Pearson
+          bullets:
+            - "Linear association only, in **[-1, 1]**"
+            - "One bad row: **+0.44** to **-0.31**"
+        right:
+          title: Spearman
+          bullets:
+            - "Works on ranks, so it resists outliers"
+            - "Same row: **+0.42** to **+0.41**"
+        takeaway: Plot the two columns before trusting a correlation, and use ranks when the tail is heavy.
+        source: notes/01-descriptive-statistics-and-eda.md
+        notes: >-
+          Among buyers, sessions against revenue gives Pearson -0.047 and Spearman -0.032. Plot big tables with jitter, alpha 0.2 or hexbin,
+          since BRFSS heights rounded to inches show bands.
+
+      - layout: cards
+        beat: pitfalls
+        level: core
+        section: Two columns at a time
+        title: A row is not always the unit you care about
+        recall: How can a per-session metric and a per-user metric disagree?
+        answer: "With nine users at 20 sessions and one at 500, the per-user mean is 68.0 and the session-weighted mean is 372.9. A per-session and a per-user metric can move in opposite directions."
+        cards:
+          - {title: Per user, accent: fundamentals, body: "Nine users at 20 sessions, one at 500: mean **68.0**"}
+          - {title: Per session, accent: problem, body: "Weighted by sessions the same data gives **372.9**"}
+          - {title: Class size, accent: practice, body: "A college class average of **24** feels different to the students in it"}
+        takeaway: Decide whose average you are quoting before you quote it.
+        source: notes/01-descriptive-statistics-and-eda.md
+        notes: >-
+          This is the class size paradox. It matters for any metric computed over sessions when the decision is about users.
+
+      - layout: flow
+        beat: practice
+        level: core
+        section: From EDA to a written finding
+        title: The EDA loop
+        recall: What are the steps of the EDA loop?
+        answer: "Load and type-check, find missing, impossible and duplicate rows, look at one column at a time, choose the summaries the shape allows, look at two columns, then write down findings and questions. Each loop returns to the missing check."
+        steps:
+          - {label: "Load and type-check", sub: "kinds of column", accent: fundamentals}
+          - {label: "Missing, impossible, duplicate", sub: "count what you remove", accent: problem}
+          - {label: "One column: shape", sub: "histogram, log, CDF", accent: practice}
+          - {label: "Choose summaries", sub: "the shape allows", accent: practice}
+          - {label: "Two columns", sub: "groups and association", accent: pitfalls}
+          - {label: "Write it down", sub: "findings and questions", accent: "94A3B8"}
+        caption: Each pass can send you back to the missing check
+        takeaway: EDA is a loop, and the written finding is what ends it.
+        source: notes/01-descriptive-statistics-and-eda.md
+        notes: >-
+          Expect to go round more than once. The group table in the last pass often reveals a missing-data problem you missed in the first.
+
+      - layout: table
+        beat: wrap
+        level: core
+        section: From EDA to a written finding
+        title: The seven-line finding
+        recall: What does a written EDA finding contain?
+        answer: "Seven lines: extract, removed, kept, shape, groups, so and open. It states the rows, what was removed and why, how the data is shaped, what differs by group, the takeaway and the question still open."
+        header: [Line, Says]
+        widths: [2, 7.6]
+        rows:
+          - [Extract, "20,000 users, last month; one row per user"]
+          - [Removed, "6 negative rows (refunds?), 2 rows at 48,000 (test account?)"]
+          - [Kept, "300 users labelled unknown"]
+          - [Shape, "95% spend nothing; buyers median 37, mean 66, p99 427, roughly lognormal"]
+          - [Groups, "Desktop converts about twice as often as mobile (observational)"]
+          - [So and open, "Refunds and the two large accounts still need an owner"]
+        takeaway: Say what you removed, what the shape is, and what you still do not know.
+        source: notes/01-descriptive-statistics-and-eda.md
+        notes: >-
+          The note sets this out as seven separate lines, and the last two are the conclusion and the open question. A finding that
+          names its open question is more trusted, not less.
+
+      - layout: table
+        beat: pitfalls
+        level: core
+        section: Pitfalls
+        title: EDA pitfalls and what to do instead
+        recall: What are the main EDA pitfalls?
+        answer: "Quoting a mean over a zero-inflated column, deleting outliers because they are large, ignoring the unit of a row, comparing rates without group size, trusting sentinel values, reading causation from a group table, and forgetting the exploration when you test."
+        header: [Pitfall, Do instead]
+        widths: [4.4, 5.2]
+        rows:
+          - [Mean of a zero-inflated column, "Report the median and the share of zeros"]
+          - [Deleting outliers for being large, "Delete only what cannot exist"]
+          - [Ignoring the unit of a row, "State per user, session or order"]
+          - [Rates without group size, "Show N next to every rate"]
+          - [Sentinel values, "Look for 0, 999 and -1 codes"]
+          - [Causation from a group table, "Call it observational"]
+          - [Forgetting the exploration, "Count every look when you test"]
+        takeaway: Most EDA mistakes are made before any model is fitted, so check the unit, the tail and the count.
+        source: notes/01-descriptive-statistics-and-eda.md
+        notes: >-
+          The last one comes back in the testing lecture: every comparison you looked at counts as a test.
+
+  - title: Probability rules
+    summary: "Counting · Conditional and Bayes · Independence · Random variables · Joint distributions"
+    notes: >-
+      The rules of probability, checked by simulation so that every formula has a number behind it.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Why start with rules
+        kicker: A 99% test
+        statement: "A positive result on a 99% test is right only 9% of the time"
+        recall: How often is a positive result on a 99% test right when the condition is rare?
+        answer: "Only 9% of the time, because the base rate decides how much a positive result means."
+        takeaway: The base rate decides how much a positive result means.
+        source: notes/02-probability-foundations.md
+        notes: >-
+          This is the 1-in-1000 example worked later in the part. The test is good, the condition is rare, and the arithmetic
+          is counterintuitive until you draw the tree.
+
+      - layout: bullets
+        beat: problem
+        section: Why start with rules
+        title: Five rules that save the most mistakes
+        recall: Which rules of probability matter most in practice?
+        answer: "P(A given B) is not P(B given A), expectations always add, variances add only for uncorrelated variables, standard errors assume independent rows, and every rule can be checked by simulation."
+        bullets:
+          - "**P(A | B)** is not **P(B | A)**, and the base rate sets the gap"
+          - "Expectations always add"
+          - "Variances add only for **uncorrelated** variables"
+          - "Standard errors assume **independent rows**"
+          - "Check every rule by simulation"
+        takeaway: Five rules cover most of the probability errors you will meet.
+        source: notes/02-probability-foundations.md
+        notes: >-
+          Each rule has a worked example in this part, and each example is checked by simulating the process.
+
+      - layout: cards
+        beat: fundamentals
+        section: Sample spaces, events and counting
+        title: What are the three rules behind every probability?
+        recall: What are the three rules, and which two shortcuts do most of the work?
+        answer: "No probability is negative, the whole space has probability one, and non-overlapping events add. The complement rule turns at least one into one minus none, and inclusion-exclusion handles overlaps."
+        cards:
+          - {title: Axioms, accent: fundamentals, body: "Nothing negative, the whole space is **1**, non-overlapping events **add**"}
+          - {title: Complement, accent: practice, body: "P(not A) = 1 - P(A). **At least one** is easier through none"}
+          - {title: Inclusion-exclusion, accent: pitfalls, body: "P(A or B) = P(A) + P(B) - P(A and B)"}
+        takeaway: Count the complement first, because at least one is almost always easier through none.
+        source: notes/02-probability-foundations.md
+        notes: >-
+          A sample space is the set of possible outcomes and an event is a subset of it. When outcomes are equally likely, probability is counting.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: Sample spaces, events and counting
+        title: Counting beats guessing, and simulation checks it
+        recall: How do you compute and check the chance of a shared birthday?
+        answer: "Multiply the chance of no match across people and subtract from one. For 23 people it is 0.507 exact and 0.509 simulated, with 253 pairs. In 10,000 hash buckets, 118 users give 0.500."
+        lead: The birthday problem, exact against simulated
+        lang: python
+        code: |-
+          def p_shared(k, days=365):
+              p_none = 1.0
+              for i in range(k):
+                  p_none *= (days - i) / days
+              return 1 - p_none
+
+          p_shared(10)                  # 0.117   45 pairs
+          p_shared(23)                  # 0.507   253 pairs
+          p_shared(50)                  # 0.970   1225 pairs
+          p_shared(100, days=10_000)    # 0.391   10k buckets
+        bullets:
+          - "Pairs grow as **k(k-1)/2**, so matches arrive early"
+          - "Simulation agrees: 0.117, 0.509 and 0.971"
+        takeaway: Collisions come sooner than intuition says, because it is the number of pairs that counts.
+        source: notes/02-probability-foundations.md
+        notes: >-
+          The same arithmetic applies to hash buckets of 10,000: 100 users give 0.391, 118 users give 0.500 and 1000 users give 1.000.
+
+      - layout: compare
+        beat: fundamentals
+        level: core
+        section: Conditional probability and Bayes' rule
+        title: P(buy | mobile) is not P(mobile | buy)
+        recall: Why is P(A | B) different from P(B | A)?
+        answer: "In a million simulated users P(buy) is 0.0520, P(buy given mobile) is 0.0378, but P(mobile given buy) is 0.4508. Mobile is 62% of users and 45% of purchases."
+        emphasis: right
+        left:
+          title: "P(buy | mobile)"
+          bullets:
+            - "**0.0378** of mobile users buy"
+            - "Overall P(buy) is **0.0520**"
+        right:
+          title: "P(mobile | buy)"
+          bullets:
+            - "**0.4508** of buyers are on mobile"
+            - "Mobile is **0.6195** of users"
+        takeaway: Mobile is 62% of users but 45% of purchases, so the two conditionals describe different things.
+        source: notes/02-probability-foundations.md
+        notes: >-
+          Bayes' rule is P(A given B) equals P(B given A) times P(A) over P(B). The two conditionals differ by the ratio of the base rates.
+
+      - layout: flow
+        beat: fundamentals
+        level: core
+        section: Conditional probability and Bayes' rule
+        title: "The fraud tree: 990 of 10,980 flagged are fraud"
+        recall: How does a probability tree give the posterior?
+        answer: "Of 1,000,000 orders, 1,000 are fraud and 990 of those are flagged, while 9,990 of the 999,000 legitimate orders are flagged too. Of 10,980 flagged orders 990 are fraud, which is 9%."
+        steps:
+          - {label: "1,000,000 orders", sub: "start", accent: fundamentals}
+          - {label: "1,000 fraud", sub: "990 flagged, 10 missed", accent: problem}
+          - {label: "999,000 legit", sub: "9,990 flagged, 989,010 cleared", accent: practice}
+          - {label: "10,980 flagged", sub: "990 are fraud", accent: pitfalls}
+        caption: 990 of 10,980 is 9%
+        takeaway: Count people instead of multiplying probabilities and the false positives become visible.
+        source: notes/02-probability-foundations.md
+        notes: >-
+          The same tree explains the mammogram problem: 0.8% prevalence, 90% sensitivity and a 7% false-positive rate give about 9% real positives.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: Conditional probability and Bayes' rule
+        title: One function for the posterior
+        recall: How do you compute a posterior from a prior, sensitivity and specificity?
+        answer: "Divide the true-positive mass by all positive mass. A 1 in 1000 prior at 99% gives 0.090, a 1 in 100 prior gives 0.500, and 1 in 1000 at 99.9% also gives 0.500."
+        lead: Prior, sensitivity and specificity
+        lang: python
+        code: |-
+          def posterior(prior, sensitivity, specificity):
+              hit = prior * sensitivity
+              false = (1 - prior) * (1 - specificity)
+              return hit / (hit + false)
+
+          posterior(1/1000, 0.99, 0.99)     # 0.090
+          posterior(1/100, 0.99, 0.99)      # 0.500
+          posterior(1/1000, 0.999, 0.999)   # 0.500
+        bullets:
+          - "A **tenfold** better prior or a tenfold better test gives the same 0.500"
+        takeaway: When the condition is rare, the false positive rate matters more than the sensitivity.
+        source: notes/02-probability-foundations.md
+        notes: >-
+          Grinstead and Snell give a version where 98.1% of positives are false, with a 1-in-1,000 prior, 99% on cancers and 95% negative otherwise.
+
+      - layout: cards
+        beat: fundamentals
+        level: core
+        section: Conditional probability and Bayes' rule
+        title: The base rate behind a significant result
+        recall: How does the base rate change what a significant result means?
+        answer: "With 100 drugs tested, 10 working, power 0.8 and alpha 0.05, about 12.5 results are significant and 64% are real. With base rates 0.5, 0.2, 0.1 and 0.02 the real share is 0.94, 0.80, 0.64 and 0.25."
+        cards:
+          - {title: "Base rate 0.5", accent: practice, body: "**0.94** of significant results are real"}
+          - {title: "Base rate 0.2", accent: practice, body: "**0.80** are real"}
+          - {title: "Base rate 0.1", accent: problem, body: "**0.64** are real"}
+          - {title: "Base rate 0.02", accent: pitfalls, body: "Only **0.25** are real"}
+        takeaway: The rarer the true effects, the more of your significant results are false.
+        source: notes/02-probability-foundations.md
+        notes: >-
+          This is Reinhart's drug example. His text reports 13 discoveries and 62%, while the unrounded figures here are 12.5 and 64%.
+
+      - layout: steps
+        beat: practice
+        level: deep
+        section: Conditional probability and Bayes' rule
+        title: The odds form of Bayes
+        recall: What is the odds form of Bayes' rule?
+        answer: "Posterior odds equal prior odds times the likelihood ratio. Prior odds of about 1 to 1000 times 99 gives 0.099. In the twins problem, odds of 1/3 to 2/3 times a ratio of 2 give 0.5."
+        steps:
+          - {title: Prior odds, text: "About **1:1000** for the rare condition", n: 1, accent: fundamentals}
+          - {title: Likelihood ratio, text: "A 99% test has a ratio of **99**", n: 2, accent: problem}
+          - {title: Posterior odds, text: "Multiply: about **0.099**", n: 3, accent: practice}
+          - {title: Update again, text: "Two independent positives give **0.907**", n: 4, accent: pitfalls}
+        takeaway: Evidence multiplies the odds, which makes updating on several tests a product.
+        source: notes/02-probability-foundations.md
+        notes: >-
+          In the twins problem the prior odds are 1/3 to 2/3 and the likelihood ratio is 2, so the posterior is 0.5. Multiplying evidence
+          is only right when the pieces are independent given the hypothesis.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: Conditional probability and Bayes' rule
+        title: Monty Hall settled by simulation
+        recall: Should you switch in the Monty Hall problem?
+        answer: "Yes. Switching wins about 0.667 of the time and staying about 0.333, because switching wins whenever the first pick was wrong."
+        lead: When the argument is hard, simulate
+        lang: python
+        code: |-
+          def monty(switch, n=100_000):
+              rng = np.random.default_rng(1)
+              car = rng.integers(3, size=n)
+              pick = rng.integers(3, size=n)
+              hit = pick == car
+              wins = ~hit if switch else hit
+              return wins.mean()
+
+          monty(switch=True)    # about 0.667
+          monty(switch=False)   # about 0.333
+        bullets:
+          - "Switching wins exactly when the first pick was **wrong**"
+          - "Conjunction rule: P(A and B) is at most **P(A)**"
+        takeaway: A short simulation settles an argument that intuition cannot.
+        source: notes/02-probability-foundations.md
+        notes: >-
+          Another quick check: for 100 dice the chance of no sixes is (5/6) to the power 100.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: Independence
+        title: Pairwise independent is not jointly independent
+        recall: Why is checking independence pair by pair not enough?
+        answer: "With c as a XOR b, c is independent of a and of b, since each conditional probability is 0.5, but given both a and b the probability that c equals 1 is 0.0."
+        lead: The XOR example
+        lang: python
+        code: |-
+          rng = np.random.default_rng(3)
+          a = rng.integers(2, size=100_000)
+          b = rng.integers(2, size=100_000)
+          c = a ^ b
+
+          c[a == 1].mean()                # 0.5
+          c[b == 1].mean()                # 0.5
+          c[(a == 1) & (b == 1)].mean()   # 0.0
+        bullets:
+          - "Each pair looks independent"
+          - "The **triple** is fully dependent"
+        takeaway: Pairwise checks can miss a dependence that only appears in a group.
+        source: notes/02-probability-foundations.md
+        notes: >-
+          This is why you cannot multiply three probabilities because each pair looks unrelated.
+
+      - layout: compare
+        beat: fundamentals
+        level: core
+        section: Independence
+        title: Dependent overall, independent within a group
+        recall: What is conditional independence?
+        answer: "Monday and Tuesday opens correlate at +0.281 overall, but within the engaged group the correlation is +0.002 and within the not-engaged group +0.000. The engaged share is 0.3, with open probabilities 0.6 against 0.1."
+        emphasis: right
+        left:
+          title: Overall
+          bullets:
+            - "Monday and Tuesday opens correlate **+0.281**"
+            - "It looks like a habit"
+        right:
+          title: Within a group
+          bullets:
+            - "Engaged: **+0.002**, not engaged: **+0.000**"
+            - "A hidden group of **0.3** drives it"
+        takeaway: A hidden group can create dependence that vanishes once you condition on it.
+        source: notes/02-probability-foundations.md
+        notes: >-
+          Open probability is 0.6 for engaged users and 0.1 for the rest. Conditioning on the group removes the correlation entirely.
+
+      - layout: compare
+        beat: pitfalls
+        level: core
+        section: Independence
+        title: Sessions in a user are not independent rows
+        recall: What does non-independence do to a standard error?
+        answer: "With 5 sessions per user and an intraclass correlation of 0.5, the true standard error is 0.0175 against a naive 0.0100, which is 1.75 times larger. The formula sqrt(1 + (m-1)rho) gives 1.73. You have about a third of the information."
+        emphasis: left
+        left:
+          title: Naive
+          bullets:
+            - "Standard error **0.0100**"
+            - "Treats every session as independent"
+        right:
+          title: True
+          bullets:
+            - "Standard error **0.0175**, **1.75x** larger"
+            - "Formula: sqrt(1 + (m-1)rho) = **1.73**"
+        takeaway: Five correlated sessions per user are worth about a third of the information of independent ones.
+        source: notes/02-probability-foundations.md
+        notes: >-
+          Reinhart calls this pseudoreplication. The cure is to resample or cluster by the unit that is independent, the user.
+
+      - layout: cards
+        beat: fundamentals
+        level: core
+        section: "Random variables, expectation and variance"
+        title: Expectation is easy to compute and easy to trust
+        recall: What do expectation and variance give you?
+        answer: "Expectation is the long-run average. The webinar is 0.05 x 300 + 0.15 x 50 = 22.50 dollars. In a shuffled deck the mean number of matches is 0.999 and P(no match) is 0.369, close to 1/e at 0.368."
+        cards:
+          - {title: Webinar value, accent: fundamentals, body: "0.05 x 300 + 0.15 x 50 = **$22.50**"}
+          - {title: Deck shuffle, accent: practice, body: "Mean matches **0.999**"}
+          - {title: No match, accent: problem, body: "**0.369**, against 1/e at **0.368**"}
+          - {title: von Neumann coin, accent: pitfalls, body: "p = 0.7 gives 0.500 kept, **4.76** flips per fair bit"}
+        takeaway: Expectations add without conditions, so use them to reason about totals.
+        source: notes/02-probability-foundations.md
+        notes: >-
+          The von Neumann trick keeps a pair of flips only when they differ. The theory says 1/(p(1-p)) flips per fair bit, which is 4.76 at p = 0.7.
+
+      - layout: table
+        beat: fundamentals
+        level: core
+        section: "Random variables, expectation and variance"
+        title: Variances add only with the covariance
+        recall: When do variances add?
+        answer: "Only for uncorrelated variables. For views and clicks E[v+c] is 6.604 and Var[v+c] is 6.612, while Var[v]+Var[c] is 5.607. Adding 2Cov restores 6.612."
+        header: [Quantity, Value]
+        widths: [6, 3.6]
+        rows:
+          - ["E[v + c]", "6.604"]
+          - ["Var[v + c]", "6.612"]
+          - ["Var[v] + Var[c]", "5.607"]
+          - ["Var[v] + Var[c] + 2Cov", "6.612"]
+        highlight: [2]
+        takeaway: Leave out the covariance and the variance of a sum is wrong.
+        source: notes/02-probability-foundations.md
+        notes: >-
+          Expectations add always. The gap between 5.607 and 6.612 is exactly twice the covariance.
+
+      - layout: bullets
+        beat: fundamentals
+        level: deep
+        section: "Random variables, expectation and variance"
+        title: The standard error shrinks as one over root n
+        recall: How does the standard error shrink with n?
+        answer: "It equals the standard deviation over the square root of n. With sd of 30, the simulation gives 3.052 against 3.000 at n=100, 0.740 against 0.750 at n=1600 and 0.188 against 0.188 at n=25600."
+        bullets:
+          - "n = 100: simulated **3.052**, theory **3.000**"
+          - "n = 1600: simulated **0.740**, theory **0.750**"
+          - "n = 25600: simulated **0.188**, theory **0.188**"
+          - "Sixteen times the data buys only **four times** less error"
+        takeaway: Precision is expensive, since halving the error needs four times the data.
+        source: notes/02-probability-foundations.md
+        notes: >-
+          This holds for independent rows. The previous slides showed what happens when they are not.
+
+      - layout: table
+        beat: fundamentals
+        level: core
+        section: Joint, marginal and conditional distributions
+        title: A joint table holds every other table
+        recall: How do marginal and conditional distributions come from a joint table?
+        answer: "Add across a row or column for a marginal and divide by a marginal for a conditional. Marginals are desktop 0.31 and mobile 0.62 with P(buy) 0.0469, and the conditionals are 0.075 and 0.038."
+        header: [Device, Buy, No buy]
+        widths: [3.6, 3, 3]
+        rows:
+          - [desktop, "0.0233", "0.2867"]
+          - [mobile, "0.0236", "0.5964"]
+        takeaway: Divide a row by its sum to get the conditional, 0.075 desktop and 0.038 mobile.
+        source: notes/02-probability-foundations.md
+        notes: >-
+          P(device) is 0.31 for desktop and 0.62 for mobile and P(buy) is 0.0469 overall. Dividing the buy cell by its row sum gives P(buy given device).
+
+      - layout: steps
+        beat: practice
+        level: deep
+        section: Joint, marginal and conditional distributions
+        title: Split the variance by group
+        recall: What are the laws of total expectation and total variance?
+        answer: "E[X] is E of E[X given B], and Var[X] is E[Var[X given B]] plus Var[E[X given B]]. For revenue E is 3.158 and Var 708.0, with 29% of the variance coming from who buys."
+        steps:
+          - {title: Total expectation, text: "**E[X] = E[E[X | B]]**", n: 1, accent: fundamentals}
+          - {title: Total variance, text: "**Var[X] = E[Var[X|B]] + Var[E[X|B]]**", n: 2, accent: problem}
+          - {title: Revenue example, text: "E **3.158**, Var **708.0**", n: 3, accent: practice}
+          - {title: The between term, text: "**29%** of the variance is who buys", n: 4, accent: pitfalls}
+        takeaway: Total variance splits into a within-group and a between-group part, and 29% of the revenue variance is who buys.
+        source: notes/02-probability-foundations.md
+        notes: >-
+          The between-group part is variance you can explain by a covariate, so a design that removes it leaves a smaller standard error.
+
+      - layout: table
+        beat: pitfalls
+        level: core
+        section: Pitfalls
+        title: Probability pitfalls and what to do instead
+        recall: What are the main probability pitfalls?
+        answer: "Swapping the conditional, ignoring the base rate, assuming independence, checking independence pairwise, adding variances without covariance, multiplying non-independent evidence, and reading a conditional as a cause."
+        header: [Pitfall, Do instead]
+        widths: [4.4, 5.2]
+        rows:
+          - [Swapping the conditional, "Write which one you mean"]
+          - [Ignoring the base rate, "Draw the tree with counts"]
+          - [Assuming independence, "Ask what a row shares"]
+          - [Pairwise independence checks, "Check the joint"]
+          - [Variances without covariance, "Add the 2Cov term"]
+          - [Multiplying dependent evidence, "Condition on the shared cause"]
+          - [A conditional read as a cause, "Treat it as description"]
+        takeaway: Write the conditional out in words and draw the counts before you trust an intuition.
+        source: notes/02-probability-foundations.md
+        notes: >-
+          Try it: a new rule with 95% sensitivity and 99.5% specificity gives about 0.16, and a double flag gives about 0.95.
+
+  - title: Distributions and sampling
+    summary: "scipy.stats · Samples · Checking a fit · LLN and CLT · The small-N trap"
+    notes: >-
+      Distributions describe the process, samples are what you actually get, and the small-N trap is where the two meet.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Why start here
+        kicker: The small-N warning
+        statement: "On zero-inflated revenue a 95% interval can cover only 56% at n = 30"
+        recall: How well does a 95% interval cover on zero-inflated revenue at n = 30?
+        answer: "Only 56% (0.563) at n = 30, against 0.948 at n = 30,000, so N of 30 is not a law."
+        takeaway: N of 30 is not a law, and a distribution tells you how fast the rule kicks in.
+        source: notes/03-distributions-and-sampling.md
+        notes: >-
+          The simulation later in the part measures this directly. Coverage is 0.563 at n of 30 and 0.948 at 30,000.
+
+      - layout: bullets
+        beat: problem
+        section: Why start here
+        title: Four questions this part answers
+        recall: What does this part of the lecture cover?
+        answer: "How to compute with a distribution in code, whether the sample is representative, whether a bigger sample fixes the problem, and when a normal interval can be trusted."
+        bullets:
+          - "How do I compute with a **distribution** in code?"
+          - "Is my sample **representative** of the population?"
+          - "Does a **bigger** sample fix the problem?"
+          - "When can I trust a **normal** interval?"
+        takeaway: A lot of statistics is checking that the sample looks like the world you care about.
+        source: notes/03-distributions-and-sampling.md
+        notes: >-
+          The six distributions used here are Normal, Binomial, Poisson, Exponential, Lognormal and Beta.
+
+      - layout: cards
+        beat: fundamentals
+        level: core
+        section: "The `scipy.stats` interface"
+        title: Every distribution has the same methods
+        recall: What are the main methods of a scipy.stats distribution?
+        answer: "pdf or pmf for the density, cdf for P(X at most x), sf for P(X greater than x), ppf for the inverse of the cdf, rvs to draw samples, and mean, std and interval for summaries."
+        cards:
+          - {title: "pdf / pmf", accent: fundamentals, body: "The density or mass at a value"}
+          - {title: "cdf and sf", accent: practice, body: "P(X <= x) and P(X > x)"}
+          - {title: ppf, accent: problem, body: "The inverse of the cdf: a quantile"}
+          - {title: "rvs", accent: pitfalls, body: "Draw random samples"}
+        takeaway: Learn the method names once and every distribution works the same way.
+        source: notes/03-distributions-and-sampling.md
+        notes: >-
+          There are also mean, std and interval. The distributions covered are Normal with mu and sigma, Binomial, Poisson with lambda,
+          Exponential with mean 1 over lambda, Lognormal and Beta.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: "The `scipy.stats` interface"
+        title: Five calls, five answers
+        recall: What do cdf, pmf, sf and ppf return in practice?
+        answer: "The normal mass within one sd is 0.6827, the binomial pmf at 10 of 20 is 0.1762, 10 or more heads is sf(9) which is 0.5881, a Poisson tail is 0.0839 and the 97.5th percentile is 1.96."
+        lead: Remember that sf(k) is P(X > k)
+        lang: python
+        code: |-
+          from scipy import stats
+
+          stats.norm.cdf(1) - stats.norm.cdf(-1)  # 0.6827
+          stats.binom.pmf(10, 20, 0.5)            # 0.1762
+          stats.binom.sf(9, 20, 0.5)              # 0.5881
+          stats.poisson.sf(5, 3)                  # 0.0839
+          stats.norm.ppf(0.975)                   # 1.96
+        bullets:
+          - "**10 or more** is sf(**9**), not sf(10)"
+          - "ppf undoes cdf: 1.96 is the 97.5th percentile"
+        takeaway: On a discrete variable, sf(k) excludes k, so pass 9 for 10 or more.
+        source: notes/03-distributions-and-sampling.md
+        notes: >-
+          Off by one on a discrete tail is the most common slip in this chapter.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: "The `scipy.stats` interface"
+        title: Poisson counts and exponential gaps are one process
+        recall: How are the Poisson and exponential distributions related?
+        answer: "For events at a rate of 3 per hour, the gaps are exponential with mean 0.333 and the counts per hour are Poisson. The simulation gives count mean 3.004, variance 3.037 and P(count over 5) 0.085 against 0.084."
+        lead: Rate 3 per hour
+        lang: python
+        code: |-
+          rng = np.random.default_rng(0)
+          gaps = rng.exponential(1 / 3, size=n)
+          counts = rng.poisson(3, size=n)
+
+          gaps.mean()                  # 0.333
+          counts.mean()                # 3.004
+          counts.var()                 # 3.037
+          (counts > 5).mean()          # 0.085
+          stats.poisson.sf(5, 3)       # 0.084
+        bullets:
+          - "A Poisson count has **mean equal to variance**"
+          - "Gaps of 1/3 hour, counts of 3 per hour"
+        takeaway: Poisson counts and exponential gaps describe the same events seen two ways.
+        source: notes/03-distributions-and-sampling.md
+        notes: >-
+          The Brisbane example in the note has 44 births with a mean gap of 32.6 minutes, and the same logic applies.
+
+      - layout: cards
+        beat: fundamentals
+        level: core
+        section: From population to sample
+        title: Big is not representative
+        recall: Does a bigger sample fix selection bias?
+        answer: "No. The population mean is 3.123, the responders give 11.062 from 57,152 rows because buyers reply at 0.20 against 0.05, and a simple random sample of 5,000 gives 3.001."
+        cards:
+          - {title: Population, accent: fundamentals, body: "True mean **3.123**"}
+          - {title: Responders, accent: problem, body: "**11.062** from 57,152 rows, since buyers reply at 0.20 against 0.05"}
+          - {title: Random sample, accent: practice, body: "**3.001** from only 5,000 rows"}
+        takeaway: A small random sample beats a huge biased one.
+        source: notes/03-distributions-and-sampling.md
+        notes: >-
+          More rows reduce the noise but do nothing about the bias. The responder survey is large and wrong.
+
+      - layout: statement
+        beat: fundamentals
+        level: core
+        section: From population to sample
+        kicker: Meng
+        statement: "A correlation of about -0.005 leaves 2.3 million people with the error of a random sample of about 400"
+        recall: How can a tiny selection correlation ruin a huge sample?
+        answer: "A correlation of about -0.005 leaves 2.3 million people with the error of a random sample of about 400."
+        takeaway: A tiny selection correlation can erase the value of millions of rows.
+        source: notes/03-distributions-and-sampling.md
+        notes: >-
+          The Literary Digest in 1936 polled more than 10 million ballots and lost to Gallup's 2,000. The same logic is at work.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: Checking a distribution against data
+        title: Test a fit with the Kolmogorov-Smirnov statistic
+        recall: How do you check whether data matches a distribution?
+        answer: "Compare the empirical and fitted CDFs. Normal draws against a fitted Normal give p = 0.10, while the exponential of those draws against a fitted Normal gives p = 1.5e-56."
+        lead: Normal data against Normal, and lognormal against Normal
+        lang: python
+        code: |-
+          samples = rng.normal(size=n)
+          # mean -0.054, sd 0.986
+          stats.kstest(samples, "norm", args=(mu, sd))
+          # p = 0.10        fits
+
+          wrong = np.exp(samples)
+          stats.kstest(wrong, "norm", args=(m2, s2))
+          # p = 1.5e-56     rejected
+        bullets:
+          - "A high p says **nothing contradicts** the fit"
+          - "Tests like this are easy to **overuse**"
+        takeaway: Use the test to rule a distribution out, and use a plot to see why.
+        source: notes/03-distributions-and-sampling.md
+        notes: >-
+          With big n almost any model is rejected. Goodness-of-fit overuse is one of the pitfalls on a later slide.
+
+      - layout: flow
+        beat: fundamentals
+        level: deep
+        section: Checking a distribution against data
+        title: Inverse transform, in both directions
+        recall: How can the cdf and ppf turn one distribution into another?
+        answer: "Push uniform draws through the ppf to get draws from that distribution, with mean 3.006 and KS p 0.38. Push exponential draws through the cdf to get a uniform, with deciles 0.1, 0.499, 0.901 and p 0.86."
+        steps:
+          - {label: "Uniform draws", sub: "between 0 and 1", accent: fundamentals}
+          - {label: "Apply the ppf", sub: "mean 3.006, KS p 0.38", accent: problem}
+          - {label: "Exponential draws", sub: "the target", accent: practice}
+          - {label: "Apply the cdf", sub: "deciles 0.1, 0.499, 0.901", accent: pitfalls}
+        caption: A p-value is uniform when the null is true
+        takeaway: The cdf and ppf convert any distribution to a uniform and back.
+        source: notes/03-distributions-and-sampling.md
+        notes: >-
+          This also explains why a p-value under the null is uniform. The check after cdf gives KS p 0.86.
+
+      - layout: compare
+        beat: fundamentals
+        level: deep
+        section: Checking a distribution against data
+        title: Straighten the tail to name it
+        recall: How do you tell an exponential tail from a Pareto tail?
+        answer: "Plot the complementary CDF. An exponential straightens on a log y-axis with slope -lambda, and a Pareto straightens on log-log axes with slope -alpha. The Pareto p95 is 10 against about 4.3 for the exponential."
+        emphasis: right
+        left:
+          title: Exponential
+          bullets:
+            - "Log y-axis, slope **-lambda**"
+            - "p95 about **4.3**"
+        right:
+          title: Pareto
+          bullets:
+            - "Log-log axes, slope **-alpha**"
+            - "p95 of **10**"
+        takeaway: The axes that straighten the tail also name its family.
+        source: notes/03-distributions-and-sampling.md
+        notes: >-
+          Think Stats prints 1.5 for the exponential p95, which is an arithmetic slip. The note corrects it to about 4.3.
+
+      - layout: table
+        beat: fundamentals
+        level: core
+        section: Law of Large Numbers
+        title: The sample mean converges, at one over root n
+        recall: How fast does the sample mean converge?
+        answer: "The error shrinks like 1/sqrt(n): for an exponential with mean 1 it is 0.0697 at n=100 and 0.0010 at n=1,000,000. Halving the error costs four times the data."
+        header: [n, Sample mean, Error, "Theory 1/sqrt(n)"]
+        widths: [2.4, 2.4, 2.4, 2.8]
+        rows:
+          - ["100", "0.9303", "0.0697", "0.1000"]
+          - ["10,000", "0.9758", "0.0242", "0.0100"]
+          - ["1,000,000", "1.0010", "0.0010", "0.0010"]
+        highlight: [2]
+        takeaway: The law of large numbers guarantees convergence, and one over root n sets the price.
+        source: notes/03-distributions-and-sampling.md
+        notes: >-
+          Halving the error costs four times the data. The same idea estimates probabilities and expectations by Monte Carlo: P of z over 2 is 0.1353 exact against 0.1353, and E of cos z is 0.4998 against 0.5.
+
+      - layout: table
+        beat: fundamentals
+        level: core
+        section: Central Limit Theorem
+        title: CLT coverage on skewed revenue
+        recall: How well does the CLT interval work on skewed revenue?
+        answer: "The skew of the sample mean falls from 4.68 at n of 30 to 0.22 at n of 30,000, and the 95% interval coverage rises from 0.563 to 0.948."
+        header: [n, Skew of the mean, Coverage of the 95% interval]
+        widths: [2.4, 3.2, 4]
+        rows:
+          - ["30", "4.68", "0.563"]
+          - ["300", "1.34", "0.832"]
+          - ["3000", "0.46", "0.928"]
+          - ["30000", "0.22", "0.948"]
+        highlight: [0]
+        takeaway: The CLT is a limit, and for a heavy tail it takes thousands of rows to reach 95%.
+        source: notes/03-distributions-and-sampling.md
+        notes: >-
+          The revenue is a purchase with probability 0.047 times a lognormal with parameters 3.6 and 1.1.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: Central Limit Theorem
+        title: Measure the coverage yourself
+        recall: How do you measure the real coverage of an interval?
+        answer: "Draw many samples of size n, build a 95% interval from each and count how often it contains the true mean."
+        lead: A coverage simulation
+        lang: python
+        code: |-
+          def spend(size):
+              buy = rng.random(size) < 0.047
+              return buy * rng.lognormal(3.6, 1.1, size)
+
+          for n in (30, 300, 3_000, 30_000):
+              hit = 0
+              for _ in range(reps):
+                  x = spend(n)
+                  se = x.std(ddof=1) / np.sqrt(n)
+                  hit += abs(x.mean() - mu) < 1.96 * se
+              print(n, hit / reps)
+        bullets:
+          - "Coverage: **0.563, 0.832, 0.928, 0.948**"
+        takeaway: When in doubt, measure the coverage by simulation instead of trusting the rule.
+        source: notes/03-distributions-and-sampling.md
+        notes: >-
+          The CLT needs independence and finite variance. A sum of n values has the distribution N of n mu and n sigma squared.
+
+      - layout: cards
+        beat: fundamentals
+        level: core
+        section: Central Limit Theorem
+        title: When can you lean on the CLT?
+        recall: What conditions let you trust the CLT?
+        answer: "Symmetric light tails are fine from n of 30, proportions work when np and n(1-p) are at least 10, heavy tails are slow so use a non-parametric test or the bootstrap, and with n under 30 and unknown sigma use the t distribution."
+        cards:
+          - {title: "Symmetric, light tails", accent: practice, body: "**N of 30** or more is good"}
+          - {title: Proportions, accent: practice, body: "np and n(1-p) both at least **10**"}
+          - {title: Heavy tails, accent: problem, body: "**Slow**: use a non-parametric test or the bootstrap"}
+          - {title: "N under 30", accent: pitfalls, body: "With unknown sigma, use **t**"}
+        takeaway: Check the tail before you check n.
+        source: notes/03-distributions-and-sampling.md
+        notes: >-
+          The CLT also needs independent rows and a finite variance, so the earlier lesson about sessions inside users applies here too.
+
+      - layout: image
+        beat: fundamentals
+        level: core
+        section: The small-N trap
+        kicker: Eighteen baseball players
+        image: ../../assets/sources/images/computer-age-statistical-inference-fig7-1.png
+        caption: Raw first-90 averages on top, James-Stein in the middle, true averages at the bottom
+        bullets:
+          - "Total squared error: **0.0425** raw, **0.0218** James-Stein"
+        recall: What does shrinkage do to small-sample estimates?
+        answer: "It pulls extreme averages towards the grand mean of 0.254. James-Stein cuts the total squared error from 0.0425 to 0.0218 and wins for 14 of the 18 players."
+        takeaway: Pulling noisy estimates towards the middle beats trusting each one alone.
+        source: notes/03-distributions-and-sampling.md
+        notes: >-
+          The grand mean is 0.254 and B-hat is 0.34. Shrinking all the way to the grand mean is worse, at 0.0266. The best hitter at 0.346 has rms
+          error 0.077 against 0.049.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: The small-N trap
+        title: Shrink a rate towards the prior
+        recall: How do you shrink a rate with few trials?
+        answer: "Add prior_n pseudo-trials at the prior mean: (hits + prior_mean x prior_n) over (trials + prior_n). With prior mean 0.9 and prior n 40, 2 of 2 becomes 0.905 and 905 of 1000 stays at 0.905."
+        lead: A prior of 0.9 worth 40 trials
+        lang: python
+        code: |-
+          prior_mean, prior_n = 0.9, 40
+          shrunk = (hits + prior_mean * prior_n) / (
+              trials + prior_n)
+
+          # hits/trials   raw     shrunk
+          # 2/2           1.000   0.905
+          # 5/5           1.000   0.911
+          # 92/100        0.920   0.914
+          # 905/1000      0.905   0.905
+        bullets:
+          - "The fewer the trials, the **stronger** the pull"
+          - "Large samples barely move"
+        takeaway: Shrinkage stops a lucky 2 of 2 from outranking a proven 905 of 1000.
+        source: notes/03-distributions-and-sampling.md
+        notes: >-
+          In the empirical Bayes version on 844 surgeries, 340 had a ratio of 0 and the fitted prior puts only 12% at 0.01 or below, so 3 of 6 has a posterior of 0.446.
+
+      - layout: compare
+        beat: pitfalls
+        level: core
+        section: The small-N trap
+        title: Small groups win both ends of the ranking
+        recall: Why do small groups top and bottom a league table?
+        answer: "Because small samples are noisy. Among 5,000 counties with true mean 150, the 10 shortest and 10 tallest are mostly small counties. The median population is 808, and a funnel plot is wide at the small end."
+        emphasis: left
+        left:
+          title: At the extremes
+          bullets:
+            - "Ten shortest counties run from **103** to **291**"
+            - "The ten tallest include **104** and **265**"
+        right:
+          title: Behind them
+          bullets:
+            - "True mean is **150.0** for every county"
+            - "Median population **808**, mostly small"
+        takeaway: Never rank raw rates, because the extremes come from the small groups.
+        source: notes/03-distributions-and-sampling.md
+        notes: >-
+          The small-schools story from Wainer's work is the same effect: small schools were best and worst. Ridge on the diabetes data shrinks the total-cholesterol
+          coefficient SD from 416.2 to 43.6.
+
+      - layout: table
+        beat: pitfalls
+        level: core
+        section: The small-N trap
+        title: Where small N shows up in practice
+        recall: Where does the small-N trap appear in daily work?
+        answer: "Ranking by average rating, comparing regions or cohorts, reading an A/B test early, and model leaderboards on small evaluation sets."
+        header: [Symptom, What to do]
+        widths: [4.6, 5]
+        rows:
+          - [Ranking by average rating, "Shrink towards the overall mean"]
+          - [Comparing regions or cohorts, "Show N and an interval"]
+          - [An A/B test read early, "Fix the sample size beforehand"]
+          - [Leaderboard on a small eval set, "Report the uncertainty"]
+        takeaway: When N is small, the interval is the result and the point estimate is the noise.
+        source: notes/03-distributions-and-sampling.md
+        notes: >-
+          Gelman's line in the note is that sample sizes are never large, which is the same point from the other side.
+
+      - layout: table
+        beat: pitfalls
+        level: core
+        section: Pitfalls
+        title: Distribution and sampling pitfalls
+        recall: What are the main distribution and sampling pitfalls?
+        answer: "Off by one on discrete tails, treating N of 30 as a law, confusing volume with representativeness, mixing up the data's distribution with the statistic's, ranking raw rates, overusing goodness-of-fit and assuming independence."
+        header: [Pitfall, Do instead]
+        widths: [4.6, 5]
+        rows:
+          - [Off by one on a discrete tail, "sf(9) means 10 or more"]
+          - [N of 30 as a law, "Check the tail"]
+          - [Volume for representativeness, "Ask who responds"]
+          - [Data versus statistic distribution, "The CLT is about the mean"]
+          - [Ranking raw rates, "Shrink first"]
+          - [Goodness-of-fit overuse, "Plot, then test"]
+          - [Assuming independence, "Ask what rows share"]
+        takeaway: The rules of thumb fail in predictable places, so know the tail and the selection.
+        source: notes/03-distributions-and-sampling.md
+        notes: >-
+          Try it: Wilson lower bounds are 0.342 for 2 of 2 and 0.888 for 95 of 100, and about 1.4 million samples are needed for E of cos X.
+
+      - layout: bullets
+        beat: wrap
+        title: Rules for looking and reasoning
+        recall: Which rules of thumb come from step 1?
+        answer: "Establish what one row is, look at the tail when mean and median disagree, show N next to every rate, P(A given B) is not P(B given A), expectations add but variances need covariance, standard errors need independent rows, N of 30 is not a law and more rows do not fix selection bias."
+        bullets:
+          - "**One row** is one what? Settle it first"
+          - "Mean and median disagree: **look at the tail**"
+          - "**P(A | B)** is not **P(B | A)**"
+          - "Standard errors assume **independent rows**"
+          - "**N of 30** is not a law, and more rows do not fix selection"
+        takeaway: Look at the table, keep the conditional straight and ask who got into the sample.
+        source: README.md
+        notes: >-
+          Step 2 takes these into estimation and testing: how far to trust a number.
+
+      - layout: bullets
+        beat: wrap
+        title: Where to go next
+        card: false
+        recall: Where does the series go from here?
+        bullets:
+          - "Next lecture: estimate and test, notes 4 and 5"
+          - "Then model a relationship, and how the rows got there"
+        takeaway: Next is estimation, how far a number can be trusted.
+        source: README.md
+        notes: >-
+          The next lecture builds on the standard error and the CLT from this one.

@@ -2,6 +2,7 @@ import { ResourceNotice } from "../ResourceNotice";
 import { useMemo, useState } from "react";
 import { useCourseProgress } from "../../hooks/useCourseProgress";
 import { usePracticeDrills } from "../../hooks/useCourses";
+import { useDueConcepts } from "../../hooks/useLearning";
 import { DrillTimer } from "./DrillTimer";
 import { FlashcardsDue } from "./FlashcardsDue";
 import { DrillBadges } from "./LessonView";
@@ -37,6 +38,7 @@ export function PracticeView({ onOpenLesson, onOpenConcept }: Props) {
           Timed drills, by language. Attempt cold, then open the solution.
         </p>
         <FlashcardsDue />
+        <DueConcepts onOpenLesson={onOpenLesson} onOpenConcept={onOpenConcept} />
         {progressError && <ResourceNotice what="Your progress" error={progressError} onRetry={retryProgress} />}
         {error && (
           <div className="practice-error">
@@ -96,5 +98,36 @@ function Chip({ label, active, onClick }: { label: string; active: boolean; onCl
     <button onClick={onClick} className={`filter-chip${active ? " is-active" : ""}`}>
       {label}
     </button>
+  );
+}
+
+/** The weakest concepts that are due for review, each with what to open to review it. Silent when none are or it cannot load. */
+function DueConcepts({ onOpenLesson, onOpenConcept }: Pick<Props, "onOpenLesson" | "onOpenConcept">) {
+  const { data } = useDueConcepts(5);
+  if (!data?.length) return null;
+  return (
+    <section className="practice-due" aria-label="Due for review">
+      <h2 className="practice-due-title">Due for review</h2>
+      {data.map((d) => (
+        <div key={d.concept.id} className="practice-due-row">
+          <button onClick={() => onOpenConcept(d.concept.id)} title={d.concept.summary} className="practice-link">
+            {d.concept.title}
+          </button>
+          <span className="concept-row-note"> {Math.round(d.strength * 100)}%</span>
+          <p className="practice-due-reason">{d.reason}</p>
+          <div className="practice-due-links">
+            {d.lessons.slice(0, 2).map((l) => (
+              <button key={l.id} onClick={() => onOpenLesson(l.id)} title={l.summary} className="practice-link">{l.title}</button>
+            ))}
+            {d.drills.slice(0, 2).map((l) => (
+              <button key={l.id} onClick={() => onOpenLesson(l.id)} title={l.summary} className="practice-link">Drill: {l.title}</button>
+            ))}
+            {d.decks.slice(0, 2).map((k) => (
+              <a key={k.id} href={`#/flashcards/${k.id}`} className="practice-link">Recall: {k.title}</a>
+            ))}
+          </div>
+        </div>
+      ))}
+    </section>
   );
 }

@@ -1,8 +1,8 @@
 ---
 title: "SMOTE: Synthetic Minority Over-sampling"
-tags: [data-science, pattern]
+tags: [data-science, classical-ml, pattern]
 summary: "SMOTE adds synthetic minority examples interpolated between a minority point and its k nearest minority neighbours; Chawla et al. (2002) reported ROC-space gains, Elor et al. found balancing comparable to threshold tuning for strong classifiers but not all, and van den Goorbergh et al. found the corrections miscalibrated logistic regression's probabilities."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-chawla-2002-smote.md
   - data/raw/papers/2026-11-08-elor-2022-to-smote-or-not.md

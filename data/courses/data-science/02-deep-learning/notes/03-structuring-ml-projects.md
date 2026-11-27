@@ -1,10 +1,12 @@
 ---
-imported_hash: 5d2c3b53c0b888e5
+imported_hash: 1725ccbb4c7b5742
 title: Structuring ML projects
 summary: 'Your two quizzes are the case studies: a bird detector for the city of Peacetopia and an autonomous-driving perception system.'
 order: 5
 kind: reading
 section: Notes
+tier: practitioner
+depth: core
 source: learn-ai-engineering/data-science/02-deep-learning/notes/03-structuring-ml-projects.md
 ---
 

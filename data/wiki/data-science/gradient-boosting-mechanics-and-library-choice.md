@@ -1,8 +1,8 @@
 ---
 title: "Gradient Boosting Mechanics and Library Choice"
-tags: [data-science, comparison]
+tags: [data-science, classical-ml, comparison]
 summary: "Boosting fits shallow trees to loss gradients; the main libraries tie on accuracy within seed noise, so choose by speed, categorical and missing-value handling, and tune rounds by early stopping."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--06-ensembles.md
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--07-boosting-in-practice.md

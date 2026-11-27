@@ -1,8 +1,8 @@
 ---
 title: "Named Entity Recognition and Sequence Tagging"
-tags: [data-science, concept]
+tags: [data-science, nlp, concept]
 summary: "NER is sequence labelling with BIO tags; a CRF learns tag-transition grammar, closed lists beat models via rules, and evaluation must be entity-level because O dominates tokens."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--03-nlp--notes--05-semantic-analysis-and-ner.md
   - data/raw/papers/2026-11-08-nlp-with-python-ch07-extracting-information-from-text.md

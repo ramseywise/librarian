@@ -1,0 +1,1234 @@
+# imported_hash: fef371f8f3b6ef30
+# Lecture on step 3, When you cannot randomise: notes/04-correlation-and-causation.md, 04b-potential-outcomes-and-quasi-experiments.md, 05-matching-and-weighting.md.
+# make slides PILLAR=data-analytics/03-experimentation-and-causality LECTURE=03-when-you-cannot-randomise STRICT=1 PREVIEW=1
+# Levels: a slide with no level is the intro, `core` is the core lesson, `deep` is the optional extension (code and maths).
+deck:
+  title: Without Randomising
+  subtitle: Confounding, quasi-experiments, matching and weighting
+  tagline: "Causal inference from observational data"
+  reference: "Notes: data-analytics/03-experimentation-and-causality, notes 4, 4b and 5"
+  output: 03-when-you-cannot-randomise.pptx
+  notes: >-
+    This is the fourth lecture of the experimentation and causality series. It covers step 3. By the end you should be able
+    to read a correlation without fooling yourself, tell a confounder from a mediator and a collider, spot Simpson's paradox,
+    choose among weighting, difference-in-differences, instrumental variables, regression discontinuity and synthetic control,
+    build a comparison group and check its balance before reading the outcome, and say honestly what an estimate assumes.
+
+lecture:
+  covers:
+    - data-analytics/03-experimentation-and-causality/notes/04-correlation-and-causation.md
+    - data-analytics/03-experimentation-and-causality/notes/04b-potential-outcomes-and-quasi-experiments.md
+    - data-analytics/03-experimentation-and-causality/notes/05-matching-and-weighting.md
+  omits:
+    - Regression as the bridge
+  requires: [data-analytics/03-experimentation-and-causality/notes/03-experimentation-at-scale.md]
+  next: [data-analytics/06-applied-analyses/README.md]
+  related:
+    - data-analytics/06-applied-analyses/notes/11-metric-trees.md
+    - data-analytics/06-applied-analyses/notes/07-survival-and-event-history.md
+    - data-analytics/02-probability-and-statistics/notes/04-estimation.md
+    - data-analytics/02-probability-and-statistics/notes/05-hypothesis-testing.md
+    - data-analytics/02-probability-and-statistics/notes/06-regression-and-glms.md
+    - data-analytics/02-probability-and-statistics/notes/08-panel-data-and-fixed-effects.md
+    - data-analytics/04-bayesian-analysis/notes/01-bayesian-inference.md
+    - data-analytics/04-bayesian-analysis/notes/06-bayesian-machine-learning.md
+    - data-analytics/04-bayesian-analysis/notes/07-multilevel-models-and-partial-pooling.md
+    - data-science/01-classical-ml/notes/11-choosing-a-metric.md
+
+parts:
+  - title: Association and confounding
+    divider: false
+    summary: Correlation · Confounders, mediators and colliders · Simpson
+    notes: We start with a number that is real and nearly useless, then learn what a correlation can and cannot tell us.
+    slides:
+      - layout: statement
+        beat: problem
+        title: Opt-ins placed 1.21 more orders, and the true effect is 0.30
+        recall: Why is the 1.21 close to useless as the effect of the loyalty email?
+        answer: "The people who opt in are the people who were already keen. In the simulation the true effect of the email is 0.30."
+        kicker: Larkspur's marketing team
+        statement: "The number is real, and it measures who opts in rather than what the email does."
+        attribution: "Loyalty email opt-ins against everyone else"
+        takeaway: When you cannot randomise, the comparison is contaminated by who chose the treatment.
+        source: notes/04-correlation-and-causation.md
+        notes: >-
+          The email costs almost nothing, so the team wants to send it to everybody. A/B tests dodge this by construction,
+          but many questions arrive after the fact or concern things you cannot randomise. This lecture is about reading
+          observational data without fooling yourself.
+
+      - layout: cards
+        beat: problem
+        title: Three questions for observational data
+        recall: What three questions does this lecture answer?
+        answer: "What a correlation does and does not say, how a third variable can create or reverse one, and which designs recover a causal answer when randomisation is off the table."
+        cards:
+          - {title: What does it say, accent: fundamentals, body: "What a **correlation** does and does not tell you"}
+          - {title: What to adjust for, accent: practice, body: "How a **third variable** creates or reverses an association"}
+          - {title: What if not, accent: wrap, body: "Designs that recover a **causal answer** without randomising"}
+        takeaway: The lecture runs from describing an association to defending a causal claim.
+        card: false
+        source: notes/04-correlation-and-causation.md
+        notes: >-
+          The three parts follow the three notes: association and confounding, the quasi-experimental designs, and matching
+          and weighting scored against a known truth.
+
+      - layout: table
+        beat: fundamentals
+        section: Measuring association
+        title: Five coefficients for different kinds of data
+        recall: Which coefficient fits ordinal data, skew or outliers?
+        answer: "Spearman rho, which is Pearson on ranks. Pearson r is for linear, roughly Normal data and is very sensitive to outliers."
+        header: [Coefficient, Measures, "Use when"]
+        widths: [2.2, 3.2, 3.6]
+        rows:
+          - [Pearson r, linear association, "both variables roughly Normal, linear"]
+          - [Spearman rho, monotonic association, "ordinal data, skew, outliers"]
+          - [Kendall tau, concordant against discordant pairs, "small samples, many ties"]
+          - [Point-biserial, one binary and one continuous, "equivalent to a t-test"]
+          - [Cramér's V, two categorical, "derived from chi-square"]
+        highlight: [1]
+        takeaway: Choose the coefficient for the kind of data, and start with Spearman when outliers are likely.
+        source: notes/04-correlation-and-causation.md
+        notes: >-
+          Pearson and point-biserial are sensitive to outliers. Spearman, Kendall and Cramér's V are not.
+
+      - layout: code
+        beat: practice
+        section: Measuring association
+        title: One outlier takes Pearson from 0.985 to 0.583
+        recall: What happens to Pearson and Spearman when one point is moved to 50?
+        answer: "Pearson falls from 0.985 to 0.583, and Spearman stays at 0.983 because the outlier was already the largest rank."
+        lead: "Thirty points on a line, then the last one set to 50."
+        lang: python
+        code: |-
+          rng = np.random.default_rng(304)
+          x = np.linspace(1, 10, 30)
+          y_clean = x + rng.normal(0, 0.5, 30)
+          y_out = y_clean.copy()
+          y_out[-1] = 50
+          # pearsonr and spearmanr from scipy.stats
+          # clean:        Pearson 0.985  Spearman 0.983
+          # one outlier:  Pearson 0.583  Spearman 0.983
+        takeaway: Spearman barely notices an outlier that is already the largest rank.
+        source: notes/04-correlation-and-causation.md
+        notes: >-
+          The demonstration comes from the statistics practice notebook. The note's code prints both coefficients for the
+          clean and the contaminated series.
+
+      - layout: code
+        beat: practice
+        section: Measuring association
+        title: Four datasets, one regression line
+        recall: What do Anscombe's four datasets share, and what is the lesson?
+        answer: "Mean y of 7.50, r of 0.816 (0.817 for IV) and the line y = 3.00 + 0.500x. Plotted, they are a noisy line, a clean curve, a line with one outlier and a vertical stack with one far-off point. So plot before you correlate."
+        lead: "Anscombe's 1973 quartet, fitted one dataset at a time."
+        lang: python
+        code: |-
+          for name, (a, b) in quartet.items():
+              fit = stats.linregress(a, b)
+              print(f"{name:<3} mean y {np.mean(b):.2f}  r {fit.rvalue:.3f}"
+                    f"  line y = {fit.intercept:.2f} + {fit.slope:.3f} x")
+          # I   mean y 7.50  r 0.816  line y = 3.00 + 0.500 x
+          # II  mean y 7.50  r 0.816  line y = 3.00 + 0.500 x
+          # III mean y 7.50  r 0.816  line y = 3.00 + 0.500 x
+          # IV  mean y 7.50  r 0.817  line y = 3.00 + 0.500 x
+        takeaway: No single coefficient describes a relationship's shape, so look at the picture first.
+        source: notes/04-correlation-and-causation.md
+        notes: >-
+          The quartet is defined in the note. A correlation heatmap is a list of things to investigate and not a conclusion.
+
+      - layout: cards
+        beat: fundamentals
+        section: Measuring association
+        title: What Pearson's r can and cannot say
+        recall: What are the limits of Pearson's rho according to Think Stats?
+        answer: "It measures linear association only, so a clear curve can give rho of 0. It says nothing about slope, and it is not robust to outliers. Remedies are Spearman or a transform such as the log of lognormal data."
+        cards:
+          - {title: Linear only, accent: fundamentals, body: "A clear curve can give **rho = 0**"}
+          - {title: Silent on slope, accent: practice, body: "A flat-looking and a steep line can share **rho = 1**"}
+          - {title: Not robust, accent: pitfalls, body: "Use **Spearman** or a transform such as the log"}
+        takeaway: Treat a correlation as a description that needs a plot beside it.
+        source: notes/04-correlation-and-causation.md
+        notes: >-
+          Think Stats chapter 9 is the source. For evidence of cause Downey lists time order, randomisation, natural
+          experiments and holding a confounder fixed by stratifying. The sections below turn each of these into estimators.
+
+      - layout: bullets
+        beat: fundamentals
+        section: Measuring association
+        title: Where evidence of cause comes from
+        recall: What kinds of evidence of cause does Think Stats list beyond a correlation?
+        answer: "Time order, randomisation, natural experiments, and stratifying to hold a confounder fixed. The NSFG birth-weight example is stratified by mother's age."
+        bullets:
+          - "**Time order**: the cause comes before the effect"
+          - "**Randomisation**: assignment is independent of every confounder"
+          - "**Natural experiments**: something outside the subjects' control assigns treatment"
+          - "**Stratifying**: compare like with like, as in birth weight by mother's age"
+        takeaway: The rest of the lecture turns each of these into an estimator.
+        card: false
+        source: notes/04-correlation-and-causation.md
+        notes: >-
+          This is the Think Stats chapter 9 list. A correlation on its own supports none of these, so each later section
+          supplies one.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: Confounding
+        title: Ice cream and drownings correlate at 0.517
+        recall: How strong is the ice cream and drownings correlation, and what causes it?
+        answer: "r = 0.517 with p = 2.2e-26. Temperature causes both, so the link says nothing about ice cream."
+        lead: "Temperature drives both series, and neither touches the other."
+        lang: python
+        code: |-
+          rng = np.random.default_rng(1)
+          temperature = rng.normal(20, 8, 365)
+          ice_cream = 100 + 3 * temperature + rng.normal(0, 10, 365)
+          drownings = 2 + 0.1 * temperature + rng.normal(0, 1, 365)
+          r, p = stats.pearsonr(ice_cream, drownings)
+          # r(ice cream, drownings) = 0.517, p = 2.2e-26
+        takeaway: A strong and highly significant correlation can be meaningless as a causal statement.
+        source: notes/04-correlation-and-causation.md
+        notes: >-
+          A confounder Z causes both X and Y, so X and Y correlate even when neither touches the other.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: Confounding
+        title: Hold temperature fixed and the link vanishes
+        recall: What happens to the ice cream coefficient once temperature is controlled?
+        answer: "The partial r is 0.027 with p = 0.61, and the regression coefficient falls from 0.0269 to 0.0026."
+        lead: "Regress Z out of both variables, or include it in one regression."
+        lang: python
+        code: |-
+          # partial r given temperature = 0.027, p = 0.61
+          fit_no = smf.ols("drownings ~ ice_cream", days).fit()
+          fit_with = smf.ols(
+              "drownings ~ ice_cream + temperature", days).fit()
+          # regression, no control:   0.0269
+          # regression, with control: 0.0026
+        bullets:
+          - "Both methods remove only confounders you **measured**"
+        takeaway: Controlling for temperature removes the spurious link
+        source: notes/04-correlation-and-causation.md
+        notes: >-
+          The coefficient on X in y ~ x + z is the association holding Z fixed. An unmeasured confounder is untouched, which
+          is why randomisation is the gold standard.
+
+      - layout: cards
+        beat: fundamentals
+        level: core
+        section: Confounding
+        title: Confounder, mediator and collider
+        recall: Which of confounder, mediator and collider should you control for?
+        answer: "Control for the confounder. Leave out the mediator if you want the total effect. Never condition on the collider, because it creates a spurious link. The mediator demo: the total effect is 1.921 against a true 1.9, and controlling for visits gives only 0.331."
+        cards:
+          - {title: Confounder Z, accent: fundamentals, body: "Z causes X and Y. **Control for it**"}
+          - {title: Mediator M, accent: practice, body: "X causes M causes Y. Controlling takes **1.921 down to 0.331**"}
+          - {title: Collider C, accent: pitfalls, body: "X and Y cause C. Conditioning **creates a spurious link**"}
+        takeaway: Whether a variable belongs in the model depends on the causal story, so draw the graph first.
+        source: notes/04-correlation-and-causation.md
+        notes: >-
+          Hernán and Robins show that the traditional association-based test for a confounder misleads investigators into
+          adjusting for variables when adjustment is harmful. In the mediator demo the coupon works mainly by bringing people
+          back, and holding visits fixed reports only the direct part. Anything measured after treatment deserves suspicion.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: Confounding
+        title: Admission on a sum creates a correlation from nothing
+        recall: What happens to the correlation of two independent scores among the admitted?
+        answer: "Everyone: r = -0.013. Admitted (15% of applicants): r = -0.682. A strong interview implies a weaker test, because you needed one or the other to get in."
+        lead: "Two independent scores, and a programme that admits on their sum."
+        lang: python
+        code: |-
+          rng = np.random.default_rng(2)
+          test = rng.normal(0, 1, 20_000)
+          interview = rng.normal(0, 1, 20_000)   # independent
+          admitted = test + interview > 1.5
+          # everyone:  r = -0.013
+          # admitted:  r = -0.682  (15% of applicants)
+        bullets:
+          - "Survivor groups carry the risk: reviewers, users who finished onboarding, customers still active"
+        takeaway: Any analysis limited to survivors of a filter can contain a collider.
+        source: notes/04-correlation-and-causation.md
+        notes: >-
+          Setting the cutoff to minus ten admits nearly everyone, and the correlation returns to about -0.01.
+
+      - layout: cards
+        beat: fundamentals
+        level: deep
+        section: Confounding
+        title: Three consequences of the backdoor criterion
+        recall: What does the backdoor criterion require, and what follows in practice?
+        answer: "No node in Z is a descendant of X, and Z blocks every path between X and Y that contains an arrow into X (Definition 3.3.1, p. 61). Only a sufficient set is required, the set is not simply all confounders, and any valid set gives the same answer."
+        cards:
+          - {title: A sufficient set, accent: fundamentals, body: "An unmeasured variable need not end the analysis if another **blocks its path**"}
+          - {title: Not all confounders, accent: practice, body: "A collider sometimes has to be adjusted, with whatever **blocks the path it opens**"}
+          - {title: Any valid set, accent: wrap, body: "Two defensible sets that disagree mean **one is wrong**"}
+        takeaway: A sufficient set may omit unmeasured variables, colliders can need adjusting, and disagreeing valid sets mean one is wrong.
+        source: notes/04-correlation-and-causation.md
+        notes: >-
+          The three steps behind the rule are to block all spurious paths, leave the directed paths unperturbed and create no
+          new spurious paths. The note follows Pearl, Glymour and Jewell, sections 3.3 and 3.4 and part of 3.6. Inverse
+          probability weighting is valid only when the covariates in the weight satisfy the criterion (section 3.6, page 75).
+
+      - layout: steps
+        beat: fundamentals
+        level: deep
+        section: Confounding
+        title: Front-door, when the confounder is never logged
+        recall: What are the front-door conditions, and what did the demo recover?
+        answer: "Z intercepts all directed paths from X to Y, there is no backdoor path from X to Z, and all backdoor paths from Z to Y are blocked by X (Definition 3.4.1, p. 69). The naive difference is 1.649, and the front-door product 0.498 x 0.794 = 0.396 against a true 0.40."
+        steps:
+          - {title: Carries every path, text: "The mediator **intercepts all directed paths** from X to Y"}
+          - {title: No backdoor in, text: "There is **no backdoor path** from X to the mediator"}
+          - {title: Blocked by X, text: "Backdoor paths from the mediator to Y are **blocked by X**"}
+        takeaway: Front-door needs a mediator that carries every path, with no backdoor into it and X blocking the mediator's backdoors.
+        source: notes/04-correlation-and-causation.md
+        notes: >-
+          The idea is to chain two effects that can each be estimated. The demo has a naive difference of 1.649 and a
+          front-door product of 0.498 times 0.794, which is 0.396. In practice the hidden cause must have no direct link to
+          the mediator, and the mediator must carry all of the effect.
+
+      - layout: table
+        beat: fundamentals
+        level: core
+        section: "Simpson's paradox"
+        title: Treatment wins both rows and loses overall
+        recall: What are the recovery rates by severity and overall in the trial table?
+        answer: "Mild: 90.0% control against 97.5% treatment. Severe: 30.0% against 50.0%. Overall: 60.0% against 59.5%. Treatment went mostly to severe cases."
+        header: [Severity, Control, Treatment]
+        widths: [2.6, 3.2, 3.2]
+        rows:
+          - [Mild, "90 / 100 = 90.0%", "39 / 40 = 97.5%"]
+          - [Severe, "30 / 100 = 30.0%", "80 / 160 = 50.0%"]
+          - [Overall, "120 / 200 = 60.0%", "119 / 200 = 59.5%"]
+        highlight: [2]
+        takeaway: Arithmetic cannot say which table to trust, and only the causal story can.
+        source: notes/04-correlation-and-causation.md
+        notes: >-
+          Severity affects both who was treated and who recovered, so it is a confounder and you stratify. If the subgroup had
+          been something the treatment changed, the pooled table would be the right one.
+
+      - layout: image
+        beat: practice
+        level: core
+        section: "Simpson's paradox"
+        title: Berkeley 1973, and the department that explains it
+        kicker: Bickel, Hammel and O'Connell, refit by McElreath
+        recall: What reverses once department is added to the Berkeley admissions model?
+        answer: "With gender alone the male coefficient is +0.61 (odds x1.84, about 14%). With department intercepts it falls to -0.10 (SD 0.08, odds about 0.90). Women applied to the departments that admit few."
+        image: ../../assets/sources/images/statistical-rethinking-fig10-5.png
+        caption: "Pooled model: predicted admission rates for men and women against the observed rates in each of the six departments. McElreath, Statistical Rethinking, Fig. 10.5."
+        bullets:
+          - "12,763 applications: **44%** of men and **35%** of women admitted"
+          - "Only 4 of 101 departments showed bias against women, and 6 against men"
+          - "WAIC 5200.9 against 5201.4, gender-only **5954.9**"
+        takeaway: The cause came from outside the data table, from asking where applicants went.
+        source: notes/04-correlation-and-causation.md
+        notes: >-
+          The margins are Reinhart's account of the full case. McElreath's six-department extract has 12 rows and 4,526
+          applications, which is a narrower slice and easy to confuse with the 101 departments. The intercepts run from 0.68 to
+          -2.62, and only departments C and E show women below men.
+
+      - layout: compare
+        beat: practice
+        level: core
+        section: "Simpson's paradox"
+        title: Kidney stones, where the new procedure only looked better
+        recall: Why did percutaneous nephrolithotomy look better overall?
+        answer: "It had 83% against 78% overall but lost in both size groups, 87% against 93% and 69% against 73%. Surgeons gave it the easy small stones, so stone size is the confounder."
+        emphasis: right
+        left:
+          title: Open surgery
+          bullets: ["Under 2 cm: **93%**", "2 cm or larger: **73%**", "Overall: 78%"]
+        right:
+          title: Percutaneous nephrolithotomy
+          bullets: ["Under 2 cm: 87%", "2 cm or larger: 69%", "Overall: **83%**"]
+        takeaway: The stratified rows are the fair comparison, and the pooled row rewards easy cases.
+        source: notes/04-correlation-and-causation.md
+        notes: >-
+          This is a 1986 non-randomised review, as reported by Reinhart. A meningitis record review of 448 children has the
+          same shape, with penicillin looking helpful overall and harmful among those who saw a GP first. The remedy is
+          randomisation.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: "Simpson's paradox"
+        title: A ramp can make B win both days and lose overall
+        recall: How can an A/B test show Simpson's paradox?
+        answer: "When allocation shifts during a test and days differ. B wins on Monday (0.110 against 0.10) and Saturday (0.055 against 0.05), yet pooled A is 0.0875 and B is 0.0688."
+        lead: "A heavy on a strong day, B heavy on a weak one."
+        lang: python
+        code: |-
+          ab = pd.DataFrame({
+              "day": ["Mon", "Mon", "Sat", "Sat"],
+              "arm": ["A", "B", "A", "B"],
+              "users": [9_000, 3_000, 3_000, 9_000],
+              "buyers": [900, 330, 150, 495]})
+          # Mon  A 0.10  B 0.110
+          # Sat  A 0.05  B 0.055
+          # pooled: {'A': 0.0875, 'B': 0.0688}
+        bullets:
+          - "A constant split stops it. Otherwise stratify by period"
+        takeaway: Keep the split constant, or stratify and report a weighted average.
+        source: notes/04-correlation-and-causation.md
+        notes: >-
+          With 6,000 users in every row the same rates give A 7.5% and B 8.25%, so B wins overall.
+
+      - layout: cards
+        beat: pitfalls
+        section: Pitfalls
+        title: Pitfalls in reading associations
+        recall: What are the three pitfalls of reading associations?
+        answer: "Reporting Pearson's r without a plot, controlling for everything, and using a post-treatment variable as a control or segment."
+        cards:
+          - {title: Pearson without a plot, accent: pitfalls, body: "Anscombe's four datasets have **the same r**"}
+          - {title: Control for everything, accent: pitfalls, body: "Mediators remove the effect, and colliders **create false ones**"}
+          - {title: A post-treatment control, accent: pitfalls, body: "It can be a mediator or a collider, and the treatment has **already moved it**"}
+        takeaway: Plot first, and draw the graph before choosing a control.
+        source: notes/04-correlation-and-causation.md
+        notes: >-
+          These are the note's three pitfalls.
+
+  - title: Designs when you cannot randomise
+    divider: false
+    summary: Potential outcomes · Weighting · DiD · IV · RD · Synthetic control
+    notes: We put a number on the selection problem, then work through five designs on small simulated cases with a known answer.
+    slides:
+      - layout: compare
+        beat: problem
+        section: The question in potential outcomes
+        title: The naive comparison has two parts
+        recall: What are the two parts of the naive comparison?
+        answer: "The effect on those who opted in, E[Y(1) - Y(0) | email], plus selection bias, E[Y(0) | email] - E[Y(0) | no email]. Randomisation makes the second part zero. Opting in does not."
+        emphasis: right
+        left:
+          title: Effect on the opted-in
+          bullets: ["Every customer has two potential outcomes, Y(1) and Y(0)", "We only ever see **one** of them"]
+        right:
+          title: Selection bias
+          bullets: ["Would the groups differ without the email?", "Randomisation makes it **zero**", "Opting in does **not**"]
+        takeaway: The naive difference is the effect plus the selection bias, and only the first part is causal.
+        source: notes/04b-potential-outcomes-and-quasi-experiments.md
+        notes: >-
+          The framing goes back to Rubin, 1974. The rest of the lecture is about getting rid of the second term.
+
+      - layout: code
+        beat: practice
+        section: The question in potential outcomes
+        title: Opt-ins were already keen, 2.84 orders against 1.34
+        recall: How much of the naive 1.21 is selection?
+        answer: "The naive difference is 1.21 against a true effect of 0.30, so 0.91 of it is selection. Opted-in customers placed 2.84 past orders against 1.34."
+        lead: "Keen customers opt in, and the true effect is 0.30."
+        lang: python
+        code: |-
+          p_opt = 1 / (1 + np.exp(1.2 - 0.5 * past))
+          email = (rng.random(n) < p_opt).astype(int)
+          orders = (0.5 + 0.6 * past + 0.30 * email
+                    + rng.normal(0, 1.2, n))   # true effect 0.30
+          # opt-in rate 44.2%
+          # naive difference 1.21, true effect 0.30
+          # past orders: opted in 2.84, did not 1.34
+        takeaway: Past orders explain why people opt in, so 0.91 of the 1.21 is selection.
+        source: notes/04b-potential-outcomes-and-quasi-experiments.md
+        notes: >-
+          The simulation has 30,000 customers and past orders drawn from a gamma distribution.
+
+      - layout: code
+        beat: practice
+        section: The question in potential outcomes
+        title: Control for past orders and 0.311 comes back
+        recall: What does regression on past orders recover, and what does it assume?
+        answer: "It gives 0.311 against a true 0.30. That works only if past orders explain who opts in, the assumption of no unmeasured confounders."
+        lead: "If past orders explain the opt-in, controlling for them recovers the answer."
+        lang: python
+        code: |-
+          fit = smf.ols("orders ~ email + past", u).fit()
+          print("regression on past orders:",
+                round(fit.params["email"], 3))
+          # regression on past orders: 0.311
+        bullets:
+          - "The **if** is the assumption of no unmeasured confounders"
+        takeaway: The rest of the lecture is about designs for when you do not believe that assumption.
+        card: false
+        source: notes/04b-potential-outcomes-and-quasi-experiments.md
+        notes: >-
+          Everything that follows relaxes or replaces the assumption in different ways.
+
+      - layout: table
+        beat: fundamentals
+        section: When you cannot randomise
+        title: Five designs and what each assumes
+        recall: What key assumption does each of the five designs rest on?
+        answer: "Matching and weighting need no unmeasured confounders and overlap. DiD needs parallel trends. IV needs the exclusion restriction, which is untestable. RD needs no manipulation of the running variable. Synthetic control needs the pre-period fit to carry forward."
+        header: [Method, "Key assumption", "Analytics example"]
+        widths: [2.6, 3.6, 3.0]
+        rows:
+          - [Matching and weighting, "no unmeasured confounders, overlap", "users who opted into a feature"]
+          - [Difference-in-differences, "parallel trends", "a launch in one country only"]
+          - [Instrumental variables, "exclusion restriction (untestable)", "a randomised invitation to a loyalty scheme"]
+          - [Regression discontinuity, "no manipulation at the cutoff", "a loyalty tier at 1,000 points"]
+          - [Synthetic control, "the pre-period fit carries forward", "one city gets a policy change"]
+        takeaway: Each design swaps no unmeasured confounders for a different assumption that you can argue about.
+        source: notes/04b-potential-outcomes-and-quasi-experiments.md
+        notes: >-
+          Cunningham's Mixtape has a full treatment of each design, free online. The rest of the section runs each one on a
+          small simulated case with a known answer.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: When you cannot randomise
+        title: Weight each user by the inverse of what they received
+        recall: What does propensity weighting do to the gap in past orders?
+        answer: "The gap falls from 1.50 to 0.04 and the effect is 0.336 against a true 0.30. The propensities run from 0.232 to 1.000 and the largest weight is 48.3."
+        lead: "Model the probability of treatment, then reweight."
+        lang: python
+        code: |-
+          ps = smf.logit("email ~ past", u).fit(disp=0).predict(u)
+          w = np.where(u.email == 1, 1 / ps, 1 / (1 - ps))
+          # propensity range 0.232 to 1.000; largest weight 48.3
+          # weighted effect 0.336
+          # gap in past orders: before weighting 1.50, after 0.042
+        takeaway: The weighted sample behaves as though treatment were independent of the covariates.
+        source: notes/04b-potential-outcomes-and-quasi-experiments.md
+        notes: >-
+          This follows Rosenbaum and Rubin, Biometrika, 1983.
+
+      - layout: cards
+        beat: fundamentals
+        level: core
+        section: When you cannot randomise
+        title: Check balance first, then watch the largest weight
+        recall: What should you check after propensity weighting?
+        answer: "Balance, because that is what the method promises: the gap went from 1.50 to 0.04. Then the weights, since the largest is 48, meaning one user counts as 48 people. Propensities close to 0 or 1 signal poor overlap, so trim or report an effect only where there is overlap."
+        cards:
+          - {title: Balance, accent: fundamentals, body: "The gap in past orders went from **1.50 to 0.04**"}
+          - {title: Weights, accent: practice, body: "The largest weight is **48**, so one user counts as 48 people"}
+          - {title: Overlap, accent: wrap, body: "Propensities near 0 or 1 mean **trim** or restrict the claim"}
+        takeaway: A near-truth estimate can still be resting on a handful of users.
+        source: notes/04b-potential-outcomes-and-quasi-experiments.md
+        notes: >-
+          The largest weight is a user who almost certainly should have opted in and did not.
+
+      - layout: code
+        beat: pitfalls
+        level: core
+        section: When you cannot randomise
+        title: An unlogged cause leaves the estimate at 0.642
+        recall: What happens when an unmeasured cause of opting in and ordering is added?
+        answer: "Controlling for past orders only gives 0.642 against a true 0.30. If the hidden cause had been logged, the estimate is 0.3. Nothing in the data warns you."
+        lead: "Add something we never logged to both opting in and ordering."
+        lang: python
+        code: |-
+          life = rng.normal(0, 1, n)      # something we never logged
+          p2 = 1 / (1 + np.exp(1.2 - 0.5 * past - 0.8 * life))
+          orders2 = (0.5 + 0.6 * past + 0.5 * life
+                     + 0.30 * email2 + rng.normal(0, 1.2, n))
+          # controlling for past orders only: 0.642 (true 0.30)
+          # if we had logged the hidden cause: 0.3
+        takeaway: A good observational analysis ends with a sensitivity analysis.
+        source: notes/04b-potential-outcomes-and-quasi-experiments.md
+        notes: >-
+          The sensitivity analysis asks how strong a hidden confounder would need to be to change the conclusion. The third
+          part of this lecture runs one.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: When you cannot randomise
+        title: Same-day delivery in half the stores, from month 6
+        recall: How do you estimate the effect of a launch in half the stores?
+        answer: "Fit y on treated times post with errors clustered by store. The coefficient on treated:post is the double difference, 0.426 (SE 0.028) against a true 0.400."
+        lead: "Treated stores were already better, and everything grows over time."
+        lang: python
+        code: |-
+          fit = smf.ols("y ~ treated * post", ok).fit(
+              cov_type="cluster", cov_kwds={"groups": ok.store})
+          # DiD 0.426 (SE 0.028), true 0.400
+          # after minus before in treated only: 0.720
+          # treated minus control after launch: 1.480
+        bullets:
+          - "Cluster the errors by store"
+        takeaway: The double difference removes the growth trend and the level gap at once.
+        source: notes/04b-potential-outcomes-and-quasi-experiments.md
+        notes: >-
+          After minus before contains the growth trend, and treated minus control contains the level gap. Cluster the errors
+          by store, since months from one store are not independent.
+
+      - layout: cards
+        beat: pitfalls
+        level: core
+        section: When you cannot randomise
+        title: Diverging trends almost double the estimate
+        recall: What happens when the pre-launch trends diverge?
+        answer: "The estimate rises to 0.762 against a true 0.400 and looks just as confident. The pre-trend test slope gap is -0.010 (p = 0.415) for parallel trends and +0.091 (p = 0.000) for diverging ones."
+        cards:
+          - {title: The estimate, accent: pitfalls, body: "DiD **0.762** against a true **0.400**"}
+          - {title: Pre-trend test, accent: practice, body: "Slope gap **+0.091**, p = 0.000, flags it here"}
+          - {title: A pass is not proof, accent: fundamentals, body: "A small pre-period has **little power**. Plot the series first"}
+        takeaway: You cannot test parallel trends directly, so plot the pre-period and test for a slope gap.
+        source: notes/04b-potential-outcomes-and-quasi-experiments.md
+        notes: >-
+          Parallel trends concerns what would have happened, so it cannot be tested directly. The eye often sees what the
+          test does not.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: When you cannot randomise
+        title: A randomised banner as the instrument
+        recall: What does the Wald ratio give for the loyalty scheme, and how does OLS do?
+        answer: "OLS gives 8.80 against a true 3.00. The first stage is 0.558 with F = 18,372, the reduced form 1.557, and the Wald ratio 2.79 (SE about 0.18)."
+        lead: "Keenness is unmeasured, but the banner was randomised."
+        lang: python
+        code: |-
+          first = smf.ols("join ~ invite", iv).fit()
+          reduced = smf.ols("spend ~ invite", iv).fit().params["invite"]
+          # OLS spend on join 8.80 (true 3.00)
+          # first stage: invite raises joining by 0.558, F = 18,372
+          # reduced form 1.557; Wald ratio 2.79 (SE about 0.18)
+          # second stage, on fitted join: 2.79
+        takeaway: The Wald ratio divides the banner's effect on spend by its effect on joining.
+        source: notes/04b-potential-outcomes-and-quasi-experiments.md
+        notes: >-
+          The second-stage regression gives the same point estimate, but its reported standard errors are wrong, so use a
+          proper 2SLS routine for inference.
+
+      - layout: cards
+        beat: pitfalls
+        level: deep
+        section: When you cannot randomise
+        title: Three warnings for instrumental variables
+        recall: What are the warnings for instrumental variables?
+        answer: "A weak first stage makes the ratio unstable, so report the F statistic. IV estimates the effect only for compliers (the local average treatment effect). The exclusion restriction cannot be tested."
+        cards:
+          - {title: Weak first stage, accent: pitfalls, body: "The ratio becomes unstable, so report the **F statistic**"}
+          - {title: Compliers only, accent: practice, body: "The effect is for people the instrument **actually moves**"}
+          - {title: Untestable, accent: fundamentals, body: "The **exclusion restriction** must be argued from how the world works"}
+        takeaway: IV answers a narrower question than the average effect, and says so.
+        source: notes/04b-potential-outcomes-and-quasi-experiments.md
+        notes: >-
+          The local average treatment effect is from Angrist, Imbens and Rubin, 1996. People who would join anyway, or never,
+          tell you nothing here. The try-it exercise makes the point: a 10 point first stage and a $0.50 spend effect give $5
+          per joiner, while a 1 point first stage would imply $50.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: When you cannot randomise
+        title: Gold status starts at 1,000 points
+        recall: What does the raw gold against non-gold gap show?
+        answer: "22.54 against a true 2.50, nine times the truth, because gold members simply spend more."
+        lead: "People at 999 and 1,001 points are nearly identical."
+        lang: python
+        code: |-
+          gold = (points >= 1_000).astype(int)
+          spend = 40 + 0.02 * points + 2.5 * gold + rng.normal(0, 8, n)
+          for bw in (100, 300, 1_000):
+              w_ = r[np.abs(r.run) * 100 <= bw]
+              f = smf.ols("spend ~ gold * run", w_).fit()
+          # gold vs not, raw: 22.54 (true 2.50)
+          # users per 50 points around the cutoff: [657 706 749 743]
+        takeaway: Fit a line on each side of the cutoff and read off the jump.
+        source: notes/04b-potential-outcomes-and-quasi-experiments.md
+        notes: >-
+          The counts on the last line are the standard check. A pile-up just above the cutoff would suggest people are gaming
+          the score, which breaks the comparison.
+
+      - layout: table
+        beat: practice
+        level: deep
+        section: When you cannot randomise
+        title: Narrow bandwidths are less biased and noisier
+        recall: What happens to the RD estimate as the bandwidth widens?
+        answer: "At 100 points it is 3.41 (SE 0.60, n 2,855), at 300 it is 2.69 (SE 0.35, n 8,833) and at 1,000 it is 2.17 (SE 0.19, n 30,000). The true effect is 2.50, so report several bandwidths."
+        header: [Bandwidth, "Users", Effect, SE]
+        widths: [2.6, 2.2, 2.2, 2.0]
+        rows:
+          - ["±100", "2,855", "3.41", "0.60"]
+          - ["±300", "8,833", "2.69", "0.35"]
+          - ["±1000", "30,000", "2.17", "0.19"]
+        takeaway: The estimate applies only to people near the cutoff.
+        source: notes/04b-potential-outcomes-and-quasi-experiments.md
+        notes: >-
+          Narrow bandwidths have less bias and more noise, and wide ones the reverse, so report several. Do not extrapolate
+          the result away from the cutoff.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: When you cannot randomise
+        title: A weighted mix of cities that tracks the treated one
+        recall: What does synthetic control do, and what did the simulation recover?
+        answer: "It fits non-negative weights summing to one on the pre-period, then compares after launch. The largest donor weights are 0.55, 0.21, 0.14 and 0.05, the pre-launch RMSE is 0.17, and the effect is 2.01 against a true 2.00."
+        lead: "Fit weights on the pre-period only, then compare after launch."
+        lang: python
+        code: |-
+          res = minimize(loss, np.ones(12) / 12,
+                         bounds=[(0, 1)] * 12,
+                         constraints={"type": "eq",
+                                      "fun": lambda w_: w_.sum() - 1},
+                         method="SLSQP")
+          # pre-launch fit RMSE 0.17
+          # effect after launch 2.01 (true 2.00)
+          # naive before/after in the city 6.09
+        takeaway: The naive before and after reads 6.09, while the synthetic comparison recovers 2.01.
+        source: notes/04b-potential-outcomes-and-quasi-experiments.md
+        notes: >-
+          This follows Abadie, Diamond and Hainmueller, 2010. The optimiser puts most of its weight on the three donors the
+          simulation used.
+
+      - layout: cards
+        beat: fundamentals
+        level: deep
+        section: When you cannot randomise
+        title: Sparse, readable weights, and placebo inference
+        recall: How is inference done with one treated unit?
+        answer: "Conventional standard errors do not apply. Inference comes from placebo runs, which treat each donor in turn as if it had been the treated unit and ask whether the real gap is unusually large. The weights are sparse and readable, which is an advantage over a regression with many controls."
+        cards:
+          - {title: Sparse weights, accent: fundamentals, body: "Most weight sits on **donors 1, 4 and 7**, the three the simulation used"}
+          - {title: Placebo runs, accent: practice, body: "Treat each donor as the **treated unit** and compare the gaps"}
+          - {title: One treated unit, accent: wrap, body: "Conventional **standard errors do not apply**"}
+        takeaway: Judge the gap against what the donors show when nothing happened to them.
+        source: notes/04b-potential-outcomes-and-quasi-experiments.md
+        notes: >-
+          The interview row for this method is one treated unit, many donors and a long pre-period.
+
+      - layout: table
+        beat: wrap
+        section: When you cannot randomise
+        title: Choosing a design by the situation
+        recall: Which design is the first choice in each situation?
+        answer: "You control assignment: A/B test. A rollout with pre-period data: DiD. A threshold: RD. A randomised nudge with self-selected treatment: IV. Rich covariates: matching or weighting plus a sensitivity analysis. One treated unit: synthetic control."
+        header: [Situation, "First choice"]
+        widths: [5.6, 3.2]
+        rows:
+          - [You control assignment, A/B test]
+          - ["A rollout hit some units and not others, with pre-period data", "DiD, plot the pre-trends"]
+          - [Treatment assigned by a threshold, RD]
+          - [A randomised nudge exists and treatment is self-selected, IV]
+          - ["Self-selected treatment, rich covariates", "matching or weighting, plus sensitivity"]
+          - [One treated unit and many controls, synthetic control]
+        takeaway: Start from how treatment was assigned, and pick the design whose assumption you can defend.
+        source: notes/04b-potential-outcomes-and-quasi-experiments.md
+        notes: >-
+          DoWhy forces the order that chapter 4 recommends: state the graph, identify the estimand, estimate, then try to
+          refute. Note 05 cross-checks it against hand-written code.
+
+      - layout: table
+        beat: pitfalls
+        section: Pitfalls
+        title: Pitfalls in the quasi-experimental designs
+        recall: What are the pitfalls of the quasi-experimental designs?
+        answer: "Trusting regression to remove unobserved confounding, skipping the pre-trend plot in DiD, claiming an IV effect for everybody, extrapolating an RD result, ignoring extreme weights, and reading a passed refuter as proof."
+        header: [Pitfall, "What goes wrong"]
+        widths: [4.0, 5.0]
+        rows:
+          - [Trusting regression to remove unobserved confounding, "it removes only what you measured"]
+          - [Skipping the pre-trend plot in DiD, "diverging trends almost doubled the estimate"]
+          - [Claiming an IV effect for everybody, "it applies to compliers"]
+          - [Extrapolating an RD result, "it applies near the cutoff"]
+          - [Ignoring extreme weights, "one user can dominate the result"]
+          - [Reading a passed refuter as proof, "it tests the model you wrote, not the confounder you forgot"]
+        takeaway: Each design answers a narrower question than the one a stakeholder asks.
+        source: notes/04b-potential-outcomes-and-quasi-experiments.md
+        notes: >-
+          These are the six pitfalls of the note.
+
+  - title: Matching, weighting and checking
+    divider: false
+    summary: Balance · Overlap · Six designs · Scoring · Sensitivity
+    notes: We answer one question six ways on one table, check balance before reading any outcome, and score every answer against the truth the generator kept back.
+    slides:
+      - layout: statement
+        beat: problem
+        section: The question and the data
+        title: Members spent £95.54 more, and the club did not cause it
+        recall: Why can't the £95.54 be the effect of Fernhill's loyalty club?
+        answer: "The people who join a club were already the keen ones. After adjusting, the best answers land near £26 when the truth is £23.38."
+        kicker: Fernhill Home, six months after 1 July 2024
+        statement: "The marketing team wants the number on a slide, and it measures who joined."
+        attribution: Members against non-members
+        takeaway: In a simulated dataset the true effect is hidden from the estimators, so each answer can be scored against it.
+        source: notes/05-matching-and-weighting.md
+        notes: >-
+          The chapter answers the question six ways on one table, checks comparability before reading any outcome, and then
+          scores every answer against the true effect, which real analysis never has.
+
+      - layout: cards
+        beat: fundamentals
+        section: The question and the data
+        title: Name the question first, ATE or ATT
+        recall: What is the difference between the ATE and the ATT?
+        answer: "The ATE is the effect across everyone. The ATT is the effect on those who actually joined. They differ because the club does more for people who already order often, and those are the people who join. The ATT is the main target."
+        cards:
+          - {title: ATE, accent: fundamentals, body: "The effect across **everyone**. True value **£15.96**"}
+          - {title: ATT, accent: practice, body: "The effect on **those who joined**. True value **£23.38**"}
+          - {title: Hidden truth, accent: wrap, body: "Columns starting `true_` are never seen by the estimators"}
+        takeaway: Should we have run this club for the people in it is an ATT question.
+        source: notes/05-matching-and-weighting.md
+        notes: >-
+          The data is load_club() from the shared retail generator. The covariates are prior orders, prior spend, days since
+          last order, tenure and acquisition channel. The treatment is club and the outcome is spend_next_6m. The true ATC
+          is 11.10.
+
+      - layout: compare
+        beat: fundamentals
+        section: The rule for choosing covariates
+        title: The backdoor rule gives two instructions
+        recall: What does the backdoor rule say about Fernhill's graph?
+        answer: "Do not put sessions in the set, because the club causes them. And the path through engagement stays open whatever we do, so the logged covariates do not satisfy the criterion. Every estimator assumes they do."
+        emphasis: right
+        left:
+          title: Before any code runs
+          bullets: ["Leave out **sessions**, because the club causes them", "Use pre-treatment history, channel and recency"]
+        right:
+          title: The path that stays open
+          bullets: ["**Engagement** is not logged", "It drives joining and spend", "Every estimator **assumes it away**"]
+        takeaway: The propensity score is not a way round the criterion.
+        source: notes/05-matching-and-weighting.md
+        notes: >-
+          The primer makes the same point for weighting: the weights are only valid when the set entering the factor satisfies
+          the backdoor criterion. Rosenbaum and Rubin show that adjusting for the score removes bias from observed covariates,
+          and that the covariates observed need not be all of them.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: Balance first, and no outcome yet
+        title: The standardised mean difference, before any outcome
+        recall: Why look at balance before reading the outcome?
+        answer: "Until the groups look comparable there is no reason to read the outcome, and if you have not read it you cannot tune the design towards the answer you hoped for."
+        lead: "Treated mean minus control mean, over the treated SD."
+        lang: python
+        code: |-
+          def smd(X, D, w, sd=None):
+              sd = X[D == 1].std() if sd is None else sd
+              wt, wc = w[D == 1], w[D == 0]
+              t = np.average(X[D == 1], axis=0, weights=wt)
+              c = np.average(X[D == 0], axis=0, weights=wc)
+              return pd.Series((t - c) / sd, index=X.columns)
+        bullets:
+          - "Unlike a t test it does not grow with the sample size"
+        takeaway: Separate the design from the analysis, and fix the design on balance alone.
+        source: notes/05-matching-and-weighting.md
+        notes: >-
+          Next to the SMD goes the variance ratio, treated variance over control variance, since two groups can share a mean
+          and differ in shape. The measure follows Stuart, Statistical Science, 2010.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: Balance first, and no outcome yet
+        title: Before adjustment, joiners sit a full SD above on orders
+        recall: How many of the ten covariates fail the balance guideline before adjustment?
+        answer: "Nine of ten fail on SMD and four fail on variance ratio, against Rubin's guideline of an absolute SMD below 0.25 and a variance ratio between 0.5 and 2. The designs use a stricter line of 0.1."
+        header: [Covariate, Treated, Control, SMD, "Variance ratio"]
+        widths: [2.6, 1.6, 1.6, 1.4, 2.0]
+        rows:
+          - [log_orders, "0.70", "-0.46", "1.00", "5.02"]
+          - [log_spend, "0.65", "-0.43", "1.12", "1.56"]
+          - [recency, "-0.37", "0.24", "-0.69", "0.78"]
+          - [tenure, "0.24", "-0.16", "0.36", "1.47"]
+          - [ch_paid_social, "-0.29", "0.19", "-0.63", "0.49"]
+        highlight: [1]
+        takeaway: With balance this poor, a regression would extrapolate.
+        source: notes/05-matching-and-weighting.md
+        notes: >-
+          There are 9,456 customers and 3,746 joined, which is 39.6%. The table shows five of the ten covariates.
+
+      - layout: image
+        beat: pitfalls
+        level: core
+        section: Overlap
+        title: 970 joiners score above 0.9, and only 40 controls do
+        kicker: The warning for the rest of the lecture
+        recall: What does the overlap chart warn about?
+        answer: "970 joiners have a propensity above 0.9 and only 40 non-joiners do. A method that keeps all the joiners must lean hard on those 40, and one that does not has to drop joiners, which changes the question."
+        image: ../../assets/sources/images/causal-club-overlap.png
+        caption: "Estimated log odds of joining. Non-joiners peak near minus two, and joiners spread from zero to six."
+        bullets:
+          - "Treated scores run **0.024 to 0.999**, controls 0.012 to 0.997"
+          - "**29** treated sit above the highest control score"
+        takeaway: Matching and weighting can only compare customers who could plausibly have gone either way.
+        source: notes/05-matching-and-weighting.md
+        notes: >-
+          The region where both groups exist is the common support. Hernán and Robins note that individuals do not come with
+          a propensity score tattooed on their forehead, so when you restrict, use real variables such as age to say who is
+          left.
+
+      - layout: steps
+        beat: fundamentals
+        level: core
+        section: Six ways to build a comparison group
+        title: Six ways to build a comparison group
+        recall: What are the six ways, and which one needs no design step?
+        answer: "Exact matching, coarsened exact matching, nearest-neighbour propensity matching, propensity weighting, entropy balancing and regression adjustment. Regression adjustment needs no design step."
+        steps:
+          - {title: Exact, text: "Same value on every covariate", n: "1", accent: fundamentals}
+          - {title: Coarsened exact, text: "Match on defensible bins", n: "2", accent: fundamentals}
+          - {title: Nearest neighbour, text: "Pair on the log odds, within a caliper", n: "3", accent: practice}
+          - {title: Propensity weights, text: "Weight by the odds of joining", n: "4", accent: practice}
+          - {title: Entropy balancing, text: "Weights that hit the means exactly", n: "5", accent: wrap}
+          - {title: Regression, text: "Model spend on the covariates", n: "6", accent: wrap}
+        takeaway: Each design returns a weight per customer and none of them reads the outcome.
+        source: notes/05-matching-and-weighting.md
+        notes: >-
+          Regression adjustment, the sixth way, needs no design step, and we come back to it when we read the outcome.
+
+      - layout: compare
+        beat: practice
+        level: core
+        section: Six ways to build a comparison group
+        title: Exact matching finds nothing, so coarsen
+        recall: What does coarsened exact matching repair?
+        answer: "Exact matching on every covariate found no matches for any of the 3,746 joiners, because prior spend and recency are nearly continuous. CEM bins each variable, matches exactly on the bins and throws away any stratum that lacks one group, so common support is enforced."
+        emphasis: right
+        left:
+          title: Exact matching
+          bullets: ["**No matches** for all 3,746 joiners", "Channel and orders only keeps most joiners but leaves the rest **out of balance**"]
+        right:
+          title: Coarsened exact matching
+          bullets: ["Bins you could defend to a colleague", "The analyst sets the **largest imbalance** up front", "Strata lacking a group are dropped"]
+        takeaway: CEM lets the analyst choose the allowed imbalance before seeing the result.
+        source: notes/05-matching-and-weighting.md
+        notes: >-
+          This is Iacus, King and Porro, 2012. In a stratum each joiner gets weight 1 and each non-joiner gets a weight that
+          makes the stratum's two groups count equally. The interview answer adds that CEM needs a lot of data.
+
+      - layout: cards
+        beat: practice
+        level: core
+        section: Six ways to build a comparison group
+        title: Nearest neighbour, with a caliper
+        recall: What does a caliper do, and what changes with replacement?
+        answer: "A caliper refuses any pair further apart than 0.2 standard deviations of the log odds. Without replacement each non-joiner is used once. With replacement one non-joiner can serve many joiners, which keeps more joiners and costs precision."
+        cards:
+          - {title: Caliper 0.2 SD, accent: fundamentals, body: "Refuses pairs further apart on the **log odds**"}
+          - {title: No replacement, accent: practice, body: "Each non-joiner used **once**"}
+          - {title: With replacement, accent: wrap, body: "One non-joiner can serve **many joiners**, at a cost in precision"}
+        takeaway: A caliper trades bias for dropped treated units, and so moves the target.
+        source: notes/05-matching-and-weighting.md
+        notes: >-
+          The try-it exercise widens the caliper to 1.0 SD. More joiners are kept but with weaker matches, and the largest SMD
+          reaches 0.25.
+
+      - layout: compare
+        beat: practice
+        level: core
+        section: Six ways to build a comparison group
+        title: Weighting models who joined, entropy balancing skips the model
+        recall: How do propensity weights and entropy balancing differ?
+        answer: "For the ATT every joiner gets weight 1 and each non-joiner p/(1-p), so a non-joiner with a score of 0.997 counts as about 330 people. Entropy balancing asks directly for the weights whose covariate means equal the joiners' exactly, as close to equal as possible."
+        emphasis: right
+        left:
+          title: Propensity weighting
+          bullets: ["Joiners get weight 1", "Non-joiners get **p / (1 - p)**", "A score of 0.997 counts as about **330 people**"]
+        right:
+          title: Entropy balancing
+          bullets: ["Weights that match the joiners' means **exactly**", "As close to equal weights as possible", "Limited overlap shows up as **extreme weights**"]
+        takeaway: Propensity weighting hopes balance follows from the model, and entropy balancing demands it.
+        source: notes/05-matching-and-weighting.md
+        notes: >-
+          This is Hainmueller, 2012. The dual has one parameter per covariate, so scipy.optimize handles it in a few lines.
+          Hainmueller warns that balance says nothing about the effective sample size, so check both.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: Six ways to build a comparison group
+        title: Judge every design before any outcome is read
+        recall: Which design has the best balance and who keeps everyone?
+        answer: "CEM and no-replacement matching have the best balance among those that drop joiners, keeping 2,202 and 1,972 of 3,746. Propensity weighting keeps everyone but its 5,710 controls are worth 107, while entropy balancing keeps everyone with no imbalance and controls worth 267."
+        header: [Design, "Treated kept", "Control effective n", "Max abs SMD"]
+        widths: [3.6, 1.8, 2.2, 1.8]
+        rows:
+          - [Exact on channel and orders, "3,369", "696", "0.433"]
+          - [CEM, "2,202", "1,106", "0.024"]
+          - [PS match with replacement, "3,682", "246", "0.069"]
+          - [PS match no replacement, "1,972", "1,972", "0.018"]
+          - [Propensity weights, "3,746", "107", "0.167"]
+          - [Entropy balancing, "3,746", "267", "0.000"]
+        highlight: [5]
+        takeaway: Balance, kept joiners and effective sample size have to be read together.
+        source: notes/05-matching-and-weighting.md
+        notes: >-
+          The effective number of controls is the sum of the weights squared over the sum of squared weights. Exact matching on
+          every covariate kept no joiners at all. Exact matching on channel and orders is rejected on balance alone, with
+          recency still 0.43 apart.
+
+      - layout: image
+        beat: practice
+        level: core
+        section: Six ways to build a comparison group
+        title: The Love plot shows balance before and after
+        kicker: One row per covariate, one mark per design
+        recall: What does the Love plot show?
+        answer: "Before adjustment most covariates sit far outside the 0.1 lines. After CEM, propensity matching with replacement and entropy balancing nearly all sit at zero."
+        image: ../../assets/sources/images/causal-club-love-plot.png
+        caption: "Standardised differences for ten covariates. Propensity weighting leaves two over the line, and one non-joiner holds 8.6% of all control weight."
+        takeaway: Read the plot with the table, because the table shows the trade the plot hides.
+        source: notes/05-matching-and-weighting.md
+        notes: >-
+          CEM and no-replacement matching keep only 59% and 53% of joiners.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: Now read the outcome
+        title: Adjusting removes about £70 of the £95.54
+        recall: How far do the estimates spread after adjustment?
+        answer: "From about £15 to £32. Most of that spread has nothing to do with bias, as the targets column hints."
+        header: [Estimator, Targets, "Estimate (£)"]
+        widths: [4.2, 2.0, 2.0]
+        rows:
+          - [Naive difference, ATT, "95.54"]
+          - [Regression with one coefficient, none, "17.59"]
+          - [Regression by arm, ATT, "26.44"]
+          - [CEM, local ATT, "20.96"]
+          - [PS match with replacement, local ATT, "22.74"]
+          - [Propensity weights, ATT, "18.75"]
+          - [Entropy balancing, ATT, "26.49"]
+        highlight: [0]
+        takeaway: The one-coefficient regression targets neither estimand cleanly, and it is what most analysts run.
+        source: notes/05-matching-and-weighting.md
+        notes: >-
+          The note's full table has fourteen rows. The last design is regression adjustment, fitted two ways: one coefficient
+          on club, and a separate model per arm which lets the effect vary.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: Scoring against the truth
+        title: Scored against the truth, nearly every sound design is a few pounds high
+        recall: What is the gap for each design's own target on the first dataset?
+        answer: "Regression by arm 3.06, CEM 3.64, PS match with replacement -0.11, PS match without replacement 2.94, propensity weights (ATT) -4.63 and entropy balancing 3.11. The naive difference misses by 72.16."
+        header: [Estimator, Estimate, Truth, Gap]
+        widths: [4.2, 1.6, 1.6, 1.6]
+        rows:
+          - [Naive difference, "95.54", "23.38", "72.16"]
+          - [Regression by arm (ATT), "26.44", "23.38", "3.06"]
+          - [CEM, "20.96", "17.31", "3.64"]
+          - [PS match with replacement, "22.74", "22.86", "-0.11"]
+          - [PS match no replacement, "18.26", "15.32", "2.94"]
+          - [Propensity weights (ATT), "18.75", "23.38", "-4.63"]
+          - [Entropy balancing (ATT), "26.49", "23.38", "3.11"]
+        highlight: [3]
+        takeaway: An analyst never gets this table, because the truth for each method's own target is hidden.
+        source: notes/05-matching-and-weighting.md
+        notes: >-
+          The true ATE is 15.96, the true ATT 23.38 and the true ATC 11.10. The generator knows each customer's spend with and
+          without the club, so it can give the true effect for whichever customers each method kept.
+
+      - layout: cards
+        beat: fundamentals
+        level: core
+        section: Scoring against the truth
+        title: Different methods answer different questions
+        recall: Why do CEM's £20.96 and entropy balancing's £26 not disagree?
+        answer: "CEM dropped 41% of joiners and the true effect for the customers it kept is £17.31 against £23.38 for all joiners. The no-replacement match kept 53% with a true effect of £15.32. Measured against their own targets all three miss by about £3."
+        cards:
+          - {title: CEM, accent: fundamentals, body: "Dropped **41%** of joiners. Truth for those kept is **£17.31**"}
+          - {title: No replacement, accent: practice, body: "Kept **53%**. Truth for those kept is **£15.32**"}
+          - {title: The trap, accent: pitfalls, body: "£18.26 looks near the true ATE of £15.96, which it does **not estimate**"}
+        takeaway: A matched estimate has to say who was kept.
+        source: notes/05-matching-and-weighting.md
+        notes: >-
+          Iacus, King and Porro call the result of pruning treated units a local SATT and ask authors to be transparent about
+          it. Hainmueller's reason for keeping every treated unit is the same. The club does more for frequent buyers, so
+          dropping them moves the target down.
+
+      - layout: image
+        beat: pitfalls
+        level: core
+        section: Scoring against the truth
+        title: One dataset is one draw, so score twenty
+        kicker: Gap from the truth over 20 generated datasets
+        recall: What do twenty datasets show that one cannot?
+        answer: "Every sound ATT design lands high, by 3.15 to 4.31. The perfect score of -0.11 for matching with replacement was luck, with a standard deviation of 2.42. Plain propensity weights are the worst, with a mean gap of 8.27 and a standard deviation of 7.76."
+        image: ../../assets/sources/images/causal-club-estimates.png
+        caption: "Eight ATT designs over twenty datasets. Every design lands high, matching's -0.11 was a good draw (mean gap 4.31), and plain weights have mean gap 8.27, SD 7.76."
+        takeaway: Twenty datasets from one generator do not make a general ranking of methods.
+        source: notes/05-matching-and-weighting.md
+        notes: >-
+          The datasets have 9,108 to 9,482 customers. Trimming the weights to scores between 0.05 and 0.95 brings the gap
+          down to 3.15, at the price of changing the target. Entropy balancing and regression by arm are close and far
+          steadier than matching with replacement and plain weights.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: Where the £3 comes from
+        title: Add the unlogged engagement and the gap nearly disappears
+        recall: What happens to each design's gap when engagement is added?
+        answer: "Regression falls from 4.2 to 1.19, entropy balancing from 3.59 to 0.15, and plain weights from 8.27 to 3.01 (standard error 2.29, not distinguishable from zero)."
+        header: [Estimator, "Observed covariates", "Plus engagement"]
+        widths: [3.4, 2.8, 2.8]
+        rows:
+          - [Regression, "4.2", "1.19"]
+          - [Entropy balancing, "3.59", "0.15"]
+          - [Plain weights, "8.27", "3.01"]
+        highlight: [1]
+        takeaway: The gap has a named cause, and the generator lets us split it.
+        source: notes/05-matching-and-weighting.md
+        notes: >-
+          These are the mean ATT gaps over twenty datasets in the generator's own table. The redrawn worlds with and without
+          the floor at zero give similar numbers.
+
+      - layout: cards
+        beat: pitfalls
+        level: core
+        section: Where the £3 comes from
+        title: Most of the gap is the hidden confounder
+        recall: How do you reproduce the £3 with arithmetic, and what got worse?
+        answer: "Omitted-variable bias is about the hidden trait's effect on spend times the imbalance it leaves: £8 per SD times 0.48 SD gives 3.81 against the measured 3.59. Engagement imbalance went from 0.29 SD before adjustment to 0.48 after."
+        cards:
+          - {title: The arithmetic, accent: fundamentals, body: "**£8** per SD times **0.48** SD gives **£3.81**, against £3.59 measured"}
+          - {title: Imbalance grew, accent: pitfalls, body: "Engagement gap **0.29 to 0.48 SD** after balancing the logged history"}
+          - {title: The floor, accent: practice, body: "A floor at zero moves **regression only**, by £1.12 once engagement is in"}
+        takeaway: A perfect Love plot says nothing about the trait nobody logged.
+        source: notes/05-matching-and-weighting.md
+        notes: >-
+          A plausible reading is that once history accounts for much of who joins, the hidden trait explains more of the
+          choice that remains. We measured the change but did not prove that mechanism. Iacus, King and Porro say CEM will not
+          rescue an analysis that leaves out an important covariate.
+
+      - layout: compare
+        beat: pitfalls
+        level: core
+        section: The bad control that helped
+        title: Sessions help in one world and hurt in another
+        recall: Why does the rule exclude sessions even though they helped?
+        answer: "In the generator sessions do not cause spend, and adding them halves the regression gap from 4.20 to 2.01. In a second world where spend gains 14.10 per session the same control takes the estimate to 0.79 and erases a real effect (the truth is 23.38)."
+        emphasis: right
+        left:
+          title: Sessions are a proxy
+          bullets: ["Regression ATT **26.44** to **24.17**", "Gap over 20 datasets **4.20 to 2.01**", "Sessions do not cause spend here"]
+        right:
+          title: Sessions are a mediator
+          bullets: ["**£14.10** per session", "Without the control **31.60**", "With it **0.79**, truth 23.38"]
+        takeaway: The data cannot tell the two worlds apart, so the arrow from sessions to spend is an assumption.
+        source: notes/05-matching-and-weighting.md
+        notes: >-
+          A pre-treatment proxy for engagement, such as sessions before the opening date, gives the benefit without the risk.
+          Fernhill's table does not have one, so the better fix is a change to what gets logged.
+
+      - layout: table
+        beat: pitfalls
+        level: deep
+        section: DoWhy as the cross-check
+        title: DoWhy's default clipping turned £18.75 into £39.24
+        recall: What did DoWhy's defaults do to the weighting estimate?
+        answer: "Its weighting estimator clips scores to 0.05 to 0.95, which caps the weight of the high-score non-joiners, so the control mean falls and the ATT rises to 39.24. With clipping off it is 17.01 against our 18.75. Both refuters passed on a biased estimate."
+        header: [Estimator, "ATT (£)"]
+        widths: [5.2, 2.4]
+        rows:
+          - [Weighting with defaults, "39.24"]
+          - [Weighting with clipping off, "17.01"]
+          - [Matching, "23.47"]
+          - [Stratification, "20.60"]
+          - [Our hand-written weights, "18.75"]
+        highlight: [0]
+        takeaway: Read what the estimator does, and replicate one number by hand.
+        source: notes/05-matching-and-weighting.md
+        notes: >-
+          DoWhy writes the clipped score into the model's data frame and the next estimator reuses it. In the first run on one
+          shared model matching read 26.58 and stratification 27.60. Build a new model for each estimator. The random common
+          cause and placebo treatment refuters can catch a broken pipeline but not a missing confounder.
+
+      - layout: cards
+        beat: practice
+        level: core
+        section: "Sensitivity: what would it take?"
+        title: Three checks for a hidden confounder
+        recall: What did the E-value, Rosenbaum bounds and whiteboard arithmetic give?
+        answer: "The E-value is 1.79 for the estimate and 1.64 for the interval's lower limit. Rosenbaum bounds on 1,972 pairs hold until gamma reaches 2.35. The whiteboard bias is about gamma times delta, the trait's pounds per SD times the imbalance left."
+        cards:
+          - {title: E-value, accent: fundamentals, body: "**1.79** for the estimate, **1.64** for the lower limit"}
+          - {title: Rosenbaum bounds, accent: practice, body: "The test of no effect holds until gamma reaches **2.35**"}
+          - {title: Whiteboard, accent: wrap, body: "Bias is about **gamma times delta**"}
+        takeaway: Each of these checks answers a narrower question than it seems.
+        source: notes/05-matching-and-weighting.md
+        notes: >-
+          The E-value is the minimum association with both treatment and outcome that a hidden confounder would need to
+          explain the result away. For a ratio RR above 1 it is RR plus the square root of RR times RR minus 1. The ratio of
+          means is 136.13 over 109.64, which is 1.242.
+
+      - layout: compare
+        beat: pitfalls
+        level: core
+        section: "Sensitivity: what would it take?"
+        title: The checks answered the wrong question, except the arithmetic
+        recall: How did each check score against the planted confounder?
+        answer: "The real bias overstated the effect by about 15% and moving the estimate to the truth needs an E-value of just 1.20, so 1.79 gives no assurance about size. Gamma is a worst case, and engagement's median hidden odds ratio of 1.68 and 90th percentile of 3.34 exceed 2.35 yet the effect is real. Gamma times delta gave 4.16 against 3.11."
+        emphasis: right
+        left:
+          title: Erase the effect entirely
+          bullets: ["E-value **1.79** and Gamma **2.35**", "Honest reading: the club **probably does something**", "Truth needs an E-value of only **1.20**"]
+        right:
+          title: Size the bias
+          bullets: ["**£4.16** against £3.11 on this dataset", "**£3.81** against £3.59 on average", "But it used the **true** gamma and delta"]
+        takeaway: Report estimate, balance, who was kept and these checks together.
+        source: notes/05-matching-and-weighting.md
+        notes: >-
+          Gamma varies only the confounder's link with treatment and sets its link with the outcome at infinity, so it
+          describes a trait that also fully decides the outcome's direction in each pair. Engagement does not. To ask about
+          size, compute the E-value for a smaller effect you would care about.
+
+      - layout: bullets
+        beat: wrap
+        level: core
+        section: "Sensitivity: what would it take?"
+        title: Report four things together
+        recall: What should a matching or weighting report contain?
+        answer: "The estimate, the balance table, who was kept, and the sensitivity checks, with the trait you worry about named."
+        bullets:
+          - "**The estimate**, with its target named (ATE or ATT)"
+          - "**Balance** before and after, so readers can judge the design"
+          - "**Who was kept**, since dropping joiners moves the target"
+          - "**The checks**: E-value, Rosenbaum bounds and the whiteboard arithmetic"
+        takeaway: No single number carries the claim, and the four together show what it rests on.
+        source: notes/05-matching-and-weighting.md
+        notes: >-
+          This is the note's closing advice for the sensitivity section.
+
+      - layout: table
+        beat: pitfalls
+        section: Pitfalls
+        title: Pitfalls in matching and weighting
+        recall: What are the main pitfalls in matching and weighting?
+        answer: "Choosing the design after reading the outcome, reporting balance as proof of no bias, comparing a local ATT with an ATT, trusting a large control count, library defaults, and adjusting for something measured after treatment."
+        header: [Pitfall, "What goes wrong", Fix]
+        widths: [3.0, 3.4, 2.8]
+        rows:
+          - [Design chosen after the outcome, "the spread here was £15 to £32", "fix the design on balance alone"]
+          - [Balance as proof of no bias, "perfect Love plot, still about £3.60 high", "balance covers observed covariates only"]
+          - [A local ATT against an ATT, "£20.96 and £26.49 target different customers", "report who was kept"]
+          - [A large control count, "5,710 weighted controls were worth 107", "report effective sample and largest weight"]
+          - [Library defaults, "clipping turned £18.75 into £39.24", "replicate one number by hand"]
+          - [A post-treatment adjustment, "sessions halved the bias in one world and erased the effect in another", "pre-treatment covariates only"]
+        takeaway: Most of these failures are decided before the outcome is read.
+        source: notes/05-matching-and-weighting.md
+        notes: >-
+          The note lists nine pitfalls. The three left out here are treating one dataset's success as evidence, treating a
+          passed refuter as a validity check, and reading an E-value of 1.79 as robust.
+
+      - layout: statement
+        beat: wrap
+        section: Pitfalls
+        title: Say what the estimate assumes
+        recall: What is the one rule that ties this lecture together?
+        answer: "Without randomisation every causal estimate rests on an assumption you cannot test in the data, so name it, check balance and overlap, and run a sensitivity analysis."
+        kicker: When you cannot randomise
+        statement: "Check balance before the outcome, report who was kept, and name the trait you worry about."
+        attribution: The analyst's closing paragraph
+        takeaway: Check balance before the outcome, report who was kept, and name the trait you worry about.
+        source: notes/05-matching-and-weighting.md
+        notes: >-
+          This closes the lecture. The next pillar's README, applied analyses, puts these ideas to work on a retail table.

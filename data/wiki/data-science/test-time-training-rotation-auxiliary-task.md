@@ -1,8 +1,8 @@
 ---
 title: Test-Time Training with a Rotation Auxiliary Task
-tags: [data-science, concept]
+tags: [data-science, deep-learning, concept]
 summary: "Test-Time Training fine-tunes a network's shared layers on one unlabeled test image with a rotation-prediction loss before classifying it; it lowered error under CIFAR-10-C corruptions without hurting the original distribution (self-reported)."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-sun-2019-test-time-training-self-supervision.md
 ---

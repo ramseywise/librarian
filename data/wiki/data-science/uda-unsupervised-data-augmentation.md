@@ -1,8 +1,8 @@
 ---
 title: "UDA: Unsupervised Data Augmentation"
-tags: [data-science, concept]
+tags: [data-science, deep-learning, concept]
 summary: "UDA adds a consistency loss between predictions on an unlabeled example and its strongly augmented version (RandAugment for images, back-translation for text) to supervised cross-entropy, and reports 5.43% CIFAR-10 error with 250 labels."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-xie-2019-unsupervised-data-augmentation-consistency-training.md
 ---

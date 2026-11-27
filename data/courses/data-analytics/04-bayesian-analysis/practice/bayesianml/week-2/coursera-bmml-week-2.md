@@ -1,8 +1,8 @@
 ---
-imported_hash: 7a9904c7e6d6a881
+imported_hash: 9ae2e28bc15eea27
 title: Expectation-maximization algorithm
 summary: In this assignment, we will derive and implement formulas for Gaussian Mixture Model — one of the most commonly used methods for performing soft clustering of the data.
-order: 14
+order: 15
 kind: notebook
 section: Practice / BayesianML / Week 2
 source: learn-ai-engineering/data-analytics/04-bayesian-analysis/practice/BayesianML/week_2/Coursera-BMML_-week-2.ipynb

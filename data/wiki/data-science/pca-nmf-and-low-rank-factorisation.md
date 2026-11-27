@@ -1,8 +1,8 @@
 ---
 title: "PCA, NMF and Low-Rank Factorisation"
-tags: [data-science, concept]
+tags: [data-science, classical-ml, concept]
 summary: "PCA rotates to maximum-variance axes, NMF builds additive non-negative parts, collaborative filtering factorises a mostly missing matrix; scale before PCA."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--05-unsupervised-learning.md
   - data/raw/papers/2026-11-08-intro-to-ml-with-python-ch03-unsupervised-learning-preprocessing.md

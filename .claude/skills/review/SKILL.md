@@ -1,6 +1,6 @@
 ---
 name: review
-description: "Quality gate for course content. Sends a note, deck, drill, guide or lab to the right independent reviewers, applies only fixes that cannot change meaning, lists the rest for the user and logs every decision. Usage: /review <note, deck.yaml, drill or practice path>, /review <pillar> for its notes, /review <pillar> --deck, /review <path> --report for no edits, /review status for the log, /review eval <reviewer> to test a reviewer on planted faults. Run from the librarian repo."
+description: "Quality gate for course content. Sends a note, deck, drill, guide or lab to the right independent reviewers, applies only fixes that cannot change meaning, lists the rest for the user and logs every decision. Usage: /review <note, deck.yaml, drill or practice path>, /review <pillar> for its notes, /review <pillar> --deck, /review <path> --report for no edits, /review status for the log, /review eval <reviewer> to test a reviewer on planted faults. Triggers on: '/review', 'review this note', 'review the deck', 'quality gate this chapter', 'check this drill'. Run from the librarian repo."
 ---
 
 You run the quality gate on one piece of content or one pillar. The reviewers report and you decide. They have not

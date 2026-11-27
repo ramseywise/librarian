@@ -1,8 +1,8 @@
 ---
 title: "Cross-Validation Variants and Nested Search"
-tags: [data-science, pattern]
+tags: [data-science, classical-ml, pattern]
 summary: "Pick the splitter that mirrors how the model meets new data, search hyperparameters on a log scale, and use nested CV because the best CV score is optimistic."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--04-model-evaluation.md
   - data/raw/papers/2026-11-06-varma-2006-bias-error-estimation-when-using.md

@@ -1,8 +1,8 @@
 ---
 title: AdaBoost as Stagewise Exponential-Loss Fitting
-tags: [data-science, concept]
+tags: [data-science, classical-ml, concept]
 summary: "AdaBoost reweights misclassified cases so the next tree faces a coin flip; statistically it is forward-stagewise fitting of exponential loss, whose population minimiser is half the logit, and a nonnegative lasso can prune the resulting tree ensemble."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-computer-age-statistical-inference-ch17-random-forests-boosting.md
 ---

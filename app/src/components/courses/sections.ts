@@ -41,3 +41,25 @@ export function lessonSections(lessons: LessonOutline[]): LessonSection[] {
     first: list.find((l) => !subsectionOf(l) && /\/readme$/.test(l.id)) ?? list[0],
   }));
 }
+
+export interface Submodule {
+  /** The part's number in the module deck, so `#/slides/<module>?part=n` opens on it. */
+  n: number;
+  title: string;
+  summary?: string;
+  /** The module's notes this part teaches, in reading order. */
+  lessons: LessonOutline[];
+}
+
+/** The module's submodules: the parts of its deck after the overview (the module page is the intro), each with
+ * the notes it teaches. A note no part cites is in none of them. Empty when the module has no deck parts. */
+export function submodules(moduleId: string, m: CourseModule): Submodule[] {
+  const deck = m.decks?.find((d) => d.id === moduleId);
+  const notes = moduleNotes(moduleId, m);
+  return (deck?.parts ?? []).map((p) => ({
+    n: p.n,
+    title: p.title,
+    summary: p.summary,
+    lessons: notes.filter((l) => p.notes.some((stem) => l.id === `${moduleId}/notes/${stem}`)),
+  }));
+}

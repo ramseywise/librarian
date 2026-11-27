@@ -1,6 +1,6 @@
 ---
 name: weekly
-description: "Weekly health report for the course: runs the tests, the reviewer findings log, the learner and reviewer signals, the readings status, pending decisions and stale decks, then reports what needs the user. Changes no content and commits nothing. Usage: /weekly. Run from the librarian repo."
+description: "Weekly health report for the course: runs the tests, the reviewer findings log, the learner and reviewer signals, the readings status, pending decisions and stale decks, then reports what needs the user. Changes no content and commits nothing. Usage: /weekly. Triggers on: '/weekly', 'weekly report', 'course health check', 'what needs my attention this week', 'are the tests and decks healthy'. Not the wiki's review (/wiki-weekly). Run from the librarian repo."
 ---
 
 You are preparing the user's weekly look at the course. You run checks and report. You change no notes, decks, drills,

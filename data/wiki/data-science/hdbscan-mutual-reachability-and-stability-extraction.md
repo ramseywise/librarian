@@ -1,8 +1,8 @@
 ---
 title: "HDBSCAN: Mutual Reachability and Stability Extraction"
-tags: [data-science, concept]
+tags: [data-science, classical-ml, concept]
 summary: "HDBSCAN replaces DBSCAN's single epsilon with a hierarchy over mutual reachability distance and picks flat clusters by total stability; McInnes and Healy speed it up with tree-based neighbour search and a dual-tree minimum spanning tree."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-mcinnes-2017-accelerated-hierarchical-density-clustering.md
   - data/raw/papers/2026-11-08-mcinnes-2017-hdbscan-joss.md

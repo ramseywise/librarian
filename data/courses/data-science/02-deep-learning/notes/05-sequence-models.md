@@ -1,10 +1,12 @@
 ---
-imported_hash: c8f8856b9f34f611
+imported_hash: bde5105748d9d768
 title: Sequence models
 summary: 'def sigmoid(z): return 1 / (1 + np.exp(-z))'
 order: 8
 kind: reading
 section: Notes
+tier: practitioner
+depth: core
 source: learn-ai-engineering/data-science/02-deep-learning/notes/05-sequence-models.md
 ---
 
@@ -456,7 +458,7 @@ by held-out digit at code 16, autoencoder: {0: 0.997, 1: 0.848, 2: 0.991, 3: 0.9
 
 Here's the catch, and the reason the two panels disagree. The best reconstruction isn't the best detector. Widen the code and PCA's error keeps falling, yet its AUC drops from 0.885 at 8 to 0.743 at 32, and the autoencoder's falls from 0.954 at 16 to 0.910 at 32. A code wide enough to rebuild everything rebuilds the anomalies too. So choose the code size on labelled anomalies if you have some, not on reconstruction error. Detection also depends on the anomaly: at 0.848, the digit 1 is the hardest, plausibly because its few strokes are easy to rebuild from the others.
 
-For tabular anomalies, try [an isolation forest or a Gaussian](../../01-classical-ml/notes/05-unsupervised-learning.md#anomaly-detection-ng-ex8-part-1) first, and reach for this when the input is an image or other raw signal. To turn the code into a distribution you can sample from, see [the VAE](../../../data-analytics/04-bayesian-analysis/notes/06-bayesian-machine-learning.md#the-vae).
+For tabular anomalies, try [an isolation forest or a Gaussian](../../01-classical-ml/notes/05-unsupervised-learning.md#anomaly-detection-ng-ex8-part-1) first, and reach for this when the input is an image or other raw signal. To turn the code into a distribution you can sample from, see [the VAE](../../../data-analytics/04-bayesian-analysis/notes/06b-variational-inference-and-gaussian-processes.md#the-vae).
 
 ## Ordered events: make the sequence model earn its place
 

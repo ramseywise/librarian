@@ -1,10 +1,12 @@
 ---
-imported_hash: 4aa491f28c374226
+imported_hash: d5051be45c11284f
 title: What the training papers measured
 summary: d = load_digits() X_tr, X_te, y_tr, y_te = train_test_split(d.data / 16.0, d.target, test_size=0.3, random_state=0, stratify=d.target) X_tr, X_te = torch.tensor(X_tr, dtype=torch.float32), torch.tensor(X_te, dtype=torch.float32) y_tr, y_te…
 order: 4
 kind: reading
 section: Notes
+tier: specialist
+depth: deep
 source: learn-ai-engineering/data-science/02-deep-learning/notes/02b-what-the-training-papers-measured.md
 ---
 

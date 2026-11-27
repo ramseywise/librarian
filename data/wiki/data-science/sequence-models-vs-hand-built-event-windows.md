@@ -1,8 +1,8 @@
 ---
 title: "Sequence Models vs Hand-Built Event Windows"
-tags: [data-science, comparison]
+tags: [data-science, deep-learning, comparison]
 summary: "On generated card events with a planted order-dependent fraud pattern, boosting on velocity windows and recent events beat a GRU (PR-AUC 0.855 vs 0.791); order matters, but hand-written order features may capture it, and untuned baselines hand the GRU undeserved wins."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--05-sequence-models.md
 ---

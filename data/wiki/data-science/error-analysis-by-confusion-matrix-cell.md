@@ -1,8 +1,8 @@
 ---
 title: "Error Analysis by Confusion-Matrix Cell"
-tags: [data-science, pattern]
+tags: [data-science, classical-ml, pattern]
 summary: "Read a model's errors in order: name the positive class, set the table at the decision threshold, compare the four cells, read random rows before confident ones, then diagnose before touching the model."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--12-reading-the-errors.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: Calibrated Score, Deterministic Decision Rule
-tags: [data-science, pattern]
+tags: [data-science, classical-ml, pattern]
 summary: "A ranked score is not a decision: in tabular ML the model supplies a probability and deterministic code turns it into an action with a cost-based threshold. That makes calibration a correctness requirement, puts the target definition (ability vs propensity vs uplift) ahead of model choice, and makes logistic regression the required explainability floor."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/claude-docs/galactus/docs/plans/2026-08-10-ml-capability-parity.md
   - data/raw/repos/galactus/.claude--docs--plans--2026-08-10-ml-capability-parity.md

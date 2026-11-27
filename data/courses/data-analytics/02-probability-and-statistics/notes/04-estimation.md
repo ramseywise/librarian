@@ -1,10 +1,18 @@
 ---
-imported_hash: a9fcb691612c07f6
+imported_hash: 150eb64292ba3a20
 title: 4 — Estimation
 summary: Larkspur's finance lead asks for revenue per user from a sample of 4,000 users.
 order: 5
 kind: reading
 section: Notes
+tier: practitioner
+depth: core
+depth_sections:
+  Why this chapter: intro
+  Estimators, bias and variance: intro
+  The method of moments: deep
+  Percentile and BCa: deep
+  Estimating after you selected: deep
 source: learn-ai-engineering/data-analytics/02-probability-and-statistics/notes/04-estimation.md
 ---
 

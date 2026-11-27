@@ -1,8 +1,8 @@
 ---
 title: Critical Batch Size and the Gradient Noise Scale
-tags: [data-science, concept]
+tags: [data-science, deep-learning, concept]
 summary: "McCandlish et al. predict the largest useful batch size from a statistic measured in one run, the simple gradient noise scale, and show the critical batch size grows during training; Shallue et al. measure the same three-regime steps-versus-batch curve across many workloads."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-07-mccandlish-2018-empirical-model-large-batch-training.md
   - data/raw/papers/2026-11-08-shallue-2018-measuring-effects-data-parallelism-neural.md

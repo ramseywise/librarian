@@ -1,10 +1,11 @@
 ---
-imported_hash: f228107e0017fa53
+imported_hash: 012900487d0e50cd
 title: Grammar of graphics and chart choice
 summary: A chart is an argument made with geometry, and a reader believes geometry faster than they believe prose.
 order: 2
 kind: reading
 section: Notes
+tier: foundations
 source: learn-ai-engineering/data-analytics/05-visualisation-and-storytelling/notes/01-grammar-and-chart-choice.md
 ---
 

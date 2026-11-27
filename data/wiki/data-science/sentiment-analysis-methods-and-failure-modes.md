@@ -1,8 +1,8 @@
 ---
 title: "Sentiment Analysis Methods and Failure Modes"
-tags: [data-science, comparison]
+tags: [data-science, nlp, comparison]
 summary: "Lexicons reach about 70 percent with no labels, TF-IDF bigrams plus a linear model about 90 percent, and sequence models overfit without more data; a maxlen mismatch at inference silently costs 11 points."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--03-nlp--notes--06-sentiment-analysis.md
   - data/raw/papers/2026-11-08-text-analytics-with-python-ch07-semantic-sentiment-analysis.md

@@ -1,8 +1,8 @@
 ---
-imported_hash: ea3017c11d2d2edf
+imported_hash: fed5ca45e01b0d1b
 title: 'Final project: Finding the suspect'
 summary: In this project we will try to implement an app for crating facial composite that will be able to construct desired faces without explicitly providing databases of templates.
-order: 13
+order: 14
 kind: notebook
 section: Practice / BayesianML / Final assignment
 source: learn-ai-engineering/data-analytics/04-bayesian-analysis/practice/BayesianML/final_assignment/Coursera BMML, Final project.ipynb

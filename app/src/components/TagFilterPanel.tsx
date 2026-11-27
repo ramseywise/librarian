@@ -3,7 +3,7 @@ import "./filter.css";
 import { useTheme } from "../hooks/useTheme";
 import { courseColor, domainColor, tagColor } from "../theme/domains";
 import type { Area, Curriculum, CurriculumCourse, CurriculumModule, Facets, Glossary } from "../types";
-import { courseFacet, gapFacet, isFacetId, moduleFacet, noteFacet, OUTSIDE_COURSES, termFacet } from "../utils/curriculum";
+import { courseFacet, gapFacet, isFacetId, moduleFacet, noteFacet, OUTSIDE_COURSES, termFacet, TIERS, tierFacet } from "../utils/curriculum";
 import type { Grouping } from "../utils/mapRoute";
 
 interface Props {
@@ -362,8 +362,19 @@ function ModuleFilters({ curriculum, facets, activeTags, onToggle, onBrief }: {
 }) {
   const theme = useTheme();
   const outside = facets.get(OUTSIDE_COURSES)?.size ?? 0;
+  const tiers = TIERS.map((tier) => ({ tier, count: facets.get(tierFacet(tier))?.size ?? 0 }));
   return (
     <div className="mod-filters" role="group" aria-label="Filter by module">
+      {tiers.some((t) => t.count) && (
+        <div className="cur-chips mod-course" role="group" aria-label="First taught at" title="Pages by the lowest tier of the notes that link them; untiered pages are in none">
+          <span className="mod-course-name">First taught at</span>
+          {tiers.map(({ tier, count }) =>
+            count || activeTags.has(tierFacet(tier)) ? (
+              <Chip key={tier} id={tierFacet(tier)} label={tier} count={count} color="var(--accent)" active={activeTags.has(tierFacet(tier))} onToggle={onToggle} />
+            ) : null,
+          )}
+        </div>
+      )}
       {curriculum.courses.map((c) => {
         const color = courseColor(c.id, theme);
         const courseId = courseFacet(c.id);
@@ -436,6 +447,7 @@ function labelOfActive(tag: string, curriculum: Curriculum | null, areas: Area[]
     return `${title ?? tag.slice(4)}: not yet in a lesson`;
   }
   if (tag === OUTSIDE_COURSES) return "Not in a course";
+  if (tag.startsWith("tier:")) return `First taught at ${tag.slice(5)}`;
   if (tag.startsWith("beyond:")) return `${tag.slice(7)}: not in a course`;
   if (tag.startsWith("term:")) return glossary?.terms.find((t) => t.id === tag.slice(5))?.label ?? tag.slice(5);
   if (tag.startsWith("dir:") || tag.startsWith("tag:")) return tag.slice(4);
@@ -445,7 +457,7 @@ function labelOfActive(tag: string, curriculum: Curriculum | null, areas: Area[]
 /** Whether the view lists this filter itself: the modules in Modules, the topics in Wiki. */
 function isListed(tag: string, grouping: Grouping, curriculum: Curriculum | null, topics: Set<string>): boolean {
   if (grouping === "wiki") return topics.has(tag);
-  return !!curriculum && (/^(course|module|gap):/.test(tag) || tag === OUTSIDE_COURSES);
+  return !!curriculum && (/^(course|module|gap|tier):/.test(tag) || tag === OUTSIDE_COURSES);
 }
 
 interface FiltersProps {

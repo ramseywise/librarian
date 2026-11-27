@@ -1,10 +1,11 @@
 ---
-imported_hash: d178bc0e6f85923f
+imported_hash: 690987540f564c16
 title: 12b — Weighting, the margin and the question
 summary: Fernhill's email blast said 73% satisfied with a margin of plus or minus 1.7 points, against a truth of 49.6%.
 order: 16
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-analytics/06-applied-analyses/notes/12b-weighting-the-margin-and-the-question.md
 ---
 

@@ -1,8 +1,8 @@
 ---
 title: "XGBoost System Design: Sparsity-Aware Splits, Quantile Sketch and Cache-Aware Blocks"
-tags: [data-science, concept]
+tags: [data-science, classical-ml, concept]
 summary: "Chen and Guestrin's XGBoost pairs a regularised second-order objective with sparsity-aware split finding, a weighted quantile sketch and a column-block layout for out-of-core and distributed training."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-07-chen-2016-xgboost.md
 ---

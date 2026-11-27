@@ -1,8 +1,8 @@
 ---
 title: "VGG Depth with Stacked 3x3 Filters"
-tags: [data-science, pattern]
+tags: [data-science, deep-learning, pattern]
 summary: "VGG fixes every other design choice, uses only 3x3 convolutions and varies depth from 11 to 19 weight layers; the paper reports error falling until 16 to 19 layers and a 6.8% top-5 test error for a two-model ensemble on ILSVRC-2014 (self-reported)."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-simonyan-2014-very-deep-convolutional-networks-large.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: "Gradient Checking with Finite Differences"
-tags: [data-science, pattern]
+tags: [data-science, deep-learning, pattern]
 summary: "A centred finite difference gives a slow but independent estimate of every gradient; the relative difference to backprop separates a correct implementation (about 9e-11) from a planted 10% error (about 0.05), and the check is switched off in training."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--01-neural-networks-fundamentals.md
   - data/raw/papers/2026-11-08-fundamentals-of-deep-learning-ch02-training-feed-forward-neural-networks.md

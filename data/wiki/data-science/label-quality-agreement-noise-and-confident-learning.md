@@ -1,8 +1,8 @@
 ---
 title: "Label Quality: Agreement, Noise and Confident Learning"
-tags: [data-science, concept]
+tags: [data-science, classical-ml, concept]
 summary: "Kappa measures agreement, not correctness, and is unstable on rare classes; label noise hurts probabilities more than ranking unless it depends on the row; confident-learning flags are a review list, not a cleaning rule."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--14-learning-from-corrections.md
   - data/raw/papers/2026-11-08-nlp-with-python-ch11-managing-linguistic-data.md

@@ -1,8 +1,8 @@
 ---
 title: "Prechelt's Stopping Criteria: GL, PQ and UP"
-tags: [data-science, comparison]
+tags: [data-science, deep-learning, comparison]
 summary: "Prechelt defines three classes of validation-based rule for stopping neural-network training, GL, PQ and UP, and compares 14 variants over 1296 runs; later-stopping rules bought roughly 4% lower test error for roughly four times the training time."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-prechelt-1998-early-stopping-but-when.md
 ---

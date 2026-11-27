@@ -1,8 +1,8 @@
 ---
 title: "Sampled Ranking Metrics and MRR"
-tags: [data-science, pattern]
+tags: [data-science, time-series-and-recommenders, pattern]
 summary: "Ranking each positive against 99 sampled negatives is a different metric from the full ranking, inflates scores several-fold and flipped the order of two models; rank the whole catalogue, and use MRR only when one good result ends the task."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--05-time-series-and-recommenders--notes--03-two-tower-and-evaluation.md
 ---

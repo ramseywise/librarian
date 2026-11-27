@@ -296,6 +296,27 @@ def _run_present(argv: list[str]) -> int:
     return int(_resolve("librarian.tools.presenter.pipeline:main")(argv) or 0)
 
 
+def _run_voice(argv: list[str]) -> int:
+    """The voice server, in its own process. Needs the `voice` extra (`make voice`)."""
+    try:
+        main_fn = _resolve("librarian.voice.__main__:main")
+    except ImportError:
+        print(
+            "librarian voice needs the voice extra: make voice "
+            "(UV_PROJECT_ENVIRONMENT=.venv-voice uv run --extra voice librarian voice)",
+            file=sys.stderr,
+        )
+        return 2
+    if argv:
+        print(
+            "librarian voice takes no arguments; configure it with VOICE_* env keys",
+            file=sys.stderr,
+        )
+        return 2
+    main_fn([])
+    return 0
+
+
 def _run_api(argv: list[str]) -> int:
     ap = argparse.ArgumentParser(prog="librarian api", description="FastAPI backend (uvicorn).")
     ap.add_argument("--host", default="127.0.0.1")
@@ -367,6 +388,7 @@ def _usage() -> str:
     lines += [
         "  mcp [--rebuild]",
         "  present <brief> [--out DIR] [--dry-run] [--no-images] [--yes]",
+        "  voice  (own process on :8200; needs the voice extra)",
         "  api [--host H] [--port N] [--workers N] [--reload] [--insecure] [--check]",
         "",
         "Run a verb with --help for its options.",
@@ -386,6 +408,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return _run_api(rest)
     if group == "present":
         return _run_present(rest)
+    if group == "voice":
+        return _run_voice(rest)
     verbs = GROUPS.get(group)
     if verbs is None:
         print(f"librarian: unknown command {group!r}\n\n{_usage()}", file=sys.stderr)

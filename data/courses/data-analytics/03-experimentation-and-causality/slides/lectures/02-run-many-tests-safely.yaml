@@ -1,0 +1,1120 @@
+# imported_hash: d9580a5e47757865
+# Lecture on step 2, Run many tests safely: notes/03-experimentation-at-scale.md.
+# make slides PILLAR=data-analytics/03-experimentation-and-causality LECTURE=02-run-many-tests-safely STRICT=1 PREVIEW=1
+# Levels: a slide with no level is the intro, `core` is the core lesson, `deep` is the optional extension (code and maths).
+deck:
+  title: Run Many Tests Safely
+  subtitle: Sensitivity, early looks, trust checks and the portfolio
+  tagline: "Experimentation at scale"
+  reference: "Notes: data-analytics/03-experimentation-and-causality, note 3"
+  output: 02-run-many-tests-safely.pptx
+  notes: >-
+    This is the third lecture of the experimentation and causality series. It covers step 2. By the end you should be able
+    to cut a test's variance with a pre-period covariate, look at results early without inflating false positives, run the
+    trust checks that catch a broken test, choose a design when users affect each other, ramp and layer many tests, and
+    explain why the sum of reported lifts overstates growth.
+
+lecture:
+  covers:
+    - data-analytics/03-experimentation-and-causality/notes/03-experimentation-at-scale.md
+  requires: [data-analytics/03-experimentation-and-causality/notes/02-metrics-and-kpi-design.md]
+  next: [data-analytics/03-experimentation-and-causality/notes/04-correlation-and-causation.md]
+  related:
+    - data-analytics/04-bayesian-analysis/notes/03b-bandits-and-thompson-sampling.md
+    - data-analytics/04-bayesian-analysis/notes/03-priors-and-bandits.md
+    - data-analytics/04-bayesian-analysis/notes/07-multilevel-models-and-partial-pooling.md
+    - data-analytics/02-probability-and-statistics/notes/05-hypothesis-testing.md
+    - generative-ai/05-RL/notes/01c-bandit-algorithms.md
+    - generative-ai/08-eval/README.md
+
+parts:
+  - title: Sensitive and safe to read
+    divider: false
+    summary: CUPED · Looking early
+    notes: We start with three weekly messages from Larkspur, then make each test more sensitive and make early looks safe.
+    slides:
+      - layout: statement
+        beat: problem
+        title: Fifty experiments at once, and the same three messages every week
+        recall: Why is one well-run test not enough at Larkspur's size?
+        answer: "At fifty experiments the effects are too small for the noise, people look at the numbers constantly, and the assignment pipeline itself breaks. None of that is covered by a single well-run test."
+        kicker: Larkspur, week after week
+        statement: "Effects are too small for the noise, people look constantly, and the assignment pipeline itself breaks."
+        attribution: The platform's answer to each
+        takeaway: At this size the hard problems stop being about one analysis.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          Chapter 1 covered the single well-run test. Here we meet the problems that only appear when a platform runs many
+          tests, which is why each of the next sections answers one message.
+
+      - layout: cards
+        beat: problem
+        title: Three messages arrive every week
+        recall: What are the three weekly messages at Larkspur?
+        answer: "A product manager wants to check results daily. A dashboard shows a 50.4/49.6 split on two million users. A team that could detect a 10% lift is told its feature will move revenue by 1%."
+        cards:
+          - {title: Daily checks, accent: fundamentals, body: "A product manager wants to look at results **every day**"}
+          - {title: A skewed split, accent: practice, body: "**50.4/49.6** on two million users. Does it matter?"}
+          - {title: A tiny effect, accent: pitfalls, body: "Could detect **10%**, but the feature will move revenue by **1%**"}
+        takeaway: Each message needs its own tool, and the lecture answers them in turn.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          The first is peeking, the second is a sample ratio mismatch, and the third is a sensitivity problem. We take them in
+          the order a team runs into them.
+
+      - layout: flow
+        beat: fundamentals
+        title: The platform's path from assignment to decision
+        recall: What does an experiment pass through on a platform?
+        answer: "Assign with a salted hash, ramp from 0.1% up to 50%, log exposure and events, run trust checks, analyse with CUPED and sequential bounds, then decide with the OEC and guardrails."
+        steps:
+          - {label: Assign, sub: "salted hash per layer", accent: fundamentals}
+          - {label: Ramp, sub: "0.1% up to 50%", accent: fundamentals}
+          - {label: Trust checks, sub: "SRM, A/A, loss", accent: practice}
+          - {label: Analyse, sub: "CUPED, sequential bounds", accent: practice}
+          - {label: Decide, sub: "OEC, guardrails", accent: wrap}
+        bullets:
+          - "A failed trust check means stop, debug, rerun"
+        takeaway: A failure at the trust checks sends the test back to the start, not on to analysis.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          The diagram in the note also shows logging exposure and events between ramp and checks, and ends with measuring the
+          portfolio after shipping. We follow the same order.
+
+      - layout: steps
+        beat: fundamentals
+        title: The order follows how a team runs into the problems
+        recall: In what order does the lecture take on these problems?
+        answer: "Sensitivity first, then safe early looks, then trust checks, and finally interference between users, overlap between tests and winner's curse across the portfolio."
+        steps:
+          - {title: Sensitivity, text: "Make each test more sensitive so small effects are affordable"}
+          - {title: Early looks, text: "Make looking early safe, since people will look"}
+          - {title: Trust checks, text: "Catch a broken test before anyone believes it"}
+          - {title: Adding up, text: "Interference, overlap and winner's curse", n: "★", accent: pitfalls}
+        takeaway: Fix sensitivity, then looking, then trust, and only then worry about adding tests up.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          The last group is what makes individual tests add up to less than they promise.
+
+      - layout: statement
+        beat: fundamentals
+        section: "Variance reduction: CUPED"
+        title: Remove the noise that has nothing to do with the treatment
+        recall: What is the cheapest way to get more power?
+        answer: "Remove variation unrelated to the treatment. Most variation in a user's activity comes from the kind of user they already were, and last month's activity predicts that."
+        kicker: Deng, Xu, Kohavi and Walker, WSDM 2013
+        statement: "Last month's activity predicts this month's, and it cannot be affected by the treatment."
+        attribution: CUPED, from Microsoft's Bing team
+        takeaway: A pre-experiment covariate is free noise removal, because assignment cannot have changed it.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          CUPED stands for Controlled-experiment Using Pre-Experiment Data. The abstract reports about a 50% variance reduction
+          on real Bing metrics. That figure is the paper's own.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: "Variance reduction: CUPED"
+        title: Forty thousand users with a stable taste and a true effect of 0.12
+        recall: How strongly does last month predict this month in the simulation?
+        answer: "corr(pre, post) = 0.702, because both come from the same stable taste."
+        lead: "The pre-period and the outcome share a stable taste."
+        lang: python
+        code: |-
+          rng = np.random.default_rng(303)
+          n = 40_000
+          taste = rng.gamma(0.6, 1 / 0.6, n)
+          pre = rng.poisson(3.0 * taste) + rng.normal(0, 1, n)
+          arm = (rng.random(n) < 0.5).astype(int)
+          post = 3.0 * taste + rng.normal(0, 3.0, n) + 0.12 * arm
+          print(f"corr(pre, post) = {np.corrcoef(pre, post)[0, 1]:.3f}")
+          # corr(pre, post) = 0.702
+        takeaway: A correlation of 0.7 between pre and post is what makes the adjustment pay.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          The treatment adds 0.12 to the outcome. Everything else about a user comes from their taste, which also drives the
+          pre-period activity.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: "Variance reduction: CUPED"
+        title: Subtract the part of the outcome the pre-period predicts
+        recall: What does CUPED replace each outcome with?
+        answer: "Y minus theta times (X minus the mean of X), where theta = cov(X, Y) / var(X) is the regression slope. It is the linear control variate from Monte Carlo."
+        lead: "Y - theta (X - mean X), with theta the slope of Y on X"
+        lang: python
+        code: |-
+          theta = np.cov(pre, post)[0, 1] / pre.var(ddof=1)
+          adj = post - theta * (pre - pre.mean())
+          # effect(y) returns the difference in means and its SE
+          for name, y in [("raw", post), ("CUPED", adj)]:
+              d, se = effect(y)
+              print(f"{name:<6} effect {d:.3f}  SE {se:.4f}"
+                    f"  z {d / se:5.2f}  var {y.var():.2f}")
+          # raw    effect 0.101  SE 0.0488  z  2.08  var 23.83
+          # CUPED  effect 0.123  SE 0.0348  z  3.53  var 12.10
+        takeaway: "Y minus theta times (X minus mean X): the outcome minus the part the pre-period predicts."
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          This is the linear control variate from Monte Carlo. The product is unchanged and no new traffic is needed.
+
+      - layout: cards
+        beat: fundamentals
+        level: core
+        section: "Variance reduction: CUPED"
+        title: Variance falls by the squared correlation
+        recall: By how much does CUPED cut variance, and what does that save?
+        answer: "Variance falls by rho squared. At rho = 0.7 the ratio is 0.508, which equals 1 minus rho squared, so you need 51% of the users for the same power."
+        cards:
+          - {title: Variance ratio, accent: fundamentals, body: "**0.508**, equal to 1 minus rho squared"}
+          - {title: Users needed, accent: practice, body: "**51%** of the original, for the same power"}
+        takeaway: At rho = 0.7 the variance halves, which halves the users you need.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          It is free: no new traffic and no change to the product.
+
+      - layout: compare
+        beat: fundamentals
+        level: core
+        section: "Variance reduction: CUPED"
+        title: Two consequences of the formula
+        recall: Why does CUPED not bias the estimate, and when does it help little?
+        answer: "Randomisation makes the pre-period mean the same across arms in expectation, so the adjustment cannot shift the difference. But it only works with a good predictor: at rho = 0.3 variance falls by only 9%."
+        emphasis: left
+        left:
+          title: The mean stays put
+          bullets: ["Arms share the same pre-period mean in expectation", "One run moves from **0.101** to **0.123**", "It corrects chance imbalance"]
+        right:
+          title: A good predictor is needed
+          bullets: ["At rho = 0.3 variance falls by only **9%**", "A new-user product has no pre-period", "A rare outcome is hard to predict"]
+        takeaway: CUPED never shifts the estimate on average, and its gain is capped by the correlation.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          A single run's estimate moves because it corrects the imbalance in pre-period activity that chance created between
+          arms.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: "Variance reduction: CUPED"
+        title: The same estimate comes from a regression with the pre value
+        recall: What would an analyst have called CUPED before?
+        answer: "ANCOVA. A regression of the outcome on the arm and the centred pre-period value gives effect 0.123 and SE 0.0348, the same as CUPED."
+        lang: python
+        code: |-
+          d = pd.DataFrame({"y": post, "arm": arm,
+                            "pre_c": pre - pre.mean()})
+          fit = smf.ols("y ~ arm + pre_c", data=d).fit()
+          print(f"regression: effect {fit.params['arm']:.3f},"
+                f" SE {fit.bse['arm']:.4f}")
+          # regression: effect 0.123, SE 0.0348
+        bullets:
+          - "Centre the covariate so the arm coefficient is the effect"
+        takeaway: CUPED is regression adjustment under another name, so a regression library already does it.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          The numbers match the CUPED run to the digits shown, which is the point.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: "Variance reduction: CUPED"
+        title: Is it really unbiased? Repeat the simulation 1,500 times
+        recall: What do 1,500 repeated simulations show about CUPED's bias and spread?
+        answer: "Both means are close to the true 0.12 (raw 0.116, CUPED 0.123). The spread falls from 0.216 to 0.153, about 30%, the square root of the halved variance."
+        lang: python
+        code: |-
+          for _ in range(1_500):
+              m = 2_000
+              t = rng.gamma(0.6, 1 / 0.6, m)
+              x = rng.poisson(3.0 * t) + rng.normal(0, 1, m)
+              w = (rng.random(m) < 0.5).astype(int)
+              y = 3.0 * t + rng.normal(0, 3.0, m) + 0.12 * w
+              th = np.cov(x, y)[0, 1] / x.var(ddof=1)
+              z = y - th * (x - x.mean())
+              # collect raw and adjusted differences in means
+          # raw   mean 0.116  sd 0.216
+          # CUPED mean 0.123  sd 0.153  (true effect 0.120)
+        takeaway: The averages agree and the spread shrinks, so the gain is pure precision.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          The loop in the note also stores each run's two estimates in lists. We abbreviate that here.
+
+      - layout: bullets
+        beat: practice
+        level: core
+        section: "Variance reduction: CUPED"
+        title: Users with no history keep their raw value
+        recall: What do you do with users who have no pre-period?
+        answer: "Leave their raw value, or adjust them within their own group. With 70% of users having history the SE is 0.0393, between raw 0.0488 and full history 0.0348. You lose some of the gain and none of the validity."
+        bullets:
+          - "Adjust only the group with history, and leave the rest raw"
+          - "SE is **0.0393** with 30% of users missing history"
+          - "That sits between raw **0.0488** and full **0.0348**"
+          - "The gain shrinks and the validity stays"
+        takeaway: Missing history costs power, never correctness.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          The simulation gave a separate adjustment to the group with history and no adjustment to the rest.
+
+      - layout: cards
+        beat: practice
+        level: core
+        section: "Variance reduction: CUPED"
+        title: Three rules for a covariate
+        recall: What are the three rules for choosing a CUPED covariate?
+        answer: "Measure it strictly before exposure, prefer the same metric from the pre-period, and check that the arms' pre-period means agree, which is also a free A/A test."
+        cards:
+          - {title: Before exposure, accent: pitfalls, body: "Anything the treatment can touch brings **bias** back"}
+          - {title: Same metric, accent: fundamentals, body: "The pre-period version of the metric is usually the **strongest predictor**"}
+          - {title: Equal pre means, accent: practice, body: "A gap is evidence of an **assignment problem**, a free A/A test"}
+        takeaway: Pick a pre-exposure covariate and use the pre-period gap as a free check.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          The third rule links forward to the trust checks section.
+
+      - layout: statement
+        beat: problem
+        section: "Looking early, safely"
+        title: Twenty looks gives about 25% false positives
+        recall: How much does peeking inflate false positives?
+        answer: "Checking twenty times and stopping at the first p below 0.05 gives a false positive rate around 25%. Even one early look bends it: a look at month 20 of a 30-month experiment gives type I error 0.074."
+        kicker: Computer Age Statistical Inference, ch. 3
+        statement: "Check twenty times and stop at the first p below 0.05, and about one test in four is a false positive."
+        attribution: One look at month 20 of 30 already gives 0.074
+        takeaway: Looking is not free, because every look is another chance to be fooled.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          Chapter 1 showed the twenty-look figure. The book's example is a one-sided 5% test at the end of a 30-month
+          experiment that also stops early if month 20 looks significant.
+
+      - layout: table
+        beat: fundamentals
+        level: core
+        section: "Looking early, safely"
+        title: More looks, more false positives, under the null
+        recall: What is the false positive rate after 1, 5, 20 and 1,000 looks?
+        answer: "About 0.048, 0.141, 0.245 and 0.524, so with a thousand looks you are wrong more than half the time."
+        header: [Looks, "False positive rate"]
+        widths: [3.0, 4.0]
+        rows:
+          - ["1", "0.048"]
+          - ["2", "0.085"]
+          - ["5", "0.141"]
+          - ["10", "0.196"]
+          - ["20", "0.245"]
+          - ["100", "0.390"]
+          - ["1000", "0.524"]
+        highlight: [4]
+        takeaway: The rate climbs fast at first and keeps climbing, so a few looks already matter.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          The note also lists 50 looks at 0.315. The simulation runs 4,000 repetitions of a null experiment with a z test at
+          each look.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: "Looking early, safely"
+        title: The z statistic at each look is a scaled random walk
+        recall: How is the false positive rate under k looks simulated?
+        answer: "Draw normal increments, cumulate them, scale by the square root of the sample size at each look, and count runs where any look crosses the threshold."
+        lang: python
+        code: |-
+          def fpr_with_looks(k, reps=4_000, n_max=10_000, seed=0,
+                             boundary=None):
+              rng = np.random.default_rng(seed)
+              looks = np.linspace(n_max / k, n_max, k)
+              incr = (rng.normal(0, 1, (reps, k))
+                      * np.sqrt(np.diff(np.r_[0, looks])))
+              z = incr.cumsum(axis=1) / np.sqrt(looks)
+              c = 1.96 if boundary is None else boundary(looks / n_max)
+              return np.mean((np.abs(z) > c).any(axis=1))
+        takeaway: Simulate many null experiments, take the z statistic at each look as a scaled random walk, and count how often any look crosses 1.96.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          The boundary argument takes the fraction of the sample seen so far and returns the threshold at each look.
+
+      - layout: bullets
+        beat: pitfalls
+        level: core
+        section: "Looking early, safely"
+        title: Forbidding peeking does not work as a policy
+        recall: Why not just ban early looks?
+        answer: "Dashboards exist and a bad launch must be stoppable. Dmitriev and colleagues describe continuous monitoring as a live problem in Bing and Xbox experiments. The honest alternatives pay for looks with a stricter threshold."
+        bullets:
+          - "Dashboards exist, and people will look"
+          - "A bad launch **must** be stoppable"
+          - "Continuous monitoring is a live problem in Bing and Xbox (Dmitriev et al.)"
+          - "Two honest alternatives, and both pay with a **stricter threshold**"
+        takeaway: Plan for looks, because a ban will be ignored.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          The two alternatives are group-sequential boundaries and always-valid p-values.
+
+      - layout: compare
+        beat: fundamentals
+        level: core
+        section: "Looking early, safely"
+        title: Pocock against O'Brien and Fleming
+        recall: How do Pocock and O'Brien-Fleming boundaries differ?
+        answer: "Pocock uses one constant threshold at every look. O'Brien and Fleming make early looks very demanding and later ones close to the fixed-horizon value."
+        emphasis: right
+        left:
+          title: Pocock, 1977
+          bullets: ["One constant threshold", "Stops moderate effects earlier", "Pays with a high final threshold"]
+        right:
+          title: O'Brien-Fleming, 1979
+          bullets: ["Very demanding early", "Close to fixed-horizon at the end", "Stops early only on enormous effects"]
+        takeaway: Group-sequential designs fix the number of looks and a threshold for each in advance.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          Pocock appeared in Biometrika in 1977 and O'Brien and Fleming in Biometrics in 1979.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: "Looking early, safely"
+        title: Boundaries at five looks, both calibrated to 5% overall
+        recall: What are the z boundaries at five looks for each design?
+        answer: "Pocock is 2.42 at every look with a rate of 0.049. O'Brien-Fleming is 4.53, 3.2, 2.61, 2.26 and 2.03, with a rate of 0.052."
+        header: [Design, "Look 1", "2", "3", "4", "5", "Rate"]
+        widths: [2.6, 1.2, 1.0, 1.0, 1.0, 1.0, 1.2]
+        rows:
+          - [Pocock, "2.42", "2.42", "2.42", "2.42", "2.42", "0.049"]
+          - ["O'Brien-Fleming", "4.53", "3.2", "2.61", "2.26", "2.03", "0.052"]
+        highlight: [1]
+        takeaway: O'Brien-Fleming asks for 4.53 at first and 2.03 at the end, against Pocock's flat 2.42.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          The calibration bisects a constant until the simulated false positive rate is 5%. Published designs use numerical
+          tables or alpha-spending functions, which also allow the looks to land on unplanned dates.
+
+      - layout: bullets
+        beat: practice
+        level: core
+        section: "Looking early, safely"
+        title: O'Brien-Fleming is the usual choice
+        recall: Why is O'Brien-Fleming usually preferred?
+        answer: "It stops early only on enormous effects, which is exactly what you want to catch, and its final threshold of 2.03 costs little compared with 1.96. Pocock pays with a final threshold of 2.42."
+        bullets:
+          - "Stops early only on **enormous** effects, the ones worth catching"
+          - "The final threshold is **2.03**, close to 1.96"
+          - "Pocock stops moderate effects sooner and ends at **2.42**"
+        takeaway: Spend little of your error budget early, so the final look keeps its power.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          Alpha-spending functions generalise this and let you look on unplanned dates.
+
+      - layout: steps
+        beat: fundamentals
+        level: deep
+        section: "Looking early, safely"
+        title: An always-valid p-value, step by step
+        recall: Why is the always-valid p-value valid at any stopping time?
+        answer: "Under the null the likelihood ratio is a martingale with mean 1, so the chance it ever reaches 1/alpha is at most alpha. Hence p = min(1/Lambda) stays valid whenever you stop."
+        steps:
+          - {title: Two hypotheses, text: "Some effect drawn from a normal with variance tau squared, against no effect"}
+          - {title: The ratio, text: "Lambda compares the data's likelihood under the two"}
+          - {title: A martingale, text: "Under the null Lambda has mean 1, so it ever reaches 1/alpha with probability at most alpha"}
+          - {title: The p-value, text: "p is the running minimum of 1/Lambda, valid at any stopping time", n: "★", accent: wrap}
+        takeaway: A martingale bound is what lets you look at any moment, as often as you like.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          This is the mixture sequential probability ratio test of Johari, Pekelis and Walsh, deployed on a commercial testing
+          platform (self-reported). A fixed-horizon test cannot make this guarantee.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: "Looking early, safely"
+        title: A check after every pair of users stays below 5%
+        recall: What did the always-valid test do in simulation?
+        answer: "Checking after every pair of users, the false positive rate was 0.041. A true effect of 0.05 sd was found by 20,000 pairs in 98.2% of runs."
+        lang: python
+        code: |-
+          def msprt_p_path(diffs, sigma2, tau2):
+              m = np.arange(1, len(diffs) + 1)
+              mean = np.cumsum(diffs) / m
+              v = 2 * sigma2
+              lam = (np.sqrt(v / (v + m * tau2))
+                     * np.exp(m**2 * tau2 * mean**2
+                              / (2 * v * (v + m * tau2))))
+              return np.minimum.accumulate(np.minimum(1, 1 / lam))
+          # H0 true: FPR 0.041, checked after every pair
+          # effect 0.05 sd: found by 20,000 pairs in 98.2% of runs
+        takeaway: The guarantee holds even with a check after every single pair.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          The note runs 1,000 repetitions of each case with n_max of 20,000 pairs and tau squared of 0.01.
+
+      - layout: cards
+        beat: pitfalls
+        level: core
+        section: "Looking early, safely"
+        title: The price of always-valid tests shows in the tail
+        recall: What does an always-valid test cost compared with a fixed-horizon test?
+        answer: "Half the runs stop sooner than the fixed test's 6,272 pairs (median 5,897), but a tenth take more than twice that (90th percentile 12,932). The mixing variance tau squared sets where the method is sharpest."
+        cards:
+          - {title: Median stop, accent: practice, body: "**5,897** pairs, under the fixed test's **6,272**"}
+          - {title: Ninetieth percentile, accent: pitfalls, body: "**12,932** pairs, more than twice the fixed test"}
+          - {title: Choose tau squared, accent: fundamentals, body: "From the effect sizes your **past experiments** really show"}
+        takeaway: You buy the freedom to look with a heavy tail on how long some tests run.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          The fixed-horizon figure is the sample size for 80% power on the same effect.
+
+      - layout: compare
+        beat: practice
+        level: core
+        section: "Looking early, safely"
+        title: Which to use depends on who looks
+        recall: When do you choose group-sequential, and when always-valid?
+        answer: "Group-sequential is simple and efficient for a test planned for three weeks and reviewed weekly. Always-valid is the only safe option on a self-serve platform where people look whenever they like. Either way, keep whole weeks."
+        emphasis: left
+        left:
+          title: Group-sequential
+          bullets: ["Planned for **three weeks**, reviewed weekly", "Simple and efficient", "Looks are fixed in advance"]
+        right:
+          title: Always-valid
+          bullets: ["Self-serve platform, anyone can look", "The only safe option there", "Pays in the tail"]
+        takeaway: Match the method to how people will really look at the numbers.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          Kohavi and colleagues advise at least one to two whole weeks, because weekday and weekend users differ, and a
+          sequential stop on a Tuesday does not change that.
+
+      - layout: bullets
+        beat: fundamentals
+        level: deep
+        section: "Looking early, safely"
+        title: To pick the best variant, explore for the answer
+        recall: What is pure exploration, and what are its two stopping framings?
+        answer: "It asks which of k variants is best, where only the final recommendation matters. With a fixed confidence you stop when an arm is optimal with probability at least 1 minus delta. With a fixed budget of n samples you minimise the chance the recommendation is wrong."
+        bullets:
+          - "A pre-launch screen of ten layouts: only the **final pick** matters"
+          - "**Fixed confidence:** stop when an arm is optimal with probability at least 1 − δ"
+          - "**Fixed budget:** n samples, minimise the chance of a wrong pick"
+          - "Two Gaussian arms need at least about 8 / gap² · log(1/(4δ)) samples"
+        takeaway: Peeking asks whether to stop, and pure exploration asks which arm to name.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          This is the bandit literature's pure exploration, from Bandit Algorithms chapter 33. The bound is for unit-variance
+          Gaussian arms.
+
+      - layout: compare
+        beat: pitfalls
+        level: deep
+        section: "Looking early, safely"
+        title: A regret-tuned bandit is a poor way to pick a winner
+        recall: Why not use UCB or Thompson sampling to pick a winner?
+        answer: "They are tuned for cumulative regret, so they play losers so rarely that the chance of naming the wrong arm decays only polynomially in n, and their arm means are biased low. Use a bandit to earn during the test and pure exploration to learn from it."
+        emphasis: right
+        left:
+          title: UCB and Thompson
+          bullets: ["Tuned for cumulative regret", "Error decays only polynomially", "Arm means biased low", "Good for earning during the test"]
+        right:
+          title: Pure exploration
+          bullets: ["Sequential halving: equal samples, drop the bottom half, repeat", "Beats equal allocation when one arm is hard to separate", "Loses a little when gaps are similar"]
+        takeaway: Use a bandit to earn and a pure-exploration design to learn.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          Sequential halving gives every arm equal samples, drops the bottom half and repeats. The chapter also covers uniform
+          allocation and track-and-stop.
+
+  - title: Trust the test
+    divider: false
+    summary: SRM · A/A · Novelty · Latency · Interference
+    notes: Now the checks that catch a broken test before anyone believes it, and the design for users who affect each other.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Trust checks
+        title: A split of 50.4/49.6 on two million users
+        recall: Is a 50.4/49.6 split on two million users a problem?
+        answer: "Yes. Chapter 1 computed the p-value as about 10 to the minus 29. At that size the check can see that something is removing users from one arm, and whatever does that is probably not random with respect to the outcome."
+        kicker: Sample ratio mismatch
+        statement: "The percentage looks harmless. With two million users the check can see that something is removing users from one arm."
+        attribution: p is about 10⁻²⁹
+        takeaway: A harmless-looking split can be a decisive failure at scale.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          Whatever drops users from one arm is probably not random with respect to the outcome, which is why it matters.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: Trust checks
+        title: A logging bug creates a win from nothing
+        recall: What happens when a logging bug loses low-value users from one arm?
+        answer: "With no true effect, a bug that loses 4% of B's users, all low value, gives A 30,113, B 28,722 and an SRM p of 9.8e-09, plus a significant false effect of +0.036 with p = 7.9e-03."
+        lang: python
+        code: |-
+          # no treatment effect; B's logging loses low-value users
+          dropped = (arm & (value < np.quantile(value, 0.25))
+                     & (rng.random(n) < 0.16))
+          kept = ~dropped
+          # users A 30,113, B 28,722, SRM p = 9.8e-09
+          # effect +0.036 on a mean of 1.00, p = 7.9e-03,
+          # true effect 0
+        takeaway: A team that looked only at the outcome would ship a change that does nothing.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          The code in the note first draws 60,000 users, an arm, a value per user and an outcome with no treatment effect.
+
+      - layout: bullets
+        beat: pitfalls
+        level: core
+        section: Trust checks
+        title: Treat a mismatch as a stopped test, not a caveat
+        recall: Why can you not just reweight after an SRM?
+        answer: "You do not know the bias, and you cannot correct it by reweighting without knowing who was lost."
+        bullets:
+          - "An SRM is a **stopped test**, not a footnote"
+          - "You do not know the **bias**"
+          - "Reweighting needs to know **who was lost**"
+        takeaway: Stop, find the cause, and rerun.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          The pitfall list names this one directly: calling an SRM a small caveat.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: Trust checks
+        title: Slice the counts until the problem localises
+        recall: Where is the SRM in the browser table?
+        answer: "Only Safari is short, with 15,020 against 13,800 and a p-value of 0.0000. Chrome (p 0.5158) and Firefox (p 0.8415) are fine."
+        lang: python
+        code: |-
+          wide = log.pivot(index="browser", columns="arm",
+                           values="users")
+          wide["srm_p"] = [stats.chisquare(r).pvalue
+                           for r in wide[["A", "B"]].to_numpy()]
+          # arm          A      B   srm_p
+          # chrome   20080  19950  0.5158
+          # firefox   4990   5010  0.8415
+          # safari   15020  13800  0.0000
+        takeaway: Run the sample ratio test per slice, and the broken slice names itself.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          The likely causes are a redirect that drops a cookie on that browser, a crash, or a load-time difference that loses
+          people before their exposure is logged.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: Trust checks
+        title: Search the pipeline in order
+        recall: Where do you look for an SRM at each stage of the pipeline?
+        answer: "Assignment: counts by experiment overlap. Execution: counts by browser and platform. Logging: raw against processed event counts. Analysis: counts by day and before and after each filter."
+        header: [Stage, What goes wrong, Where to look]
+        widths: [1.8, 4.0, 3.6]
+        rows:
+          - [Assignment, "hash correlated with another test, or a salt reused", counts by experiment overlap]
+          - [Execution, "redirect or new code loses users before logging", counts by browser and platform]
+          - [Logging, "bot filter or loss differs by arm", raw against processed event counts]
+          - [Analysis, "filter that depends on treatment, or a wrong start date", "counts by day, and before and after each filter"]
+        takeaway: Follow the pipeline from assignment to analysis, and check the counts at each stage.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          Fabijan and colleagues give a taxonomy of causes and a diagnosis method drawn from production platforms (KDD 2019).
+          A platform usually alerts at a p-value far below 0.05, to avoid constant false alarms.
+
+      - layout: cards
+        beat: pitfalls
+        level: core
+        section: Trust checks
+        title: The same check applies to the users behind a metric
+        recall: What was the MSN Page Load Time example?
+        answer: "Opening links in a new tab raised Page Load Time 8.32%, but the treatment arm had 7.8% fewer homepage loads. The arms averaged different page loads, so the metric had its own sample ratio mismatch."
+        cards:
+          - {title: Page Load Time, accent: pitfalls, body: "Up **8.32%** after opening links in a new tab"}
+          - {title: Homepage loads, accent: fundamentals, body: "**7.8%** fewer in treatment, so the denominators differ"}
+          - {title: The fix, accent: practice, body: "Show numerator and denominator counts beside every ratio, and run the SRM test per segment"}
+        takeaway: Report the counts behind every ratio metric.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          This is from a single Microsoft experiment, Dmitriev and colleagues, KDD 2017, section 5.1.
+
+      - layout: compare
+        beat: pitfalls
+        level: core
+        section: Trust checks
+        title: A result that looks too bad can be fine, and "no change" can mean no power
+        recall: What do the module and page-views examples teach?
+        answer: "Moving a module higher cut its per-user click-through 40%, yet impressions rose 200%, clicks 74% and revenue rose. A 0.5% rise in page views had a CI of about plus or minus 5%, so only 7.8% or more was detectable at 80% power."
+        emphasis: left
+        left:
+          title: Looks too bad
+          bullets: ["Per-user CTR **−40%**", "Impressions **+200%**, clicks **+74%**", "Page CTR flat, revenue up"]
+        right:
+          title: Looks like nothing
+          bullets: ["Page views **+0.5%**", "CI about **±5%**", "Only **7.8%** or more detectable at 80% power"]
+        takeaway: Read the whole metric family, and check the power before saying nothing changed.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          Both are from Dmitriev and colleagues, sections 5.2 and 5.4.
+
+      - layout: bullets
+        beat: practice
+        level: core
+        section: Trust checks
+        title: Run A/A tests continuously
+        recall: What should a healthy A/A test show?
+        answer: "About 5% of results significant at 0.05, and p-values that are uniform. A mismatch points to a broken variance estimate, usually because the analysis unit does not match the randomisation unit."
+        bullets:
+          - "Run the whole pipeline with **no change**, alongside live tests"
+          - "About **5%** significant at 0.05, and p-values **uniform**"
+          - "A mismatch means a broken variance estimate, often a unit mismatch"
+        takeaway: An A/A test is the only direct check of the pipeline's false positive rate.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          The note calls the unit mismatch the pageview bug in chapter 1.
+
+      - layout: bullets
+        beat: pitfalls
+        level: deep
+        section: Trust checks
+        title: An assignment hash deserves its own test
+        recall: Which hashes failed Kohavi and colleagues' correlation test?
+        answer: "They ran five simulated experiments over a million sequential user IDs. Only MD5 gave no correlation between experiments, SHA256 came close, and the non-cryptographic hashes failed."
+        bullets:
+          - "Five simulated experiments over a million sequential IDs"
+          - "Only **MD5** gave no correlations, **SHA256** came close"
+          - "The non-cryptographic hashes **failed**"
+          - "An A/A's variance also sets the sample size, and some metrics lose power as a test runs longer"
+        takeaway: Test the hash that assigns users, and do not trust it to be random.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          This is section 5.1.2 of Kohavi and colleagues. Dmitriev and colleagues make the related point that many count
+          metrics' confidence intervals do not shrink with time.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: Trust checks
+        title: The first week's lift is not the steady state
+        recall: How much would stopping at week 1 overstate the lasting effect?
+        answer: "Weekly lift was 0.83, 0.33, 0.27 and 0.28 against a steady-state truth of 0.20. Stopping at week 1 claims about four times the lasting effect."
+        lang: python
+        code: |-
+          days = np.arange(1, 29)
+          true_daily = 0.002 + 0.012 * np.exp(-days / 5)
+          ctrl = rng.binomial(6_000, 0.05, 28) / 6_000
+          trt = rng.binomial(6_000, 0.05 + true_daily) / 6_000
+          lift = pd.Series(trt - ctrl, index=days)
+          weekly = lift.groupby((days - 1) // 7 + 1).mean()
+          # lift in points by week: {1: 0.83, 2: 0.33,
+          #                          3: 0.27, 4: 0.28}
+          # stop at week 1: 0.83; steady state truth: 0.20
+        takeaway: Novelty fades, so a first-week win can be four times the truth.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          The simulated effect decays exponentially with a floor of 0.002, which is the 0.20 points of steady state.
+
+      - layout: steps
+        beat: practice
+        level: core
+        section: Trust checks
+        title: How to spot novelty and primacy
+        recall: How do you check whether a lift is novelty or primacy?
+        answer: "Plot lift by days since first exposure and compute it separately for new users, who cannot have novelty or primacy about a change they never saw before. For long-term effects some teams hold out a group for months."
+        steps:
+          - {title: Plot by exposure day, text: "Lift by days since first exposure, not by calendar day"}
+          - {title: New users, text: "They cannot be surprised by a change they never saw before"}
+          - {title: Edge coach mark, text: "Page clicks +0.96% and top-site clicks +2.07%, gone after the first visit"}
+          - {title: Long holdouts, text: "For effects that matter long-term, hold a group out for months", n: "★", accent: wrap}
+        takeaway: Read lift by days since exposure before you believe a first-week number.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          The Edge example is from Dmitriev and colleagues. The Google long-term learning paper is cited in the note, which
+          says it is not held.
+
+      - layout: steps
+        beat: practice
+        level: core
+        section: Trust checks
+        title: Measure a cost you would never ship with a slowdown test
+        recall: How do you measure what latency costs engagement?
+        answer: "Add an artificial delay in several small arms, such as +100 ms and +250 ms, randomise by user, keep arms small and short, log the delay that landed, put guardrails on errors and abandonment, and fit engagement against delay."
+        steps:
+          - {title: Delay in small arms, text: "+100 ms and +250 ms against control, so you can fit a line"}
+          - {title: Randomise by user, text: "One person's experience stays consistent"}
+          - {title: Keep it small and short, text: "You are knowingly making the product worse"}
+          - {title: Confirm and guard, text: "Log the latency users got, with guardrails on errors and abandonment"}
+          - {title: Fit the slope, text: "Report engagement per 100 ms, and read it by week", n: "★", accent: wrap}
+        takeaway: Run the experiment in the direction you can do, and state what the extrapolation assumes.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          The result is a slope near today's operating point. Using it to value a speed-up assumes the line continues in the
+          other direction, which is an assumption to state. Users also learn that a product is slow.
+
+      - layout: statement
+        beat: problem
+        section: When users affect each other
+        title: The test claims +30%, and the real gain is +19%
+        recall: What goes wrong when one user's arm affects another's outcome?
+        answer: "Randomised tests assume one user's arm does not change another's outcome (SUTVA). With a fixed stock, extra treated sales come out of what control would have bought, so the test claims +30.1% when the real gain is +19.0%."
+        kicker: SUTVA breaks in marketplaces and networks
+        statement: "The treatment takes units from control, so the A/B lift of +30% overstates a real gain of +19%."
+        attribution: A seller with a fixed stock
+        takeaway: When users share a stock, the control arm is not a clean baseline.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          Statisticians call the assumption SUTVA. Marketplaces and networks break it.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: When users affect each other
+        title: A fixed-stock market, simulated
+        recall: How does the simulation show the interference?
+        answer: "Treated buyers want to buy more often but sales cannot exceed stock. Inside one market control sells at 0.0981 and treatment at 0.1277, a +30.1% lift. Treating nobody gives 100.0 sales and everybody 119.0, a real +19.0%."
+        lang: python
+        code: |-
+          # 1,000 buyers, stock 120, base 0.1, treated want +30%
+          tr = rng.random(buyers) < treated_share
+          want = rng.random(buyers) < np.where(
+              tr, base * (1 + lift), base)
+          wanting = np.nonzero(want)[0]
+          rng.shuffle(wanting)
+          sold = np.zeros(buyers, bool)
+          sold[wanting[:stock]] = True
+          # A/B inside one market: lift +30.1%
+          # nobody 100.0 sales, everybody 119.0: real +19.0%
+        takeaway: Compare against what happens when everyone is treated, not against a control in the same market.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          The note's function loops 3,000 times and averages. Kohavi and colleagues raise eBay auctions as the same problem:
+          a first-bidder discount to some users affects every item, so their fix is to randomise the items, not the users.
+
+      - layout: table
+        beat: fundamentals
+        level: core
+        section: When users affect each other
+        title: Choose a design for the interference you expect
+        recall: What are the four designs for interference, and what does each cost?
+        answer: "Cluster by city or seller (fewer units, more variance), switchback by time window (carryover), two-sided buyers and sellers (a lot of traffic), and a holdout (delay, users left behind)."
+        header: [Design, How it randomises, Good for, Cost]
+        widths: [1.6, 3.0, 2.6, 2.6]
+        rows:
+          - [Cluster, "city, seller or network community", spatial and social spillover, "fewer units, more variance"]
+          - [Switchback, market by time window, ride-sharing and delivery, carryover between windows]
+          - [Two-sided, buyers and sellers crossed, marketplaces, a lot of traffic]
+          - [Holdout, small group kept away from the launch, total long-run effect, "delay, some users left behind"]
+        takeaway: Randomise at a higher level, so spillover happens within a unit.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          The holdout is the one design aimed at the total long-run effect.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: When users affect each other
+        title: Even a small correlation is expensive for large clusters
+        recall: What is the design effect of cluster randomisation?
+        answer: "1 plus (m minus 1) times rho. For m = 100 and rho = 0.01 variance is times 2.0, for m = 1000 and rho = 0.01 it is times 11.0, and for m = 1000 and rho = 0.001 times 2.0."
+        lang: python
+        code: |-
+          for m_, icc in [(100, 0.01), (1000, 0.01), (1000, 0.001)]:
+              print(f"cluster size {m_:>4}, "
+                    f"intra-cluster corr {icc}: "
+                    f"variance x {1 + (m_ - 1) * icc:.1f}")
+          # cluster size  100, intra-cluster corr 0.01: variance x 2.0
+          # cluster size 1000, intra-cluster corr 0.01: variance x 11.0
+          # cluster size 1000, intra-cluster corr 0.001: variance x 2.0
+        takeaway: The design effect is 1 + (m − 1)ρ, so a large cluster multiplies variance.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          Here m is the cluster size and rho the intra-cluster correlation.
+
+      - layout: bullets
+        beat: pitfalls
+        level: core
+        section: When users affect each other
+        title: A design effect of 11 turns a million users into 91,000
+        recall: How do you analyse a cluster-randomised test?
+        answer: "At the cluster level or with cluster-robust errors, for the same reason chapter 1 refused to analyse pageviews when it randomised users. Multilevel models estimate rho and read each segment's effect with partial pooling."
+        bullets:
+          - "With an effect of **11**, a million users carry the information of about **91,000**"
+          - "Analyse at the **cluster level** or with cluster-robust errors"
+          - "Multilevel models estimate **ρ** as a parameter, and read each market's effect with partial pooling"
+        takeaway: Analyse at the level you randomised, or the intervals will be far too narrow.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          The note links the Bayesian pillar's multilevel note for the intraclass correlation and for reading many segments.
+
+  - title: Run the portfolio
+    divider: false
+    summary: Layers · Ramps · Winner's curse · LLM features
+    notes: Finally, how tests overlap, how to ramp them, why the portfolio overstates what it delivered, and how LLM features fit.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Many tests at once
+        title: Tests must overlap, or traffic runs out
+        recall: How does a platform let many tests overlap?
+        answer: "Google's layered design lets every user be in one test per layer, with independent salted hashes between layers, and tests on the same parameters kept in the same layer so that they cannot collide."
+        kicker: Tang et al., KDD 2010
+        statement: "One test per layer per user, independent salted hashes between layers, and tests on the same parameters in the same layer."
+        attribution: Google's layered design
+        takeaway: Layers give independent splits and keep colliding tests apart.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          Without overlap a platform runs out of traffic quickly.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: Many tests at once
+        title: Salting makes the splits independent
+        recall: How do you check two salted assignments are independent?
+        answer: "Cross-tabulate the two splits. With 60,000 users the counts were 15,105, 15,025, 14,996 and 14,874 and the chi-square p was 0.867."
+        lang: python
+        code: |-
+          def assign(uid, salt):
+              h = hashlib.sha256(f"{salt}:{uid}".encode())
+              return int(h.hexdigest(), 16) % 2
+
+          a = np.array([assign(u, "checkout-v1") for u in ids])
+          b = np.array([assign(u, "search-v3") for u in ids])
+          tab = pd.crosstab(a, b)
+          # 15105 15025 / 14996 14874
+          # independent splits, chi-square p: 0.867
+        takeaway: A different salt per layer gives splits that pass an independence test.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          The note builds the hash on one line. We split it for width without changing it.
+
+      - layout: cards
+        beat: fundamentals
+        level: core
+        section: Many tests at once
+        title: Interactions are rarer than feared
+        recall: Should you queue tests to avoid interactions?
+        answer: "No. Large interactions are possible but rarer than people fear, so monitor rather than queue. An interaction's standard error is twice a main effect's, so only big ones are visible. Keep known collisions in one layer."
+        cards:
+          - {title: Monitor, accent: practice, body: "Better than **queueing** every test"}
+          - {title: Hard to see, accent: fundamentals, body: "An interaction's SE is **twice** a main effect's"}
+          - {title: One layer, accent: wrap, body: "Keep known collisions, such as two redesigns of one page, together"}
+        takeaway: Monitor for interactions, and keep known conflicts in a single layer.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          In the simulation, main effects were a 0.348 and b 0.191 and the interaction was −0.052 with p = 0.59. The
+          simulation had no real interaction to find.
+
+      - layout: flow
+        beat: practice
+        level: core
+        section: Many tests at once
+        title: Ramps handle risk, one step at a time
+        recall: What ramp do Kohavi and colleagues use?
+        answer: "0.1%, 0.5%, 2.5%, 10% and 50%. Start small and check for disasters, then expand to full power."
+        steps:
+          - {label: 0.1%, sub: "check for disasters", accent: pitfalls}
+          - {label: 0.5%, sub: "still small", accent: practice}
+          - {label: 2.5%, sub: "more power", accent: practice}
+          - {label: 10%, sub: "nearly there", accent: fundamentals}
+          - {label: 50%, sub: "full power", accent: wrap}
+        takeaway: Expand only as each step shows no disaster.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          Kohavi and colleagues use exactly these steps, then explain why it works on the next slide.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: Many tests at once
+        title: A catastrophe needs far less data than the planned effect
+        recall: Why do ramps catch a disaster so quickly?
+        answer: "Sample size falls with the square of the effect. A 20% drop needs 7,600 per arm, 3.8 days at 50/50, against 30,400 and 15.2 days for a planned +10%. At a 10% arm those become 19.0 and 76.0 days."
+        lang: python
+        code: |-
+          base, sigma = 0.05, np.sqrt(0.05 * 0.95)
+          daily = 4_000
+          for name, delta in [("catastrophe, -20%", 0.01),
+                              ("planned effect, +10%", 0.005)]:
+              need = 16 * sigma ** 2 / delta ** 2
+          # catastrophe, -20%    7,600 per arm: 3.8 days at 50/50,
+          #                      19.0 days at a 10% arm
+          # planned effect, +10% 30,400 per arm: 15.2 days at 50/50,
+          #                      76.0 days at a 10% arm
+        takeaway: The square law means a small ramp is enough to see a big bug.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          The note prints both numbers per arm and per split. We abbreviate the print statement.
+
+      - layout: bullets
+        beat: pitfalls
+        level: core
+        section: Many tests at once
+        title: A 1% split is a ramp, not a full test
+        recall: Why is a 1% split no way to run a full test?
+        answer: "A 99/1 split needs about 25 times the running time of 50/50. A bug causing a 20% drop can be seen in 1/400 of the time needed for a planned 1% change, and the platform can abort automatically past a threshold."
+        bullets:
+          - "A 20% bug is seen in **1/400** of the time for a planned 1% change"
+          - "The platform can **abort automatically** past a threshold"
+          - "A 99/1 split needs about **25 times** the running time of 50/50"
+          - "So end the ramp at **50/50**"
+        takeaway: Use a small split for safety and a 50/50 split for the answer.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          Both numbers are Kohavi and colleagues' calculations.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: Many tests at once
+        title: Winners' measured lifts overstate what they delivered
+        recall: What does a simulated portfolio of 200 experiments show?
+        answer: "19 shipped. The sum of their measured lifts was 18.6 against a true 9.2, and 37% of shipped changes had a true effect of zero."
+        lang: python
+        code: |-
+          k, se = 200, 0.35
+          true = np.where(rng.random(k) < 0.3,
+                          rng.normal(0.5, 0.4, k), 0.0)
+          obs = true + rng.normal(0, se, k)
+          ship = obs / se > 1.96
+          # experiments 200, shipped 19
+          # sum of measured lifts of what shipped  18.6
+          # sum of true lifts of what shipped      9.2
+          # share of shipped with true effect 0    37%
+        takeaway: Selecting on significance doubles the measured total, and 37% of what shipped does nothing.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          About 30% of ideas do something in the simulation. Dmitriev and colleagues make the point under underpowered
+          metrics.
+
+      - layout: bullets
+        beat: practice
+        level: core
+        section: Many tests at once
+        title: Mature platforms use four remedies
+        recall: What remedies do mature platforms use against winner's curse?
+        answer: "A long-running holdout, shrinkage, FDR control and a second certification run. In Dmitriev and colleagues' Bing example, an OEC with p = 0.029 did not reproduce on a rerun at double the traffic."
+        bullets:
+          - "A long-running **holdout**"
+          - "**Shrinkage**, where a prior pulls estimates in"
+          - "**FDR** control"
+          - "A second **certification** run: Bing's OEC with p = 0.029 did not reproduce at double the traffic"
+        takeaway: Never trust a single significant result as the final number.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          The Bayesian pillar's priors note explains how a prior does the shrinking.
+
+      - layout: cards
+        beat: fundamentals
+        level: deep
+        section: Many tests at once
+        title: Numbers behind two of the remedies
+        recall: What do Efron and Hastie's examples show for FDR and shrinkage?
+        answer: "FDR control at q = 0.1 admitted 28 of 6,033 genes where Holm's rule admitted 7. When the middle of the z histogram is wider than N(0, 1), the theoretical null flags too many, as with 216 officers against 4 under a fitted null. Tweedie shrinkage removes the winner's curse in their simulation."
+        cards:
+          - {title: FDR against Holm, accent: practice, body: "**28** of 6,033 genes admitted, against **7**"}
+          - {title: Wrong null, accent: pitfalls, body: "**216** officers against **4** under a null fitted to the central z-values"}
+          - {title: Tweedie shrinkage, accent: wrap, body: "Top-20 differences move from about one unit right of zero to **zero**"}
+        takeaway: FDR admits more than Holm, but only if the theoretical null is right.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          These are Computer Age Statistical Inference chapters 15 and 20. The simulation used 100 datasets of 1,000 cases.
+
+      - layout: compare
+        beat: fundamentals
+        level: deep
+        section: Many tests at once
+        title: A prior fitted from the portfolio corrects the winner
+        recall: Why does the empirical Bayes estimate for gene 610 differ from the raw one?
+        answer: "The winner, gene 610, has x = 5.29. A flat prior returns 5.29, the dangerous overestimate. The empirical Bayes prior fitted from all 6,033 values gives 4.11. For a platform, estimate the prior from the portfolio of past tests."
+        emphasis: right
+        left:
+          title: Flat prior
+          bullets: ["Gene 610 has x = **5.29**", "The posterior returns **5.29**", "The dangerous overestimate"]
+        right:
+          title: Empirical Bayes
+          bullets: ["Prior fitted from all 6,033 values", "Posterior gives **4.11**", "Estimate it from past tests"]
+        takeaway: Selection does not change the likelihood, so the right correction is a defensible prior.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          Selection acts on which estimate you look at and leaves the likelihood untouched. The cost the authors name is that
+          attention shifts to choosing a defensible prior. This is chapter 3 of the book, with the empirical Bayes
+          calculation in chapter 15.
+
+      - layout: bullets
+        beat: practice
+        level: core
+        section: The same machinery for LLM features
+        title: An LLM feature is the same experiment
+        recall: How does online evaluation of an LLM feature map to this lecture?
+        answer: "A prompt change is an experiment and the unit is a user or a conversation. The OEC may be task success or retention, with cost per task and latency as guardrails, and offline graders act as the sensitive proxy."
+        bullets:
+          - "A prompt change is an **experiment**, with a user or a conversation as the unit"
+          - "OEC: task success or retention, with **cost per task** and latency as guardrails"
+          - "Offline graders are the **sensitive proxy**"
+          - "The trap is trusting a proxy you have **not validated**"
+        takeaway: The platform machinery carries over unchanged, including the trap of an unvalidated proxy.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          The Eval pillar in generative-ai continues from here.
+
+      - layout: cards
+        beat: pitfalls
+        section: Pitfalls
+        title: Pitfalls in designing and reading
+        recall: Which pitfalls come from CUPED, SRM and peeking?
+        answer: "Using a post-exposure covariate in CUPED biases the estimate. Calling an SRM a small caveat hides a bias you cannot fix. Peeking with fixed-horizon p-values gives about 25% false positives at twenty looks."
+        cards:
+          - {title: Post-exposure covariate, accent: pitfalls, body: "The treatment can move it, so the estimate is **biased**"}
+          - {title: A small caveat, accent: pitfalls, body: "You cannot estimate or fix the bias without knowing who was lost"}
+          - {title: Fixed-horizon peeking, accent: pitfalls, body: "Twenty looks gives about **25%**. Use boundaries or always-valid p-values"}
+        takeaway: Each of these breaks the test before the analysis starts.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          The first three of the note's nine pitfalls.
+
+      - layout: table
+        beat: pitfalls
+        section: Pitfalls
+        title: Pitfalls in reading and adding up
+        recall: What goes wrong with the sum of lifts, the first good week and marketplace tests?
+        answer: "Adding up reported lifts overstates growth through the winner's curse. Stopping at the first good week mistakes novelty for a win. User-level randomisation in a marketplace inflates the lift through interference."
+        header: [Pitfall, Why it fails, Fix]
+        widths: [3.2, 3.4, 2.6]
+        rows:
+          - [Adding up reported lifts, winner's curse inflates the sum, "holdouts, shrinkage"]
+          - [Stopping at the first good week, novelty looks like a win, plot by days since exposure]
+          - [User-level randomisation in a marketplace, interference inflates the lift, cluster or switch back]
+        takeaway: These three overstate what you gained, so check each before reporting a lift.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          The pitfalls fix column is the note's own advice from the matching bullets.
+
+      - layout: bullets
+        beat: pitfalls
+        section: Pitfalls
+        title: Pitfalls in running the test
+        recall: What goes wrong with clusters as users, a 1% split and queued tests?
+        answer: "Analysing clusters as if they were users makes confidence intervals far too narrow. A 1% split is fine as a ramp but costs about 25 times as long as 50/50. Queuing all tests loses far more in throughput than interactions usually cost."
+        bullets:
+          - "**Clusters as users:** the confidence intervals will be far too narrow"
+          - "**A 1% split as a full test:** fine as a ramp, but about 25 times as long as 50/50"
+          - "**Queuing all tests:** you lose far more in throughput than interactions usually cost"
+        takeaway: Match the analysis to the randomisation, and spend traffic on tests, not on waiting.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          These are the last three of the note's nine pitfalls.
+
+      - layout: statement
+        beat: wrap
+        section: Pitfalls
+        title: Trust the test before you trust the number
+        recall: What is the one rule that ties this lecture together?
+        answer: "A result is only as good as the checks that ran before it: sensitivity, safe looks, the sample ratio, the A/A test, and a portfolio view that expects the winner's curse."
+        kicker: Experimentation at scale
+        statement: "Make it sensitive, look safely, check the counts, and expect the winner's curse."
+        attribution: The platform's answer to each weekly message
+        takeaway: Every number from a platform comes with the checks that make it believable.
+        source: notes/03-experimentation-at-scale.md
+        notes: >-
+          This closes the lecture. Next is correlation and causation, for when you cannot randomise at all.

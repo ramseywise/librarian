@@ -1,10 +1,11 @@
 ---
-imported_hash: b793920ae643aeb5
+imported_hash: 4e5efcb83b7cee5b
 title: 1 — Descriptive Statistics and EDA
 summary: Someone hands you an extract and asks what the average customer spends.
 order: 2
 kind: reading
 section: Notes
+tier: foundations
 source: learn-ai-engineering/data-analytics/02-probability-and-statistics/notes/01-descriptive-statistics-and-eda.md
 ---
 

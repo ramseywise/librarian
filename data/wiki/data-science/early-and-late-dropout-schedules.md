@@ -1,8 +1,8 @@
 ---
 title: "Early and Late Dropout"
-tags: [data-science, pattern]
+tags: [data-science, deep-learning, pattern]
 summary: "Liu et al. switch dropout (or stochastic depth) on only for the first epochs to help underfitting vision models, and only after the first epochs for overfitting ones; the reported gains are small against seed noise."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-liu-2023-dropout-reduces-underfitting.md
 ---

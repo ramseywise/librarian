@@ -1,8 +1,8 @@
 ---
 title: Least-Angle Regression and the Lasso Path
-tags: [data-science, concept]
+tags: [data-science, classical-ml, concept]
 summary: "Forward stepwise, least-angle regression (LAR) and the lasso are three ways to grow a sparse model one variable at a time; LAR gives the lasso path exactly (with a drop step), and pathwise coordinate descent computes the generalised lasso along a lambda grid."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-computer-age-statistical-inference-ch16-sparse-modeling-lasso.md
 ---

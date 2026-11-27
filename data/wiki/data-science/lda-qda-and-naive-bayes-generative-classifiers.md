@@ -1,8 +1,8 @@
 ---
 title: LDA, QDA and Naive Bayes Generative Classifiers
-tags: [data-science, concept]
+tags: [data-science, classical-ml, concept]
 summary: "LDA, QDA and naive Bayes model each class's predictors and apply Bayes' theorem to get a posterior; which of them, logistic regression or KNN wins depends on whether the true boundary is linear, quadratic or irregular, and on class balance."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-islp-ch04-classification.md
 ---

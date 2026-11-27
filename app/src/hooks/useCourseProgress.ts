@@ -3,6 +3,7 @@ import { errorText, type Resource } from "./resource";
 import { z } from "zod";
 import { serverProgressSchema } from "../schemas/courses";
 import { apiJson, postJson } from "../utils/api";
+import { invalidateLearning } from "./useLearning";
 
 /** Where progress lived before it moved to the server; read once, sent up, then removed. */
 export const PROGRESS_KEY = "librarian.courses.v1";
@@ -59,7 +60,12 @@ function set(next: Stored) {
 
 function mark(lesson: string, state: "opened" | "done"): Promise<unknown> {
   // A failed write keeps the change in memory for this page; the next load corrects it.
-  return postJson(markResultSchema, "/api/courses/progress", { lesson, state }).catch(() => undefined);
+  // A finished lesson is mastery evidence, so what the learning hooks show is refetched once it is stored.
+  return postJson(markResultSchema, "/api/courses/progress", { lesson, state })
+    .catch(() => undefined)
+    .finally(() => {
+      if (state === "done") invalidateLearning();
+    });
 }
 
 /** Done lessons recorded in this browser before progress moved to the server. */

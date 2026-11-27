@@ -2,6 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import type { Flashcard, FlashcardDeck } from "./types";
 import { StudyFilter } from "./StudyFilter";
 import { studyOrder, type StudyMode } from "./studyQueue";
+import { invalidateLearning } from "../../hooks/useLearning";
+import { useDictation, useSpeech } from "../../hooks/useSpeech";
+import { dictationAllowed } from "../../voice/policy";
+import { toSpeech } from "../../voice/speechText";
+import { MicButton } from "../voice/MicButton";
+import { ReadAloud } from "../voice/ReadAloud";
+import { VoiceDrawer } from "../voice/VoiceDrawer";
 import { pageTitle, useDocumentTitle } from "./useDocumentTitle";
 import "./courses.css";
 import { flashcardDeckSchema } from "../../schemas/courses";
@@ -43,6 +50,41 @@ function shuffled(n: number): number[] {
     [order[i], order[j]] = [order[j], order[i]];
   }
   return order;
+}
+
+/**
+ * Voice for one card, remounted per card so nothing carries over. It is handed the front only:
+ * the back never reaches this component, so no state of it can speak the back. The spoken answer
+ * is local text to compare against the back after flipping. It is not graded, sent or stored.
+ */
+function CardVoice({ front, flipped, micAllowed }: { front: string; flipped: boolean; micAllowed: boolean }) {
+  const speech = useSpeech();
+  const [spoken, setSpoken] = useState("");
+  const dictation = useDictation((text) => setSpoken((s) => (s ? `${s} ${text}` : text)));
+  const { stop } = speech;
+  const { listening, finish } = dictation;
+  useEffect(() => {
+    if (!flipped) return;
+    stop();
+    if (listening) finish("ended");
+  }, [flipped, listening, stop, finish]);
+  const shown = dictation.listening ? [spoken, dictation.transcript].filter(Boolean).join(" ") : spoken;
+  return (
+    <>
+      {!flipped && <ReadAloud speech={speech} label="Read question" segments={() => [{ text: toSpeech(front) }]} />}
+      {micAllowed && dictation.supported && (
+        <div className="flashcard-answer">
+          {!flipped && <MicButton dictation={dictation} label="Hold to talk: say your answer" />}
+          {dictation.error && <span role="alert" className="voice-error">{dictation.error}</span>}
+          {shown && (
+            <p className="flashcard-spoken">
+              <span className="flashcard-side">Your answer (not graded)</span> {shown}
+            </p>
+          )}
+        </div>
+      )}
+    </>
+  );
 }
 
 /** Flip through one deck: a module's cards or a single lesson's. A grade only appends to the server's log,
@@ -115,7 +157,7 @@ export function FlashcardsView({
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ deck: deck.id, card: card.id, result }),
-    }).catch(() => undefined);
+    }).then(invalidateLearning, () => undefined);
     setGraded((g) => new Set(g).add(card.id));
     if (mode === "due") {
       // Graded either way means not due again today: a miss comes back tomorrow.
@@ -131,6 +173,7 @@ export function FlashcardsView({
       <div className="course-page-inner course-page-inner--practice">
         <a href={`#/courses/${deck.course}`} className="link-btn">← Course</a>
         <h1 className="course-page-title course-page-title--overview">{deck.title}</h1>
+        <VoiceDrawer key={`voice-${deck.id}`} subject={deck.id} target={{ mode: "flashcard", deck: deck.id }} />
         <StudyFilter cards={deck.cards} mode={mode} graded={graded} onChange={study} />
         {!card ? (
           <p className="flashcard-done">Nothing left to study today in this deck.</p>
@@ -140,6 +183,12 @@ export function FlashcardsView({
           <span className="flashcard-side">{flipped ? "Answer" : "Question (click to flip)"}{labels && ` · ${labels}`}</span>
           <span className="flashcard-text"><InlineMarkup text={flipped ? card.back : card.front} /></span>
         </button>
+        <CardVoice
+          key={`${deck.id}:${card.id}`}
+          front={card.front}
+          flipped={flipped}
+          micAllowed={dictationAllowed(deck.course) && dictationAllowed(deck.id)}
+        />
         {flipped && card.more && (
           <div className="flashcard-more">
             <button onClick={() => setInDepth((d) => !d)} aria-expanded={inDepth} className="link-btn">

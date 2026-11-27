@@ -1,10 +1,11 @@
 ---
-imported_hash: 8b6aaad4af1c160e
+imported_hash: c8aeba9d8a2ff361
 title: Plotly and interactive charts
 summary: A chart with hover, zoom and a filter feels more powerful than a picture, and in the right hands it is.
 order: 5
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-analytics/05-visualisation-and-storytelling/notes/03-plotly-and-interactive.md
 ---
 

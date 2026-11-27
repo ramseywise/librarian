@@ -1,4 +1,4 @@
-# imported_hash: fe3cecec16d1b8b3
+# imported_hash: ba1099cc0789a646
 # Deep learning lecture deck. Covers notes 01-06.
 # Build: make slides PILLAR=data-science/02-deep-learning STRICT=1 PREVIEW=1
 # Spec:  .claude/skills/slides/references/deck-spec.md
@@ -33,6 +33,7 @@ parts:
         attribution: Own runs from the chapters, on a laptop
         takeaway: A network has to be trained, debugged when nothing raises an error, and matched to the data.
         source: README.md
+        depth: intro
         notes: >-
           Logistic regression stops at a straight line, and a hidden layer bends it. Then training becomes the problem. Each part opens with a number that looks wrong, states the rule behind it, and applies the rule to a run you can repeat.
 
@@ -51,6 +52,7 @@ parts:
           - "Each part ends on the mistake it usually produces."
         takeaway: The loop never changes, so each step changes what you check or what the network assumes about the data.
         source: README.md
+        depth: intro
         notes: >-
           The first two steps are about getting one network to train and generalise. The third decides where a month goes. The last two match the architecture to the data, first images, sequences and encoders, then real reviews.
 
@@ -65,6 +67,7 @@ parts:
           - {title: Match, accent: "D4621A", body: "Choose an architecture for images, sequences or text, and keep a simple control to beat."}
         takeaway: You will be able to train a network, tell why it fails, and say which architecture the data asks for.
         source: README.md
+        depth: intro
         notes: >-
           This lecture starts from classical machine learning. The same discipline of splits, controls and honest metrics applies unchanged to every network here.
 
@@ -82,6 +85,7 @@ parts:
         attribution: Own run in the first chapter, NumPy only
         takeaway: A hidden layer bends the boundary, and everything else is how to train it.
         source: notes/01-neural-networks-fundamentals.md
+        depth: intro
         notes: >-
           Logistic regression is a one-layer network and it can only draw a straight line. Add one hidden layer and the
           boundary bends. So how do we find the weights? That question is the first course in Ng's specialization.
@@ -102,6 +106,7 @@ parts:
           - "**Cost for W weights:** backprop gets every derivative in O(W), central differences need O(W²)."
         takeaway: Backprop is the chain rule with bookkeeping, and `backward()` does the bookkeeping.
         source: notes/01-neural-networks-fundamentals.md
+        depth: intro
         notes: >-
           Forward, loss, backward, step. The notebooks write every line in NumPy, which is worth doing once. A numerical
           gradient check catches a planted bug instantly, and autograd reproduces the hand-written gradient to machine
@@ -129,6 +134,7 @@ parts:
         takeaway: Use ReLU in hidden layers and keep sigmoid and softmax for the output, where a probability is wanted.
         answer: "Its slope is 1 for positive inputs, so depth doesn't shrink the gradient, and it is cheap. The cost is dead units, which Leaky ReLU avoids."
         source: notes/01-neural-networks-fundamentals.md
+        depth: core
         notes: >-
           A sigmoid's slope peaks at 0.25 at z equals zero and falls as the unit saturates, and backpropagation multiplies one such factor per layer. tanh fixes the centring and has slope 1 at zero, but it still saturates.
 
@@ -156,6 +162,7 @@ parts:
           - "Same loop for every model in this lecture."
         takeaway: The loop never changes, and each line exists because leaving it out fails quietly.
         source: notes/01-neural-networks-fundamentals.md
+        depth: core
         notes: >-
           Learn this loop by heart. The model outputs logits because cross-entropy applies the log-softmax itself. Zero the
           gradients or they accumulate. Switch modes or batch norm and dropout do the wrong thing. None of these raise errors.
@@ -168,6 +175,7 @@ parts:
         caption: "Two moons, same loop: logistic regression tests at 0.895 with one straight cut, and one hidden layer at 0.955. Run `practice/moons_boundary.py`."
         takeaway: The same loop with one hidden layer draws a curve that logistic regression cannot.
         source: notes/01-neural-networks-fundamentals.md
+        depth: core
         notes: >-
           Same data and same training loop. Only the model differs. The curve is what the hidden layer buys. The note also has a full table translating Ng's notebooks to PyTorch: cost, backward and update become F.cross_entropy, loss.backward() and optimizer.step().
 
@@ -185,6 +193,7 @@ parts:
           - ["A TF port scores lower", "`keep_prob=0.8` copied as `nn.Dropout(0.8)`, which drops 80%", "`p = 1 - keep_prob`"]
         takeaway: Learn the symptom of each quiet bug, because the loop runs and the number only looks wrong.
         source: notes/01-neural-networks-fundamentals.md
+        depth: core
         notes: >-
           These come from the pitfalls table in the first chapter. Four of the five raise no error. The loop itself looks right, which is why the symptom is the only clue.
 
@@ -202,6 +211,7 @@ parts:
         attribution: Own run. The only thing changed is the initial weights
         takeaway: With no signal reaching the first layers, training can't start, so check activations before tuning anything.
         source: notes/02-optimisation-and-regularisation.md
+        depth: core
         notes: >-
           The code is correct and nothing raises an error. Too small, and the activations die out layer by layer. Too large,
           and they explode. So what else fails like this, quietly?
@@ -221,6 +231,8 @@ parts:
           - [He, "`kaiming_normal_`, ReLU", "0.406 and 0.317", "**0.970**"]
         takeaway: Each layer multiplies the signal by its weights, so only an initial scale that holds the activations steady lets a deep network start learning.
         source: notes/02-optimisation-and-regularisation.md
+        depth: core
+        refs: 'https://arxiv.org/abs/1502.01852'
         notes: >-
           Zeros and too-small weights land on the same 0.102, ten-class chance on this split, because no signal reaches the last layer. Large weights start with a loss near ten to the twelve. He doubles the Glorot variance because ReLU zeroes half its inputs, and Glorot is the default for tanh. PyTorch's default for a linear layer is close enough for shallow networks, so you notice this as depth grows.
 
@@ -245,6 +257,8 @@ parts:
             - "Weight norm 13.57"
         takeaway: In Adam the penalty passes through the per-parameter scaling and can destroy the run, so use AdamW.
         source: notes/02-optimisation-and-regularisation.md
+        depth: deep
+        refs: 'https://arxiv.org/abs/1711.05101'
         notes: >-
           This is the Loshchilov and Hutter result in one run. Same number, same network. In Adam the L2 term passes through
           the adaptive scaling and drives the weights to nearly zero. In AdamW the same setting is harmless.
@@ -268,6 +282,8 @@ parts:
           - "**LayerNorm** avoids this, which is why Transformers use it."
         takeaway: "`eval()` switches batch norm from batch statistics to running averages, and forgetting it cost 9 points with no error."
         source: notes/02-optimisation-and-regularisation.md
+        depth: core
+        refs: 'https://arxiv.org/abs/1502.03167'
         notes: >-
           Ioffe and Szegedy's layer speeds up training a great deal. Wu and Johnson catalogue what it costs: a dependence on the
           batch that shows up as silent bugs like this. At batch size 2 it's bad either way.
@@ -280,6 +296,7 @@ parts:
         caption: "Digits, Adam, 10 epochs, mean of three seeds: 0.961 at a rate of 0.01, and 0.100 at 1.0, which is chance. Run `practice/lr_sweep.py`."
         takeaway: The rate moves accuracy from chance to 0.96, far more than choosing among adaptive optimisers does.
         source: notes/02-optimisation-and-regularisation.md
+        depth: core
         notes: >-
           In the same chapter, the gaps between Adam, RMSprop and Lion were inside the noise on this short budget, but the rate moves everything. Tools like D-Adaptation try to remove the search; on this task one seed in five failed.
 
@@ -296,6 +313,7 @@ parts:
           - "**Dropout 0.5:** train 0.988, test 0.745."
         takeaway: Networks learn real patterns before the noise, so stop early on a clean validation set, which won here by about 9 points.
         source: notes/02-optimisation-and-regularisation.md
+        depth: core
         notes: >-
           Labels here are 30 percent wrong in training and clean in the test set. Networks fit the real structure first, then
           the noise. So stopping early helps more than anything else in this run, and it costs nothing.
@@ -314,6 +332,8 @@ parts:
         attribution: Peacetopia case study, Ng's Structuring Machine Learning Projects
         takeaway: Find the largest gap before you act, as each gap has a different fix.
         source: notes/03-structuring-ml-projects.md
+        depth: intro
+        refs: 'https://www.coursera.org/specializations/deep-learning'
         notes: >-
           The bird-recognition case study in Ng's third course gives this situation. Most teams' first instinct is more data, and
           it wouldn't help. So how do we read those numbers systematically?
@@ -332,6 +352,8 @@ parts:
           - "**Count errors by cause** first: a cause covering 5 of 24 mistakes can only win 0.93 points."
         takeaway: Fix the largest gap first, and count what a fix could win before building it.
         source: notes/03-structuring-ml-projects.md
+        depth: core
+        refs: 'https://www.coursera.org/specializations/deep-learning'
         notes: >-
           Train-dev comes from the training distribution but isn't trained on, which is what lets us split the last gap in two.
           And before building a fix for a category of errors, count how many errors it could possibly remove.
@@ -358,6 +380,8 @@ parts:
           - "**Hypothetical:** the training data differs from production."
         takeaway: Writing the diagnosis down turns an argument about priorities into a subtraction.
         source: notes/03-structuring-ml-projects.md
+        depth: intro
+        refs: 'https://www.coursera.org/specializations/deep-learning'
         notes: >-
           The function subtracts neighbouring error rates and names the biggest one. Same training error of two percent in
           the first two cases, and entirely different next steps.
@@ -370,6 +394,8 @@ parts:
         caption: "Train on clean digits, deploy on corrupted: dev error is 63.0%. With synthetic corruption added it falls to 14.1%. Run `practice/data_mismatch.py`."
         takeaway: Adding artificial data that looks like production cut dev error from 63% to 14%, at some cost to training error.
         source: notes/03-structuring-ml-projects.md
+        depth: core
+        refs: 'https://www.coursera.org/specializations/deep-learning'
         notes: >-
           Train-dev comes from the training data, but the model is not trained on it. Train on clean digits, deploy on corrupted ones. The clean row looks like a great model until the last step. Without train-dev you might read it as variance and go collect more of the wrong data.
 
@@ -392,6 +418,8 @@ parts:
             - "Low-level features didn't carry over"
         takeaway: Transfer needs a similar task with much more data, so try scratch as the control.
         source: notes/03-structuring-ml-projects.md
+        depth: core
+        refs: 'https://arxiv.org/abs/1411.1792'
         notes: >-
           I expected transfer to win here, and across label counts from 10 to 100 it never did. The two digit groups don't share
           enough, and an 8 by 8 image has few low-level features to reuse. Yosinski and colleagues found that transfer weakens
@@ -411,6 +439,7 @@ parts:
         attribution: Own run, 3 seeds. Neither model is fully shift-invariant
         takeaway: An MLP ties each weight to one pixel, while a convolution reuses one filter at every position.
         source: notes/04-convolutional-networks.md
+        depth: core
         notes: >-
           Every weight in the MLP is tied to one pixel position, so it has nothing to say about a digit that has moved. Shifted
           training data helps it too, but sharing a filter builds the idea into the network. Rotation is different: nothing is shared across turning, so a rotated edge is a different pattern to the filter, and a CNN copes only as far as its training images did. The fix is augmentation with rotations the label survives. For a 64 by 64 colour image, a dense
@@ -436,6 +465,8 @@ parts:
           - "**Pooling** has no parameters."
         takeaway: The design goes back to LeNet-5, with local filters, shared weights and subsampling, and one formula gives the output size.
         source: notes/04-convolutional-networks.md
+        depth: intro
+        refs: 'https://doi.org/10.1109/5.726791'
         notes: >-
           Local filters, shared weights, subsampling: three ideas from LeCun in 1998. LeNet-5 used about 60,000 parameters for
           345,308 connections and reached 0.95 percent error on MNIST.
@@ -448,6 +479,8 @@ parts:
         caption: "Digits, seed 0: at 62 layers the plain network trains to 0.379 and the residual one to 0.983. Run `practice/depth_degradation.py`."
         takeaway: Plain depth fails on the training data itself, so it isn't overfitting, and `out + x` makes doing nothing the easy default.
         source: notes/04-convolutional-networks.md
+        depth: core
+        refs: 'https://arxiv.org/abs/1512.03385'
         notes: >-
           He and colleagues called this the degradation problem. At 62 layers the training score itself is 0.38, so it can't be overfitting. The block learns a residual, so doing nothing is easy. Transformers carried the idea straight over. Residuals aren't free at shallow depth: at 12 layers the plain network wins here, 0.985 against 0.974 on test, and the gap only opens from 22 layers on.
 
@@ -465,6 +498,8 @@ parts:
           - "**Threshold 0.95** keeps all five, since the largest overlap is 0.907."
         takeaway: Detection filters boxes by score and then removes overlaps, and the threshold trades merged cars against duplicates.
         source: notes/04-convolutional-networks.md
+        depth: core
+        refs: 'https://arxiv.org/abs/1612.08242'
         notes: >-
           YOLO predicts everything in one pass and most boxes are useless. Filtering by score and removing overlaps is all
           the car detection notebook adds. The chapter writes those functions in a few lines.
@@ -485,6 +520,8 @@ parts:
             accent: 5B21B6
         takeaway: Embeddings need many identities and strong augmentation, so the toy shows the mechanics and the papers the payoff.
         source: notes/04-convolutional-networks.md
+        depth: deep
+        refs: 'https://arxiv.org/abs/1503.03832'
         notes: >-
           Face verification can't retrain a classifier for each new person, so it learns a distance. Self-supervised vision takes
           the same loss further. My small version loses to supervised training at each label count here, and that's worth
@@ -498,6 +535,7 @@ parts:
         caption: "Generated shapes, 6 classes, 3 seeds, 600 test images. Scratch gets 2,000 steps, ResNet-18 arms 500. Run `practice/vision_transfer.py`."
         takeaway: Frozen features win with a handful of labels, fine-tuning from a few hundred, and scratch only draws level with plenty of data.
         source: notes/04b-vision-in-practice.md
+        depth: core
         notes: >-
           At 300 images: fine-tuned 0.939, frozen 0.848, scratch 0.359. At 3,000 scratch reaches 0.902, level with frozen, and
           fine-tuning is at 0.986. This is the transfer that lost on digits in chapter 03, now with the conditions met: far more
@@ -519,6 +557,7 @@ parts:
             accent: 5B21B6
         takeaway: Predict through the same transform you tested with, and keep a frozen backbone in eval mode.
         source: notes/04b-vision-in-practice.md
+        depth: core
         notes: >-
           The three error types are Bourke's grouping, from Learn PyTorch. The messages here are the ones an Apple GPU prints.
           The BatchNorm one raises nothing, which is why it is on the slide.
@@ -537,6 +576,8 @@ parts:
         attribution: Own run, 3 seeds, 500 steps
         takeaway: The LSTM's advantage isn't automatic, as it depends on starting the forget gate near keep.
         source: notes/05-sequence-models.md
+        depth: core
+        refs: 'https://proceedings.mlr.press/v37/jozefowicz15.html'
         notes: >-
           The rest of the numbers are noise. So the network only has to carry one bit along. Backpropagation through time multiplies
           one factor per step, and the signal fades away. What fixes it turns out to be a single initial value.
@@ -561,6 +602,8 @@ parts:
             - "Gradients fade over many steps, as the next slides show"
         takeaway: "A single symbol is a poor memory: 10 bits of context cost 1,024 states, where 10 binary units do."
         source: notes/05-sequence-models.md
+        depth: deep
+        refs: 'Bishop, Pattern Recognition and Machine Learning (Springer, 2006), ch. 13'
         notes: >-
           An HMM is still a fair choice when states are few and you need to read them. From Bishop's PRML, chapter 13. Bishop calls the exponential state duration "a very unrealistic model of state duration" for many applications. The numerical trap is the one from gradients: forward probabilities shrink at every step and exceed double precision on chains of "say 100 or so" unless rescaled.
 
@@ -574,6 +617,7 @@ parts:
           - "**Accuracy at T=50, three seeds:** bias 2 reaches 0.50, 0.89, 1.00; every other cell stays near 0.50."
         takeaway: Ten orders of magnitude separate these lines at the first step, set entirely by initialisation.
         source: notes/05-sequence-models.md
+        depth: core
         notes: >-
           Bias 1 solves T equals 20, which Jozefowicz and colleagues recommend. T equals 50 needs more. One trap: nn.LSTM has two bias vectors, and each gate adds both, so the widely copied snippet that writes 1 to both is really setting 2.
 
@@ -597,6 +641,7 @@ parts:
           - "Measure the gradient, don't trust the assignment."
         takeaway: Initialisation code can do nothing without any error, so measure its effect afterwards.
         source: notes/05-sequence-models.md
+        depth: core
         notes: >-
           My first attempt at this cell compared against the wrong name, and it silently changed nothing. The gradient
           measurement is what caught it.
@@ -614,6 +659,8 @@ parts:
         caption: Date normalisation, as in Ng's Neural machine translation notebook, with synthetic dates
         takeaway: Attention replaces one summary vector with a learned lookup, redone at every step.
         source: notes/05-sequence-models.md
+        depth: intro
+        refs: 'https://arxiv.org/abs/1409.0473'
         notes: >-
           Bahdanau and colleagues let the decoder look at all of the encoder's states. Remove the recurrence, let all positions
           query each other, and you get the Transformer's self-attention.
@@ -638,6 +685,7 @@ parts:
             - "Month digits look at the 'm' of 'may'"
         takeaway: On the same data and budget, the only change takes whole-date accuracy from 3% to 100%.
         source: notes/05-sequence-models.md
+        depth: core
         notes: >-
           The whole experiment runs in seconds. And we can read the weights: year digits look at the year, month digits at the
           month, day digits at the day. With only 500 pairs neither one solves it, because that's only 42 updates.
@@ -664,6 +712,8 @@ parts:
         takeaway: "Compute PCA first: at a code of 32 it wins with far less variation between runs and no training."
         answer: "At small codes (2, 4 and 8), where it beat PCA. At 16 and 32 PCA is ahead, so compute PCA first."
         source: notes/05-sequence-models.md
+        depth: core
+        refs: 'Bishop, Pattern Recognition and Machine Learning (Springer, 2006), ch. 12'
         notes: >-
           The seq2seq model squeezed a sentence through one vector and suffered for it. An autoencoder makes that squeeze the whole point. It can't copy through a narrow code, so it has to learn what is regular in the data. Hinton and Salakhutdinov set this out as a non-linear PCA and reached a squared error of 3.00 on MNIST at a code of 30, against 13.87 for PCA. Our digits are far smaller than MNIST, so don't compare the scale of these numbers with theirs. For the shallow case it is a theorem: Bishop's PRML (ch. 12) shows a two-layer autoencoder on squared error finds only the PCA subspace even with non-linear hidden units. This autoencoder has more layers, so its gains at small codes are not ruled out.
 
@@ -681,6 +731,7 @@ parts:
           - ["30% of pixels zeroed (denoising)", "0.545", "**0.927**", "3.756"]
         takeaway: The plain network copies the holes and the denoising one repairs them, paying with a worse rebuild of clean images, 0.545 against 0.077.
         source: notes/05-sequence-models.md
+        depth: core
         notes: >-
           Vincent and colleagues asked what happens if you drop the bottleneck. Now copying fails even with a code wider than the input, so the corruption is the constraint, and it applies only during training. Their model selection chose very wide layers, 2,000 units for 784 pixels. Stacked denoising layers beat ordinary stacked autoencoders on most of their tasks, though not all. The denoising network has learned a different job, which is why clean images get worse.
 
@@ -697,6 +748,7 @@ parts:
           - "**Hardest digit:** the 1, at 0.848."
         takeaway: A code wide enough to rebuild everything rebuilds the anomalies too, so choose its size on labelled anomalies if you have some.
         source: notes/05-sequence-models.md
+        depth: deep
         notes: >-
           Neither paper proposes this, as both are after representations, so this is the course's own test. Train on normal data only, and the model fails on what doesn't resemble it. The autoencoder peaks at 0.956 at a code of 8, and it beats PCA at every size here. The digit 1 is hardest, plausibly because its few strokes are easy to rebuild from the others. For tables, try an isolation forest or a Gaussian first, and reach for this on images or other raw signals. To sample from the code, the VAE is in the Bayesian analysis pillar.
 
@@ -713,6 +765,7 @@ parts:
         attribution: "Digits as 8 rows of 8 pixels, 3 seeds: with no position, 0.902 on test and 0.902 with the rows upside down."
         takeaway: Self-attention is permutation-equivariant, and invariant with a mean pool, so order has to be added as position.
         source: notes/05b-transformer-encoders.md
+        depth: core
         recall: Why did the no-position encoder score the same on upside-down digits?
         notes: >-
           The encoder scores the same on upside-down digits, because nothing in it knows the order of the rows. The next slide shows what happens when we add it.
@@ -731,6 +784,8 @@ parts:
           - [Learned table, "18,026", "0.975", "0.551"]
         takeaway: Self-attention is permutation-equivariant, so add position before the first block, and expect the upside-down score to fall once the model reads order.
         source: notes/05b-transformer-encoders.md
+        depth: core
+        refs: 'https://arxiv.org/abs/1706.03762'
         notes: >-
           Shuffle the input tokens and each output moves with its input, so the layer does not know their order, and a mean pool then sees a set. Sinusoids and a learned table are a tie on three seeds. The learned table has no entry for a ninth token and raises an error on longer input. The Transformer paper found the two nearly level, 25.7 against 25.8 dev BLEU. Attention has 4,224 parameters at any head count, because heads split the width rather than add to it.
 
@@ -749,6 +804,7 @@ parts:
           - "**`batch_first=False`, the default:** digits scored as one batch 0.966, one at a time 0.658."
         takeaway: The model still trains, so score the same examples at batch size 1 and 32 and check that the logits match.
         source: notes/05b-transformer-encoders.md
+        depth: core
         notes: >-
           With the default, the layer reads the batch as the sequence, so each digit attends to the other digits in its batch. A large batch gives every example neighbours to borrow from, which is why the test score looks healthy. In the mask, True means ignore. Without a mask the same input gives different logits depending on the longest member of its batch: 0.4305 padded to 20. A third silent bug is a loss broadcast between shapes of batch by one and batch: R-squared per seed is about -0.084, 0.089 and -0.135, against 0.897, 0.966 and 0.946 once squeezed.
 
@@ -776,6 +832,8 @@ parts:
           - "**Tables:** tree-based models stayed ahead up to 10,000 samples across 45 datasets (Grinsztajn et al.)."
         takeaway: An encoder assumes less than a CNN or an LSTM, so it has to learn more from examples. Ask which task you have before reaching for one.
         source: notes/05b-transformer-encoders.md
+        depth: deep
+        refs: 'https://arxiv.org/abs/2010.11929'
         notes: >-
           The CNN wins at every size because digits are small local shapes, and the CNN assumes exactly that. The encoder has three times the CNN's parameters here. Position zero is one attention step from everything, so the first-sign task is easy for it, and without position it stays at chance. Self-attention costs n squared times d per layer against n times d squared for a recurrent layer. ViT-B/16 shows the data appetite: 77.91 pre-trained on ImageNet, 83.97 on ImageNet-21k and 84.15 on JFT-300M, though DeiT reached 83.1 on ImageNet alone. In forecasting, Zeng et al.'s linear model beat five Transformers on nine benchmarks, and PatchTST answered with patches. Pre-norm trains at a learning rate of 0.01 with no warm-up at 0.935, where post-norm reaches 0.101 without warm-up and 0.905 with it.
 
@@ -793,6 +851,7 @@ parts:
         attribution: Own run on IMDb, 5,000 training and 5,000 test reviews, on CPU
         takeaway: With little data, learning embeddings costs more than word order pays back.
         source: notes/06-neural-text-models.md
+        depth: core
         notes: >-
           This is the most useful result for a practitioner. What does each model read, and why do the neural ones lose?
 
@@ -810,6 +869,7 @@ parts:
           - [TF-IDF and logistic regression, "Weighted counts of words and word pairs", "No network"]
         takeaway: Each learned model has over 160,000 parameters for 5,000 reviews, and all of them must come from those labels.
         source: notes/06-neural-text-models.md
+        depth: core
         notes: >-
           The CNN's filters are n-gram detectors, and global max pooling keeps the strongest match. The BiLSTM reads both ways, which suits classification and not generation. The baseline needs no GPU and no tuning.
 
@@ -821,6 +881,7 @@ parts:
         caption: "IMDb, 5,000 training reviews: TF-IDF bigrams test at 0.886, ahead of embedding average 0.847, TextCNN 0.741 and BiLSTM 0.716. Run `practice/imdb_models.py`."
         takeaway: The linear model wins here, and a notebook on 25,000 reviews saw 0.87 to 0.89 against about 0.90.
         source: notes/06-neural-text-models.md
+        depth: core
         notes: >-
           The CNN memorises and the BiLSTM is still learning. The intro-to-nlp notebook on five times the data saw a closer race, and the linear model still led it.
 
@@ -836,6 +897,8 @@ parts:
           - "**Fine-tuning** adds a few points."
         takeaway: Pretraining supplies the representation your labels can't pay for.
         source: notes/06-neural-text-models.md
+        depth: intro
+        refs: 'https://arxiv.org/abs/1810.04805'
         notes: >-
           The figure is only the shape of the pipeline. The numbers come from the table in the chapter, where Sarkar compares TF-Hub encoders on IMDb with the same head. Fine-tuning helps, but most of the gain comes from starting
           with a representation learned on far more text.
@@ -860,6 +923,7 @@ parts:
           - "**Measure two,** with TF-IDF as the bar."
         takeaway: A pre-trained encoder isn't one result, so measure it on your own task against the baseline.
         source: notes/06-neural-text-models.md
+        depth: core
         notes: >-
           I expected any pre-trained encoder to beat word counts here. The small one lost at every label count, and the larger
           one won where labels are few. The code is short, so there's no reason not to measure.
@@ -879,6 +943,10 @@ parts:
           - ["5,000", "0.886", "0.806", "0.882", "0.905"]
         takeaway: A strong frozen encoder helps on few labels and fine-tuning on many, while the small encoder loses throughout.
         source: notes/06-neural-text-models.md
+        depth: core
+        refs:
+          - 'https://arxiv.org/abs/1908.10084'
+          - 'https://arxiv.org/abs/1910.01108'
         notes: >-
           One split and one seed, so differences under a point are ties. Fine-tuning only clearly beats word counts at 5,000
           reviews. The chapter also shows the pipelines one-liners, and warns that transformers 5 removed the question answering,
@@ -913,6 +981,7 @@ parts:
             accent: 94A3B8
         takeaway: Most deep learning failures are silent, so each rule is a way to see one.
         source: notes/03-structuring-ml-projects.md
+        depth: intro
         notes: >-
           If you remember one thing: most of what goes wrong here raises no error, so measure.
 
@@ -927,5 +996,6 @@ parts:
           - "**Generative AI:** `generative-ai/01-llm-fundamentals`, for LLMs at the level of how they behave."
         takeaway: Next, build the Transformer you've now seen the reasons for.
         source: notes/06-neural-text-models.md
+        depth: intro
         notes: >-
           Attention was the last idea today. The LLMs from scratch pillar builds it line by line.

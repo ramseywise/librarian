@@ -1,8 +1,8 @@
 ---
 title: "Drift Seen and Unseen in an Automated Router"
-tags: [data-science, concept]
+tags: [data-science, classical-ml, concept]
 summary: "With a frozen router, covariate drift trips a label-free alarm while the error stays fine, whereas prior and concept drift can leave the alarm green and double the error on automatically paid cases; recalibration fixes only part."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--13-automate-review-or-reject.md
 ---

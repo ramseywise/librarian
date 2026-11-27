@@ -1,8 +1,8 @@
 ---
 title: "Random Forests and Bagging"
-tags: [data-science, concept]
+tags: [data-science, classical-ml, concept]
 summary: "Averaging deep trees cuts variance only as far as their errors are decorrelated, which is why forests subsample features at each split; the out-of-bag score is a free validation estimate."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--06-ensembles.md
   - data/raw/papers/2026-11-08-practical-statistics-for-data-scientists-ch06-statistical-machine-learning.md

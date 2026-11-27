@@ -1,10 +1,11 @@
 ---
-imported_hash: f3b631946f83a035
+imported_hash: 4ed69b533320a35b
 title: Training and Tuning
 summary: Blocks run top to bottom from this notes/ folder.
 order: 13
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-science/01-classical-ml/notes/09-training-and-tuning.md
 ---
 

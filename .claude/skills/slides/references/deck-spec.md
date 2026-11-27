@@ -1,8 +1,9 @@
 # Deck spec — `slides/deck.yaml` and `slides/lectures/*.yaml`
 
 `src/librarian/tools/slides/build_deck.py` renders one YAML file into a 16:9 `.pptx` in the course's
-house style (navy title bar with an orange edge, breadcrumb strip, white cards with
-coloured stripes, tinted takeaway strip). Specs live in `data/courses/<course>/<module>/slides/`,
+house style, the beat-coloured look of the study UI: white slides on a warm off-white, a beat chip
+and "Part · n / total" line at the top, the takeaway in a band washed with the beat's colour,
+a yellow title panel, a divider with its part number on a solid panel, statements in Charter serif. Specs live in `data/courses/<course>/<module>/slides/`,
 and a spec's `source:` and `covers:` paths are relative to that module or to `data/courses/`.
 The worked example is `data/courses/ai-engineering/01-prompt-engineering/slides/deck.yaml`.
 
@@ -22,7 +23,7 @@ deck:
 parts:
   - title: Foundations                          # "Part 1 · Foundations" in every breadcrumb
     summary: How models read prompts · Prompt anatomy   # shown on the title slide and the divider
-    divider: true                               # navy section slide before the part (default true)
+    divider: true                               # section slide before the part, in the part's beat colour (default true)
     agenda: true                                # numbered + listed on the title slide (default true)
     overview: true                              # this part opens the deck; exempt from the beat check (default false)
     notes: speaker notes for the divider
@@ -52,7 +53,7 @@ An `overview: true` part is still an agenda part: it gets a number, a divider an
 | `source` | note path, shown in the footer and appended to the speaker notes |
 | `notes` | speaker notes: what to say, context left off the slide |
 | `narration` | the script the study UI reads aloud while it shows the slide: 60 to 150 words, full sentences written to be heard, nothing that points at the screen ("as you can see"). Falls back to `notes`. Also allowed on `deck:` and on a part, for the title slide and the divider. Not drawn in the `.pptx` |
-| `level` | `core` (default), `practice` or `deep`: the audience this slide is for. See Levels below. Any other value stops the build |
+| `level` | `intro` (default), `core` or `deep`, the same tiers as the notes: the audience this slide is for. See Levels below. `practice` is read as `core`; any other value stops the build |
 | `beat` | `problem`, `fundamentals`, `practice`, `pitfalls` or `wrap`: what this slide does in its part. See The story. Any other value stops the build |
 | `revisits` | `true` on a slide that deliberately returns to an earlier note. Exempt from the order check; at most two per deck. See The story |
 
@@ -76,12 +77,15 @@ One `deck.yaml` holds the whole lecture, and a build can draw a shorter talk fro
 
 | Level | Meaning |
 |---|---|
-| `core` | tells the idea to any audience. A slide with no `level` is `core` |
-| `practice` | adds how it is done |
-| `deep` | adds the code and math |
+| `intro` | tells the idea to any audience. A slide with no `level` is `intro` |
+| `core` | adds how it is done: the core lesson |
+| `deep` | adds the code and math, the optional extension |
+
+The names match the notes' intro / core lesson / in-depth split. Specs written before the rename used
+`core` < `practice` < `deep`; `practice` is still accepted and read as `core`.
 
 ```bash
-make slides PILLAR=<pillar> LEVEL=core      # writes slides/<topic>-core.pptx next to the full deck
+make slides PILLAR=<pillar> LEVEL=intro     # writes slides/<topic>-intro.pptx next to the full deck
 ```
 
 A filtered build keeps the title slide, every part's divider, the closing parts whole (`agenda: false`, whatever their
@@ -107,8 +111,8 @@ aside:            # optional right-hand card (title/body/bullets/accent) …
 
 ### `compare`: two cards side by side
 ```yaml
-emphasis: right          # right (default) | left | none: which card gets the navy band
-left:  {title: …, bullets: [...], body: …, code: …, tag: "footer line", accent: "D4621A"}
+emphasis: right          # right (default) | left | none: which card wins (wash, ink outline, filled tag); the other is neutral grey
+left:  {title: …, bullets: [...], body: …, code: …, tag: "footer line", accent: pitfalls}
 right: {title: …, bullets: [...], tag: …}
 ```
 
@@ -116,7 +120,7 @@ right: {title: …, bullets: [...], tag: …}
 ```yaml
 cards:
   - {title: …, body: …}          # or bullets: [...], code: …
-  - {title: "So…", accent: "0EA5C9", body: …}   # accent recolours the stripe
+  - {title: "So…", accent: wrap, body: …}   # accent draws the card solid; the last card is solid by default
 ```
 
 ### `table`
@@ -135,9 +139,9 @@ The table layout ignores `bullets`: put any takeaway in the title or on its own 
 ```yaml
 steps:
   - Plain label
-  - {label: Model, sub: proposes a call, accent: "1E3A5F"}
-loop: repeat until done      # optional green return arrow under the boxes
-end_accent: true             # last box orange (default true)
+  - {label: Model, sub: proposes a call, accent: practice}
+loop: repeat until done      # optional return arrow under the boxes
+end_accent: true             # last box solid in the beat's fill (default true)
 bullets: [...]               # or caption: one line
 ```
 3–5 steps fit. Keep each label to 1–3 words and put the detail in `sub`.
@@ -147,7 +151,7 @@ bullets: [...]               # or caption: one line
 axis: weaker → stronger guarantee   # optional vertical arrow label at the left
 steps:
   - {title: Ask for it, text: "…"}
-  - {title: …, text: …, n: "★", accent: "D4621A"}
+  - {title: …, text: …, n: "★", accent: pitfalls}
 ```
 Fits 4–6 steps. Use it for ladders, criteria, and ordered procedures.
 
@@ -173,16 +177,25 @@ caption: Standard vs. CoT prompting (Wei et al., 2022)
 bullets: [...]                      # optional: image left, bullets right
 ```
 
-## Palette (for `accent`)
+## Palette
 
-| Hex | Use |
-|---|---|
-| `1E3A5F` | navy: default, structure |
-| `D4621A` | orange: emphasis, the answer, the warning |
-| `0EA5C9` | teal: the "so what" card |
-| `0F7490` | dark teal: alternative or secondary |
-| `5B21B6` | purple: the occasional third category |
-| `94A3B8` / `CBD5E1` | greys: de-emphasised steps |
+A slide's colours come from its `beat` (else its part's commonest beat), so most slides need no `accent`.
+Each beat has an ink (text on white), a fill (solid panels), the text on that fill, a 14% wash and a 34% tint:
+
+| Beat | Fill | Chip |
+|---|---|---|
+| `problem` | `FFD54F` yellow (ink `7A5C00`) | The idea |
+| `fundamentals` | `1F55C4` blue | The principle |
+| `practice` | `6A35B8` purple | The application |
+| `pitfalls` | `B5560A` orange | Pitfall |
+| `wrap` | `1D7F63` sea green | Keep |
+
+Neutrals: background `F7F6F2`, surface `EFEEE9`, borders `DEDBD2` / `C4C0B4`, text `2D2C28`, strong `14130F`,
+soft `6B685F`, inline code indigo `4743C4`.
+
+`accent` on a card, flow box or step takes a beat name (`accent: pitfalls`) or a hex. Prefer the beat name.
+The old hexes still work and map onto this palette: navy `1E3A5F` to blue, orange `D4621A` to orange,
+teal `0EA5C9` / `0F7490` to sea, purple `5B21B6` to purple, greys `94A3B8` / `CBD5E1` to the borders.
 
 ## The story
 

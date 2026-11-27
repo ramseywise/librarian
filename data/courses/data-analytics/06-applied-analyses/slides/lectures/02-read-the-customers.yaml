@@ -1,0 +1,1161 @@
+# imported_hash: 16a0e75d026c8cea
+# Lecture on step 2, Read the customers: notes/03-cohort-and-retention.md to 06-sql-for-analytics.md, in the notes' order.
+# make slides PILLAR=data-analytics/06-applied-analyses LECTURE=02-read-the-customers STRICT=1 PREVIEW=1
+# Levels: a slide with no level is the intro, `core` is the core lesson, `deep` is the optional extension (code and maths).
+deck:
+  title: Read the Customers
+  subtitle: Cohorts, funnels, segments and SQL
+  tagline: "Retention · Conversion · RFM · Revenue bridge"
+  reference: "Notes: data-analytics/06-applied-analyses, notes 3 to 6"
+  output: 02-read-the-customers.pptx
+  notes: >-
+    This is the third lecture of the applied analyses series. It covers step 2. By the end you should be able to read a
+    retention triangle, split a change into rate and mix, find which funnel step moved and whether the redesign caused it,
+    test a segmentation on a later period, and write the revenue bridge in SQL and prove it adds up.
+
+lecture:
+  covers:
+    - data-analytics/06-applied-analyses/notes/03-cohort-and-retention.md
+    - data-analytics/06-applied-analyses/notes/04-funnel-and-conversion.md
+    - data-analytics/06-applied-analyses/notes/05-segmentation-and-rfm.md
+    - data-analytics/06-applied-analyses/notes/06-sql-for-analytics.md
+  requires: [data-analytics/06-applied-analyses/notes/02-credit-scoring.md]
+  next: [data-analytics/06-applied-analyses/notes/07-survival-and-event-history.md]
+  related:
+    - data-science/01-classical-ml/notes/05-unsupervised-learning.md
+    - data-science/01-classical-ml/notes/05b-clustering-categorical-and-mixed-data.md
+    - data-science/01-classical-ml/notes/12-reading-the-errors.md
+    - data-analytics/03-experimentation-and-causality/notes/01-ab-testing.md
+    - data-analytics/03-experimentation-and-causality/notes/05-matching-and-weighting.md
+    - data-analytics/01-python-for-data-analysis/notes/07-groupby-and-aggregation.md
+    - data-analytics/01-python-for-data-analysis/notes/04-reshaping-and-joins.md
+
+parts:
+  - title: Cohorts and retention
+    divider: false
+    summary: The triangle · Rate and mix · Channel value · The sBG curve
+    notes: Fernhill's repeat buying has fallen. We read it by cohort, split the fall into rate and mix, price each channel and project the curve.
+    slides:
+      - layout: statement
+        beat: problem
+        section: The question and the data
+        title: Why did repeat buying fall?
+        recall: What is the question in the retention chapter, and what makes it hard?
+        answer: "Fernhill's 90-day repeat rate fell after email reminders were cut and paid social grew. We must say how much is behaviour, how much is mix, and what each channel is worth, before the data is old enough to say."
+        kicker: The problem
+        statement: "Repeat buying fell. Was it the customers, or the customers we chose to buy?"
+        attribution: Fernhill, 2024 to 2025
+        takeaway: A fall in an aggregate has two possible causes, and the cure for each is different.
+        source: notes/03-cohort-and-retention.md
+        notes: >-
+          The finance question is whether the move to paid social paid for itself, and what to do about the fall. We use the
+          order log of 26,342 customers and 63,958 orders.
+
+      - layout: bullets
+        beat: fundamentals
+        section: The question and the data
+        title: One order log, three questions
+        recall: How big is the data and what does the chapter ask of it?
+        answer: "26,342 customers, 63,958 orders and £3,364,669 of revenue. It asks how retention varies by age and cohort, how much of the fall is rate and how much mix, and what a customer is worth by channel."
+        bullets:
+          - "**26,342** customers, **63,958** orders, **£3,364,669** revenue"
+          - "Cohort: the quarter of a customer's first order"
+          - "Age: periods since that first order"
+          - "Rate or mix? Which channel pays back?"
+          - "How good is the 24-month figure we cannot yet see?"
+        takeaway: Start from one order log and a clear question, and every table after is a view of it.
+        source: notes/03-cohort-and-retention.md
+        notes: >-
+          The synthetic Fernhill data comes with a known generator, so claims can be checked against truth where the note says so.
+
+      - layout: image
+        beat: fundamentals
+        section: The retention triangle
+        title: Read a retention triangle along both diagonals
+        kicker: Retention by cohort and age
+        recall: What does the retention triangle show, and where do you look for a period effect?
+        answer: "Rows are cohorts, columns are age (period minus cohort). Age-1 retention was about 15% up to 2024Q4, then about 8.4% for 2025Q1 and Q2. A shock in one calendar quarter runs along a diagonal."
+        image: ../../assets/sources/images/applied-cohort-heatmap.png
+        caption: "Share of each cohort ordering at each age, upper triangle only."
+        bullets:
+          - "Age-1: about **15%** to 2024Q4, then **8.4%**"
+          - "2025Q3 recovers a little, to **9.1%**"
+          - "Age = period − cohort"
+          - "Mask cohorts too young to have reached the age"
+        takeaway: A new low at the same calendar quarter across cohorts is a period effect, not a cohort one.
+        source: notes/03-cohort-and-retention.md
+        notes: >-
+          The step down happens at the same calendar time for every cohort that is old enough, so it is a period effect. Cohorts
+          after the cut also start lower, so some is a cohort effect. We need to separate them.
+
+      - layout: compare
+        beat: fundamentals
+        level: core
+        section: The retention triangle
+        title: A 2% monthly loss is 21.5% a year, not 24%
+        recall: Why does 2% a month not make 24% a year?
+        answer: "Losses compound on what is left, so 2% a month leaves 0.98 to the 12th power, a loss of 21.5% a year, not 24%."
+        emphasis: right
+        left:
+          title: Simple sum
+          bullets: ["2% × 12 = **24%**", "Ignores that the base shrinks"]
+        right:
+          title: Compounded
+          bullets: ["0.98 to the power 12", "A loss of **21.5%**"]
+        takeaway: Convert rates across periods by compounding, never by multiplying.
+        source: notes/03-cohort-and-retention.md
+        notes: >-
+          The same care applies to a quarterly rate quoted as monthly. Compare like with like before comparing cohorts.
+
+      - layout: statement
+        beat: problem
+        section: Separate rates from mix
+        title: An aggregate moves for two reasons
+        recall: Why must a change in an aggregate be split before it is explained?
+        answer: "The rate within each group can change, or the share of each group can change. The two have different owners and different fixes."
+        kicker: Rate and mix
+        statement: "The share of paid social among new customers went from 27.5% to 53.8%. Its customers return less."
+        attribution: Fernhill new customers, 2024 to 2025
+        takeaway: Say which part is behaviour and which is who we acquired, because only one is a retention problem.
+        source: notes/03-cohort-and-retention.md
+        notes: >-
+          Paid social had the largest rise. Email fell from 18.5% to 4.7% of new customers because it was cut.
+
+      - layout: table
+        beat: fundamentals
+        section: Separate rates from mix
+        title: Mix shifted to paid social while every rate fell
+        recall: How did channel share and the 90-day repeat rate move between 2024 and 2025?
+        answer: "Paid social share 27.5 to 53.8%, repeat 18.5 to 13.6%. Organic 39.0 to 30.6%, 33.3 to 27.3%. Email 18.5 to 4.7%, 45.1 to 38.6%. Referral 15.0 to 10.9%, 33.6 to 24.8%."
+        header: [Channel, Share 2024, Share 2025, Repeat 2024, Repeat 2025]
+        widths: [2.4, 1.8, 1.8, 1.8, 1.8]
+        rows:
+          - [Paid social, 27.5%, 53.8%, 18.5%, 13.6%]
+          - [Organic, 39.0%, 30.6%, 33.3%, 27.3%]
+          - [Email, 18.5%, 4.7%, 45.1%, 38.6%]
+          - [Referral, 15.0%, 10.9%, 33.6%, 24.8%]
+        highlight: [0]
+        takeaway: The biggest channel by growth is the one that repeats least, and every channel got worse.
+        source: notes/03-cohort-and-retention.md
+        notes: >-
+          Repeat means a second order within 90 days. Every channel's rate fell, which is the behaviour part, and the base moved to the
+          channel with the lowest rate, which is the mix part.
+
+      - layout: cards
+        beat: fundamentals
+        level: core
+        section: Separate rates from mix
+        title: 11.4 points split into rate and mix
+        recall: How do the 11.4 points split, and what do you report?
+        answer: "The overall 90-day repeat rate fell from 31.6% to 20.2%. Rates account for -6.2 points and mix for -5.2. In the reverse order it is -5.8 and -5.6, so report about half and half."
+        cards:
+          - {title: "Total", accent: "1E3A5F", body: "31.6% to 20.2%, a fall of **11.4** points"}
+          - {title: "Rates", accent: "D4621A", body: "**−6.2** points: each channel got worse"}
+          - {title: "Mix", accent: "0F7490", body: "**−5.2** points: more paid social"}
+        takeaway: Report about half and half, because the split depends on the order you take it in.
+        source: notes/03-cohort-and-retention.md
+        notes: >-
+          The two orders of decomposition are in the note: rates first gives -6.2 and -5.2, mix first gives -5.8 and -5.6. The
+          fall is shared, and only the retention half can be reached by retention work.
+
+      - layout: compare
+        beat: fundamentals
+        level: deep
+        section: Separate rates from mix
+        title: The order of the decomposition changes the split
+        recall: What are the rate and mix effects in each order?
+        answer: "Rate effect first: rates -6.2, mix -5.2. Mix effect first: mix -5.6, rates -5.8. Each sums to -11.4."
+        emphasis: left
+        left:
+          title: Rates, then mix
+          bullets: ["Rates **−6.2**", "Mix **−5.2**"]
+        right:
+          title: Mix, then rates
+          bullets: ["Mix **−5.6**", "Rates **−5.8**"]
+        takeaway: Quote the sensitivity to order alongside the split.
+        source: notes/03-cohort-and-retention.md
+        notes: >-
+          There is an interaction term, and the order decides which side takes it. Reporting both orders is honest and cheap.
+
+      - layout: image
+        beat: practice
+        section: What is a customer worth by channel?
+        title: Email customers are worth over twice paid social's
+        kicker: Cumulative margin per customer by channel
+        recall: What is a customer worth by channel over 12 months?
+        answer: "Email is over £200, organic and referral about £140, paid social about £84. The first order rose from £56 to £62."
+        image: ../../assets/sources/images/applied-cohort-ltv-channel.png
+        caption: "Cumulative revenue per customer by months since first order."
+        bullets:
+          - "Email: over **£200** at 12 months"
+          - "Organic and referral: about **£140**"
+          - "Paid social: about **£84**"
+          - "First order: **£56** to **£62**"
+        takeaway: The lines only separate later, so judge a channel on months, not on the first order.
+        source: notes/03-cohort-and-retention.md
+        notes: >-
+          The lines overlap early because first orders are similar. Judging a channel on its first order or its 30-day return would
+          miss the gap.
+
+      - layout: table
+        beat: practice
+        section: What is a customer worth by channel?
+        title: Paid social returns about its cost, no more
+        recall: What are the 24-month margin and LTV to CAC by channel, and what is assumed?
+        answer: "With a 35% margin and CACs of £32, £6, £9 and £14: 24-month margin £32.68 (paid social), £62.68, £98.52 and £61.48. LTV to CAC is 1.02, 10.45, 10.95 and 4.39. Margin and CAC are assumptions."
+        header: [Channel, Customers, CAC, 24-month margin, LTV to CAC]
+        widths: [2.4, 1.8, 1.6, 2.4, 1.8]
+        rows:
+          - [Paid social, "2,100", £32, £32.68, "1.02"]
+          - [Organic, "3,155", £6, £62.68, "10.45"]
+          - [Email, "1,434", £9, £98.52, "10.95"]
+          - [Referral, "1,251", £14, £61.48, "4.39"]
+        highlight: [0]
+        takeaway: Margin and acquisition cost decide the ratio, so state them and show the sensitivity.
+        source: notes/03-cohort-and-retention.md
+        notes: >-
+          The margin of 35% and the CACs are assumptions. If paid social costs £15 a customer its ratio is about 2.2, which is why the
+          recommendation asks for the real number first.
+
+      - layout: statement
+        beat: problem
+        section: Project the curve, because you cannot wait 24 months
+        title: Nobody has 24 months of data on a new cohort
+        recall: Why is the choice of curve a decision, not a detail?
+        answer: "A curve fitted on the early months must extrapolate. A good fit in the calibration window says little about the extrapolation."
+        kicker: Extrapolation
+        statement: "A good fit in the window says little about what happens beyond it."
+        attribution: Fader and Hardie, 2007
+        takeaway: Choose a model whose shape you can defend, and test it on held-back months.
+        source: notes/03-cohort-and-retention.md
+        notes: >-
+          The question is what a paid social customer will be worth at 24 months, using only six months of their history.
+
+      - layout: compare
+        beat: fundamentals
+        level: core
+        section: Project the curve, because you cannot wait 24 months
+        title: Curves that fit early months miss the year-12 rate
+        recall: How far do linear, exponential and quadratic curves miss the year-12 survival rate?
+        answer: "A linear curve falls short by 81% and an exponential by 30%, while a quadratic overshoots by 92%. These are the Fader and Hardie 2007 comparisons."
+        emphasis: right
+        left:
+          title: Common shapes
+          bullets: ["Linear: **81%** short", "Exponential: **30%** short", "Quadratic: **92%** over"]
+        right:
+          title: Why
+          bullets: ["Customers differ", "The fast leavers go first", "Retention of the rest rises"]
+        takeaway: A curve that ignores the mix of customers cannot get the shape right.
+        source: notes/03-cohort-and-retention.md
+        notes: >-
+          Fader and Hardie call this the ruse of heterogeneity: pooled retention rises with age even though no customer changes.
+
+      - layout: flow
+        beat: fundamentals
+        level: core
+        section: Project the curve, because you cannot wait 24 months
+        title: The sBG model builds the curve from customer differences
+        recall: How does the shifted beta geometric model get its shape?
+        answer: "Each customer has a constant chance of leaving, that chance varies across customers following a beta distribution, so the fast leavers go first and the pooled retention rate rises."
+        steps:
+          - {label: One customer, sub: "a constant chance of leaving", accent: "94A3B8"}
+          - {label: Customers differ, sub: "the chance follows a beta", accent: "1E3A5F"}
+          - {label: Fast leavers go first, sub: "the mix gets loyal", accent: "0F7490"}
+          - {label: Pooled retention rises, sub: "with age"}
+        caption: "Two parameters, alpha and beta, set the whole curve."
+        takeaway: The curve bends because the base gets more loyal, and the model says exactly how fast.
+        source: notes/03-cohort-and-retention.md
+        notes: >-
+          This is the shifted beta geometric (sBG) model. It describes a contractual-style survival curve for cohorts in the data.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: Project the curve, because you cannot wait 24 months
+        title: Two formulas hold the whole sBG model
+        recall: What are the survival and retention functions of the sBG model?
+        answer: "Survival is S(t) = B(alpha, beta + t) / B(alpha, beta), and retention is r(t) = (beta + t - 1) / (alpha + beta + t - 1)."
+        lead: "B is the beta function. Two parameters, alpha and beta, are fitted."
+        lang: text
+        code: |-
+          S(t) = B(alpha, beta + t)
+                 / B(alpha, beta)
+
+          r(t) = (beta + t - 1)
+                 / (alpha + beta + t - 1)
+        bullets:
+          - "**S(t)**: share still active at time t"
+          - "**r(t)** rises with t, so retention improves with age"
+        takeaway: Fit alpha and beta on the early months, then read the whole curve off these two functions.
+        source: notes/03-cohort-and-retention.md
+        notes: >-
+          The derivation is in the note and in Fader and Hardie (2007). We replicate their published fits on the next slides.
+
+      - layout: image
+        beat: practice
+        level: core
+        section: Project the curve, because you cannot wait 24 months
+        title: Fitted on six months, the sBG curve tracks month 24
+        kicker: Calibrated on months 0 to 6
+        recall: How well does the sBG curve predict month 24 compared with an exponential?
+        answer: "At month 24 the actual survival is 0.238, sBG predicts 0.251 and an exponential 0.087. The fit uses alpha 0.689 and beta 3.883."
+        image: ../../assets/sources/images/applied-cohort-sbg.png
+        caption: "Observed survival against sBG and exponential fits, calibration window shaded."
+        bullets:
+          - "Fit: alpha **0.689**, beta **3.883**"
+          - "Month 24 actual: **0.238**"
+          - "sBG: **0.251**, exponential: **0.087**"
+          - "Model retention at months 1, 6, 12: **0.849, 0.928, 0.956**"
+        takeaway: With six months of data the sBG curve lands near the 24-month truth, and the exponential does not.
+        source: notes/03-cohort-and-retention.md
+        notes: >-
+          Retention rises from 0.849 at month 1 to 0.956 at month 12, which is the mix getting more loyal. An exponential assumes it stays flat.
+
+      - layout: table
+        beat: practice
+        level: deep
+        section: Project the curve, because you cannot wait 24 months
+        title: We reproduced the published fits, with one caveat
+        recall: How well does the replication of the sBG paper hold up?
+        answer: "Regular alpha 0.704 and beta 1.182. High End alpha 0.668 and beta 3.806 against a printed 0.688, likely a typo. Year-12 forecast errors are -4.1% and -1.7%, with a sign mismatch unresolved."
+        header: [Segment, Alpha, Beta, Year-12 error]
+        widths: [2.4, 1.8, 1.8, 2.4]
+        rows:
+          - [Regular, "0.704", "1.182", "−4.1%"]
+          - [High End, "0.668 (printed 0.688)", "3.806", "−1.7%"]
+        highlight: [1]
+        takeaway: Check a method against a published table, and say so where yours differs.
+        source: notes/03-cohort-and-retention.md
+        notes: >-
+          The printed 0.688 is likely a typo in the paper. The sign of the year-12 errors does not match the paper and we could not resolve it. Say that, do not hide it.
+
+      - layout: cards
+        beat: wrap
+        section: Recommendation
+        title: Reinstate email with a holdout, cap paid social
+        recall: What is the cohort recommendation, and what would change it?
+        answer: "Bring back the email reminders for the existing base with a holdout, and cap paid social at about its old volume until its true cost is confirmed. About half the fall is every channel getting worse, the other half the move to paid social. At £15 CAC the ratio would be about 2.2."
+        cards:
+          - {title: "Reinstate email", accent: "1E3A5F", body: "For the existing base, **with a holdout** to measure it"}
+          - {title: "Cap paid social", accent: "D4621A", body: "At about its old volume until its true CAC is confirmed"}
+          - {title: "What would change it", accent: "0F7490", body: "A real CAC of **£15** gives a ratio of about **2.2**"}
+        takeaway: Get the real acquisition cost first, and reinstate email through a holdout and not just a date.
+        source: notes/03-cohort-and-retention.md
+        notes: >-
+          The drop in rates coincides with the budget cut, and a before-and-after cannot prove one caused the other. That is why the
+          reinstatement needs a holdout.
+
+      - layout: table
+        beat: pitfalls
+        section: Pitfalls
+        title: Retention pitfalls and what to do instead
+        recall: What are the main cohort and retention pitfalls?
+        answer: "Incomplete cohorts, a blended rate, reading a period effect as a cohort effect, regressing out age, period and cohort, mistaking mix for behaviour, judging a channel on its first order, fitting a curve because it fits, and quoting LTV with invisible assumptions."
+        header: [Pitfall, Do instead]
+        widths: [4, 5.6]
+        rows:
+          - [Incomplete cohorts, Mask the triangle]
+          - [A blended retention rate, Hold age fixed]
+          - [Period read as cohort, Look along the diagonal]
+          - ["Regressing out age, period and cohort", State the assumption the identity forces]
+          - [Mix taken for behaviour, Decompose and report the order]
+          - [Fit-because-it-fits curves, Compare on held-back periods]
+          - [Lapsed treated as lost, You observe silence and not churn]
+          - [Invisible LTV assumptions, State margin and CAC and show sensitivity]
+        takeaway: Most retention mistakes are about age, so hold age fixed before you compare anything.
+        source: notes/03-cohort-and-retention.md
+        notes: >-
+          Also: reading a rising retention rate as growing loyalty. It is usually the less loyal customers having left already.
+
+  - title: Funnel and conversion
+    summary: The steps · The headline · Real or redesign · The cost
+    notes: A redesign went live and the headline conversion barely moved. We look at each step, ask whether the drop is real and what it costs.
+    slides:
+      - layout: statement
+        beat: problem
+        section: The question and the data
+        title: Conversion held still, so was the redesign fine?
+        recall: What was the situation behind the funnel analysis?
+        answer: "The checkout was redesigned on 15 September 2025. Headline conversion moved from 7.48% to 7.60%, so it looks fine."
+        kicker: The problem
+        statement: "Conversion went from 7.48% to 7.60% after the redesign. It looks like nothing happened."
+        attribution: Fernhill, redesign of 15 September 2025
+        takeaway: A flat headline can hide a large loss and a large gain that happen to cancel.
+        source: notes/04-funnel-and-conversion.md
+        notes: >-
+          The data is 496,153 sessions from 247,369 users, through six steps. The headline nets out gains and losses.
+
+      - layout: flow
+        beat: fundamentals
+        section: Conditional rates, step by step
+        title: Measure each step as a rate of the one before
+        recall: What are the funnel steps and why use conditional rates?
+        answer: "Product, basket, checkout, payment, purchase, each step measured as a share of those who reached the one before. A conditional rate shows where a loss happens and is not hidden by the steps before it."
+        steps:
+          - {label: Product, sub: "unchanged", accent: "94A3B8"}
+          - {label: Basket, sub: "rate rose", accent: "1E3A5F"}
+          - {label: Checkout, sub: "flat", accent: "0F7490"}
+          - {label: Payment, sub: "fell on mobile", accent: "D4621A"}
+          - {label: Purchase, sub: "flat"}
+        caption: "Five steps. Each rate is the share who reach the step from the one before."
+        takeaway: Count conditional rates, and the step that broke shows itself.
+        source: notes/04-funnel-and-conversion.md
+        notes: >-
+          The funnel has six steps in the data. The picture shows the ones where the story is.
+
+      - layout: image
+        beat: fundamentals
+        section: Conditional rates, step by step
+        title: Mobile lost 15 points at the payment step
+        kicker: Step rates by device
+        recall: Which funnel step fell and by how much on mobile and desktop?
+        answer: "On mobile, checkout to payment fell from 82.4% to 67.6%, while desktop held at 83.2% to 84.0%. Basket rose (22.3 to 25.4 mobile) and the other steps were flat."
+        image: ../../assets/sources/images/applied-funnel-steps.png
+        caption: "Mobile and desktop step rates before and after 15 September 2025."
+        bullets:
+          - "Mobile payment step: **82.4%** to **67.6%**"
+          - "Desktop payment step: **83.2%** to **84.0%**"
+          - "Mobile basket: **22.3%** to **25.4%**"
+          - "Product step unchanged: **54.9%**"
+        takeaway: The loss is one step on one device, and only a conditional rate shows it.
+        source: notes/04-funnel-and-conversion.md
+        notes: >-
+          Mobile checkout 61.9 to 61.3 and purchase 93.3 to 93.0 are flat. Desktop: basket 30.1 to 34.4, checkout 68.2 to 68.0, purchase 94.8 to 95.5.
+
+      - layout: compare
+        beat: fundamentals
+        section: Why the headline held still
+        title: Mobile fell and desktop rose, and the mix hid it
+        recall: Why did the headline conversion hold still?
+        answer: "Mobile conversion fell from 5.80 to 5.37 and desktop rose from 10.03 to 11.65. The mobile share also rose from 60.5 to 64.5%. Rate effect +0.38, mix -0.25, sum about +0.12."
+        emphasis: left
+        left:
+          title: Rates
+          bullets: ["Desktop **10.03** to **11.65**", "Mobile **5.80** to **5.37**", "Rate effect **+0.38**"]
+        right:
+          title: Mix
+          bullets: ["Mobile share **60.5** to **64.5%**", "Mobile converts at about half", "Mix effect **−0.25**"]
+        takeaway: Rate and mix almost cancel, which is why a headline can hold still while a step breaks.
+        source: notes/04-funnel-and-conversion.md
+        notes: >-
+          The sum is about +0.12, which is the headline's small rise. This looks like Simpson's paradox (Bickel 1975), but here it is only a relative of it, since the direction of the overall change is not reversed.
+
+      - layout: image
+        beat: practice
+        level: deep
+        section: Why the headline held still
+        title: A relative of Simpson's paradox
+        kicker: Rate and mix by device
+        recall: What does the Simpson figure show?
+        answer: "Conversion by device and the mix of devices, where the pooled change points one way and the groups the other."
+        image: ../../assets/sources/images/applied-funnel-simpson.png
+        caption: "Conversion by device and the pooled headline."
+        bullets:
+          - "Desktop up, mobile down"
+          - "Mobile share up"
+          - "Pooled headline barely moves"
+        takeaway: Group before you pool, whenever the mix can change.
+        source: notes/04-funnel-and-conversion.md
+        notes: >-
+          This figure sits with the rate and mix argument, and is an optional extension of the same story.
+
+      - layout: steps
+        beat: fundamentals
+        level: core
+        section: Is the drop real, and is it the redesign?
+        title: Difference in differences asks it of the data
+        recall: How does difference in differences separate the redesign from the calendar?
+        answer: "Mobile fell 14.8 points (interval -15.9 to -13.7) and desktop rose 0.8 (-0.2 to +1.7), so the difference is -15.5 (-17.0 to -14.1). It assumes mobile and desktop would have moved in parallel."
+        steps:
+          - {title: Mobile change, text: "**−14.8** points, interval −15.9 to −13.7"}
+          - {title: Desktop change, text: "**+0.8** points, interval −0.2 to +1.7"}
+          - {title: The difference, text: "**−15.5** points, interval −17.0 to −14.1", n: "★", accent: "D4621A"}
+          - {title: Parallel trends, text: "Assumed, not tested: it is not randomised"}
+        takeaway: Desktop is the comparison group, so the estimate holds only if the two would have moved together.
+        source: notes/04-funnel-and-conversion.md
+        notes: >-
+          The number of mobile sessions at the step after is 10,503. The comparison is a before-and-after with a control, not an experiment.
+
+      - layout: table
+        beat: fundamentals
+        level: core
+        section: Sessions or users?
+        title: Per user the headline looks worse than per session
+        recall: How do per-session and per-user conversion differ, and why?
+        answer: "Per session 7.48% to 7.60%. Per user 11.34% to 9.94%. Sessions per user are 1.57 and 1.34 because the windows are 198 and 108 days, so a longer window gives more chances to buy."
+        header: [Basis, Before, After, Window]
+        widths: [2.4, 1.8, 1.8, 2.4]
+        rows:
+          - [Per session, 7.48%, 7.60%, "198 vs 108 days"]
+          - [Per user, 11.34%, 9.94%, "1.57 vs 1.34 sessions"]
+        highlight: [1]
+        takeaway: Compare equal windows, because per-user rates rise with the length of the window.
+        source: notes/04-funnel-and-conversion.md
+        notes: >-
+          Windows of 198 and 108 days are unequal, so the per-user figures are not comparable. The effect is 13 times the interval half-width, so the conclusion survives either way.
+
+      - layout: cards
+        beat: practice
+        section: What it cost
+        title: The drop costs about £1,800 of margin a week
+        recall: What does the mobile drop cost?
+        answer: "About 1,500 orders in 108 days (range 1,378 to 1,659) at an average order of £52.61. The mid case is £79,865 of revenue and £27,953 of margin (range £25,364 to £30,542), which is £1,812 a week."
+        cards:
+          - {title: "Orders lost", accent: "1E3A5F", body: "About **1,500** in 108 days, range 1,378 to 1,659"}
+          - {title: "Revenue", accent: "0F7490", body: "**£79,865** at £52.61 an order"}
+          - {title: "Margin", accent: "D4621A", body: "**£27,953**, about **£1,812** a week"}
+        takeaway: A rate persuades nobody until it becomes money, with its assumptions stated.
+        source: notes/04-funnel-and-conversion.md
+        notes: >-
+          The margin range is £25,364 to £30,542. The headline alone would have suggested a smaller picture, about 8.4% from 190,528 sessions.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: Can we afford to find out?
+        title: Small effects need many sessions to find
+        recall: How long does a test take to detect a +2, +5 or +10 point gain?
+        answer: "At 97 sessions a day at the step, +2 points needs 8,390 per arm (173 days), +5 points needs 1,302 (27 days) and +10 points needs 305 (6 days). It is close to 16 sigma squared over delta squared."
+        header: [Gain to detect, Per arm, Days]
+        widths: [3, 3, 2.4]
+        rows:
+          - [+2 points, "8,390", "173"]
+          - [+5 points, "1,302", "27"]
+          - [+10 points, "305", "6"]
+        highlight: [1]
+        takeaway: A low-funnel test can only find a large effect, so decide the smallest gain worth shipping before it starts.
+        source: notes/04-funnel-and-conversion.md
+        notes: >-
+          The rule of thumb is close to 16 sigma squared over delta squared (Kohavi 2009). It uses the 97 sessions a day that reach the step.
+
+      - layout: cards
+        beat: wrap
+        section: Recommendation
+        title: Roll back in a two-week test
+        recall: What is the funnel recommendation?
+        answer: "Roll the mobile checkout page back in a two-week 50/50 test, then send everyone to the winner. Ship nothing without at least a 5-point gain. Each extra week costs about £1,800. The data is synthetic and not randomised."
+        cards:
+          - {title: "Roll back", accent: "1E3A5F", body: "A two-week **50/50** test, then everyone to the winner"}
+          - {title: "Raise the bar", accent: "D4621A", body: "Ship nothing without at least a **5-point** gain"}
+          - {title: "Cost of waiting", accent: "0F7490", body: "About **£1,800** of margin for each extra week"}
+        takeaway: Judge a replacement on the checkout-to-payment step, since headline conversion would hide it.
+        source: notes/04-funnel-and-conversion.md
+        notes: >-
+          The analysis cannot say why customers abandon the new page. It needs session recordings, error logs and a few calls with customers. The figures are synthetic, so the method transfers but the numbers do not.
+
+      - layout: bullets
+        beat: pitfalls
+        section: Pitfalls
+        title: Funnel pitfalls
+        recall: What are the main funnel pitfalls?
+        answer: "Reading only end-to-end conversion, calling a before-and-after an experiment, comparing unequal windows, conditioning on a step the change affects, trusting one event source, assuming a strict funnel, ignoring the step's own traffic and treating lost sessions as lost customers."
+        bullets:
+          - "Only **end-to-end** conversion: it nets out gains and losses"
+          - "A before-and-after is **not** an experiment"
+          - "**Unequal windows**: per-user rates grow with length"
+          - "Conditioning on a step the **change affects**"
+          - "One event source: reconcile to the payment system"
+          - "Lost sessions are not always lost customers"
+        takeaway: Split a change into conditional steps and then into segments before you say anything about it.
+        source: notes/04-funnel-and-conversion.md
+        notes: >-
+          Also: assuming a strict funnel, since real sessions skip and repeat steps, and ignoring the step's own traffic when sizing a test.
+
+  - title: Segmentation and RFM
+    summary: Scores · Shape · Clusters · Concentration · The campaign · A B2B case
+    notes: A £4,000 win-back plan targets the customers labelled At risk. We score the segments on a later period and price the campaign.
+    slides:
+      - layout: statement
+        beat: problem
+        section: The question and the data
+        title: Is the At risk segment worth £4,000?
+        recall: What is the question in the segmentation chapter?
+        answer: "A £4,000 win-back plan targets the At risk segment. We take a snapshot on 30 June 2025 and score every segment on the next six months, July to December, for 21,085 customers."
+        kicker: The problem
+        statement: "A £4,000 win-back campaign is planned for the customers called At risk."
+        attribution: Fernhill, snapshot 30 June 2025
+        takeaway: A segment is a prediction, so score it on a period it has not seen.
+        source: notes/05-segmentation-and-rfm.md
+        notes: >-
+          21,085 customers. Typical customer: median recency 287 days, median frequency 1, median future value 0. Most customers buy once.
+
+      - layout: table
+        beat: fundamentals
+        section: Scores and named segments
+        title: Champions hold 68% of future value
+        recall: How do the named RFM segments differ on the later period?
+        answer: "Champions are 3,872 customers, 45% buy again, £55.57 each and 68% of future value. At risk is 2,651, 3% buy again, £1.72 and 1%. Middle 7,653, 9%, £7.64, 18%. New 3,061, 14%, £11.30, 11%. Hibernating 3,848, 2%, £1.19, 1%."
+        header: [Segment, Customers, Share of future value]
+        widths: [3.0, 2.4, 3.0]
+        rows:
+          - [Champions, "3,872", 68%]
+          - [At risk, "2,651", 1%]
+          - [Middle, "7,653", 18%]
+          - [New, "3,061", 11%]
+          - [Hibernating, "3,848", 1%]
+        highlight: [1]
+        takeaway: The label At risk sounds like a save, but its 2,651 customers hold 1% of the next six months' value.
+        source: notes/05-segmentation-and-rfm.md
+        notes: >-
+          Scores of recency, frequency and monetary value are built from before the snapshot only. The named segments are a rule on top of the scores.
+
+      - layout: image
+        beat: fundamentals
+        section: Scores and named segments
+        title: The segments, scored on the later six months
+        kicker: Future value per head by segment
+        recall: What does the RFM segments figure show?
+        answer: "Champions are far above the rest on future value per head, and At risk and Hibernating are near zero."
+        image: ../../assets/sources/images/applied-rfm-segments.png
+        caption: "Customers, repurchase rate and future value per head by named segment."
+        bullets:
+          - "Champions: **£55.57** a head"
+          - "At risk: **£1.72**, Hibernating: **£1.19**"
+          - "The names say little about the money"
+        takeaway: Judge a segment on what it does next, not on what it is called.
+        source: notes/05-segmentation-and-rfm.md
+        notes: >-
+          The figure is generated by the chapter's practice script on the Fernhill data.
+
+      - layout: bullets
+        beat: pitfalls
+        level: core
+        section: Scores and named segments
+        title: A tie-break bug shrank New from 3,061 to 315
+        recall: What was the tie-break bug in the scores?
+        answer: "60.2% of customers have one order, and rank with method first breaks the ties by row order, which follows signup. New came out at 315 instead of 3,061, until ties were broken at random."
+        bullets:
+          - "**60.2%** of customers have a single order"
+          - "`rank(method=\"first\")` breaks ties by row order"
+          - "Row order follows **signup**, so it encodes age"
+          - "New: **315** instead of **3,061**"
+          - "Break ties at random, or use fixed bins"
+        takeaway: A heavily tied column plus a silent tie-break makes a segment out of the row order.
+        source: notes/05-segmentation-and-rfm.md
+        notes: >-
+          Nothing errors. The bug only shows when you compare a segment's size against what you expect from the data.
+
+      - layout: table
+        beat: fundamentals
+        level: deep
+        section: The shape underneath the names
+        title: The RFM grid has no clean boundaries
+        recall: What does the grid of recency and frequency show?
+        answer: "Mean future value in pounds runs 18, 34, 54, 113 for customers active in the last 60 days, 6, 10, 17, 22 for 181 to 365 days and 1, 2, 3, 1 for 366 days and over. Fader, Hardie and Lee 2005 show iso-value curves bend backwards, and the correlation is 0.11 among 946 repeat buyers (Fernhill Spearman 0.09)."
+        lead: "Mean future value per customer in £, by days since last order and by number of orders:"
+        header: [Days since last order, 1 order, 2 orders, 3-4 orders, 5+ orders]
+        widths: [2.6, 1.7, 1.7, 1.7, 1.7]
+        rows:
+          - ["0-60", "18", "34", "54", "113"]
+          - ["61-180", "9", "21", "34", "67"]
+          - ["181-365", "6", "10", "17", "22"]
+          - ["366+", "1", "2", "3", "1"]
+        takeaway: Iso-value curves bend backwards, so high frequency with a long silence is not valuable.
+        source: notes/05-segmentation-and-rfm.md
+        notes: >-
+          From Fader, Hardie and Lee (2005), on 23,560 CDNOW customers. The correlation of 0.11 is among 946 repeat buyers.
+
+      - layout: compare
+        beat: fundamentals
+        section: Does clustering do better?
+        title: Clusters differ in order value, not in future value
+        recall: Does k-means beat the RFM segments?
+        answer: "Silhouettes are about 0.3 (k=2 0.345, k=4 0.31). Clusters 0 and 3 are £77 against £27 on order value but £5.40 against £3.55 in future value. Cluster 1 holds 56% of future value with 3,672 customers."
+        emphasis: right
+        left:
+          title: Order value
+          bullets: ["Clusters 0 and 3: **£77**", "Others: **£27**", "A clear split"]
+        right:
+          title: Future value
+          bullets: ["**£5.40** against **£3.55**", "Cluster 1: **56%** of future value", "Silhouette about **0.3**"]
+        takeaway: K-means finds the largest spread in the features, which is not the value you need to predict.
+        source: notes/05-segmentation-and-rfm.md
+        notes: >-
+          Silhouettes at k=2 and k=4 are 0.345 and 0.31. Cluster 1 has 3,672 customers and cluster 2 has 3,096 with 23% of future value.
+
+      - layout: image
+        beat: fundamentals
+        section: How concentrated is value?
+        title: Past spenders are not the future's top decile
+        kicker: Concentration of past and future value
+        recall: How concentrated is value, and how well does the past predict it?
+        answer: "The top decile by past value holds 45.4% of past value and 44.3% of future value. The top decile by future value holds 91.9%. Spearman is 0.244, and 0.397 among 3,032 buyers in both periods."
+        image: ../../assets/sources/images/applied-rfm-concentration.png
+        caption: "Cumulative share of value by customer decile."
+        bullets:
+          - "Top past decile: **45.4%** of past, **44.3%** of future"
+          - "Top future decile: **91.9%** of future"
+          - "Spearman **0.244**, or **0.397** among 3,032 repeat buyers"
+        takeaway: A few customers carry the value, and the past ranks them only loosely.
+        source: notes/05-segmentation-and-rfm.md
+        notes: >-
+          Beware regression to the mean: top customers look worse next period with no intervention at all.
+
+      - layout: bullets
+        beat: pitfalls
+        level: deep
+        section: How concentrated is value?
+        title: Top customers look worse next period on their own
+        recall: What is regression to the mean in the segment tables?
+        answer: "Customers picked for a high score on one period look worse in the next with no intervention at all, so a campaign aimed at them must be judged against a holdout."
+        bullets:
+          - "Pick the top by one period, and they **fall back** in the next"
+          - "No campaign is needed for the drop to appear"
+          - "A before-and-after on a selected group **flatters** any fix"
+          - "Compare with a **random holdout** from the same group"
+        takeaway: Selected groups drift back to the average, so compare them with a holdout and not with their own past.
+        source: notes/05-segmentation-and-rfm.md
+        notes: >-
+          This is the last pitfall in the segmentation note, and the reason the campaign needs a randomised holdout.
+
+      - layout: table
+        beat: practice
+        section: The campaign, in money
+        title: Only the Lapsing group could pay for a campaign
+        recall: What response must each segment show for the campaign to break even?
+        answer: "At an average order of £52.67, £18.43 margin per order and £1.50 a contact, breakeven is 8.1 points. At risk needs 4.1 times its base rate (144 per arm), Hibernating 5.5 times (127), Lapsing 1.2 times (589 per arm, cost £1,809)."
+        header: [Segment, Buy again, Needs, Per arm]
+        widths: [2.6, 2, 2, 2]
+        rows:
+          - [At risk, 3%, "4.1x", "144"]
+          - [Hibernating, 2%, "5.5x", "127"]
+          - ["Lapsing (1,206 customers)", 45.2%, "1.2x", "589"]
+        highlight: [2]
+        takeaway: Only a randomised holdout measures the campaign, and uplift is what counts, not the response rate.
+        source: notes/05-segmentation-and-rfm.md
+        notes: >-
+          The breakeven is 8.1 points of order rate. This is an uplift question (Gutierrez and Gerardy 2017). Predicting who buys is not knowing who is persuadable.
+
+      - layout: cards
+        beat: wrap
+        section: Recommendation
+        title: Do not send to At risk; test the Lapsing half
+        recall: What is the segmentation recommendation?
+        answer: "Do not send to At risk. Send to a random half of the 1,206 Lapsing customers and keep the other half as a holdout, about £900. The contacted half must beat the holdout by at least 8.1 points of order rate over six months."
+        cards:
+          - {title: "Not At risk", accent: "94A3B8", body: "Its customers buy again **3%** of the time"}
+          - {title: "Lapsing, half", accent: "1E3A5F", body: "A random half of **1,206**, the other half a holdout"}
+          - {title: "The bar", accent: "D4621A", body: "Beat the holdout by **8.1** points over six months"}
+        takeaway: Spend about £900 to learn whether a campaign works, rather than £4,000 on a label.
+        source: notes/05-segmentation-and-rfm.md
+        notes: >-
+          The campaign for the half costs about £900. The decision is to measure first.
+
+      - layout: statement
+        beat: problem
+        level: deep
+        section: "Case: segmenting B2B customers by behaviour"
+        title: A clustering can pass every check and still be noise
+        recall: What does the B2B case set out to test?
+        answer: "A synthetic set of 400 businesses with seed 42, in three worlds: planted groups, blurred groups and a control with no structure. We test whether each method passes a gate on structure and whether the groups are stable and actionable."
+        kicker: A synthetic case
+        statement: "A clustering gate is only as good as its control with no structure in it."
+        attribution: 400 businesses, seed 42, worlds planted, blurred and control
+        takeaway: Always run a control with no structure, because that is the one that shows the gate leaks.
+        source: notes/05-segmentation-and-rfm.md
+        notes: >-
+          The case is synthetic, with the structure planted in one world and absent in the control. The thresholds are design choices.
+
+      - layout: table
+        beat: practice
+        level: deep
+        section: "Case: segmenting B2B customers by behaviour"
+        title: HDBSCAN's gate passes on a control
+        recall: How do the methods behave on the planted and control worlds?
+        answer: "RFM scores an ARI on planted of 0.004. K-means at k=5 has a silhouette of 0.358. HDBSCAN marks 32.8% noise at silhouette 0.458. The control passes with a 16-customer cluster, and across five fresh controls HDBSCAN passes once."
+        header: [Method, Result]
+        widths: [3, 6.4]
+        rows:
+          - [RFM on planted, ARI **0.004**]
+          - [K-means k=5, silhouette **0.358**]
+          - [HDBSCAN, "32.8% noise, silhouette **0.458**"]
+          - [HDBSCAN on a control, "passes the gate with a **16**-customer cluster"]
+          - [Five fresh controls, HDBSCAN passes **once**]
+        takeaway: A silhouette gate rewards a small tight cluster, so test it on data with nothing in it.
+        source: notes/05-segmentation-and-rfm.md
+        notes: >-
+          HDBSCAN is picked on planted although k-means has ARI 0.734 against 0.480. 40 of 54 manufacturers and 52 of 75 early-stage firms are labelled noise. With minimum size 15 it returns all noise.
+
+      - layout: image
+        beat: practice
+        level: deep
+        section: "Case: segmenting B2B customers by behaviour"
+        title: UMAP draws clusters on noise
+        kicker: UMAP on a control world
+        recall: What does UMAP show on the planted and control worlds?
+        answer: "Planted gives 6 clusters (0.857 on the map, 0.348 on the features, ARI 0.937). The control with size 10 gives 2 clusters (0.522 and 0.279), and with size 3 gives 48 clusters (0.548 and 0.073)."
+        image: ../../assets/sources/images/applied-segments-umap-control.png
+        caption: "A UMAP map of the control world, where no structure exists."
+        bullets:
+          - "Planted: **6** clusters, ARI **0.937**"
+          - "Control, size 10: **2** clusters"
+          - "Control, size 3: **48** clusters"
+          - "UMAP is for **looking**, not for scoring"
+        takeaway: A map looks convincing on noise, so trust the features and not the picture.
+        source: notes/05-segmentation-and-rfm.md
+        notes: >-
+          Silhouette on the map beats silhouette on the features in every case, which is the warning. Chari and Pachter use Jaccard above 0.7 for neighbour preservation. Here it is 0.492 and 0.611.
+
+      - layout: table
+        beat: practice
+        level: deep
+        section: "Case: segmenting B2B customers by behaviour"
+        title: Stable groups are not always actionable ones
+        recall: How stable are the groups, and can anyone act on them?
+        answer: "Stability by subsample ARI and against the previous year: planted k-means 0.999 and 0.902, planted HDBSCAN 0.603 and 0.288, control k-means 0.906 and 0.453, control HDBSCAN 0.768 and 0. Actionability AUC is 0.692 for k-means."
+        header: [World and method, Subsample ARI, Previous year]
+        widths: [4, 2.6, 2.6]
+        rows:
+          - [Planted k-means, "0.999", "0.902"]
+          - [Planted HDBSCAN, "0.603", "0.288"]
+          - [Control k-means, "0.906", "0.453"]
+          - [Control HDBSCAN, "0.768", "0.000"]
+        highlight: [3]
+        takeaway: A group that is stable inside one year and gone the next is not a segment you can plan on.
+        source: notes/05-segmentation-and-rfm.md
+        notes: >-
+          After Ben-David et al. (2006). Actionability AUC: 0.692 (k-means), 0.678 (the rule's clusters), 0.526 (RFM), 0.545 (costs exceed income). On the control 0.754, 0.744 and 0.578. A depth-3 tree reproduces the groups with 0.915 accuracy.
+
+      - layout: bullets
+        beat: pitfalls
+        section: Pitfalls
+        title: Segmentation pitfalls
+        recall: What are the main segmentation pitfalls?
+        answer: "Never validating the segments, future data in the features, tie-breaking by row order, using total spend as M, reading high frequency plus silence as valuable, reporting a campaign response without a holdout, believing the clusters are real, clustering unscaled features and reacting to regression to the mean."
+        bullets:
+          - "**Never validating** the segments on a later period"
+          - "Future data leaking into the features"
+          - "Tie-breaking by row order, here sign-up date"
+          - "Total spend as M duplicates **frequency**"
+          - "A campaign response with **no holdout**"
+          - "**K-means always returns k**: judge clusters by use"
+        takeaway: Hold out a period every time, because a segmentation not scored later is only a description.
+        source: notes/05-segmentation-and-rfm.md
+        notes: >-
+          Also: high frequency with a long silence usually means gone, unscaled skewed features let one heavy customer decide the distance, and top customers look worse next period with no intervention.
+
+  - title: SQL for analytics
+    summary: The bridge · Windows · Spines and islands · The fan-out
+    notes: The board pack says revenue is up 2.1%. We write the revenue bridge in SQL, prove it adds up, and look at the join bug that overstates it.
+    slides:
+      - layout: statement
+        beat: problem
+        section: The question and the data
+        title: Revenue is up 2.1%, and two teams disagree
+        recall: What is the question in the SQL chapter?
+        answer: "The board pack says revenue is up 2.1%, and two teams read it differently. We answer in DuckDB on 63,958 orders and £3,364,669 revenue."
+        kicker: The problem
+        statement: "The board pack says revenue is up 2.1%. One team says growth, the other says decline."
+        attribution: Fernhill, DuckDB over the order log
+        takeaway: A definition written once in SQL ends the argument between two spreadsheets.
+        source: notes/06-sql-for-analytics.md
+        notes: >-
+          Both teams are right, about different rows. The chapter builds the query that shows it.
+
+      - layout: flow
+        beat: fundamentals
+        section: The revenue bridge
+        title: The bridge is built as a chain of small steps
+        recall: What are the steps of the revenue bridge query?
+        answer: "Orders become a monthly table with one row per customer month, then a history that adds the previous active month, then labels of new, returning or reactivated, then revenue per quarter and kind."
+        steps:
+          - {label: Orders, sub: "the source rows", accent: "94A3B8"}
+          - {label: Monthly, sub: "one row per customer month", accent: "1E3A5F"}
+          - {label: History, sub: "previous active month", accent: "0F7490"}
+          - {label: Labelled, sub: "new, returning, reactivated", accent: "D4621A"}
+          - {label: Per quarter, sub: "revenue by kind"}
+        caption: "Each step is a common table expression that can be run and checked by itself."
+        takeaway: One idea per step, so that each can be checked on its own.
+        source: notes/06-sql-for-analytics.md
+        notes: >-
+          The label needs a customer's earlier rows, which is exactly what window functions are for: they see other rows without collapsing them.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: The revenue bridge
+        title: lag() labels each customer month
+        recall: How does the query label a customer month new, returning or reactivated?
+        answer: "lag(month) over a partition by customer gives the previous active month. No previous month is new, a gap of at most three months is returning, and otherwise reactivated."
+        lead: "The labelling step of the bridge, in DuckDB."
+        lang: sql
+        code: |-
+          history AS (
+            SELECT *, lag(month) OVER (
+              PARTITION BY customer_id
+              ORDER BY month) AS previous_month
+            FROM monthly),
+          labelled AS (
+            SELECT *, CASE
+              WHEN previous_month IS NULL THEN 'new'
+              WHEN date_diff('month',
+                previous_month, month) <= 3
+                THEN 'returning'
+              ELSE 'reactivated' END AS kind
+            FROM history)
+        bullets:
+          - "No previous month: **new**"
+          - "Gap of at most **3** months: **returning**"
+          - "The three is a **choice**: state it with the result"
+        takeaway: The definition lives in a comment and a number, so show it with the result.
+        source: notes/06-sql-for-analytics.md
+        notes: >-
+          This is an excerpt of the full query in the note. The three-month rule is a choice, and exercise 1 checks how much the answer depends on it.
+
+      - layout: image
+        beat: fundamentals
+        section: The revenue bridge
+        title: Growth hid a 24% fall in returning revenue
+        kicker: Revenue per quarter, by kind
+        recall: What does the bridge say about the 2.1% rise?
+        answer: "Revenue rose £27,264 (2.1%). New customers added £124,260, reactivated £55,021, and returning customers lost £152,017, a fall of 24%."
+        image: ../../assets/sources/images/applied-sql-revenue-bridge.png
+        caption: "Revenue per quarter split into new, returning and reactivated."
+        bullets:
+          - "Revenue **+£27,264** (2.1%)"
+          - "New **+£124,260**, reactivated **+£55,021**"
+          - "Returning **−£152,017**, **−24%**"
+        takeaway: A growth figure of 2.1% contains a fall of 24% in revenue from customers who keep buying.
+        source: notes/06-sql-for-analytics.md
+        notes: >-
+          Yearly totals new, returning, reactivated, total: 2023 464,619, 289,962, 46,215, 800,796. 2024 454,068, 638,310, 175,926, 1,268,304. 2025 578,328, 486,293, 230,947, 1,295,568.
+
+      - layout: compare
+        beat: practice
+        section: Prove it adds up
+        title: The bridge sums to the source, within £1
+        recall: How do you prove the bridge adds up?
+        answer: "Sum the bridge and compare with the source: £3,364,668 against £3,364,669, a £1 rounding difference. Reconcile every report's total before anyone reads it."
+        emphasis: left
+        left:
+          title: The bridge
+          bullets: ["Sums to **£3,364,668**", "Three kinds, every quarter"]
+        right:
+          title: The source
+          bullets: ["**£3,364,669**", "A **£1** rounding difference"]
+        takeaway: Make the reconciliation a scheduled test, so a broken join alerts someone before a slide does.
+        source: notes/06-sql-for-analytics.md
+        notes: >-
+          A report that does not reconcile to the source is not finished. This one check would have caught the fan-out bug later in the lecture.
+
+      - layout: table
+        beat: fundamentals
+        level: core
+        section: Running totals and year-on-year
+        title: Windows give totals and comparisons without collapsing rows
+        recall: What do the window figures in the note show?
+        answer: "December is down 0.4% year on year. The year-to-date total is 1,295,567 and the three-month average is 115,456. Write the frame as ROWS BETWEEN when you mean rows."
+        header: [Window figure, Value]
+        widths: [5, 3]
+        rows:
+          - [December year on year, "−0.4%"]
+          - [Year to date, "1,295,567"]
+          - [Three-month average, "115,456"]
+        takeaway: A window sees neighbouring rows without collapsing them, but write the frame down.
+        source: notes/06-sql-for-analytics.md
+        notes: >-
+          With ORDER BY the default frame is a range that treats ties as peers. Say ROWS BETWEEN when you mean rows.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: Top N per group
+        title: QUALIFY filters after the window
+        recall: How do you keep the top N per group in DuckDB?
+        answer: "Use rank() over a partition and filter it with QUALIFY, because WHERE runs before windows. PostgreSQL has no QUALIFY, so wrap the window in a subquery."
+        lead: "The two top customers per year."
+        lang: sql
+        code: |-
+          SELECT year(order_date) AS year,
+                 customer_id,
+                 round(sum(value)) AS spend,
+                 rank() OVER (
+                   PARTITION BY year(order_date)
+                   ORDER BY sum(value) DESC) AS place
+          FROM orders
+          GROUP BY 1, 2
+          QUALIFY place <= 2
+          ORDER BY year, place
+        bullets:
+          - "`WHERE` runs **before** windows"
+          - "`QUALIFY` runs **after** them"
+          - "`rank()` leaves gaps, `dense_rank()` does not"
+        takeaway: Choose the ranking function on purpose, and add a tie-break if you use row_number().
+        source: notes/06-sql-for-analytics.md
+        notes: >-
+          QUALIFY is not in every database. rank() gives ties the same place, dense_rank() leaves no gap, and row_number() picks a winner arbitrarily unless the ORDER BY has a tie-breaker.
+
+      - layout: bullets
+        beat: pitfalls
+        level: deep
+        section: Top N per group
+        title: Rankings and dialects can change the answer
+        recall: What can change a top-N or window result between databases or runs?
+        answer: "rank() gives ties the same place, dense_rank() leaves no gap and row_number() picks arbitrarily unless the ORDER BY has a tie-break. QUALIFY is not in every database, so PostgreSQL needs a subquery."
+        bullets:
+          - "`rank()` ties share a place and leave a **gap**"
+          - "`dense_rank()` leaves **no gap**"
+          - "`row_number()` is **arbitrary** on ties: add a tie-break"
+          - "`QUALIFY` is **not** in PostgreSQL: use a subquery"
+        takeaway: Name the ranking function on purpose and test it on tied data.
+        source: notes/06-sql-for-analytics.md
+        notes: >-
+          A non-deterministic row_number() can give a different top row on each run, with no error.
+
+      - layout: compare
+        beat: fundamentals
+        section: Filling gaps with a date spine
+        title: Without a spine the average skips empty weeks
+        recall: Why do you need a date spine before averaging?
+        answer: "Missing periods vanish, so the average is taken only over periods with data. Without a spine it is 1.83 per week against a true 1.38."
+        emphasis: right
+        left:
+          title: No spine
+          bullets: ["Empty weeks vanish", "Average **1.83** a week"]
+        right:
+          title: With a spine
+          bullets: ["Every week has a row", "True average **1.38**"]
+        takeaway: Build the calendar first and join the data to it.
+        source: notes/06-sql-for-analytics.md
+        notes: >-
+          The same applies to lag(x, 12) on a sparse table, which counts rows and not months.
+
+      - layout: flow
+        beat: fundamentals
+        level: core
+        section: Sessionising events
+        title: A gap rule turns page views into sessions
+        recall: How are events turned into sessions, and how sensitive is the count?
+        answer: "Start a new session when the gap since the previous event exceeds a threshold. 29,782 page views give 5,974 sessions at the note's gap, 6,127 at 15 minutes and 5,894 at 60 minutes."
+        steps:
+          - {label: Order the events, sub: "by user and time", accent: "94A3B8"}
+          - {label: Take the gap, sub: "lag of the timestamp", accent: "1E3A5F"}
+          - {label: Flag a new session, sub: "when the gap is large", accent: "0F7490"}
+          - {label: Running sum, sub: "numbers the sessions"}
+        caption: "29,782 page views give 5,974 sessions. A 15-minute gap gives 6,127 and 60 minutes gives 5,894."
+        takeaway: The threshold is a definition, so quote it with the session count.
+        source: notes/06-sql-for-analytics.md
+        notes: >-
+          The count moves by only a few percent across a wide range of thresholds, which is the check that the definition is not driving the answer.
+
+      - layout: bullets
+        beat: fundamentals
+        level: deep
+        section: Gaps and islands
+        title: 60% of repeat active months follow a gap
+        recall: What do gaps and islands show about customer streaks?
+        answer: "54,651 active customer-months form 43,370 streaks across 26,342 customers, so about 60% of repeat active months follow a gap. Streak lengths run 36,135, 5,046, 1,301, 490, 191, 87."
+        bullets:
+          - "**54,651** active customer-months"
+          - "**43,370** streaks across 26,342 customers"
+          - "Streak lengths 1 to 6: **36,135**, 5,046, 1,301, 490, 191, 87"
+          - "About **60%** of repeat active months follow a gap"
+        takeaway: Most buying comes back in bursts, so a streak metric tells you more than a monthly active count.
+        source: notes/06-sql-for-analytics.md
+        notes: >-
+          A streak is found by subtracting a row number from the month, so that consecutive months share a constant.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: The funnel in one scan
+        title: FILTER counts every funnel step in one pass
+        recall: How does FILTER compute a funnel in one scan?
+        answer: "Each step is a conditional count with FILTER in a single table scan. It reproduces the funnel chapter's 84.0 and 67.6 at the payment step and 11.65 and 5.37 conversion for desktop and mobile."
+        lead: "One scan, one row per device."
+        lang: sql
+        code: |-
+          SELECT device,
+            count(*) AS sessions,
+            count(*) FILTER (furthest >= 3)
+              AS at_checkout,
+            count(*) FILTER (furthest >= 4)
+              AS reached_payment,
+            round(100.0 * avg(
+              (furthest = 5)::INT), 2)
+              AS conversion_pct
+          FROM sessions
+          WHERE date >= DATE '2025-09-15'
+          GROUP BY device
+        bullets:
+          - "Desktop: **84.0%** at the step, **11.65%** overall"
+          - "Mobile: **67.6%** and **5.37%**"
+        takeaway: One scan beats a subquery per step, and the numbers match the pandas version exactly.
+        source: notes/06-sql-for-analytics.md
+        notes: >-
+          Without FILTER, sum(CASE WHEN ... THEN 1 ELSE 0 END) does the same job.
+
+      - layout: table
+        beat: pitfalls
+        section: The fan-out
+        title: A join fan-out overstates revenue by 8.2%
+        recall: What happens when you join refunds directly to orders?
+        answer: "Revenue comes out at £3,641,037 against the right £3,364,669, an overstatement of £276,368 or 8.2%. Refunds are £164,342 both ways, so a spot check on refunds would pass."
+        header: [Query, Revenue, Refunds]
+        widths: [4, 2.6, 2.6]
+        rows:
+          - ["Join directly", "£3,641,037", "£164,342"]
+          - [Aggregate refunds first, "£3,364,669", "£164,342"]
+        highlight: [0]
+        takeaway: Aggregate the many side to the grain of the one side before you join, and reconcile to the source.
+        source: notes/06-sql-for-analytics.md
+        notes: >-
+          The overstatement is £276,368, or 8.2%, with no error or warning. Net of refunds revenue is £3,200,327. The many side of a join is never fanned out, so the refunds total passes any spot check.
+
+      - layout: cards
+        beat: wrap
+        section: Recommendation
+        title: Publish the bridge, plan on the returning line
+        recall: What is the SQL recommendation?
+        answer: "Put the bridge in the board pack with its definition, publish the query as the single shared view, plan 2026 on the returning line rather than the total, and add the reconciliation as a scheduled test."
+        cards:
+          - {title: "The board line", accent: "1E3A5F", body: "Revenue **+£27,264**; returning **−£152,017**"}
+          - {title: "Plan 2026", accent: "D4621A", body: "On the **returning** line, not the 2.1% total"}
+          - {title: "Stop the argument", accent: "0F7490", body: "One query in version control, plus a scheduled reconciliation"}
+        takeaway: Restoring returning revenue deserves the first call on next year's budget.
+        source: notes/06-sql-for-analytics.md
+        notes: >-
+          A bridge says where revenue landed, not why. Labels depend on the gap chosen, revenue is before refunds, and the figures are synthetic.
+
+      - layout: table
+        beat: pitfalls
+        section: Pitfalls
+        title: SQL pitfalls and what to do instead
+        recall: What are the main SQL analytics pitfalls?
+        answer: "Joining before aggregating, filtering a left join in WHERE, averaging without a spine, relying on a default frame, lag over a sparse table, non-deterministic row_number, NOT IN with NULLs, assuming one dialect, interpolating values and treating an unreconciled report as finished."
+        header: [Pitfall, Do instead]
+        widths: [4, 5.6]
+        rows:
+          - [Joining before aggregating, State the grain and aggregate first]
+          - [Left join filtered in WHERE, Put the condition in ON]
+          - [Averaging without a spine, Build the calendar first]
+          - [A default window frame, Write ROWS BETWEEN]
+          - [Non-deterministic row_number, Add a unique tie-break]
+          - [NOT IN over NULLs, Use NOT EXISTS]
+          - [One dialect everywhere, Check the target engine]
+          - [Unreconciled report, Check the total against the source]
+        takeaway: Most analytics SQL bugs return a number with no error, so test the totals.
+        source: notes/06-sql-for-analytics.md
+        notes: >-
+          Also: lag(x, 12) on a sparse table counts rows and not months, and values from a user go in as parameters and not into the string.
+
+  - title: Rules of thumb
+    agenda: false
+    divider: false
+    summary: What to carry away
+    notes: The rules from the pillar README that this lecture touches.
+    slides:
+      - layout: cards
+        beat: wrap
+        title: Four rules for reading customers
+        recall: Which rules of thumb come from this lecture?
+        answer: "Split a change in any aggregate into rate and mix, a before-and-after is not an experiment, score every segmentation on a later period, and reconcile each report's total against the source."
+        cards:
+          - {title: "Rate and mix", accent: "1E3A5F", body: "Split a change in any aggregate into **rate and mix** before you explain it"}
+          - {title: "Before and after", accent: "D4621A", body: "It is **not an experiment**: find a comparison group, or randomise"}
+          - {title: "Segments", accent: "0F7490", body: "Score every segmentation on a **later period**, or it is a description"}
+          - {title: "Reconcile", accent: "5B21B6", body: "Check each report's total against the **source** before anyone reads it"}
+        takeaway: Four habits catch most of the mistakes in this lecture.
+        source: README.md
+        notes: >-
+          From the pillar README. Also from this lecture: price the result, and predicting who buys is not the same as knowing who is persuadable.

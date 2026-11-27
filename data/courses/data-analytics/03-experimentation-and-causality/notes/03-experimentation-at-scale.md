@@ -1,10 +1,11 @@
 ---
-imported_hash: 3f8ede8b820a4b43
+imported_hash: 3fb948a5732f439c
 title: 3 — Experimentation at Scale
 summary: Larkspur now runs fifty experiments at once, and the same three messages arrive every week.
 order: 4
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-analytics/03-experimentation-and-causality/notes/03-experimentation-at-scale.md
 ---
 
@@ -544,4 +545,4 @@ Kohavi, Tang and Xu's [book](https://experimentguide.com/) is the standard text,
 
 ## Next
 
-[Chapter 4: Correlation and Causation](04-correlation-and-causation.md) covers what to do when you cannot randomise at all: confounding, Simpson's paradox, and the quasi-experimental toolkit.
+[Chapter 4: Correlation and Causation](04-correlation-and-causation.md) covers confounding and Simpson's paradox, and [chapter 4b](04b-potential-outcomes-and-quasi-experiments.md) the quasi-experimental toolkit for when you cannot randomise at all.

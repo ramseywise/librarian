@@ -1,0 +1,1190 @@
+# imported_hash: 9e82af1734d64506
+# Lecture on step 4, Ask how the rows got there: notes/07-data-generating-process.md and 08-panel-data-and-fixed-effects.md, in the notes' order.
+# make slides PILLAR=data-analytics/02-probability-and-statistics LECTURE=04-how-the-rows-got-there STRICT=1 PREVIEW=1
+# Levels: a slide with no level is the intro, `core` is the core lesson, `deep` is the optional extension (code and maths).
+deck:
+  title: How the Rows Got There
+  subtitle: Simulate the process, then ask who is in the data
+  tagline: "Data generating process · Validity · Panels and fixed effects"
+  reference: "Notes: data-analytics/02-probability-and-statistics, notes 7 and 8"
+  output: 04-how-the-rows-got-there.pptx
+  notes: >-
+    This is the fifth lecture of the probability and statistics series, after the lecture on modelling a relationship. It
+    covers step 4. By the end you should be able to write the process you believe made the rows and simulate from it, judge
+    an estimator by bias, spread and coverage, say whether you are explaining or predicting, ask whether a fit generalises to
+    the people who are not in the data, and use fixed effects, difference-in-differences and an event study on a panel.
+
+lecture:
+  covers:
+    - data-analytics/02-probability-and-statistics/notes/07-data-generating-process.md
+    - data-analytics/02-probability-and-statistics/notes/08-panel-data-and-fixed-effects.md
+  requires: [data-analytics/02-probability-and-statistics/notes/06b-logistic-regression-and-poisson-glms.md]
+  next: [data-analytics/03-experimentation-and-causality/README.md]
+  related:
+    - data-analytics/03-experimentation-and-causality/notes/04b-potential-outcomes-and-quasi-experiments.md
+    - data-analytics/03-experimentation-and-causality/notes/05-matching-and-weighting.md
+    - data-analytics/03-experimentation-and-causality/notes/01-ab-testing.md
+    - data-science/01-classical-ml/notes/04-model-evaluation.md
+    - data-analytics/04-bayesian-analysis/notes/07-multilevel-models-and-partial-pooling.md
+
+parts:
+  - title: Write the process, then simulate it
+    divider: false
+    summary: A coupon with a known lift · Estimand, estimator, estimate · Bias, spread and coverage
+    notes: We start with a problem where the right answer is known, so we can watch an estimator miss it.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Why this chapter
+        title: A significant coefficient can be confidently wrong
+        recall: What goes wrong when a coupon with a true 22% lift is fitted with a linear tenure term?
+        answer: "The model reports a lift of about 95%, and its 95% interval never contains the truth over a thousand simulated datasets."
+        kicker: The problem
+        statement: "A coupon truly lifts spend by 22%. A linear tenure term reports about 95%, and its 95% interval never contains the truth in a thousand datasets."
+        attribution: A self-selected sample of a million is no better than a random sample of 278
+        takeaway: Fit and p-values say nothing about whether the model matches how the rows were made.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          The true log effect is 0.20, a lift of 22.1%. The chapter's two lessons are both in this hook: a misspecified model
+          is biased with a tight interval, and a huge sample that selected itself is worth very little.
+
+      - layout: flow
+        beat: fundamentals
+        section: Why this chapter
+        title: Write the process, simulate it, and see what you recover
+        recall: What is the workflow of this chapter?
+        answer: "Write the data generating process, simulate, fit, check whether the fit recovers the truth, then explain or predict, and ask how the rows got into the sample."
+        steps:
+          - {label: "Write the process", sub: "the claim", accent: "1E3A5F"}
+          - {label: Simulate, sub: "known truth", accent: "0F7490"}
+          - {label: Fit, sub: "an estimator"}
+          - {label: "Recovered?", sub: "bias and coverage", accent: "D4621A"}
+          - {label: "Explain or predict", sub: "theory or CV", accent: "5B21B6"}
+          - {label: "Who is in?", sub: "validity", accent: "94A3B8"}
+        caption: "Bias, spread and coverage need a truth, which only a simulation can give."
+        takeaway: The order is process first, estimator second, and the sample's origin last but not least.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          Every later slide is one box of this flow. We return to it when the panel chapter asks the same question about
+          repeated observations.
+
+      - layout: bullets
+        beat: fundamentals
+        section: A model is a claim about how the rows were generated
+        title: A model is a claim about how the rows were generated
+        recall: What does a regression say about the data?
+        answer: "That the rows came from a specific process. If that process is wrong, the coefficient answers a different question."
+        bullets:
+          - "Larkspur sends a coupon, and the **true effect on log spend is 0.20**"
+          - "Marketing aims coupons at **mid-tenure** customers, who also spend the most"
+          - "Tenure drives both the coupon and the spend, so it **confounds**"
+          - "Spend is lognormal, so we model **log spend**"
+          - "A lift of exp(0.20) - 1 = **22.1%**"
+        takeaway: Tenure drives both coupon and spend, so hold it fixed in the right shape.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          The coupon is not random. Its probability peaks at tenure 30, and that is the same place spend peaks.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: A model is a claim about how the rows were generated
+        title: The process as code
+        recall: How is the Larkspur customer table generated?
+        answer: "Tenure is uniform on 1 to 60, the coupon probability peaks at tenure 30, and log spend is 2.6 plus 0.20 for a coupon plus a tenure curve plus noise with sd 0.5."
+        lang: python
+        code: |-
+          def simulate(n, rng):
+              tenure = rng.uniform(1, 60, n)
+              z = ((tenure - 30) / 15) ** 2
+              p_coupon = 0.15 + 0.60 * np.exp(-z)
+              coupon = rng.binomial(1, p_coupon)
+              curve = 0.14 * tenure - 0.0024 * tenure**2
+              noise = rng.normal(0, 0.5, n)
+              log_spend = 2.6 + TRUE_COUPON * coupon + curve + noise
+              return pd.DataFrame({"tenure": tenure,
+                                   "coupon": coupon,
+                                   "log_spend": log_spend})
+
+          df = simulate(800, np.random.default_rng(7))
+        bullets:
+          - "`TRUE_COUPON` is **0.20**"
+          - "800 rows, seed 7"
+          - "Spend **rises then falls** with tenure"
+        takeaway: With the generator in hand, every estimator can be graded against the truth.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          The shortened code here leaves out the raw spend column, which is the exponential of log spend. The seed makes the
+          800-row table reproducible.
+
+      - layout: steps
+        beat: fundamentals
+        section: A model is a claim about how the rows were generated
+        title: Estimand, estimator and estimate are three different things
+        recall: What is the difference between an estimand, an estimator and an estimate?
+        answer: "The estimand is the quantity you want, the estimator is the recipe, and the estimate is the number the recipe gave on this sample. Here the estimate is 0.195."
+        steps:
+          - {title: Estimand, text: "The quantity we want, such as the effect of the coupon on log spend, 0.20", accent: "1E3A5F"}
+          - {title: Estimator, text: "The recipe, such as OLS with a quadratic in tenure", accent: "0F7490"}
+          - {title: Estimate, text: "The number from this sample: 0.195", accent: "D4621A"}
+        takeaway: Name the estimand first, since a different estimand changes what counts as a correct answer.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          This is the vocabulary the rest of the lecture uses, and it is the same split as in the experimentation pillar.
+
+      - layout: compare
+        beat: fundamentals
+        level: core
+        section: A model is a claim about how the rows were generated
+        title: The estimand changes with the scale
+        recall: Does the effect of the coupon in pounds have one value?
+        answer: "No. From 2 million simulated customers it is 15.29 pounds for all customers and 18.98 pounds for customers who got a coupon."
+        emphasis: right
+        left:
+          title: All customers
+          bullets: ["Effect in pounds **15.29**", "From 2 million simulated customers"]
+        right:
+          title: Customers who got a coupon
+          bullets: ["Effect in pounds **18.98**", "Same 2 million customers"]
+        takeaway: On the log scale one number is the effect, but in pounds it depends on who you ask.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          A constant effect on the log scale is a larger pound effect for bigger spenders. Taking logs also turns the estimand
+          into a ratio, which is why 22.1% is the headline.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: A model is a claim about how the rows were generated
+        title: Four estimators, one dataset
+        recall: What do four different estimators report on the same 800 rows?
+        answer: "The difference in means gives 0.663 and linear tenure 0.666, both near 0.66 and far from 0.20. The quadratic gives 0.195 and the spline 0.196."
+        header: [Estimator, Coupon estimate, SE, R²]
+        widths: [3.6, 2.2, 1.6, 1.6]
+        rows:
+          - [Difference in means, "0.663", "0.054", "0.157"]
+          - [Linear in tenure, "0.666", "0.054", "0.160"]
+          - [Quadratic, "0.195", "0.038", "0.639"]
+          - [Spline df=5, "0.196", "0.039", "0.639"]
+        highlight: [2, 3]
+        takeaway: The wrong estimators report tight standard errors around a number that is not the truth.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          Both wrong models have an SE of 0.054, which reads as precise. The two flexible ones sit near 0.20 and also explain
+          four times as much variance.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: A model is a claim about how the rows were generated
+        title: Does the estimator recover the truth over 1,000 datasets?
+        recall: What do bias, SD and coverage show over 1,000 simulated datasets?
+        answer: "The difference in means and the linear model have bias near 0.49 and coverage 0.000. The quadratic and spline have bias 0 and coverage near 0.94."
+        header: [Estimator, Mean, Bias, SD, Coverage]
+        widths: [3.4, 1.4, 1.4, 1.4, 1.8]
+        rows:
+          - [Difference in means, "0.688", "0.488", "0.054", "0.000"]
+          - [Linear in tenure, "0.685", "0.485", "0.054", "0.000"]
+          - [Quadratic, "", "-0.000", "0.040", "0.941"]
+          - [Spline df=5, "", "-0.000", "0.040", "0.943"]
+        highlight: [2, 3]
+        takeaway: Only coverage shows the failure that bias and SD describe.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          Coverage is how often the 95% interval contains the truth. Zero in a thousand is as wrong as an interval can be.
+
+      - layout: statement
+        beat: pitfalls
+        level: core
+        section: A model is a claim about how the rows were generated
+        title: The pound estimate is biased even with a good curve
+        recall: Does a good tenure curve fix the pound effect?
+        answer: "No. A quadratic in levels gives a mean of 20.180 against a truth of 15.287, a bias of 4.894 and coverage of 0.745."
+        kicker: Same curve, wrong scale
+        statement: "A quadratic fitted in levels gets the pound effect wrong: mean 20.180, truth 15.287, bias 4.894, coverage 0.745."
+        attribution: The shape was right in logs, and the scale was not
+        takeaway: A flexible tenure term does not rescue a model whose scale does not match the process.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          This is why we write the process down: spend is multiplicative, so the log scale is part of the claim.
+
+  - title: Specification and comparing models
+    divider: false
+    summary: Polynomials and splines · The quadratic's story · AIC, BIC and cross-validation
+    notes: With the process written down, we turn to the shape of the curve and to choosing between candidate models.
+    slides:
+      - layout: bullets
+        beat: fundamentals
+        section: "Specification: the shape you write down"
+        title: A polynomial against a spline
+        recall: What does a spline buy over a polynomial?
+        answer: "A spline lets the data choose the shape without a global curve. The note uses a basis spline with 5 degrees of freedom."
+        bullets:
+          - "A polynomial writes **one global curve**: tenure, tenure squared and so on"
+          - "A spline uses a **local basis**, here `bs(tenure, df=5)`"
+          - "The quadratic and the spline give nearly the same coupon estimate: **0.195 and 0.196**"
+          - "The spline wins when you do not know the shape"
+        takeaway: Either form can hold the curve, and agreement between them is a check on the specification.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          Both fit the data from the process above, and the spline needs no assumption about where the bend is.
+
+      - layout: image
+        beat: practice
+        level: core
+        section: "Specification: the shape you write down"
+        title: A quadratic can tell two different stories
+        recall: How can a quadratic tell the wrong story?
+        answer: "Both rises-then-falls and rises-then-flattens data give a negative squared term. A spline, and the data past the turn, show which."
+        image: ../../assets/sources/images/stats-dgp-quadratic-story.png
+        caption: "A quadratic and a spline fitted to two different truths."
+        kicker: Two curves, one fit
+        bullets:
+          - "Rises then falls: coefficient **-0.00249**, peak at **29.2**"
+          - "Rises then flattens: coefficient **-0.00062**, peak at **50.1**"
+        takeaway: A significant squared term is not a turning point, so check the spline before telling the story.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          On the flattening data the quadratic's squared term has p of 3.6e-19 and still tells the wrong story.
+
+      - layout: compare
+        beat: practice
+        level: core
+        section: "Specification: the shape you write down"
+        title: The quadratic earns its story only sometimes
+        recall: When does a quadratic earn a turning-point story?
+        answer: "When theory gives a reason, the data run well past the turn, and a spline turns in the same place."
+        emphasis: right
+        left:
+          title: Rises then falls
+          bullets: ["Squared coefficient **-0.00249**, p < 1e-100", "Peak **29.2** [28.7, 29.6]", "Change to 60: **-2.37** (truth -2.28)", "R² quad and spline: 0.629 and 0.631"]
+        right:
+          title: Rises then flattens
+          bullets: ["Squared coefficient **-0.00062**, p 3.6e-19", "Peak **50.1** [46.3, 55.4]", "Change to 60: **-0.06** (truth 0.03)", "R² quad and spline: 0.442 and 0.448"]
+        takeaway: Both squared terms are significant, and only one turning point is worth believing.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          The right-hand peak interval is wide, 46.3 to 55.4, and the predicted fall is about zero where the truth rises.
+
+      - layout: bullets
+        beat: fundamentals
+        section: Comparing models
+        title: Six tools for comparing models, and what each answers
+        recall: Which tools compare candidate models?
+        answer: "R², adjusted R², AIC, BIC, the likelihood-ratio test and cross-validation, and they do not all agree."
+        bullets:
+          - "**R²** never falls when you add terms"
+          - "**Adjusted R²** adds a small penalty per term"
+          - "**AIC** is fit minus a fixed penalty of 2 per term"
+          - "**BIC** is fit minus a penalty of log n per term"
+          - "**LR test** asks if the extra term is needed, for nested models"
+          - "**Cross-validation** scores error on rows the model did not see"
+        takeaway: Each tool trades fit against complexity differently, so they can disagree.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          The next slides run all six on the same 300 rows.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: Comparing models
+        title: The quadratic wins on cross-validated error
+        recall: Which model do AIC, BIC and cross-validation prefer on 300 rows?
+        answer: "The quadratic: AIC 434.551, BIC 449.366 and cv_rmse 0.496, against the linear model's 701.433, 712.545 and 0.776."
+        header: [Model, cv_rmse, Coupon estimate]
+        widths: [3.6, 2.4, 2.8]
+        rows:
+          - [Linear, "0.776", "0.678"]
+          - [Quadratic, "0.496", "0.179"]
+          - [Degree 6, "0.505", "0.197"]
+          - [Degree 10, "0.510", "0.200"]
+        highlight: [1]
+        takeaway: Past the quadratic, extra flexibility buys nothing in cross-validated error.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          The flexible forms give coupon estimates from 0.179 to 0.200, all near the truth, while the linear form gives 0.678.
+          Adjusted R² prefers degree 10 over the quadratic by 0.659 against 0.658.
+
+      - layout: cards
+        beat: practice
+        level: core
+        section: Comparing models
+        title: The F and likelihood-ratio tests say where to stop
+        recall: What do the nested tests say about the polynomial order?
+        answer: "The squared term is needed (chi-squared 268.88), the cubic is not (p 0.9462) and degree 6 is not (p 0.4923)."
+        cards:
+          - {title: "Squared term", accent: "1E3A5F", body: "Needed: chi-squared 268.88"}
+          - {title: "Cubic term", accent: "0F7490", body: "Not needed: p = 0.9462"}
+          - {title: "Degree 6", accent: "D4621A", body: "Not needed: p = 0.4923"}
+        takeaway: A nested test answers one question, which is whether the extra term earns its place.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          These tests only compare nested polynomials, so they cannot compare a polynomial with a spline.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: Comparing models
+        title: How often does each rule pick the quadratic?
+        recall: How often do the selection rules pick the true quadratic at n = 100 and n = 800?
+        answer: "R² picks degree 10 every time, BIC picks the quadratic 95% then 98%, and AIC 78% then 77%."
+        header: [Rule, "Picks the quadratic, n = 100 then 800"]
+        widths: [3.6, 6]
+        rows:
+          - [R², "Never: picks degree 10 every time"]
+          - [Adjusted R², "39% at n = 100"]
+          - [AIC, "78% then 77%"]
+          - [BIC, "95% then 98%"]
+          - [Cross-validation, "73% then 70%"]
+        highlight: [3]
+        takeaway: No rule is right every time, and a bigger sample does not rescue AIC or cross-validation.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          The AIC penalty is fixed at 2 per term, while BIC's penalty is log n, so BIC tightens as the sample grows and AIC
+          does not.
+
+      - layout: compare
+        beat: fundamentals
+        level: deep
+        section: Comparing models
+        title: AIC and BIC answer different questions
+        recall: Why do AIC and BIC disagree?
+        answer: "AIC has a fixed penalty of 2 per term, and BIC's grows with log n. At n = 10,000 a z of 3.29 (p = 0.001) gives a Bayes factor of only 2.24."
+        emphasis: right
+        left:
+          title: AIC
+          bullets: ["Penalty is **2 per term**", "Null-comparison win probability **0.157**", "A penalty of **1.92** reproduces the 5% test"]
+        right:
+          title: BIC
+          bullets: ["Penalty is **log n**", "At n = 10,000 the win probability is **0.0024**", "z of 3.29 gives a Bayes factor of **2.24**"]
+        takeaway: A p-value of 0.001 can be weak evidence in a large sample, as BIC accounts for.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          This is Efron and Hastie's point. The two criteria are not rivals so much as tools aimed at prediction and at
+          finding the true model.
+
+      - layout: bullets
+        beat: fundamentals
+        level: deep
+        section: Comparing models
+        title: What cross-validation estimates, and where it breaks
+        recall: Why can cross-validation error mislead?
+        answer: "Apparent error was 0.72 and CV error 1.17, 62% higher. Over 500 bootstrap datasets CV averaged 1.07 against a true 1.02, and with ordered data a random split hides a drift."
+        bullets:
+          - "Supernova example: N = 39 and 10 predictors"
+          - "Apparent MSE **0.72**, CV error **1.17**, 62% higher"
+          - "R² falls from **0.816** to **0.701**"
+          - "500 bootstrap datasets: mean CV **1.07** against a true **1.02**, apparent **0.57**"
+          - "Correlation of CV with the true error is about **-0.175**"
+        takeaway: Cross-validation is a noisy estimate of out-of-sample error.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          The correlation of about -0.175 is the surprising part. CV is right on average and weakly related to the error of the
+          model you actually fitted.
+
+      - layout: image
+        beat: pitfalls
+        level: deep
+        section: Comparing models
+        title: A random split can hide a drift in time
+        recall: What goes wrong when cross-validation ignores time order?
+        answer: "A random forest scores 15% error in CV and on a random 60-day holdout, and 27% on the later 60 days."
+        image: ../../assets/sources/images/computer-age-statistical-inference-fig12-6.png
+        caption: "Cross-validated against honest holdout error."
+        kicker: Ordered data
+        bullets:
+          - "Random split **15%** error, the later 60 days **27%**"
+        takeaway: Split by time for ordered data, and prefer a Cp-style penalty when a believable parametric model exists.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          The figure is Efron and Hastie's figure 12.6. The note's advice is to split by time whenever the rows have an order.
+
+  - title: Explain, predict, and sampling
+    divider: false
+    summary: Shmueli's four differences · Internal and external validity · Meng's identity · Rules of thumb
+    notes: A model can be right about the sample and wrong about the people who are not in it, so we ask how the rows got in.
+    slides:
+      - layout: compare
+        beat: fundamentals
+        section: Explain or predict
+        title: Explaining and predicting need different models
+        recall: What are the four differences between explaining and predicting?
+        answer: "Causation against association, theory against data, back against forward, and bias against variance."
+        emphasis: right
+        left:
+          title: Explain
+          bullets: ["Causation", "Theory chooses the model", "Looks back at the data", "Wants low **bias**"]
+        right:
+          title: Predict
+          bullets: ["Association", "Data chooses the model", "Looks forward to new rows", "Wants low **variance**"]
+        takeaway: Decide whether you are explaining or predicting before you choose a model.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          This is Shmueli's framework. Hagerty and Srinivasan put the consequence plainly: a parsimonious but less true model
+          can have a higher predictive validity than a truer but less parsimonious model.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: Explain or predict
+        title: A simulation where the wrong model predicts better
+        recall: How does the note show that a less true model can predict better?
+        answer: "At small n the short model predicts better, because its lower variance outweighs its bias."
+        lang: python
+        code: |-
+          def explain_vs_predict(n, reps=2000, seed=51):
+              b1, b2, rho, sigma = 1.0, 0.2, 0.9, 2.0
+              r = np.random.default_rng(seed)
+              cov = [[1, rho], [rho, 1]]
+              for _ in range(reps):
+                  X = r.multivariate_normal([0, 0], cov, n)
+                  noise = r.normal(0, sigma, n)
+                  y = b1 * X[:, 0] + b2 * X[:, 1] + noise
+                  full = lstsq(add_constant(X), y)
+                  short = lstsq(add_constant(X[:, 0]), y)
+                  # score both on 2,000 fresh rows
+        bullets:
+          - "True form: **b1 and b2** both fitted"
+          - "Short form: **b1 only**"
+          - "Score on **2,000 fresh rows**"
+        takeaway: The short model is wrong about the world and can still win the test.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          The comment line stands for the test-error loop in the note. Predictors are correlated at 0.9, with noise sigma 2.0.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: Explain or predict
+        title: The short model wins at n = 30 and loses at n = 3,000
+        recall: At what sample sizes does the short model predict better?
+        answer: "At n = 30 the short model wins 78.2% of the time, at n = 300 it wins 51.2%, and at n = 3,000 it wins only 19.0%."
+        header: [n, True-form RMSE, Short RMSE, Short wins]
+        widths: [1.6, 2.8, 2.4, 2.4]
+        rows:
+          - ["30", "2.107", "2.070", "78.2%"]
+          - ["300", "2.011", "2.009", "51.2%"]
+          - ["3000", "2.001", "2.003", "19.0%"]
+        highlight: [0]
+        takeaway: The gain from the wrong model is about 2%, and it fades as the data grow.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          At n = 30 the true-form coefficient b1 averages 1.004 with an SD of 0.900. The short model's b1 averages 1.184, with
+          an SD of 0.374. So the short model predicts better and gives the biased coefficient.
+
+      - layout: cards
+        beat: fundamentals
+        level: core
+        section: Explain or predict
+        title: Four consequences of explaining versus predicting
+        recall: What follows from the explain-or-predict split?
+        answer: "Explanatory power is not predictive power, selection differs, AIC is a predictive tool, and you should report both."
+        cards:
+          - {title: "Power differs", accent: "1E3A5F", body: "Explanatory power is not predictive power"}
+          - {title: "Selection differs", accent: "0F7490", body: "The best explanatory model need not be the best predictive one"}
+          - {title: "AIC predicts", accent: "D4621A", body: "It is a predictive tool, and Berk calls the alternative unjustified optimism"}
+          - {title: "Report both", accent: "5B21B6", body: "Say which question each number answers"}
+        takeaway: A predictive criterion does not certify a coefficient.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          Breiman said the conclusions are about the model's mechanism, and not about nature's mechanism. He also raised the
+          Rashomon problem, many equally good models, and wrote that he is not against data models per se.
+
+      - layout: statement
+        beat: fundamentals
+        level: core
+        section: Explain or predict
+        title: Breiman on a model's mechanism
+        recall: What did Breiman warn about data models?
+        answer: "That the conclusions are about the model's mechanism, and not about nature's mechanism."
+        kicker: Breiman
+        statement: "The conclusions are about the model's mechanism, and not about nature's mechanism."
+        attribution: He also raised the Rashomon problem, many equally good models
+        takeaway: A good fit tells you about the model you wrote, so check the model against how the rows were made.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          Breiman also wrote that he is not against data models per se.
+
+      - layout: table
+        beat: fundamentals
+        section: Internal and external validity
+        title: Randomised inside, but not the population
+        recall: What does selecting on tenure or on keenness do to the effect estimate?
+        answer: "Selecting on keenness gives a truth of 0.273 and an estimate of 0.265, so the estimate is fine for that group but far from the population's 0.157."
+        header: [Sample, n, Truth, Estimate, Reweighted]
+        widths: [3.2, 1.4, 1.4, 1.6, 2.0]
+        rows:
+          - [Random, "20,000", "0.157", "0.158", "0.158"]
+          - [Selected on tenure, "49,871", "0.113", "0.117", "0.169"]
+          - [Selected on keenness, "34,067", "0.273", "0.265", "0.264"]
+        highlight: [2]
+        takeaway: Randomising makes the estimate right for the people in the study, and not necessarily for anyone else.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          The population average effect is 0.157. In the random sample the estimate is 0.158 with SE 0.007. Reweighting fixes
+          the tenure selection because tenure is recorded, and cannot fix keenness, which is not.
+
+      - layout: bullets
+        beat: fundamentals
+        level: core
+        section: Internal and external validity
+        title: Transportability is a causal notion
+        recall: Why can reweighting fix selection on tenure but not on keenness?
+        answer: "Tenure is recorded, so we can reweight on it. Keenness is unmeasured, so we cannot. Pearl and Bareinboim call transportability a causal, not statistical, notion."
+        bullets:
+          - "Selection on **tenure** (recorded): reweighting moves 0.117 to **0.169**"
+          - "Selection on **keenness** (unmeasured): reweighting stays **0.264**"
+          - "Share of new customers: **0.186** random against **0.015** selected on tenure"
+          - "Share of keen customers: **0.302** random against **0.879** selected on keenness"
+        takeaway: You can only adjust for the selection you measured.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          In the selection diagram the selection node points at tenure, which is recorded and fine, and at keenness, which is
+          not recorded and not fine.
+
+      - layout: statement
+        beat: problem
+        level: deep
+        section: Big is not the same as representative
+        title: A million rows, worth 278
+        recall: What is a million self-selected rows worth?
+        answer: "About 278 random rows. At f = 0.1 and rho = 0.02 the effective sample size is 278."
+        kicker: Big is not representative
+        statement: "A self-selected sample of a million rows, with a correlation of 0.02 between response and outcome, carries the information of 278 random rows."
+        attribution: "Meng's identity: data quality times quantity times difficulty"
+        takeaway: Sample size measures quantity, and quality can be worth more than any amount of it.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          The numbers are f = 0.1, the share of the population in the sample, and rho = 0.02, the correlation between
+          responding and the outcome.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: Big is not the same as representative
+        title: Meng's identity holds exactly
+        recall: What is Meng's identity?
+        answer: "Sample mean minus population mean equals rho(R, G) times sqrt((1 - f) / f) times sd(G): data quality, quantity and difficulty."
+        lang: python
+        code: |-
+          # error = data quality x quantity x difficulty
+          error = rho * np.sqrt((1 - f) / f) * sd_g
+          # check: the two sides agree to 3.5e-14
+          # N 10,000,000, n 1,000,453, f 0.1, rho 0.0202
+          # sample mean 0.32767, population mean 0.29990
+        bullets:
+          - "**rho(R, G)** is data quality"
+          - "**sqrt((1 - f) / f)** is quantity"
+          - "**sd(G)** is problem difficulty"
+        takeaway: The error of a big biased sample is mostly the correlation, not the size.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          The difference in the check is -3.5e-14, so the identity is exact. Response rates in the two groups are 10.9% against
+          9.6%. The effective sample size is about f over 1 - f, times 1 over rho squared.
+
+      - layout: image
+        beat: practice
+        level: deep
+        section: Big is not the same as representative
+        title: A tiny interval that misses the truth
+        recall: What happens to the confidence interval of a self-selected sample?
+        answer: "Random 278 gives an RMSE of 0.0276 with 95.3% coverage. Self-selected has an RMSE of 0.0275, a naive SE of 0.00046 and 0.0% coverage in 50 draws."
+        image: ../../assets/sources/images/stats-dgp-meng-interval.png
+        caption: "Intervals from a random sample of 278 and a self-selected sample of a million."
+        kicker: Same error, tiny SE
+        bullets:
+          - "Random 278: RMSE **0.0276**, coverage **95.3%**"
+          - "Self-selected: RMSE **0.0275**, naive SE **0.00046**, coverage **0.0%**"
+        takeaway: The naive standard error assumes randomness the sample does not have, so it is wrong by a factor of 60.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          The error of the self-selected million equals the error of 278 random rows, and its interval is far too narrow to
+          contain the truth in any of 50 draws.
+
+      - layout: bullets
+        beat: practice
+        level: deep
+        section: Big is not the same as representative
+        title: The Law of Large Populations
+        recall: How does the effective sample size change as the population grows?
+        answer: "It stays near 278 while z grows from 3.8 at N = 100k to 17.5 at 1M and 57.8 at 10M."
+        bullets:
+          - "N = 100k: n = 9,849, error 0.0179, z **3.8**, effective n **277**"
+          - "N = 1M: z **17.5**, effective n **278**"
+          - "N = 10M: z **57.8**, effective n **278**"
+          - "Information stays flat while the bias grows more significant"
+        takeaway: As the population grows, the same bias gets more significant while the information stays the same.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          At N = 100k the error is 0.0179. Meng's election example: 1% of 231.6 million voters, rho = 0.005, so 2.3 million
+          responses carry about 404 and give z of 75.8. The 1% is a rough figure.
+
+      - layout: cards
+        beat: pitfalls
+        level: deep
+        section: Big is not the same as representative
+        title: Three limits of the effective sample size
+        recall: What are the limits of Meng's effective sample size?
+        answer: "You usually cannot estimate rho, it is about means and totals, and weighting helps but is no escape."
+        cards:
+          - {title: "Rho is unknown", accent: "1E3A5F", body: "You usually cannot estimate it from the sample"}
+          - {title: "Means and totals", accent: "0F7490", body: "The identity covers means and totals, not every statistic"}
+          - {title: "Weighting is no escape", accent: "D4621A", body: "It helps, but cannot undo selection you did not measure"}
+        takeaway: Treat the effective sample size as a warning, not an estimate.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          At f = 0.5 and rho = 0.05 the effective n is about 400, so even half a population does little when the quality is
+          this poor.
+
+      - layout: table
+        beat: practice
+        level: deep
+        section: A better fit is not better generalisation
+        title: A better fit in the sample, a worse one outside it
+        recall: Can a better in-sample fit give worse out-of-sample predictions?
+        answer: "Yes. Opt-in on segment gives a sample R² of 0.774 but a population RMSE of 2.461, against 1.984 for the best linear fit."
+        header: [Sample, Slope, Sample R², Population RMSE]
+        widths: [3.6, 1.6, 2.2, 2.6]
+        rows:
+          - [Best linear fit on the population, "0.560", "0.074", "1.984"]
+          - [Random n = 500, "0.366", "0.031", "1.994"]
+          - [Opt-in on x (n about 100k), "0.554", "0.025", "1.984"]
+          - [Opt-in on segment (n about 100k), "1.833", "0.774", "2.461"]
+        highlight: [3]
+        takeaway: Before admiring R², ask how the rows got in.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          The opt-in segment sample has a share of keen customers of 0.904 and a sample RMSE of 0.990. It looks best in the
+          sample and is worst on the population.
+
+      - layout: cards
+        beat: wrap
+        title: Rules of thumb for the data generating process
+        recall: What are the rules of thumb for the data generating process?
+        answer: "Write and simulate the process before fitting, ask how the rows got in before admiring R², and decide whether you are explaining or predicting."
+        cards:
+          - {title: "Write it first", accent: "1E3A5F", body: "Write the process you believe and simulate from it, to see whether your estimator recovers it"}
+          - {title: "How did rows get in?", accent: "0F7490", body: "A better fit in this sample is not a better answer for the population"}
+          - {title: "Explain or predict", accent: "D4621A", body: "Decide first, since held-out error can prefer a biased coefficient"}
+        takeaway: Each rule is a question to ask before you trust a fit.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          These are the pillar README's rules of thumb for this chapter. The second half of the lecture asks the same question
+          of repeated observations on the same units.
+
+      - layout: table
+        beat: pitfalls
+        section: Pitfalls
+        title: Specification and sampling pitfalls
+        recall: What are the main pitfalls of this chapter?
+        answer: "Fitting before naming the estimand, trusting significance, telling a turning-point story, trusting adjusted R², trusting in-sample fit, using a predictive rule for an explanatory question, and trusting randomisation or a small SE from self-selected data."
+        header: [Pitfall, What the note found]
+        widths: [4, 5.6]
+        rows:
+          - [Fitting before naming the estimand, "State what you want first"]
+          - [Treating significant as correctly specified, "Linear tenure is significant with bias 0.485"]
+          - [A turning-point story from a quadratic, "Check the spline"]
+          - [Trusting adjusted R², "It chose degree 10 by 0.001, and picked the truth 39%"]
+          - [Using a predictive rule for an explanatory question, "It can prefer the biased short model at n = 30"]
+          - [Trusting a small SE from self-selected data, "0.00046 against a miss of 0.027"]
+        takeaway: Each pitfall is a check that costs one simulation or one question.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          The note lists nine pitfalls, and this table has the six that carry a number. The others are that in-sample fit is
+          not predictive power, that randomisation is not generalisation and that reweighting needs measured selection.
+
+  - title: A panel with a known answer
+    divider: false
+    summary: Pooled OLS misses the sign · Clustering fixes the SE, not the estimate · Fixed effects change the comparison
+    notes: The same units watched over time give us a new tool, the fixed effect, and a new way to be wrong.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Why this chapter
+        title: Pooled OLS gets the sign wrong
+        recall: What does pooled OLS say about the effect of a discount across 100 concessions?
+        answer: "A slope of -1.0 with a standard error of 0.017, while the truth is +0.5 per point of discount. Two-way fixed effects gives 0.472."
+        kicker: The problem
+        statement: "Across 100 concessions, pooled OLS says each point of discount costs one unit of sales: -1.0, SE 0.017. The truth is +0.5."
+        attribution: Two-way fixed effects recovers 0.472
+        takeaway: A tiny standard error on the wrong sign shows that precision is not accuracy.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          Weak stores discount harder, so the discount is correlated with a store quality we never observe.
+
+      - layout: flow
+        beat: fundamentals
+        section: Why this chapter
+        title: Is the confounder fixed within a unit?
+        recall: How do you choose among the panel tools?
+        answer: "If the confounder is fixed within a unit, use unit effects. One start date means two-way fixed effects is difference-in-differences. Staggered starts mean comparing cohorts with clean controls."
+        steps:
+          - {label: "Repeated units", sub: "same stores, many weeks", accent: "94A3B8"}
+          - {label: "Fixed in a unit?", sub: "then unit effects", accent: "1E3A5F"}
+          - {label: "One start date", sub: "TWFE is DiD, plot the event study", accent: "0F7490"}
+          - {label: "Staggered starts", sub: "clean controls only", accent: "D4621A"}
+        caption: "A panel observes the same units repeatedly."
+        takeaway: The tool depends on how the treatment arrives, not on the size of the panel.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          This is the order of the chapter. The panel here is 100 stores over 52 weeks.
+
+      - layout: bullets
+        beat: fundamentals
+        section: A panel with a known answer
+        title: The simulated panel, with a known +0.5
+        recall: How is the panel generated?
+        answer: "Sales is 50 plus store quality plus season plus 0.5 times the discount plus noise, and weak stores discount harder."
+        bullets:
+          - "**100 stores** over **52 weeks**: 5,200 rows"
+          - "Sales = 50 + quality + season + **0.5 x discount** + noise"
+          - "Quality is drawn from **N(0, 6)** and is unobserved"
+          - "Errors are **AR(0.5)**, so they persist"
+          - "Discount = 10 - 0.5 x quality - 0.6 x season + noise"
+          - "corr(quality, mean discount) is **-0.996**, deliberately extreme"
+        takeaway: Weak stores discount harder, which is exactly the confounding that hides the +0.5.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          `TRUE_BETA` is 0.5. The within-store sd of the discount noise is 2.0. The correlation is deliberately extreme to make
+          the point.
+
+      - layout: bullets
+        beat: practice
+        level: core
+        section: A panel with a known answer
+        title: Most of the discount varies between stores
+        recall: How much of the discount's variance is between stores?
+        answer: "Of 15.79 total, 10.51 is between stores and 5.28 within. The between-only slope is -1.488."
+        bullets:
+          - "Total variance of the discount: **15.79**"
+          - "Between stores: **10.51**"
+          - "Within stores: **5.28**"
+          - "Slope on store means (between only): **-1.488**"
+        takeaway: Between stores we are mostly measuring quality, which gives about -1.5.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          Two-thirds of the variance is between stores. Average discount is about 10 minus 0.5 times quality.
+
+      - layout: code
+        beat: practice
+        section: Pooled OLS, with clustered errors
+        title: Clustering changes the SE and not the estimate
+        recall: What does clustering do to a pooled OLS estimate?
+        answer: "It raises the standard error from 0.017 to 0.044 and leaves the estimate at -1.005."
+        lang: python
+        code: |-
+          naive = smf.ols("sales ~ discount", df).fit()
+          clus = smf.ols("sales ~ discount", df).fit(
+              cov_type="cluster",
+              cov_kwds={"groups": df.store})
+          # pooled OLS -1.005, naive SE 0.017,
+          # clustered SE 0.044
+        bullets:
+          - "Estimate unchanged: **-1.005**"
+          - "SE **0.017** to **0.044**"
+        takeaway: Clustering repairs the uncertainty around the number, and the number is the problem.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          The pooled slope is close to a variance-weighted average of the between slope and the within slope.
+
+      - layout: bullets
+        beat: fundamentals
+        section: Fixed effects
+        title: A fixed effect is a separate intercept per unit
+        recall: What does a fixed effect do?
+        answer: "It gives each unit its own intercept, which absorbs everything constant about it. This equals subtracting each unit's mean, so the coefficient comes from within-unit variation only."
+        bullets:
+          - "A **separate intercept** for each store absorbs everything constant about it"
+          - "The same as subtracting each store's mean from its own rows"
+          - "The estimate uses **within-store** variation only"
+          - "**Two-way** fixed effects adds an intercept for each week as well"
+          - "`linearmodels` does this with `PanelOLS`"
+        takeaway: Fixed effects change the estimate because they change the comparison.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          The week effects remove anything that hits all stores alike, such as the season.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: Fixed effects
+        title: Store effects alone are not enough
+        recall: What do store effects alone, and store plus week effects, give?
+        answer: "Store effects only give -0.041 (SE 0.026), and store plus week effects give 0.472 (SE 0.026). A hand two-way demean gives 0.472220, the same as PanelOLS."
+        lang: python
+        code: |-
+          def fe(data, entity=True, time=True,
+                 formula="sales ~ discount"):
+              term = formula + (" + EntityEffects" if entity else "")
+              term += (" + TimeEffects" if time else "")
+              return PanelOLS.from_formula(term, data).fit(
+                  cov_type="clustered", cluster_entity=True)
+          # store effects only    -0.041, clustered SE 0.026
+          # store + week effects   0.472, clustered SE 0.026
+        bullets:
+          - "Store effects only: **-0.041**"
+          - "Store and week: **0.472**"
+          - "By hand **0.472220**, `PanelOLS` **0.472220**"
+        takeaway: The week effects matter as well, since the season pushed discounts and sales together.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          The two-way demeaned regression by hand equals the library's answer, so fixed effects are nothing but this
+          demeaning.
+
+      - layout: image
+        beat: fundamentals
+        level: core
+        section: Fixed effects
+        title: Within each store the line slopes up
+        recall: Why does the sign flip once store effects are included?
+        answer: "Within a store the discount and sales rise together, and across stores the line slopes down because weak stores discount more."
+        image: ../../assets/sources/images/stats-panel-pooled-vs-within.png
+        caption: "Five stores with week effects removed: within-store lines and the line across stores."
+        kicker: Within and between
+        bullets:
+          - "Blue lines **within** stores slope up"
+          - "The orange line **across** stores slopes down"
+        takeaway: The pooled line mixes the two comparisons, and fixed effects keep only the within one.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          With 52 noisy weeks per store, one of the five slopes down a little by chance.
+
+      - layout: flow
+        beat: fundamentals
+        level: core
+        section: Fixed effects
+        title: Two-way fixed effects is OLS on demeaned rows
+        recall: On a balanced panel, what is two-way fixed effects mechanically?
+        answer: "OLS after subtracting each store's mean and each week's mean and adding back the grand mean. By hand that gives 0.472220, the same as PanelOLS."
+        steps:
+          - {label: "Subtract store means", sub: "Removes what is constant per store", accent: "0F7490"}
+          - {label: "Subtract week means", sub: "Removes what hits all stores alike", accent: "D4621A"}
+          - {label: "Add back the grand mean", sub: "Then run plain OLS", accent: "5B21B6"}
+        caption: "By hand 0.472220, PanelOLS 0.472220."
+        takeaway: There is nothing mysterious in fixed effects, only demeaning.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          This holds on a balanced panel, where every store is seen in every week.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: Fixed effects
+        title: Over 300 panels only two-way fixed effects covers
+        recall: Which estimators cover the truth of 0.5 over 300 panels?
+        answer: "Only store plus week effects with clustered errors does, with a mean of 0.502, SD 0.023, SE 0.024 and coverage 0.947."
+        header: [Estimator, Mean, SD, Mean SE, Coverage]
+        widths: [3.6, 1.4, 1.4, 1.6, 1.8]
+        rows:
+          - ["Pooled, naive", "-0.906", "0.055", "0.018", "0.000"]
+          - ["Pooled, clustered", "", "", "0.054", "0.000"]
+          - ["Store effects, clustered", "0.013", "", "", "0.000"]
+          - ["Store + week, clustered", "0.502", "0.023", "0.024", "0.947"]
+          - ["Store + week, unadjusted", "", "", "", "0.953"]
+        highlight: [3]
+        takeaway: Clustering without the right effects still never covers, and the effects without them barely moves.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          Here the discounts are not sticky, so unadjusted errors also cover, at 0.953.
+
+      - layout: compare
+        beat: practice
+        level: deep
+        section: Fixed effects
+        title: Clustering earns its keep when discounts stick
+        recall: When does clustering matter for coverage?
+        answer: "With discounts of 0.9 persistence, unadjusted SE 0.033 gives coverage 0.697 and clustered SE 0.066 gives 0.940."
+        emphasis: right
+        left:
+          title: Unadjusted
+          bullets: ["SE **0.033**", "Coverage **0.697**"]
+        right:
+          title: Clustered
+          bullets: ["SE **0.066**", "Coverage **0.940**"]
+        takeaway: Cluster by unit when the treatment persists.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          The note adds the Abadie et al. (2023) caveat about when clustering is called for. The 0.9 persistence is the
+          discount's week-to-week persistence.
+
+  - title: What fixed effects cannot do
+    divider: false
+    summary: Constants and moving confounders · Weighting · Difference-in-differences · Staggered rollouts
+    notes: Fixed effects remove what is constant, and nothing else, so the rest of the chapter is about what is left.
+    slides:
+      - layout: cards
+        beat: fundamentals
+        section: What fixed effects cannot do
+        title: Four things that fixed effects do not fix
+        recall: What can fixed effects not do?
+        answer: "They cannot estimate constants, remove time-varying confounders, give a precise estimate from little variation, or give an unweighted average effect."
+        cards:
+          - {title: "Constants", accent: "1E3A5F", body: "Anything that never changes is absorbed"}
+          - {title: "Moving confounders", accent: "0F7490", body: "Competitors and reactions that change over time"}
+          - {title: "Little variation", accent: "D4621A", body: "Within-unit spread decides the precision"}
+          - {title: "Everyone's effect", accent: "5B21B6", body: "The coefficient is variance-weighted"}
+        takeaway: Fixed effects remove what is constant within a unit, and the other three limits follow from that.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          The next four slides take these in order.
+
+      - layout: bullets
+        beat: practice
+        section: What fixed effects cannot do
+        title: A constant cannot be estimated
+        recall: What happens if you add a constant such as urban to a fixed-effects model?
+        answer: "It is absorbed, and PanelOLS raises AbsorbingEffectError unless you pass drop_absorbed=True, which drops the variable."
+        bullets:
+          - "A store's region, or whether it is **urban**, never varies within a store"
+          - "`PanelOLS` refuses with `AbsorbingEffectError`"
+          - "`drop_absorbed=True` keeps only **discount**"
+        takeaway: A fixed effect buys protection from what you did not measure and costs the effect of what is constant.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          If you need the effect of a store attribute, you need a different design, such as a model with random effects.
+
+      - layout: cards
+        beat: pitfalls
+        level: core
+        section: What fixed effects cannot do
+        title: Confounders that move over time
+        recall: What happens when a confounder changes over time or the treatment reacts to the outcome?
+        answer: "With the competitor unmeasured the estimate is 0.199. Controlling for it gives 0.502, and a discount that reacts to last week's shock gives 0.133."
+        cards:
+          - {title: "Competitor left out", accent: "D4621A", body: "Estimate 0.199 against a truth of 0.5"}
+          - {title: "Competitor controlled", accent: "0F7490", body: "Estimate 0.502"}
+          - {title: "Discount reacts to last week", accent: "5B21B6", body: "Estimate 0.133, reverse causality"}
+        takeaway: Ask what moved at the same time as the treatment, and whether the treatment responded to the outcome.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          The competitor opens near 40% of stores part-way through the year, sales fall by 6 and those stores discount 4
+          points deeper. The reacting manager is reverse causality: the outcome moving the treatment.
+
+      - layout: bullets
+        beat: pitfalls
+        level: core
+        section: What fixed effects cannot do
+        title: The competitor story in numbers
+        recall: How does the note build a time-varying confounder?
+        answer: "A competitor opens near 40% of stores, sales fall by 6, and those stores discount 4 points deeper."
+        bullets:
+          - "A competitor opens near about **40%** of stores"
+          - "Sales fall by **6** in those stores"
+          - "Those stores discount **4** points deeper"
+          - "Store and week effects cannot see this change"
+        takeaway: The confounder moves with the treatment inside a store, so fixed effects keep it.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          Controlling for the competitor brings the estimate back to 0.502.
+
+      - layout: flow
+        beat: pitfalls
+        level: core
+        section: What fixed effects cannot do
+        title: Little within-store variation, a noisy answer
+        recall: What happens when discounts barely vary within a store?
+        answer: "With a within-store sd of 2.0 the estimate is 0.472 (SE 0.026), with 0.5 it is 0.389 (SE 0.102) and with 0.1 it is -0.056 (SE 0.510)."
+        steps:
+          - {label: "Within sd 2.0", sub: "0.472 (SE 0.026)", accent: "0F7490"}
+          - {label: "Within sd 0.5", sub: "0.389 (SE 0.102)", accent: "D4621A"}
+          - {label: "Within sd 0.1", sub: "-0.056 (SE 0.510)", accent: "5B21B6"}
+        caption: "The truth is 0.5 throughout."
+        takeaway: The estimate comes from within-unit change, so no change means no estimate.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          The truth is 0.5 throughout, and the standard error widens twentyfold from 0.026 to 0.510 as the within-store spread
+          shrinks.
+
+      - layout: compare
+        beat: practice
+        level: deep
+        section: What fixed effects cannot do
+        title: The coefficient weights stores by their variance
+        recall: Does two-way fixed effects give the average effect over stores?
+        answer: "No. With an average effect of 0.500, two-way fixed effects gives 0.901 (weighted 0.900), because the responsive half moves 3x as much."
+        emphasis: right
+        left:
+          title: Average effect
+          bullets: ["Half the stores respond at **1.0**, half at **0**", "Average **0.500**"]
+        right:
+          title: Two-way FE
+          bullets: ["Coefficient **0.901** (weighted 0.900)", "Responsive half moves **3x** as much, so **9x** the variance"]
+        takeaway: The coefficient is a variance-weighted average, so it describes the stores that moved the most.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          Everyone's effect is not the same as the effect on the stores that supply the variation.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: Difference-in-differences is two-way fixed effects
+        title: A difference of differences, by hand
+        recall: What does the difference of differences give on the display panel?
+        answer: "Group 0 goes from 48.669 to 45.071 and group 1 from 55.186 to 55.083, a difference of differences of 3.493822, against a true 3.596."
+        header: [Group, Before, After]
+        widths: [3.6, 2.6, 2.6]
+        rows:
+          - [Group 0, "48.669", "45.071"]
+          - [Group 1, "55.186", "55.083"]
+          - [Difference of differences, "", "3.493822"]
+        highlight: [2]
+        takeaway: The design gives a believable 3.49 against a true 3.596.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          The display starts at week 26. The difference of differences equals the two-way fixed-effects coefficient, with a
+          clustered SE of 0.168.
+
+      - layout: bullets
+        beat: fundamentals
+        section: Difference-in-differences is two-way fixed effects
+        title: Parallel trends cannot be proved
+        recall: What does difference-in-differences assume, and can you test it?
+        answer: "It assumes parallel trends, which cannot be proved. A flat pre-period is evidence, not a proof."
+        bullets:
+          - "With one start date, **two-way FE equals DiD**"
+          - "The assumption is **parallel trends**, which cannot be proved"
+          - "Plot the **event study**: weeks -8 to 12, reference week -1, tails binned"
+          - "The Effect warns these pre-tests have **low power**"
+        takeaway: Plot the event study, and treat a flat pre-period as evidence and not as proof.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          The reference week is -1, and the far tails are binned into the end coefficients.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: Difference-in-differences is two-way fixed effects
+        title: The event study, one coefficient per week
+        recall: How is an event study built?
+        answer: "One indicator per week relative to the start, from -8 to 12 with week -1 omitted and the tails binned, entered alongside store and week effects."
+        lang: python
+        code: |-
+          def event_study(d, lo=-8, hi=12, omit=-1):
+              for k in range(lo, hi + 1):
+                  if k == omit:
+                      continue
+                  ends = ((d.k <= k) if k == lo
+                          else (d.k >= k) if k == hi
+                          else (d.k == k))  # bin the tails
+                  # one dummy per k, fitted with
+                  # store and week effects
+        bullets:
+          - "Weeks **-8 to 12**"
+          - "Reference week **-1**"
+          - "Tails are **binned**"
+        takeaway: Each coefficient compares a week to the week before the start, so the pre-period should sit at zero.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          The comment lines stand for the fitting code in the note.
+
+      - layout: image
+        beat: practice
+        level: core
+        section: Difference-in-differences is two-way fixed effects
+        title: A parallel panel and a tilted one
+        recall: What does an event study show for parallel and tilted pre-trends?
+        answer: "In the tilted panel, at 0.15 a week, TWFE gives 7.394 against a true 3.596, and the pre-trend check flags it only weakly."
+        image: ../../assets/sources/images/stats-panel-event-study.png
+        caption: "Event-study coefficients for a parallel panel and a tilted one."
+        kicker: Pre-trend check
+        bullets:
+          - "Parallel: range **-0.97 to 0.22**, 0 of 7 outside"
+          - "Tilted: range **-2.18 to -0.29**, 1 of 7 outside"
+          - "TWFE **7.394** against a true **3.596**"
+        takeaway: The tilted panel fails the check only weakly, and its estimate is double the truth.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          Excerpt of the table: week -4 is -0.97 (SE 0.80), week 0 is 0.74, week 5 is 4.10 (SE 0.85) and week 8 is 3.91. The
+          tilted panel had one pre-period coefficient outside its interval, so a power problem is plain.
+
+      - layout: bullets
+        beat: fundamentals
+        level: deep
+        section: Difference-in-differences is two-way fixed effects
+        title: A staggered rollout, set up
+        recall: How is the staggered rollout simulated?
+        answer: "Three cohorts adopt at weeks 15, 30 and 45 of 60, and the note compares a flat effect of 4.5 with a growing one."
+        bullets:
+          - "Three cohorts adopt at weeks **15, 30 and 45** of 60"
+          - "Flat effect **4.5**: TWFE gives **4.486** (SD 0.151)"
+          - "Growing effect: later cohorts use earlier treated cohorts as controls"
+        takeaway: When effects change over time, already-treated stores make bad controls.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          The next slide shows what happens to the single coefficient when the effect grows.
+
+      - layout: table
+        beat: practice
+        level: deep
+        section: Difference-in-differences is two-way fixed effects
+        title: Staggered rollouts break the single coefficient
+        recall: When does two-way fixed effects fail on a staggered rollout?
+        answer: "When the effect grows over time: with no never-treated stores TWFE gives 0.096 against a true 4.531, and with 0.5 never-treated 3.010 against 4.561."
+        header: [Scenario, True ATT, TWFE]
+        widths: [5, 2.2, 2.2]
+        rows:
+          - [Flat effect 4.5, "", "4.486 (SD 0.151)"]
+          - ["Growing 0.25 a week, no never-treated", "4.531", "0.096"]
+          - ["Growing, 0.5 never-treated", "4.561", "3.010"]
+          - [Clean 2x2 comparison, "4.561", "4.572"]
+        highlight: [1, 2]
+        takeaway: On a staggered rollout, do not trust the single coefficient, and compare cohorts with clean controls.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          Three cohorts adopt at weeks 15, 30 and 45 of 60. Callaway and Sant'Anna (2021), Wooldridge (2021) and Borusyak et al.
+          (2024) are not read for this chapter, so the note only points to them.
+
+      - layout: compare
+        beat: fundamentals
+        level: deep
+        section: "Fixed or random: a pointer"
+        title: Within and between effects are different numbers
+        recall: What does the within-between model show?
+        answer: "The within effect is 0.4722 (se 0.0244) and the between effect is -1.4884 (se 0.0316). The between effect is confounded, and the choice between fixed and random lives in multilevel models."
+        emphasis: left
+        left:
+          title: Within effect
+          bullets: ["**0.4722** (se 0.0244)", "Within-store variance **11.31**"]
+        right:
+          title: Between effect
+          bullets: ["**-1.4884** (se 0.0316)", "Between-store variance **0.83**, and confounded"]
+        takeaway: The within effect is 0.47 and the between effect is -1.49, so they are different numbers.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          This is a pointer to pillar 04. Bell and Jones write that there are few, if any, occasions in which FE modeling is
+          preferable to RE modeling.
+
+      - layout: cards
+        beat: wrap
+        title: Rules of thumb for panels
+        recall: What are the rules of thumb for panel data?
+        answer: "Clustered errors fix the SE and not the estimate, fixed effects remove what is constant within a unit, and a flat pre-period is not a proof."
+        cards:
+          - {title: "Clusters and effects", accent: "1E3A5F", body: "Clustered errors fix the standard error and not the estimate. Fixed effects change the estimate, because they change the comparison"}
+          - {title: "What moved?", accent: "0F7490", body: "Ask what moved at the same time as the treatment, and whether the treatment responded to the outcome"}
+          - {title: "Parallel trends", accent: "D4621A", body: "A flat pre-period is not a proof, and on a staggered rollout do not trust the single coefficient"}
+        takeaway: A panel's estimate is only as good as the comparison it is built on.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          These are the README's rules of thumb for this chapter. The experimentation pillar picks up from here with the
+          potential-outcomes view and A/B testing.
+
+      - layout: table
+        beat: pitfalls
+        section: Pitfalls
+        title: Panel pitfalls and what to do instead
+        recall: What are the main panel pitfalls?
+        answer: "Trusting clustered errors for bias, forgetting time effects, treating FE as controls for everything, absorbing fixed attributes, trusting a flat pre-period, and trusting staggered TWFE."
+        header: [Pitfall, Do instead]
+        widths: [4.2, 5.4]
+        rows:
+          - [Expecting clustering to fix bias, "It fixes the SE only: -1.005 stays -1.005"]
+          - [FE as controls for everything, "A competitor gives 0.199, a reacting manager 0.133"]
+          - [Reading the coefficient as everyone's effect, "It is variance-weighted: 0.901 against 0.500"]
+          - [Trusting a flat pre-period, "Parallel trends cannot be proved"]
+          - [A single TWFE on a staggered rollout, "0.096 against a true 4.531"]
+        takeaway: Each pitfall has a number from this chapter that shows it, so keep the simulations.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          The note lists nine pitfalls and this table has the five that carry a number. The others cover forgetting time
+          effects, fixed attributes, counting rows and the between-effect p-value.

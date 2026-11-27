@@ -130,6 +130,8 @@ Use `related` rather than inventing a type (`part-of`, `depends-on`, `complement
 
 Run for **every** new raw source, however small. Log one line per run: `uv run librarian wiki log ingest "<source> -> <n> new, <n> updated"`. Examples: [docs/wiki-templates.md](docs/wiki-templates.md).
 
+**Batches fan out.** With more than one source, dispatch one `ingest-worker` agent per source (`.claude/agents/ingest-worker.md`, `model: sonnet`, steps 1–9 on its single file, writes only `data/wiki/`), then run `ingest-reviewer` once over the combined result for steps 10–11. The main session orchestrates and never ingests a batch inline — the 2026-11-20 telemetry pass found ingest sessions at the top of the compaction count, with the whole batch read into one context.
+
 0. **Triage:** `uv run librarian ingest triage <files>` routes each file: `clear`, `strip` (contact details), `decide` (listed term or private page name: generalise, or compile to `data/wiki/private/`) or `stop` (a secret). When unsure, use `private/`. Terms: `data/wiki/private/_sensitive-terms.txt`. Steps are in the ingest skill.
 1. **Read the source fully** before writing to `data/wiki/`.
 2. **Identify** all entities, concepts, decisions, open questions.
@@ -164,6 +166,10 @@ Contradicting a wiki claim: do not silently overwrite; add an entry to `data/wik
 ## Naming Conventions
 
 - **Files:** `kebab-case.md` (`google-adk-state-management.md`). **Decisions:** `YYYY-MM-DD-decision-slug.md`. **Raw sources:** original name or `YYYY-MM-DD-source-topic.md`. **Page titles:** Title Case ("Google ADK State Management").
+
+## Session handover
+
+`.claude/notes/handover.md` is the one live handover file (git-ignored). Read it at session start before touching the wiki or the pipeline; overwrite it at session end with what was done, what is unfinished, and where the next session starts. One file, overwritten — never dated copies, and never a substitute for wiki pages: knowledge goes to `data/wiki/`, working state goes here.
 
 ## What NOT to Do
 

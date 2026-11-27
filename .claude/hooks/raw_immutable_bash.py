@@ -25,7 +25,9 @@ Limits (string matching is a heuristic, not a sandbox):
     (`rm "$DIR"/x`, `rm $(ls ...)`) cannot be resolved; only a literal `data/raw` text in a
     command that also uses a mutating verb is caught (fallback scan).
   - `cd data/raw` followed by relative ops is tracked for simple `cd X &&`/`;` chains only.
-  - Heredoc bodies are not parsed. Symlinks are resolved with realpath, hardlinks are not.
+  - Heredoc bodies (`python3 - <<'PY' ... PY`) get the same text scan as interpreter
+    one-liners: a literal `data/raw` beside a write/delete API blocks, a read does not.
+    Symlinks are resolved with realpath, hardlinks are not.
   - `touch` only updates mtime and is allowed.
 Test override: RAW_GUARD_ROOT sets the repo root (default: two levels above this file).
 """
@@ -310,8 +312,37 @@ def check_segment(seg: list[str], cwd: str, raw_upstream: bool, depth: int) -> s
     return None
 
 
+HEREDOC = re.compile(
+    r"<<-?\s*(?P<q>['\"]?)(?P<tag>\w+)(?P=q)[^\n]*\n(?P<body>.*?)\n[ \t]*(?P=tag)[ \t]*(?:\n|$)",
+    re.S,
+)
+
+
+def check_heredocs(command: str) -> str | None:
+    """Scan heredoc bodies the shlex pass cannot see.
+
+    The body is interpreter code (`python3 - <<'PY'`, `uv run python - <<EOF`, `node -`),
+    so the same heuristic as the interpreter one-liner applies: a literal data/raw path
+    beside a write/delete API blocks; reads pass. Returns None when there is no heredoc.
+    """
+    for m in HEREDOC.finditer(command):
+        body = m.group("body")
+        if re.search(r"data/raw", body) and WRITE_API.search(body):
+            return "heredoc body writes/deletes with a data/raw path"
+    return None
+
+
 def check_command(command: str, cwd: str, depth: int = 0) -> str | None:
-    prepared = command.replace("\r", " ").replace("\n", " ; ")
+    if "\n" in command:
+        reason = check_heredocs(command)
+        if reason:
+            return reason
+        # Drop heredoc bodies before tokenising: their lines are not shell segments, and a
+        # body line like `rm x` would otherwise be checked as a command.
+        command_for_shell = HEREDOC.sub(" ", command)
+    else:
+        command_for_shell = command
+    prepared = command_for_shell.replace("\r", " ").replace("\n", " ; ")
     try:
         lex = shlex.shlex(prepared, posix=True, punctuation_chars=True)
         lex.whitespace_split = True

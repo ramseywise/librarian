@@ -1,10 +1,11 @@
 ---
-imported_hash: c8c868778951ecf3
+imported_hash: d6e3801215a74f78
 title: Text classification
 summary: You have thousands of documents and a label you care about, and someone suggests a transformer.
 order: 3
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-science/03-nlp/notes/02-text-classification.md
 ---
 

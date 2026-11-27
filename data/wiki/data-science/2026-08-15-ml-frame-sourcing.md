@@ -1,8 +1,8 @@
 ---
 title: ML Frame Sourcing — License, Horizon, Prevalence
-tags: [data-science, decision]
+tags: [data-science, classical-ml, decision]
 summary: Choosing public datasets for ML prototype frames on three constraints — a license that permits redistribution of derived artifacts, a time column that supports a temporal split, and a positive rate low enough to exercise the sufficiency guard — with the explicit note that class imbalance is not data insufficiency and that pre-registered hypotheses stay unedited after results.
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/claude-docs/galactus/docs/DESIGN-ml-frame-sourcing.md
   - data/raw/claude-docs/galactus/docs/decisions/ml-frame-sourcing-decisions.md

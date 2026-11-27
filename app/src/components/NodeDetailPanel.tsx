@@ -1,14 +1,10 @@
-import { useEffect, useState, type CSSProperties } from "react";
+import type { CSSProperties } from "react";
 import "./card.css";
 import type { WikiNodeData } from "../types";
-import type { LessonOutline } from "./courses/types";
 import { useTheme } from "../hooks/useTheme";
 import { domainColor, tagColor } from "../theme/domains";
 import { ReportButton } from "./feedback/ReportButton";
-import { conceptLessonsSchema } from "../schemas/courses";
-import { apiFetch, parseJson } from "../utils/api";
-
-type ConceptLesson = LessonOutline & { course: string };
+import { useConceptLessons } from "../hooks/useConceptLessons";
 
 const TYPE_LABELS: Record<string, string> = {
   concept: "Concept", pattern: "Pattern", decision: "Decision",
@@ -173,18 +169,4 @@ export function NodeDetailPanel({
       </div>
     </div>
   );
-}
-
-function useConceptLessons(pageId: string): ConceptLesson[] {
-  const [lessons, setLessons] = useState<ConceptLesson[]>([]);
-  useEffect(() => {
-    let cancelled = false;
-    setLessons([]);
-    apiFetch(`/api/courses/concept/${encodeURIComponent(pageId)}`)
-      .then((r) => (r.ok ? parseJson(r, conceptLessonsSchema) : []))
-      .then((ls) => !cancelled && setLessons(ls))
-      .catch(() => {});
-    return () => { cancelled = true; };
-  }, [pageId]);
-  return lessons;
 }

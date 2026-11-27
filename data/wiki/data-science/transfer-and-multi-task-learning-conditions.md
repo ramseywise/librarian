@@ -1,8 +1,8 @@
 ---
 title: "Transfer and Multi-Task Learning Conditions"
-tags: [data-science, pattern]
+tags: [data-science, deep-learning, pattern]
 summary: "Transfer learning needs a much larger source task and shared low-level features, and can lose to training from scratch (frozen backbone 39.48% vs scratch 11.82% error); multi-task learning with masked loss uses partially labelled rows and halved error versus keeping only complete rows."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-caruana-1997-multitask-learning.md
   - data/raw/papers/2026-11-08-kornblith-2019-do-better-imagenet-models-transfer.md

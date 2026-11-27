@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { COURSE_COLORS, KNOWN, LIGHT_CARD_BG, PALETTE, TYPE_COLORS, areaColor, contrastRatio, courseColor, domainColor, lightVariant, tagColor } from "../domains";
+import { COURSE_COLORS, KNOWN, LIGHT_CARD_BG, PALETTE, TYPE_COLORS, areaColor, contrastRatio, courseColor, domainColor, lightVariant, tagColor, topicColor, DARK_CARD_BG } from "../domains";
 
 describe("domainColor", () => {
   it("keeps historical colours for known domains", () => {
@@ -107,5 +107,25 @@ describe("light theme colours", () => {
     expect(domainColor("eval", "light")).toBe(lightVariant("#FFEB3B"));
     expect(courseColor("programming", "light")).toBe(lightVariant("#64B5F6"));
     expect(tagColor("decision", "light")).toBe(lightVariant("#ef9a9a"));
+  });
+});
+
+describe("topicColor", () => {
+  it("is the directory colour without a topic", () => {
+    expect(topicColor("eval", undefined, undefined, "dark")).toBe(domainColor("eval", "dark"));
+    expect(topicColor("eval", 0, 1, "dark")).toBe(domainColor("eval", "dark"));
+  });
+  it("gives each topic its own readable shade in both themes", () => {
+    for (const d of ["data-science", "data-analytics", "eval", "llm", "multimodal", "data-engineering"]) {
+      const shades = new Set<string>();
+      for (let i = 0; i < 14; i++) {
+        const dark = topicColor(d, i, 14, "dark");
+        const light = topicColor(d, i, 14, "light");
+        shades.add(dark);
+        expect(contrastRatio(dark, DARK_CARD_BG)).toBeGreaterThanOrEqual(4.5);
+        expect(contrastRatio(light, LIGHT_CARD_BG)).toBeGreaterThanOrEqual(4.5);
+      }
+      expect(shades.size).toBe(14);
+    }
   });
 });

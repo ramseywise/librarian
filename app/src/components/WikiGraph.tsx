@@ -19,6 +19,7 @@ import { MapBar } from "./MapBar";
 import { MapSearch } from "./MapSearch";
 import { WikiNode, type WikiFlowNode } from "./WikiNode";
 import { NodeCardContext, type NodeCard } from "./nodeCard";
+import { NodeDetailPanel } from "./NodeDetailPanel";
 import { FiltersPanel } from "./TagFilterPanel";
 import { MapControls } from "./MapControls";
 import { ConnectChips } from "./EdgeTogglePanel";
@@ -65,7 +66,7 @@ import {
   type MapView,
 } from "../utils/mapRoute";
 import { useTheme } from "../hooks/useTheme";
-import { domainColor } from "../theme/domains";
+import { topicColor } from "../theme/domains";
 import "./graph.css";
 import "./filter.css";
 import "../theme/atlas.css";
@@ -86,6 +87,11 @@ const MOVE_MS = 650;
 interface WikiGraphProps {
   /** The slot under the chat, for the clusters in view and the map's controls. Without one they sit in the map's corner. */
   dock?: HTMLElement | null;
+  /**
+   * The side column's Reading slot. Given one, the selected page's card is read there and nodes
+   * on the canvas stay compact; without one the node opens into its card in place.
+   */
+  reading?: HTMLElement | null;
   highlightedPages?: Set<string>;
   /** Wiki page to pan/zoom to — set when arriving from a course lesson's concept link. */
   focusPage?: string | null;
@@ -116,6 +122,7 @@ function WikiGraphInner({
   onOpenLesson,
   onFocusApplied,
   dock,
+  reading = null,
   onBrief,
   activeTags,
   onActiveTagsChange,
@@ -234,7 +241,13 @@ function WikiGraphInner({
     [atlasPages, degree, grouping, areas, theme],
   );
   const pageInfo = useMemo(
-    () => new Map<string, AtlasPageInfo>(baseNodes.map((n) => [n.id, { title: n.data.title, summary: n.data.summary }])),
+    () =>
+      new Map<string, AtlasPageInfo>(
+        baseNodes.map((n) => [
+          n.id,
+          { title: n.data.title, summary: n.data.summary, tags: n.data.tags, path: n.data.path, origins: n.data.origins, sourceCount: n.data.sourceCount },
+        ]),
+      ),
     [baseNodes],
   );
   const primaryIds = useMemo(() => filterPrimaryIds(baseNodes, activeTags, facets), [baseNodes, activeTags, facets]);
@@ -648,10 +661,11 @@ function WikiGraphInner({
   // The first paint doesn't wait for these. Retries on reconnect while none have landed.
   const hasSemanticEdges = semanticEdges.length > 0;
   useEffect(() => {
-    if (!hasRenderedNodes || !connected || !edgeVis.semantic || hasSemanticEdges) return;
+    // The atlas draws no React Flow nodes but its cards list similar pages, so it loads them too.
+    if (!(hasRenderedNodes || (onAtlas && hasNodes)) || !connected || !edgeVis.semantic || hasSemanticEdges) return;
     const timer = setTimeout(() => void handleLoadSemantic(), SEMANTIC_DELAY_MS);
     return () => clearTimeout(timer);
-  }, [hasRenderedNodes, connected, edgeVis.semantic, hasSemanticEdges, handleLoadSemantic]);
+  }, [hasRenderedNodes, onAtlas, hasNodes, connected, edgeVis.semantic, hasSemanticEdges, handleLoadSemantic]);
 
   // Clicking a node focuses it and keeps its neighbours on the canvas, so the graph can be
   // walked outward click by click. Clicking it again unfocuses. In a clustered level the walk is
@@ -697,6 +711,22 @@ function WikiGraphInner({
   });
   const titleOf = useCallback((id: string) => pageInfo.get(id)?.title ?? id, [pageInfo]);
 
+  // A page's most similar pages by embedding, best first; empty until the edges load.
+  const similarOf = useMemo(() => {
+    const by = new Map<string, { id: string; title: string; score: number }[]>();
+    for (const e of semanticEdges) {
+      const score = e.data?.score;
+      if (score == null) continue;
+      for (const [a, b] of [[e.source, e.target], [e.target, e.source]]) {
+        const list = by.get(a) ?? [];
+        list.push({ id: b, title: pageInfo.get(b)?.title ?? b, score });
+        by.set(a, list);
+      }
+    }
+    for (const list of by.values()) list.sort((x, y) => y.score - x.score);
+    return (id: string) => by.get(id) ?? [];
+  }, [semanticEdges, pageInfo]);
+
   // What an open card shows and does. Its related pages are the page's wikilinks by kind of link.
   const closeCard = useCallback(() => onNodeSelect?.(null), [onNodeSelect]);
   const nodeCard = useMemo<NodeCard>(
@@ -735,10 +765,6 @@ function WikiGraphInner({
     [navigate, grouping],
   );
   const openAtlas = useCallback(() => navigate(mapPath({ level: "atlas", grouping })), [navigate, grouping]);
-  const openPageLevel = useCallback(
-    (id: string, page: string) => navigate(mapPath({ level: "page", grouping, sector: id, page, cap: PAGE_CAP })),
-    [navigate, grouping],
-  );
 
   const handlePaneClick = useCallback(() => {
     setFocusNodeId(null);
@@ -765,7 +791,7 @@ function WikiGraphInner({
   }, [navigate]);
 
   const miniMapColor = useCallback(
-    (n: WikiFlowNode) => n.data.groupColor ?? domainColor(n.data.domain[0], theme),
+    (n: WikiFlowNode) => n.data.groupColor ?? topicColor(n.data.domain[0], n.data.topicIndex, n.data.topicCount, theme),
     [theme],
   );
 
@@ -898,6 +924,26 @@ function WikiGraphInner({
       extra={allNodes || undefined}
     />
   );
+  // The selected page in the Reading slot, with what the canvas card would have shown.
+  const readNode = reading && !onAtlas && selectedId ? baseNodes.find((n) => n.id === selectedId) : undefined;
+  const readingCard = readNode ? (
+    <NodeDetailPanel
+      key={readNode.id}
+      nodeId={readNode.id}
+      data={readNode.data}
+      highlighted={nodeCard.cited.has(readNode.id)}
+      lastQuery={nodeCard.lastQuery}
+      onClose={nodeCard.onClose}
+      onTagClick={nodeCard.onTagClick}
+      activeTags={nodeCard.activeTags}
+      onOpenLesson={nodeCard.onOpenLesson}
+      related={nodeCard.related(readNode.id)}
+      why={nodeCard.why?.(readNode.id)}
+      onOpenPage={nodeCard.onOpenPage}
+    />
+  ) : (
+    <p className="reading-empty">Click a page on the map to read it here. Double-click opens its own level.</p>
+  );
   const inset = !onAtlas && (
     <ClusterInset
       sectors={sectors}
@@ -935,13 +981,17 @@ function WikiGraphInner({
               matches={atlasMatches}
               lit={atlasLit}
               taught={taught}
-              onOpenSector={openSectorLevel}
-              onOpenPage={openPageLevel}
+              related={nodeCard.related}
+              similar={similarOf}
+              activeTags={activePageTags}
+              onTagClick={onTagClick}
               enterFrom={enterFrom}
+              reading={reading}
+              links={wikilinkEdges}
             />
           )
         ) : (
-          <NodeCardContext.Provider value={nodeCard}>
+          <NodeCardContext.Provider value={reading ? null : nodeCard}>
           <ReactFlow
             className="map-fade-in"
             nodes={nodes}
@@ -969,6 +1019,7 @@ function WikiGraphInner({
           {!dock && inset}
           {!dock && bar}
         </div>
+        {reading && !onAtlas && createPortal(readingCard, reading)}
         {dock &&
           createPortal(
             <>

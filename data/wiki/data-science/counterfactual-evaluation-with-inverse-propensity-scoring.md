@@ -1,8 +1,8 @@
 ---
 title: "Counterfactual Evaluation with Inverse Propensity Scoring"
-tags: [data-science, pattern]
+tags: [data-science, time-series-and-recommenders, pattern]
 summary: "Logs only record what the old system showed; inverse propensity scoring reweights logged events by one over the logging probability to estimate an unshipped policy's value, at the price of variance, so log propensities, keep some randomisation and report effective sample size."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--05-time-series-and-recommenders--notes--03-two-tower-and-evaluation.md
 ---

@@ -30,9 +30,11 @@ from typing import Any, Final
 
 from pydantic import BaseModel, Field, ValidationError
 
-from librarian import retrieval
+from librarian import accounts, retrieval
 from librarian.config import get_settings
-from librarian.courses import curriculum
+from librarian.courses import catalog as course_catalog
+from librarian.courses import curriculum, learning, learning_text
+from librarian.db import get_engine
 from librarian.retrieval import corpus
 from librarian.tools.codemap import client as codemap
 from librarian.wiki.common import parse_frontmatter
@@ -51,9 +53,12 @@ INVALID_ARGS_PREFIX = "Invalid arguments"
 
 @dataclass(frozen=True)
 class ToolContext:
-    """What a request knows that a tool might need. Empty today; see the module docstring."""
+    """What a request knows that a tool might need: the surface and, for per-user tools
+    (`learning_next`, `concept_status`), the signed-in user. None means the owner (open mode,
+    local stdio MCP)."""
 
     surface: str = CHAT
+    user_id: str | None = None
     extra: Mapping[str, Any] = field(default_factory=dict)
 
 
@@ -213,6 +218,30 @@ def chat_domain_briefing(domain: str) -> str:
     return listing
 
 
+def _learner(ctx: ToolContext) -> str:
+    """The user whose study history a learning tool reads: the caller, else the owner."""
+    return ctx.user_id or accounts.ensure_owner(get_engine(), get_settings().owner_email).id
+
+
+def chat_learning_next(limit: object, ctx: ToolContext) -> str:
+    """The Due list for the caller. Reads only their own attempts and progress."""
+    n = learning_text.clamp_limit(limit)
+    cat = course_catalog.catalog()
+    if not cat.lessons:
+        return learning_text.CATALOG_UNAVAILABLE
+    rows = learning.build_next(_learner(ctx), cat, learning.utcnow(), n + 1)
+    return learning_text.format_next(rows[:n], more=len(rows) > n)
+
+
+def chat_concept_status(page_id: str, ctx: ToolContext) -> str:
+    """One public wiki page's hub for the caller. Private, retired and unknown ids read alike."""
+    cat = course_catalog.catalog()
+    detail = learning.build_concept(_learner(ctx), cat, page_id.strip(), learning.utcnow())
+    if detail is None:
+        return learning_text.format_no_page(page_id)
+    return learning_text.format_concept(detail)
+
+
 # --- parameter models -----------------------------------------------------------------------
 
 
@@ -224,6 +253,17 @@ class _ChatRead(BaseModel):
     page_id: str = Field(
         description="Page ID as shown in search results, e.g. 'langgraph-crag-pipeline'"
     )
+
+
+class _LearningNext(BaseModel):
+    limit: int = Field(
+        default=learning_text.NEXT_DEFAULT_LIMIT,
+        description=f"How many due concepts to list (default {learning_text.NEXT_DEFAULT_LIMIT}, max {learning_text.NEXT_MAX_LIMIT})",
+    )
+
+
+class _ConceptStatus(BaseModel):
+    page_id: str = Field(description="Wiki page ID as shown in search results")
 
 
 class _ChatBriefing(BaseModel):
@@ -379,6 +419,7 @@ _CM_LIST_REPOS_DOC = "List all repos currently indexed by codemap, with last-ind
 
 _ONLY_CHAT = frozenset({CHAT})
 _ONLY_MCP = frozenset({MCP})
+_CHAT_AND_MCP = frozenset({CHAT, MCP})
 
 TOOLS: Final[tuple[Tool, ...]] = (
     Tool(
@@ -540,6 +581,38 @@ TOOLS: Final[tuple[Tool, ...]] = (
         read_only=True,
         remote_proxy=False,
     ),
+    Tool(
+        name="learning_next",
+        description=(
+            "The concepts this user is due to review, weakest first, each with why it is due and "
+            "the lessons, drills and flashcard decks to review it with. Estimates from study "
+            "recorded in the app; an empty list says nothing about concepts without evidence."
+        ),
+        params=_LearningNext,
+        fn=lambda p, ctx: chat_learning_next(p.limit, ctx),
+        surfaces=_CHAT_AND_MCP,
+        read_only=True,
+        remote_proxy=True,
+        log_arg="limit",
+    ),
+    Tool(
+        name="concept_status",
+        description=(
+            "This user's estimated mastery of one wiki page (by page id) and the lessons, drills "
+            "and flashcard decks that cover it."
+        ),
+        params=_ConceptStatus,
+        fn=lambda p, ctx: chat_concept_status(p.page_id, ctx),
+        surfaces=_CHAT_AND_MCP,
+        read_only=True,
+        remote_proxy=True,
+        log_arg="page_id",
+    ),
+)
+
+# What a voice session may call: the read-only learning tools. Lab solutions are never in here.
+LEARNING_TOOLS: Final = frozenset(
+    {"search_lessons", "read_page", "learning_next", "concept_status"}
 )
 
 

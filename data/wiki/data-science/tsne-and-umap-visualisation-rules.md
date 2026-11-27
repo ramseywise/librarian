@@ -1,8 +1,8 @@
 ---
 title: "t-SNE and UMAP Visualisation Rules"
-tags: [data-science, concept]
+tags: [data-science, classical-ml, concept]
 summary: "t-SNE preserves neighbourhoods for 2-D pictures only; read cluster shape not size or distance, vary perplexity, and never feed it to a model."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--05-unsupervised-learning.md
   - data/raw/papers/2026-11-07-mcinnes-2018-umap.md

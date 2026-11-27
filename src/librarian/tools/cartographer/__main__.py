@@ -254,14 +254,18 @@ def _run_facts() -> None:
         action="store_true",
         help="Skip deterministic verdict scoring against the tooling ledger",
     )
+    # Defaults follow lib.sh's CLAUDE_TELEMETRY_DIR resolution (paths.py), not a fixed
+    # ~/.claude path — the hooks moved their logs to guacamayo/.sounding/telemetry/.
+    from librarian.tools.cartographer.paths import hook_log_path, hook_pass_log_path
+
     p.add_argument(
         "--hook-log",
-        default=str(Path("~/.claude/.hook-log.jsonl").expanduser()),
+        default=str(hook_log_path()),
         help="Guard-hook event log (blocks/warns) for the hook-activity card",
     )
     p.add_argument(
         "--hook-pass-log",
-        default=str(Path("~/.claude/.hook-pass-log.jsonl").expanduser()),
+        default=str(hook_pass_log_path()),
         help="Guard-hook pass log (silent OKs) for the hook-activity card",
     )
     args = p.parse_args()

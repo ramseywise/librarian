@@ -1,8 +1,8 @@
 ---
 title: "Gradient-Boosted Forecasting Relative to a Known Level"
-tags: [data-science, pattern]
+tags: [data-science, time-series-and-recommenders, pattern]
 summary: "A regression tree cannot predict above anything it has seen, so divide target and lags by a level known at issue time; on a short single series this beat LSTM, TCN and DLinear, and quantile models give intervals whose coverage must be checked per fold."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--05-time-series-and-recommenders--notes--01-time-series-ml.md
 ---

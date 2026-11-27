@@ -19,6 +19,7 @@ from librarian.wiki.common import (
     page_tags,
     resolve_link,
 )
+from librarian.wiki.source_links import OriginResolver
 
 log = get_logger(__name__)
 
@@ -101,6 +102,8 @@ def parse_wiki_uncached() -> dict:
 
     # First pass: collect all pages
     pages = _public_pages()
+    settings = get_settings()
+    origins_of = OriginResolver(settings.raw_dir, settings.course_sources_dir)
     for md_file in pages:
         # One bad page must not take the graph down: this runs in the /ws watcher too, and an
         # exception there ends live updates until restart.
@@ -129,6 +132,7 @@ def parse_wiki_uncached() -> dict:
         # The top-level directory: a subdirectory (frameworks/adk) only files the pages.
         domain = [md_file.relative_to(WIKI_DIR).parts[0]]
         type_tag = next((t for t in tags if t in TYPE_TAGS), "concept")
+        origins, source_count = origins_of(fm(post).get("sources"))
 
         nodes.append(
             {
@@ -142,6 +146,9 @@ def parse_wiki_uncached() -> dict:
                     "summary": fm(post).get("summary") or "",
                     "updated": str(fm(post).get("updated") or ""),
                     "path": str(md_file.relative_to(WIKI_DIR)),
+                    # Public links to the paper, PDF or article; see wiki/source_links.py.
+                    "origins": origins,
+                    "sourceCount": source_count,
                     "dimmed": False,
                 },
                 "position": {"x": 0, "y": 0},
@@ -187,7 +194,27 @@ def parse_wiki_uncached() -> dict:
 
     domains = sorted(_domain_tag_set())
     areas = areas_for(domains)
-    return {"nodes": nodes, "edges": edges, "domains": domains, "areas": areas}
+    return {
+        "nodes": nodes,
+        "edges": edges,
+        "domains": domains,
+        "areas": areas,
+        "topics": topic_order(domains),
+    }
+
+
+def topic_order(domains: list[str]) -> dict[str, list[str]]:
+    """Directory → its topics in `_topics.yaml` order, for directories on disk. The map shades a
+    page by its topic within the directory's colour; empty when the file is missing or invalid."""
+    path = WIKI_DIR / "_topics.yaml"
+    if not path.is_file():
+        return {}
+    try:
+        raw = yaml.safe_load(path.read_text()) or {}
+    except yaml.YAMLError:
+        log.warning("topics.unreadable", path=str(path))
+        return {}
+    return {d: list(ts or {}) for d, ts in raw.items() if d in domains and isinstance(ts, dict)}
 
 
 def tag_shared_edges(nodes: list[dict], domains: list[str] | set[str]) -> list[dict]:

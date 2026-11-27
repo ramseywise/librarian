@@ -1,10 +1,11 @@
 ---
-imported_hash: b1c11dac0630717f
+imported_hash: e221c92cefd7ae8d
 title: 'Operations and supply chain: stock and reserve'
 summary: A forecast of 1,120 units is not an order of 1,120 units.
 order: 12
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-analytics/06-applied-analyses/notes/10-operations-and-supply-chain.md
 ---
 

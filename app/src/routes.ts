@@ -13,6 +13,7 @@ export type CoursePage =
   | { page: "labs" }
   | { page: "practice" }
   | { page: "flashcards"; deckId: string }
+  | { page: "concept"; conceptId: string }
   | { page: "courses"; path: string };
 
 const after = (route: string, prefix: string) => route.slice(prefix.length);
@@ -28,6 +29,13 @@ export function parseRoute(route: string): CoursePage | null {
   if (route === "/labs" || route.startsWith("/labs/")) return { page: "labs" };
   if (route === "/practice") return { page: "practice" };
   if (route.startsWith("/flashcards/")) return { page: "flashcards", deckId: after(route, "/flashcards/") };
+  if (route.startsWith("/concept/") && route.length > "/concept/".length) {
+    try {
+      return { page: "concept", conceptId: decodeURIComponent(after(route, "/concept/")) };
+    } catch {
+      return null;
+    }
+  }
   if (route === "/courses" || route.startsWith("/courses/")) return { page: "courses", path: route.replace(/^\/courses\/?/, "") };
   return null;
 }

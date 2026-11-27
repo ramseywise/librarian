@@ -1,10 +1,11 @@
 ---
-imported_hash: 2a7e0f20c755861e
+imported_hash: d559134d062af7f6
 title: 1b — Grids, hypotheses and simulation
 summary: Larkspur's analyst has now met the update, the Beta-Binomial and a sampler, and then a question arrives that none of them answers directly.
 order: 3
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-analytics/04-bayesian-analysis/notes/01b-grids-hypotheses-and-simulation.md
 ---
 

@@ -1,10 +1,11 @@
 ---
-imported_hash: 76854c30375361df
+imported_hash: c2d000de2835807a
 title: Thresholds, precision–recall, ROC and calibration
 summary: Blocks run top to bottom from the same notes/ folder as 04, whose split, metric and confusion-matrix sections this note assumes.
 order: 7
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-science/01-classical-ml/notes/04b-thresholds-pr-roc-and-calibration.md
 ---
 

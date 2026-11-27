@@ -1,8 +1,8 @@
 ---
-imported_hash: 6cb053cbecb7ecb7
+imported_hash: 60e970507637713a
 title: AB Testing
 summary: 'from statsmodels.stats.proportion import proportions_ztest, proportion_confint # when to use t-test or chi 2'
-order: 7
+order: 8
 kind: notebook
 section: Practice / AB Bayes
 source: learn-ai-engineering/data-analytics/03-experimentation-and-causality/practice/AB-Bayes/AB_Testing_with_Python.ipynb

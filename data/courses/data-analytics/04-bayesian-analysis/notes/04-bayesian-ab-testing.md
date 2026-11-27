@@ -1,10 +1,11 @@
 ---
-imported_hash: 6975f707a8c0e2f3
+imported_hash: 15b0d789219885f1
 title: 4 — Bayesian A/B Testing
 summary: 'Larkspur''s head of product wanted two things from the checkout test: how likely is it that the new checkout is better, and what do we lose if we ship it and we are wrong?'
 order: 7
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-analytics/04-bayesian-analysis/notes/04-bayesian-ab-testing.md
 ---
 

@@ -1,8 +1,8 @@
 ---
 title: "Clustering Stability and Symmetry"
-tags: [data-science, concept]
+tags: [data-science, classical-ml, concept]
 summary: "In the large-sample limit, a centre-based or spectral clustering is stable when the objective has a unique best solution and unstable when a symmetry of the data swaps equally good ones, so stability under resampling does not tell you whether k is right."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-ben-david-2006-sober-look-clustering-stability.md
 ---

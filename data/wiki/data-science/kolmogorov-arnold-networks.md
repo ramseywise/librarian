@@ -1,8 +1,8 @@
 ---
 title: "Kolmogorov-Arnold Networks"
-tags: [data-science, concept]
+tags: [data-science, deep-learning, concept]
 summary: "KANs put a learnable spline on every edge and only sum at the nodes; the authors report accuracy and interpretability gains on small science tasks at about 10x the training cost of an MLP."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-07-liu-2024-kan.md
 ---

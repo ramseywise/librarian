@@ -1,8 +1,8 @@
 ---
 title: "Big Transfer (BiT) Generalist Pretraining"
-tags: [data-science, pattern]
+tags: [data-science, deep-learning, pattern]
 summary: "BiT scales supervised pre-training of ResNets with GroupNorm and Weight Standardization, then fine-tunes with a fixed size-based heuristic, BiT-HyperRule, instead of a per-task search."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-kolesnikov-2020-big-transfer-bit.md
 ---

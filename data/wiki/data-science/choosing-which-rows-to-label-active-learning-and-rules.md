@@ -1,8 +1,8 @@
 ---
 title: "Choosing Which Rows to Label: Active Learning and Rules"
-tags: [data-science, comparison]
+tags: [data-science, classical-ml, comparison]
 summary: "Rules can stand in for many hand labels but learned rule weights lose to a plain vote at low label density; uncertainty sampling beat random on generated data and lost AUC on real data, and its labelled set is biased."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--14-learning-from-corrections.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: Neural Turing Machine
-tags: [data-science, concept]
+tags: [data-science, deep-learning, concept]
 summary: "A controller network coupled to a memory matrix through differentiable read and write heads, using content-based and location-based addressing, trained by gradient descent to learn copy, recall and sort; on small synthetic tasks it generalised to longer inputs where an LSTM did not (self-reported)."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-07-graves-2014-neural-turing-machines.md
   - data/raw/papers/2026-11-08-fundamentals-of-deep-learning-ch08-memory-augmented-neural-networks.md

@@ -1,8 +1,8 @@
 ---
 title: "Collocations and Pointwise Mutual Information"
-tags: [data-science, concept]
+tags: [data-science, nlp, concept]
 summary: "PMI scores word pairs by how much more often they co-occur than chance; it overrates rare pairs, so it needs a minimum count, while raw frequency surfaces only common pairs."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--03-nlp--notes--03-topic-models-and-summarization.md
   - data/raw/papers/2026-11-08-text-analytics-with-python-ch05-text-summarization.md

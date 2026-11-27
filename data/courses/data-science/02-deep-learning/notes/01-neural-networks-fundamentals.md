@@ -1,10 +1,14 @@
 ---
-imported_hash: 8d68d659ae8d06e9
+imported_hash: a67adcb3735325a3
 title: Neural network basics
 summary: The sklearn MLPClassifier in supervised learning hides all of this.
 order: 2
 kind: reading
 section: Notes
+tier: foundations
+depth: core
+depth_sections:
+  Is deep learning a different kind of model?: deep
 source: learn-ai-engineering/data-science/02-deep-learning/notes/01-neural-networks-fundamentals.md
 ---
 

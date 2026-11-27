@@ -13,12 +13,23 @@
   gap: var(--space-1);
 }
 .atlas-zoom .pill-btn { background: var(--surface-raised); }
+/* Which lines the selected page draws; they also filter the card's link rows. */
+.atlas-lines {
+  position: absolute;
+  right: var(--space-5);
+  bottom: calc(var(--space-5) + 34px);
+  z-index: var(--z-panel);
+  display: flex;
+  gap: var(--space-1);
+}
+.atlas-lines .pill-btn { background: var(--surface-raised); }
+.atlas-lines .pill-btn[aria-pressed="false"] { opacity: 0.55; text-decoration: line-through; }
 .atlas-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .atlas-canvas--hot { outline-offset: -3px; touch-action: manipulation; }
 .atlas-canvas--hot:focus { outline: none; }
 .atlas-canvas--hot:focus-visible { outline: 2px solid var(--accent); }
 .atlas-svg { position: absolute; inset: 0; pointer-events: none; transition: opacity var(--dur-quick); }
-.atlas.is-moving .atlas-svg, .atlas.is-moving .atlas-card { opacity: 0; pointer-events: none; }
+.atlas.is-moving .atlas-svg, .atlas.is-moving .atlas-corner { opacity: 0; pointer-events: none; }
 
 .atlas-band {
   font-size: var(--fs-xs);
@@ -68,6 +79,7 @@
   overflow: hidden;
 }
 .atlas-card-actions { display: flex; gap: var(--space-2); margin-top: var(--space-2); }
+/* Beside a Reading slot the hole keeps a few words, sized to the ring (--hole is the card's width). */
 
 .atlas-tip {
   position: absolute;
@@ -266,3 +278,58 @@
 .health-chip--broken strong { color: var(--danger); }
 /* The connection chips stay in view below the scrolling filters, whichever Browse by is on. */
 .map-dock-connect { flex: none; border-top: 1px solid var(--border); padding-top: var(--space-2); }
+
+/* Beside the ring, bottom-left: the totals, and the selected page's card above them. The ring's
+   hole is the field of page dots now, so nothing sits in it. */
+.atlas-corner {
+  position: absolute;
+  left: var(--space-5);
+  bottom: var(--space-5);
+  z-index: var(--z-panel);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  max-width: min(300px, calc(100% - 2 * var(--space-5)));
+  pointer-events: none;
+  transition: opacity var(--dur-quick);
+}
+.atlas-totals { display: flex; flex-direction: column; gap: 2px; }
+.atlas-totals .atlas-card-total { font-size: var(--fs-3xl); }
+.atlas-totals .atlas-card-legend { margin-top: var(--space-1); }
+.atlas-card--dock {
+  position: static;
+  pointer-events: auto;
+  align-items: flex-start;
+  text-align: left;
+  width: 100%;
+  max-height: 46vh;
+  overflow-y: auto;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
+.atlas-card--dock .reading-sub { margin-top: var(--space-2); }
+.atlas-card-links { display: block; width: 100%; }
+/* The page card: its related pages by link type, then lessons, then tags. Each link moves the card. */
+.atlas-detail { display: flex; flex-direction: column; gap: var(--space-3); }
+.atlas-detail-group .panel-label { margin-bottom: var(--space-1); }
+.atlas-detail-group .reading-list { gap: 1px; }
+.atlas-detail-tags { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+/* One list for every kind of link: a narrow key column, then the page. */
+.atlas-row { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr); align-items: baseline; gap: var(--space-2); }
+.atlas-row-key {
+  display: flex;
+  gap: var(--space-2);
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.atlas-row-title { overflow: hidden; text-overflow: ellipsis; }
+a.atlas-out { color: var(--accent); text-decoration: none; }
+a.atlas-out:hover, a.atlas-out:focus-visible { text-decoration: underline; }
+a.detail-lesson.atlas-out { color: inherit; }
+.reading-link .cur-dot { margin-right: var(--space-2); }

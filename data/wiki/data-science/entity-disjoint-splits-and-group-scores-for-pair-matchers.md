@@ -1,8 +1,8 @@
 ---
 title: "Entity-Disjoint Splits and Group Scores for Pair Matchers"
-tags: [data-science, pattern]
+tags: [data-science, time-series-and-recommenders, pattern]
 summary: "Because match labels are transitive, a random pair split leaks the answer: close the labels into groups, hold out whole groups, block inside each side, and tune on group F1 when merging, since closure chains pair errors."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--05-time-series-and-recommenders--notes--04-entity-matching-and-learning-to-rank.md
   - data/raw/repos/learn-ai-engineering/data-science--05-time-series-and-recommenders--notes--05-learning-a-similarity-function.md

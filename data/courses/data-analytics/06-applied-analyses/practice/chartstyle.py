@@ -22,10 +22,11 @@ def apply():
     plt.rcParams.update({
         "figure.figsize": (8, 4.5), "figure.dpi": 150, "savefig.dpi": 150,
         "figure.facecolor": SURFACE, "axes.facecolor": SURFACE, "savefig.facecolor": SURFACE,
-        "font.family": "sans-serif", "font.size": 10,
+        # 13pt on an 8in figure stays readable when a slide shows it about 5.5in wide.
+        "font.family": "sans-serif", "font.size": 13,
         "font.sans-serif": ["Helvetica Neue", "Arial", "DejaVu Sans"],
         "text.color": INK, "axes.labelcolor": SECONDARY, "axes.titlecolor": INK,
-        "axes.titlesize": 12, "axes.titleweight": "bold", "axes.titlelocation": "left",
+        "axes.titlesize": 15, "axes.titleweight": "bold", "axes.titlelocation": "left",
         "axes.spines.top": False, "axes.spines.right": False, "axes.spines.left": False,
         "axes.edgecolor": BASELINE, "axes.grid": True, "axes.grid.axis": "y",
         "axes.axisbelow": True, "grid.color": GRID, "grid.linewidth": .7, "grid.linestyle": "-",

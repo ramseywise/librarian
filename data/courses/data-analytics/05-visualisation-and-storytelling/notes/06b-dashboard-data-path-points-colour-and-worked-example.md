@@ -1,10 +1,15 @@
 ---
-imported_hash: 13dab43647961771
+imported_hash: c10dbc232f88ba85
 title: 'Dashboard stacks, part 2: the data path, many points, colour and the finished pages'
 summary: This is the draft from the opening, as a runnable block.
 order: 9
 kind: reading
 section: Notes
+tier: practitioner
+depth: core
+depth_sections:
+  When there are many points: deep
+  Maps: deep
 source: learn-ai-engineering/data-analytics/05-visualisation-and-storytelling/notes/06b-dashboard-data-path-points-colour-and-worked-example.md
 ---
 

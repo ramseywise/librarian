@@ -1,8 +1,8 @@
 ---
 title: SimCSE Contrastive Sentence Embeddings
-tags: [data-science, pattern]
+tags: [data-science, nlp, pattern]
 summary: "SimCSE fine-tunes BERT or RoBERTa with an in-batch contrastive loss, using two dropout masks of the same sentence as the unsupervised positive pair and NLI entailment/contradiction pairs when labels exist."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-gao-2021-simcse.md
 ---

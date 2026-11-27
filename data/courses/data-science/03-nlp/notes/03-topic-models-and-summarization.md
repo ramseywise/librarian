@@ -1,10 +1,11 @@
 ---
-imported_hash: 4346f33f58e0f84f
+imported_hash: 5c5528d8ba4697b0
 title: Topic models, keyphrases and summarisation
 summary: A colleague hands you ten thousand support tickets and asks what people are complaining about.
 order: 4
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-science/03-nlp/notes/03-topic-models-and-summarization.md
 ---
 

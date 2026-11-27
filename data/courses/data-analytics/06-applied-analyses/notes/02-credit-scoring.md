@@ -1,10 +1,11 @@
 ---
-imported_hash: 8433e0d3e2d07e59
+imported_hash: 9e88637407a47bad
 title: 'Credit scoring: which applications should a bank approve?'
 summary: A loan is an unusual product, because you find out whether the sale was a good one years after making it.
 order: 3
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-analytics/06-applied-analyses/notes/02-credit-scoring.md
 ---
 

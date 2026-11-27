@@ -55,19 +55,30 @@ describe("App", () => {
     expect(screen.getByRole("menuitem", { name: "Admin" })).toHaveAttribute("href", "#/admin");
   });
 
-  it("folds the map filters under an open chat and gives them the column when it is hidden", async () => {
+  it("stacks Browse & filter, Reading and the chat in the column, each folding on its own", async () => {
     await renderApp();
-    const toggle = await screen.findByRole("button", { name: /Browse & filter/ });
+    const browse = await screen.findByRole("button", { name: /Browse & filter/ });
     const dock = document.getElementById("app-map-dock")!;
-    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    expect(browse).toHaveAttribute("aria-expanded", "false");
     expect(dock).toHaveAttribute("hidden");
-    fireEvent.click(toggle);
-    expect(toggle).toHaveAttribute("aria-expanded", "true");
+    fireEvent.click(browse);
+    expect(browse).toHaveAttribute("aria-expanded", "true");
     expect(dock).not.toHaveAttribute("hidden");
+
+    const reading = screen.getByRole("button", { name: /^Reading/ });
+    const slot = document.getElementById("app-reading")!;
+    expect(reading).toHaveAttribute("aria-expanded", "true");
+    expect(slot).not.toHaveAttribute("hidden");
+    fireEvent.click(reading);
+    expect(slot).toHaveAttribute("hidden");
+
+    // The chat sits last, under the two sections, so its input stays at the bottom.
+    const column = screen.getByRole("complementary", { name: "Agent chat" });
+    expect(column.lastElementChild).toHaveClass("chat-panel");
 
     fireEvent.click(screen.getByRole("button", { name: "Hide Chat" }));
     expect(screen.getByRole("complementary", { name: "Map filters" })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /Browse & filter/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Browse & filter/ })).toHaveAttribute("aria-expanded", "true");
     expect(document.getElementById("app-map-dock")).not.toHaveAttribute("hidden");
   });
 

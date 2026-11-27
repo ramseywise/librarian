@@ -1,8 +1,8 @@
 ---
 title: "Density Estimators: KDE Bandwidth, GMM Components and the Generative Classifier"
-tags: [data-science, concept]
+tags: [data-science, classical-ml, concept]
 summary: "Kernel density estimation and Gaussian mixtures model a data distribution rather than predict a label; choose bandwidth or component count by held-out likelihood or AIC/BIC, and fit one density per class to get a Bayesian generative classifier."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-python-data-science-handbook-ch05-machine-learning.md
 ---

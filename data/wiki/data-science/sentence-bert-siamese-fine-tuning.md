@@ -1,8 +1,8 @@
 ---
 title: "Sentence-BERT Siamese Fine-Tuning"
-tags: [data-science, pattern]
+tags: [data-science, nlp, pattern]
 summary: "Sentence-BERT fine-tunes BERT or RoBERTa with pooling in a siamese network so sentence vectors can be compared by cosine similarity, avoiding the cross-encoder's pairwise cost at search time."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-07-reimers-2019-sentence-bert.md
 ---

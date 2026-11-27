@@ -1,8 +1,8 @@
 ---
 title: Data Sufficiency Refusal
-tags: [data-science, eval, pattern]
+tags: [data-science, classical-ml, eval, pattern]
 summary: A pure, never-raising guard reads the minimum positives in any CV fold against a stated floor and, when it fails, withholds the cost-sensitive metrics entirely — a run that refuses to answer is distinguishable from a run that failed and from a run that scored badly, and exits 0 because refusing was the correct output.
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/claude-docs/galactus/docs/research/2026-08-15_ml-parity_fraud.md
   - data/raw/claude-docs/galactus/docs/research/2026-08-15_ml-parity_segmentation.md

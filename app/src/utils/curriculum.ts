@@ -18,9 +18,12 @@ export const termFacet = (term: string) => `term:${term}`;
 export const areaFacet = (area: string) => `area:${area}`;
 /** An area's pages no lesson links yet: what its course has still to cover. */
 export const gapFacet = (area: string) => `gap:${area}`;
+/** Pages first taught at a tier: the lowest tier among the notes that link them. */
+export const TIERS = ["foundations", "practitioner", "specialist"] as const;
+export const tierFacet = (tier: string) => `tier:${tier}`;
 
-const FACET_ID = /^(course|module|note|beyond|area|gap|dir|tag|term):/;
-const CURRICULUM_FACET = /^(course|module|note|beyond|gap):/;
+const FACET_ID = /^(course|module|note|beyond|area|gap|tier|dir|tag|term):/;
+const CURRICULUM_FACET = /^(course|module|note|beyond|gap|tier):/;
 export const isFacetId = (tag: string) => FACET_ID.test(tag);
 export const isModuleFacet = (tag: string) => tag.startsWith("module:");
 
@@ -57,6 +60,11 @@ export function facetsOf(
     }
     for (const b of c.beyond) out.set(beyondFacet(b.domain), new Set(b.pageIds));
     out.set(OUTSIDE_COURSES, new Set(c.beyond.flatMap((b) => b.pageIds)));
+    for (const [page, tier] of Object.entries(c.pageTier ?? {})) {
+      const set = out.get(tierFacet(tier));
+      if (set) set.add(page);
+      else out.set(tierFacet(tier), new Set([page]));
+    }
   }
   const add = (id: string, page: string) => {
     const set = out.get(id);

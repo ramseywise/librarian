@@ -44,6 +44,16 @@ export const deckSchema = z.object({
   subtitle: z.string().optional(),
   /** The lecture that introduces a lecture series. */
   overview: z.boolean().optional(),
+  /** Stems of the notes a lecture teaches; a lecture over several notes serves each of them. */
+  covers: z.array(z.string()).optional(),
+  /** A module deck's submodules: its numbered parts after the overview, each with the note stems it teaches.
+   * `n` is the part's number in the deck, so `#/slides/<id>?part=n` opens on it. */
+  parts: z.array(z.object({
+    n: z.number(),
+    title: z.string(),
+    summary: z.string().optional(),
+    notes: z.array(z.string()),
+  })).optional(),
 });
 
 /** A wiki page as the topic page lists it. */

@@ -1,10 +1,16 @@
 ---
-imported_hash: 753c07f3e20d11c3
+imported_hash: 067870ab1f6a7d04
 title: Two-tower retrieval and offline and online evaluation
 summary: Once a catalogue reaches millions of items and new ones arrive every hour, an item-item matrix no longer fits and a new item has no history to work from.
 order: 4
 kind: reading
 section: Notes
+tier: practitioner
+depth: core
+depth_sections:
+  Why large systems retrieve first: intro
+  'Training: in-batch softmax and its bias': deep
+  'Offline evaluation: counterfactual estimates': deep
 source: learn-ai-engineering/data-science/05-time-series-and-recommenders/notes/03-two-tower-and-evaluation.md
 ---
 

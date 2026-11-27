@@ -375,6 +375,50 @@ def test_agent_spawns_extraction(tmp_path: Path) -> None:
     assert spawns[0] == {"type": "Explore", "description": "Find config files", "model": "haiku"}
     assert spawns[1] == {"type": "general-purpose", "description": "Review changes", "model": None}
     assert spawns[2] == {"type": "code-reviewer", "description": "Check quality", "model": "sonnet"}
+    # Retro R14 F1: scalar coverage counts derived from the same spawns.
+    assert session["agent_calls"] == 3
+    assert session["agent_calls_model_set"] == 2
+
+
+@pytest.mark.unit
+def test_agent_calls_zero_when_no_agent_tool(tmp_path: Path) -> None:
+    tools = [{"type": "tool_use", "name": "Read", "input": {"file_path": "/x"}}]
+    _write_jsonl(
+        tmp_path / "proj" / "sess-1.jsonl",
+        [_user("2026-07-20T10:00:00Z"), _assistant_with_tools("2026-07-20T10:00:05Z", tools)],
+    )
+    session = parse_session(tmp_path / "proj" / "sess-1.jsonl")
+    assert session is not None
+    assert session["agent_calls"] == 0
+    assert session["agent_calls_model_set"] == 0
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("text", "kind"),
+    [
+        ("Error: server-side auto mode classifier gave no verdict", "transient_classifier"),
+        ("Error: concurrent subagent limit reached (max 10)", "subagent_limit"),
+        ("IO Error: Could not set lock on file /x/wiki.duckdb", "lock_contention"),
+        ("<tool_use_error>No such tool available: Grep</tool_use_error>", "tool_unavailable"),
+        ("Error: pdftoppm is not installed", "missing_binary"),
+        ("<tool_use_error>Unknown skill: review-correctness</tool_use_error>", "skill_not_found"),
+        ("Output does not match required schema", "invalid_tool_output"),
+        ("[Request interrupted by user for tool use]", "user_rejected"),
+        ("API Error: 500 the model went to sleep", "api_error"),
+        (
+            "<tool_use_error>Found 2 matches of the string to replace, but replace_all is false."
+            "</tool_use_error>",
+            "edit_failed",
+        ),
+    ],
+)
+def test_taxonomy_r14_m6_heads_do_not_land_in_other(tmp_path: Path, text: str, kind: str) -> None:
+    """Retro R14 M6 (2026-11-20): the ten heads that made up every 'other' error
+    since 2026-10-02 each get a named kind."""
+    errors = _tool_error_session(tmp_path, text)
+    assert errors.get(kind, 0) == 1, errors
+    assert errors.get("other", 0) == 0
 
 
 @pytest.mark.unit

@@ -1,8 +1,8 @@
 ---
 title: "Topic Models and Extractive Summarisation"
-tags: [data-science, concept]
+tags: [data-science, nlp, concept]
 summary: "LSI, LDA and NMF factor the document-term matrix into readable topics; choose k by coherence plus reading, check seed stability; document clustering and TextRank/LSA summaries share the same machinery."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--03-nlp--notes--03-topic-models-and-summarization.md
   - data/raw/papers/2026-11-07-grootendorst-2022-bertopic.md

@@ -1,8 +1,8 @@
 ---
 title: "Categorical Encoding Choices"
-tags: [data-science, reference]
+tags: [data-science, classical-ml, reference]
 summary: "One-hot, ordinal, frequency and target encoding suit different models and cardinalities; fit the encoder on training data and handle unseen categories."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--03-feature-engineering-and-pipelines.md
   - data/raw/papers/2026-11-08-python-data-science-handbook-ch05-machine-learning.md

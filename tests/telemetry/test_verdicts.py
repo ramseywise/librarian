@@ -28,6 +28,8 @@ def _row(**overrides: object) -> dict[str, Any]:
         "max_context": None,
         "cost_units": 0.0,
         "models": "{}",
+        "agent_spawns": None,
+        "compacted": 0,
     }
     row.update(overrides)
     return row
@@ -225,6 +227,57 @@ def test_ratio_boundary_just_above_threshold_confirms() -> None:
     rows = _exec_rows(n_with_skills=9, n_without=1)  # 90%, strictly above 80%
     v = score_metric("ratio:execution-sessions-with-skills above 80%", rows)
     assert v.verdict == VERDICT_CONFIRMED
+
+
+# --- agent-calls-typed-ratio (LIB, 2026-11-20) --------------------------------
+
+
+def _spawn_rows(typed: int, untyped: int) -> list[dict[str, Any]]:
+    spawns = [{"type": "Explore", "description": "x", "model": "haiku"}] * typed
+    spawns += [{"type": "", "description": "y", "model": ""}] * untyped
+    return [_row(agent_spawns=json.dumps(spawns)), _row(agent_spawns=None)]
+
+
+def test_typed_ratio_confirmed_when_all_spawns_typed() -> None:
+    v = score_metric("ratio:agent-calls-typed-ratio above 90%", _spawn_rows(10, 0))
+    assert v.verdict == VERDICT_CONFIRMED
+
+
+def test_typed_ratio_trending_when_close() -> None:
+    v = score_metric("ratio:agent-calls-typed-ratio above 90%", _spawn_rows(8, 2))  # 80%
+    assert v.verdict == VERDICT_TRENDING
+
+
+def test_typed_ratio_failed_when_mostly_untyped() -> None:
+    v = score_metric("ratio:agent-calls-typed-ratio above 90%", _spawn_rows(1, 9))  # 10%
+    assert v.verdict == VERDICT_FAILED
+
+
+def test_typed_ratio_inconclusive_without_spawns() -> None:
+    rows = [_row(agent_spawns=None), _row(agent_spawns="[]"), _row(agent_spawns="not json")]
+    v = score_metric("ratio:agent-calls-typed-ratio above 90%", rows)
+    assert v.verdict == VERDICT_INCONCLUSIVE
+
+
+# --- compacts-per-session (LIB, 2026-11-20) ----------------------------------
+
+
+def test_compacts_count_drop_confirmed_when_rare() -> None:
+    rows = [_row(compacted=1)] + [_row(compacted=0) for _ in range(9)]  # 0.1
+    v = score_metric("count-drop:compacts-per-session below 0.2", rows)
+    assert v.verdict == VERDICT_CONFIRMED
+
+
+def test_compacts_count_drop_trending_when_frequent() -> None:
+    rows = [_row(compacted=1) for _ in range(5)] + [_row(compacted=0) for _ in range(5)]  # 0.5
+    v = score_metric("count-drop:compacts-per-session below 0.2", rows)
+    assert v.verdict == VERDICT_TRENDING
+
+
+def test_compacts_inconclusive_when_column_null() -> None:
+    rows = [_row(compacted=None) for _ in range(3)]
+    v = score_metric("count-drop:compacts-per-session below 0.2", rows)
+    assert v.verdict == VERDICT_INCONCLUSIVE
 
 
 # --- combination across multi-clause rows ---------------------------------

@@ -1,8 +1,8 @@
 ---
 title: "Temperature Scaling for Post-Hoc Calibration"
-tags: [data-science, pattern]
+tags: [data-science, deep-learning, pattern]
 summary: "Temperature scaling divides a trained classifier's logits by one scalar T, fitted by negative log-likelihood on held-out data; it leaves predictions unchanged and cut ECE sharply on 2017 image benchmarks (self-reported)."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-07-guo-2017-calibration-modern-neural-networks.md
   - data/raw/papers/2026-11-07-minderer-2021-revisiting-calibration-modern-neural-networks.md

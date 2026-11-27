@@ -26,6 +26,7 @@ from pathlib import Path
 import structlog
 
 from librarian.config import get_settings
+from librarian.tools.cartographer.paths import hook_log_path
 
 log = structlog.get_logger(__name__)
 
@@ -238,11 +239,12 @@ class EmptyInputError(RuntimeError):
 
 
 def _rotate_hook_log() -> None:
-    """Rotate ~/.claude/.hook-log.jsonl when it exceeds 10,000 lines.
+    """Rotate the guard-hook log when it exceeds 10,000 lines.
 
+    The log lives wherever lib.sh writes it (`$CLAUDE_TELEMETRY_DIR`, see paths.py).
     Keeps at most 2 files: current + .hook-log.jsonl.1 (overwrites previous archive).
     """
-    hook_log = Path.home() / ".claude" / ".hook-log.jsonl"
+    hook_log = hook_log_path()
     if not hook_log.exists():
         return
     lines = hook_log.read_text(encoding="utf-8").count("\n")

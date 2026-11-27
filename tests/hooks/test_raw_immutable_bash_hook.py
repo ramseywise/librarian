@@ -67,6 +67,10 @@ BLOCKED = [
     "uv run pytest && rm data/raw/web/a.md",
     "rm {root}/data/raw/web/a.md",
     "rm data/wiki/../raw/web/a.md",
+    # heredoc bodies (2026-11-20): the interpreter one-liner rule applied to the body
+    "python3 - <<'PY'\nfrom pathlib import Path\nPath('data/raw/web/a.md').write_text('x')\nPY",
+    "uv run python - <<EOF\nimport os\nos.remove('data/raw/web/a.md')\nEOF",
+    'node - <<"JS"\nrequire("fs").writeFileSync("data/raw/web/a.md", "x")\nJS\n',
 ]
 
 ALLOWED = [
@@ -90,6 +94,10 @@ ALLOWED = [
     "diff data/raw/web/a.md scratch.md 2>/dev/null",
     "touch data/raw/web/a.md",
     "uv run pytest tests/hooks -q",
+    # heredocs that only read data/raw, or write elsewhere
+    "python3 - <<'PY'\nprint(open('data/raw/web/a.md').read())\nPY",
+    "python3 - <<'PY'\nfrom pathlib import Path\nPath('data/wiki/new.md').write_text('x')\nPY",
+    "cat <<'EOF'\nrm nothing here, this is prose about data/raw\nEOF",
 ]
 
 

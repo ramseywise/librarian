@@ -1,16 +1,17 @@
 ---
-imported_hash: 975a3e6ebb650e0e
+imported_hash: 6a6f2ebf99007b5b
 title: Unsupervised Learning
 summary: Blocks run top to bottom from this notes/ folder.
 order: 8
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-science/01-classical-ml/notes/05-unsupervised-learning.md
 ---
 
 # Unsupervised Learning
 
-> You have no labels and no score to tell you if you are right. Transform the data (scaling, PCA, NMF, t-SNE) or group it (k-means, agglomerative, DBSCAN), then judge the result mostly by looking at it. Plus the two Ng exercises that sit next door: Gaussian anomaly detection and collaborative filtering.
+> You have no labels and no score to tell you if you are right. Transform the data (scaling, PCA, NMF, t-SNE) or group it (k-means, agglomerative, DBSCAN), then judge the result mostly by looking at it. Plus the Ng exercise that sits next door: Gaussian anomaly detection.
 
 **In plain words.** Imagine being handed a box of unlabelled holiday photos, or a shop's customer list, and asked to sort them into piles with nobody to tell you the right ones. That's unsupervised learning: shrink the data down to something you can look at, or group similar things, with no answer key. At work it's how you find groups of customers, spot the odd transaction and suggest the next film. Since no score says you're right, someone has to check that the piles make sense.
 
@@ -401,46 +402,9 @@ irrelevant noise columns added to the six real ones, mean AUC, both anomaly kind
 
 ---
 
-## Recommender systems: Ng ex8, part 2
+## Recommender systems
 
-Collaborative filtering on MovieLens (1,682 movies × 943 users, ratings 1–5, most missing). Learn a feature vector $x^{(i)}$ per movie and a preference vector $\theta^{(j)}$ per user so that $\theta^{(j)} \cdot x^{(i)}$ predicts the rating.
-
-$$J = \tfrac{1}{2}\sum_{(i,j): r(i,j)=1} \left(\theta^{(j)\top} x^{(i)} - y^{(i,j)}\right)^2 + \tfrac{\lambda}{2}\lVert\Theta\rVert^2 + \tfrac{\lambda}{2}\lVert X\rVert^2$$
-
-```python
-def cofi_cost(X, Theta, Y, R, lam):
-    E = (X @ Theta.T - Y) * R                      # only rated entries count
-    J = 0.5 * (E ** 2).sum() + lam / 2 * ((Theta ** 2).sum() + (X ** 2).sum())
-    X_grad = E @ Theta + lam * X
-    Theta_grad = E.T @ X + lam * Theta
-    return J, X_grad, Theta_grad
-
-mov = loadmat("../practice/ng-machine-learning/ex8/data/ex8_movies.mat")
-Y, R = mov["Y"], mov["R"]
-print(Y.shape, "rated", int(R.sum()), f"({R.mean():.1%})")
-
-# A few hundred steps of plain gradient descent on mean-normalised ratings, K=10
-counts = np.maximum(R.sum(1, keepdims=True), 1)
-mean = (Y * R).sum(1, keepdims=True) / counts
-Yn = (Y - mean) * R
-g = np.random.default_rng(0)
-Xm_, Th = g.normal(0, 0.1, (Y.shape[0], 10)), g.normal(0, 0.1, (Y.shape[1], 10))
-for i in range(301):
-    J, Gx, Gt = cofi_cost(Xm_, Th, Yn, R, lam=5.0)
-    Xm_, Th = Xm_ - 0.002 * Gx, Th - 0.002 * Gt
-    if i % 150 == 0: print(i, round(J))
-```
-
-```text
-(1682, 943) rated 100000 (6.3%)
-0 50700
-150 35054
-300 34128
-```
-
-The update is the gradient step from [note 02](02b-linear-models.md#vectors-matrix-products-and-the-gradient): nudge each parameter against its gradient by a small rate.
-
-Ex8 checks the [gradient](02b-linear-models.md#vectors-matrix-products-and-the-gradient) numerically, adds a new user's ratings, **mean-normalises** each movie's ratings (otherwise a user with no ratings gets predicted 0 for everything), and optimises with `scipy.optimize.fmin_cg`. This is low-rank matrix factorisation: the same idea as PCA and NMF, fitted only on observed entries. It is the ancestor of the embedding models in [NLP embeddings](../../03-nlp/notes/04-embeddings-and-similarity.md): $x^{(i)}$ is a learned movie embedding.
+Collaborative filtering, the Ng ex8 exercise on MovieLens included, is taught in [DS 05/02](../../05-time-series-and-recommenders/notes/02-collaborative-filtering-and-matrix-factorisation.md#from-scratch-ng-ex8). It is low-rank matrix factorisation fitted on the observed entries only, the same idea as PCA and NMF. The Gaussian anomaly detector (part 1) and the isolation forest are above.
 
 ---
 
@@ -595,7 +559,7 @@ An AUC of 0.870 means a random member outranks a random non-member 87% of the ti
 |---|---|---|
 | [`03-unsupervised-learning.ipynb`](../practice/intro-to-ml-in-python/03-unsupervised-learning.md) | Scaling, PCA, eigenfaces, NMF, t-SNE, k-means, agglomerative, DBSCAN, evaluation | Needs internet once: `fetch_lfw_people` downloads ~200 MB; otherwise offline with `scikit-learn>=1.4`, `mglearn` |
 | [`ex7.ipynb`](../practice/ng-machine-learning/ex7/ex7.md) | k-means from scratch, image compression, PCA, eigenfaces | Legacy: Python 2.7; `scipy.misc.imread`/`toimage` removed in SciPy 1.2 (use `imageio` / `PIL`) |
-| [`ex8.ipynb`](../practice/ng-machine-learning/ex8/ex8.md) | Gaussian anomaly detection, collaborative filtering | Legacy: Python 2.7 kernel; data in `ex8/data/` |
+| [`ex8.ipynb`](../practice/ng-machine-learning/ex8/ex8.md) | Gaussian anomaly detection (its collaborative filtering part is in DS 05/02) | Legacy: Python 2.7 kernel; data in `ex8/data/` |
 | [`music_clustering_lab.py`](../practice/music-clustering-lab/readme.md) | Scaling and feature choice, k-means vs GMM, soft assignment, choosing k with BIC and silhouette, seed stability, naming clusters, a per-playlist LightGBM reranker | Script, not a notebook. Needs internet once to fetch its data; about a minute with `scikit-learn`, `lightgbm`, `pandas`, `pyarrow`, `matplotlib`, `scipy` |
 
 ---
@@ -610,7 +574,6 @@ An AUC of 0.870 means a random member outranks a random non-member 87% of the ti
 | Accuracy for a clustering | A perfect grouping scores near zero because labels are arbitrary | ARI or NMI with ground truth; silhouette and inspection without |
 | k-means on non-round shapes | Moons or rings cut in half | DBSCAN or agglomerative with suitable linkage |
 | `eps` without scaling in DBSCAN | Everything is noise, or one cluster | Scale first, then sweep `eps` |
-| Collaborative filtering without mean normalisation | A new user is predicted 0 for every item | Subtract each item's mean rating |
 | A Gaussian detector scores gap points as normal | Normal data has two regimes, and the gap sits near the overall mean. We measured an AUC of 0.000 | Plot the columns first, then use a forest or one Gaussian per regime |
 | An isolation forest near chance on a wide table | Random splits land on irrelevant columns: AUC 0.965 at none, 0.489 at 60 | Select columns first |
 
@@ -647,7 +610,6 @@ An AUC of 0.870 means a random member outranks a random non-member 87% of the ti
 | Anomaly detection vs classification? | Density when positives are rare or novel; a classifier when positives are many and stable |
 | How does an isolation forest score a point? | By how few random splits isolate it, averaged over trees, each on a small sample. No density is modelled |
 | When does a forest beat a Gaussian, and when not? | It wins on gaps between regimes and skewed columns. It ties on round clouds and fails when irrelevant columns swamp the splits |
-| What is collaborative filtering? | Low-rank factorisation of the ratings matrix fitted on observed entries, learning item and user vectors |
 | How do you pick k for a clustering? | Measure, then expect disagreement. On the music library BIC is lowest at 11 and silhouette peaks at 2 or 3. The project's k=8 matches its eight taxonomy groups, which is a product reason and should be stated as one. |
 | When do you use unsupervised rather than supervised learning? | When there is no ground truth to score against. It is used most for exploration and as preprocessing for a supervised model, where the downstream score does give feedback. |
 | How much can scaling change a result? | A lot for a distance model. On the music library, k-means clusters on raw features match clusters on duration alone at ARI 0.988, and at 0.072 once the features are scaled. |

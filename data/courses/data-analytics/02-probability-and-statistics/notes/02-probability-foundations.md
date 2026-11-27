@@ -1,10 +1,11 @@
 ---
-imported_hash: 1fe53e2547d92ad9
+imported_hash: b1cdbe9d758b8e6b
 title: 2 — Probability Foundations
 summary: Larkspur's fraud filter is 99% accurate, it flagged an order, and the support lead wants to cancel it.
 order: 3
 kind: reading
 section: Notes
+tier: foundations
 source: learn-ai-engineering/data-analytics/02-probability-and-statistics/notes/02-probability-foundations.md
 ---
 

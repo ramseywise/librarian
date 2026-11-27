@@ -15,6 +15,9 @@
   },
   "dependencies": {
     "@codemirror/lang-python": "6.2.1",
+    "@pipecat-ai/client-js": "1.16.0",
+    "@pipecat-ai/client-react": "1.11.0",
+    "@pipecat-ai/small-webrtc-transport": "1.11.2",
     "@uiw/react-codemirror": "4.25.2",
     "@xyflow/react": "12.10.2",
     "d3-force": "3.0.0",

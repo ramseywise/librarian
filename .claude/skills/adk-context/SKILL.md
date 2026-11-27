@@ -1,6 +1,6 @@
 ---
 name: adk-context
-description: "Generate a curated briefing from the wiki before starting an agent build session. Reads decision, pattern, and concept pages tagged adk/langgraph/mcp/memory/voice/deep-agents/context-management and outputs a structured context injection."
+description: "Generate a curated briefing from the wiki before starting an agent build session. Reads decision, pattern, and concept pages tagged adk/langgraph/mcp/memory/voice/deep-agents/context-management and outputs a structured context injection. Triggers on: '/adk-context', 'brief me before building an agent', 'what does the wiki say about ADK', 'pre-build briefing', 'load agent context from the wiki'."
 allowed-tools: Read Glob Grep
 ---
 

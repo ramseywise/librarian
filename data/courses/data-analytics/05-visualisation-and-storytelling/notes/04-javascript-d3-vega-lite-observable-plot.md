@@ -1,10 +1,11 @@
 ---
-imported_hash: 861add6e151bc81c
+imported_hash: 5666e1a7ddf26fae
 title: 'JavaScript: D3, Vega-Lite and Observable Plot'
 summary: Every chart you see on a news site or inside a product is JavaScript in a browser, and so was every interactive chart in the last chapter, whatever language wrote its configuration.
 order: 6
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-analytics/05-visualisation-and-storytelling/notes/04-javascript-d3-vega-lite-observable-plot.md
 ---
 

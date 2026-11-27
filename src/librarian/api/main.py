@@ -28,10 +28,12 @@ from librarian.api.routers.curriculum import router as curriculum_router
 from librarian.api.routers.feedback import router as feedback_router
 from librarian.api.routers.glossary import router as glossary_router
 from librarian.api.routers.intake import router as intake_router
+from librarian.api.routers.learning import router as learning_router
 from librarian.api.routers.release import ReleaseHeaderMiddleware, poll_releases
 from librarian.api.routers.release import router as release_router
 from librarian.api.routers.spend import router as spend_router
 from librarian.api.routers.tools import router as tools_router
+from librarian.api.routers.voice import router as voice_router
 from librarian.api.routers.wiki_health import router as wiki_health_router
 from librarian.api.security import (
     RequestLogMiddleware,
@@ -276,8 +278,10 @@ app.include_router(curriculum_router)
 app.include_router(feedback_router)
 app.include_router(glossary_router)
 app.include_router(intake_router)
+app.include_router(learning_router)
 app.include_router(release_router)
 app.include_router(spend_router)
+app.include_router(voice_router)
 if get_settings().tools_enabled:  # LIBRARIAN_TOOLS_ENABLED=false: no remote MCP tool surface
     app.include_router(tools_router)
 app.include_router(wiki_health_router)

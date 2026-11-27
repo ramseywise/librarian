@@ -1,8 +1,8 @@
 ---
 title: "Feature Representation for Linear Models"
-tags: [data-science, pattern]
+tags: [data-science, classical-ml, pattern]
 summary: "Binning, interactions, polynomials, log transforms, selection and domain features give linear models shape; trees gain little from them."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--03-feature-engineering-and-pipelines.md
   - data/raw/papers/2026-11-08-intro-to-ml-with-python-ch04-representing-data-engineering-features.md

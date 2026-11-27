@@ -1,8 +1,8 @@
 ---
 title: "Hyperparameter Search Budgets and Selection Optimism"
-tags: [data-science, pattern]
+tags: [data-science, classical-ml, pattern]
 summary: "Random, grid and TPE searches tie when the plateau is wide; the winner's score is optimistic by an amount set by how few rows chose it, so report on untouched rows or nested folds."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--09-training-and-tuning.md
   - data/raw/papers/2026-11-08-raissi-2023-open-problems-applied-deep-learning.md

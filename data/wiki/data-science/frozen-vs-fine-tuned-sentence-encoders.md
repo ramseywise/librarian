@@ -1,8 +1,8 @@
 ---
 title: "Frozen vs Fine-Tuned Sentence Encoders"
-tags: [data-science, comparison]
+tags: [data-science, nlp, comparison]
 summary: "A pre-trained encoder is not one result: a small frozen encoder lost to TF-IDF at every label count, a larger one won with few labels, and fine-tuning DistilBERT first clearly beat word counts only at 5,000 labels (0.905 vs 0.886); measure on your task and keep TF-IDF as the bar."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--06-neural-text-models.md
 ---

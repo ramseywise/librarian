@@ -1,8 +1,8 @@
 ---
 title: "LIME Local Surrogate Explanations and Submodular Pick"
-tags: [data-science, concept]
+tags: [data-science, classical-ml, concept]
 summary: "LIME explains one prediction of any classifier by fitting a sparse linear model on weighted perturbations of that instance; SP-LIME picks a small set of instances whose explanations cover the important features."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-07-ribeiro-2016-why-should-i-trust-you.md
   - data/raw/papers/2026-11-08-ribeiro-2016-why-should-i-trust-you.md

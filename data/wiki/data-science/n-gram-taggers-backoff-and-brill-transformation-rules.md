@@ -1,8 +1,8 @@
 ---
 title: "N-gram Taggers, Backoff and Brill Transformation Rules"
-tags: [data-science, pattern]
+tags: [data-science, nlp, pattern]
 summary: "A part-of-speech tagger built from a default tag, suffix rules, unigram and bigram lookups chained by backoff, with Brill rules as a compact alternative; the held-out split decides which numbers mean anything."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-nlp-with-python-ch05-categorizing-tagging-words.md
   - data/raw/papers/2026-11-08-nlp-with-python-ch06-learning-classify-text.md

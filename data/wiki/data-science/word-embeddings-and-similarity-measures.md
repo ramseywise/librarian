@@ -1,8 +1,8 @@
 ---
 title: "Word Embeddings and Similarity Measures"
-tags: [data-science, concept]
+tags: [data-science, nlp, concept]
 summary: "word2vec, GloVe and FastText give dense vectors where shared contexts mean closeness; covers negative sampling, subwords, analogy and bias limits, document vectors, and why to normalise before cosine."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--03-nlp--notes--02-text-classification.md
   - data/raw/repos/learn-ai-engineering/data-science--03-nlp--notes--04-embeddings-and-similarity.md

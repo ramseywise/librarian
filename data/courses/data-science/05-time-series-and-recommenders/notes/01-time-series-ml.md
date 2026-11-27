@@ -1,10 +1,11 @@
 ---
-imported_hash: faf70c1157b51f52
+imported_hash: 329339bfaa3dd80f
 title: 'Time series ML: features, sequence models and backtesting'
 summary: A forecast is a promise about a future you cannot see, so the standard machine learning habit of shuffling rows and holding some out will report an accuracy you will never get in production.
 order: 2
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-science/05-time-series-and-recommenders/notes/01-time-series-ml.md
 ---
 

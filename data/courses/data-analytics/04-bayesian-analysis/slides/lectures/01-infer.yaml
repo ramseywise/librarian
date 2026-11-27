@@ -1,0 +1,1096 @@
+# imported_hash: 4a7cef06ae997ba5
+# Lecture on step 1, Infer: notes/01-bayesian-inference.md and 01b-grids-hypotheses-and-simulation.md, in the notes' order.
+# make slides PILLAR=data-analytics/04-bayesian-analysis LECTURE=01-infer STRICT=1 PREVIEW=1
+# Levels: a slide with no level is the intro, `core` is the core lesson, `deep` is the optional extension (code and maths).
+deck:
+  title: Infer
+  subtitle: From a prior and some data to a posterior you can act on
+  tagline: "Bayes' rule · Beta-Binomial · Generative stories · Grids · Bayes factors · Simulation"
+  reference: "Notes: data-analytics/04-bayesian-analysis, notes 1 and 1b"
+  output: 01-infer.pptx
+  notes: >-
+    This is the second lecture of the Bayesian analysis series, after the overview. It covers step 1. By the end you should
+    be able to update a belief with Bayes' rule by hand, write a model as a generative story in PyMC, read a credible
+    interval and a posterior predictive check, and know where grids, Bayes factors and simulation each earn their place.
+
+lecture:
+  covers:
+    - data-analytics/04-bayesian-analysis/notes/01-bayesian-inference.md
+    - data-analytics/04-bayesian-analysis/notes/01b-grids-hypotheses-and-simulation.md
+  requires: [data-analytics/04-bayesian-analysis/README.md]
+  next: [data-analytics/04-bayesian-analysis/notes/02-mcmc-and-pymc.md]
+  related:
+    - data-analytics/02-probability-and-statistics/notes/02-probability-foundations.md
+    - data-analytics/02-probability-and-statistics/notes/04-estimation.md
+    - data-analytics/03-experimentation-and-causality/notes/01-ab-testing.md
+
+parts:
+  - title: Bayes' rule and the coin
+    divider: false
+    summary: Two views of probability · Bayes by table · The Beta-Binomial · Credible intervals
+    notes: We open with a result a p-value cannot interpret, then build the update rule from tables and a coin.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Two views of probability
+        title: A p-value does not say how likely the lift is real
+        recall: What does the head of product want that a p-value cannot give?
+        answer: "A probability that the variant is better, and by how much. A p-value of 0.00003 on a 0.64 point lift says how surprising the data would be if nothing changed, not how likely the lift is."
+        kicker: The problem
+        statement: "A lift of 0.64 points, p = 0.00003. The head of product asks how likely it is that the variant really is better, and by how much."
+        takeaway: A p-value answers a question about the data under a null. The decision needs a probability about the lift, and Bayes' rule gives one.
+        source: notes/01-bayesian-inference.md
+        notes: Open with the Larkspur result from the A/B testing pillar. The p-value is correct and does not answer the question being asked. This lecture builds the machinery that does.
+
+      - layout: image
+        beat: fundamentals
+        level: core
+        section: Two views of probability
+        title: A hypothesis, a process model and a statistical model
+        kicker: Where the model sits
+        recall: How do hypotheses, process models and statistical models relate?
+        answer: "Different process models can imply the same statistical model, so data that fit one statistical model cannot by themselves pick between the hypotheses behind it."
+        image: ../../assets/sources/images/statistical-rethinking-fig1-2.png
+        caption: "Neutral and selection models both imply M-II (McElreath, Fig. 1.2)."
+        bullets:
+          - "**Hypothesis:** the claim about the world"
+          - "**Process model:** how the world would produce data"
+          - "**Statistical model:** what we can fit"
+        takeaway: Several explanations can imply the same fitted model, so a good fit alone does not name the explanation.
+        source: notes/01-bayesian-inference.md
+        notes: The figure is from Statistical Rethinking. It is here to separate what we believe about the world from what we fit. The Bayesian machinery works on the statistical model.
+
+      - layout: compare
+        beat: fundamentals
+        section: Two views of probability
+        title: Frequentist and Bayesian answer different questions
+        recall: What is the difference between the two views of probability?
+        answer: "A frequentist probability is a long-run frequency of repeated data under a fixed parameter. A Bayesian probability is a degree of belief about the parameter given the data seen."
+        left:
+          title: Frequentist
+          tag: Long-run frequency
+          bullets:
+            - "The parameter is fixed"
+            - "The data are random"
+            - "A confidence interval describes the procedure"
+        right:
+          title: Bayesian
+          tag: Degree of belief
+          bullets:
+            - "The data are fixed"
+            - "The parameter has a distribution"
+            - "A credible interval describes the parameter"
+        emphasis: right
+        takeaway: Pick the view by the question. When the question is how likely a parameter is, only the Bayesian answer says it directly.
+        source: notes/01-bayesian-inference.md
+        notes: The two views are not rivals on every problem. They answer different questions, and the head of product asked the Bayesian one.
+
+      - layout: flow
+        beat: fundamentals
+        section: Bayes' theorem
+        title: Bayes' rule is a prior, a likelihood and a posterior
+        recall: What are the three parts of a Bayesian update?
+        answer: "The prior is what you believed before the data. The likelihood is how well each hypothesis explains the data. The posterior is the prior times the likelihood, rescaled to sum to one."
+        steps:
+          - label: Prior
+            sub: Belief before the data
+          - label: Likelihood
+            sub: How well each hypothesis explains the data
+          - label: Posterior
+            sub: Prior times likelihood, rescaled
+            accent: "D4621A"
+        caption: The rescaling constant is the same for every hypothesis, so it only normalises.
+        takeaway: Multiply the prior by the likelihood and rescale. Every Bayesian method in the series is this one step.
+        source: notes/01-bayesian-inference.md
+        notes: Stress that the normalising constant does not change the ranking of hypotheses. It reappears in lecture 2, where it cancels inside the sampler.
+
+      - layout: table
+        beat: practice
+        section: Bayes' theorem
+        title: A bug test shows how much the prior matters
+        recall: How do three different priors turn into three different posteriors in the bug example?
+        answer: "The posterior is 2p/(1+p), so priors of 0.20, 0.50 and 0.80 give posteriors of 0.33, 0.67 and 0.89."
+        header: [Prior, Posterior after the test]
+        rows:
+          - ["0.20", "**0.33**"]
+          - ["0.50", "**0.67**"]
+          - ["0.80", "**0.89**"]
+        lead: With the likelihood fixed, the posterior is 2p/(1+p).
+        highlight: [1]
+        takeaway: The same evidence moves different priors by different amounts, so state the prior before you show the posterior.
+        source: notes/01-bayesian-inference.md
+        notes: A small closed form makes the point that the prior is part of the answer. The test result is identical in all three rows.
+
+      - layout: cards
+        beat: practice
+        section: Bayes' theorem
+        title: Count it in a table before you trust the formula
+        recall: What three puzzles does the note solve by counting?
+        answer: "Cookies, where P(Bowl 1 given vanilla) = 3/5. M&Ms, where the answer is 20/27 = 0.74. Monty Hall, where switching wins 2/3 of the time."
+        cards:
+          - title: Cookies
+            body: "P(Bowl 1 given vanilla) = **3/5**"
+          - title: M&Ms
+            body: "The answer is 20/27 = **0.74**"
+            accent: "0F7490"
+          - title: Monty Hall
+            body: "Staying wins 1/3, switching wins **2/3**"
+            accent: "D4621A"
+        takeaway: Lay the joint out as counts. The update is then a division, not a formula to remember.
+        source: notes/01-bayesian-inference.md
+        notes: The three puzzles use the same table. Rows are hypotheses, columns are data, and the posterior is one column over its total.
+
+      - layout: bullets
+        beat: pitfalls
+        level: core
+        section: Bayes' theorem
+        title: Change the host's rule and Monty Hall flips
+        recall: What happens to the Monty Hall answer when the host's rule changes?
+        answer: "The 1/3 and 2/3 become 1/2 and 1/2, because how the host chooses a door is part of the likelihood."
+        bullets:
+          - "**Host always opens a goat door:** 1/3 and 2/3, so switching wins 2/3"
+          - "**Host opens a door at random:** 1/2 and 1/2, because when it happens to show a goat the doors are even"
+        takeaway: The likelihood includes how the data came to be seen, so a changed rule changes the answer even when the observation is the same.
+        source: notes/01-bayesian-inference.md
+        notes: The data are identical in both columns. Only the process that produced them differs, which is why the generative story matters later.
+
+      - layout: bullets
+        beat: fundamentals
+        level: deep
+        section: Bayes' theorem
+        title: The odds form multiplies by a Bayes factor
+        recall: What is the odds form of Bayes' rule?
+        answer: "Posterior odds equal prior odds times the Bayes factor. In the blood-traces example the Bayes factor is 0.83, so the evidence slightly favours the other hypothesis."
+        bullets:
+          - "**Posterior odds** = prior odds times the Bayes factor"
+          - "A Bayes factor above 1 favours the first hypothesis"
+          - "Blood traces: a factor of **0.83**, so slightly against"
+        lead: "A factor close to 1 barely moves the odds."
+        takeaway: Work in odds and the update is one multiplication, with the evidence summed up in one number.
+        source: notes/01-bayesian-inference.md
+        notes: The odds form is what the Bayes factor slides in the second half use. Keep it brief here.
+
+      - layout: statement
+        beat: problem
+        section: "The coin: Beta-Binomial"
+        title: The coin is the smallest model that has everything
+        recall: What is the Beta-Binomial update?
+        answer: "A Beta(a, b) prior plus s successes in n trials gives a Beta(a+s, b+n-s) posterior. Beta(4,4) with 32 of 50 gives Beta(36,22)."
+        kicker: The coin
+        statement: "Beta(4,4) prior. 32 heads in 50 flips. The posterior is Beta(36,22), with no sampler and no integral."
+        takeaway: A Beta prior and a binomial likelihood give a Beta posterior, so the update is addition.
+        source: notes/01-bayesian-inference.md
+        notes: This is a conjugate pair. Later we pay for the closed form's absence with a sampler, and this case is the check that the sampler is right.
+
+      - layout: code
+        beat: practice
+        section: "The coin: Beta-Binomial"
+        title: The whole update is two additions
+        recall: How is the coin posterior computed in code?
+        answer: "Add the successes to the first Beta parameter and the failures to the second. For Beta(4,4) and 32 of 50, the closed form gives a mean of 0.6207 and an sd of 0.0632."
+        lang: python
+        lead: "Closed form, no sampling."
+        code: |-
+          from scipy import stats
+
+          a, b = 4, 4
+          heads, n = 32, 50
+          post = stats.beta(a + heads, b + n - heads)   # Beta(36, 22)
+          print(post.mean(), post.std())                # 0.6207  0.0632
+        takeaway: When the posterior has a name, scipy gives it to you in one line, and it is the reference answer for any sampler.
+        source: notes/01-bayesian-inference.md
+        notes: The numbers match the NUTS run on the next slide, which is the point of running both.
+
+      - layout: table
+        beat: practice
+        section: "The coin: Beta-Binomial"
+        title: One coin, four summaries
+        recall: How do the MLE, MAP and posterior mean compare for the coin, and how does NUTS compare with the closed form?
+        answer: "MLE 0.640, MAP 0.625, mean 0.621. The closed form gives mean 0.6207 and sd 0.0632, against NUTS at 0.6190 and 0.0638."
+        header: [Estimate, Value]
+        rows:
+          - ["Maximum likelihood", "0.640"]
+          - ["Posterior mode (MAP)", "0.625"]
+          - ["Posterior mean", "0.621"]
+          - ["Closed form, mean and sd", "0.6207 and 0.0632"]
+          - ["NUTS, mean and sd", "0.6190 and 0.0638"]
+        highlight: [2]
+        takeaway: The prior pulls the estimate from 0.640 toward 0.5, and the sampler agrees with the closed form to two decimals.
+        source: notes/01-bayesian-inference.md
+        notes: The prior Beta(4,4) is weakly centred on a fair coin, so it pulls the estimate a little. NUTS is the sampler in lecture 2.
+
+      - layout: bullets
+        beat: practice
+        level: core
+        section: "The coin: Beta-Binomial"
+        title: The same machinery on a Belgian euro
+        recall: What does the euro coin posterior say?
+        answer: "With 140 heads in 250 spins and a flat prior the posterior is Beta(141,111), with a mean of 55.95 and a 90% interval of 51 to 61."
+        bullets:
+          - "**140** heads in **250** spins"
+          - "Posterior **Beta(141,111)**"
+          - "Mean **55.95**, 90% interval **51 to 61**"
+          - "A fair coin (50) lies outside the interval"
+        lead: "Mean and interval are in percent heads."
+        takeaway: The interval is a direct statement about the coin. It excludes 50, and it comes with no null hypothesis.
+        source: notes/01-bayesian-inference.md
+        notes: This is the Think Bayes euro problem. Lecture 1b returns to it with Bayes factors, where the verdict gets less clear.
+
+      - layout: compare
+        beat: fundamentals
+        section: What a credible interval buys you
+        title: A credible interval works where the Wald interval fails
+        recall: When does a credible interval beat a Wald interval?
+        answer: "With little data. For 1 success in 20 the credible interval is [0.012, 0.238] and the Wald interval is [-0.046, 0.146], which goes below zero. With lots of data they agree: Larkspur gives [0.05363, 0.05802] against [0.05358, 0.05798]."
+        left:
+          title: Credible interval
+          tag: Posterior
+          bullets:
+            - "1 of 20: **[0.012, 0.238]**"
+            - "Larkspur: [0.05363, 0.05802]"
+        right:
+          title: Wald interval
+          tag: Normal approximation
+          bullets:
+            - "1 of 20: **[-0.046, 0.146]**"
+            - "Larkspur: [0.05358, 0.05798]"
+        emphasis: left
+        takeaway: With lots of data the two agree. With little data the Wald interval can go below zero and the credible interval cannot.
+        source: notes/01-bayesian-inference.md
+        notes: A probability cannot be negative, so an interval below zero is a warning that the normal approximation has run out. The credible interval respects the support by construction.
+
+  - title: Generative stories and PyMC
+    divider: false
+    summary: Models as stories · The switchpoint · PyMC · A sensitive survey · Challenger
+    notes: Now we move from conjugate pairs to models written as stories, which PyMC samples.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Thinking in generative stories
+        title: Write down how the data got here
+        recall: What is a generative story?
+        answer: "A model written forwards, as the process that produced the data, with unknown parameters that inference then runs backwards."
+        kicker: Generative stories
+        statement: "Say how the numbers were made. Then let Bayes' rule run the story backwards."
+        takeaway: A model is a story you could simulate. Inference is asking which values of its unknowns make the data likely.
+        source: notes/01-bayesian-inference.md
+        notes: Texting habits are the running example. The same story-first habit carries all the way to multilevel models in lecture 5.
+
+      - layout: image
+        beat: fundamentals
+        section: Thinking in generative stories
+        title: The switchpoint model as a graph
+        kicker: Text messages per day
+        recall: What does the switchpoint model's graph show?
+        answer: "Alpha feeds lambda 1 and lambda 2, which with tau feed a deterministic lambda that parameterises the observed Poisson counts."
+        image: ../../assets/sources/images/davidson-pilon-bmh-sms-model-fig1.png
+        caption: "The switchpoint model (Davidson-Pilon, Fig. 1)."
+        bullets:
+          - "**alpha** sets the prior on both rates"
+          - "**tau** is the day the rate changed"
+          - "**lambda** is deterministic, the counts are Poisson"
+        takeaway: Draw the model as a graph. Each arrow is one sentence of the story.
+        source: notes/01-bayesian-inference.md
+        notes: Walk the graph top to bottom. The observed counts are the only shaded node, and everything above them is inferred.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: Thinking in generative stories
+        title: The switchpoint story in PyMC
+        recall: How is the switchpoint model written in PyMC?
+        answer: "Two exponential priors for the rates, a discrete uniform for the switch day, a switch function choosing the rate by day, and Poisson counts as the observed variable."
+        lang: python
+        lead: "74 days of counts."
+        code: |-
+          import numpy as np
+          import pymc as pm
+
+          day = np.arange(74)
+          with pm.Model():
+              alpha = 1.0 / counts.mean()
+              lam_1 = pm.Exponential("lam_1", alpha)
+              lam_2 = pm.Exponential("lam_2", alpha)
+              tau = pm.DiscreteUniform("tau", 0, 73)
+              lam = pm.math.switch(tau >= day, lam_1, lam_2)
+              pm.Poisson("obs", lam, observed=counts)
+              idata = pm.sample()
+        takeaway: The code reads like the story, line by line, and the sampler does the inverting.
+        source: notes/01-bayesian-inference.md
+        notes: The structure is what matters here. The note's own listing may differ in small details. A discrete tau is why PyMC uses a Metropolis-type step for it, which lecture 2 covers.
+
+      - layout: cards
+        beat: practice
+        section: Thinking in generative stories
+        title: The rate changed, and the model says when
+        recall: What did the switchpoint model find in the 74 days of text messages?
+        answer: "Lambda 1 is 17.76 and lambda 2 is 22.68. The probability that lambda 2 is higher is 0.9994. Tau is day 45 with probability 0.489 and day 44 with 0.354, so the top four days hold 0.997."
+        cards:
+          - {title: "lambda 1", body: "17.76"}
+          - {title: "lambda 2", body: "22.68"}
+          - {title: "P(lambda 2 higher)", body: "**0.9994**"}
+          - {title: "tau", body: "day 45 at 0.489, day 44 at 0.354"}
+          - {title: "Top four days of tau", body: "0.997"}
+        takeaway: The model is sure the rate rose and only roughly sure when. Both statements come out of the same posterior.
+        source: notes/01-bayesian-inference.md
+        notes: The expected counts by day are 17.8, 20.2, 22.7 and 22.7, which shows the change smeared across the uncertain switch day rather than a hard step.
+
+      - layout: bullets
+        beat: practice
+        section: Thinking in generative stories
+        title: The expected counts differ by day
+        recall: What are the expected message counts at different days?
+        answer: "The posterior expected count is 17.8 on day 10, 20.2 on day 44 and 22.7 on days 45 and 60."
+        bullets:
+          - "Day 10: **17.8** messages"
+          - "Day 44: **20.2** messages"
+          - "Days 45 and 60: **22.7** messages"
+        lead: "The jump sits where tau puts it."
+        takeaway: The posterior gives an expected count for every day, and the switchpoint shows up as a step.
+        source: notes/01-bayesian-inference.md
+        notes: Day 44 sits between the two rates because tau is uncertain between days 44 and 45.
+
+      - layout: bullets
+        beat: fundamentals
+        level: core
+        section: PyMC building blocks
+        title: Four pieces cover every model in this series
+        recall: What are the PyMC building blocks?
+        answer: "A model context, distributions for unknowns, observed data attached to a distribution, and sampling from the finished model."
+        bullets:
+          - "A **model** context holds everything"
+          - "A **distribution** per unknown, with its prior"
+          - "**observed=** attaches the data"
+          - "**pm.sample** returns the posterior draws"
+        lead: "Deterministic nodes record derived quantities."
+        takeaway: Learn the four pieces once. Every later model is a bigger story built from them.
+        source: notes/01-bayesian-inference.md
+        notes: Keep this to the vocabulary. The detail is in the note, and lecture 2 covers what the sampler does with the finished model.
+
+      - layout: compare
+        beat: practice
+        section: The survey nobody answers honestly
+        title: "Randomised response protects people and still estimates"
+        recall: What does the randomised-response model recover?
+        answer: "With 35 yes answers of 100, the posterior mean for the true rate is 0.207 with a 90% interval of [0.035, 0.392]. A direct estimate would be [0.264, 0.448]."
+        left:
+          title: Direct count
+          tag: Asked straight
+          bullets:
+            - "Interval **[0.264, 0.448]**"
+        right:
+          title: Randomised response
+          tag: Noise added on purpose
+          bullets:
+            - "35 of 100 said yes"
+            - "Mean **0.207**, interval **[0.035, 0.392]**"
+        emphasis: right
+        takeaway: The privacy noise is modelled, not ignored, so the interval is wider and honest about how much information is left.
+        source: notes/01-bayesian-inference.md
+        notes: The generative story includes the coin flips that hide each answer, and inference runs through them. The width of the interval is the price of the privacy.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: "Challenger: logistic regression with uncertainty"
+        title: Challenger as a Bayesian logistic regression
+        recall: How is the Challenger model written?
+        answer: "A logistic curve in temperature, with priors on intercept and slope, and Bernoulli outcomes for each of the 23 launches."
+        lang: python
+        lead: "23 launches, 7 with a failure."
+        code: |-
+          with pm.Model():
+              alpha = pm.Normal("alpha", 0, 10)
+              beta = pm.Normal("beta", 0, 10)
+              p = pm.math.sigmoid(alpha + beta * temp)
+              pm.Bernoulli("fail", p, observed=failed)
+              idata = pm.sample()
+        takeaway: A classic regression becomes Bayesian by adding priors and keeping all the draws.
+        source: notes/01-bayesian-inference.md
+        notes: The priors here are illustrative. Lecture 2 revisits the same model to show that standardising the predictor helps the sampler, and the next lecture block covers priors for logistic regression. The temperature should be the raw or centred values the note uses.
+
+      - layout: cards
+        beat: practice
+        section: "Challenger: logistic regression with uncertainty"
+        title: The posterior says how sure we can be at each temperature
+        recall: What does the Challenger posterior predict?
+        answer: "P(beta<0) = 0.9985. At 31F the mean failure probability is 0.989 with interval [0.900, 1.000]. At 65F the mean is 0.515 with interval [0.226, 0.821]."
+        cards:
+          - title: Slope
+            body: "P(beta < 0) = **0.9985**"
+          - title: At 31F
+            body: "Mean **0.989**, interval [0.900, 1.000]"
+            accent: "D4621A"
+          - title: At 65F
+            body: "Mean **0.515**, interval [0.226, 0.821]"
+            accent: "0F7490"
+        takeaway: The band is tight where the data are dense and wide where they are thin, and a Bayesian fit reports both.
+        source: notes/01-bayesian-inference.md
+        notes: At 31F no launch was tested, so that band is conditional on the logistic form continuing. We return to that in the pitfalls.
+
+      - layout: statement
+        beat: pitfalls
+        section: "Challenger: logistic regression with uncertainty"
+        title: The forecast was 22 degrees beyond the coldest launch
+        recall: How far outside the data was the Challenger launch temperature?
+        answer: "The forecast was 31 F, 22 F beyond the coldest launch on record. The posterior mean at 31 F is 0.989 with a 95% interval of 0.900 to 1.000."
+        kicker: Extrapolation
+        statement: "At 31 F the model says damage is very likely, at 0.989. No launch had been flown within 22 F of that."
+        takeaway: A narrow band outside the observed range reflects the model form, not evidence from data.
+        source: notes/01-bayesian-inference.md
+        notes: The interval is 0.90 to 1.00. It is narrow because the logistic form assumes the curve continues.
+
+      - layout: table
+        beat: practice
+        section: "Challenger: logistic regression with uncertainty"
+        title: Simulate from the posterior and compare to the data
+        recall: What do the posterior predictive checks show for Challenger?
+        answer: "Total failures simulated 7.04 against 7 observed. Below 65F, 3.25 simulated against 4 of 4 observed. At 65F and above, 3.80 simulated against 3 of 19."
+        header: [Check, Simulated, Observed]
+        rows:
+          - ["All launches", "7.04 failures", "7"]
+          - ["Below 65F", "3.25 failures", "4 of 4"]
+          - ["65F and above", "3.80 failures", "3 of 19"]
+        takeaway: A good fit overall can hide a miss in a subgroup, so check the quantities you did not fit.
+        source: notes/01-bayesian-inference.md
+        notes: The overall count is matched almost exactly because the model was fitted to it. The subgroup rows are the informative ones.
+
+  - title: Worked problems
+    divider: false
+    summary: Predicting a game · Observer bias · German tanks · The locomotive
+    notes: Four short problems show the same update at work on questions where intuition goes wrong.
+    slides:
+      - layout: bullets
+        beat: practice
+        level: core
+        section: "Predicting a game: the posterior predictive as a mixture"
+        title: The prior decides the series forecast
+        recall: How do two priors change the Bruins series forecast?
+        answer: "A prior sd of 0.3 gives a series probability of 0.58 (the book says 57%), and a prior sd of 0.85 gives 0.80."
+        bullets:
+          - "**Tight prior, sd 0.3:** series probability **0.58**"
+          - "**Loose prior, sd 0.85:** series probability **0.80**"
+        takeaway: The forecast is a mixture over the posterior, so a different prior gives a different forecast, and you should show both.
+        source: notes/01-bayesian-inference.md
+        notes: The predictive for a game mixes Poisson outcomes over the posterior of the scoring rate. A loose prior lets the posterior stay wide, which raises the series probability.
+
+      - layout: bullets
+        beat: pitfalls
+        level: deep
+        section: "Predicting a game: the posterior predictive as a mixture"
+        title: The book has two slips in this example
+        recall: What errors does the note flag in the book's game-prediction example?
+        answer: "The book's mean is a typo (2.8 versus 2.7), and its norm.pdf call has the arguments in the wrong order. The 57% in the book is 0.58 here."
+        bullets:
+          - "Mean typo: **2.8** versus **2.7**"
+          - "`norm.pdf` has its arguments in the wrong order"
+          - "The book's **57%** reproduces as **0.58**"
+        lead: "Reproduce before you trust."
+        takeaway: Re-run the numbers from a book before you build on them, because printed examples carry typos.
+        source: notes/01-bayesian-inference.md
+        notes: The note flags these without fixing the book. It is a small lesson in checking a source against your own code.
+
+      - layout: statement
+        beat: problem
+        section: "Observer bias: waiting for the train"
+        title: Riders do not see the average gap
+        recall: Why does the average rider see a longer gap than the timetable's average?
+        answer: "Riders arrive in proportion to gap length, so long gaps are over-represented. The mean gap is 7.5 minutes and the gap a rider experiences averages 8.33."
+        kicker: Observer bias
+        statement: "The Red Line runs every 7.5 minutes on average. A passenger who asks the people on the platform hears 8.33."
+        takeaway: Who gets sampled is part of the data-generating story, and a biased sample needs the bias in the model.
+        source: notes/01-bayesian-inference.md
+        notes: The sampling process favours long gaps. A model that ignores that returns the wrong average, however much data it has.
+
+      - layout: table
+        beat: practice
+        level: deep
+        section: "Observer bias: waiting for the train"
+        title: Correct for who got sampled
+        recall: What are the Red Line numbers?
+        answer: "The mean gap is 7.5, the biased mean is 8.33, and the mean wait is 4.17. With 15 people at 2 per minute, the elapsed time goes from 4.17 to 7.18."
+        header: [Quantity, Value]
+        rows:
+          - ["Mean gap", "7.5"]
+          - ["Gap as seen by riders", "8.33"]
+          - ["Mean wait", "4.17"]
+          - ["Elapsed time, 15 people at 2 per minute", "4.17 to **7.18**"]
+        takeaway: Fix the bias in the likelihood by weighting each gap by how likely it is to be observed.
+        source: notes/01-bayesian-inference.md
+        notes: The second pair of numbers is the queue version, where the number of people on the platform tells you how long it has been since the last train.
+
+      - layout: statement
+        beat: problem
+        section: "German tanks: when the posterior is one line"
+        title: Estimate the total from the largest serial number
+        recall: What is the German tank problem?
+        answer: "Estimate how many tanks exist from the serial numbers you have seen. With a maximum of 912, the posterior mean is 982 and the interval is [913, 1186]."
+        kicker: German tanks
+        statement: "The largest serial number seen is 912. How many tanks are there?"
+        takeaway: The posterior for the total is a distribution above the maximum, not one number.
+        source: notes/01-bayesian-inference.md
+        notes: The problem is classic. Frequentist and Bayesian answers differ, and the posterior gives a whole interval.
+
+      - layout: table
+        beat: practice
+        section: "German tanks: when the posterior is one line"
+        title: Six summaries of one posterior span 70 tanks
+        recall: What do the different German tank estimates say?
+        answer: "Max 912, unbiased 971.8, posterior mean 982, median 958, MAP 912, with an interval of [913, 1186] and P(N>1100) = 0.071."
+        header: [Summary, Value]
+        rows:
+          - ["Maximum seen", "912"]
+          - ["Unbiased estimate", "971.8"]
+          - ["Posterior mean", "982"]
+          - ["Posterior median", "958"]
+          - ["MAP", "912"]
+          - ["Interval and tail", "[913, 1186], P(N>1100) = 0.071"]
+        highlight: [5]
+        takeaway: Point summaries disagree by about 70. Report an interval and the tail probability the decision needs.
+        source: notes/01-bayesian-inference.md
+        notes: The tail probability P(N>1100) = 0.071 is the kind of statement a decision maker can use directly.
+
+      - layout: bullets
+        beat: practice
+        level: deep
+        section: "German tanks: when the posterior is one line"
+        title: A sampler and a simulation agree with the one-liner
+        recall: How do Metropolis and the simulation check the German tank result?
+        answer: "Metropolis gives 980, 957 and [913, 1175]. In simulation the max-seen estimator has an rmse of 85.0 and the max-plus-gap estimator 62.3."
+        bullets:
+          - "Metropolis: **980**, **957**, **[913, 1175]**"
+          - "Simulation, max seen: rmse **85.0**"
+          - "Simulation, max plus gap: rmse **62.3**"
+        lead: "Three routes, one answer."
+        takeaway: When a posterior has a closed form, use a sampler and a simulation as checks on it.
+        source: notes/01-bayesian-inference.md
+        notes: The agreement of three routes is the check. The estimator with the smaller rmse in simulation is the better one for this problem.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: "German tanks: when the posterior is one line"
+        title: The locomotive posterior depends on the bound you pick
+        recall: How does the locomotive posterior mean depend on the prior's upper bound?
+        answer: "With one train numbered 60 the mean is 207, 333 and 552 at bounds of 500, 1,000 and 2,000. Two further sightings, 30 and 90, pull them to 152, 164 and 171."
+        header: [Evidence, "Bound 500", "Bound 1,000", "Bound 2,000"]
+        rows:
+          - ["Train 60 only", "207", "333", "552"]
+          - ["Trains 30, 60 and 90", "152", "164", "171"]
+        highlight: [1]
+        takeaway: More data shrinks the gap between priors from 345 to 19, so when the bound matters, collect more sightings.
+        source: notes/01-bayesian-inference.md
+        notes: The gaps are 552 minus 207 and 171 minus 152. This is the first look at a prior washing out, which lecture 2 measures properly.
+
+      - layout: cards
+        beat: pitfalls
+        section: Pitfalls
+        title: Three ways to misstate the interval and the prior
+        recall: What are three pitfalls in stating the prior and the interval?
+        answer: "Reading a confidence interval as a credible one, treating the prior as a hidden knob, and giving a prior zero mass where the truth might lie."
+        cards:
+          - {title: "Reading a confidence interval as a credible interval", body: "Say which one you computed"}
+          - {title: "Treating the prior as a hidden knob", body: "State it and show a sceptic's prior"}
+          - {title: "Zero prior mass, as with `upper=2000`", body: "Keep supports wider than anything plausible"}
+        takeaway: State the prior, check the support and name the interval.
+        source: notes/01-bayesian-inference.md
+        notes: A prior chosen after seeing the result can produce any conclusion. A DiscreteUniform with upper=2000 can never conclude N is above 2000.
+
+      - layout: table
+        beat: pitfalls
+        section: Pitfalls
+        title: Three ways to over-trust a fit
+        recall: What are three ways to over-trust a Bayesian fit?
+        answer: "Reporting only the posterior mean, extrapolating with a confident band, and trusting a fit without a predictive check."
+        header: [Pitfall, Fix]
+        rows:
+          - ["Reporting only the posterior mean", "Report an interval and the decision quantity"]
+          - ["Extrapolating with a confident band", "Mark the observed range and say the band is conditional on the form"]
+          - ["Trusting a fit without a predictive check", "Simulate and compare on a quantity not used to fit it"]
+        takeaway: Convergence says the sampler worked, not that the model describes the world.
+        source: notes/01-bayesian-inference.md
+        notes: The Challenger band at 31F is narrow only because the logistic form assumes the curve continues, and no launch was tested there.
+
+  - title: Grids, factors and simulation
+    divider: false
+    summary: Two parameters on a grid · Bayes factors · Nuisance parameters · Simulation · Hierarchies
+    notes: The second note widens the toolkit. Grids, hypothesis comparison and simulation each cover a case where the one-line posterior does not exist.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Two parameters on a grid, and what the marginals hide
+        title: Two clean marginals can hide the joint
+        recall: Why can the marginals of a two-parameter posterior mislead?
+        answer: "Marginals lose the dependence between parameters. In the paintball problem the sd of alpha given beta is 5.3, 7.9 and 8.8 at beta = 10, 20 and 40, so the conditionals differ."
+        kicker: The paintball problem
+        statement: "Four spatters at 15, 16, 18 and 21 ft. Where is the shooter standing, along the wall and away from it?"
+        takeaway: If you only report marginals you cannot recreate the joint, so keep the joint or report conditionals.
+        source: notes/01b-grids-hypotheses-and-simulation.md
+        notes: The hypotheses are a position along the wall (alpha) and a distance from it (beta). The grid is every integer pair.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: Two parameters on a grid, and what the marginals hide
+        title: The grid is a loop and a normalise
+        recall: How is the paintball grid posterior computed?
+        answer: "Start from a uniform grid, multiply in the likelihood for each of the four hits, normalise, then sum along an axis for a marginal or slice a column for a conditional."
+        lang: python
+        lead: "Multiply in each hit, then normalise."
+        code: |-
+          post = np.ones((len(alphas), len(betas)))
+          for x in (15, 16, 18, 21):
+              post *= np.array([[loc_pmf(a, b)[x]
+                                 for b in betas] for a in alphas])
+          post /= post.sum()
+          m_alpha = post.sum(axis=1)       # marginal
+          cond = post[:, 9] / post[:, 9].sum()   # beta = 10
+        takeaway: A grid posterior is an array. Marginals are sums, and conditionals are slices.
+        source: notes/01b-grids-hypotheses-and-simulation.md
+        notes: The note defines loc_pmf for where a shot from a given position lands. The array form generalises to any problem with two parameters.
+
+      - layout: table
+        beat: practice
+        section: Two parameters on a grid, and what the marginals hide
+        title: The marginals look vague and the conditionals are not
+        recall: What do the paintball marginals and conditionals say?
+        answer: "Alpha has a 50% interval of (14, 21) and beta of (5, 31). Given beta = 10, 20 and 40, the sd of alpha is 5.3, 7.9 and 8.8."
+        header: [Quantity, Result]
+        rows:
+          - ["Alpha, 50% interval", "(14, 21)"]
+          - ["Beta, 50% interval", "(5, 31)"]
+          - ["sd of alpha given beta = 10", "**5.3**"]
+          - ["sd of alpha given beta = 20", "**7.9**"]
+          - ["sd of alpha given beta = 40", "**8.8**"]
+        highlight: [2, 3, 4]
+        takeaway: Alpha and beta are not independent, which the marginals cannot show and the conditionals do.
+        source: notes/01b-grids-hypotheses-and-simulation.md
+        notes: Beyond about 10 ft from the wall the beta marginal is almost flat, so the data do not separate a shooter 20 ft away from one 40 ft away.
+
+      - layout: bullets
+        beat: fundamentals
+        level: deep
+        section: Two parameters on a grid, and what the marginals hide
+        title: The grid costs n to the power d
+        recall: What limits a grid posterior?
+        answer: "The cost is n^d for d parameters with n values each. A million hypotheses allow 1,000 values in two dimensions, 100 in three or 10 in six."
+        bullets:
+          - "Cost **n^d** for d parameters"
+          - "A million hypotheses: **1,000** values in 2D"
+          - "**100** in 3D, **10** in 6D"
+          - "Past two or three parameters, use a sampler"
+        lead: "Lecture 2 is the sampler."
+        takeaway: A grid is exact and honest for one or two parameters, and out of reach beyond that.
+        source: notes/01b-grids-hypotheses-and-simulation.md
+        notes: This is the bridge to the next lecture. The species problem below shows one trick that postpones the limit.
+
+      - layout: statement
+        beat: problem
+        section: A Bayes factor depends on how the alternative is defined
+        title: Is the euro coin biased? It depends how you define biased
+        recall: Why does a Bayes factor depend on the alternative?
+        answer: "A biased coin needs a distribution over its head probability, and the data cannot choose it. Three reasonable definitions give Bayes factors of 6.08, 1.33 and 0.47."
+        kicker: Bayes factors
+        statement: "140 heads, 110 tails. The Guardian said a fair coin would do this less than 7% of the time. A Bayes factor needs to know what biased means."
+        takeaway: A Bayes factor compares two models, so it has no value until the alternative is written down.
+        source: notes/01b-grids-hypotheses-and-simulation.md
+        notes: The p-value needs no alternative, which is why it is easy to compute and hard to interpret. The Bayes factor makes you choose.
+
+      - layout: table
+        beat: practice
+        section: A Bayes factor depends on how the alternative is defined
+        title: Three definitions of biased, three verdicts
+        recall: What Bayes factors do the euro coin definitions give?
+        answer: "The cheating definition (x = 140/250) gives 6.08, two values (0.4 or 0.6) give 1.33, and uniform gives 0.47. The book's triangular prior gives 0.84."
+        header: [Definition of biased, Bayes factor vs fair]
+        rows:
+          - ["Cheat, x = 140/250", "6.08"]
+          - ["Two values, x = 0.4 or 0.6", "1.33"]
+          - ["Uniform", "0.47"]
+          - ["Triangular, peaking at 50%", "0.84"]
+        highlight: [0]
+        takeaway: The same data run from 6.08 for a hypothesis built from them to 0.47 for a uniform one.
+        source: notes/01b-grids-hypotheses-and-simulation.md
+        notes: The cheat row sets x to the observed fraction, which is the subject of the next slide.
+
+      - layout: cards
+        beat: pitfalls
+        section: A Bayes factor depends on how the alternative is defined
+        title: Three points about a Bayes factor
+        recall: What three points does the note draw from the euro Bayes factors?
+        answer: "A composite hypothesis scores as its prior-weighted average likelihood. The cheat alternative is bogus because it peeks. Every definition that does not peek gives weak evidence, 1.3 for B and 2.1 (1/0.47) for F."
+        cards:
+          - title: Average likelihood
+            body: "A composite hypothesis scores as its **prior-weighted average**"
+          - title: Do not peek
+            body: "B built from the data favours itself, **6.1**"
+            accent: "D4621A"
+          - title: Weak evidence
+            body: "Honest definitions give **1.3** for B and **2.1** for F"
+            accent: "0F7490"
+        takeaway: Define the alternative before you look, and expect weak evidence from honest definitions.
+        source: notes/01b-grids-hypotheses-and-simulation.md
+        notes: A factor of 2 from prior odds of 1:1 is posterior odds of 2:1, a move from 50% to 66%. That is small against modelling error.
+
+      - layout: table
+        beat: fundamentals
+        level: deep
+        section: A Bayes factor depends on how the alternative is defined
+        title: Jeffreys' scale and the p-value can disagree
+        recall: How can a Bayes factor and a p-value disagree?
+        answer: "A slope with z = 2.36 at n = 39 has a BIC Bayes factor of 5.49. A slope with z = 3.29 at n = 10,000 has 2.24, below substantial, though far past the usual p-value cutoffs."
+        header: [Slope, BIC Bayes factor]
+        rows:
+          - ["z = 2.36, n = 39", "5.49, substantial"]
+          - ["z = 3.29, n = 10,000", "2.24, below substantial"]
+        lead: "Jeffreys: 1 to 3 barely, 3 to 10 substantial, 10 to 30 strong, 30 to 100 very strong, over 100 decisive."
+        takeaway: With a large n a small p-value can carry weak Bayes-factor evidence, so read both.
+        source: notes/01b-grids-hypotheses-and-simulation.md
+        notes: A factor of 100 is odds of 100 to 1, over 99%. Downey prefers to think in odds than to argue about the adjectives.
+
+      - layout: compare
+        beat: practice
+        level: deep
+        section: "Comparing two people: nuisance parameters"
+        title: Who is better at the SAT, Alice or Bob?
+        recall: How do the simple and better SAT models compare?
+        answer: "The simple model gives P(Alice higher) = 0.79 and a Bayes factor of 3.8. The better model, with question difficulty and efficacy, gives 3.4 and 77%. A retake predicts only 63% that she scores higher."
+        left:
+          title: Simple model
+          tag: Same difficulty
+          bullets:
+            - "P(Alice higher) **0.79**"
+            - "Bayes factor **3.8**"
+        right:
+          title: Efficacy and difficulty
+          tag: Nuisance parameters
+          bullets:
+            - "Bayes factor **3.4**, 77%"
+            - "A retake: only **63%**"
+        emphasis: right
+        takeaway: Average out what you do not care about. A 3 to 1 gap in ability is only a 63% chance on a retake.
+        source: notes/01b-grids-hypotheses-and-simulation.md
+        notes: The question difficulties are nuisance parameters. They are estimated and then integrated out. The retake prediction is the only validation offered, since efficacy cannot be observed.
+
+      - layout: flow
+        beat: fundamentals
+        level: core
+        section: Simulate the joint, then slice it
+        title: When the likelihood is out of reach, simulate forward
+        recall: How does simulate-then-slice work?
+        answer: "Simulate many cases forward from a model of growth, record the pairs of age and size, and read the posterior for age off the slice at the observed size."
+        steps:
+          - label: Simulate
+            sub: Many tumours at growth rates from the data
+          - label: Record
+            sub: Pairs of age and size
+          - label: Slice
+            sub: Keep those at the observed size
+            accent: "D4621A"
+        caption: Conditioning the simulated joint is the update.
+        takeaway: Simulation moves the work from the likelihood to the forward model, and a slice of the joint is the posterior.
+        source: notes/01b-grids-hypotheses-and-simulation.md
+        notes: The setup is a 15.5 cm kidney tumour found 3,291 days after a scan that showed none. Growth is measured as a doubling time, with a median of 811 days from 53 patients.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: Simulate the joint, then slice it
+        title: At the median growth rate it was already 6 cm
+        recall: What does back-calculating at the median growth rate say?
+        answer: "At the median rate the tumour was already 6.1 cm at discharge. Growing from 0.1 cm needs 2.4 volume doublings a year, which only 20% of patients reached."
+        lang: python
+        lead: "Back-calculate before you simulate."
+        code: |-
+          days, vdt, final_cm = 3291, 811, 15.5
+          doublings = days / (3 * vdt)
+          print(final_cm / 2 ** doublings)       # 6.1 cm
+          n = np.log2(final_cm / 0.1)
+          print(3 * n / (days / 365))            # 2.4 a year
+        takeaway: A quick back-of-envelope calculation tells you what the simulation must explain.
+        source: notes/01b-grids-hypotheses-and-simulation.md
+        notes: Either the tumour was there already or it grew unusually fast. The simulation weighs those two stories.
+
+      - layout: bullets
+        beat: practice
+        level: deep
+        section: Simulate the joint, then slice it
+        title: How old is the tumour? Probably over 8 years
+        recall: How does serial correlation change the tumour age result?
+        answer: "P(older than 8 years) is 0.999 with no serial correlation, 0.995 at 0.4 and 0.978 at 0.8. Serial correlation widens the age range."
+        bullets:
+          - "Serial correlation none: P(older than 8 years) **0.999**"
+          - "Serial correlation 0.4: P(older than 8 years) **0.995**"
+          - "Serial correlation 0.8: P(older than 8 years) **0.978**"
+        takeaway: The conclusion survives a wide range of growth assumptions, and the sensitivity check is what earns the claim.
+        source: notes/01b-grids-hypotheses-and-simulation.md
+        notes: The limits are the model's. There are 53 patients, spherical tumours, growth independent of size and grade, and sizes beyond the observed range are extrapolated. Downey's summary is that we side-stepped Bayes but he was with us in spirit.
+
+      - layout: flow
+        beat: fundamentals
+        level: deep
+        section: Parameters of parameters
+        title: Causal information flows down, inference flows up
+        recall: What is the structure of the Geiger counter problem?
+        answer: "A rate r goes by Poisson to n particles emitted, and n goes by binomial thinning with f = 0.1 to k = 15 clicks. The posterior for n peaks at k/f = 150."
+        steps:
+          - label: r
+            sub: Long-run rate
+          - label: n
+            sub: Emitted this second
+          - label: k
+            sub: Clicks, with f = 0.1
+            accent: "D4621A"
+        caption: Posteriors for n and r both peak at 150. The rate is the more certain.
+        takeaway: With levels of unknowns, the higher level is better determined than the one below it.
+        source: notes/01b-grids-hypotheses-and-simulation.md
+        notes: This chapter has one group and no pooling. Hyperpriors over many groups and shrinkage come in lecture 5.
+
+      - layout: cards
+        beat: practice
+        level: deep
+        section: "Many unknown categories: the species problem"
+        title: With unseen species, the naive proportions are wrong
+        recall: What does the Dirichlet say about 3 lions, 2 tigers and 1 bear?
+        answer: "With Dirichlet(1,1,1), the posterior means are 44%, 33% and 22%, where the naive maximum likelihood is 50%, 33% and 17%."
+        cards:
+          - {title: "Lions, 3", body: "Naive 50%, posterior **44%**"}
+          - {title: "Tigers, 2", body: "Naive 33%, posterior **33%**"}
+          - {title: "Bears, 1", body: "Naive 17%, posterior **22%**"}
+        takeaway: A Dirichlet prior keeps room for what you have not seen, and the rarest category gains most.
+        source: notes/01b-grids-hypotheses-and-simulation.md
+        notes: The prevalences must sum to one, so the prior is a Dirichlet and not independent Betas.
+
+      - layout: bullets
+        beat: practice
+        level: deep
+        section: "Many unknown categories: the species problem"
+        title: How many species live in one gut sample?
+        recall: What does the species posterior say?
+        answer: "From 400 reads with 61 species seen, the posterior for the number of species has its mode at 72 with a 90% interval of 66 to 79, so 87 is unlikely and exactly 61 nearly impossible."
+        bullets:
+          - "**400** reads, **61** species seen"
+          - "Mode **72**, 90% interval **66 to 79**"
+          - "The count is itself an unknown, with a hierarchy of priors"
+        lead: "Assumes every organism is equally likely to be sampled."
+        takeaway: Put a prior on how many categories there are and the data tell you how many you have missed.
+        source: notes/01b-grids-hypotheses-and-simulation.md
+        notes: The grid is made affordable by updating one species at a time. The upper bound of the prior on the number of species is a judgment call, so check the posterior tail.
+
+      - layout: table
+        beat: fundamentals
+        level: core
+        section: Four estimators for one train
+        title: Four estimators, four questions
+        recall: What do the four train estimators optimise?
+        answer: "For i = 60: i gives 60 (maximum likelihood), 3i/2 gives 90 (minimum mean squared error), 2i gives 120 (unbiased) and 2i-1 gives 119 (population mean equals sample mean)."
+        header: [Estimator, For i = 60, Optimises]
+        rows:
+          - ["i", "60", "Maximum likelihood"]
+          - ["3i/2", "90", "Minimum mean squared error"]
+          - ["2i", "120", "Zero mean error"]
+          - ["2i - 1", "119", "Population mean equals sample mean"]
+        takeaway: Each estimator answers a different question and behaves as if it had its own prior.
+        source: notes/01b-grids-hypotheses-and-simulation.md
+        notes: With a uniform prior on 1 to 200 the 90% interval is [63, 189] and the mean 116. The book prints the unbiased multiplier as 2N/(N-1), and the note works it out as 2N/(N+1), with the same limit of 2.
+
+      - layout: statement
+        beat: problem
+        section: "One parameter: grid, quadratic approximation, then samples"
+        title: Six water in nine tosses
+        recall: What is the globe toss in McElreath's workflow?
+        answer: "A one-parameter problem, 6 water in 9 tosses with a flat prior, where the whole workflow of grid, quadratic approximation and samples fits on a page."
+        kicker: The globe toss
+        statement: "Toss the globe nine times and land on water six times. What fraction of the globe is water?"
+        takeaway: With one parameter, you can see every approximation next to the exact answer.
+        source: notes/01b-grids-hypotheses-and-simulation.md
+        notes: A grid of 20 points is already usable and little changes after the first 100 points.
+
+      - layout: bullets
+        beat: fundamentals
+        level: deep
+        section: "One parameter: grid, quadratic approximation, then samples"
+        title: A coarse grid is already usable
+        recall: How many grid points does the globe toss need?
+        answer: "A grid of 20 points is already usable and little changes after the first 100. Two parameters at 100 values each cost 10,000 evaluations."
+        bullets:
+          - "**20** points are usable"
+          - "Little changes after **100**"
+          - "Two parameters at 100 values: **10,000** evaluations"
+        takeaway: One parameter needs a short grid, and the cost grows as the power of the parameter count.
+        source: notes/01b-grids-hypotheses-and-simulation.md
+        notes: The 6 water in 9 tosses example uses a flat prior. The cost point links back to the grid slide, which gave n to the power d.
+
+      - layout: image
+        beat: fundamentals
+        section: "One parameter: grid, quadratic approximation, then samples"
+        title: The quadratic approximation is wrong at small n
+        kicker: Globe toss, n = 9, 18 and 36
+        recall: When does the quadratic approximation fail?
+        answer: "At n = 9 it gives mean 0.67 and sd 0.16, and it puts mass at p = 1, which the data rule out. At n = 18 and 36 the gap closes."
+        image: ../../assets/sources/images/statistical-rethinking-fig2-8.png
+        caption: "Quadratic approximation against the exact Beta posterior (McElreath, Fig. 2.8)."
+        bullets:
+          - "n = 9: mean **0.67**, sd **0.16**"
+          - "Mass at p = 1, ruled out by the data"
+          - "Closes by n = 18 and 36"
+        takeaway: A Gaussian at the mode is a small-n shortcut, and it can be visibly wrong.
+        source: notes/01b-grids-hypotheses-and-simulation.md
+        notes: McElreath also calls the 30-observations rule a superstition. A posterior is valid at any n, and the price of small n is dependence on the prior.
+
+      - layout: code
+        beat: practice
+        section: "One parameter: grid, quadratic approximation, then samples"
+        title: Sample from the grid and every summary becomes counting
+        recall: How do you summarise a grid posterior with samples?
+        answer: "Draw samples from the grid with the posterior as weights. Mass below 0.5 is 0.174 (the grid gives 0.172) and the middle 80% is [0.446, 0.812]."
+        lang: python
+        lead: "6 water in 9, flat prior."
+        code: |-
+          g = np.linspace(0, 1, 1000)
+          post = stats.binom.pmf(6, 9, g)
+          post /= post.sum()
+          rng = np.random.default_rng(0)
+          s = rng.choice(g, size=100_000, p=post)
+          print((s < 0.5).mean())              # 0.174
+          print(np.percentile(s, [10, 90]))    # [0.446 0.812]
+        takeaway: Once you have samples, stop integrating. A mean, a quantile or a probability is a count over draws.
+        source: notes/01b-grids-hypotheses-and-simulation.md
+        notes: The sampling noise is in the third decimal, as the grid's own 0.172 shows.
+
+      - layout: image
+        beat: practice
+        level: core
+        section: "One parameter: grid, quadratic approximation, then samples"
+        title: Two 50% intervals for 3 water in 3 tosses
+        kicker: Percentile interval and HPDI
+        recall: How do the percentile interval and HPDI differ for 3 of 3 water?
+        answer: "The percentile interval is (0.708, 0.931) and excludes the mode. The HPDI is (0.839, 0.999) and contains it."
+        image: ../../assets/sources/images/statistical-rethinking-fig3-3.png
+        caption: "50% percentile interval and 50% HPDI (McElreath, Fig. 3.3)."
+        bullets:
+          - "Percentile: **(0.708, 0.931)**"
+          - "HPDI: **(0.839, 0.999)**"
+          - "If the choice changes the inference, plot the whole posterior"
+        takeaway: On a skewed posterior the interval type matters, so say which one you report or show the full curve.
+        source: notes/01b-grids-hypotheses-and-simulation.md
+        notes: McElreath prefers nested 67, 89 and 97% intervals to 95%, which he calls a convention with no defence.
+
+      - layout: bullets
+        beat: practice
+        level: deep
+        section: "One parameter: grid, quadratic approximation, then samples"
+        title: McElreath prefers nested intervals to 95%
+        recall: Which interval widths does McElreath prefer, and why?
+        answer: "He prefers nested 67, 89 and 97% intervals to 95%, which he calls a convention with no defence."
+        bullets:
+          - "Nested **67, 89 and 97%** intervals"
+          - "95% is a convention with no defence"
+          - "If the interval type changes the inference, plot the whole posterior"
+        takeaway: No interval width is special, so show several or the whole curve.
+        source: notes/01b-grids-hypotheses-and-simulation.md
+        notes: This follows the 3-of-3 posterior, where two 50% intervals disagree.
+
+      - layout: cards
+        beat: practice
+        level: core
+        section: "One parameter: grid, quadratic approximation, then samples"
+        title: A point estimate is a loss function in disguise
+        recall: Which point estimate minimises which loss?
+        answer: "For the 3-of-3 posterior, absolute loss is minimised at the median (0.84), quadratic loss at the mean (0.80), and the MAP is 1.0. Reporting p = 0.5 costs 0.313 in expected absolute loss."
+        cards:
+          - title: Median
+            body: "**0.84** minimises absolute loss"
+          - title: Mean
+            body: "**0.80** minimises quadratic loss"
+            accent: "0F7490"
+          - title: MAP
+            body: "**1.0**, the mode"
+            accent: "D4621A"
+        takeaway: Choosing a number to report is choosing a loss. Lecture 3 takes this up properly.
+        source: notes/01b-grids-hypotheses-and-simulation.md
+        notes: Reporting p = 0.5 costs 0.313 in expected absolute loss on the same posterior.
+
+      - layout: image
+        beat: practice
+        section: "One parameter: grid, quadratic approximation, then samples"
+        title: Predictions must carry the uncertainty about p
+        kicker: Posterior predictive
+        recall: Why does plugging in one p understate the spread?
+        answer: "At the plug-in p = 0.67, 6 of 9 has probability 0.273, but the posterior predictive gives 0.20, because uncertainty about p spreads the counts out."
+        image: ../../assets/sources/images/statistical-rethinking-fig3-6.png
+        caption: "Sampling distributions at ten values of p combine into the posterior predictive (McElreath, Fig. 3.6)."
+        bullets:
+          - "Plug-in: **0.273**"
+          - "Posterior predictive: **0.20**"
+        takeaway: Draw a p for each simulated dataset and the predictions have the right spread.
+        source: notes/01b-grids-hypotheses-and-simulation.md
+        notes: Draw rng.binomial(9, s) for each sampled p. A check should use more than one feature of the data, such as the 6 switches between water and land in the toss sequence. The base-rate drill gives 0.087, with 95 true cases among 1,094 positives.
+
+      - layout: table
+        beat: pitfalls
+        section: Pitfalls
+        title: Pitfalls of marginals, Bayes factors and grid bounds
+        recall: What are the pitfalls of marginals, Bayes factors and grid bounds?
+        answer: "Clean marginals with a wrong joint, a Bayes factor for a hypothesis written after the data, weak evidence read as no effect, and a posterior that depends on the grid's upper bound."
+        header: [Symptom, Fix]
+        rows:
+          - ["Two clean marginals, then a wrong joint", "Keep the joint, or plot conditionals"]
+          - ["A Bayes factor of 6 for a hypothesis written after the data", "Define B before looking, as a distribution"]
+          - ["Weak evidence read as no effect", "Report posterior odds with the setup"]
+          - ["Posterior depends on the grid's upper bound", "Re-run with a larger bound and compare tails"]
+        takeaway: Check the bound, keep the joint and write the alternative first.
+        source: notes/01b-grids-hypotheses-and-simulation.md
+        notes: A factor near 1 is equally compatible with both hypotheses.
+
+      - layout: table
+        beat: pitfalls
+        section: Pitfalls
+        title: Pitfalls with logs, intervals and simulation
+        recall: What are the pitfalls with logs, intervals and simulation?
+        answer: "Underflow on thousands of points, 50% intervals that disagree, predictions that look too tight, and a simulated posterior with no sensitivity check."
+        header: [Symptom, Fix]
+        rows:
+          - ["Underflow on a few thousand data points", "Work in log-likelihood, or use a summary"]
+          - ["50% intervals that disagree", "Plot the whole posterior and say which interval"]
+          - ["Predictions that look too tight", "Simulate with a sampled p per draw"]
+          - ["Simulated posterior with no sensitivity check", "Vary the correlation or growth model"]
+        takeaway: Work in logs, show the whole posterior, and vary the assumptions of a simulation.
+        source: notes/01b-grids-hypotheses-and-simulation.md
+        notes: Multiplying densities underflows after a few thousand points, which is why the log-likelihood is the habit.
+
+  - title: Rules of thumb
+    agenda: false
+    divider: false
+    slides:
+      - layout: cards
+        beat: wrap
+        title: Rules of thumb for inference
+        recall: What are the rules of thumb for Bayesian inference?
+        answer: "Report a distribution not a point. State the prior and show a sceptic's. Check the model by simulating from it. Define a hypothesis before you look."
+        cards:
+          - title: Report a distribution
+            body: "An interval and the tail the decision needs"
+          - title: State the prior
+            body: "And show the result under a sceptic's prior"
+            accent: "0F7490"
+          - title: Simulate to check
+            body: "Compare on a quantity you did not fit"
+            accent: "D4621A"
+        takeaway: Say what you assumed, show what the posterior says, and check it against data it has not seen.
+        source: README.md
+        notes: These are the rules from the inference group in the README. They carry into the next lecture, where the sampler can fail without telling you.
+
+      - layout: bullets
+        beat: wrap
+        title: Where to go next
+        card: false
+        recall: What comes after inference?
+        answer: "Lecture 2 covers how a sampler works and how to tell when it has failed, then how priors are chosen and checked."
+        bullets:
+          - "**Next:** MCMC and PyMC, in notes/02-mcmc-and-pymc.md"
+          - "**Then:** priors, in notes/03-priors-and-bandits.md"
+          - "**Practice:** redo the coin with a different prior"
+        takeaway: A grid works for one or two parameters. For more, you need a sampler you can check.
+        source: README.md
+        notes: The grid's n^d cost is the reason for the next lecture.

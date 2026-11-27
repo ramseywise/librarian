@@ -10,6 +10,7 @@ import argparse
 import json
 import os
 import re
+import statistics
 import sys
 from bisect import bisect_left, bisect_right
 from collections import defaultdict
@@ -265,8 +266,20 @@ def parse_session(path: Path) -> dict[str, Any] | None:
     # Ordered most-specific-first so narrow patterns are not swallowed by broad ones.
     # Each entry is (substring_to_match, category).  First match wins.
     _ERROR_PATTERNS: list[tuple[str, str]] = [
+        # --- harness / platform transients (retro R14 M6, 2026-11-20: 76 "other"
+        #     errors sampled since 2026-10-02; these ten heads covered all of them) ---
+        ("auto mode classifier gave no verdict", "transient_classifier"),
+        ("concurrent subagent limit", "subagent_limit"),
+        ("could not set lock", "lock_contention"),
+        ("no such tool available", "tool_unavailable"),
+        ("is not installed", "missing_binary"),
+        ("unknown skill", "skill_not_found"),
+        ("does not match required schema", "invalid_tool_output"),
+        ("interrupted by user", "user_rejected"),
+        ("api error", "api_error"),
         # --- agent-side malformed calls (before any "failed" broad match) ---
         ("inputvalidationerror", "invalid_tool_input"),
+        ("replace_all is false", "edit_failed"),
         # --- edit-tool failures (before generic "not found") ---
         ("string to replace not found", "edit_failed"),
         # --- write-before-read / stale-read (before generic "file" patterns) ---
@@ -592,6 +605,10 @@ def parse_session(path: Path) -> dict[str, Any] | None:
         "hook_blocks": hook_blocks,
         "has_todo_write": has_todo_write,
         "agent_spawns": agent_spawns,
+        # Retro R14 F1 (2026-11-20): scalar counts so the factstore can carry the
+        # `model:` coverage of Agent calls without re-parsing the spawn JSON.
+        "agent_calls": len(agent_spawns),
+        "agent_calls_model_set": sum(1 for a in agent_spawns if a.get("model")),
         "friction_labels": friction_labels,
         "friction_label_count": len(friction_labels),
         "entrypoint": entrypoint,
@@ -866,7 +883,13 @@ def aggregate(
         "uses_task_agent": sum(1 for s in sessions if s["uses_task_agent"]),
         # --- Context engineering signals ---
         "bash_antipatterns_total": total_bash_antipatterns,
+        # Heavy-tailed: report mean AND median, named (retro R14 F4, 2026-11-20).
+        # `bash_antipatterns_per_session` is the mean under its historical key.
         "bash_antipatterns_per_session": round(total_bash_antipatterns / len(sessions), 2),
+        "bash_antipatterns_mean": round(total_bash_antipatterns / len(sessions), 2),
+        "bash_antipatterns_p50": float(
+            statistics.median(s.get("bash_antipatterns", 0) for s in sessions)
+        ),
         "skill_invocations": dict(
             sorted(
                 defaultdict(
@@ -1124,7 +1147,7 @@ def _key_from_env_file() -> str:
     return ""
 
 
-def call_claude(api_key: str, prompt: str, model: str = "claude-sonnet-4-6") -> str:
+def call_claude(api_key: str, prompt: str, model: str = "claude-sonnet-5-5") -> str:
     """Call the Anthropic API to generate an HTML report.
 
     _SYSTEM_PROMPT carries the pinned section-ID contract that _missing_section_ids
@@ -1414,8 +1437,10 @@ def main() -> None:
             msg="No JSONL found — using session notes as primary source",
         )
 
-    # --- Hook telemetry ---
-    hook_log_path = Path.home() / ".claude" / ".hook-log.jsonl"
+    # --- Hook telemetry (same dir lib.sh writes to: $CLAUDE_TELEMETRY_DIR, see paths.py) ---
+    from librarian.tools.cartographer.paths import hook_log_path as _hook_log_path
+
+    hook_log_path = _hook_log_path()
     hook_telemetry = parse_hook_log(hook_log_path)
     if hook_telemetry:
         log.info("parser.hook_telemetry_loaded", hooks=len(hook_telemetry))
@@ -1432,7 +1457,9 @@ def main() -> None:
         sys.stdout.write("\n")
         return
 
-    model = args.model or "claude-sonnet-4-6"
+    # Retro R14 M2 (2026-11-20): keep this one generation current; callers should
+    # still pass --model explicitly (meta-insights SKILL.md step 3 does).
+    model = args.model or "claude-sonnet-5-5"
     log.info("parser.calling_api", model=model)
     prompt = build_prompt(sessions, agg, session_notes=session_notes or None)
 

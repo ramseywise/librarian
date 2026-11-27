@@ -1,0 +1,1172 @@
+# imported_hash: 90e3a8dff2f64867
+# Lecture on step 3, Lifetime and spend: notes/07-survival-and-event-history.md to 09b-customer-lifetime-value.md, in the notes' order.
+# make slides PILLAR=data-analytics/06-applied-analyses LECTURE=03-lifetime-and-spend STRICT=1 PREVIEW=1
+# Levels: a slide with no level is the intro, `core` is the core lesson, `deep` is the optional extension (code and maths).
+deck:
+  title: Lifetime and Spend
+  subtitle: Survival, journeys, marketing measurement and customer value
+  tagline: "Censoring · Markov chains · Attribution · BG/NBD"
+  reference: "Notes: data-analytics/06-applied-analyses, notes 7 to 9b"
+  output: 03-lifetime-and-spend.pptx
+  notes: >-
+    This is the fourth lecture of the applied analyses series. It covers step 3. By the end you should be able to
+    estimate how long customers stay when many are still subscribed, value a customer from a transition matrix and say
+    what the pooled chain gets wrong, say what a channel really caused, and quote a new customer's lifetime value as a range.
+
+lecture:
+  covers:
+    - data-analytics/06-applied-analyses/notes/07-survival-and-event-history.md
+    - data-analytics/06-applied-analyses/notes/08-states-and-sequences.md
+    - data-analytics/06-applied-analyses/notes/09-marketing-measurement.md
+    - data-analytics/06-applied-analyses/notes/09b-customer-lifetime-value.md
+  requires: [data-analytics/06-applied-analyses/notes/06-sql-for-analytics.md]
+  next: [data-analytics/06-applied-analyses/notes/10-operations-and-supply-chain.md]
+  related:
+    - data-analytics/02-probability-and-statistics/notes/06b-logistic-regression-and-poisson-glms.md
+    - data-analytics/03-experimentation-and-causality/notes/01-ab-testing.md
+    - data-analytics/03-experimentation-and-causality/notes/05-matching-and-weighting.md
+    - data-science/01-classical-ml/notes/05b-clustering-categorical-and-mixed-data.md
+    - data-science/01-classical-ml/notes/10-imbalance-errors-and-drift.md
+    - data-science/05-time-series-and-recommenders/notes/01-time-series-ml.md
+    - data-engineering/06-ml-platform/notes/04-drift.md
+    - data-engineering/07-architecture-and-governance/notes/03-catalog-semantic-layer-and-contracts.md
+    - generative-ai/05-RL/README.md
+  omits:
+    - What a customer is worth
+
+parts:
+  - title: How long customers stay
+    divider: false
+    summary: Censoring · Kaplan-Meier · Cox · Time-varying effects · Standardised survival
+    notes: Fernhill sells a subscription box with a welcome call. We ask how long people stay, and what the call is worth.
+    slides:
+      - layout: statement
+        beat: problem
+        section: The question and the data
+        title: Does the welcome call keep people subscribed?
+        recall: What is the survival question, and what are its three traps?
+        answer: "Fernhill wants to know if the welcome call keeps subscribers. The traps are censoring, confounding, and a price rise in mid-life."
+        kicker: The problem
+        statement: "Called subscribers stay longer. Did the call do it, or were they the ones who stay anyway?"
+        attribution: Fernhill subscription box
+        takeaway: A lifetime question has three traps before any model is fitted.
+        source: notes/07-survival-and-event-history.md
+        notes: >-
+          Fernhill sells a subscription box and phones some new subscribers. A third of the subscriptions are still running.
+
+
+      - layout: bullets
+        beat: fundamentals
+        section: The question and the data
+        title: Three traps in one table
+        recall: What are the three traps in the subscription data?
+        answer: "Censoring (a third are still subscribed), confounding (the call goes mostly to channels that stay longer) and a mid-life price rise."
+        bullets:
+          - "**Censoring:** a third are still subscribed"
+          - "**Confounding:** calls go to channels that stay longer"
+          - "**Price rise:** hits subscribers mid-life"
+          - "**5,061** subscriptions, **44,840** person-periods"
+          - "Exits: **2,979** cancel, **401** downgrade, **1,681** still on"
+        takeaway: Name the traps first, and each later model is the answer to one of them.
+        source: notes/07-survival-and-event-history.md
+        notes: >-
+          The person-period table has one row per subscriber per month. A downgrade is a different exit from a cancel, which matters later.
+
+
+      - layout: cards
+        beat: fundamentals
+        section: "Censoring: why the obvious average is wrong"
+        title: Three averages of one lifetime
+        recall: Why is the mean of the churned lifetimes wrong?
+        answer: "The churned-only mean is 212.8 days and counting censored as end is 250.9, against a true mean of 401.8. The longest stayers are the ones missing."
+        cards:
+          - {title: "Churned only", accent: 1E3A5F, body: "**212.8** days"}
+          - {title: "Censored as the end", accent: D4621A, body: "**250.9** days"}
+          - {title: "True mean", accent: 0F7490, body: "**401.8** days"}
+        takeaway: Never average lifetimes over those who left, because the longest stayers are the missing ones.
+        source: notes/07-survival-and-event-history.md
+        notes: >-
+          The longest true lifetime is 10,309 days but the data stop at 1,088. Both naive averages are far below the truth.
+
+      - layout: compare
+        beat: fundamentals
+        level: core
+        section: "Censoring: why the obvious average is wrong"
+        title: 55% or 68% alive? The honest answer is 71%
+        recall: In the brain-tumour example, how does Kaplan-Meier beat both naive shares?
+        answer: "Of 88 patients 53 were alive at the end. 48 of 88 is 55% and 48 of 71 is 68%. Kaplan-Meier gives 71%."
+        emphasis: right
+        left:
+          title: Naive shares
+          bullets: ["48 of 88 is **55%**", "48 of 71 is **68%**", "Both throw away the censored"]
+        right:
+          title: Kaplan-Meier
+          bullets: ["Uses each person while at risk", "Gives **71%**"]
+        takeaway: Kaplan-Meier uses a censored person for as long as they were seen, and no longer.
+        source: notes/07-survival-and-event-history.md
+        notes: >-
+          This is the ISLP brain-tumour example. Dropping the censored cases or counting them as events both bias the share.
+
+
+      - layout: table
+        beat: fundamentals
+        section: "Who leaves first: Kaplan-Meier by channel"
+        title: Paid social leaves first
+        recall: How do median lifetime and 360-day survival differ by channel?
+        answer: "Paid social median 139 days and 23.4% left at 360 days. Organic 288 and 40.8%, email 350 and 48.8%, referral 286 and 40.9%."
+        header: [Channel, n, Median days, Still on at 360]
+        widths: [2.4, 1.4, 2.0, 2.4]
+        rows:
+          - [paid_social, "1,481", "139", 23.4%]
+          - [organic, "1,839", "288", 40.8%]
+          - [email, "1,018", "350", 48.8%]
+          - [referral, "723", "286", 40.9%]
+        highlight: [0]
+        takeaway: The curve shows who leaves first, and paid social leaves in half the time of email.
+        source: notes/07-survival-and-event-history.md
+        notes: >-
+          The overall Kaplan-Meier median is 255 days against a truth of 248. The restricted mean to day 1080 is 361.1 against 355.0.
+
+
+      - layout: image
+        beat: fundamentals
+        section: "Who leaves first: Kaplan-Meier by channel"
+        title: The four channel curves fan out early
+        kicker: Kaplan-Meier by channel
+        recall: What does the Kaplan-Meier chart show about paid social?
+        answer: "Paid social falls fastest, to about 23% by day 360. Organic and referral overlap near 41%. Email is highest near 49%."
+        image: ../../assets/sources/images/applied-survival-km-channel.png
+        caption: "Share of each channel still subscribed, by day."
+        bullets:
+          - "Paid social: about **23%** at day 360"
+          - "Organic and referral overlap, near **41%**"
+          - "Email: highest, near **49%**"
+        takeaway: Plot the curves before you model them, because the gaps already say where to look.
+        source: notes/07-survival-and-event-history.md
+        notes: >-
+          Log-rank test across the four channels gives chi-squared 296.7 on 3 degrees of freedom, p of 5.0e-64.
+
+
+      - layout: compare
+        beat: fundamentals
+        section: "The Cox model, and the number that hides the story"
+        title: One hazard ratio, unadjusted and adjusted
+        recall: What does the welcome-call hazard ratio become once channel and plan are adjusted for?
+        answer: "Unadjusted 0.681, adjusted 0.811 (interval 0.753 to 0.875). Part of the raw gap was the channels."
+        emphasis: right
+        left:
+          title: Unadjusted
+          bullets: ["Hazard ratio **0.681**", "Mixes the call with the channel"]
+        right:
+          title: Adjusted
+          bullets: ["Hazard ratio **0.811**", "Interval 0.753 to 0.875"]
+        takeaway: A hazard ratio is the factor on the baseline hazard, and adjusting for channel shrinks the call's effect.
+        source: notes/07-survival-and-event-history.md
+        notes: >-
+          The Cox model gives each covariate a factor on a shared baseline hazard, without having to specify the baseline.
+
+
+      - layout: table
+        beat: fundamentals
+        level: core
+        section: "The Cox model, and the number that hides the story"
+        title: What else moves the hazard
+        recall: Which covariates raise or lower the hazard, and which one fails the proportional-hazards check?
+        answer: "Paid social 1.781, email 0.794, referral 0.990, large 0.760, welcome call 0.811. The check fails only for welcome_call (p below 5e-05)."
+        header: [Covariate, Adjusted hazard ratio]
+        widths: [3.2, 3.2]
+        rows:
+          - [welcome_call, "0.811"]
+          - [paid_social, "1.781"]
+          - [email, "0.794"]
+          - [referral, "0.990"]
+          - [large, "0.760"]
+        highlight: [0]
+        takeaway: Only the welcome call breaks the proportional-hazards check, so its single ratio hides something.
+        source: notes/07-survival-and-event-history.md
+        notes: >-
+          A ratio near 1 means no change. Referral at 0.990 is indistinguishable from organic.
+
+
+      - layout: image
+        beat: pitfalls
+        section: "The Cox model, and the number that hides the story"
+        title: The call works for 90 days and then stops
+        kicker: The number that hides the story
+        recall: How does the welcome call's hazard ratio change by tenure band?
+        answer: "0.535 in days 0 to 90 (0.472 to 0.606), then 1.024, 0.984 and 1.076 in the later bands."
+        image: ../../assets/sources/images/applied-survival-wear-off.png
+        caption: "Welcome-call hazard ratio in four tenure bands, with the single ratio of 0.81 marked."
+        bullets:
+          - "Days 0 to 90: **0.535**"
+          - "Days 90 to 180: **1.024**"
+          - "Days 180 to 360: **0.984**; 360 and over: **1.076**"
+        takeaway: One hazard ratio of 0.81 averages a strong early effect and a null one later.
+        source: notes/07-survival-and-event-history.md
+        notes: >-
+          The single ratio drifts towards 1 the longer you follow people, without anything having changed.
+
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: "The Cox model, and the number that hides the story"
+        title: The partial likelihood
+        recall: How does the Cox partial likelihood compare each leaver with those still at risk?
+        answer: "For each event, the leaver's exp(c'b) is divided by the sum of exp(c'b) over everyone at risk then, and the terms are multiplied."
+        lead: "Each event is scored against the risk set at that time:"
+        lang: text
+        code: |-
+          L(b) = product over events i of
+
+              exp(c_i' b)
+            -------------------------------
+            sum over k at risk of exp(c_k' b)
+
+          c = covariates, b = log hazard ratios
+          no baseline hazard appears
+        takeaway: The baseline hazard cancels, so Cox needs no assumption about the shape of survival over time.
+        source: notes/07-survival-and-event-history.md
+        notes: >-
+          This is the formula behind the fit. Ties and the numerical routine are left to the library.
+
+
+      - layout: cards
+        beat: pitfalls
+        level: deep
+        section: "The Cox model, and the number that hides the story"
+        title: The proportional-hazards check fails only for the call
+        recall: Which covariate fails the proportional-hazards check, and what do the others show?
+        answer: "Only welcome_call fails, with test statistics of 36.46 (km) and 39.75 (rank) and a p-value below 0.005. Email, large, paid_social and referral all pass."
+        cards:
+          - title: welcome_call
+            accent: pitfalls
+            body: "Test statistic **36.46** (km) and **39.75** (rank), p below 0.005. The check fails."
+          - title: The other four
+            body: "Email, large, paid_social and referral all pass, with p between 0.21 and 0.68."
+          - title: So what
+            accent: wrap
+            body: "The call's single ratio of 0.811 hides a change over tenure, so look at the ratio by tenure band."
+        takeaway: Only the welcome call breaks the check, which is why one ratio is not enough for it.
+        source: notes/07-survival-and-event-history.md
+        notes: >-
+          The lifelines documentation warns that even very small violations show up in a large sample. Here the failure is large, so we look at the ratio over tenure.
+
+
+      - layout: table
+        beat: fundamentals
+        section: "Time-varying covariates: the price rise and the call's wear-off"
+        title: Split time at the price rise and the call's wear-off
+        recall: How close does the time-varying model get to the generator's truth?
+        answer: "On 10,112 episodes, five of seven intervals contain the truth. Call early 0.535 (0.6), call late 1.024 (1.0), rise 1.494 (1.5)."
+        lead: The Truth column holds the ratios the generator used to simulate the data.
+        header: [Covariate, Estimate, Truth]
+        widths: [3.0, 1.8, 1.8]
+        rows:
+          - [call_early, "0.535", "0.6"]
+          - [call_late, "1.024", "1.0"]
+          - [rise, "1.494", "1.5"]
+          - [paid_social, "1.756", "1.6"]
+          - [email, "0.779", "0.7"]
+          - [large, "0.757", "0.8"]
+        highlight: [0, 2]
+        takeaway: Split the clock at each change, and the model recovers an early effect and a price-rise effect.
+        source: notes/07-survival-and-event-history.md
+        notes: >-
+          Referral comes out at 0.994 against 0.9. Five of seven intervals contain the truth, so two miss, and that is reported.
+
+
+      - layout: table
+        beat: fundamentals
+        level: core
+        section: A survival model is a logistic regression on person-periods
+        title: A logit on person-months gives the same answer
+        recall: How does a discrete-time logit compare with Cox?
+        answer: "Odds ratios and hazard ratios agree closely: welcome_early 0.531 against 0.535, price_rise 1.541 against 1.494, paid_social 1.771 against 1.756."
+        header: [Covariate, Logit odds ratio, Cox hazard ratio]
+        widths: [3.0, 2.4, 2.4]
+        rows:
+          - [welcome_early, "0.531", "0.535"]
+          - [welcome_late, "1.008", "1.024"]
+          - [price_rise_active, "1.541", "1.494"]
+          - [paid_social, "1.771", "1.756"]
+          - [email, "0.781", "0.779"]
+        highlight: [0]
+        takeaway: With a small monthly hazard, a logistic regression on person-months is a survival model.
+        source: notes/07-survival-and-event-history.md
+        notes: >-
+          The mean monthly cancel hazard is 0.066. Referral is 0.992 against 0.994 and large is 0.744 against 0.757.
+
+
+      - layout: cards
+        beat: pitfalls
+        section: Competing risks
+        title: Cancel and downgrade compete
+        recall: Why does one minus Kaplan-Meier overstate the cancel probability?
+        answer: "By day 720 the large plan has 0.620 cancel and 0.208 downgrade. Treating downgrades as censored gives a naive 0.726, too high."
+        cards:
+          - {title: "Large: cancel", accent: 1E3A5F, body: "**0.620** by day 720"}
+          - {title: "Large: downgrade", accent: 0F7490, body: "**0.208** by day 720"}
+          - {title: "Naive 1 - KM", accent: D4621A, body: "**0.726**, too high"}
+        takeaway: Count each exit as its own cumulative incidence, or the exits add to more than the truth.
+        source: notes/07-survival-and-event-history.md
+        notes: >-
+          A subscriber who downgrades can no longer cancel from the large plan. Censoring them says they might still.
+
+
+      - layout: bullets
+        beat: fundamentals
+        level: deep
+        section: The link to the sBG curve of chapter 3
+        title: The sBG forecast drifts high
+        recall: How does the sBG forecast fitted on months 0 to 12 compare with Kaplan-Meier later?
+        answer: "Alpha 2.079 and beta 19.876. At month 24 Kaplan-Meier is 0.176 against 0.199, and at month 36 it is 0.087 against 0.121."
+        bullets:
+          - "Fit on months 0 to 12: alpha **2.079**, beta **19.876**"
+          - "Month 12: **0.380** against **0.382**"
+          - "Month 24: **0.176** against **0.199**"
+          - "Month 36: **0.087** against **0.121**"
+        takeaway: A curve fitted on the first year overstates survival, partly because the price rise came later.
+        source: notes/07-survival-and-event-history.md
+        notes: >-
+          Removing the time after the rise gives 0.208 at month 24. The generator uses a Weibull with shape 0.75.
+      - layout: image
+        beat: practice
+        section: "Standardised survival: what the call is worth"
+        title: Standardised, the call lifts survival early
+        kicker: Everyone called vs nobody called
+        recall: What does the standardised-survival chart show about the call's gain?
+        answer: "The called curve pulls ahead by about 11 points over three months, and the gap narrows to about 2 points at month 36."
+        image: ../../assets/sources/images/applied-survival-standardised.png
+        caption: "Survival if all were called and if none were, with the true curves dotted."
+        bullets:
+          - "Gap of about **11** points by month 3"
+          - "Narrows to about **2** points by month 36"
+          - "Dotted truth lies close to both curves"
+        takeaway: Standardising answers what everyone called would do, which a hazard ratio cannot say.
+        source: notes/07-survival-and-event-history.md
+        notes: >-
+          The crude gap at day 360 is 0.131, which is the confounded number. The adjusted one is smaller.
+
+
+      - layout: cards
+        beat: practice
+        section: "Standardised survival: what the call is worth"
+        title: The call's gain, over time
+        recall: How big is the call's survival gain at months 3, 12, 24 and 36?
+        answer: "0.114 at month 3, 0.059 at month 12 (0.033 to 0.083, truth 0.053), 0.033 at month 24 and 0.021 at month 36."
+        cards:
+          - {title: "Month 3", accent: 1E3A5F, body: "Gain of **0.114**"}
+          - {title: "Month 12", accent: D4621A, body: "Gain of **0.059**, interval 0.033 to 0.083, truth 0.053"}
+          - {title: "Month 24", accent: 0F7490, body: "Gain of **0.033**, interval 0.007 to 0.056, truth 0.029"}
+          - {title: "Month 36", accent: 1E3A5F, body: "Gain of **0.021**"}
+        takeaway: The gain peaks early and fades, so quote it at a stated month, not as one number.
+        source: notes/07-survival-and-event-history.md
+        notes: >-
+          Box-months gained in 24 months is 1.48 (0.91 to 1.95) against a truth of 1.30. This uses the parametric g-formula.
+
+
+      - layout: bullets
+        beat: practice
+        level: core
+        section: Pricing the call and the price rise
+        title: Pricing the call
+        recall: What is the call worth per subscriber, and in total?
+        answer: "At an assumed margin of 0.35 a box-month is worth £10.03. A call gains £14.85 (£9.09 to £19.52) against an assumed £4 cost. On 2,235 uncalled subscribers that is £24,242."
+        bullets:
+          - "Margin **0.35** (assumed); call cost **£4** (assumed)"
+          - "Margin per box-month: **£10.03**"
+          - "Gain per call: **£14.85** (£9.09 to £19.52)"
+          - "**2,235** uncalled subscribers: net **£24,242**"
+        takeaway: The call pays for itself several times over, if the estimate is causal.
+        source: notes/07-survival-and-event-history.md
+        notes: >-
+          The margin and the call cost are assumptions, labelled as such. Only a randomised rollout makes the gain causal.
+
+
+      - layout: compare
+        beat: practice
+        section: Pricing the call and the price rise
+        title: The price rise lost subscribers and made money
+        recall: What did the price rise do to cancels and to margin?
+        answer: "Cancels giving price as the reason went from 21.4% to 44.8%, an implied hazard ratio of 1.42 (Cox 1.49). Margin per subscriber gained £16.95 at 6 months, £23.56 at 12 and £24.14 at 24."
+        emphasis: right
+        left:
+          title: Lost
+          bullets: ["Price-reason cancels **21.4%** to **44.8%**", "Implied hazard ratio **1.42**", "Cox says **1.49**"]
+        right:
+          title: Gained
+          bullets: ["**1,582** on the books at the rise", "**£16.95** a subscriber at 6 months", "**£23.56** at 12, **£24.14** at 24"]
+        takeaway: A price rise can lose subscribers and still add margin, so price the net.
+        source: notes/07-survival-and-event-history.md
+        notes: >-
+          This compares margin with and without the rise, and does not extrapolate to a second rise.
+
+
+      - layout: cards
+        beat: wrap
+        section: Recommendation
+        title: What to do about the call
+        recall: What does the survival chapter recommend?
+        answer: "Extend the call as a randomised rollout, judge it on 12-month survival and box-months, do not target by channel, and do not treat the price rise as a mistake."
+        cards:
+          - {title: "Extend, randomised", accent: 1E3A5F, body: "Hold back a random share of new subscribers"}
+          - {title: "Judge on survival", accent: D4621A, body: "12-month survival and box-months, not a hazard ratio"}
+          - {title: "Do not target", accent: 0F7490, body: "Not by channel, on this evidence"}
+          - {title: "Keep the rise", accent: 1E3A5F, body: "It lost subscribers and made money"}
+        takeaway: Roll out the call at random, and change the plan if the gain falls below about 0.4 box-months.
+        source: notes/07-survival-and-event-history.md
+        notes: >-
+          What would change it: a randomised gain below about 0.4 box-months, where the assumed £4 stops paying at £10.03 a box-month.
+
+
+      - layout: bullets
+        beat: pitfalls
+        section: Pitfalls
+        title: Survival pitfalls
+        recall: Which survival pitfalls end in a wrong number?
+        answer: "Averaging over the leavers, assuming censoring is harmless, counting the future as the present, quoting one hazard ratio that moves, reading a p-value as a size, censoring competing events, and reading a hazard ratio as a share saved."
+        bullets:
+          - "Averaging over those who left"
+          - "Counting the future as the present: split time at the change"
+          - "One hazard ratio when it moves: report bands or curves"
+          - "Censoring competing events without saying so"
+          - "A ratio of **0.53** for 3 months is about **6** points at a year"
+          - "An adjusted estimate is not an experiment"
+        takeaway: Convert a hazard ratio to survival before you price it, and say what was censored.
+        source: notes/07-survival-and-event-history.md
+        notes: >-
+          The remaining pitfalls are assuming censoring is harmless and reading a check_assumptions p-value as a size.
+
+  - title: Journeys and states
+    summary: States · Transition matrix · Markov CLV · Optimal matching · Journey types
+    notes: Fernhill's pooled chain values a new customer at £431 against a true £513. We find out why.
+    slides:
+
+      - layout: statement
+        beat: problem
+        section: The question and the data
+        title: Why did the chain value a customer at £431?
+        recall: What goes wrong with the pooled Markov chain?
+        answer: "It values a new customer at £431 against a true £513, because it pools customers of unlike kinds."
+        kicker: The problem
+        statement: "The pooled chain says £431 for a new customer. The truth is £513."
+        attribution: Fernhill customers, 18 months
+        takeaway: A pooled chain can be wrong in a way that looks fine on the page.
+        source: notes/08-states-and-sequences.md
+        notes: >-
+          The chapter asks what a customer is worth when we follow them through states, and what the pooling hides.
+
+
+      - layout: bullets
+        beat: fundamentals
+        section: The question and the data
+        title: Four states over eighteen months
+        recall: What are the states and the size of the data?
+        answer: "New, active, lapsed and churned. 72,000 rows, 4,000 customers, 18 months. The commonest string is NCCCCCCCCCCCCCCCCC, 978 customers."
+        bullets:
+          - "**72,000** rows, **4,000** customers, **18** months"
+          - "States: new, active, lapsed, churned"
+          - "Counts: **4,000**, **17,436**, **11,145**, **39,419**"
+          - "Commonest string: **N** then 17 months of **C**, 978 customers"
+        takeaway: Each customer becomes a string of states, one letter a month.
+        source: notes/08-states-and-sequences.md
+        notes: >-
+          Most customers are churned most of the time, as the state counts show.
+
+
+      - layout: compare
+        beat: pitfalls
+        section: States from an order log
+        title: An order log has no state called churned
+        recall: What happens when churn is defined as four silent months?
+        answer: "Of 12,201 customers ever called churned, 2,684 (22.0%) ordered again. Transition new to lapsed is 0.849 there, against 0.312 in the journeys table."
+        emphasis: right
+        left:
+          title: A rule you chose
+          bullets: ["Four silent months means churned", "12,201 customers ever called churned"]
+        right:
+          title: What happens
+          bullets: ["**2,684** (22.0%) ordered again", "New to lapsed is **0.849**, against **0.312**"]
+        takeaway: Churn in an order log is your rule, so test how the result moves when you change it.
+        source: notes/08-states-and-sequences.md
+        notes: >-
+          The order log has 12,633 customers. A real churned row should have no moves out, and here it does.
+
+
+      - layout: table
+        beat: fundamentals
+        section: The transition matrix
+        title: The pooled transition matrix
+        recall: How do customers move between states in one month?
+        answer: "Active stays active 0.707, goes lapsed 0.257 and churned 0.036. Lapsed returns to active 0.351. Churned is absorbing."
+        header: [From, new, active, lapsed, churned]
+        widths: [2.0, 1.6, 1.6, 1.6, 1.8]
+        rows:
+          - [new, "0.0", "0.444", "0.312", "0.244"]
+          - [active, "0.0", "0.707", "0.257", "0.036"]
+          - [lapsed, "0.0", "0.351", "0.516", "0.132"]
+          - [churned, "0", "0", "0", "1"]
+        highlight: [1]
+        takeaway: "Read a transition matrix by rows: each row is where a customer in that state goes next."
+        source: notes/08-states-and-sequences.md
+        notes: >-
+          Every row sums to one. No one returns to new, and churned is absorbing.
+
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: Absorbing states and time to churn
+        title: Months to churn from the fundamental matrix
+        recall: How is time to churn computed from the transition matrix?
+        answer: "Take Q, the moves among non-absorbing states. N is the inverse of I minus Q, and the row sums are the expected months to churn."
+        lead: "The drunkard's walk, on Fernhill's states:"
+        lang: text
+        code: |-
+          Q = moves among new, active, lapsed
+          N = (I - Q)^-1
+          t = N times a column of ones
+
+          t = (3, 4, 3)    drunkard's walk check
+
+          pooled chain, months to churn
+          new 11.31  active 14.42  lapsed 12.54
+          truth for a new customer: 13.91
+        takeaway: The fundamental matrix gives expected months to churn, and the pooled chain misses the truth for a new customer.
+        source: notes/08-states-and-sequences.md
+        notes: >-
+          The small drunkard's walk example, with t of 3, 4 and 3, checks the code before it is used on the chain.
+
+
+      - layout: code
+        beat: practice
+        section: Markov CLV, and what the pooled chain gets wrong
+        title: Markov customer lifetime value
+        recall: What is the Markov CLV formula, and what does the pooled chain give?
+        answer: "V is the inverse of I minus P over one plus d, times R. The pooled values are new 430.73, active 580.02 and lapsed 412.61, against a true 513.29 for a new customer."
+        lead: "Discount the chain and add up revenue:"
+        lang: text
+        code: |-
+          V = (I - P / (1 + d))^-1 R
+
+          P = transition matrix
+          d = monthly discount rate
+          R = revenue by state
+
+          pooled value (£)
+          new 430.73  active 580.02
+          lapsed 412.61
+          true new customer: 513.29
+        takeaway: One matrix inverse values every state, but the pooled one is low by about a fifth.
+        source: notes/08-states-and-sequences.md
+        notes: >-
+          Across 12 seeds the truth averages 515.0 and the pooled chain 415.8, about 19% low.
+
+
+      - layout: table
+        beat: pitfalls
+        section: Markov CLV, and what the pooled chain gets wrong
+        title: Four customer types, one pooled chain
+        recall: How do the four types differ in share and value?
+        answer: "Steady 23.9% worth 1,688.9 (true 1,485.9), drifter 27.4% worth 233.1, one-and-done 31.6% worth 54.2, comeback 17.0% worth 443.1."
+        header: [Type, Share, Estimated, True]
+        widths: [2.6, 1.6, 2.0, 1.8]
+        rows:
+          - [steady, "0.239", "1688.9", "1485.9"]
+          - [drifter, "0.274", "233.1", "230.3"]
+          - [one_and_done, "0.316", "54.2", "53.35"]
+          - [comeback, "0.170", "443.1", "458.2"]
+        highlight: [0]
+        takeaway: A customer worth £1,486 and one worth £53 sit in the same pooled row.
+        source: notes/08-states-and-sequences.md
+        notes: >-
+          The mixture of type chains gives 560.28, with a 95% interval of 521 to 595 against 411 to 451 for the pooled chain.
+
+
+      - layout: compare
+        beat: practice
+        section: Which journeys lead to a second order
+        title: Who comes back for a second order
+        recall: How does the second-order rate vary by channel and by type?
+        answer: "Overall 0.620; the pooled chain says 0.670. By channel: paid social 0.404, organic 0.673, email 0.808, referral 0.660. By type: steady 0.975, drifter 0.765, one_and_done 0.087, comeback 0.877."
+        emphasis: right
+        left:
+          title: By channel
+          bullets: ["paid_social **0.404**, organic **0.673**", "email **0.808**, referral **0.660**"]
+        right:
+          title: By type
+          bullets: ["steady **0.975**, comeback **0.877**", "drifter **0.765**, one_and_done **0.087**"]
+        takeaway: The first move and the channel say most of what is known about a second order.
+        source: notes/08-states-and-sequences.md
+        notes: >-
+          Overall 0.620; the pooled chain says 0.670. The lapse return rate is 0.369 after one silent month and 0.266 at five or more.
+
+      - layout: table
+        beat: pitfalls
+        section: "Checking the chain: the Markov property and a holdout"
+        title: The Markov property fails in the pool
+        recall: How does the previous state change the chance of staying active?
+        answer: "Pooled, the chance of staying active is 0.772, 0.521 and 0.679 by previous state. Within the steady type it is 0.857, 0.859 and 0.880."
+        header: [Previous state, Stay active, Within steady]
+        widths: [3.0, 2.4, 2.4]
+        rows:
+          - [active, "0.772", "0.857"]
+          - [lapsed, "0.521", "0.859"]
+          - [new, "0.679", "0.880"]
+        highlight: [1]
+        takeaway: The memory in a pooled chain is a mixture at work, and inside one type it disappears.
+        source: notes/08-states-and-sequences.md
+        notes: >-
+          This is the Markov-property check. Inside a type the history stops mattering, which is what the property says.
+
+
+      - layout: image
+        beat: pitfalls
+        section: "Checking the chain: the Markov property and a holdout"
+        title: The pooled chain fails the holdout
+        kicker: Fit on months 0 to 8
+        recall: How does the pooled chain do on months 9 to 17?
+        answer: "Alive at 17 is 0.247 observed, 0.178 pooled and 0.257 with type chains. Revenue is 126.17 observed, 94.76 pooled, 128.34 type chains."
+        image: ../../assets/sources/images/applied-sequence-holdout.png
+        caption: "Share not yet churned by month: observed, pooled chain and type chains."
+        bullets:
+          - "Alive at 17: **0.247** observed, **0.178** pooled, **0.257** types"
+          - "Revenue, months 9 to 17: **126.17**, **94.76**, **128.34**"
+        takeaway: Test any chain on a later period before it forecasts, because the pooled one fails visibly.
+        source: notes/08-states-and-sequences.md
+        notes: >-
+          The pooled chain runs above observed at first, then falls below it. The type chains track the data.
+
+
+      - layout: steps
+        beat: practice
+        level: deep
+        section: "Journeys as strings: optimal matching"
+        title: Optimal matching in three ideas
+        recall: How does optimal matching compare two journeys?
+        answer: "It counts the cheapest mix of substitutions and insertions or deletions that turns one string into another. With substitution 2 and indel 1 the hand distance is 34.0. TRATE costs run 1.39 to 1.96."
+        steps:
+          - {title: "Edit", n: 1, accent: 1E3A5F, text: "Substitute a state or insert or delete one, at a cost"}
+          - {title: "Price", n: 2, accent: D4621A, text: "Substitution 2, indel 1 gives a hand distance of 34.0"}
+          - {title: "Learn costs", n: 3, accent: 0F7490, text: "TRATE: 2 minus p(i|j) minus p(j|i), from 1.39 to 1.96"}
+        takeaway: The cost table is a modelling choice, so show how the clusters change when you change it.
+        source: notes/08-states-and-sequences.md
+        notes: >-
+          The hand version and the sequenzo library agree on 300 random pairs. There are 1,466 distinct sequences and the mean distance is 15.95.
+
+
+      - layout: table
+        beat: practice
+        section: Clustering into journey types
+        title: Four clusters, four kinds of customer
+        recall: What do the four journey clusters look like?
+        answer: "A n 1627, second order 0.143, revenue £58.9; B 940, 0.866, £206; C 706, 0.999, £483; D 727, 1.000, £1,052."
+        header: [Cluster, n, Second order, Revenue]
+        widths: [1.8, 1.6, 2.4, 2.0]
+        rows:
+          - [A, "1,627", "0.143", "£58.9"]
+          - [B, "940", "0.866", "£206"]
+          - [C, "706", "0.999", "£483"]
+          - [D, "727", "1.000", "£1,052"]
+        highlight: [3]
+        takeaway: Use the shapes to explain what is happening to the growth team, not to score.
+        source: notes/08-states-and-sequences.md
+        notes: >-
+          Ward clustering on the distance matrix. The silhouette peaks at k of 2 (0.680) and the adjusted Rand reaches about 0.40.
+
+
+      - layout: image
+        beat: practice
+        section: Clustering into journey types
+        title: Four journey shapes
+        kicker: Index plot of the clusters
+        recall: What does each cluster look like over time?
+        answer: "A churns from month one, B by about month ten, C alternates active and lapsed, and D is mostly active throughout."
+        image: ../../assets/sources/images/applied-sequence-typical.png
+        caption: "Index plot of four clusters, one row per customer."
+        bullets:
+          - "A: **1,627** mostly gone from month one"
+          - "B: **940** gone by about month ten"
+          - "C: **706** alternating; D: **727** mostly active"
+        takeaway: A picture of the four shapes says what a silhouette score cannot.
+        source: notes/08-states-and-sequences.md
+        notes: >-
+          The medoid of A is NCCCCCCCCCCCCCCCCC and of D is NAAAAAAAAAAAAAAAAA.
+
+
+      - layout: compare
+        beat: pitfalls
+        section: Description, not prediction
+        title: Clustering on the outcome, then predicting it
+        recall: Why must clusters not be used to value customers?
+        answer: "Cluster chains give £901.14 against a truth of 513.29, and cluster D is £3,936 against a true steady value of £1,486. Clusters formed on a whole history cannot value that history."
+        emphasis: right
+        left:
+          title: Describe
+          bullets: ["Explain the four shapes", "Tell the growth team what happens"]
+        right:
+          title: Predict
+          bullets: ["Cluster chains give **£901.14**", "Truth is **£513.29**; D is **£3,936**"]
+        takeaway: Clusters formed on a whole history describe it well and value it badly.
+        source: notes/08-states-and-sequences.md
+        notes: >-
+          The note's interview table says clusters inflated the value by about 75%. Here the ratio is about 1.76.
+
+
+      - layout: cards
+        beat: wrap
+        section: Recommendation
+        title: What to do about journeys
+        recall: What does the states-and-sequences chapter recommend?
+        answer: "Do not budget on the pooled chain, do not value lapsed from the pooled row (£413 against £5 to £1,259), put effort into the first month, check on a holdout, and use the shapes to explain."
+        cards:
+          - {title: "Not the pool", accent: 1E3A5F, body: "It is about 19% low across seeds"}
+          - {title: "Lapsed is a mix", accent: D4621A, body: "£413 averages groups worth £5 and £1,259"}
+          - {title: "First month", accent: 0F7490, body: "A quarter have gone by month 1"}
+          - {title: "Holdout", accent: 1E3A5F, body: "Check any chain before it forecasts"}
+        takeaway: Quote the mixture with its range, and check it on a holdout before it forecasts.
+        source: notes/08-states-and-sequences.md
+        notes: >-
+          What would change it: a mixture that does no better than the pooled chain on a holdout would mean heterogeneity is not the problem.
+
+
+      - layout: bullets
+        beat: pitfalls
+        section: Pitfalls
+        title: Journey pitfalls
+        recall: Which journey pitfalls end in a wrong value?
+        answer: "Treating an inferred state as observed, pooling unlike customers, reading stationarity failure as real change, clustering on the outcome, trusting a low churn value, taking a silhouette as a count of types, and treating substitution costs as discovered."
+        bullets:
+          - "An inferred state is not an observed one"
+          - "Pooling unlike customers gives too few survivors"
+          - "A later table looks better because the worst have gone"
+          - "A low churn rate of 0.017 against 0.02 moved value **14%**"
+          - "A silhouette preferred **2** clusters; the generator has **4**"
+        takeaway: Report a range, and treat every cost and state rule as a choice you made.
+        source: notes/08-states-and-sequences.md
+        notes: >-
+          Clustering on the outcome and then predicting it gives a surprising value for the best cluster, £3,936 here.
+
+  - title: What the marketing caused
+    summary: Attribution · Experiments · Adstock · A mix model · Moving the budget
+    notes: The dashboard says paid social closes about half the sales. We ask how much it caused.
+    slides:
+
+      - layout: image
+        beat: problem
+        section: The question and the data
+        title: The dashboard credits paid social with half the sales
+        kicker: Credit against cause
+        recall: How far do the attribution shares sit from the true incremental shares?
+        answer: "Last touch gives paid social 0.484 against a true 0.169. Email gets 0.138 against a true 0.286, and referral 0.120 against 0.300."
+        image: ../../assets/sources/images/applied-attribution-vs-truth.png
+        caption: "Each channel's share of conversions under four methods and in truth."
+        bullets:
+          - "Paid social: last touch **0.484**, truth **0.169**"
+          - "Email: last touch **0.138**, truth **0.286**"
+          - "Referral: **0.120**, truth **0.300**"
+        takeaway: Attribution shares must sum to 100%, whatever the channel caused.
+        source: notes/09-marketing-measurement.md
+        notes: >-
+          Fernhill's paid social rose from about £2,680 to about £7,340 a week and email fell from about £1,360 to about £450 at the cut on 1 January 2025.
+
+
+      - layout: cards
+        beat: pitfalls
+        section: Attribution is accounting
+        title: Paid social is last because it finds the keen
+        recall: Why does last touch over-credit paid social?
+        answer: "Paths ending in paid social carry a mean intent of 0.374 against 0.285 for organic. Organic's last-touch share (0.258) is close to its true incremental share (0.245)."
+        cards:
+          - title: Paid social paths
+            accent: pitfalls
+            body: "Mean intent of paths ending in paid social: **0.374**"
+          - title: Organic paths
+            body: "Mean intent of paths ending in organic: **0.285**"
+          - title: Organic credit
+            body: "Last touch **0.258**, true incremental **0.245**: close"
+        takeaway: Paid social is last because it reaches people who were already likely to buy.
+        source: notes/09-marketing-measurement.md
+        notes: >-
+          The ad finds the keen. The table of all four channels is on the previous slide's chart.
+
+
+      - layout: bullets
+        beat: fundamentals
+        level: core
+        section: Attribution is accounting
+        title: Fair is not causal
+        recall: Why does Shapley credit not fix attribution?
+        answer: "Shapley gives paid social 0.326, organic 0.243, email 0.234 and referral 0.197 over 15 channel sets. Across 12 seeds paid social averages 47.5% by last touch and 29.0% by Shapley against a true 16.8%."
+        bullets:
+          - "Shapley: paid social **0.326**, organic **0.243**"
+          - "Email **0.234**, referral **0.197**"
+          - "Paid social over 12 seeds: **47.5%** last touch, **29.0%** Shapley"
+          - "True share: **16.8%**"
+        takeaway: Shapley is fair among channels, but fairness is not measured against a world with no ad.
+        source: notes/09-marketing-measurement.md
+        notes: >-
+          There are 15 distinct channel sets. Of 469 true conversions from any touch, 463.9 would have converted untouched. The noisy-or fit gives paid social 18.0% over 12 seeds, from 6.3% to 25.5%.
+
+
+      - layout: statement
+        beat: fundamentals
+        section: What an experiment measures
+        title: An experiment measures a chord
+        recall: What did the geo test measure, and where does it fall short?
+        answer: "Incremental ROAS of 1.491 (bootstrap 1.43 to 1.57, true 1.524). It measures the first £2,510 a week, not today's £7,300."
+        kicker: The geo test
+        statement: "The geo test says 1.49. It measured the first £2,500 a week, not today's £7,300."
+        attribution: Fernhill, 20 areas in 10 pairs
+        takeaway: An experiment gives an average over the spend it tested, which is not the margin at today's spend.
+        source: notes/09-marketing-measurement.md
+        notes: >-
+          Revenue lost was 15,263 and spend saved 10,239. The 12-seed mean error is 0.002 (SD 0.044).
+
+
+      - layout: table
+        beat: fundamentals
+        section: Adstock and saturation
+        title: Adstock spreads one pound over weeks
+        recall: How does the adstock rate change the carry-over of a £1,000 pulse?
+        answer: "At 0.30 the pulse gives 700, 210, 63, 19, 6, 2, 1. At 0.60 it gives 407, 244, 146, 88, 53, 32, 19."
+        header: [Week, "Alpha 0.30", "Alpha 0.60"]
+        widths: [2.0, 2.4, 2.4]
+        rows:
+          - ["1", "700", "407"]
+          - ["2", "210", "244"]
+          - ["3", "63", "146"]
+          - ["4", "19", "88"]
+          - ["5", "6", "53"]
+        highlight: [1]
+        takeaway: A higher alpha keeps the effect alive for weeks, and the model has to estimate it.
+        source: notes/09-marketing-measurement.md
+        notes: >-
+          The pulse continues to 2 and 1 at alpha 0.30 and to 32 and 19 at alpha 0.60 in weeks 6 and 7.
+
+
+      - layout: table
+        beat: pitfalls
+        section: Adstock and saturation
+        title: Average ROAS hides a falling marginal ROAS
+        recall: How does marginal ROAS for paid social fall with spend?
+        answer: "At £7,300 average ROAS is 1.31 and marginal is 0.71. Marginal is 1.70 at £1,000, 1.74 at £2,500, 1.12 at £5,000 and 0.27 at £13,000."
+        header: [Weekly spend, Marginal ROAS]
+        widths: [3.0, 3.0]
+        rows:
+          - ["£1,000", "1.70"]
+          - ["£2,500", "1.74"]
+          - ["£5,000", "1.12"]
+          - ["£7,300", "0.71"]
+          - ["£13,000", "0.27"]
+        highlight: [3]
+        takeaway: Never use an average to make a marginal decision.
+        source: notes/09-marketing-measurement.md
+        notes: >-
+          At £7,300 the average ROAS is 1.31. The correlation of paid social and email spend is -0.72, which is what confuses a regression.
+
+
+      - layout: bullets
+        beat: pitfalls
+        level: core
+        section: A small Bayesian mix model
+        title: Why a plain regression fails
+        recall: Why does OLS get the channels wrong, and what is the data budget?
+        answer: "OLS gives email 0.46 and organic 2.69 against a true 2.89 and 1.59. With 157 weeks and about 31 parameters there are about 5 per parameter, against a guideline of 7 to 10."
+        bullets:
+          - "OLS: email **0.46**, organic **2.69**; truth **2.89** and **1.59**"
+          - "**157** weeks, about **31** parameters"
+          - "About **5** observations a parameter; guideline **7 to 10**"
+          - "Spends move together: correlation **-0.72**"
+        takeaway: Moving-together spends and few weeks mean the data alone cannot separate the channels.
+        source: notes/09-marketing-measurement.md
+        notes: >-
+          The guideline is from Chan and Perry. A Bayesian model lets priors and the geo test fill the gap.
+
+
+      - layout: bullets
+        beat: practice
+        section: A small Bayesian mix model
+        title: Priors change the answer more than the data
+        recall: How do the priors change the ROAS estimate for paid social?
+        answer: "Default priors give paid social 2.71 (truth 1.29) and email 20.36 (truth 4.0). Jin priors give 1.75. Adding the geo test gives 1.37 [1.23, 1.51]."
+        bullets:
+          - "Default priors: **2.71**"
+          - "Jin priors: **1.75**"
+          - "Plus the geo test: **1.37** [1.23, 1.51]"
+          - "Truth: **1.29**"
+        takeaway: An experiment is the best prior a mix model can have, because it is anchored in a cause.
+        source: notes/09-marketing-measurement.md
+        notes: >-
+          Email's default-prior ROAS of 20.36 against a true 4.0 shows how far a default can go. Jin and colleagues find bias up to about 40% at two years of data and up to about 10% at sixty.
+
+      - layout: image
+        beat: practice
+        section: A small Bayesian mix model
+        title: The geo test narrows the response curve
+        kicker: Paid social response
+        recall: What does the geo test do to the paid-social response curve?
+        answer: "Without it the posterior band is wide, with it narrow. Marginal ROAS becomes 0.86 [0.62, 1.08] against a true 0.71. Today's spend sits far beyond the test's £2,500."
+        image: ../../assets/sources/images/applied-mmm-response-paid-social.png
+        caption: "Paid social response with and without the geo test, true curve, and the geo test chord."
+        bullets:
+          - "Marginal **0.86** [0.62, 1.08] against truth **0.71**"
+          - "Current spend sits far past the **£2,500** test"
+        takeaway: The test pins down the first £2,500, and the model has to extrapolate beyond it.
+        source: notes/09-marketing-measurement.md
+        notes: >-
+          Email's marginal is 6.51 against a true 3.38. The model needed nutpie, 3,000 tuning steps and target accept 0.99.
+
+
+      - layout: image
+        beat: practice
+        section: A small Bayesian mix model
+        title: Recovering ROAS by channel
+        kicker: Fitted against true ROAS
+        recall: How well does the model recover each channel's ROAS?
+        answer: "With the geo test the fitted average and marginal ROAS sit close to truth for paid social. Email stays the least well known."
+        image: ../../assets/sources/images/applied-mmm-roas-recovery.png
+        caption: "Fitted against true average and marginal ROAS by channel, with and without the geo test."
+        bullets:
+          - "Paid social: fitted **1.37** against truth **1.29**"
+          - "Email: marginal **6.51** against **3.38**"
+        takeaway: Test email next, the channel whose curve is least known.
+        source: notes/09-marketing-measurement.md
+        notes: >-
+          This chart is the summary of the model checks, by channel and with and without the experiment.
+
+
+      - layout: table
+        beat: practice
+        section: Moving the budget
+        title: How much to move from paid social to email
+        recall: How does the gain from moving money change with the amount moved?
+        answer: "£250 gains 550 true and 908 posterior, £500 905 and 1,186, £1,000 1,232 and 1,124, £2,000 1,049 and 205 with P of 0.656, and £4,000 loses 925 true."
+        header: [Moved, True gain, Posterior median, P(gain > 0)]
+        widths: [1.8, 2.0, 2.6, 2.4]
+        rows:
+          - ["250", "550", "908", "1.000"]
+          - ["500", "905", "1,186", "0.999"]
+          - ["1000", "1,232", "1,124", "0.983"]
+          - ["2000", "1,049", "205", "0.656"]
+          - ["4000", "-925", "-2,700", "0.001"]
+        highlight: [1, 2]
+        takeaway: Small moves are safe, and past about £1,000 a week the evidence runs out.
+        source: notes/09-marketing-measurement.md
+        notes: >-
+          The truth's best split moves about £1,100 out of paid social and £1,300 into email, for about £1,280 more revenue a week. Weekly revenue is £13,965 now and £15,248 at the best split.
+
+
+      - layout: cards
+        beat: wrap
+        section: Recommendation
+        title: What to do with the budget
+        recall: What does the marketing chapter recommend?
+        answer: "Move about £500 to £1,000 a week from paid social to email, stop using last touch for budgets, run a geo test at today's spend, and defer the total-spend decision."
+        cards:
+          - {title: "Move £500 to £1,000", accent: 1E3A5F, body: "A week, paid social to email"}
+          - {title: "Drop last touch", accent: D4621A, body: "Keep it for reporting, as credit"}
+          - {title: "Test at today's spend", accent: 0F7490, body: "Partial cuts, from about £7,300 to £5,000"}
+          - {title: "Defer total spend", accent: 1E3A5F, body: "Until that test reports"}
+        takeaway: Move a little, measure again, and do not decide total spend until the test reports.
+        source: notes/09-marketing-measurement.md
+        notes: >-
+          A test at current spend showing paid social's marginal above about 1.6 would end the case for moving money.
+
+
+      - layout: bullets
+        beat: pitfalls
+        section: Pitfalls
+        title: Marketing pitfalls
+        recall: Which marketing-measurement pitfalls end in a wrong decision?
+        answer: "Reading attribution as cause, reading Shapley as causal, using an average for a marginal decision, believing R squared, trusting library defaults, accepting the first sampler run, and using posterior means in a nonlinear formula."
+        bullets:
+          - "A channel can get **48%** of credit and cause **17%**"
+          - "Fairness is among channels, not against no ad"
+          - "R² of 0.98 to 0.99 across five models that disagree by up to **50%**"
+          - "Default priors tripled email's ROAS"
+          - "Read R-hat and divergences before trusting a sampler run"
+        takeaway: Use the posterior samples in a nonlinear formula, and read the sampler's diagnostics first.
+        source: notes/09-marketing-measurement.md
+        notes: >-
+          The R-squared point is from Chan and Perry. Posterior means in a nonlinear formula are a further pitfall.
+
+  - title: What a customer is worth
+    summary: BG/NBD · Gamma-Gamma · Lifetime value against cost
+    notes: Fernhill asks what a new customer is worth, and whether a channel's cost sits below it.
+    slides:
+
+      - layout: statement
+        beat: problem
+        section: "What a customer is worth: BG/NBD"
+        title: What is a new customer worth?
+        recall: What question does the lifetime-value chapter ask?
+        answer: "What a new customer is worth, and whether a channel's cost sits below it."
+        kicker: The problem
+        statement: "What is a new customer worth, and does a channel cost less than that?"
+        attribution: Fernhill customers
+        takeaway: Lifetime value is a forecast, and it should come with a range.
+        source: notes/09b-customer-lifetime-value.md
+        notes: >-
+          BG/NBD needs three numbers per customer: frequency, recency and the time observed, T.
+
+
+      - layout: cards
+        beat: fundamentals
+        section: "What a customer is worth: BG/NBD"
+        title: BG/NBD recovers the generator's four numbers
+        recall: How close are the BG/NBD parameters to truth?
+        answer: "r 0.487, alpha 7.467, a 0.659 and b 2.448, against 0.5, 8.0, 0.7 and 2.5."
+        cards:
+          - {title: "r", accent: 1E3A5F, body: "Fitted **0.487**, truth 0.5"}
+          - {title: "alpha", accent: D4621A, body: "Fitted **7.467**, truth 8.0"}
+          - {title: "a", accent: 0F7490, body: "Fitted **0.659**, truth 0.7"}
+          - {title: "b", accent: 1E3A5F, body: "Fitted **2.448**, truth 2.5"}
+        takeaway: Frequency, recency and age are enough to recover how often customers buy and when they leave.
+        source: notes/09b-customer-lifetime-value.md
+        notes: >-
+          The purchase rate is gamma(r, alpha) and the dropout probability beta(a, b). There are 11,929 orders from 3,000 customers, mean order value 50.83. 28.6% have no repeat order.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: "What a customer is worth: BG/NBD"
+        title: P(alive) tells who is still a customer
+        recall: How well does P(alive) match who is truly alive?
+        answer: "From 0.100 in the lowest band to 0.999 in the highest. Mean P(alive) 0.633 against a realised 0.638, AUC 0.920."
+        header: [P(alive) band, Share truly alive]
+        widths: [3.0, 3.0]
+        rows:
+          - ["0.00 to 0.25", "0.100"]
+          - ["0.25 to 0.50", "0.434"]
+          - ["0.50 to 0.75", "0.630"]
+          - ["0.75 to 0.95", "0.842"]
+          - ["0.95 to 1.00", "0.999"]
+        highlight: [4]
+        takeaway: A customer's P(alive) is calibrated, so a band means what it says.
+        source: notes/09b-customer-lifetime-value.md
+        notes: >-
+          Mean P(alive) is 0.633 against a realised 0.638 and the AUC is 0.920.
+
+
+      - layout: image
+        beat: practice
+        section: "What a customer is worth: BG/NBD"
+        title: The forecast sits on the actual orders
+        kicker: Holdout from June 2025
+        recall: How does the BG/NBD forecast do on the holdout?
+        answer: "Actual 1,841 orders, forecast 1,847, an error of +0.3%. Individual correlation 0.717. CDNOW in the paper was about 4% under with 0.626."
+        image: ../../assets/sources/images/applied-bgnbd-holdout.png
+        caption: "Cumulative actual orders and forecast, June to December 2025."
+        bullets:
+          - "**1,841** actual, **1,847** forecast: **+0.3%**"
+          - "Individual correlation **0.717**"
+          - "CDNOW: about **4%** under, **0.626**"
+        takeaway: The forecast agrees with the holdout, though it is scored on its own generator.
+        source: notes/09b-customer-lifetime-value.md
+        notes: >-
+          Fit to June 2025, forecast 26.3 weeks. BG/NBD is scored here on its own generator, so the holdout fit tests the code and not the idea.
+
+
+      - layout: bullets
+        beat: practice
+        section: "What an order is worth: Gamma-Gamma"
+        title: What an order is worth
+        recall: How does Gamma-Gamma estimate order value, and what does shrinkage do?
+        answer: "Frequency and value correlate at 0.02 on 2,141 customers. The library gives p 4.95 and v 30.1 against a true 6 and 25, and maximum likelihood 6.45 and 22.77. The population mean is £51.01 against £50."
+        bullets:
+          - "Frequency and value correlate **0.02** on **2,141** customers"
+          - "Library p **4.95**, v **30.1**; truth **6** and **25**"
+          - "Maximum likelihood: p **6.45**, v **22.77**"
+          - "Population mean **£51.01** against **£50**"
+          - "Shrinkage cuts a one-repeat customer's spread from **40.5** to **25.5**"
+        takeaway: Shrinkage pulls a thin history towards the average, and the correlation check says it is allowed.
+        source: notes/09b-customer-lifetime-value.md
+        notes: >-
+          The default priors are Weibull(2, 1) on p and q and Weibull(2, 10) on v. Wide HalfNormal priors give p 6.56, q 3.93, v 23.1.
+
+
+      - layout: bullets
+        beat: practice
+        section: Lifetime value against acquisition cost
+        title: Five years at 1% a month
+        recall: What is a new customer's lifetime value over a stated horizon?
+        answer: "True 5.29 orders and £264 revenue over 60 months. The margin value median is £173 [163, 184] against a true £162. A fair statement is about £155 to £185."
+        bullets:
+          - "True, 60 months: **5.29** orders, **£264** revenue"
+          - "True, 100 years: **6.96** orders, **£348**"
+          - "Margin value median: **£173** [163, 184]; truth **£162**"
+          - "A fair statement: **£155 to £185**"
+        takeaway: Quote lifetime value over a stated horizon and discount rate, as a range.
+        source: notes/09b-customer-lifetime-value.md
+        notes: >-
+          Because a is below 1, expected orders are unbounded, so a horizon or a discount is required. Undiscounted repeat orders by year: 1.96, 3.97, 5.31, 7.63, 11.74 and 15.82 at years 1, 3, 5, 10, 25 and 50.
+
+      - layout: image
+        beat: practice
+        section: Lifetime value against acquisition cost
+        title: Cost per customer against value
+        kicker: LTV to CAC
+        recall: How does each channel's CAC compare with the value of a new customer?
+        answer: "CAC after the cut: paid social £68.4, organic £14.3, email £48.4, referral £32.3. Median LTV to CAC: 2.53, 12.09, 3.58, 5.37."
+        image: ../../assets/sources/images/applied-ltv-cac-posterior.png
+        caption: "Posterior margin value of a new customer, with each channel's CAC and the true value."
+        bullets:
+          - "CAC: paid social **£68.4**, organic **£14.3**, email **£48.4**, referral **£32.3**"
+          - "LTV to CAC: **2.53**, **12.09**, **3.58**, **5.37**"
+        takeaway: Compare CAC with the whole distribution of value, not a single point.
+        source: notes/09b-customer-lifetime-value.md
+        notes: >-
+          The LTV interval leaves out model error, so a narrow posterior is not narrow knowledge.
+
+
+      - layout: compare
+        beat: pitfalls
+        section: Lifetime value against acquisition cost
+        title: LTV to CAC does not judge a channel
+        recall: Why should LTV to CAC not defend a channel?
+        answer: "What-if on caused customers gives paid social 0.46, organic 5.99, email 3.87 and referral 6.99, and paid social's incremental CAC is £375.71. Customers rise with spend (CAC £65.0 to £68.4) while revenue saturates."
+        emphasis: right
+        left:
+          title: Average CAC
+          bullets: ["Paid social CAC **£68.4**", "Customers rise almost with spend"]
+        right:
+          title: Caused customers
+          bullets: ["Paid social **0.46**, organic **5.99**", "Incremental CAC **£375.71**"]
+        takeaway: Judge a channel by customers it caused, not by customers it was credited with.
+        source: notes/09b-customer-lifetime-value.md
+        notes: >-
+          The note says the overlays do not reconcile, with customers rising and revenue saturating.
+
+
+      - layout: cards
+        beat: wrap
+        section: Recommendation
+        title: Quote a range, not a verdict
+        recall: What does the lifetime-value chapter recommend?
+        answer: "Quote a new customer as about £155 to £185 of margin over five years at 1% a month, and do not defend a channel with LTV to CAC."
+        cards:
+          - {title: "Quote a range", accent: 1E3A5F, body: "About **£155 to £185** of margin"}
+          - {title: "State the basis", accent: D4621A, body: "Five years, 1% a month"}
+          - {title: "Not a verdict", accent: 0F7490, body: "Do not defend a channel with LTV to CAC"}
+        takeaway: Lifetime value is a stated range over a stated horizon, never a channel's defence.
+        source: notes/09b-customer-lifetime-value.md
+        notes: >-
+          Gupta and colleagues' survey of LTV models was not reached and Fader's Customer Centricity was not read.
+
+
+      - layout: bullets
+        beat: pitfalls
+        section: Pitfalls
+        title: Lifetime value pitfalls
+        recall: What are the three lifetime-value pitfalls?
+        answer: "Trusting library defaults, forgetting that a below 1 has no finite lifetime total, and reading narrow posteriors as narrow knowledge."
+        bullets:
+          - "Library defaults pulled p from the truth; compare with maximum likelihood"
+          - "With a below 1, undiscounted orders keep growing"
+          - "A narrow posterior leaves out model error, and missed the truth"
+        takeaway: Set a horizon and a discount, compare with maximum likelihood, and widen the interval for model error.
+        source: notes/09b-customer-lifetime-value.md
+        notes: >-
+          Horizon and discount choices range the value from £136 to £192 in the exercise.

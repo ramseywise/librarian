@@ -46,4 +46,6 @@ export interface GraphPayload {
   edges: Edge<WikiEdgeData>[];
   domains: string[];
   areas: Area[];
+  /** Directory → its topics in order; empty from an older server. */
+  topics: Record<string, string[]>;
 }

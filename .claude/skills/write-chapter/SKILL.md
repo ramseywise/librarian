@@ -1,6 +1,6 @@
 ---
 name: write-chapter
-description: "Write one new chapter from scratch to the chapter standard: place it in the curriculum, research it from real sources, draft it, run an independent review, test its code and wire it into the course. Never cites what was not read. Usage: /write-chapter <pillar> <NN-slug> [PDF paths or a brief], or /write-chapter \"<topic>\" to place it first. Run from the librarian repo."
+description: "Write one new chapter from scratch to the chapter standard: place it in the curriculum, research it from real sources, draft it, run an independent review, test its code and wire it into the course. Never cites what was not read. Usage: /write-chapter <pillar> <NN-slug> [PDF paths or a brief], or /write-chapter \"<topic>\" to place it first. Triggers on: '/write-chapter', 'write a new chapter', 'draft a chapter on', 'add a chapter about', 'write this chapter from scratch'. Run from the librarian repo."
 ---
 
 You are writing one chapter of the course. Agents read and review; you hold the outline, the argument and every

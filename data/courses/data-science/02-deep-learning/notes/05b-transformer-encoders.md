@@ -1,10 +1,12 @@
 ---
-imported_hash: 6d9a2859498668ad
+imported_hash: b946b69067a3f078
 title: Transformer encoders
 summary: This chapter treats the encoder as a model you choose and train.
 order: 9
 kind: reading
 section: Notes
+tier: practitioner
+depth: core
 source: learn-ai-engineering/data-science/02-deep-learning/notes/05b-transformer-encoders.md
 ---
 
@@ -188,8 +190,6 @@ With no position, a bag of rows gets far on digits, and the upside-down score do
 
 The learned table has a limit: `Encoder(n=8)` has no entry for a ninth token, so it raises an error on longer input. Sinusoids will run on any length, whether or not they generalise there.
 
-ViT (Vision Transformer) is an encoder over image patches. On ImageNet 5-shot linear accuracy, which I read as a linear classifier on frozen features with 5 labelled images per class (the paper doesn't spell out the 5), its base model, ViT-B/16, scored 0.61382 with no position embedding, 0.64206 with learned 1-D and 0.64001 with 2-D-aware, so most of the benefit came from having any at all ([arXiv:2010.11929](https://arxiv.org/abs/2010.11929), Table 8 (Dosovitskiy et al., ICLR 2021)). FT-Transformer, an encoder for tables, has no position term in its tokenizer equations, which I read as fitting columns having no order: each feature gets its own weights and bias instead ([arXiv:2106.11959](https://arxiv.org/abs/2106.11959) (Gorishniy et al., NeurIPS 2021)).
-
 ## Padding, masks and three silent shape bugs
 
 Real sequences have different lengths, so batches are padded. Attention would then happily attend to the padding, unless told not to. `src_key_padding_mask` tells it: **`True` means ignore**. The test you can assert: padding a sequence must not change its output.
@@ -305,9 +305,9 @@ for name, size, make in [("64 tokens of 1 pixel", 1, lambda: Encoder(inp=1, n=64
 
 Sixteen times the tokens buys nothing here: 64 single pixels score below 4 patches of 4×4, at five times the time. A patch already carries local shape. This is 3 seeds and 40 epochs on small digits, so more training might narrow the gap, but published work on larger problems also uses patches, for its own reasons:
 
-- **Images.** ViT's paper title states the choice, *An Image is Worth 16x16 Words*: ViT-B/16 makes one token per patch of 16×16 pixels. The reason given is cost ("With quadratic cost in the number of pixels, this does not scale"), and more tokens did help there: from ImageNet pre-training, B/16 scored 77.91 against 73.38 for the coarser B/32 (Table 5, [arXiv:2010.11929](https://arxiv.org/abs/2010.11929) (Dosovitskiy et al., ICLR 2021)). [Vision in practice](04b-vision-in-practice.md#what-a-transformer-would-need) builds ViT from its four equations and trains it.
+- **Images.** The Vision Transformer (ViT) paper's title states the choice, *An Image is Worth 16x16 Words*: ViT-B/16 makes one token per patch of 16×16 pixels. The reason given is cost ("With quadratic cost in the number of pixels, this does not scale"), and more tokens did help there: from ImageNet pre-training, B/16 scored 77.91 against 73.38 for the coarser B/32 (Table 5, [arXiv:2010.11929](https://arxiv.org/abs/2010.11929) (Dosovitskiy et al., ICLR 2021)). [Vision in practice](04b-vision-in-practice.md#what-a-transformer-would-need) builds ViT from its four equations and trains it.
 - **Time series.** PatchTST, an encoder for forecasting, gives this reason for patches: "a single time step does not have semantic meaning like a word in a sentence". On Traffic at horizon 96 and look-back 336, MSE fell from 0.397 to 0.367 with patching (Table 7, PatchTST/42, channel-independent both ways, with epochs cut to 20 in the appendix), and running time at look-back 336 fell from 10,040 s to 464 s (Table 1, patch length 16, stride 8, [arXiv:2211.14730](https://arxiv.org/abs/2211.14730) (Nie et al., ICLR 2023)).
-- **Tables.** FT-Transformer makes one token per feature, plus a [CLS] token. Its training time against a ResNet ran from 0.9x to 13.8x, the worst being Yahoo, which the authors put down to its 700 features; they blame "the quadratic complexity of the vanilla MHSA" in general. It doesn't rise steadily with width: Adult, 14 features, was 0.9x, California Housing, 8 features, 2.6x, and Epsilon, 2,000 features, 1.3x with an approximation of attention (§E.3), which I read as the reason ([arXiv:2106.11959](https://arxiv.org/abs/2106.11959), Table 10 (Gorishniy et al., NeurIPS 2021)).
+- **Tables.** FT-Transformer, an encoder for tables, makes one token per feature, plus a [CLS] token. Its training time against a ResNet ran from 0.9x to 13.8x, the worst being Yahoo, which the authors put down to its 700 features; they blame "the quadratic complexity of the vanilla MHSA" in general. It doesn't rise steadily with width: Adult, 14 features, was 0.9x, California Housing, 8 features, 2.6x, and Epsilon, 2,000 features, 1.3x with an approximation of attention (§E.3), which I read as the reason ([arXiv:2106.11959](https://arxiv.org/abs/2106.11959), Table 10 (Gorishniy et al., NeurIPS 2021)).
 - **Event logs.** PRAGMA, an encoder Revolut pre-trained on banking records, makes tokens from the fields of an event, not one token per event. Each field is a key token (about 60 keys) plus value tokens from a vocabulary of about 28k: numbers go to percentile buckets "whose boundaries are learned from training data", a category is one token, and free text is split by BPE. Time isn't a token. Each event's distance in seconds to the most recent event in the history passes through $8\ln(1 + t/8)$, and hour of day, day of week and day of month enter as periodic features. An event is cut to 24 tokens, which touched 0.01% of events, and a user to their most recent 6,500 events (§2.2, §2.4, [arXiv:2604.08649](https://arxiv.org/abs/2604.08649) (Ostroukhov et al., 2026-08, preprint)). One encoder reads each event alone and a second reads one vector per event, so no attention layer sees every field token of a history at once (my reading of §2.3). The paper compares no other way of cutting an event, so it shows this one trains, not that it is the best.
 
 ![PRAGMA's tokenisation of one card payment: the timestamp becomes log-seconds to the last event plus hour, weekday and month-day features; each key (Type, Direction, Amount, Currency, Fee, Description, MCC) is one token; values become a category token, a percentile bucket such as perc_24 for 14.99, or subword pieces met, al, plan](../assets/sources/images/ostroukhov-pragma-fig3.png)
@@ -385,10 +385,6 @@ train 1257  encoder  params  18026  test 0.973 +- 0.002  down 0.683  right 0.448
 ```
 
 The CNN wins at every size, as expected: digits are small local shapes, and the CNN assumes exactly that. At 100 labels the encoder at 0.862 loses even to the linear model at 0.913, and it overtakes linear only by 300. With all 1,257 labels it reaches 0.973, level with the LSTM at 0.975 and behind the CNN's 0.988, at three times the CNN's parameters and about the same time per run. Moving digits sideways takes the encoder to 0.448, since each row's pixels feed one linear layer. That beats the linear model and loses to the CNN's 0.673. Moved down, where each row stays whole, the encoder beats the CNN at all three sizes, 0.680 against 0.615 at 100 labels, so its token choice is doing some of the work.
-
-The published evidence also says data size matters, at a much larger scale, but ViT's paper reports a crossover. Its authors say it has "much less image-specific inductive bias than CNNs": locality, 2-D neighbourhoods and translation equivariance are built into each CNN layer, and "all spatial relations between the patches have to be learned from scratch". Pre-trained on ImageNet (1.3M images), ViT-B/16 reached 77.91, on ImageNet-21k (14M) 83.97 and on JFT-300M 84.15, top-1 on ImageNet at resolution 384 ([arXiv:2010.11929](https://arxiv.org/abs/2010.11929), Table 5). That table changes regularisation along with size (for B/16, weight decay 0.3, 0.03 and 0.1, Table 3) and has no CNN rows; the CNN comparison is in the text: "The BiT CNNs outperform ViT on ImageNet, but with the larger datasets, ViT overtakes". The authors' summary is "large scale training trumps inductive bias", a finding about image classification.
-
-The requirement also depends on the recipe. DeiT, a training recipe, took the same 86M-parameter architecture from 77.9 to 83.1 on ImageNet alone (resolution 384, fine-tuned) with heavy augmentation, stochastic depth, repeated augmentation and different optimiser settings. Removing Mixup and CutMix, which blend pairs of images and their labels, cost it 6 points at resolution 224, 81.8 to 75.8, with other settings left fixed, which the authors say may be suboptimal. The gap isn't gone: "transformers require a larger amount of data", and on CIFAR-10 from scratch, at up to 7,200 epochs with images rescaled to 224, DeiT-B scored 97.5 against 98.0 for a CNN ([arXiv:2012.12877](https://arxiv.org/abs/2012.12877) (Touvron et al., ICML 2021)). No paper here gives a threshold in rows or images. Run the learning curve on your own data.
 
 ### When the structure doesn't match
 
@@ -517,22 +513,18 @@ Table 1 of the Transformer paper gives per-layer complexity: $O(n^2 \cdot d)$ fo
 
 ### What the evidence says by data type
 
+The published measurements behind the rows below are in [what the encoder papers measured](05c-what-the-encoder-papers-measured.md).
+
 | Data | Start with | Evidence, with its setup |
 |---|---|---|
 | Text, few labels | TF-IDF, then a frozen encoder | [Note 06](06-neural-text-models.md#transfer-learning-with-sentence-encoders), up to 5,000 reviews |
 | Text, thousands of labels | Fine-tune a pre-trained encoder | Note 06: DistilBERT 0.905 at 5,000 reviews against 0.886 for TF-IDF |
-| Images, few to mid-sized data | A CNN, or a pre-trained ViT | ViT and DeiT above |
-| Long-horizon forecasting | A linear model first, then a patched encoder (my order) | Below |
-| Ordinary tables, around 10K rows | Gradient boosting | Below |
-| Large tables | Boosting and FT-Transformer, both | Below |
-| Very many classes | FT-Transformer, since boosting struggles | Below |
-| Event histories, tens of millions of users, several tasks | One pre-trained encoder adapted with LoRA, scored against the task model you already run | Below: relative gains only, and worse on a relational task |
-
-**Forecasting.** Zeng et al. found that one-layer linear models beat five earlier Transformer forecasters across 9 multivariate benchmarks, with most Transformer scores copied from FEDformer's paper rather than re-run. By default the linear models looked back 336 steps and the Transformers 96 (Appendix B.2). The printed improvement column ran from 0.80% (ETTh1, horizon 96) to 47.86% (ILI, horizon 24), against the underlined best Transformer, FEDformer's 3.228 ([arXiv:2205.13504](https://arxiv.org/abs/2205.13504), Table 2 (Zeng et al., AAAI 2023)). PatchTST replied with a plain encoder using patches and separate channels, which "can still outperform" DLinear "in general": for PatchTST/42 at DLinear's look-back of 336, Traffic at horizon 96 was 0.367 against 0.410, but Electricity at horizon 720 only 0.202 against 0.203 ([arXiv:2211.14730](https://arxiv.org/abs/2211.14730), Table 3 (Nie et al., ICLR 2023)). My count of that table, on MSE at /42: 30 wins, 1 tie and 1 loss in 32 rows, with 13 of the wins under 5% and 17 at 5% or more, on one seed and 8 of Zeng's 9 datasets (Exchange-Rate is left out). [Time-series ML](../../05-time-series-and-recommenders/notes/01-time-series-ml.md) has the baselines to run first.
-
-**Tables.** Across 11 datasets of 20,640 to 1,200,192 objects, tuned FT-Transformer ensembles were best on 7 and gradient boosting ensembles on 4, with tuned boosting absent on one dataset (my count of the bold entries in Table 4). Bold marks the best mean with no significance test, and FT-Transformer's Yahoo and Epsilon entries weren't fully tuned. The authors call boosting "unsuitable" for very many classes, and warn their benchmark is "slightly biased towards 'DL-friendly' problems", concluding there is "no universal solution" ([arXiv:2106.11959](https://arxiv.org/abs/2106.11959) (Gorishniy et al., NeurIPS 2021)). With training capped at 10,000 samples across 45 datasets, after excluding missing data, high-cardinality categoricals and time series, "tree-based models remain state-of-the-art" even with FT-Transformer as deep learning's "best case" ([NeurIPS 2022](https://proceedings.neurips.cc/paper_files/paper/2022/hash/0378c7692da36807bdec87ab043cdadc-Abstract-Datasets_and_Benchmarks.html) (Grinsztajn et al., Datasets and Benchmarks Track), [arXiv:2207.08815](https://arxiv.org/abs/2207.08815)). I read these as different regimes, not a contradiction, though neither paper says so, and Grinsztajn et al. call their sign of the gap narrowing at 50,000 samples tentative. So for an ordinary business table, [boosting](../../01-classical-ml/notes/07-boosting-in-practice.md) comes first.
-
-**Event histories.** PRAGMA applies the pre-train-then-adapt recipe from text to 26M user records: 24B events and 207B tokens from 111 countries over 25 months, with masked modelling at three levels (15% of tokens, 10% of whole events, 10% of keys) and three sizes, 10M, 100M and 1B parameters. On six internal tasks, LoRA on the pre-trained encoder (rank 8, about 2–4% of parameters) beat a frozen-embedding probe on the same backbone in every cell, by +0.2% to +72.9% relative, and at 100M it beat the same architecture trained from scratch by +0.3% to +18.6% (my ranges over Table 2; scratch was run at 100M only). Against Revolut's task-specific baselines the 1B model's largest gain was **credit-scoring PR-AUC, +130.2%**, and external fraud moved +64.7% in recall and +16.7% in precision with no operating point given. Lifetime value gained 1.8% in PR-AUC at 1B and was 1.2% below baseline at 10M. On anti-money-laundering a linear probe on the 1B model was **47.1% below a network-aware baseline** on F0.5 (Table 6), which the authors put down to a model that "processes event histories in isolation". Every number is a relative change against an unnamed internal model, since absolute metrics are withheld as "commercially sensitive", and there are no seeds, no online tests, and no released data, code or weights. The authors work at Revolut and NVIDIA ([arXiv:2604.08649](https://arxiv.org/abs/2604.08649) (Ostroukhov et al., 2026-08, preprint)). I read it as evidence that the recipe transfers to event data at this scale, and not as a measured margin over boosting on hand-built features.
+| Images, few to mid-sized data | A CNN, or a pre-trained ViT | [ViT and DeiT](05c-what-the-encoder-papers-measured.md#what-vit-and-deit-measured-about-data-size) |
+| Long-horizon forecasting | A linear model first, then a patched encoder (my order) | [05c](05c-what-the-encoder-papers-measured.md#what-the-other-families-papers-measured) |
+| Ordinary tables, around 10K rows | Gradient boosting | [05c](05c-what-the-encoder-papers-measured.md#what-the-other-families-papers-measured) |
+| Large tables | Boosting and FT-Transformer, both | [05c](05c-what-the-encoder-papers-measured.md#what-the-other-families-papers-measured) |
+| Very many classes | FT-Transformer, since boosting struggles | [05c](05c-what-the-encoder-papers-measured.md#what-the-other-families-papers-measured) |
+| Event histories, tens of millions of users, several tasks | One pre-trained encoder adapted with LoRA, scored against the task model you already run | [05c](05c-what-the-encoder-papers-measured.md#what-the-other-families-papers-measured): relative gains only, and worse on a relational task |
 
 ## Training it: pre-norm, warm-up and regularisation
 
@@ -634,14 +626,6 @@ Xiong et al. argue warm-up "can be safely removed" with pre-norm, but ViT is pre
 
    </details>
 
-3. A colleague wants a transformer for 8,000 rows of customer data with 30 columns, because "it finds interactions automatically". What do you run, and what would change your mind?
-
-   <details><summary>Answer</summary>
-
-   Gradient boosting first, on a split that matches the deployment, with a small linear baseline. Grinsztajn et al.'s 10,000-sample benchmark is the closest setup in this chapter, and trees won there. Then try FT-Transformer: 31 tokens are affordable, at 1.5x and 2.8x a ResNet's training time on Gorishniy et al.'s 27- and 28-feature datasets, whose object counts are larger than yours. What would change your mind: a learning curve on your data showing it ahead by more than the seed-to-seed difference, or very many classes, where Gorishniy et al. call boosting "unsuitable".
-
-   </details>
-
 ## Interview checklist
 
 | Question | Answer |
@@ -651,9 +635,6 @@ Xiong et al. argue warm-up "can be safely removed" with pre-norm, but ViT is pre
 | What does multi-head add, at what cost? | Parallel attention on narrower projections. No extra parameters at fixed width: 4,224 at any head count here. |
 | What's the complexity of a self-attention layer against an LSTM? | $O(n^2 \cdot d)$ against $O(n \cdot d^2)$, with $O(1)$ against $O(n)$ sequential steps and path length. |
 | When would you not use a transformer? | Ordinary tables around 10K rows, long-horizon forecasting before a linear baseline has run, little data with strong local structure, or very long raw sequences without patching. |
-| Why do ViTs need more data than CNNs? | Locality and translation equivariance aren't built in, so they must be learned. The recipe matters too: DeiT took the same architecture from 77.9 to 83.1 on ImageNet alone at resolution 384. |
-| Do Transformers work for forecasting? | Zeng et al. found linear models beat five earlier ones on 9 benchmarks. PatchTST, with patches and independent channels, then beat DLinear on most of its 8 datasets, by under 5% on 13 of 30 wins (my count, MSE). Baseline with linear first. |
-| Would you pre-train an encoder on transaction histories? | At tens of millions of users and several tasks, PRAGMA says it can pay: LoRA beat a frozen probe and training from scratch on six internal tasks, with credit PR-AUC +130.2% over the task baseline at 1B parameters. All gains are relative to unnamed baselines, and AML, a relational task, was 47.1% worse. Keep the task model as the bar. |
 | Pre-norm or post-norm? | Pre-norm. Post-norm's gradients near the output are large at initialisation, and it needs warm-up with Adam at the rates tested (8.45 against about 34 BLEU in Xiong et al.; RAdam is an exception). Final quality was comparable. |
 | Model runs but doesn't learn: what do you check for shapes? | Broadcasting in the loss: `(batch, 1)` against `(batch)` gives `(batch, batch)`. |
 | Accuracy drops when serving single requests. Why? | Suspect `batch_first=False`. Compare logits at two batch sizes. |
@@ -661,4 +642,4 @@ Xiong et al. argue warm-up "can be safely removed" with pre-norm, but ViT is pre
 
 ## Next
 
-[Neural text models](06-neural-text-models.md): the same encoders pre-trained on far more text than you have.
+[What the encoder papers measured](05c-what-the-encoder-papers-measured.md) reads the ViT, DeiT, forecasting, tabular and event-history papers against what they ran. Then [neural text models](06-neural-text-models.md): the same encoders pre-trained on far more text than you have.

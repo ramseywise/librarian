@@ -1,8 +1,8 @@
 ---
 title: "Word Segmentation by Objective and Simulated Annealing"
-tags: [data-science, pattern]
+tags: [data-science, nlp, pattern]
 summary: "Segmenting unspaced text as a search: score a boundary bit string by lexicon size plus word count, then flip bits with a cooling schedule to find a low-scoring split."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-nlp-with-python-ch03-processing-raw-text.md
 ---

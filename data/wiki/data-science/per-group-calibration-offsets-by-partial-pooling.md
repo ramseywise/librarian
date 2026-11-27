@@ -1,8 +1,8 @@
 ---
 title: "Per-Group Calibration Offsets by Partial Pooling"
-tags: [data-science, pattern]
+tags: [data-science, classical-ml, pattern]
 summary: "When groups share one score but differ in base rate, correct each group with one shrunken log-odds offset: a per-group threshold on few labels pays everything when none are positive, one global threshold ignores real differences."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--13-automate-review-or-reject.md
   - data/raw/papers/2026-11-08-van-den-goorbergh-2022-harm-class-imbalance-corrections.md

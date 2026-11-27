@@ -1,8 +1,8 @@
 ---
 title: "Tree-Structured Parzen Estimator (TPE)"
-tags: [data-science, pattern]
+tags: [data-science, classical-ml, pattern]
 summary: "TPE models the density of settings that scored well and the density of those that scored badly, then proposes the setting with the highest good-over-bad ratio; Bergstra et al. compared it with a Gaussian-process search, random search and manual search on a 32-variable deep belief network space."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-bergstra-2011-algorithms-hyper-parameter-optimization.md
   - data/raw/papers/2026-11-08-akiba-2019-optuna.md

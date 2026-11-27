@@ -1,10 +1,11 @@
 ---
-imported_hash: 0766e0b25c1623e9
+imported_hash: 8d2b6d5a2badd8fe
 title: 3 — Distributions and Sampling
 summary: A foundation gives a pile of money to small schools because the top of the league table is full of them.
 order: 4
 kind: reading
 section: Notes
+tier: foundations
 source: learn-ai-engineering/data-analytics/02-probability-and-statistics/notes/03-distributions-and-sampling.md
 ---
 

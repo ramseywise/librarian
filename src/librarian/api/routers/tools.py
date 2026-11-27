@@ -29,8 +29,8 @@ def list_tools(_: SignedIn) -> list[str]:
 
 
 @router.get("/api/tools/{name}", response_class=PlainTextResponse)
-def run_tool(name: str, request: Request, _: SignedIn) -> str:
+def run_tool(name: str, request: Request, user: SignedIn) -> str:
     tool = _TOOLS.get(name)
     if tool is None:
         raise HTTPException(status_code=404, detail=f"No MCP tool named {name!r}.")
-    return tool.run(dict(request.query_params), ToolContext(surface=MCP))
+    return tool.run(dict(request.query_params), ToolContext(surface=MCP, user_id=user.id))

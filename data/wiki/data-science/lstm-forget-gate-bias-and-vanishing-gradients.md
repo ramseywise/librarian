@@ -1,8 +1,8 @@
 ---
 title: "LSTM Forget-Gate Bias and Vanishing Gradients"
-tags: [data-science, pattern]
+tags: [data-science, deep-learning, pattern]
 summary: "Default-initialised LSTMs pass a gradient of about 10^-12 from the first step, no better than a plain RNN; setting the forget-gate bias to 1 or 2 (mind PyTorch's two bias vectors) restores long memory, and gradient clipping handles the opposite failure."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--05-sequence-models.md
   - data/raw/papers/2026-11-08-fundamentals-of-deep-learning-ch07-models-sequence-analysis.md

@@ -1,0 +1,340 @@
+---
+imported_hash: 4fb294c313967b3e
+title: 6b — Variational Inference and Gaussian Processes
+summary: The coursework is the one described in chapter 6; these are its remaining rows.
+order: 10
+kind: reading
+section: Notes
+tier: specialist
+depth: core
+depth_sections:
+  Where this sits: intro
+  The VAE: deep
+source: learn-ai-engineering/data-analytics/04-bayesian-analysis/notes/06b-variational-inference-and-gaussian-processes.md
+---
+
+# 6b — Variational Inference and Gaussian Processes
+
+[Chapter 6](06-bayesian-machine-learning.md) kept a point estimate with EM and sampled with MCMC. Two further ideas handle posteriors that are too large for the sampler of [chapter 2](02-mcmc-and-pymc.md). Variational inference replaces the posterior with something simple, turning integration into optimisation. Gaussian processes keep an exact posterior over functions, and you can use one to choose the next expensive experiment. This chapter builds each small enough to run, and maps them onto the rest of the BayesianML coursework in this pillar.
+
+```python
+import numpy as np, pymc as pm, arviz as az
+from scipy import stats
+SAMPLE = dict(chains=4, cores=1, progressbar=False, random_seed=7)
+```
+
+## Where this sits
+
+The coursework is the one described in [chapter 6](06-bayesian-machine-learning.md#where-this-sits); these are its remaining rows.
+
+| Coursework | Topic | Inference method | Key idea |
+|---|---|---|---|
+| [week_5](../practice/bayesianml/week-5) | Variational autoencoder on MNIST | variational inference (ELBO) | amortised posterior via an encoder network |
+| [week_6](../practice/bayesianml/week-6) | Gaussian processes, Bayesian optimisation | exact GP posterior, acquisition functions | tune hyperparameters with few evaluations |
+| [final_assignment](../practice/bayesianml/final-assignment) | "Finding the suspect": VAE + Bayesian optimisation | both | search a VAE's latent space with human feedback |
+
+The runnability note in [chapter 6](06-bayesian-machine-learning.md#where-this-sits) applies here too: week 6 adds GPy, GPyOpt and xgboost by pip, and blocks marked `# illustrative` need the pinned conda environment.
+
+## Variational inference and the VAE (week 5)
+
+When the posterior is too big to sample, approximate it with a simpler distribution q, and make q as close as possible. [Blei, Kucukelbir and McAuliffe (JASA, 2017)](https://arxiv.org/abs/1601.00670) frame the method and its trade-off well: it turns inference into optimisation over a KL divergence, tends to be faster and scale better than MCMC, and generally underestimates the variance of the posterior. KL to the true posterior needs the evidence we could not compute, so we maximise an equivalent quantity, the **evidence lower bound (ELBO)**:
+
+```text
+log p(x) ≥ E_q[ log p(x | z) ] − KL( q(z | x) ‖ p(z) )
+          reconstruction        regulariser
+```
+
+The gap in that inequality is exactly the KL from q to the true posterior. That is easy to see on a model small enough to have an exact answer: a single observation x = 2, with x ~ N(z, 1) and z ~ N(0, 1).
+
+```python
+x_obs, sigma, s0 = 2.0, 1.0, 1.0                    # one point, x ~ N(z, 1), z ~ N(0, 1)
+log_evidence = stats.norm.logpdf(x_obs, 0, np.sqrt(s0**2 + sigma**2))
+post_mean, post_sd = x_obs / 2, np.sqrt(0.5)         # exact posterior
+def elbo(m, s, n=200_000, seed=0):
+    z = m + s * np.random.default_rng(seed).standard_normal(n)     # reparameterised draws
+    recon = stats.norm.logpdf(x_obs, z, sigma).mean()
+    kl = np.log(s0 / s) + (s**2 + m**2) / (2 * s0**2) - 0.5
+    return recon, kl, recon - kl
+print(f"log evidence {log_evidence:.4f}")
+for m, s in ((0.0, 1.0), (0.5, 1.0), (1.0, 1.0), (post_mean, post_sd)):
+    r, k, e = elbo(m, s)
+    print(f"q=N({m:.2f}, {s:.2f}^2): reconstruction {r:7.4f}  KL {k:.4f}  ELBO {e:7.4f}  gap {log_evidence - e:.4f}")
+```
+
+```text
+log evidence -2.2655
+q=N(0.00, 1.00^2): reconstruction -3.4199  KL 0.0000  ELBO -3.4199  gap 1.1544
+q=N(0.50, 1.00^2): reconstruction -2.5449  KL 0.1250  ELBO -2.6699  gap 0.4044
+q=N(1.00, 1.00^2): reconstruction -1.9200  KL 0.5000  ELBO -2.4200  gap 0.1545
+q=N(1.00, 0.71^2): reconstruction -1.6694  KL 0.5966  ELBO -2.2660  gap 0.0005
+```
+
+Starting from the prior, the KL term is zero and the reconstruction is poor. Moving q toward the data costs some KL and gains more reconstruction. At the exact posterior, N(1, 0.71²), the ELBO reaches the log evidence, up to Monte Carlo noise in the fourth decimal. The gap you can't measure directly in a real model is visible here.
+
+To maximise the ELBO by gradient ascent we need a gradient through a sampling step. The **reparameterisation trick** gets one by writing z = m + s·ε with ε ~ N(0, 1), so the randomness no longer depends on what we are differentiating:
+
+```python
+def grad_m(m, s, seed=1, n=200_000):
+    eps = np.random.default_rng(seed).standard_normal(n)
+    z = m + s * eps
+    return ((x_obs - z) / sigma**2).mean() - m / s0**2   # d/dm of reconstruction minus KL
+m, s = 0.0, post_sd
+for step in range(40):
+    m += 0.2 * grad_m(m, s, seed=step)
+print(f"gradient ascent on the ELBO: m {m:.3f}   exact {post_mean:.3f}")
+```
+
+```text
+gradient ascent on the ELBO: m 1.000   exact 1.000
+```
+
+Forty noisy steps reach the exact mean. This is the core of a VAE, but not of Blei et al., whose review never uses the trick and only lists Kingma and Welling among its examples of "black box" methods. Their main algorithm is coordinate ascent (CAVI), which updates one factor of q at a time from the same complete conditional a Gibbs sampler draws from, plus a stochastic version (SVI) for large data that follows noisy natural gradients computed on a sampled data point.
+
+PyMC's `pm.fit(method="advi")` is the same idea, with a Normal q per parameter. Compare it to NUTS when two inputs are nearly collinear, so the posterior over their coefficients is a narrow diagonal ridge:
+
+```python
+rng = np.random.default_rng(2)
+x = rng.normal(size=80)
+x2 = 0.95 * x + np.sqrt(1 - 0.95**2) * rng.normal(size=80)   # two nearly collinear inputs
+y_vi = 1.0 * x + 1.0 * x2 + rng.normal(0, 1, 80)
+with pm.Model():
+    a = pm.Normal("a", 0, 5)
+    b = pm.Normal("b", 0, 5)
+    pm.Normal("y", a * x + b * x2, 1, observed=y_vi)
+    mcmc = pm.sample(1000, tune=1000, **SAMPLE)
+    approx = pm.fit(20000, method="advi", progressbar=False, random_seed=7)
+    vi = approx.sample(4000, random_seed=7)
+for name, idata in (("NUTS", mcmc), ("ADVI", vi)):
+    a_s, b_s = [idata.posterior[v].values.flatten() for v in ("a", "b")]
+    print(f"{name}: mean a {a_s.mean():.3f} b {b_s.mean():.3f}  sd a {a_s.std():.3f} b {b_s.std():.3f}  sd of a+b {(a_s + b_s).std():.3f}  corr {np.corrcoef(a_s, b_s)[0, 1]:+.2f}")
+```
+
+```text
+NUTS: mean a 1.218 b 0.960  sd a 0.390 b 0.397  sd of a+b 0.113  corr -0.96
+ADVI: mean a 1.153 b 1.018  sd a 0.127 b 0.130  sd of a+b 0.181  corr -0.01
+```
+
+The means are close. The marginal standard deviations are about 0.39 under NUTS and 0.13 under ADVI, which is the underestimation Blei et al. warn about, and here it is threefold. Mean-field q has no way to express the correlation of −0.96, and that also misstates the sum: the well-determined a + b gets an sd of 0.181 against 0.113. If you need intervals rather than a prediction, check VI against MCMC on a sample of the data first.
+
+That check is needed because the general answer isn't known. Blei et al. write that **the relative accuracy of VI and MCMC "is still unknown"**: VI generally underestimates variance, yet it need not lose accuracy on posterior predictive densities. Their own speed result is one case. CAVI fit a 30-cluster Gaussian mixture to 10,000 images (576-dimensional colour histograms) in under a minute, "orders of magnitude" faster than the HMC-based sampler in Stan (the review cites version 2.8), with progress tracked by held-out log predictive and no hardware stated. It says nothing about intervals, and a footnote calls it "not a definitive comparison", since a collapsed Gibbs sampler might do better. Two more limits come from the same review. The ELBO is generally non-convex, so CAVI only reaches a local optimum that depends on the starting point. And picking a model by its ELBO "sometimes works in practice" but is "not justified in theory".
+
+Bishop's *Pattern Recognition and Machine Learning* (*PRML*) shows where the narrowness comes from. Minimising KL(q‖p) with a factorised q matches the variance of the narrowest direction and under-estimates the rest; a factorised approximation tends to give posteriors that are "too compact" (*PRML*, ch. 10, p. 467). The same chapter shows what VI is good for. A variational mixture of 6 Gaussians fitted to the Old Faithful data switches off the components it doesn't need, and how many survive depends on the prior on the mixing weights: 2 with $\alpha_0=10^{-3}$, 3 with $\alpha_0=1$, all 6 with $\alpha_0=10$ (ch. 10, p. 480). So the count is not read off the data alone. Comparing the lower bound across $K$, with $\ln K!$ added for the label symmetry and 100 random starts per $K$, gives a peak at $K=2$ (ch. 10, Fig. 10.7, p. 484, one data set).
+
+![Exact correlated posterior against its mean-field approximation, drawn as 2-sigma ellipses](../assets/sources/images/blei-variational-inference-fig1.png)
+*Image Source: Blei, Kucukelbir & McAuliffe, [Variational Inference: A Review for Statisticians](https://arxiv.org/abs/1601.00670) (2017), Fig. 1. Ellipses are 2σ contours: the mean-field approximation misses the correlation and is too narrow.*
+
+### The VAE
+
+A variational autoencoder ([Kingma and Welling, 2013](https://arxiv.org/abs/1312.6114)) learns both halves of the ELBO with neural networks:
+
+| Part | Role |
+|---|---|
+| Encoder | outputs the mean and log-variance of q(z given x): an amortised posterior |
+| Reparameterisation | z = μ + σ ⊙ ε with ε ~ N(0, I), so gradients flow through the sampling |
+| Decoder | p(x given z); Bernoulli per pixel for binarised MNIST |
+| Prior | p(z) = N(0, I); sampling from it and decoding "hallucinates" new digits |
+| Conditional VAE | condition encoder and decoder on the label to generate a chosen digit |
+
+ADVI fits one q per model, and a VAE fits one encoder that outputs a q per data point. It is why a VAE can handle a new image without refitting. Week 5 builds this for MNIST in Keras 2.3 on TensorFlow 1.15, with the pinned environment above.
+
+
+## Gaussian processes and Bayesian optimisation (week 6)
+
+A **Gaussian process** is a prior over functions: any finite set of function values is jointly Normal, with covariance given by a kernel such as the RBF, k(x, x') = σ² exp(−‖x − x'‖² / 2ℓ²). Conditioning on observed points gives a posterior mean and a variance at every x: a prediction with an error bar. [Rasmussen and Williams](http://gaussianprocess.org/gpml/) is the standard text. The algebra is a Normal conditional, which takes a few lines:
+
+```python
+def rbf(a, b, var=1.0, ell=1.0):
+    return var * np.exp(-0.5 * (a[:, None] - b[None, :]) ** 2 / ell**2)
+def gp_posterior(X, y, X_new, noise=1e-6, **kw):
+    K = rbf(X, X, **kw) + noise * np.eye(len(X))
+    Ks = rbf(X_new, X, **kw)
+    alpha = np.linalg.solve(K, y)
+    mean = Ks @ alpha
+    var = np.diag(rbf(X_new, X_new, **kw)) - np.sum(Ks * np.linalg.solve(K, Ks.T).T, axis=1)
+    return mean, np.sqrt(np.maximum(var, 0))
+X_t = np.array([1.0, 3.0, 4.0])
+y_t = np.sin(X_t)
+X_new = np.array([1.0, 2.0, 3.5, 6.0])
+m_hand, s_hand = gp_posterior(X_t, y_t, X_new)
+for x_, m_, s_ in zip(X_new, m_hand, s_hand):
+    print(f"x={x_}: mean {m_:+.3f}  sd {s_:.3f}  truth {np.sin(x_):+.3f}")
+```
+
+```text
+x=1.0: mean +0.841  sd 0.001  truth +0.841
+x=2.0: mean +0.768  sd 0.540  truth +0.909
+x=3.5: mean -0.365  sd 0.171  truth -0.351
+x=6.0: mean -0.160  sd 0.987  truth -0.279
+```
+
+At an observed point, the sd is effectively zero. Between points, it grows. Far from the data at x = 6, the mean drifts to the prior's 0 and the sd reaches nearly 1, the prior's own. An honest model says it does not know there, and acquisition functions exploit this. As a check on the algebra, scikit-learn gives the same answer:
+
+```python
+from sklearn.gaussian_process import GaussianProcessRegressor
+from sklearn.gaussian_process.kernels import RBF, ConstantKernel, WhiteKernel
+gp = GaussianProcessRegressor(ConstantKernel(1.0, "fixed") * RBF(1.0, "fixed"), alpha=1e-6)
+gp.fit(X_t[:, None], y_t)
+m_sk, s_sk = gp.predict(X_new[:, None], return_std=True)
+print("largest difference from the hand-written version:", round(float(np.abs(m_sk - m_hand).max() + np.abs(s_sk - s_hand).max()), 8))
+```
+
+```text
+largest difference from the hand-written version: 0.0
+```
+
+The week 6 notebook uses GPy, which fits the kernel's hyperparameters by marginal likelihood:
+
+```python
+# illustrative: week_6 coursework, needs GPy in the pinned conda env
+import GPy
+kernel = GPy.kern.RBF(input_dim=1, variance=1.5, lengthscale=2.)
+model = GPy.models.GPRegression(X, y, kernel)
+model.optimize()                      # fit kernel hyperparameters by marginal likelihood
+mean, var = model.predict(X_new)
+# sparse GPs (inducing points) cut the O(n^3) cost for large n
+```
+
+**Bayesian optimisation** uses the GP as a cheap surrogate for an expensive black-box function, such as a model's validation score as a function of its hyperparameters. An acquisition function picks the next point to evaluate, trading off exploration and exploitation, as the bandits in [chapter 3b](03b-bandits-and-thompson-sampling.md) do. [Snoek, Larochelle and Adams (NeurIPS, 2012)](https://proceedings.neurips.cc/paper/2012/hash/05311655a15b75fab86956663e1819cd-Abstract.html) made this a standard approach for tuning models.
+
+| Acquisition | Picks the point with |
+|---|---|
+| Expected improvement | the largest expected gain over the best value so far |
+| Upper confidence bound | the highest mean + κ · standard deviation |
+| Probability of improvement | the highest chance of beating the best so far (GPyOpt's `MPI`, used in week 6) |
+
+![Top panel: a Gaussian process fit through four observations with its mean and uncertainty band. Bottom panel: expected improvement over the same x range, peaking at the next point to evaluate, near 7.7](../assets/sources/images/bayes-gp-expected-improvement.png)
+*Image Source: generated for this chapter, a GP on four points with its expected-improvement curve*
+
+The notebook tunes XGBoost with GPyOpt, and repeats it for an SVR:
+
+```python
+# illustrative: week_6 coursework, needs GPyOpt and xgboost in the pinned conda env
+import GPyOpt
+bounds = [  # continuous variables first, then discrete
+    {"name": "learning_rate", "type": "continuous", "domain": (0, 1)},
+    {"name": "gamma", "type": "continuous", "domain": (0, 5)},
+    {"name": "max_depth", "type": "discrete", "domain": (1, 50)},
+    {"name": "n_estimators", "type": "discrete", "domain": (1, 300)},
+    {"name": "min_child_weight", "type": "discrete", "domain": (1, 10)},
+]
+optimizer = GPyOpt.methods.BayesianOptimization(
+    f=f, domain=bounds, acquisition_type="MPI", acquisition_par=0.1, exact_eval=True)
+optimizer.run_optimization(max_iter=50)
+```
+
+The same loop in current scikit-learn, tuning a gradient-boosted model's learning rate and leaf count on a small built-in dataset, with expected improvement chosen over 2,000 random candidates each round:
+
+```python
+from sklearn.datasets import load_breast_cancer
+from sklearn.ensemble import HistGradientBoostingClassifier
+from sklearn.model_selection import cross_val_score
+data_X, data_y = load_breast_cancer(return_X_y=True)
+def objective(u):
+    log_lr, leaves = u
+    model = HistGradientBoostingClassifier(learning_rate=10**log_lr, max_leaf_nodes=int(round(leaves)),
+                                           max_iter=60, random_state=0)
+    return cross_val_score(model, data_X, data_y, cv=3, scoring="neg_log_loss").mean()
+
+low, high = np.array([-3.0, 2]), np.array([0.0, 40])
+def expected_improvement(mean, sd, best):
+    z = (mean - best) / sd
+    return (mean - best) * stats.norm.cdf(z) + sd * stats.norm.pdf(z)
+
+def bayes_opt(n_iter=20, n_init=4, seed=0):
+    rng = np.random.default_rng(seed)
+    U = rng.uniform(low, high, (n_init, 2))
+    y_u = np.array([objective(u) for u in U])
+    kernel = ConstantKernel(1.0) * RBF([1.0, 10.0], (1e-2, 1e3)) + WhiteKernel(1e-4, (1e-8, 1e-1))
+    for _ in range(n_iter - n_init):
+        gp = GaussianProcessRegressor(kernel, normalize_y=True, n_restarts_optimizer=2, random_state=0).fit(U, y_u)
+        candidates = rng.uniform(low, high, (2000, 2))
+        mean, sd = gp.predict(candidates, return_std=True)
+        next_u = candidates[np.argmax(expected_improvement(mean, sd + 1e-9, y_u.max()))]
+        U = np.vstack([U, next_u])
+        y_u = np.append(y_u, objective(next_u))
+    return U, y_u
+U, y_u = bayes_opt()
+best = np.maximum.accumulate(y_u)
+print("best log loss after 4, 8, 12, 20 fits:", (-best[[3, 7, 11, 19]]).round(4))
+print(f"best learning rate {10 ** U[y_u.argmax(), 0]:.3f}, leaves {int(round(U[y_u.argmax(), 1]))}")
+```
+
+```text
+best log loss after 4, 8, 12, 20 fits: [0.1148 0.1065 0.1065 0.1016]
+best learning rate 0.447, leaves 3
+```
+
+Is that better than guessing? Compare with random search over the same box, and read the same columns. It takes about two minutes to run.
+
+```python
+rng = np.random.default_rng(1)
+curves = []
+for _ in range(5):
+    r_u = rng.uniform(low, high, (20, 2))
+    curves.append(np.maximum.accumulate([objective(u) for u in r_u]))
+print("random search, mean of 5 runs:        ", (-np.mean(curves, axis=0)[[3, 7, 11, 19]]).round(4))
+```
+
+```text
+random search, mean of 5 runs:         [0.1233 0.1193 0.1164 0.112 ]
+```
+
+The GP's best log loss beats the random-search average at each checkpoint, by 0.01 or so. That comparison is one Bayesian optimisation run against five random runs, on a dataset where each evaluation takes about a second, so it shows the shape of the method rather than measuring its advantage. The case for Bayesian optimisation grows as each fit gets more expensive. If a fit takes a second, random search with more fits is often simpler.
+
+The final project combines both: train a VAE on faces, then use Bayesian optimisation over its latent space, with a human rating each generated face, to converge on a target face (darkest hair, widest smile, a specific person) in a few dozen evaluations.
+
+
+## Pitfalls
+
+| Pitfall | What goes wrong | Fix |
+|---|---|---|
+| Quoting mean-field VI intervals | Threefold too narrow on the collinear example | Check against MCMC on a sample |
+| Assuming ELBO comparisons rank models safely | It is a bound, and the gap differs across models | Use held-out predictive scores |
+| A GP on large n | Cost grows as n³ | Sparse GPs, or a different surrogate |
+| Bayesian optimisation on cheap fits | Random search with more trials can be simpler | Reserve it for expensive functions |
+| Running the coursework on current packages | PyMC3, Theano, TF 1 and `grader` are not there | Use the pinned environment, or port with chapter 2's map |
+
+---
+
+## Try it
+
+1. In `elbo`, what are the reconstruction and KL when q is the prior, and why is the KL zero?
+2. Change `advi` so the inputs are uncorrelated. What should happen to ADVI's standard deviations?
+3. Raise `ell` to 3 in `gp_hand`. Does the sd at x = 6 go up or down?
+
+<details>
+<summary>Answers</summary>
+
+1. They should move close to NUTS's. With an uncorrelated posterior, mean-field can represent it, so its main error goes away.
+2. Down. A longer lengthscale means distant points are more correlated, so x = 4 tells you more about x = 6.
+3.
+
+</details>
+
+---
+
+## Interview checklist
+
+| Prompt | Answer |
+|---|---|
+| What is the ELBO? | A lower bound on log evidence: reconstruction minus KL from the prior. The gap to log evidence is the KL to the true posterior |
+| Why the reparameterisation trick? | It moves the randomness out of the parameters so gradients can pass through sampling |
+| VI or MCMC? | VI scales and is fast, and it tends to underestimate variance. MCMC is slower and asymptotically exact |
+| What makes a VAE amortised? | One encoder network outputs a posterior for any input, rather than fitting one per data point |
+| What is a Gaussian process? | A distribution over functions where any finite set of values is jointly Normal; a kernel sets the covariance |
+| What does an acquisition function do? | Turns a surrogate's mean and uncertainty into the next point to try, trading exploration against exploitation |
+
+
+---
+
+## Further reading
+
+| Topic | Source |
+|---|---|
+| EM, VI and GPs alongside the frequentist toolkit | Efron and Hastie, *Computer Age Statistical Inference* ([book site](https://hastie.su.domains/CASI/)) |
+
+---
+
+## Next
+
+[Chapter 7: Multilevel Models and Partial Pooling](07-multilevel-models-and-partial-pooling.md) returns to the Larkspur experiment with many markets in it: how much to trust each market's own number, what partial pooling does to the winning segment's effect, when it does not help, and when clustered standard errors or fixed effects are the better tool.

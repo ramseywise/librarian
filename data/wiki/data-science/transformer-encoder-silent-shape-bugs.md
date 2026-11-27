@@ -1,8 +1,8 @@
 ---
 title: "Transformer Encoder Silent Shape Bugs"
-tags: [data-science, reference]
+tags: [data-science, deep-learning, reference]
 summary: "Three transformer-encoder bugs raise no error and still train: attending to padding (or an inverted mask), the batch_first=False default that makes digits attend across the batch (0.966 as a batch, 0.658 one at a time), and a (batch,1) vs (batch) broadcast in the loss."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--05b-transformer-encoders.md
 ---

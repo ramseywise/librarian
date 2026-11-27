@@ -1,0 +1,1213 @@
+# imported_hash: 939252abfbe9a0b0
+# Lecture on step 4, Dashboard stacks: notes/06-dashboard-stacks-from-python-to-frontend.md and notes/06b-dashboard-data-path-points-colour-and-worked-example.md, in the notes' order.
+# make slides PILLAR=data-analytics/05-visualisation-and-storytelling LECTURE=04-dashboard-stacks STRICT=1 PREVIEW=1
+# Levels: a slide with no level is the intro, `core` is the core lesson, `deep` is the optional extension (code and maths).
+deck:
+  title: Dashboard Stacks
+  subtitle: From a Python result to a browser
+  tagline: "Stacks · APIs · Many points · Colour · Accessibility"
+  reference: "Notes: data-analytics/05-visualisation-and-storytelling, notes 6 and 6b"
+  output: 04-dashboard-stacks.pptx
+  notes: >-
+    This is the fifth lecture of the visualisation series and covers step 4. By the end you should be able to name the three
+    layers of a dashboard, say who really draws a Python chart, choose between a BI tool, a Python app and a full stack by
+    situation, list what was wrong with an endpoint that returns the customer table, explain why labels are precomputed and
+    not refitted on a filter, and colour categories and meet four accessibility checks.
+
+lecture:
+  covers:
+    - data-analytics/05-visualisation-and-storytelling/notes/06-dashboard-stacks-from-python-to-frontend.md
+    - data-analytics/05-visualisation-and-storytelling/notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+  requires: [data-analytics/05-visualisation-and-storytelling/notes/05-dashboards-and-storytelling.md]
+  next: [data-analytics/03-experimentation-and-causality/README.md]
+  related:
+    - data-engineering/06-ml-platform/notes/03-batch-and-online-serving.md
+    - data-analytics/06-applied-analyses/notes/05-segmentation-and-rfm.md
+    - programming/typescript/notes/01-js-for-python-devs.md
+    - programming/python/02-informatics/notes/03-web-data-json-xml.md
+
+parts:
+  - title: Layers and who draws
+    divider: false
+    summary: Analysis, application, presentation · Python draws nothing in the browser
+    notes: We open on the ten-minute first draft that leaked every email, then name the three jobs every dashboard does and ask who really draws the chart.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Three layers, and where a chart library sits
+        title: The first draft took ten minutes and leaked every email
+        recall: What was wrong with the first draft of the Fernhill segments dashboard?
+        answer: "It returned the whole customer table from one endpoint: 50,000 customers' emails to anyone with the address, no login, a download as heavy as the largest charting library, and cluster numbers on a scale that implies order."
+        kicker: The problem
+        statement: "Which stack should this dashboard be built on, and how do Python results reach a browser?"
+        takeaway: The question the draft skipped is which stack, and how the result gets to the browser.
+        source: notes/06-dashboard-stacks-from-python-to-frontend.md
+        notes: >-
+          Fernhill's analysts have given every customer a segment and the CRM team wants a dashboard by Friday. The first draft is a
+          web endpoint called GET /segments that returns the whole table, with a scatter coloured by cluster number. You do not need
+          to know React for this lecture. The costs are measured on 50,000 synthetic customers.
+
+      - layout: flow
+        beat: fundamentals
+        section: Three layers, and where a chart library sits
+        title: Every dashboard does three jobs
+        recall: What are the three layers of a dashboard and when does each run?
+        answer: "Analysis cleans, models and scores on a schedule. Application decides who may ask and what they get, on every request. Presentation draws and reacts to clicks, in the browser."
+        steps:
+          - {label: Analysis, sub: "clean, model, score", accent: "1E3A5F"}
+          - {label: Application, sub: "who may ask, what they get", accent: "0EA5C9"}
+          - {label: Presentation, sub: "draw it, react to clicks", accent: "D4621A"}
+        caption: "A table on disk passes from analysis to application, then JSON over HTTP to the browser."
+        takeaway: Analysis runs on a schedule, the application on every request and the presentation in the browser.
+        source: notes/06-dashboard-stacks-from-python-to-frontend.md
+        notes: >-
+          Analysis produces one row per customer with a segment name and two coordinates to plot, and nobody waits on it. The
+          application runs every time someone touches a filter. On the web, presentation is JavaScript, whoever wrote it.
+
+      - layout: compare
+        beat: fundamentals
+        section: Three layers, and where a chart library sits
+        title: A chart library is presentation only
+        recall: Why is "Plotly or Dash?" not a real choice?
+        answer: "Plotly draws charts and has no notion of a user, a login or a filter. Dash is an application framework that draws with Plotly, so the two sit on different layers."
+        emphasis: none
+        left:
+          title: Presentation only
+          tag: Draws
+          bullets: ["Plotly", "Altair", "D3"]
+          accent: "D4621A"
+        right:
+          title: Application frameworks
+          tag: Serve and react
+          bullets: ["Streamlit, Dash, Panel, Shiny", "They draw with a chart library", "FastAPI has no presentation at all"]
+          accent: "1E3A5F"
+        takeaway: Dash draws with Plotly, so the choice is never between them.
+        source: notes/06-dashboard-stacks-from-python-to-frontend.md
+        notes: >-
+          A BI tool such as Tableau packages all three layers. A chart library has no notion of a user, a login or a filter that
+          asks a server for new data.
+
+      - layout: code
+        beat: fundamentals
+        level: core
+        section: Three layers, and where a chart library sits
+        title: The analysis layer's output is the contract
+        recall: What does the batch job in segments.py hand to the other two layers?
+        answer: "One Parquet table with a row per customer: id, email, region, segment name and two plot coordinates. The email column is there on purpose, because real tables have one."
+        lead: "The batch job writes one file, then we read it back."
+        lang: python
+        code: |-
+          import pandas as pd
+          import segments
+
+          segments.build_table()  # fit, name, write
+          table = pd.read_parquet(segments.TABLE)
+          print(table[["customer_id", "email",
+                       "region", "segment"]].head(3))
+        bullets:
+          - "Customer 1: customer1@example.com, East, **Lapsed email readers**"
+          - "The other two layers rely on this shape"
+        takeaway: Note the email column, because the layers downstream must decide what to do with it.
+        source: notes/06-dashboard-stacks-from-python-to-frontend.md
+        notes: >-
+          The labels are a given here. How to choose them is in segmentation and RFM. The rows printed are customer 1 in East as
+          Lapsed email readers, customer 2 in Yorkshire as One and done and customer 3 in North West as One and done.
+
+      - layout: statement
+        beat: fundamentals
+        section: Who really draws the chart
+        title: Python draws nothing in the browser
+        recall: When you write px.scatter, what does Python actually produce?
+        answer: "A description of the chart as JSON. A JavaScript library draws it in the browser."
+        kicker: Altair's documentation
+        statement: "Altair itself cannot render visualizations."
+        attribution: "It generates a Vega-Lite specification instead"
+        takeaway: Python writes a description and a JavaScript library does the drawing.
+        source: notes/06-dashboard-stacks-from-python-to-frontend.md
+        notes: >-
+          The Plotly project describes plotly.py as built on top of plotly.js. Altair's user guide is blunter, as quoted.
+
+      - layout: table
+        beat: fundamentals
+        section: Who really draws the chart
+        title: Each Python library hands the drawing to JavaScript
+        recall: Which JavaScript library draws for Plotly, Altair, Bokeh, Folium and HoloViews?
+        answer: "plotly.js, Vega-Lite with Vega and vega-embed, BokehJS, Leaflet, and Bokeh, Matplotlib or Plotly for HoloViews and hvPlot."
+        header: [Python library, Produces, Drawn by]
+        widths: [2.6, 3.2, 3.4]
+        bold_first: true
+        rows:
+          - [Plotly, A JSON figure, plotly.js]
+          - [Altair, A Vega-Lite specification, "Vega-Lite, Vega, vega-embed"]
+          - [Bokeh, JSON objects, BokehJS]
+          - [Folium, An HTML page, Leaflet]
+          - [HoloViews and hvPlot, A declarative object, "Bokeh, Matplotlib or Plotly"]
+        takeaway: You can move a chart from notebook to web page without learning JavaScript.
+        source: notes/06-dashboard-stacks-from-python-to-frontend.md
+        notes: >-
+          The versions come from practice/ch06_stack_map.py. Plotly 7.1.0 bundles plotly.js 4.1.1, Altair 6.3.0 targets Vega-Lite
+          6.4.1, Bokeh 3.10.1 uses BokehJS 3.10.1, Folium 0.20.0 loads Leaflet 1.9.3 and HoloViews 1.23.2 loaded all three
+          back ends. hvPlot's own docs say support is best for Bokeh.
+
+      - layout: cards
+        beat: fundamentals
+        level: core
+        section: Who really draws the chart
+        title: A chart library's limits apply in any language
+        recall: What is the consequence of each library's drawing route for Plotly, Altair and Folium?
+        answer: "Every point in a Plotly figure travels to the browser. Altair stops at 5,000 rows by default, and VegaFusion can move some work to a server-side runtime. Folium writes each marker into the page."
+        cards:
+          - {title: Plotly, accent: "1E3A5F", body: "Every point in the figure travels to the browser"}
+          - {title: Altair, accent: "0EA5C9", body: "Stops at 5,000 rows by default; VegaFusion can move some work to a server"}
+          - {title: Folium, accent: "D4621A", body: "Each marker is written into the page"}
+        takeaway: A limit belongs to the library that draws, whichever language called it.
+        source: notes/06-dashboard-stacks-from-python-to-frontend.md
+        notes: >-
+          A Bokeh server can keep Python and the browser in sync. Notes 3 and 4 cover the libraries themselves.
+
+  - title: Three routes to a browser
+    divider: false
+    summary: BI tool · Python app · Full stack · Choosing by situation
+    notes: We compare the three routes, take the situation table, and then walk through the four ideas that let you review a React front end without writing one.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Three routes to a browser
+        title: Who pays per viewer, and what limits do you hit?
+        recall: What are the new questions a BI tool raises that a Python app does not?
+        answer: "Who pays per viewer and what limits you hit. Check the vendor pages before quoting any price."
+        kicker: The route question
+        statement: "A BI tool, a Python app or a full stack: which route fits the people who will use it?"
+        takeaway: The three routes differ in who maintains the result and what each viewer costs.
+        source: notes/06-dashboard-stacks-from-python-to-frontend.md
+        notes: >-
+          The vendor facts in this part were read on 2 November 2026. Tableau's pricing page refused the request, so no Tableau
+          price is used.
+
+      - layout: cards
+        beat: fundamentals
+        section: Three routes to a browser
+        title: Three routes, three owners
+        recall: What does each route give you and what does it cost you?
+        answer: "A BI tool gives all three layers in one product, in exchange for working its way. A Python app gives application and presentation in one Python file, and the analyst keeps ownership. A full stack gives complete control and costs a second language and a build."
+        cards:
+          - {title: A BI tool, accent: "1E3A5F", body: "All three layers in one product, in exchange for working its way"}
+          - {title: A Python app, accent: "0EA5C9", body: "Application and presentation in one Python file; the analyst keeps ownership"}
+          - {title: A full stack, accent: "D4621A", body: "A Python API plus a React and TypeScript front end; full control, a second language and a build"}
+        takeaway: Each step up the list buys control with a second thing to maintain.
+        source: notes/06-dashboard-stacks-from-python-to-frontend.md
+        notes: >-
+          React is a JavaScript library for building pages out of components, and TypeScript is JavaScript with type annotations. A
+          build step compiles that code into the files a browser loads.
+
+      - layout: table
+        beat: fundamentals
+        level: core
+        section: Three routes to a browser
+        title: Each BI tool has a limit you will hit
+        recall: What limit does each BI tool in the table impose?
+        answer: "Power BI DirectQuery fails above 1,000,000 rows with a 4-minute timeout. Tableau Cloud suggests 25 GB for a workbook, with a 120-minute refresh limit. Metabase's table view shows at most 2,000 rows, or 10,000 aggregated."
+        header: [Tool, A limit to know]
+        widths: [2.2, 7.0]
+        bold_first: true
+        rows:
+          - [Power BI, "DirectQuery: more than 1,000,000 rows fails, with a 4-minute timeout"]
+          - [Tableau, "Cloud: 25 GB suggested for one workbook, refresh limit 120 minutes"]
+          - [Metabase, "Table view shows 2,000 rows, or 10,000 for aggregated queries"]
+          - [Data Studio, "Not checked"]
+        takeaway: A limit shows up as a failed query or a truncated table, so look before you promise a viewer a view.
+        source: notes/06-dashboard-stacks-from-python-to-frontend.md
+        notes: >-
+          Premium capacities can raise Power BI's limit. DirectQuery is the mode where Power BI queries the source live instead of
+          importing a copy. Data Studio is the name Google's pages now use for what note 5 calls Looker Studio, and we found no
+          announcement to cite.
+
+      - layout: cards
+        beat: fundamentals
+        level: core
+        section: Three routes to a browser
+        title: Prices as read on 2 November 2026
+        recall: What did each vendor's page say about price, and what is the caveat?
+        answer: "Power BI Pro $14 and Premium Per User $24 a user a month, on a page that says its prices are for marketing purposes only. Metabase is free as Open Source under AGPL, Starter $100 a month with 5 users, Pro $575 with 10. Data Studio has a no-cost tier and Pro at $9. Tableau's price is omitted. Check before quoting."
+        cards:
+          - {title: Power BI, accent: "1E3A5F", body: "Pro $14, Premium Per User $24, a user a month; prices for marketing purposes only"}
+          - {title: Metabase, accent: "0EA5C9", body: "Free open source (AGPL); Starter $100 a month with 5 users; Pro $575 with 10"}
+          - {title: Data Studio, accent: "0F7490", body: "Self-service at no cost; Pro $9 per user per project per month"}
+          - {title: Tableau, accent: "D4621A", body: "Omitted: the pricing page refused our request"}
+        takeaway: A price is a reading on a date, so check the vendor page before you quote it.
+        source: notes/06-dashboard-stacks-from-python-to-frontend.md
+        notes: >-
+          Power BI prices are paid yearly. Metabase Starter is $6 a user after the first 5 and Pro is $12 a user after the first 10.
+          Data Studio's Pro price is per user per project per month.
+
+      - layout: compare
+        beat: pitfalls
+        level: core
+        section: Three routes to a browser
+        title: Row security has edges, and embedding needs capacity
+        recall: Where does Power BI row-level security stop, and what does embedding need?
+        answer: "RLS only restricts users with Viewer permissions, so workspace editors see everything. Embedding for your customers says app users need no licence, but production embedding needs a capacity."
+        emphasis: none
+        left:
+          title: Row-level security
+          tag: Power BI
+          bullets: ["Restricts only users with **Viewer** permission", "Workspace editors see everything"]
+          accent: "D4621A"
+        right:
+          title: Embedding for customers
+          tag: App-owns-data
+          bullets: ["App users do not need a licence", "Production use needs a **capacity**"]
+          accent: "1E3A5F"
+        takeaway: Ask who is exempt from the security rule and what the embedded route needs in production.
+        source: notes/06-dashboard-stacks-from-python-to-frontend.md
+        notes: >-
+          Capacity is compute an organisation buys for shared use, as opposed to a licence per user. BI tools also sell embedding,
+          for putting their charts inside your own product.
+
+      - layout: table
+        beat: fundamentals
+        section: Three routes to a browser
+        title: Python frameworks differ in what reruns on a change
+        recall: What happens in Streamlit, Dash, Shiny, Panel and Bokeh when a control changes?
+        answer: "Streamlit reruns the script from the top. Dash runs a callback. Shiny reruns the reactive functions that read the control. Panel reruns functions bound to it. A Bokeh server runs Python callbacks and keeps data in sync."
+        header: [Framework, When a control changes, Watch for]
+        widths: [1.9, 3.6, 3.7]
+        bold_first: true
+        rows:
+          - [Streamlit, "The script reruns from the top", "cache_data values reach all users, so never cache per-person data"]
+          - [Dash, "A callback runs", "Workers share no memory; no built-in authentication"]
+          - [Shiny for Python, "Reactive functions rerun", "In Shinylive, code and data go to the browser"]
+          - [Panel, "Bound functions rerun", "Builds on Bokeh's models, not its plotting"]
+          - [Bokeh server, "Python callbacks run", "A new document for each session costs memory"]
+        takeaway: What reruns on a change shapes how you write the code and what each viewer costs.
+        source: notes/06-dashboard-stacks-from-python-to-frontend.md
+        notes: >-
+          Fragments in Streamlit rerun only part of the script. Open-source Dash has no built-in authentication. Shiny's own
+          words are that Shinylive code and data cannot be kept secret from the user. Panel's reactive APIs are built on Param, a
+          library of declared parameters. Licences read on 2 November 2026: Dash and Shiny MIT, Panel BSD-3, Bokeh BSD 3-Clause
+          conditions, and Streamlit's was not checked.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: Three routes to a browser
+        title: A Dash callback takes the filter and returns the view
+        recall: What should a Dash callback do each time a dropdown changes?
+        answer: "It runs on the server, takes the region, reads the labels without refitting, and returns a new figure and summary."
+        lead: "Excerpt from segments_dash.py; it needs the file's layout to run."
+        lang: python
+        code: |-
+          @callback(Output("map", "figure"),
+                    Output("summary", "data"),
+                    Input("region", "value"))
+          def update(region):
+              """Runs on the server on every change.
+              Reads the labels, never refits."""
+              rows = TABLE if region is None \
+                  else TABLE[TABLE.region == region]
+              bins = pd.DataFrame(api.bin_map(rows))
+              figure = px.scatter(bins, x="x", y="y",
+                  size="customers", color="segment")
+              return figure, api.summarise(rows)
+        bullets:
+          - "Logic lives in one function"
+          - "It reads labels and never refits"
+        takeaway: In a Python app, the logic sits in a function from filter to new contents.
+        source: notes/06-dashboard-stacks-from-python-to-frontend.md
+        notes: >-
+          The real excerpt also passes category_orders, color_discrete_map and symbol_map, a template and axis labels. They are
+          trimmed here for room.
+
+      - layout: table
+        beat: fundamentals
+        section: Three routes to a browser
+        title: Choose by situation, not by what you know
+        recall: Which route does each situation in the table start with?
+        answer: "Recurring warehouse reporting starts with a BI tool. An internal tool around a model starts with Streamlit, Dash, Shiny or Panel. Specialists exploring millions of points start with Panel or HoloViews with datashader. A customer-facing feature starts with FastAPI, React and TypeScript. One finding sent once is a self-contained HTML file."
+        header: [Situation, Audience, Start with]
+        widths: [3.4, 3.0, 2.8]
+        bold_first: true
+        rows:
+          - [Recurring reporting on warehouse tables, "Many non-technical viewers", A BI tool]
+          - [Internal tool around a model's output, A team you can name, "Streamlit, Dash, Shiny or Panel"]
+          - [Specialists exploring millions of points, A few experts, Panel or HoloViews with datashader]
+          - [A feature in a product customers log in to, Outside users with their own data, FastAPI with React and TypeScript]
+          - ["One finding, sent once", A few people, A self-contained HTML file]
+        takeaway: The answer depends on the situation and not on the tool you already know.
+        source: notes/06-dashboard-stacks-from-python-to-frontend.md
+        notes: >-
+          The full table also has columns for interaction, data reaching the tool and who maintains it. The maintenance column is the
+          note's judgement, not a measurement: analysts who write SQL, analysts who write Python, a Python-comfortable team,
+          front-end engineers who are on call, and nobody.
+
+      - layout: statement
+        beat: fundamentals
+        section: Three routes to a browser
+        title: Take the first row that fits
+        recall: When should you move to a heavier route?
+        answer: "Only when you can name the requirement forcing it. If the team already has front-end engineers, that cost has been paid and the answer changes."
+        kicker: The rule
+        statement: "Take the first row that fits, and move to a heavier route only when you can name the requirement forcing it."
+        takeaway: Go heavier only when you can name the requirement forcing it.
+        source: notes/06-dashboard-stacks-from-python-to-frontend.md
+        notes: >-
+          The team that built the analysis can maintain a Python app. A React front end needs someone who keeps its dependencies
+          and build working after the author moves on.
+
+      - layout: bullets
+        beat: practice
+        section: Three routes to a browser
+        title: Separate layers make the choice less final
+        recall: Why is changing route later less costly than it sounds?
+        answer: "The Dash app and the API call the same summarise and bin_map functions, so changing route leaves the numbers alone."
+        bullets:
+          - "The Dash app and the API call the **same functions**"
+          - "Both use `summarise` and `bin_map`"
+          - "Changing route later **leaves the numbers alone**"
+        takeaway: Keep the logic out of the route and the route can change.
+        source: notes/06-dashboard-stacks-from-python-to-frontend.md
+        notes: >-
+          This is the payoff of the three layers from the start of the lecture.
+
+      - layout: steps
+        beat: fundamentals
+        section: The full stack, if you do not write React
+        title: Four ideas to follow and review a React front end
+        recall: What four ideas let you review the full-stack route without writing React?
+        answer: "The JSON contract is the real interface. A component is a function that returns markup. A fetch is a request and an effect runs it. TypeScript types describe the API's answer and do not check it at run time."
+        steps:
+          - {title: The JSON contract, text: "The API promises a shape and the analyst owns it", n: "1"}
+          - {title: A component, text: "A function that returns markup", n: "2"}
+          - {title: A fetch and an effect, text: "A fetch is a request; an effect runs it", n: "3"}
+          - {title: TypeScript types, text: "They describe the answer but do not check it", n: "4", accent: "D4621A"}
+        takeaway: You can review this route by knowing four ideas, and the first is that you own the JSON shape.
+        source: notes/06-dashboard-stacks-from-python-to-frontend.md
+        notes: >-
+          The running code is practice/segments_api.py and practice/js/segments_app/main.tsx. FastAPI publishes the contract
+          automatically as an OpenAPI 3.1 document at /openapi.json, and tools can generate front-end code from it. React's
+          documentation calls a component a JavaScript function that you can sprinkle with markup. You declare what you want to
+          show for the current data and React works out how to update the page, as a Dash callback's return value does.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: The full stack, if you do not write React
+        title: An effect reruns the fetch whenever region changes
+        recall: What does the current flag in the useEffect do?
+        answer: "Two quick filter changes can answer out of order, so an answer to an old filter is ignored. The cleanup function sets current to false before the next run."
+        lead: "From the segments front end, trimmed."
+        lang: tsx
+        code: |-
+          useEffect(() => {
+            let current = true;
+            const query = region
+              ? `?region=${encodeURIComponent(region)}` : "";
+            Promise.all([
+              getJson(`/v1/segments${query}`),
+              getJson(`/v1/segments/map${query}`)])
+              .then(([s, b]) => {
+                if (current) { setSummary(s); setBins(b); }
+              });
+            return () => { current = false; };
+          }, [region]);
+        bullets:
+          - "`[region]` says when to rerun"
+          - "The returned function is cleanup"
+        takeaway: The flag stops a slow answer for Wales overwriting a quick one for Scotland.
+        source: notes/06-dashboard-stacks-from-python-to-frontend.md
+        notes: >-
+          The real file also handles errors with setError and a catch. React's documentation warns there is no guarantee about
+          which order the responses will arrive in. Without the flag the dropdown would say one thing while the chart showed
+          another.
+
+      - layout: cards
+        beat: fundamentals
+        level: core
+        section: The full stack, if you do not write React
+        title: Reading the effect, line by line
+        recall: What do Promise.all, setSummary and the dependency list do?
+        answer: "Promise.all sends both requests and waits for both, like asyncio.gather. setSummary and setBins store the answers and React redraws. The list [region] tells React when to rerun the effect."
+        cards:
+          - {title: Promise.all, accent: "1E3A5F", body: "Sends both requests and waits for both; like asyncio.gather"}
+          - {title: setSummary, accent: "0EA5C9", body: "Stores the answers; React redraws"}
+          - {title: "[region]", accent: "D4621A", body: "Tells React when to rerun the effect"}
+        takeaway: If you know asyncio.gather, you already know what Promise.all does.
+        source: notes/06-dashboard-stacks-from-python-to-frontend.md
+        notes: >-
+          The function returned at the end is cleanup. React calls it before the next run, which turns the older request's current
+          flag to false.
+
+      - layout: statement
+        beat: pitfalls
+        section: The full stack, if you do not write React
+        title: Types describe the answer and do not check it
+        recall: Why can a TypeScript build pass while the page breaks?
+        answer: "Compiled code has no type information and a type assertion has no runtime checking. If the API renames a column, the build still passes and the page breaks in front of the user."
+        kicker: The TypeScript handbook
+        statement: "Compiled code has no type information, and a type assertion has no runtime checking."
+        attribution: "So test the API's real responses"
+        takeaway: A type is a promise you wrote, so test the API's real responses.
+        source: notes/06-dashboard-stacks-from-python-to-frontend.md
+        notes: >-
+          Our file declares type Summary with segment and customers fields. Both quotes are from the TypeScript handbook.
+
+      - layout: cards
+        beat: fundamentals
+        section: The full stack, if you do not write React
+        title: Four ways to draw in React
+        recall: When do you reach for react-plotly.js, ECharts, Recharts and D3?
+        answer: "react-plotly.js when you already have Plotly figures. ECharts for many marks, with canvas above about 1,000 items. Recharts for ordinary charts in modest numbers. D3 for a form no library offers, using its scales and letting React draw."
+        cards:
+          - {title: Plotly.js, accent: "1E3A5F", body: "The same library Python uses; for existing Plotly figures"}
+          - {title: ECharts, accent: "0EA5C9", body: "Tree-shakeable; for many marks, with canvas above about 1,000 items"}
+          - {title: Recharts, accent: "0F7490", body: "React components as SVG; for ordinary charts in modest numbers"}
+          - {title: D3, accent: "D4621A", body: "Use its scales and let React draw; for a form no library offers"}
+        takeaway: Pick the drawing library by how many marks you have and what you already own.
+        source: notes/06-dashboard-stacks-from-python-to-frontend.md
+        notes: >-
+          Recharts' guide asks whether your chart truly needs to display all 50,000 data points. D3's selection modules
+          manipulate the DOM, which competes with React's virtual DOM. Tailwind, which you will hear named too, is a CSS framework:
+          it changes how the page looks and nothing about the data. Note 4 shows the cost of D3.
+
+      - layout: compare
+        beat: pitfalls
+        section: Pitfalls
+        title: Choosing the stack by what you know
+        recall: What is the symptom of choosing the stack by what you know?
+        answer: "A React project for six internal readers, or a Streamlit app that outside customers log in to. Start from the situation table."
+        emphasis: right
+        left:
+          title: Chosen by habit
+          tag: The symptom
+          bullets: ["A React project for **six internal readers**", "A Streamlit app that **customers log in to**"]
+          accent: "D4621A"
+        right:
+          title: Chosen by situation
+          tag: The fix
+          bullets: ["Start from the situation table", "Name the requirement before the heavier route"]
+          accent: "0F7490"
+        takeaway: Start from the situation table and not from the tool you like.
+        source: notes/06-dashboard-stacks-from-python-to-frontend.md
+        notes: >-
+          This is the one pitfall note 6 lists. The second half of this lecture takes the Fernhill page
+          from its faults to a finished build on two routes.
+
+  - title: The data path
+    divider: false
+    summary: The first draft's faults · What a request costs · Labels from a table
+    notes: Now the first draft's four faults and their fix, the measured cost of each request, and why labels are precomputed and not refitted on a filter.
+    slides:
+      - layout: statement
+        beat: problem
+        section: What is wrong with the first draft
+        title: 11,235 KB and 50,000 rows, with no key sent
+        recall: What did the first draft's endpoint return when called with no key?
+        answer: "Status 200, 11,235 KB, 50,000 rows, every column including email."
+        kicker: The first draft, run
+        statement: "200 OK, 11,235 KB, 50,000 rows, and no key sent."
+        takeaway: The draft looks fine on a laptop and is wrong in four separate ways.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          This is the draft from the opening, as a runnable block. FastAPI turns a Python function into a web address, and
+          TestClient calls it without starting a server. The columns returned were customer_id, days_since_order, discount_share,
+          email, email_open_rate, orders_12m, region, segment, spend_12m, x and y.
+
+      - layout: code
+        beat: problem
+        level: core
+        section: What is wrong with the first draft
+        title: The draft is a three-line endpoint
+        recall: Why is returning the whole table from an endpoint a fault?
+        answer: "It returns every row, 50,000 customers with their emails, to anyone who asks, and no key is needed."
+        lead: "FastAPI and TestClient, no server needed."
+        lang: python
+        code: |-
+          table = pd.read_parquet(segments.TABLE)
+          app = FastAPI()
+
+          @app.get("/segments")
+          def all_customers():
+              return table.to_dict("records")
+
+          answer = TestClient(app).get("/segments")
+          print(answer.status_code, len(answer.json()))
+        bullets:
+          - "Prints **200** and **50,000** rows"
+          - "No key was sent"
+        takeaway: One line returns the whole table, and that line is the fault.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          The note's block also prints the size in KB and the sorted column names of the first record.
+
+      - layout: cards
+        beat: pitfalls
+        section: What is wrong with the first draft
+        title: Four faults, each with an OWASP heading
+        recall: What are the four faults and the OWASP API heading for each?
+        answer: "No authentication (API2, nearest heading), no per-object permission (API1), every column exposed (API3), and no limit (API4)."
+        cards:
+          - {title: No authentication, accent: "1E3A5F", body: "Anyone with the address gets the answer (API2)"}
+          - {title: No owner check, accent: "0EA5C9", body: "Seeing a segment's size is not seeing a named customer (API1)"}
+          - {title: Every column, accent: "D4621A", body: "The emails go along because nobody excluded them (API3)"}
+          - {title: No limit, accent: "0F7490", body: "One request does all the work the server can do (API4)"}
+        takeaway: There are four separate faults and each has its own fix.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          API2, Broken Authentication, is the nearest heading, though its list mainly covers weak mechanisms. API1 says to validate
+          that a user can only access the objects they should. API3 notes that APIs tend to expose endpoints that return all an
+          object's properties. API4 asks for server-side validation of the number of records returned.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: What is wrong with the first draft
+        title: Three keywords close three of the faults
+        recall: What do response_model, Depends and Query(le=500) each do?
+        answer: "response_model limits the output to the fields you named. Depends runs the key check before the function. Query with le=500 is a cap we chose, which enforces the maximum."
+        lead: "The fixed customers route, trimmed."
+        lang: python
+        code: |-
+          @app.get("/v1/customers",
+                   response_model=api.CustomerPage)
+          def customers(segment: str, after: int = 0,
+                        limit: int = Query(100, ge=1,
+                                           le=500),
+                        _: str = Depends(api.require_crm)):
+              rows = table[(table.segment == segment)
+                  & (table.customer_id > after)].head(limit)
+              return {"rows": rows.to_dict("records")}
+        bullets:
+          - "`response_model` limits the fields"
+          - "`Depends` checks the key first"
+          - "`le=500` is our cap"
+        takeaway: Enforcing a maximum is your job, and the framework only gives you the place to put it.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          FastAPI's tutorial shows defaults for skip and limit, and enforcing a maximum is your job. The real route also returns
+          next_after for paging. The summary route takes a region and returns one row per segment, whoever asks.
+
+      - layout: table
+        beat: practice
+        section: What is wrong with the first draft
+        title: 401, 403 and 422 are three different refusals
+        recall: What do HTTP 401, 403 and 422 each mean for a FastAPI endpoint?
+        answer: "401 means no valid key. 403 means a valid key without the right, so the analyst cannot list customers. 422 means FastAPI rejected a 50,000 limit over the cap before the function ran."
+        header: [Request, Status, Meaning]
+        widths: [3.6, 1.3, 4.3]
+        bold_first: true
+        rows:
+          - [No key, "401", No valid key]
+          - [Analyst asks for customers, "403", Valid key without the right]
+          - ["CRM asks for 50,000 rows", "422", Over the cap; refused before the function ran]
+          - [CRM asks for a page, "200", "Rows without the email column"]
+        takeaway: The email is absent from the last row because response_model removed it.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          The analyst's summary request succeeded and returned one row per segment. The demo keys are stand-ins so the code runs. A
+          real deployment uses your single sign-on provider and verifies a signed token. A key compiled into a front-end bundle is
+          public, because every visitor downloads that bundle.
+
+      - layout: compare
+        beat: fundamentals
+        level: core
+        section: What is wrong with the first draft
+        title: Keyset paging asks for rows after the last id seen
+        recall: Why use keyset pagination rather than offset for a large export?
+        answer: "Offset still computes the skipped rows inside the server. Keyset filters on the last id seen, but you cannot jump to an arbitrary page, and it needs a unique sort order."
+        emphasis: right
+        left:
+          title: Offset
+          tag: Skip 40,000 rows
+          bullets: ["Skipped rows **still have to be computed**"]
+          accent: "D4621A"
+        right:
+          title: Keyset
+          tag: After the last id I saw
+          bullets: ["Skipped rows are not computed", "Cannot jump to an arbitrary page", "Needs a unique sort order"]
+          accent: "0F7490"
+        takeaway: For a CRM export, the lost random access costs nothing.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          The reason is PostgreSQL's documentation, which says the rows skipped by an OFFSET clause still have to be computed inside
+          the server. Winand's talk gives the technique and its price.
+
+      - layout: table
+        beat: fundamentals
+        section: What is wrong with the first draft
+        title: A summary is about 140 times faster than the draft
+        recall: How do the five requests compare in size and time?
+        answer: "The draft sends 50,000 rows, 11,235.3 KB (1,418.7 gzipped) in 533.8 ms. A segment summary sends 4 rows, 0.5 KB in 3.8 ms. The map is 442 rows, 28.8 KB in 5.3 ms. A page of 100 customers is 8.5 KB in 2.2 ms."
+        header: [Request, Rows, JSON KB, Gzip KB, Median ms]
+        widths: [4.0, 1.2, 1.4, 1.4, 1.4]
+        bold_first: true
+        highlight: [1]
+        rows:
+          - [First draft, "50,000", "11,235.3", "1,418.7", "533.8"]
+          - [One row per segment, "4", "0.5", "0.2", "3.8"]
+          - ["Segment, one region", "4", "0.5", "0.2", "3.2"]
+          - ["Map grid, cell 0.25", "442", "28.8", "2.4", "5.3"]
+          - [One page of 100 customers, "100", "8.5", "1.1", "2.2"]
+        takeaway: A chart of groups does not need a row per person.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          533.8 divided by 3.8 is the 140 times, our arithmetic. Setup: 50,000 synthetic customers on an Apple M4 Pro with 24 GB,
+          Python 3.13.15, FastAPI TestClient, no network and no TLS, median after one warm-up, measured on 2 November 2026,
+          uncompressed. Gzip is applied to each body separately at level 6. A real network would add to every row, and most to the
+          largest.
+
+      - layout: cards
+        beat: fundamentals
+        level: core
+        section: What is wrong with the first draft
+        title: Dropping columns is not enough
+        recall: How much does dropping columns or listing by column save compared with a summary?
+        answer: "Keeping three columns still sends 2,496 KB (330 KB gzipped). Listing values by column rather than by row is 1,520 KB (244 KB gzipped). A summary is 0.5 KB."
+        cards:
+          - {title: Three columns, accent: "1E3A5F", body: "Still 2,496 KB, 330 KB gzipped"}
+          - {title: By column, accent: "0EA5C9", body: "1,520 KB, 244 KB gzipped"}
+          - {title: A summary, accent: "0F7490", body: "0.5 KB, one row per segment"}
+        takeaway: Send the answer to the question, which is a few rows and not a thinner table.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          The note makes the point in one sentence: a chart of groups does not need a row per person.
+
+      - layout: bullets
+        beat: pitfalls
+        level: core
+        section: What is wrong with the first draft
+        title: The map drops any cell with fewer than five customers
+        recall: Why does the map endpoint drop small cells, and what does it not guarantee?
+        answer: "So no mark on the page is one person. It reduces the risk of picking out one person and does not remove it, because comparing filtered views can still reveal small counts."
+        bullets:
+          - "Cells with **fewer than five** customers are dropped"
+          - "Wales: cells add up to **1,632 of 2,001** customers"
+          - "The table carries the total, and the caption says what the map leaves out"
+          - "Less risk, **not none**: filtered views can reveal small counts"
+        takeaway: Say what the map leaves out, because the gap is a privacy choice and a counting one.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          The map endpoint counts customers in grid cells. This reduces the risk of picking out one person, and it does not remove
+          it.
+
+      - layout: steps
+        beat: practice
+        section: What is wrong with the first draft
+        title: Two cheap additions finish the job
+        recall: Which cheap additions reduce payload and reuse, and what must be marked private?
+        answer: "GZipMiddleware compresses answers, with a default minimum size of 500 bytes. An ETag lets a browser reuse an answer until the batch job writes a new table. Per-person answers must be marked private in Cache-Control."
+        steps:
+          - {title: GZipMiddleware, text: "Compresses answers; default minimum size 500 bytes"}
+          - {title: ETag, text: "A browser reuses the answer until a new table is written"}
+          - {title: "Cache-Control: private", text: "Mark anything per-person, or personal information can leak", accent: "D4621A"}
+        takeaway: Compress and cache the shared answers, and mark per-person ones private.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          MDN warns that forgetting private can cause personal information to leak.
+
+      - layout: cards
+        beat: problem
+        section: Precompute the labels, and do not refit on a filter
+        title: Refitting on a filter is fast, so speed is not the objection
+        recall: Is refit speed the objection to refitting on a filter?
+        answer: "No. Labels change meaning when you refit on a filter, even when the fit is fast. One k-means fit took 49 ms per request, against 4.7 ms to read Parquet and aggregate."
+        cards:
+          - {title: Refit, accent: "D4621A", body: "49 ms per request on 50,000 rows and five features"}
+          - {title: Parquet and aggregate, accent: "1E3A5F", body: "4.7 ms to read the file and aggregate"}
+          - {title: Aggregate in memory, accent: "0F7490", body: "2.7 ms to aggregate in memory"}
+        takeaway: "Speed is not the objection; labels change meaning when you refit on a filter."
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          K-means groups rows around k centres and is restarted from 10 random starts to keep the best. Timings are 49 ms of
+          wall-clock on a 12-core laptop per filter change, with scikit-learn's threads busy for much of it, so the server handles
+          fewer viewers at once.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: Precompute the labels, and do not refit on a filter
+        title: A new seed keeps the grouping and loses the ids
+        recall: What happens to cluster ids and grouping when you refit k-means with a new seed?
+        answer: "Only 49.1% of customers keep the same cluster id, but the ARI is 0.994, so the grouping is nearly identical once ids are ignored."
+        lead: "Overlapping groups, as real customers are."
+        lang: python
+        code: |-
+          frame = segments.make_customers(spread=2.5)
+          published, _, _ = segments.fit(frame, seed=0)
+          new_seed, _, _ = segments.fit(frame, seed=1)
+          print(np.mean(published == new_seed))
+          print(adjusted_rand_score(published, new_seed))
+        bullets:
+          - "Same cluster id: **49.1%**"
+          - "Same grouping, ids ignored (ARI): **0.994**"
+        takeaway: The ids are arbitrary, so anything keyed on a cluster number silently changes meaning.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          The adjusted Rand index compares groupings while ignoring the ids: 1 means identical and about 0 means chance. Fixing
+          random_state makes one fit repeatable, and it does not help when the data changes.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: Precompute the labels, and do not refit on a filter
+        title: A filter on a modelled feature moves customers
+        recall: How many customers change group when you refit on one region and on spend above the median?
+        answer: "A new seed moves 0.0% and 0.2%. One region moves 0.0% and 2.6%. Spend above the median moves 14.8% on well-separated data and 25.3% on overlapping data."
+        header: [Refit on, "Well-separated, spread 1", "Overlapping, spread 2.5"]
+        widths: [3.6, 2.8, 2.8]
+        bold_first: true
+        highlight: [2]
+        rows:
+          - ["The same 50,000 and a new seed", "ARI 1.000, 0.0% change", "ARI 0.994, 0.2% change"]
+          - ["One region (Wales, 2,001)", "ARI 0.999, 0.0% change", "ARI 0.932, 2.6% change"]
+          - ["Spend above the median (25,000)", "ARI 0.799, 14.8% change", "ARI 0.614, 25.3% change"]
+        takeaway: On a filter that touches a modelled feature, one in seven to one in four customers changes segment.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          Change group is after matching each new cluster to its best published counterpart. These groups are planted and simple,
+          so treat the percentages as an illustration and measure your own.
+
+      - layout: flow
+        beat: wrap
+        section: Precompute the labels, and do not refit on a filter
+        title: A job writes the labels and the app only reads
+        recall: What is the rule for labels, and why not choose k inside a request?
+        answer: "A job writes labels, names and the model version to a table and the app only reads. Choosing k from 2 to 8 with a silhouette score on 10,000 rows took 3.6 s, which nobody should do in a request."
+        steps:
+          - {label: Batch job, sub: "labels, names, model version", accent: "1E3A5F"}
+          - {label: One table, sub: "approved by a person", accent: "0EA5C9"}
+          - {label: The app, sub: "reads and filters rows", accent: "D4621A"}
+        caption: "Between refits the job only assigns new customers to the approved model."
+        takeaway: Refitting becomes a decision a person reviews, and a filter only selects rows.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          This follows the precompute-or-compute-on-request reasoning in the batch and online serving note. Our segments.py fits on
+          every run only because its data is seeded and never changes.
+
+  - title: Downloads, points and maps
+    divider: false
+    summary: What the browser downloads · Many points · Maps
+    notes: We weigh the code the browser has to download, then climb the three rungs for many points and look at maps. The last two are optional extensions.
+    slides:
+      - layout: statement
+        beat: problem
+        section: What the browser downloads
+        title: The code that draws the data has to arrive too
+        recall: Why does the choice of charting library also matter to the download?
+        answer: "The browser downloads the drawing code as well as the data, and some bundles are very large."
+        kicker: The other download
+        statement: "The data weighs as much as the largest library, so fixing the data matters more than choosing the library."
+        takeaway: Count the code as well as the data when you weigh a download.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          We bundled each library the way a production build would, with esbuild, minified and then gzipped at level 6, and pinned
+          the versions: practice/js/bundle_sizes.mjs, run on 2 November 2026 on Node 22.23.2.
+
+      - layout: image
+        beat: fundamentals
+        section: What the browser downloads
+        title: Three data responses beside eight code bundles
+        kicker: Gzipped download size
+        card: false
+        recall: In the download chart, what do the orange and blue bars show?
+        answer: "Orange bars are data responses from the table above and blue bars are code bundles."
+        image: ../../assets/sources/images/viz-segments-what-the-browser-downloads.png
+        caption: "Horizontal bars of gzipped download size for three data responses and eight code bundles"
+        bullets:
+          - "**Orange** bars are data"
+          - "**Blue** bars are code"
+        takeaway: The first draft's orange bar is as long as the longest blue one.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          Image source: generated by practice/ch06_figure.py.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: What the browser downloads
+        title: Plotly's full bundle is 1,449 KB gzipped
+        recall: Which bundles are largest and smallest, and what does importing less save?
+        answer: "plotly.js-dist-min is 1,449 KB gzipped, the basic Plotly bundle 396 KB, ECharts everything 375 KB and scatter-only 172 KB, d3 everything 94 KB and its scale, axis and selection only 12 KB."
+        header: [Package, Minified KB, Gzip KB]
+        widths: [5.6, 1.8, 1.8]
+        bold_first: true
+        rows:
+          - ["plotly.js-dist-min, every chart type", "4,707", "1,449"]
+          - ["plotly.js-basic-dist-min", "1,188", "396"]
+          - ["echarts, everything", "1,115", "375"]
+          - ["vega-embed with vega and vega-lite", "820", "285"]
+          - ["recharts scatter with react", "576", "173"]
+          - ["echarts, scatter only", "506", "172"]
+          - ["d3, everything", "277", "94"]
+          - ["leaflet", "147", "43"]
+          - ["d3, scale, axis and selection only", "34", "12"]
+        takeaway: What you import matters, and ECharts scatter is under half of ECharts everything.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          Versions: plotly.js 4.2.0, echarts 6.1.0, vega-embed 7.3.0 with vega 6.4.0 and vega-lite 6.5.0, recharts 3.10.1 with
+          react and react-dom 19.3.1, d3 7.9.0, leaflet 1.9.4. The basic Plotly bundle does not contain scattergl, because its
+          README lists only bar, pie and scatter, so the smaller file costs you WebGL.
+
+      - layout: compare
+        beat: pitfalls
+        section: What the browser downloads
+        title: A Python app is not free of download weight
+        recall: How do the Dash and React pages compare on first load?
+        answer: "Dash fetched 21 files totalling 6,716 KB, about 1,901 KB gzipped. React fetched 5 files totalling 610 KB, about 177 KB gzipped. The tenfold gap matters on phones and hardly at all on office broadband."
+        emphasis: none
+        left:
+          title: Dash page
+          tag: First load
+          bullets: ["**21** files, 6,716 KB", "About **1,901 KB** gzipped"]
+          accent: "1E3A5F"
+        right:
+          title: React page
+          tag: First load
+          bullets: ["**5** files, 610 KB", "About **177 KB** gzipped"]
+          accent: "0F7490"
+        takeaway: The tenfold gap matters for customers on phones and hardly at all for a CRM team on office broadband.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          Measured in Chrome on localhost on 3 November 2026. Dash sends plotly.js and its component libraries.
+
+      - layout: table
+        beat: practice
+        level: deep
+        section: When there are many points
+        title: WebGL loses at 1,000 points and wins from 10,000
+        recall: At which point counts does scattergl beat SVG scatter in the measurements?
+        answer: "SVG is quicker at 1,000 points (27 against 42 ms). WebGL wins from 10,000 (102 against 46 ms), and at 50,000 it is 55 ms against 476 ms. WebGL ran 200,000 in 76 ms and 400,000 in 111 ms."
+        header: [Points, "SVG scatter, ms", "WebGL scattergl, ms"]
+        widths: [2.6, 3.2, 3.4]
+        bold_first: true
+        rows:
+          - ["1,000", "27", "42"]
+          - ["10,000", "102", "46"]
+          - ["50,000", "476", "55"]
+          - ["200,000", "not run", "76"]
+          - ["400,000", "not run", "111"]
+        takeaway: Read the shape of the numbers and not the digits, because reruns moved WebGL by tens of milliseconds.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          Drawn in Chrome 156 with plotly.js 4.2.0 on an Apple M4 Pro, headless at 800 by 500, median of three, until two
+          animation frames had passed. This measures one fast laptop drawing once, and panning and a phone would both differ. Sometimes
+          an analyst does want every point, and there are three rungs; climb only as far as you need. SVG makes one page element per
+          mark and scattergl hands the drawing to the graphics card.
+
+      - layout: bullets
+        beat: pitfalls
+        level: deep
+        section: When there are many points
+        title: WebGL has limits of its own
+        recall: What limits does Plotly's performance page set on WebGL?
+        answer: "Most browsers allow between 8 and 16 WebGL contexts per page, which generally means 4 to 8 figures, and past that some figures will not render. Plotly Express switches to WebGL above 1,000 rows. The ceiling for WebGL traces is around a million points."
+        bullets:
+          - "Browsers allow **8 to 16** WebGL contexts per page"
+          - "That generally means **4 to 8 figures** on one page"
+          - "Past it, some figures **will not render**"
+          - "Plotly Express switches to WebGL above **1,000 rows**"
+          - "The ceiling is **around a million points**"
+        takeaway: WebGL scales to around a million points, and the cost is the number of figures per page.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          These figures are quoted from the Plotly performance page.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: When there are many points
+        title: Datashader draws five million points in 21 ms
+        recall: How long does Datashader take on five million points, first and second time?
+        answer: "371 ms the first time, which includes compiling, and 21 ms the second, producing an 800 by 500 image."
+        lead: "Count into a grid, then shade."
+        lang: python
+        code: |-
+          canvas = ds.Canvas(plot_width=800, plot_height=500)
+          for attempt in ("first, compiling", "second"):
+              start = time.perf_counter()
+              image = ds.tf.shade(
+                  canvas.points(cloud, "x", "y")).to_pil()
+              print(attempt, image.size,
+                    time.perf_counter() - start)
+        bullets:
+          - "5,000,000 points, **371 ms** then **21 ms**"
+          - "Only the aggregation stage touches the whole dataset"
+        takeaway: With the server doing the counting, the browser's cost stops depending on the number of points.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          The five million points are resampled from the 50,000 with noise. The printout in the note shows the time in
+          milliseconds. In Datashader's own pipeline, only one stage, aggregation, requires access to the entire dataset.
+
+      - layout: image
+        beat: practice
+        level: deep
+        section: When there are many points
+        title: An image of density instead of a mark per customer
+        kicker: Datashader output
+        recall: What does the Datashader image weigh against a Plotly figure, and what is the catch?
+        answer: "The image shaded by segment is 255 KB, against 362 KB gzipped for a Plotly figure of only 50,000 points. It needs a running Python process to show more detail when zooming."
+        image: ../../assets/sources/images/viz-segments-datashader.png
+        caption: "Five million synthetic points drawn as a soft image, with four coloured groups and no individual marks"
+        bullets:
+          - "Image **255 KB**, Plotly with 50,000 points **362 KB**"
+          - "Zooming for detail needs a **running server**"
+        takeaway: It suits Panel or HoloViews and a small audience, because it needs a server running.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          Datashader's docs say you will not be able to see more detail when zooming in unless the Python process is running.
+
+      - layout: statement
+        beat: wrap
+        level: deep
+        section: When there are many points
+        title: Ask whether you need the points at all
+        recall: What is the third rung for many points?
+        answer: "Ask whether you need the points at all. For the CRM team the answer is no, and the grid of counts is 2.4 KB."
+        kicker: The third rung
+        statement: "For the CRM team the answer is no, and the grid of counts is 2.4 KB."
+        takeaway: The cheapest point to draw is the one you never send.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          The three rungs were SVG then WebGL, render on the server, and ask whether you need the points at all.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: Maps
+        title: Folium writes a page where Leaflet draws
+        recall: How big is the Folium page for ten regions, and for 5,000 markers?
+        answer: "10 KB for ten region circles. The same page with 5,000 individual circle markers was 2,435 KB, because each marker is written into the HTML."
+        lead: "One sized circle per region."
+        lang: python
+        code: |-
+          counts = table.groupby("region").size()
+          uk = folium.Map(location=[53.5, -2], zoom_start=6)
+          for region, (_, lat, lon) in segments.REGIONS.items():
+              folium.CircleMarker(
+                  [lat, lon], radius=counts[region] ** .5 / 8,
+                  tooltip=f"{region}: {counts[region]:,}"
+              ).add_to(uk)
+        bullets:
+          - "Ten regions: **10 KB**"
+          - "5,000 markers: **2,435 KB**"
+        takeaway: Aggregate to regions first, because every marker is written into the page.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          Trimmed from the note's block, which also sets tiles, weight and fill and saves the file. The 2,435 KB figure comes from
+          ch06_stack_map.py.
+
+      - layout: cards
+        beat: pitfalls
+        level: deep
+        section: Maps
+        title: Three traps on a customer map
+        recall: What three things go wrong on a customer map?
+        answer: "A region's size misleads on a choropleth. Tiles are someone else's server with no SLA. A home address is personal data, so a map of customers' homes is a privacy decision."
+        cards:
+          - {title: Size misleads, accent: "D4621A", body: "On a choropleth large regions dominate; shade a density, or use a sized circle for a count"}
+          - {title: Tiles are borrowed, accent: "1E3A5F", body: "OpenStreetMap offers no SLA or guarantee and asks for clear attribution"}
+          - {title: Homes are personal, accent: "0F7490", body: "Our coordinates are one city per region on purpose"}
+        takeaway: A map of customers' homes is a privacy decision and not a chart choice.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          A choropleth is a map with each region shaded by its value. Wilke notes that we perceive larger areas as corresponding to
+          larger amounts, and that choropleths work best when the colouring represents a density. OpenStreetMap's policy says
+          availability is best-effort, and warns that access may be withdrawn from commercial services. For anything a business
+          depends on, arrange your own tiles.
+
+  - title: Colour, access, two pages
+    divider: false
+    summary: Colour for categories · Four WCAG checks · The same page twice
+    notes: We fix the colour the draft got wrong, run the four accessibility checks, and then compare the segments page built on Dash and on FastAPI with React.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Colour for categories
+        title: The draft coloured groups by their cluster number
+        recall: What does Plotly do when the colour column is numeric?
+        answer: "It treats it as continuous and draws a colour bar with values such as 1.5, which is not a group that exists."
+        kicker: Plotly's documentation
+        statement: "If the data is numeric, the color will automatically be considered continuous."
+        attribution: "A colour bar with 1.5 on it is not a group"
+        takeaway: A default can break a colour rule silently, so name the groups.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          Note 1 covers colour's jobs. This is that rule failing silently inside a default.
+
+      - layout: image
+        beat: fundamentals
+        section: Colour for categories
+        title: A numeric scale on the left, four named groups on the right
+        kicker: The same customers twice
+        card: false
+        recall: How do the two scatters in the figure differ?
+        answer: "On the left, numeric cluster ids on a purple-to-yellow scale with a colour bar from 0 to 3. On the right, four named segments in four colours and four shapes with a legend."
+        image: ../../assets/sources/images/viz-segments-numeric-vs-categorical.png
+        caption: "Two scatter plots of the same customers, numeric cluster ids against four named segments"
+        bullets:
+          - "Left: colour bar from **0 to 3**"
+          - "Right: four colours **and** four shapes"
+        takeaway: The right-hand chart can be read from its legend, and the left one implies an order.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          Image source: generated by practice/ch06_stack_map.py, synthetic data.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: Colour for categories
+        title: Fix the colour by name, not by order of appearance
+        recall: Why does filtering out a segment repaint the others under default colours?
+        answer: "Default colour follows order of appearance, so removing one segment shifts the colours of every other one. Fix the mapping by name with color_discrete_map."
+        lead: "Four named traces with a fixed palette."
+        lang: python
+        code: |-
+          COLOURS = dict(zip(segments.NAMES,
+              ["#2a78d6", "#eb6834", "#1baf7a", "#eda100"]))
+          named = px.scatter(table, x="x", y="y",
+              color="segment", symbol="segment",
+              category_orders={"segment": segments.NAMES},
+              color_discrete_map=COLOURS)
+        bullets:
+          - "Numeric ids: **1 trace** and a colour bar"
+          - "Names: **4 traces**"
+        takeaway: With colour tied to the name, a filter cannot change what a colour means.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          In the default run, Discount hunters is first and blue. With one segment filtered out the remaining three shift to
+          the next colours. In React, a lookup table does the same job, as our STYLE object does. Wilke finds that qualitative
+          scales work best when there are three to five different categories.
+
+      - layout: steps
+        beat: fundamentals
+        section: Accessibility is part of the contract
+        title: Four WCAG checks that apply to a chart page
+        recall: What are the four WCAG 2.2 checks applied to a chart page?
+        answer: "Colour is not alone (1.4.1), contrast (1.4.3 and 1.4.11), a table view (1.1.1), and keyboard and hover (2.1.1 and 1.4.13)."
+        steps:
+          - {title: Colour is not alone, text: "WCAG 1.4.1: our segments also differ in shape", n: "1"}
+          - {title: Contrast, text: "WCAG 1.4.3 and 1.4.11: 4.5:1 for text, 3:1 for marks", n: "2"}
+          - {title: A table view, text: "WCAG 1.1.1: the actual data is provided in a table", n: "3"}
+          - {title: Keyboard and hover, text: "WCAG 2.1.1 and 1.4.13: a real select works free", n: "4"}
+        takeaway: A dashboard is often someone's only route to these numbers, so it has to work for them.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          WCAG 2.2 is the W3C's web accessibility guidelines. About 8% of men and 0.5% of women have some colour-vision deficiency
+          (Wilke). Our filter is a real select element, which gets keyboard support free. Anything found only on hover fails for
+          keyboard and touch users.
+
+      - layout: bullets
+        beat: pitfalls
+        level: core
+        section: Accessibility is part of the contract
+        title: Our palette passes colour-vision checks and fails contrast
+        recall: Which of our colours fall short of 3:1 contrast, and what is the escape?
+        answer: "Aqua at 2.74:1 and yellow at 2.11:1 fall short of 3:1 on the near-white surface. WCAG accepts the information being available in another form, so our table meets the check."
+        bullets:
+          - "Aqua is **2.74:1** and yellow **2.11:1**, under 3:1"
+          - "Text needs **4.5:1**, or 3:1 if large"
+          - "A **table** meets the check, so ours does"
+          - "No screen-reader test: we claim **only these checks**"
+        takeaway: A low-contrast shape is still low contrast, and the table is what carries the claim.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          The shapes and legend help. The numbers are from the validator we ran. We have not tested these pages with a screen
+          reader.
+
+      - layout: image
+        beat: practice
+        section: "Worked example: the Fernhill segments page, twice"
+        title: The React page, with grid cells in four colours and shapes
+        kicker: FastAPI and React
+        card: false
+        recall: What does the React segments page show?
+        answer: "A region dropdown above a chart of grid cells in four colours and shapes, and a table of each segment's customers, share, spend, days since order and email open rate."
+        image: ../../assets/sources/images/viz-segments-react-dashboard.png
+        caption: "The React segments dashboard with a region dropdown, a grid-cell chart and a segment table"
+        bullets:
+          - "Each mark is a grid cell of at least **five** customers"
+          - "The table carries the numbers"
+        takeaway: The page meets the checks with shapes, a legend and a table below the chart.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          Screenshot from practice/ch06_browser.py, the React and FastAPI route. Every number in this section is synthetic.
+
+      - layout: image
+        beat: practice
+        section: "Worked example: the Fernhill segments page, twice"
+        title: The Dash page, from the same table and helpers
+        kicker: Dash
+        card: false
+        recall: What does the Dash segments page show?
+        answer: "A region dropdown above a Plotly chart of the same grid cells with a legend, and a plain table of the same segments."
+        image: ../../assets/sources/images/viz-segments-dash-dashboard.png
+        caption: "The Dash segments dashboard with a region dropdown, a Plotly chart with legend and a plain table"
+        bullets:
+          - "The **same** grid cells and segments"
+          - "A plain table beside a legend"
+        takeaway: Two routes give the same page, built from the same table and helpers.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          Screenshot from practice/ch06_browser.py, the Dash route.
+
+      - layout: compare
+        beat: fundamentals
+        section: "Worked example: the Fernhill segments page, twice"
+        title: 42 lines of Python against 247 lines and a toolchain
+        recall: How do the Dash and FastAPI-with-React builds compare?
+        answer: "Dash is 42 lines of Python and about 1,901 KB first load, with no login in our demo. FastAPI and React is 147 lines of Python and 100 of TypeScript plus a Node toolchain, about 177 KB, with a key check in the demo."
+        emphasis: none
+        left:
+          title: Dash
+          tag: Python app
+          bullets: ["**42** lines of Python", "About **1,901 KB** first load", "Bring your own login"]
+          accent: "1E3A5F"
+        right:
+          title: FastAPI and React
+          tag: Full stack
+          bullets: ["**147** lines of Python, **100** of TypeScript, a Node toolchain", "About **177 KB** first load", "A key check; your SSO in production"]
+          accent: "0F7490"
+        takeaway: The React version buys a smaller first load with a second language and a toolchain.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          The 147 lines of Python include the kept first draft. We add 147 and 100 only in the title as a loose total; the table
+          in the note lists them separately.
+
+      - layout: compare
+        beat: wrap
+        section: "Worked example: the Fernhill segments page, twice"
+        title: For Fernhill, a Python app on the Dash row
+        recall: Which route should Fernhill take, and when would React earn its code?
+        answer: "A CRM team of a few people, inside the company, with labels that change only when someone approves a refit, belongs on the Python app row. The 42-line Dash file is enough behind the company's login proxy. React earns its extra code when these views go into the customer-facing product."
+        emphasis: left
+        left:
+          title: Today
+          tag: A CRM team inside the company
+          bullets: ["A few people, labels change on approval", "The 42-line Dash file", "Behind the company's login proxy"]
+          accent: "0F7490"
+        right:
+          title: The day it changes
+          tag: Customer-facing
+          bullets: ["Views go into the customer product", "React earns its extra code", "A BI tool already paid for is cheaper still"]
+          accent: "D4621A"
+        takeaway: The situation picks the route, and a change of situation is when to change it.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          A login proxy is a service in front of the app that checks the company sign-in before passing any request through. If the
+          same numbers were going into a BI tool the company already pays for, publishing the summary table to it would be
+          cheaper still.
+
+      - layout: cards
+        beat: pitfalls
+        section: Pitfalls
+        title: Three pitfalls that pass a demo
+        recall: Name three dashboard data-path pitfalls that pass a demo
+        answer: "A list endpoint that returns the table, a secret or cap only in the front end, and refitting on a filter or keying on a cluster number."
+        cards:
+          - {title: The table as an endpoint, accent: "D4621A", body: "At 50,000 rows it is half a second and 11 MB. Return an aggregate"}
+          - {title: Front-end secrets, accent: "1E3A5F", body: "Anything in the bundle is public. Keep keys and limits on the server"}
+          - {title: Refit or cluster id, accent: "0F7490", body: "A segment name changes meaning when a slider moves. Read named labels from a table"}
+        takeaway: Aggregate by default, keep secrets and caps on the server, and read named labels from a table.
+        source: notes/06b-dashboard-data-path-points-colour-and-worked-example.md
+        notes: >-
+          An email list built on cluster 2 targets a different group after a refit. A dropdown limited to 100 rows does nothing
+          against someone calling the address directly.

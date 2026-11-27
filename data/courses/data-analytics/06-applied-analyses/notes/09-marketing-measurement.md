@@ -1,10 +1,11 @@
 ---
-imported_hash: a3324a3871e5623b
+imported_hash: 6f8b15038146528b
 title: 'Marketing measurement: attribution, mix models and the budget'
 summary: 'Fernhill''s dashboard says paid social closes almost half of all sales, and from January 2025 the money went that way: paid social rose from about £2,680 a week to about £7,340 while email was cut from about £1,360 to about £450.'
 order: 10
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-analytics/06-applied-analyses/notes/09-marketing-measurement.md
 ---
 

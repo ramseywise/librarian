@@ -1,8 +1,8 @@
 ---
 title: "Learning to Rank: Pointwise, Pairwise, Listwise and LambdaMART"
-tags: [data-science, concept]
+tags: [data-science, time-series-and-recommenders, concept]
 summary: "Learning to rank trains on one item, one pair or one whole list; NDCG is flat or discontinuous so LambdaMART defines gradients (RankNet's times |delta NDCG|) instead of a loss, yet on a matching task moving to pairs bought most of the gain and the NDCG factor little."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--05-time-series-and-recommenders--notes--04-entity-matching-and-learning-to-rank.md
 ---

@@ -1,6 +1,6 @@
 ---
 name: codemap
-description: "Reindex and query the live code-structure index. No args = reindex all configured repos + report symbol/file counts. 'query <term>' = find_symbol lookup. 'map <repo>' = repo_map overview for orientation before working in an unfamiliar repo."
+description: "Reindex and query the live code-structure index (symbols and repo maps). No args = reindex all configured repos + report symbol/file counts. 'query <term>' = find_symbol lookup. 'map <repo>' = repo_map overview for orientation before working in an unfamiliar repo. Triggers on: '/codemap', 'reindex the code', 'where is this symbol defined', 'map this repo', 'find the function called X', 'orient me in this repo'."
 allowed-tools: Read Bash
 ---
 

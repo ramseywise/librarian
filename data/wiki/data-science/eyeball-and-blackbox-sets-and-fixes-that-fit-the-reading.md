@@ -1,8 +1,8 @@
 ---
 title: "Eyeball and Blackbox Sets and Fixes That Fit the Reading"
-tags: [data-science, pattern]
+tags: [data-science, classical-ml, pattern]
 summary: "Reading errors overfits the rows read: keep a read set apart from a score set, fix classes not rows, count rounds, and expect even a well-argued mechanism fix to vanish on unread data."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--12-reading-the-errors.md
 ---

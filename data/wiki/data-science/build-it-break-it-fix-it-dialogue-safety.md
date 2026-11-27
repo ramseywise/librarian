@@ -1,8 +1,8 @@
 ---
 title: Build it Break it Fix it (Dialogue Safety)
-tags: [data-science, concept]
+tags: [data-science, nlp, concept]
 summary: "Dinan et al. train an offensive-language classifier in rounds where crowdworkers write messages that fool the current model, then retrain on them; the adversarially trained model beat a standard-trained one on adversarial test rounds (self-reported)."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-dinan-2019-build-it-break-it-fix.md
   - data/raw/papers/2026-11-08-henderson-2018-ethical-challenges-data-driven-dialogue.md

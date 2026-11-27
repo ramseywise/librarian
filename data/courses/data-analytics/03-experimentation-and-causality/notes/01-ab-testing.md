@@ -1,10 +1,11 @@
 ---
-imported_hash: 7a189e905da07588
+imported_hash: 2840761febb2242f
 title: 1 — A/B Testing
 summary: Larkspur's designers have rebuilt the checkout, and everyone who has seen it thinks it is better.
 order: 2
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-analytics/03-experimentation-and-causality/notes/01-ab-testing.md
 ---
 

@@ -8,6 +8,11 @@ import { Markdown } from "./Markdown";
 import { openingRepeatsSummary, splitLesson, stripDuplicateH1 } from "./lessonParts";
 import { CLOBBER_PREFIX, splitSolution } from "./markdownUtils";
 import { StudyLevels } from "./StudyLevels";
+import { useSpeech } from "../../hooks/useSpeech";
+import { dictationAllowed } from "../../voice/policy";
+import { drillPromptSpeech, lessonSections } from "../../voice/speechText";
+import { ReadAloud } from "../voice/ReadAloud";
+import { VoiceDrawer } from "../voice/VoiceDrawer";
 
 interface Props {
   lesson: Lesson;
@@ -47,6 +52,22 @@ export function DrillBadges({ drill }: { drill: NonNullable<Lesson["drill"]> }) 
   );
 }
 
+/** A drill reads its Prompt section or nothing, and says which. See drillPromptSpeech. */
+function DrillReadAloud({ body }: { body: string }) {
+  const speech = useSpeech();
+  if (!speech.supported) return null;
+  const prompt = drillPromptSpeech(body);
+  if (!prompt.ok) return <p className="voice-notice">Read-aloud is off for this drill: {prompt.reason}.</p>;
+  return <ReadAloud speech={speech} label="Read prompt" segments={() => [{ text: prompt.text }]} />;
+}
+
+/** A lesson, one heading at a time. */
+function LessonReadAloud({ body, title }: { body: string; title: string }) {
+  const speech = useSpeech();
+  const segments = () => lessonSections(body, title).map((s, group) => ({ text: s.text, group, groupLabel: s.heading }));
+  return <ReadAloud speech={speech} label="Read aloud" segments={segments} skipLabel="Next section" />;
+}
+
 export function LessonView({ lesson, courseTitle, decks = [], done, onMarkDone, onOpen, onOpenConcept, onAsk, onToc, onActiveHeading }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const proseRef = useRef<HTMLDivElement>(null);
@@ -62,9 +83,11 @@ export function LessonView({ lesson, courseTitle, decks = [], done, onMarkDone, 
   const [tab, setTab] = useState<Tab>("lecture");
   const [anchor, setAnchor] = useState<string | null>(null);
   const [showSolution, setShowSolution] = useState(false);
-  // A lecture is named after its note (`lectures/01-x.yaml` for `notes/01-x.md`); a note without one gets the
-  // module's own deck, whose id is the module.
-  const deck = decks.find((d) => d.id.split("/").pop() === lesson.id.split("/").pop())
+  // A lecture is named after its note (`lectures/01-x.yaml` for `notes/01-x.md`) or lists it in `covers`
+  // (one lecture per submodule); a note without one gets the module's own deck, whose id is the module.
+  const stem = lesson.id.split("/").pop();
+  const deck = decks.find((d) => d.id.split("/").pop() === stem)
+    ?? decks.find((d) => !!stem && d.covers?.includes(stem))
     ?? decks.find((d) => lesson.id.startsWith(`${d.id}/`));
   const exercises = split?.exercises ? splitSolution(split.exercises) : null;
   const { data: glossary, error: glossaryError, retry: retryGlossary } = useGlossary(null, true);
@@ -133,6 +156,16 @@ export function LessonView({ lesson, courseTitle, decks = [], done, onMarkDone, 
             </div>
           )}
           {lesson.summary && !openingRepeatsSummary(body, lesson.summary) && <p className="lesson-summary">{lesson.summary}</p>}
+          {lesson.kind === "drill" || lesson.drill ? (
+            <DrillReadAloud key={`read-${lesson.id}`} body={body} />
+          ) : (
+            <LessonReadAloud key={`read-${lesson.id}`} body={body} title={lesson.title} />
+          )}
+          {lesson.kind === "drill" || lesson.drill ? (
+            <VoiceDrawer key={`voice-${lesson.id}`} subject={lesson.id} target={{ mode: "approach", lesson: lesson.id }} />
+          ) : !dictationAllowed(lesson.id) ? (
+            <VoiceDrawer key={`voice-${lesson.id}`} subject={lesson.id} target={{ mode: "interview", lesson: lesson.id }} />
+          ) : null}
           {tabbed ? (
             <div className="lab-tabs lesson-tabs" role="tablist" aria-label="Parts of this lesson">
               {TABS.map((t) => (

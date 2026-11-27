@@ -21,6 +21,12 @@ describe("parseRoute", () => {
     expect(parseRoute("/flashcards/ai/m")).toEqual({ page: "flashcards", deckId: "ai/m" });
   });
 
+  it("decodes a concept id and ignores an empty one", () => {
+    expect(parseRoute("/concept/rag%2Fchunking")).toEqual({ page: "concept", conceptId: "rag/chunking" });
+    expect(parseRoute("/concept/")).toBeNull();
+    expect(parseRoute("/concept/%E0%A4%A")).toBeNull();
+  });
+
   it("tells a lab from the lab list", () => {
     expect(parseRoute("/labs")).toEqual({ page: "labs" });
     expect(parseRoute("/labs/")).toEqual({ page: "labs" });

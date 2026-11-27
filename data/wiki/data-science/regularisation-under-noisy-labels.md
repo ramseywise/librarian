@@ -1,8 +1,8 @@
 ---
 title: "Regularisation Under Noisy Labels"
-tags: [data-science, comparison]
+tags: [data-science, deep-learning, comparison]
 summary: "With 30% flipped labels a wide net memorises (train 1.000, clean test 0.694); early stopping on a clean validation set beat weight decay and dropout, and dropout should be off at test time and, for underfitting models, only used early."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--02-optimisation-and-regularisation.md
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--README.md

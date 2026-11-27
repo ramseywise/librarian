@@ -1,8 +1,8 @@
 ---
 title: "Colorization as Classification over Quantised Colour Bins"
-tags: [data-science, concept]
+tags: [data-science, deep-learning, concept]
 summary: "Zhang, Isola and Efros predict a distribution over 313 quantised ab colour bins per pixel, reweight by colour rarity and decode with an annealed mean; the paper reports that 32% of AMT trials judged its output real, and tests colorization as a self-supervised pretext task (self-reported)."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-zhang-2016-colorful-image-colorization.md
 ---

@@ -1,8 +1,8 @@
 ---
 title: "Choosing k and Naming Clusters Honestly"
-tags: [data-science, pattern]
+tags: [data-science, classical-ml, pattern]
 summary: "Scale and choose features before clustering, expect BIC, silhouette and seed agreement to disagree on k, shuffle columns as a null check, and only name clusters that survive reseeding."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--05-unsupervised-learning.md
   - data/raw/papers/2026-11-08-practical-statistics-for-data-scientists-ch07-unsupervised-learning.md

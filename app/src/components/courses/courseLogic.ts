@@ -45,10 +45,3 @@ export function splitOverview(lesson: Lesson): { lead: string; rest: string } {
   if (at < 0) return { lead: body, rest: "" };
   return { lead: body.slice(0, at), rest: body.slice(at).replace(/^## (Lecture|Next)\s*\n[\s\S]*?(?=^## |(?![\s\S]))/gm, "") };
 }
-
-/** The syllabus row a note is studied in ("1. Load"), read off the readme's table. */
-export function submoduleOf(body: string, noteId: string): string | null {
-  const slug = noteId.split("/").pop() ?? "";
-  const row = body.split("\n").find((line) => line.startsWith("| **") && new RegExp(`/${slug}(\\.md)?[)#]`).test(line));
-  return row?.match(/^\| \*\*(.+?):?\*\*/)?.[1] ?? null;
-}

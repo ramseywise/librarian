@@ -1,8 +1,8 @@
 ---
 title: Profile Then Select
-tags: [data-science, pattern]
+tags: [data-science, classical-ml, pattern]
 summary: Two-stage ML framing — a transform skill that profiles every column with stated thresholds and recommends without applying, then a select skill that refuses to pick a model family before the profile exists, treats "I don't know" as a first-class parked answer with a revisit trigger, and emits a draft (not confirmed) config when nobody is there to answer.
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/claude-docs/galactus/skills/ml-transform/SKILL.md
   - data/raw/claude-docs/galactus/skills/ml-select/SKILL.md

@@ -1,10 +1,18 @@
 ---
-imported_hash: 842051a472def431
+imported_hash: 5a6923a50212d821
 title: '7 — The data generating process: fit, specification and generalisation'
 summary: Larkspur sends a coupon that we know lifts spend by 22%, because we wrote the simulation that says so.
 order: 9
 kind: reading
 section: Notes
+tier: practitioner
+depth: core
+depth_sections:
+  Why this chapter: intro
+  A model is a claim about how the rows were generated: intro
+  What cross-validation estimates, and where it breaks: deep
+  Big is not the same as representative: deep
+  A better fit is not better generalisation: deep
 source: learn-ai-engineering/data-analytics/02-probability-and-statistics/notes/07-data-generating-process.md
 ---
 

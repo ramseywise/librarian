@@ -1,8 +1,8 @@
 ---
 title: "Linear Text Classifiers and the TF-IDF Baseline"
-tags: [data-science, pattern]
+tags: [data-science, nlp, pattern]
 summary: "TF-IDF plus a regularised linear model inside a pipeline is the text-classification baseline; Naive Bayes, trees and averaged word vectors compared, with coefficient reading as a leakage check."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--03-nlp--notes--02-text-classification.md
   - data/raw/papers/2026-11-08-text-analytics-with-python-ch04-text-classification.md

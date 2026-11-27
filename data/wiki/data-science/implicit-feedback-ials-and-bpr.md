@@ -1,8 +1,8 @@
 ---
 title: "Implicit Feedback: iALS and BPR"
-tags: [data-science, concept]
+tags: [data-science, time-series-and-recommenders, concept]
 summary: "With clicks and plays there is no negative signal and counts measure confidence, not strength; iALS weights every cell in closed form and BPR optimises pairwise order, and a published alpha of 40 was the worst setting on other data."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--05-time-series-and-recommenders--notes--02-collaborative-filtering-and-matrix-factorisation.md
 ---

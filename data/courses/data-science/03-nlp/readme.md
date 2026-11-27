@@ -1,5 +1,5 @@
 ---
-imported_hash: e5f5c5a31838bc70
+imported_hash: 2127375659fb2112
 title: 03 — Natural language processing
 summary: 'The pre-transformer NLP toolkit, taught as something you can still use: preprocessing, bag of words and TF-IDF, text classification, topic models and summarisation, word embeddings, named entity recognition and sentiment analysis.'
 order: 1
@@ -31,7 +31,8 @@ A model cannot read, so somebody decides how text becomes numbers, and that deci
 | 02 | [Text classification](notes/02-text-classification.md) | How good is the baseline, and how do you compare anything else against it? |
 | 03 | [Topic models and summarisation](notes/03-topic-models-and-summarization.md) | What is in a corpus when nobody has labelled it? |
 | 04 | [Embeddings and similarity](notes/04-embeddings-and-similarity.md) | How does a model learn that "hotel" is near "motel"? |
-| 05 | [Semantic analysis and NER](notes/05-semantic-analysis-and-ner.md) | How do you pull out who, where and when, and how do you score it? |
+| 05 | [Semantic analysis](notes/05-semantic-analysis-and-ner.md) | What does a word mean, and how did early systems represent what a sentence asserts? |
+| 05b | [Named entity recognition](notes/05b-named-entity-recognition.md) | How do you pull out who, where and when, and how do you score it? |
 | 06 | [Sentiment analysis](notes/06-sentiment-analysis.md) | Dictionary, linear model or LSTM, and why do people feel that way? |
 | 07 | [LLM embeddings as features](notes/07-llm-embeddings-as-features.md) | When does a pretrained encoder beat TF-IDF, and what else can its vectors do? |
 
@@ -52,7 +53,7 @@ A model cannot read, so somebody decides how text becomes numbers, and that deci
 | [GA 01/01 Tokens and embeddings](../../generative-ai/01-llm-fundamentals/notes/01-tokens-and-embeddings.md) | Word counts to word2vec to a learned embedding table |
 | [GA 02/03 Keyword, semantic and hybrid search](../../generative-ai/02-rag-retrieval/notes/03-keyword-semantic-and-hybrid-search.md) | TF-IDF, BM25 and sentence embeddings are taught here first |
 | [GA 09/03 nanoGPT](../../generative-ai/09-llms-from-scratch/notes/03-nanogpt.md) | Compares a GPT with these earlier text models |
-| [AIE 05/10 Building KGs with LLMs](../../ai-engineering/05-graph-engineering/notes/10-building-kgs-with-llms.md) | NER without an LLM |
+| [AIE 05/10 Building KGs with LLMs](../../ai-engineering/05-graph-engineering/notes/10-building-kgs-with-llms.md) | NER without an LLM ([05b](notes/05b-named-entity-recognition.md)) |
 | [AIE 08/03 Multimodal RAG](../../ai-engineering/08-multimodal-engineering/notes/03-multimodal-rag.md) | Comparing vectors in one space |
 
 ## Rules of thumb
@@ -84,7 +85,8 @@ Packages for each note, on Python 3.12:
 | 02 | `gensim`, `scikit-learn`, `pandas` |
 | 03 | `nltk`, `gensim`, `scikit-learn`, `pandas`, `networkx`, `scipy` |
 | 04 | `gensim`, `scikit-learn`, `pandas`, `tensorflow`, `scipy` |
-| 05 | `nltk`, `spacy`, the `en_core_web_sm` wheel, `sklearn-crfsuite`, `seqeval`, `pandas` |
+| 05 | `nltk`, `pandas` |
+| 05b | `nltk`, `spacy`, the `en_core_web_sm` wheel, `sklearn-crfsuite`, `seqeval`, `pandas` |
 | 06 | `nltk`, `afinn`, `textblob`, `gensim`, `lime`, `wordcloud`, `scikit-learn`, `pandas`, `pyarrow`, `tensorflow` |
 | 07 | As in the command above; the API block is illustrative and is skipped |
 
@@ -94,7 +96,7 @@ The spaCy model goes on the command line as `--with "en_core_web_sm@https://gith
 
 | Folder | Notes | How it runs |
 |---|---|---|
-| [`practice/text-analytics-with-python/`](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-science/03-nlp/practice/text-analytics-with-python) | 01-06 | Notebooks from Sarkar's book. They need the nltk, spaCy and gensim models and are partly legacy: spaCy 2, standalone keras, gensim 3, `skater`, and TF 2.15 or earlier for Ch10a. Ch09 and Ch10 need `movie_reviews.csv`, which is not in the repo |
+| [`practice/text-analytics-with-python/`](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-science/03-nlp/practice/text-analytics-with-python) | 01-06, 05b | Notebooks from Sarkar's book. They need the nltk, spaCy and gensim models and are partly legacy: spaCy 2, standalone keras, gensim 3, `skater`, and TF 2.15 or earlier for Ch10a. Ch09 and Ch10 need `movie_reviews.csv`, which is not in the repo |
 | [`practice/intro-to-nlp/`](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-science/03-nlp/practice/intro-to-nlp) | 01, 03, 04, 06 | Own DeepLearning.AI TensorFlow NLP and Hugging Face course work, using the `tf.keras` 2.x `Tokenizer` API. The transformers notebook needs internet access for model downloads |
 | [`practice/approaching-almost-any-nlp-problem-on-kaggle.ipynb`](practice/approaching-almost-any-nlp-problem-on-kaggle.md) | 02 | Legacy. Needs Kaggle's spooky-author data and GloVe, with old keras and xgboost APIs |
 

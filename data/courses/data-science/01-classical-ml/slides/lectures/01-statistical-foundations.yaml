@@ -1,4 +1,4 @@
-# imported_hash: 150c58fb11e253b2
+# imported_hash: c05e6e6676cd3e20
 # Lecture on notes/01-statistical-foundations.md, in the note's order.
 # make slides PILLAR=data-science/01-classical-ml LECTURE=01-statistical-foundations STRICT=1 PREVIEW=1
 deck:
@@ -156,7 +156,7 @@ parts:
 
       - layout: compare
         beat: fundamentals
-        level: practice
+        level: core
         section: The problem setting
         title: Breiman split the field by its measure of success
         recall: How did Breiman divide statistical modelling by its measure of success?
@@ -176,7 +176,7 @@ parts:
 
       - layout: code
         beat: practice
-        level: practice
+        level: core
         section: The problem setting
         title: The running example is one table of people
         recall: What is the first thing to print on a classification problem?
@@ -368,7 +368,7 @@ parts:
 
       - layout: compare
         beat: fundamentals
-        level: practice
+        level: core
         section: "Bias, variance and model complexity"
         title: Explaining and predicting want different things
         recall: Why can the wrong model predict better than the correct one?
@@ -391,7 +391,7 @@ parts:
     slides:
       - layout: table
         beat: fundamentals
-        level: practice
+        level: core
         section: Probability as ML uses it
         title: Four probability ideas keep coming back
         recall: Which four probability ideas recur in ML?
@@ -482,7 +482,7 @@ parts:
 
       - layout: code
         beat: practice
-        level: practice
+        level: core
         section: "Train, validation, test"
         title: Two arguments make a split trustworthy
         recall: How do you make a classification split reproducible and balanced?
@@ -565,7 +565,7 @@ parts:
 
       - layout: bullets
         beat: practice
-        level: practice
+        level: core
         section: The scikit-learn API in four lines
         title: Before fitting, look at the data
         recall: What does a scatter matrix catch before you fit?
@@ -581,7 +581,7 @@ parts:
 
       - layout: table
         beat: practice
-        level: practice
+        level: core
         section: The scikit-learn API in four lines
         title: Six methods and what they return
         recall: What does fit return, and what does transform return?
@@ -687,7 +687,7 @@ parts:
 
       - layout: code
         beat: pitfalls
-        level: practice
+        level: core
         section: Pitfalls
         title: A sensible rule can lose to guessing
         recall: Why compare a sensible-looking rule to the base rate?

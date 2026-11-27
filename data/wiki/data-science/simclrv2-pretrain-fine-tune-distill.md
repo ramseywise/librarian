@@ -1,8 +1,8 @@
 ---
 title: "SimCLRv2 Pretrain, Fine-Tune, Distill"
-tags: [data-science, pattern]
+tags: [data-science, deep-learning, pattern]
 summary: "SimCLRv2 pretrains a big ResNet without labels, fine-tunes it on 1% or 10% of ImageNet labels, then distils it into a same-size or smaller student using unlabeled images only."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-chen-2020-big-self-supervised-models-strong.md
 ---

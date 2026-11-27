@@ -1,8 +1,8 @@
 ---
 title: "Ordered Boosting and Ordered Target Statistics"
-tags: [data-science, pattern]
+tags: [data-science, classical-ml, pattern]
 summary: "CatBoost's two permutation-based fixes for target leakage in boosting: categorical encodings and residuals are computed for each example only from examples earlier in a random order."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-07-prokhorenkova-2017-catboost.md
 ---

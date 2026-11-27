@@ -19,6 +19,14 @@
   color: var(--text);
   flex-shrink: 0;
 }
+.chat-min-btn {
+  background: none; border: none; padding: 0; cursor: pointer;
+  font: inherit; font-weight: 600; color: var(--text);
+  display: inline-flex; align-items: center; gap: var(--space-2);
+}
+.chat-min-btn:hover { color: var(--accent); }
+.chat-panel--min { height: auto; }
+.chat-panel--min .chat-header { border-bottom: none; }
 .chat-header-meta { display: flex; align-items: center; gap: var(--space-3); }
 .chat-hint { font-size: var(--fs-xs); color: var(--text-ghost); font-weight: 400; }
 .chat-clear-btn {

@@ -219,27 +219,27 @@ cards:
 - front: What does the Lesk algorithm do?
   back: Picks the sense whose definition overlaps most with the context. It is a weak baseline.
   lesson: data-science/03-nlp/notes/05-semantic-analysis-and-ner
-- front: What is BIO tagging?
-  back: B begins an entity, I continues it, O is outside. It keeps adjacent entities separate.
-  lesson: data-science/03-nlp/notes/05-semantic-analysis-and-ner
-- front: What does a CRF add to a per-token classifier?
-  back: It scores tag transitions over the whole sequence, so it can rule out invalid sequences.
-  lesson: data-science/03-nlp/notes/05-semantic-analysis-and-ner
-- front: Why is NER evaluated at the entity level?
-  back: Token accuracy is dominated by `O`, and a partly correct span is not a usable entity.
-  lesson: data-science/03-nlp/notes/05-semantic-analysis-and-ner
-- front: When do you train your own tagger?
-  back: When your entity types are specific and labelled examples exist. Otherwise use a pretrained model or rules.
-  lesson: data-science/03-nlp/notes/05-semantic-analysis-and-ner
-- front: Rules or a model?
-  back: Rules for closed lists like SKUs, a model for open classes where context matters.
-  lesson: data-science/03-nlp/notes/05-semantic-analysis-and-ner
-- front: What are the typical modern options?
-  back: Fine-tuned transformers for accuracy, LLM prompting for new types with few examples.
-  lesson: data-science/03-nlp/notes/05-semantic-analysis-and-ner
 - front: How do semantic representations survive today?
   back: As triples, knowledge graphs and constrained schemas, with LLMs doing the extraction.
   lesson: data-science/03-nlp/notes/05-semantic-analysis-and-ner
+- front: What is BIO tagging?
+  back: B begins an entity, I continues it, O is outside. It keeps adjacent entities separate.
+  lesson: data-science/03-nlp/notes/05b-named-entity-recognition
+- front: What does a CRF add to a per-token classifier?
+  back: It scores tag transitions over the whole sequence, so it can rule out invalid sequences.
+  lesson: data-science/03-nlp/notes/05b-named-entity-recognition
+- front: Why is NER evaluated at the entity level?
+  back: Token accuracy is dominated by `O`, and a partly correct span is not a usable entity.
+  lesson: data-science/03-nlp/notes/05b-named-entity-recognition
+- front: When do you train your own tagger?
+  back: When your entity types are specific and labelled examples exist. Otherwise use a pretrained model or rules.
+  lesson: data-science/03-nlp/notes/05b-named-entity-recognition
+- front: Rules or a model?
+  back: Rules for closed lists like SKUs, a model for open classes where context matters.
+  lesson: data-science/03-nlp/notes/05b-named-entity-recognition
+- front: What are the typical modern options?
+  back: Fine-tuned transformers for accuracy, LLM prompting for new types with few examples.
+  lesson: data-science/03-nlp/notes/05b-named-entity-recognition
 - front: When would you use a lexicon?
   back: No labels, or a quick baseline, especially VADER on short informal text.
   lesson: data-science/03-nlp/notes/06-sentiment-analysis

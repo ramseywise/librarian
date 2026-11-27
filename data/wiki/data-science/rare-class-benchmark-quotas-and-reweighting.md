@@ -1,8 +1,8 @@
 ---
 title: "Rare-Class Benchmark Quotas and Reweighting"
-tags: [data-science, pattern]
+tags: [data-science, classical-ml, pattern]
 summary: "A production-mix benchmark learns almost nothing about a rare class; equal quotas fix the spread but bias the headline unless each class's accuracy is reweighted back to its production share."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--11-choosing-a-metric.md
 ---

@@ -1,10 +1,11 @@
 ---
-imported_hash: 1d197631fdb4c470
+imported_hash: 467663f921128303
 title: 'Fairness in Automated Scoring: What to Measure, and What No Metric Settles'
 summary: Brackwater Freight is invented. It wants to screen applicants for shift supervisor with a model, and has capacity to interview the top 20%.
 order: 19
 kind: reading
 section: Notes
+tier: specialist
 source: learn-ai-engineering/data-science/01-classical-ml/notes/15-fairness-in-automated-scoring.md
 ---
 

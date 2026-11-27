@@ -1,8 +1,8 @@
 ---
 title: "Probability Calibration and Reliability Curves"
-tags: [data-science, concept]
+tags: [data-science, classical-ml, concept]
 summary: "A score is calibrated when a 0.8 happens 80% of the time; check with a reliability diagram and Brier score, and fix on held-out data with isotonic, Platt or temperature scaling."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--04-model-evaluation.md
   - data/raw/papers/2026-11-07-guo-2017-calibration-modern-neural-networks.md

@@ -5,7 +5,8 @@ import { AppNav } from "./components/AppNav";
 import { ChatPanel } from "./components/ChatPanel";
 import { pageTitle, useDocumentTitle } from "./components/courses/useDocumentTitle";
 import { useChatStream, type ChatContext, type LabChatContext, type StudyChatContext } from "./hooks/useChatStream";
-import { parseRoute } from "./routes";
+import { parseRoute, type CoursePage } from "./routes";
+import { dictationAllowed } from "./voice/policy";
 import { useHashRoute } from "./hooks/useHashRoute";
 import { useSlashSearch } from "./hooks/useSlashSearch";
 import { ThemeToggle } from "./components/ThemeToggle";
@@ -48,6 +49,13 @@ function writeFlag(key: string, on: boolean) {
   }
 }
 
+/** The chat sits beside whatever is open, so the page decides whether it may offer a mic. */
+function pageAllowsDictation(page: CoursePage | null): boolean {
+  if (page?.page === "courses") return dictationAllowed(page.path);
+  if (page?.page === "flashcards" || page?.page === "slides") return dictationAllowed(page.deckId);
+  return true;
+}
+
 export default function App() {
   const [highlightedPages, setHighlightedPages] = useState<Set<string>>(new Set());
   const [selectedNode, setSelectedNode] = useState<SelectedNode | null>(null);
@@ -59,8 +67,11 @@ export default function App() {
   // with the chat hidden (the filters fill it); narrow ones drop it, and the bar goes back on the map.
   const [mapDock, setMapDock] = useState<HTMLElement | null>(null);
   const narrow = useNarrow();
-  // Beside an open chat the filters fold to one header row; open, they share the column.
+  // The column stacks Browse & filter, Reading and the chat; the first two fold to a header row.
   const [filtersOpen, setFiltersOpen] = useState(false);
+  // The slot the selected page (or the atlas's sector or spike) is read in.
+  const [readingDock, setReadingDock] = useState<HTMLElement | null>(null);
+  const [readingOpen, setReadingOpen] = useState(true);
   // Narrow screens: the navigation is a drawer behind the Menu button. Wide ones: a sidebar the
   // same button slides away, which is remembered.
   const [navOpen, setNavOpen] = useState(false);
@@ -73,6 +84,11 @@ export default function App() {
     });
   };
   const navToggleRef = useRef<HTMLButtonElement>(null);
+  // Picking a page opens the Reading section, so the click always shows something.
+  const selectedId = selectedNode?.id ?? null;
+  useEffect(() => {
+    if (selectedId) setReadingOpen(true);
+  }, [selectedId]);
   const mainRef = useRef<HTMLElement>(null);
   const [focusPage, setFocusPage] = useState<string | null>(null);
   const lastQueryRef = useRef("");
@@ -237,9 +253,16 @@ export default function App() {
             className="pill-btn app-menu-btn"
             aria-expanded={isNarrow() ? navOpen : !navHidden}
             aria-controls="app-sidenav"
+            aria-label={(isNarrow() ? navOpen : !navHidden) ? "Hide navigation" : "Show navigation"}
+            title={(isNarrow() ? navOpen : !navHidden) ? "Hide navigation" : "Show navigation"}
             onClick={toggleNav}
           >
-            Menu
+            {/* A sidebar: a panel down the left of a window. */}
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
+              strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="16" rx="2" />
+              <line x1="9" y1="4" x2="9" y2="20" />
+            </svg>
           </button>
         )}
         <span className="app-brand">Librarian</span>
@@ -298,12 +321,14 @@ export default function App() {
               focusPage={inCourses ? null : focusPage}
               onFocusApplied={clearFocus}
               dock={mapDock}
+              reading={readingDock}
             />
           </div>
         </main>
 
-        {/* Right column: the chat over the map's filters, or the filters alone while the chat is
-            hidden (wide screens). Narrow screens show it only with the chat, as an overlay. */}
+        {/* Right column, top to bottom: Browse & filter, Reading, then the chat pinned at the
+            bottom so its input never moves. Wide screens keep the column with the chat hidden;
+            narrow ones show it only with the chat, as an overlay. */}
         {(chatOpen || (!narrow && !inCourses && !inLogin)) && (
           <aside
             id="chat-panel"
@@ -311,6 +336,40 @@ export default function App() {
             className={chatOpen ? "app-chat" : "app-chat app-chat--filters"}
             aria-label={chatOpen ? "Agent chat" : "Map filters"}
           >
+            {!inCourses && (
+              <>
+                <button
+                  type="button"
+                  className="app-map-dock-toggle"
+                  aria-expanded={filtersOpen}
+                  aria-controls="app-map-dock"
+                  onClick={() => setFiltersOpen((o) => !o)}
+                >
+                  <span>Browse &amp; filter</span>
+                  {activeTags.size > 0 && <span className="app-map-dock-count">{activeTags.size} active</span>}
+                  <span className="app-map-dock-chevron" aria-hidden="true">{filtersOpen ? "▾" : "▸"}</span>
+                </button>
+                <div id="app-map-dock" ref={setMapDock} className="app-map-dock" hidden={!filtersOpen} />
+                <button
+                  type="button"
+                  className="app-map-dock-toggle"
+                  aria-expanded={readingOpen}
+                  aria-controls="app-reading"
+                  onClick={() => setReadingOpen((o) => !o)}
+                >
+                  <span>Reading</span>
+                  {selectedNode && <span className="app-map-dock-count app-reading-name">{selectedNode.data.title}</span>}
+                  <span className="app-map-dock-chevron" aria-hidden="true">{readingOpen ? "▾" : "▸"}</span>
+                </button>
+                <section
+                  id="app-reading"
+                  ref={setReadingDock}
+                  className="app-reading"
+                  aria-label="Reading"
+                  hidden={!readingOpen}
+                />
+              </>
+            )}
             {chatOpen && (
               <ChatPanel
                 messages={messages}
@@ -320,27 +379,9 @@ export default function App() {
                 onOpenPage={openConcept}
                 onStop={stop}
                 onClear={clear}
+                dictationAllowed={pageAllowsDictation(page)}
               />
             )}
-            {chatOpen && !inCourses && (
-              <button
-                type="button"
-                className="app-map-dock-toggle"
-                aria-expanded={filtersOpen}
-                aria-controls="app-map-dock"
-                onClick={() => setFiltersOpen((o) => !o)}
-              >
-                <span>Browse &amp; filter</span>
-                {activeTags.size > 0 && <span className="app-map-dock-count">{activeTags.size} active</span>}
-                <span className="app-map-dock-chevron" aria-hidden="true">{filtersOpen ? "▾" : "▸"}</span>
-              </button>
-            )}
-            <div
-              id="app-map-dock"
-              ref={setMapDock}
-              className="app-map-dock"
-              hidden={inCourses || (chatOpen && !filtersOpen)}
-            />
           </aside>
         )}
       </div>

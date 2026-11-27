@@ -1,10 +1,11 @@
 ---
-imported_hash: cf8e749e9a4af261
+imported_hash: 37122fa6d5c8cf9d
 title: Sentiment analysis
 summary: 'Your product has fifty thousand reviews, and a manager asks two questions: are people happy, and why not?'
-order: 7
+order: 8
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-science/03-nlp/notes/06-sentiment-analysis.md
 ---
 

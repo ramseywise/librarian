@@ -550,9 +550,6 @@ cards:
 - front: When does a forest beat a Gaussian, and when not?
   back: It wins on gaps between regimes and skewed columns. It ties on round clouds and fails when irrelevant columns swamp the splits
   lesson: data-science/01-classical-ml/notes/05-unsupervised-learning
-- front: What is collaborative filtering?
-  back: Low-rank factorisation of the ratings matrix fitted on observed entries, learning item and user vectors
-  lesson: data-science/01-classical-ml/notes/05-unsupervised-learning
 - front: How do you pick k for a clustering?
   back: Measure, then expect disagreement. On the music library BIC is lowest at 11 and silhouette peaks at 2 or 3. The project's k=8 matches its eight taxonomy groups, which is a product reason and should be stated as one.
   lesson: data-science/01-classical-ml/notes/05-unsupervised-learning

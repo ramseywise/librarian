@@ -1,8 +1,8 @@
 ---
 title: "Choosing a Metric From the Cost of Errors"
-tags: [data-science, decision]
+tags: [data-science, classical-ml, decision]
 summary: "A loss rewards a specific answer (mean, median, quantile), MAPE rewards forecasting low, balanced accuracy hides a cost ratio of N:P, and MCC cannot respond to costs; pick the metric from the decision first."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--11-choosing-a-metric.md
 ---

@@ -1,8 +1,8 @@
 ---
-imported_hash: 9da977c9c6b6a872
+imported_hash: b50e19ffb3083d51
 title: Overview
 summary: This repository contains completed (and WIP) jupyter notebooks for the Bayesian Machine Learning MOOC on Coursera.
-order: 12
+order: 13
 kind: reading
 section: Practice / BayesianML
 source: learn-ai-engineering/data-analytics/04-bayesian-analysis/practice/BayesianML/README.md

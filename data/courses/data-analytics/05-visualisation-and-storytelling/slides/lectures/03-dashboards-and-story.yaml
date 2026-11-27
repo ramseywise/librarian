@@ -1,0 +1,965 @@
+# imported_hash: 10f0e7fbf2be7394
+# Lecture on step 3, Dashboards and story: notes/05-dashboards-and-storytelling.md, in the notes' order.
+# make slides PILLAR=data-analytics/05-visualisation-and-storytelling LECTURE=03-dashboards-and-story STRICT=1 PREVIEW=1
+# Levels: a slide with no level is the intro, `core` is the core lesson, `deep` is the optional extension (code and maths).
+deck:
+  title: Dashboards and Story
+  subtitle: A number to watch, a sentence to send
+  tagline: "Dashboards · Streamlit · BI tools · Storytelling"
+  reference: "Notes: data-analytics/05-visualisation-and-storytelling, note 5"
+  output: 03-dashboards-and-story.pptx
+  notes: >-
+    This is the fourth lecture of the visualisation series, after the three on choosing and drawing charts. It covers step 3.
+    By the end you should be able to tell a dashboard from an explanatory story, build one that pairs a growth metric with a
+    health metric, read a Streamlit script in rerun terms, choose between Streamlit and a BI tool by asking who will change it,
+    and turn an analysis into one sentence, one chart and a three-act story with a holdout.
+
+lecture:
+  covers:
+    - data-analytics/05-visualisation-and-storytelling/notes/05-dashboards-and-storytelling.md
+  requires: [data-analytics/05-visualisation-and-storytelling/notes/04-javascript-d3-vega-lite-observable-plot.md]
+  next: [data-analytics/05-visualisation-and-storytelling/notes/06-dashboard-stacks-from-python-to-frontend.md]
+  related:
+    - data-analytics/05-visualisation-and-storytelling/notes/03-plotly-and-interactive.md
+    - generative-ai/06-observability/notes/06-cost-and-latency-dashboards.md
+    - generative-ai/07-agentic-applications/notes/05-data-analysis-agent.md
+
+parts:
+  - title: Two jobs, one dashboard
+    divider: false
+    summary: Exploratory and explanatory · A dashboard is not a finding · Six checks
+    notes: We open on the green dashboard that missed a fall, separate the two jobs at the end of an analysis, and set out what a dashboard needs to be worth opening.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Two jobs, two forms
+        title: The dashboard was green and repeat buying fell
+        recall: Why did Fernhill's revenue dashboard miss a fall in repeat buying of nearly a third?
+        answer: "The dashboard did not lie. It answered the question it was built for, and nobody had asked it the one that mattered."
+        kicker: The problem
+        statement: "Revenue is up, the tile is green, and nobody has noticed that repeat buying fell by nearly a third."
+        takeaway: A dashboard answers the question it was built for, so the question has to be the right one.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          Fernhill's marketing team has had a revenue dashboard for three years. The lecture covers two jobs at the end of an
+          analysis that are often confused: building something people monitor, and telling someone what you found so they act.
+
+      - layout: flow
+        beat: fundamentals
+        section: Two jobs, two forms
+        title: A dashboard sits between exploring and telling
+        recall: Where does a dashboard sit between exploratory and explanatory work?
+        answer: "Exploratory is you finding out. Explanatory is telling a particular audience one particular thing. A dashboard sits between them as a tool for monitoring, and it contains no finding because it is built before the finding exists."
+        steps:
+          - {label: Exploratory, sub: "you, finding out", accent: "1E3A5F"}
+          - {label: Dashboard, sub: "them, monitoring", accent: "0EA5C9"}
+          - {label: Explanatory, sub: "them, deciding", accent: "D4621A"}
+          - {label: Decision and action, sub: "what changes", accent: "0F7490"}
+        caption: "Something moved on the dashboard sends you back to exploring."
+        takeaway: The dashboard monitors and the story persuades, and they are two different pieces of work.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          Knaflic draws the line at exploratory versus explanatory (Knaflic 2015, chapter 1). Exploratory work is you going
+          through the data for what is interesting. Explanatory work is you telling one audience one thing. The dotted arrow
+          back from the dashboard is the moment it prompts new exploration.
+
+      - layout: table
+        beat: fundamentals
+        section: Two jobs, two forms
+        title: A dashboard and a story answer different questions
+        recall: How do a dashboard and an explanatory story differ?
+        answer: "A dashboard answers 'what is my number' before the event, lives for months, and is returned to. A story answers 'what happened and what should we do' after the analysis, serves one decision, and is read once."
+        header: ["", Dashboard, Explanatory story]
+        widths: [1.8, 3.6, 3.8]
+        bold_first: true
+        rows:
+          - [Question it answers, "\"What is my number, is it okay?\"", "\"What happened, and what should we do?\""]
+          - [Written, before the event, after the analysis]
+          - [Lifespan, months or years, one decision]
+          - [Reader, "returns repeatedly, knows the context", "reads once, may not"]
+          - [Form, several small views and filters, "one chart per point, answer in the title"]
+        takeaway: Pick the column by the reader's question, because the two forms are not interchangeable.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          Walk the five rows. The form row is the one to dwell on: the story gets one chart per point, with the answer in the
+          title.
+
+      - layout: statement
+        beat: pitfalls
+        section: Two jobs, two forms
+        title: Do not send the left column to do the right one's job
+        recall: What is the most common failure in analytics, according to this lecture?
+        answer: "Pasting a dashboard screenshot into a slide and hoping the executive finds the point."
+        kicker: The common failure
+        statement: "Paste a dashboard screenshot into a slide and hope the executive finds the point."
+        attribution: "The most common failure in analytics"
+        takeaway: A dashboard holds no finding, so a screenshot of one leaves the reader to find it.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          This is the failure the rest of the lecture is built to avoid. If you have a finding, the second half of the lecture
+          shows how to write it down.
+
+      - layout: cards
+        beat: fundamentals
+        section: What makes a dashboard work
+        title: Three phrases that forbid most dashboards
+        recall: Which three phrases in Few's definition carry the weight?
+        answer: "'Most important', 'one screen' and 'at a glance'. Between them they forbid most dashboards in production."
+        cards:
+          - {title: Most important, accent: "1E3A5F", body: "The information needed to achieve objectives, and nothing else"}
+          - {title: One screen, accent: "0EA5C9", body: "Arranged so nothing needs scrolling or a second page"}
+          - {title: At a glance, accent: "D4621A", body: "Built for monitoring, not for a long read"}
+        takeaway: If a dashboard cannot be read on one screen at a glance, it is a report.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          Few's definition is usually summarised as the most important information needed to achieve objectives, arranged on a
+          single screen for monitoring at a glance (Few 2006). The note worked from secondary accounts, including a review, and
+          did not read the book, so say that if asked.
+
+      - layout: steps
+        beat: fundamentals
+        level: core
+        section: What makes a dashboard work
+        title: Six checks for a working dashboard
+        recall: What are the six items on the dashboard checklist?
+        answer: "Name the decision, few metrics each with context, pair a growth metric with a health metric, layout in reading order, filters in one row above the charts, and state sources and refresh time."
+        steps:
+          - {title: Name the decision, text: "Where next week's money goes, or whether to add shifts"}
+          - {title: Few metrics, with context, text: "Compare with last year, a target or a threshold"}
+          - {title: Pair growth with health, text: "A metric you can push by spending needs a partner", n: "★", accent: "D4621A"}
+          - {title: Reading order, text: "Summary tiles top left, then trends, then detail"}
+          - {title: Filters in one row, text: "Above the charts, changing everything below"}
+          - {title: Sources and refresh time, text: "Trust dies when it disagrees with finance"}
+        takeaway: Name the decision first, because without one you are building a report no one will open.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          A dashboard belongs to a recurring decision: where next week's marketing money goes, whether to add warehouse shifts.
+          Starred item three is the Fernhill failure, and the next two slides take it apart.
+
+      - layout: compare
+        beat: fundamentals
+        section: What makes a dashboard work
+        title: A tile needs something to compare against
+        recall: What does a tile that reads £5.96m need before it says anything?
+        answer: "A comparison with last year, a target or a threshold. £5.96m says little. £5.96m, +6.5% on last year, says something."
+        emphasis: right
+        left:
+          title: A number alone
+          bullets: ["Reads **£5.96m**", "Says little"]
+        right:
+          title: A number with context
+          bullets: ["Reads **£5.96m**, +6.5% on last year", "Says something"]
+        takeaway: Say compared with what, every time, or the tile is decoration.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          Compare with last year, a target or a threshold. Item two on the checklist.
+
+      - layout: compare
+        beat: fundamentals
+        level: core
+        section: What makes a dashboard work
+        title: Pair a growth metric with a health metric
+        recall: Why does revenue alone mislead, and what does a partner metric add?
+        answer: "Buying more traffic raises revenue, so revenue alone will look fine. Revenue beside repeat rate shows what the growth cost. Any metric you can push by spending deserves a partner."
+        emphasis: right
+        left:
+          title: Revenue alone
+          bullets: ["Buying traffic raises it", "Always going to look fine"]
+        right:
+          title: Revenue beside repeat rate
+          bullets: ["Shows what growth cost", "The Fernhill failure, caught"]
+        takeaway: Any metric you can push by spending deserves a partner that shows the side effect.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          This is the Fernhill failure. Revenue on its own was always going to look fine, because buying more traffic raises
+          revenue. The partner metric is the one that tells you what the growth cost.
+
+      - layout: bullets
+        beat: fundamentals
+        section: What makes a dashboard work
+        title: Layout, filters and provenance
+        recall: How should layout, filters and sources be handled on a dashboard?
+        answer: "Summary tiles top left, then trends, then detail, which is Shneiderman's overview first, filter, details on demand. Filters sit in one row above the charts and change everything below. State where the numbers come from and when they were refreshed."
+        bullets:
+          - "**Reading order:** summary tiles top left, then trends, then detail"
+          - "**Shneiderman:** overview first, filter, then details on demand"
+          - "**Filters:** one row above the charts, and obvious that they changed everything"
+          - "**Provenance:** where the numbers come from and when they were refreshed"
+        takeaway: The first time a dashboard disagrees with finance, trust goes unless the source is stated.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          Filters should change everything below them, and it should be obvious that they did. Trust dies the first time a
+          dashboard disagrees with finance and nobody can say why.
+
+  - title: Streamlit, a dashboard as a script
+    divider: false
+    summary: The rerun model · The code · Caching · Testing without a browser
+    notes: We build the whole Fernhill dashboard as one Python script, read it in rerun terms and test it without a browser.
+    slides:
+      - layout: statement
+        beat: problem
+        section: "Streamlit: a dashboard as a script"
+        title: Every touch reruns the whole script
+        recall: What is Streamlit's one big idea?
+        answer: "Whenever a user touches a widget, the entire script reruns from top to bottom. It is the source of most of its surprises."
+        kicker: The problem
+        statement: "Touch a widget and the entire script reruns from top to bottom."
+        takeaway: There are no callbacks to wire up, and everything Streamlit does follows from the rerun.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          Streamlit turns a Python script into a web app. Its one big idea, and the source of most of its surprises, is the
+          execution model. There are no callbacks, so a widget is simply a function call that returns the current value.
+
+      - layout: flow
+        beat: fundamentals
+        level: core
+        section: "Streamlit: a dashboard as a script"
+        title: A widget is a function call that returns a value
+        recall: What happens between a user touching a filter and the page changing?
+        answer: "The script reruns from the top, each widget call returns the current value, the data is filtered with it, and the tiles and chart are drawn from the filtered frame."
+        steps:
+          - {label: User touches a widget, sub: "a channel, a year", accent: "1E3A5F"}
+          - {label: Script reruns, sub: "top to bottom", accent: "0EA5C9"}
+          - {label: Widget returns, sub: "the current value", accent: "0F7490"}
+          - {label: Frame is filtered, sub: "tiles and chart redraw", accent: "D4621A"}
+        loop: true
+        caption: "That is all the interactivity there is."
+        takeaway: Read a Streamlit app in rerun terms and the filter, the tiles and the chart are three lines of one story.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          Left.multiselect returns a list. The next lines filter the DataFrame with it. The metrics and the chart are drawn from
+          the filtered frame, and that is all the interactivity there is.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: "Streamlit: a dashboard as a script"
+        title: Cache the load, or every click reruns it
+        recall: Why does a Streamlit app need @st.cache_data on its loader?
+        answer: "The script reruns on every click, and without the cache load() would run again each time. cache_data stores the return value keyed on the function's code and inputs."
+        lead: "From dashboard_app.py: the load step."
+        lang: python
+        code: |-
+          @st.cache_data
+          def load():
+              monthly = (fernhill.load_monthly()
+                  .merge(fernhill.load_repeat(),
+                         on=["month", "channel"]))
+              monthly["channel"] = monthly.channel.map(
+                  fernhill.LABELS)
+              return monthly
+
+          data = load()
+        bullets:
+          - "Stores the **return value**"
+          - "Keyed on the function's code and inputs"
+          - "Uncached, `load()` reruns on every click"
+        takeaway: Put the slow work inside a cached function, because the script outside it reruns on every click.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          The excerpt trims the docstring and the page setup from the full listing in the note. The full script is about 60
+          lines and sits in practice/dashboard_app.py.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: "Streamlit: a dashboard as a script"
+        title: Two widgets and one filtered frame
+        card: false
+        recall: In the dashboard script, how do the two widgets filter the data?
+        answer: "multiselect returns the chosen channels and selectbox returns the year. The view is the data filtered on both, and previous is the same filter on the year before."
+        lead: "The filters and the prior-year frame."
+        lang: python
+        code: |-
+          names = list(fernhill.LABELS.values())
+          left, right = st.columns([2, 1])
+          chosen = left.multiselect(
+              "Channel", names, default=names)
+          year = right.selectbox(
+              "Year", [2025, 2024, 2023])
+          view = data[data.channel.isin(chosen)
+                      & (data.month.dt.year == year)]
+          previous = data[data.channel.isin(chosen)
+                          & (data.month.dt.year == year - 1)]
+        bullets:
+          - "`multiselect` returns a **list**"
+          - "`selectbox` returns the **year**"
+          - "`previous` gives each tile its comparison"
+        takeaway: The widgets return plain values, and the rest of the script is ordinary pandas.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          Two columns hold the filters in one row. Both frames come from the same data, one year apart.
+
+      - layout: image
+        beat: practice
+        section: "Streamlit: a dashboard as a script"
+        title: Revenue green beside a repeat rate that is red
+        kicker: The Fernhill dashboard running
+        card: false
+        recall: What does the finished dashboard show, and which checklist item is visible on it?
+        answer: "Revenue up 6.5% and green, directly beside a repeat rate down 11.3 points and red. Item three, the growth and health pair, is visible on screen."
+        image: ../../assets/sources/images/viz-streamlit-dashboard.png
+        caption: "Streamlit dashboard showing a channel filter, three metric tiles and repeat rate by channel"
+        bullets:
+          - "Revenue **up 6.5%**, green"
+          - "Repeat rate **down 11.3 points**, red"
+          - "The headline asks the question the first version never did"
+        takeaway: Beside the revenue tile, the repeat rate tile asks the question the old dashboard never did.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          Screenshot of the dashboard script running. Point at the three tiles, then at the filter row,
+          then at the chart.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: "Streamlit: a dashboard as a script"
+        title: A metric tile carries its own comparison
+        recall: How does the Revenue tile get its comparison with last year?
+        answer: "The metric call gets a delta string, the change on last year, and None when there is no previous year."
+        lead: "The revenue and repeat-rate tiles."
+        lang: python
+        code: |-
+          tiles = st.columns(3)
+          tiles[0].metric(
+              "Revenue",
+              f"£{view.revenue.sum() / 1e6:.2f}m",
+              f"{view.revenue.sum()
+                 / max(previous.revenue.sum(), 1) - 1:+.1%}"
+              f" on last year" if len(previous) else None)
+          tiles[1].metric(
+              "90-day repeat rate", f"{rate(view):.1%}",
+              f"{(rate(view) - rate(previous)) * 100:+.1f} pts"
+              if len(previous) else None)
+        bullets:
+          - "Delta is `None` with no prior year"
+          - "A sign and an arrow, not colour alone"
+        takeaway: The delta argument gives each tile its comparison, and the sign and arrow do not rely on colour.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          Checklist item two is the tile with context. The third tile, marketing spend, has no delta. The excerpt
+          reformats the note's f-strings slightly to fit the slide.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: "Streamlit: a dashboard as a script"
+        title: AppTest drives the dashboard with no browser
+        recall: How do you test a Streamlit app without a browser?
+        answer: "AppTest runs the script, lets you set widget values and exposes what it would have drawn."
+        lead: "Run the script, then set a widget and run again."
+        lang: python
+        code: |-
+          from streamlit.testing.v1 import AppTest
+
+          app = AppTest.from_file(
+              "dashboard_app.py", default_timeout=30).run()
+          assert not app.exception
+          print([(m.label, m.value) for m in app.metric])
+          app.multiselect[0].set_value(["Email"]).run()
+          app.selectbox[0].set_value(2023).run()
+        bullets:
+          - "`.run()` executes the script"
+          - "`set_value` stands in for a click"
+          - "`app.metric` is what would be drawn"
+        takeaway: AppTest runs the script, sets widgets and reads the tiles, so a dashboard can have real tests.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          The excerpt drops two of the print calls from the note. The outputs are on the next slide.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: "Streamlit: a dashboard as a script"
+        title: Three states, and the empty deltas in 2023
+        card: false
+        recall: What did the three AppTest runs return, and why are the 2023 deltas empty?
+        answer: "All channels gave £5.96m, 26.2% and £624k. Email only gave £0.72m, 39.5% and £48k. The year 2023 gave £1.56m, 49.8% and £168k with empty deltas, because there is no prior year in the data."
+        header: [State, Revenue, 90-day repeat rate, Marketing spend]
+        widths: [2.6, 2.0, 2.6, 2.2]
+        bold_first: true
+        rows:
+          - [All channels, "£5.96m", "26.2%", "£624k"]
+          - [Email only, "£0.72m", "39.5%", "£48k"]
+          - [Year 2023, "£1.56m", "49.8%", "£168k"]
+        highlight: [2]
+        takeaway: In 2023 the deltas come back empty and not as a division-by-zero crash, which is the test worth keeping.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          The last run also prints the delta, and each comes back as an empty string. In 2023 there is no prior year in the
+          data. That edge case exists in every dashboard with a year filter.
+
+  - title: BI tools, when not to write code
+    divider: false
+    summary: Metabase · Looker Studio · Who changes it in six months
+    notes: Streamlit is excellent while you are the one maintaining it, so we look at what a BI tool gives other people and how to pick.
+    slides:
+      - layout: statement
+        beat: problem
+        section: "Metabase and Looker Studio: when not to write code"
+        title: Who will change this in six months?
+        recall: What question should you ask before picking Streamlit or a BI tool?
+        answer: "Who will change this in six months. If the answer is the marketing team, a Streamlit app quietly becomes a queue of tickets for you."
+        kicker: The problem
+        statement: "If the marketing team will change it, a Streamlit app becomes a queue of tickets for you."
+        takeaway: Pick the tool by who will edit it in six months, not by who builds it today.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          Streamlit is a Python application, so it needs a place to run, someone to fix it and an analyst for each change.
+          Often the right answer is a BI tool, which gives other people the ability to change a chart.
+
+      - layout: bullets
+        beat: fundamentals
+        section: "Metabase and Looker Studio: when not to write code"
+        title: Metabase, open source with analysts' SQL
+        recall: What is Metabase and how does a parameter become a filter?
+        answer: "Open source and self-hostable, with a paid cloud. Non-technical people use a point-and-click builder and analysts write SQL with parameters. A variable in double braces becomes a filter widget."
+        bullets:
+          - "**Open source** and self-hostable, with a paid cloud offering"
+          - "Non-technical people ask questions in a point-and-click builder"
+          - "Analysts write **SQL with parameters**"
+          - "A variable in double braces becomes a **filter widget**"
+        takeaway: Metabase gives non-developers the point-and-click builder and gives analysts parameterised SQL.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          Metabase is open source and self-hostable, with a paid cloud offering. The next slide shows the optional clause.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: "Metabase and Looker Studio: when not to write code"
+        title: Double brackets make a filter optional
+        recall: What do double square brackets do in a Metabase query?
+        answer: "They make a clause optional, so the query still runs when the filter is empty."
+        lead: "Illustrative: it needs a Metabase instance connected to a Fernhill warehouse."
+        lang: sql
+        code: |-
+          SELECT date_trunc('month', first_order_at)
+                   AS month,
+                 sum(repeat_within_90d)::float / count(*)
+                   AS repeat_rate
+          FROM customers
+          WHERE 1 = 1
+            [[AND channel = {{channel}}]]
+          GROUP BY 1
+          ORDER BY 1
+        bullets:
+          - "`{{channel}}` becomes a **widget**"
+          - "`[[ ... ]]` drops the clause when empty"
+          - "`WHERE 1 = 1` keeps the AND valid"
+        takeaway: Wrap a filter clause in double square brackets and the query still runs when the filter is empty.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          Field filters go one step further by binding the variable to a column, so the widget offers that column's real
+          values. This SQL is illustrative and was not run.
+
+      - layout: compare
+        beat: fundamentals
+        section: "Metabase and Looker Studio: when not to write code"
+        title: Looker Studio is not Looker
+        recall: What is Looker Studio, and why is its name confusing?
+        answer: "Google's free hosted report builder, worked on a canvas in the browser and shared by link. It is not the same product as Looker, Google's governed BI platform with a modelling layer."
+        emphasis: left
+        left:
+          title: Looker Studio
+          bullets: ["Free and hosted by Google", "A canvas in the browser", "Shared by link, like a Google Doc"]
+        right:
+          title: Looker
+          bullets: ["Google's governed BI platform", "Has a modelling layer", "A different product"]
+        takeaway: Looker Studio is a free canvas for quick reports, and it is not the governed Looker platform.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          You connect sources such as BigQuery, Sheets and Google Analytics. It has no code for us to run here, so it is covered
+          by the comparison table only.
+
+      - layout: table
+        beat: fundamentals
+        level: core
+        section: "Metabase and Looker Studio: when not to write code"
+        title: Streamlit, Metabase and Looker Studio side by side
+        recall: How do Streamlit, Metabase and Looker Studio differ on who edits and where the logic lives?
+        answer: "Streamlit is edited by Python developers with logic in Python in git. Metabase is for analysts plus self-serve users with logic in SQL and models in the tool. Looker Studio is for anyone with a browser with logic in calculated fields in the tool."
+        header: ["", Streamlit, Metabase, Looker Studio]
+        widths: [1.9, 2.6, 2.6, 2.6]
+        bold_first: true
+        rows:
+          - [Who edits, Python developers, "Analysts, plus self-serve", Anyone with a browser]
+          - [Logic lives in, "Python, in git", "SQL and models, in the tool", "Calculated fields, in the tool"]
+          - [Hosting, "You, or Streamlit's cloud", "You, or Metabase Cloud", Google]
+          - [Custom charts, Anything Python can draw, Its chart types, "Its chart types plus add-ons"]
+          - [Tests and review, "Code review, AppTest", Limited, Limited]
+          - [Best for, "Models, simulators, bespoke tools", "A company's standard reporting", "Quick marketing reports on Google data"]
+        takeaway: Streamlit buys tests and custom charts, and the BI tools buy editing by other people.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          Read the table by row. Tests and review is the row that separates Streamlit from the other two.
+
+      - layout: compare
+        beat: wrap
+        section: "Metabase and Looker Studio: when not to write code"
+        title: Choose Streamlit, or choose a BI tool
+        recall: When do you choose a BI tool over Streamlit?
+        answer: "When non-developers need to edit reports and the content is standard reporting. Streamlit suits bespoke tools maintained by people who write Python."
+        emphasis: none
+        left:
+          title: Streamlit
+          tag: Python owners
+          bullets: ["Models, simulators, bespoke tools", "Maintained by people who write Python", "Normal code review and AppTest"]
+          accent: "1E3A5F"
+        right:
+          title: Metabase or Looker Studio
+          tag: Other editors
+          bullets: ["A company's standard reporting", "Non-developers need to edit reports", "Quick marketing reports on Google data"]
+          accent: "0F7490"
+        takeaway: If the owners cannot write Python, use a BI tool.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          The interview answer: a BI tool when non-developers need to edit reports and the content is standard reporting.
+
+  - title: From a chart to a decision
+    divider: false
+    summary: Who, what, how · The Big Idea · Decomposing the fall · Sizing it
+    notes: Now the second job. We turn the repeat rate fall into a sentence for Priya, then do the arithmetic that sentence needs.
+    slides:
+      - layout: statement
+        beat: problem
+        section: From a chart to a decision
+        title: You have noticed the repeat rate. Now what?
+        recall: What does Knaflic say the first step is, before you touch a chart?
+        answer: "Be precise about who you are telling, what you need them to know or do, and only then how data supports that."
+        kicker: The problem
+        statement: "Before you open a chart: who are you telling, and what do you need them to do?"
+        takeaway: The first step does not touch a chart at all.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          Now the second job. "Stakeholders" is not an audience. For Fernhill, a fictional retailer, it is Priya, the CMO, who
+          set this year's budget and decides next quarter's.
+
+      - layout: steps
+        beat: fundamentals
+        level: core
+        section: From a chart to a decision
+        title: Who, what, how
+        recall: What are Knaflic's who, what and how?
+        answer: "Who is the specific audience and decision maker. What is what they need to know or do. How is the data that makes the point."
+        steps:
+          - {title: Who, text: "Priya, the CMO, who set this year's budget and decides next quarter's", accent: "1E3A5F"}
+          - {title: What, text: "What she needs to know or do", accent: "0EA5C9"}
+          - {title: How, text: "Only then, the data that supports it", accent: "D4621A"}
+        takeaway: Name Priya and the action before you pick a chart, because the data comes third.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          Knaflic, ch. 1. Notice the order: the data comes last, not first.
+
+      - layout: cards
+        beat: fundamentals
+        level: core
+        section: From a chart to a decision
+        title: Two compressions that force clarity
+        recall: What are the 3-minute story and the Big Idea?
+        answer: "The 3-minute story asks whether you could explain the point out loud if your slot shrank to three minutes. The Big Idea, from Duarte's Resonate, is one complete sentence stating your point of view and what is at stake."
+        cards:
+          - {title: The 3-minute story, accent: "0EA5C9", body: "Could you explain the point out loud if your slot shrank to three minutes?"}
+          - {title: The Big Idea, accent: "D4621A", body: "One complete sentence with your point of view and what is at stake. From Duarte's Resonate"}
+        takeaway: If you cannot write the Big Idea sentence, you do not yet know what you are saying.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          Both compressions come from Knaflic, and the Big Idea is hers from Nancy Duarte's Resonate. Both come before you open
+          a slide tool.
+
+      - layout: statement
+        beat: fundamentals
+        section: From a chart to a decision
+        title: The Fernhill Big Idea
+        recall: What is the Big Idea sentence for Fernhill?
+        answer: "Cutting the email budget saved £120k a year and has cost us several times that in margin, so we should restore it and test the effect with a holdout."
+        kicker: The sentence
+        statement: "Cutting the email budget saved £120k a year and has cost us several times that in margin, so we should restore it and test the effect with a holdout."
+        takeaway: Writing that sentence obliges you to know the numbers in it.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          Every number in the sentence has to be earned. The next four slides do the analysis that earns it.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: From a chart to a decision
+        title: Split the fall into mix and within-channel
+        card: false
+        recall: How does the code separate the mix effect from the within-channel effect?
+        answer: "Apply the old 2024 channel rates to the 2025 mix. The gap from the 2024 overall rate is the mix effect, and the remainder is the within-channel effect."
+        lead: "The key lines: old rates, new mix."
+        lang: python
+        code: |-
+          mix25 = y25.groupby("channel")[
+              "new_customers"].sum()
+          actual = ((rates25 * mix25).sum()
+                    / mix25.sum())
+          at_old_rates = ((rates24 * mix25).sum()
+                          / mix25.sum())
+          overall24 = (y24.repeat_90d.sum()
+                       / y24.new_customers.sum())
+          # mix effect: at_old_rates - overall24
+          # within-channel: actual - at_old_rates
+        bullets:
+          - "`rates24` and `rates25` are each channel's repeat rate"
+          - "`mix25` is 2025's new customers by channel"
+          - "The two effects sum to the full drop"
+        takeaway: Holding the old rates on the new mix isolates how much of the fall is mix alone.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          The excerpt keeps the lines that carry the idea. The full listing in the note also builds y24, y25, rates24 and
+          rates25 by grouping the repeat table by channel. Two things happened at once in January 2025: more new customers came
+          from paid social, a low-repeat channel, and every channel's repeat rate fell.
+
+      - layout: table
+        beat: fundamentals
+        section: From a chart to a decision
+        title: Mix explains 4 points and 7 are within channels
+        recall: How much of the fall is mix, and how much is within channels?
+        answer: "The 2024 overall rate was 37.5% and 2025 was 26.2%. The 2025 mix at 2024 channel rates would be 33.3%, so mix is -4.3 points and within-channel is -7.1 points, together the headline drop of 11.3 points."
+        header: [Step, Rate or effect]
+        widths: [5.6, 3.0]
+        rows:
+          - [2024 overall repeat rate, "37.5%"]
+          - [2025 mix at 2024 channel rates, "33.3%"]
+          - [2025 overall repeat rate, "26.2%"]
+          - [Mix effect, "-4.3 pts"]
+          - [Within-channel effect, "-7.1 pts"]
+        highlight: [4]
+        takeaway: Only the within-channel part is plausibly about retention marketing, so the story is "we stopped talking to our customers".
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          Together the two effects make the headline drop of 11.3 points, give or take rounding, which is the check that the
+          split is complete. That moves the conversation away from "paid social brings bad customers" and towards "we also
+          stopped talking to the customers we have".
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: From a chart to a decision
+        title: Size the cost, with assumptions named
+        card: false
+        recall: Which inputs in the sizing code are assumptions?
+        answer: "Gross margin of 40% and £110 of further revenue per repeat customer are assumptions standing in for numbers from finance. The restore cost is £14k minus £4k a month for a year."
+        lead: "The three inputs and the break-even line."
+        lang: python
+        code: |-
+          MARGIN = 0.40          # assumption: gross margin
+          REPEAT_REVENUE = 110   # assumption: next-year revenue
+          RESTORE_COST = (14_000 - 4_000) * 12
+
+          lost_repeaters = (at_old_rates - actual) * mix25.sum()
+          repeat_margin = lost_repeaters * REPEAT_REVENUE * MARGIN
+          # break-even gross margin = RESTORE_COST / lost_revenue
+        bullets:
+          - "Two inputs are **assumptions**, labelled as such"
+          - "The restore cost is the budget the cut saved"
+          - "Break-even margin makes the claim safe"
+        takeaway: Label every assumption in the code, so a reader can change it and see whether the answer flips.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          The excerpt trims the email revenue lines and the prints. The full listing is in the note. Gross margin of 40% and
+          £110 of further revenue per repeat customer are my assumptions, standing in for numbers from finance.
+
+      - layout: table
+        beat: practice
+        section: From a chart to a decision
+        title: The cut saved £120k and cost several times that
+        recall: What did the sizing find, and what is the break-even margin?
+        answer: "New customers in 2025 were 61,718 and 4,373 repeat customers were lost, worth £192,419 of margin. Email revenue fell from £1,603,582 to £717,268, worth £354,526 of margin. Against £120,000 saved, that is 4.6 pounds lost per pound saved, with break-even margin at 8.8%."
+        header: [Quantity, Value]
+        widths: [5.6, 3.0]
+        rows:
+          - ["Repeat customers lost (of 61,718 new in 2025)", "4,373"]
+          - [Margin on lost repeat revenue, "£192,419"]
+          - [Margin on lost email revenue, "£354,526"]
+          - [Budget saved by the cut, "£120,000"]
+          - [Margin lost per pound saved, "4.6"]
+          - [Break-even gross margin, "8.8%"]
+        highlight: [5]
+        takeaway: Each pound saved cost 4.6 pounds of margin, and the cut breaks even only below 8.8%.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          Email revenue was £1,603,582 in 2024 and £717,268 in 2025. The last line is what makes it safe to say out loud.
+
+      - layout: bullets
+        beat: pitfalls
+        section: From a chart to a decision
+        title: It is not proof of cause
+        recall: Why is the sizing not proof that the email cut caused the fall?
+        answer: "A before-and-after with one change date also picks up anything else that changed in January. Fernhill's data is synthetic and built with this effect. That is why the recommendation includes a holdout."
+        bullets:
+          - "A before-and-after with one change date picks up **anything else** that changed in January"
+          - "Fernhill's data is **synthetic**, built with this effect"
+          - "So the recommendation includes a **holdout**"
+        takeaway: Name what else changed and propose a test, because a before-and-after cannot show cause.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          This is the interview answer to "have you shown the cut caused it?" No. Propose a holdout, and say what would change
+          your mind.
+
+  - title: The chart, and its story
+    divider: false
+    summary: The explanatory chart · Three acts · Truthfulness · Pitfalls
+    notes: We turn the analysis into two charts and a three-act story, test it for honesty, and close on the pitfalls.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Making the chart say it
+        title: Four small multiples are not a message
+        recall: Why is the exploratory view not what the audience needs?
+        answer: "The audience does not need four series to take the point in. The explanatory version strips the chart to the single message."
+        kicker: The problem
+        statement: "The explanatory version strips the small multiples to the single message."
+        takeaway: The exploratory view serves you, and the explanatory chart serves the reader.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          You saw the exploratory view earlier: four channels as small multiples. Now the explanatory version.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: Making the chart say it
+        title: The finding becomes the title
+        card: false
+        recall: Which lines of the chart code do the explaining?
+        answer: "A single line with a zero-based axis, an annotation naming the January 2025 event, bold direct labels for the two values, and a title that states the finding."
+        lead: "The lines that carry the message."
+        lang: python
+        code: |-
+          ax.set_ylim(0, 50)
+          ax.axvline(fernhill.CUT, color=cs.MUTED)
+          ax.annotate("January 2025: email budget cut\n"
+                      "from £14k to £4k a month",
+                      (fernhill.CUT, 44))
+          ax.set_title(
+              "Since we cut email, repeat buying has "
+              "fallen from 38% to 26% of new customers")
+        bullets:
+          - "Zero-based axis"
+          - "The annotation **names the event**"
+          - "The title is a sentence"
+        takeaway: The title is the finding, so the chart says it before anyone reads the axis.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          The excerpt keeps the lines that explain. The full code, with the bold direct labels, is in the note and prints
+          average before 37.6%, after 26.2%.
+
+      - layout: image
+        beat: practice
+        section: Making the chart say it
+        title: One series, direct labels, an annotated event
+        kicker: The explanatory chart
+        recall: What did the explanatory chart remove, and what did it add?
+        answer: "It keeps one series instead of four, replaces the legend with direct labels, names the event in an annotation and shows the two values to remember in bold ink."
+        image: ../../assets/sources/images/viz-story-explanatory-repeat-rate.png
+        caption: "Single line of repeat rate falling from 38% to 26% at the January 2025 email budget cut"
+        bullets:
+          - "Only **one series** remains"
+          - "Direct labels replace the legend"
+          - "The annotation names the event"
+        takeaway: Remove what the audience does not need, then point at what they do.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          Compare it with the small multiples from the earlier lecture. The title is the finding, as a sentence.
+
+      - layout: flow
+        beat: fundamentals
+        level: core
+        section: Making the chart say it
+        title: Knaflic's sequence for clearing a chart
+        recall: What is Knaflic's sequence for turning an exploratory chart into an explanatory one?
+        answer: "Identify the clutter, remove it, then use preattentive attributes such as weight and position to direct attention where you want it."
+        steps:
+          - {label: Identify the clutter, sub: "what the audience does not need", accent: "94A3B8"}
+          - {label: Remove it, sub: "three series, the legend", accent: "1E3A5F"}
+          - {label: Direct attention, sub: "weight and position", accent: "D4621A"}
+        caption: "Preattentive attributes such as weight and position."
+        takeaway: Clear the clutter first, and only then spend emphasis on the two values you want remembered.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          All of the changes on the previous slide follow this sequence.
+
+      - layout: image
+        beat: practice
+        section: Making the chart say it
+        title: The decision chart, in bars that are honest
+        kicker: Saved against lost
+        recall: Why are bars honest on the decision chart, and what carries the argument?
+        answer: "The three items share a unit and a zero. The grey bar is the saving and the blue bars are the costs, so the colour carries the argument. There is no axis, because each bar is directly labelled."
+        image: ../../assets/sources/images/viz-story-saved-vs-lost.png
+        caption: "Horizontal bars comparing £120k budget saved with about £355k and £192k of lost margin"
+        bullets:
+          - "Title: the cut saved **£120k** and gave up about **£550k**"
+          - "**Grey** is the saving, **blue** the costs"
+          - "No axis, because the bars are labelled"
+        takeaway: Bars share a unit and a zero here, so the colour is free to carry the argument.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          The margin and revenue inputs are assumptions stated in the code.
+
+      - layout: statement
+        beat: problem
+        section: Building a story around it
+        title: A chart is one beat of a story
+        recall: How does Knaflic's three-act structure cast the audience?
+        answer: "The audience is the protagonist: the setting is what they know, the tension is what is unresolved and why they should care, and the resolution is what they can do about it."
+        kicker: The problem
+        statement: "Put the audience in the role of protagonist."
+        attribution: "Knaflic, borrowing Aristotle's three acts"
+        takeaway: Setting, tension and resolution give the chart a place in a story the audience can act on.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          Knaflic borrows Aristotle's three acts. The setting is what they know. The tension is what is unresolved and why they
+          should care. The resolution is what they can do about it.
+
+      - layout: cards
+        beat: fundamentals
+        level: core
+        section: Building a story around it
+        title: Fernhill in three acts
+        recall: What are Fernhill's setup, conflict and resolution?
+        answer: "Setup: email cut from £14k to £4k in January 2025, acquisition raised, revenue up 6.5%. Conflict: repeat buying fell from 38% to 26%, about 4 points mix and 7 within channels. Resolution: restore about £10k a month to email for two quarters, hold out 10% of customers, hold paid social flat."
+        cards:
+          - {title: Setup, accent: "1E3A5F", body: "Email cut from £14k to £4k a month in January 2025, acquisition raised. Revenue grew 6.5%"}
+          - {title: Conflict, accent: "D4621A", body: "Repeat buying fell from 38% to 26%. Mix explains about 4 points and about 7 are within channels"}
+          - {title: Resolution, accent: "0F7490", body: "Restore about £10k a month to email for two quarters, hold out 10% of customers, hold paid social flat. Back in Q3"}
+        takeaway: The resolution is a decision with a test attached, and it comes back to Priya in Q3.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          The conflict line in the note reads: we are spending more to buy customers who come back less. The decision comes back
+          to you in Q3.
+
+      - layout: bullets
+        beat: pitfalls
+        section: Building a story around it
+        title: What the resolution does not claim
+        recall: What does the Fernhill recommendation leave out, and why?
+        answer: "It does not say cut paid social. Paid-social spend rose from £312k to £576k, and nothing here shows whether that money earned its return. Claiming it would be over-reach."
+        bullets:
+          - "It does **not** say cut paid social"
+          - "Paid-social spend rose from **£312k to £576k**"
+          - "Nothing here shows whether that money earned its return"
+          - "That is a different analysis"
+        takeaway: A recommendation is stronger for saying what it does not know.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          Claiming a paid-social conclusion from this data would be over-reach.
+
+      - layout: compare
+        beat: fundamentals
+        section: Building a story around it
+        title: Horizontal logic and vertical logic
+        recall: What are horizontal and vertical logic?
+        answer: "Horizontal logic: read only the slide titles in order and they should tell the whole story without the charts. Vertical logic: everything on a slide supports its own title."
+        emphasis: none
+        left:
+          title: Horizontal logic
+          tag: Across slides
+          bullets: ["Read only the titles, in order", "They tell the whole story"]
+          accent: "1E3A5F"
+        right:
+          title: Vertical logic
+          tag: Within a slide
+          bullets: ["Everything supports its own title", "Nothing else stays"]
+          accent: "0F7490"
+        takeaway: Test both in a minute, and ask someone who has not seen the work what they take from it.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          Her last device, the "Bing, Bang, Bongo", is older advice: say what you will say, say it, then say what you said.
+
+      - layout: cards
+        beat: fundamentals
+        section: Building a story around it
+        title: Cairo's five qualities
+        recall: What are Cairo's five qualities of a good visualisation?
+        answer: "Truthful, functional, beautiful, insightful and enlightening. Truthful comes first."
+        cards:
+          - {title: Truthful, accent: "D4621A", body: "Comes first, because storytelling is persuasion"}
+          - {title: Functional, accent: "1E3A5F", body: "It does its job for the reader"}
+          - {title: Beautiful, accent: "0EA5C9", body: "Drawn with care"}
+          - {title: Insightful, accent: "0F7490", body: "It shows something"}
+          - {title: Enlightening, accent: "5B21B6", body: "It leaves the reader knowing more"}
+        takeaway: Truthful comes first, because every persuasion technique can also mislead.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          From Cairo, The Truthful Art (2016). The note worked from accounts of the book rather than the book itself, so say so
+          if asked. Cropping the series and highlighting one line can also mislead.
+
+      - layout: statement
+        beat: pitfalls
+        section: Building a story around it
+        title: Would it survive someone else's axis?
+        recall: What test should you apply before you send the chart?
+        answer: "Would this chart still support the sentence if someone else had chosen the axis, the window and the comparison? For ours, yes: the axis is zero-based and the rate is flat for two years before the fall."
+        kicker: The test before you send
+        statement: "Would the chart still support the sentence if someone else chose the axis, the window and the comparison?"
+        takeaway: Ours passes, because the axis is zero-based and the rate is flat for two years before the fall.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          The three-year window is all we have. A small window is not creating the drop, since the rate is flat for two years
+          before it.
+
+      - layout: table
+        beat: pitfalls
+        section: Pitfalls
+        title: Five ways a dashboard misleads
+        recall: Name five dashboard pitfalls, from deliverable to caching
+        answer: "A dashboard as the deliverable for a finding, a growth metric alone, tiles with no comparison, red and green as the only signal, and heavy work outside the cache in Streamlit."
+        header: [Pitfall, The fix]
+        widths: [4.4, 4.8]
+        bold_first: true
+        rows:
+          - [A dashboard as the deliverable, "Write the sentence and send it"]
+          - [A growth metric alone, "Pair it with a health metric"]
+          - [Tiles with no comparison, "Say compared with what"]
+          - [Red and green as the only signal, "Add an arrow and a sign"]
+          - [Heavy work outside the cache, "Cache it, since the script reruns on every click"]
+        takeaway: Each of these failures has a one-line fix that is already in the checklist.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          Nobody finds your insight for you. On red and green, readers with red-green colour vision deficiency cannot tell them
+          apart reliably, and Streamlit's metric delta adds an arrow and a sign.
+
+      - layout: table
+        beat: pitfalls
+        section: Pitfalls
+        title: Four ways a story or build misleads
+        recall: Name four pitfalls of tool choice, causal claims, the ask and precision
+        answer: "Building Streamlit for people who will want to edit it, a before-and-after presented as causal, burying the ask, and false precision in a sizing."
+        header: [Pitfall, The fix]
+        widths: [4.4, 4.8]
+        bold_first: true
+        rows:
+          - [Streamlit for people who will edit it, "If the owners cannot write Python, use a BI tool"]
+          - [A before-and-after as causal, "Name what else changed, propose a test"]
+          - [Burying the ask, "State the decision on the first slide"]
+          - [False precision, "Say about £550k, not £546,945, and show the sensitivity"]
+        takeaway: Put the ask on the first slide and give the sizing no more precision than its assumptions allow.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          "£546,945 of margin" claims more than the assumptions allow. Say "about £550k" and show the sensitivity.
+
+      - layout: compare
+        beat: wrap
+        section: Pitfalls
+        title: Monitor with a dashboard, persuade with a story
+        recall: What one rule sums up this lecture?
+        answer: "A dashboard answers 'what is my number' and delivers no finding, so pair a metric you can push by spending with one that shows the side effect, and write the sentence and send it."
+        emphasis: none
+        left:
+          title: The dashboard
+          tag: To watch
+          bullets: ["Pair growth with a health metric", "Every tile has a comparison", "Choose the tool by who edits it"]
+          accent: "1E3A5F"
+        right:
+          title: The story
+          tag: To act on
+          bullets: ["Write the Big Idea sentence", "One chart, with the finding as title", "Propose a holdout"]
+          accent: "D4621A"
+        takeaway: A dashboard answers "what is my number?" and delivers no finding, so write the sentence and send it.
+        source: notes/05-dashboards-and-storytelling.md
+        notes: >-
+          This is the rule of thumb for step 3 in the pillar README. The next lecture asks which stack a dashboard should be
+          built on and how Python results reach a browser.

@@ -1,10 +1,16 @@
 ---
-imported_hash: 8ef410f188e7c8a3
+imported_hash: 9b7026b943b53fb0
 title: Supervised Learning
 summary: Blocks run top to bottom from this notes/ folder, on the breast-cancer data that ships with scikit-learn, so the numbers below are this split's.
 order: 3
 kind: reading
 section: Notes
+tier: foundations
+depth: core
+depth_sections:
+  The two tasks: intro
+  Kernelized support vector machines: deep
+  Neural networks (multilayer perceptrons): deep
 source: learn-ai-engineering/data-science/01-classical-ml/notes/02-supervised-learning.md
 ---
 

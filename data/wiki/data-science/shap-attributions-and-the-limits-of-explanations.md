@@ -1,8 +1,8 @@
 ---
 title: "SHAP Attributions and the Limits of Explanations"
-tags: [data-science, concept]
+tags: [data-science, classical-ml, concept]
 summary: "SHAP splits one prediction into a baseline plus per-feature log-odds that sum exactly; it explains the model, not the world, and studies show explanations help only for some tasks and people."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-07-bansal-2021-ai-explanations-team-performance.md
   - data/raw/papers/2026-11-06-huang-2023-can-large-language-models-explain.md

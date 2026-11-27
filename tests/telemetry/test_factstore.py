@@ -670,6 +670,22 @@ def test_compact_columns_none_when_no_compact(tmp_path: Path) -> None:
         ("file_not_found", ERROR_CATEGORY_CODE),
         ("file_too_large", ERROR_CATEGORY_ENV),
         ("edit_failed", ERROR_CATEGORY_CODE),
+        # Retro R14 M6: previously-emitted-but-unmapped kinds, and the new heads.
+        ("invalid_tool_input", ERROR_CATEGORY_CODE),
+        ("read_before_write", ERROR_CATEGORY_CODE),
+        ("stale_read", ERROR_CATEGORY_CODE),
+        ("is_a_directory", ERROR_CATEGORY_CODE),
+        ("skill_not_invocable", ERROR_CATEGORY_ENV),
+        ("cancelled", ERROR_CATEGORY_TOOL),
+        ("blocked_by_hook", ERROR_CATEGORY_TOOL),
+        ("transient_classifier", ERROR_CATEGORY_ENV),
+        ("subagent_limit", ERROR_CATEGORY_ENV),
+        ("lock_contention", ERROR_CATEGORY_ENV),
+        ("tool_unavailable", ERROR_CATEGORY_ENV),
+        ("missing_binary", ERROR_CATEGORY_ENV),
+        ("skill_not_found", ERROR_CATEGORY_CODE),
+        ("invalid_tool_output", ERROR_CATEGORY_CODE),
+        ("api_error", ERROR_CATEGORY_ENV),
         ("other", ERROR_CATEGORY_UNKNOWN),
     ],
 )
@@ -755,6 +771,26 @@ def test_jsonl_adapter_stores_bash_antipatterns_from_parser(tmp_path: Path) -> N
 
     assert len(rows) == 1
     assert rows[0]["bash_antipatterns"] == 2  # cat + grep; python script.py is not flagged
+
+
+def test_jsonl_adapter_stores_agent_call_model_coverage(tmp_path: Path) -> None:
+    """agent_calls / agent_calls_model_set come straight from the parser (retro R14 F1)."""
+    from tests.shared.test_cartographer_parser import _assistant_with_tools, _user, _write_jsonl
+
+    tools = [
+        {"type": "tool_use", "name": "Agent", "input": {"description": "a", "model": "haiku"}},
+        {"type": "tool_use", "name": "Agent", "input": {"description": "b"}},
+    ]
+    _write_jsonl(
+        tmp_path / "proj" / "sess-1.jsonl",
+        [_user("2026-07-20T10:00:00Z"), _assistant_with_tools("2026-07-20T10:00:05Z", tools)],
+    )
+
+    rows = from_jsonl(tmp_path)
+
+    assert len(rows) == 1
+    assert rows[0]["agent_calls"] == 2
+    assert rows[0]["agent_calls_model_set"] == 1
 
 
 def test_error_attribution_columns_none_for_notes_era(tmp_path: Path) -> None:

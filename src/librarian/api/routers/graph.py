@@ -114,6 +114,7 @@ def get_graph_atlas() -> dict[str, Any]:
         "links": links,
         "domains": graph["domains"],
         "areas": graph["areas"],
+        "topics": graph.get("topics", {}),
     }
 
 

@@ -1,10 +1,11 @@
 ---
-imported_hash: 6bcab02afaa212c1
+imported_hash: 250a772310381064
 title: 3b — Bandits and Thompson Sampling
 summary: 'The multi-armed bandit: N slot machines with unknown payout rates.'
 order: 6
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-analytics/04-bayesian-analysis/notes/03b-bandits-and-thompson-sampling.md
 ---
 

@@ -1,8 +1,8 @@
 ---
 title: "ResNeXt Cardinality in Residual Blocks"
-tags: [data-science, pattern]
+tags: [data-science, deep-learning, pattern]
 summary: "ResNeXt replaces each ResNet bottleneck with C parallel low-dimensional paths of the same shape, summed and implemented as grouped convolution; the paper reports that raising cardinality beats going deeper or wider at matched FLOPs on ImageNet-1K (self-reported)."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/papers/2026-11-08-xie-2017-aggregated-residual-transformations-deep-neural.md
 ---

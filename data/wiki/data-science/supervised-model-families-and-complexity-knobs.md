@@ -1,8 +1,8 @@
 ---
 title: "Supervised Model Families and Complexity Knobs"
-tags: [data-science, reference]
+tags: [data-science, classical-ml, reference]
 summary: "Each classical supervised family has one knob that sets its complexity, a typical strength and a typical failure; sweep the knob first and start with a simple model."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--02-supervised-learning.md
   - data/raw/papers/2026-11-08-intro-to-ml-with-python-ch02-supervised-learning.md

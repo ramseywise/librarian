@@ -1,10 +1,11 @@
 ---
-imported_hash: 11a3ed9383397672
+imported_hash: 2efb2ed67f15d9f6
 title: Statistical Foundations
 summary: Code blocks in this pillar run top to bottom within a note, as in a notebook, from the note's own notes/ folder (uv run --with scikit-learn --with pandas --with matplotlib python).
 order: 2
 kind: reading
 section: Notes
+tier: foundations
 source: learn-ai-engineering/data-science/01-classical-ml/notes/01-statistical-foundations.md
 ---
 

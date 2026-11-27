@@ -1,8 +1,8 @@
 ---
 title: "Bag of Words, n-grams and TF-IDF"
-tags: [data-science, concept]
+tags: [data-science, nlp, concept]
 summary: "Sparse count and TF-IDF document vectors: how vocabulary controls, n-grams and idf weighting shape features, and why the vectoriser must be fitted inside the training fold."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--03-nlp--notes--01-text-representation.md
   - data/raw/papers/2026-11-08-intro-to-ml-with-python-ch07-working-text-data.md

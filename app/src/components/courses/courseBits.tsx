@@ -52,3 +52,25 @@ export function ProgressBar({ value }: { value: number }) {
     </div>
   );
 }
+
+/**
+ * How well the learner knows a module, from the learning API (`null` strength: no concept of it has
+ * direct evidence yet). Drawn as an outline, never as 0%, so "no data" cannot read as "failing".
+ */
+export function MasteryBar({ mastery }: { mastery: { strength: number | null; concepts: number; withEvidence: number } | undefined }) {
+  if (!mastery || mastery.concepts === 0) return null;
+  const { strength, concepts, withEvidence } = mastery;
+  const pct = strength === null ? null : Math.round(strength * 100);
+  return (
+    <div className="mastery" data-testid="mastery">
+      <div className="mastery-track" role="img" aria-label={pct === null ? "Mastery: no data yet" : `Mastery ${pct}%`}>
+        <div className={`mastery-seg${pct === null ? " is-empty" : ""}`}>
+          {pct !== null && <div className="mastery-fill" style={{ width: `${pct}%` }} />}
+        </div>
+      </div>
+      <div className="mastery-label">
+        {pct === null ? "Mastery: no data yet" : `Mastery ${pct}%`} · {withEvidence} of {concepts} concepts practised
+      </div>
+    </div>
+  );
+}

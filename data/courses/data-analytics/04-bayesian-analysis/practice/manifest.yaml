@@ -5,6 +5,7 @@ examples:
     demonstrates:
       - "notes/02-mcmc-and-pymc.md"
       - "notes/06-bayesian-machine-learning.md"
+      - "notes/06b-variational-inference-and-gaussian-processes.md"
     pattern: analysis
     language: jupyter
     runs_offline: false

@@ -1,6 +1,6 @@
 ---
 name: slides
-description: "Build a lecture deck (.pptx) for any module of any course (ai-engineering, generative-ai, data-analytics, data-science, data-engineering, programming, interviewing) from its notes, in the course's house style (the LangGraph deck look). Writes data/courses/<pillar>/slides/deck.yaml, renders it with src/librarian/tools/slides/build_deck.py, previews every slide and fixes overflow. Usage: /slides 02-context-engineering, /slides generative-ai/02-rag-retrieval, /slides data-analytics/06-applied-analyses, /slides programming/python/01-foundations. Run from the librarian repo: media is built here, not in learn-ai-engineering."
+description: "Build a lecture deck (.pptx) for any module of any course (ai-engineering, generative-ai, data-analytics, data-science, data-engineering, programming, interviewing) from its notes, in the course's beat-coloured house style. Writes data/courses/<pillar>/slides/deck.yaml, renders it with src/librarian/tools/slides/build_deck.py, previews every slide and fixes overflow. Usage: /slides 02-context-engineering, /slides generative-ai/02-rag-retrieval, /slides data-analytics/06-applied-analyses, /slides programming/python/01-foundations. Triggers on: '/slides', 'build a lecture deck', 'make slides for this module', 'rebuild the deck', 'turn these notes into a pptx'. Run from the librarian repo: media is built here, not in learn-ai-engineering."
 ---
 
 You are turning one pillar's notes into a lecture deck. The notes are the source of truth.
@@ -56,7 +56,7 @@ first and keep what still matches the notes. A deck inherits its notes' errors, 
   Avoid long runs of the same layout.
 - **Order.** Follow the notes. Put a pillar's thesis first, as a `statement`.
 - **Syllabus, beats and levels.** If the README has a Syllabus section, plan the parts from it. Open with an
-  `overview: true` part, and give each slide a `beat` and, where it is not `core`, a `level` (see deck-spec.md).
+  `overview: true` part, and give each slide a `beat` and, where it is not `intro`, a `level` (`core` or `deep`) (see deck-spec.md).
 
 ## Step 4 — Write `<pillar>/slides/deck.yaml`
 

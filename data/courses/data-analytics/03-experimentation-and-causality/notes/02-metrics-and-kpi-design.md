@@ -1,10 +1,11 @@
 ---
-imported_hash: 314fe2911d9503a4
+imported_hash: 6e72af72da063f49
 title: 2 — Metrics and KPI Design
 summary: Microsoft once moved a page module higher up, and its click-through rate per user fell by 40%.
 order: 3
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-analytics/03-experimentation-and-causality/notes/02-metrics-and-kpi-design.md
 ---
 

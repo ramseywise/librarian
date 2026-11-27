@@ -1,0 +1,1189 @@
+# imported_hash: 77d71ee59830e396
+# Lecture on step 4, Operations and metrics: notes/10-operations-and-supply-chain.md, 10b-packers-queues-and-a-shift-plan.md and 11-metric-trees.md, in the notes' order.
+# make slides PILLAR=data-analytics/06-applied-analyses LECTURE=04-operations-and-metrics STRICT=1 PREVIEW=1
+# Levels: a slide with no level is the intro, `core` is the core lesson, `deep` is the optional extension (code and maths).
+deck:
+  title: Operations and Metrics
+  subtitle: Stock, queues and a scoreboard
+  tagline: "Newsvendor · EOQ · Safety stock · Queues · Shift plan · Metric trees"
+  reference: "Notes: data-analytics/06-applied-analyses, notes 10, 10b and 11"
+  output: 04-operations-and-metrics.pptx
+  notes: >-
+    This is the fifth lecture of the applied analyses series. It covers step 4. By the end you should be able to order a
+    seasonal line at a cost-based fractile, choose an order size and a reserve, test that the reserve delivers what it
+    promises, roster a queue with Little's law and Erlang C, turn a staffing answer into a shift plan, and build a metric
+    tree whose edges are labelled as identities or claims.
+
+lecture:
+  covers:
+    - data-analytics/06-applied-analyses/notes/10-operations-and-supply-chain.md
+    - data-analytics/06-applied-analyses/notes/10b-packers-queues-and-a-shift-plan.md
+    - data-analytics/06-applied-analyses/notes/11-metric-trees.md
+  requires: [data-analytics/06-applied-analyses/notes/09b-customer-lifetime-value.md]
+  next: [data-analytics/06-applied-analyses/notes/12-surveys-and-sampling-design.md]
+  related:
+    - data-analytics/03-experimentation-and-causality/notes/02-metrics-and-kpi-design.md
+    - data-engineering/07-architecture-and-governance/notes/03-catalog-semantic-layer-and-contracts.md
+    - data-science/01-classical-ml/notes/11-choosing-a-metric.md
+    - data-science/05-time-series-and-recommenders/notes/01-time-series-ml.md
+  omits:
+    - The packing line
+
+parts:
+  - title: Stock - what to order and what to keep
+    divider: false
+    summary: Newsvendor · Order size (EOQ) · Safety stock · Does the buffer deliver
+    notes: We start with the stock decisions, one season's order, how much to order at a time and how much to hold in reserve, and check each against the truth.
+    slides:
+      - layout: statement
+        beat: problem
+        section: The question and the data
+        title: How much do we order, and how much do we keep?
+        recall: What stock question does Fernhill's operations manager face?
+        answer: "How much of each line to order for a season, how much to order at a time, and how much to hold in reserve, for 12 products, three of them sold only before Christmas."
+        kicker: The problem
+        statement: "Order too much and the stock sits unsold. Order too little and a customer goes elsewhere. The two mistakes do not cost the same."
+        takeaway: The cost of being short and the cost of being over are different numbers, and the order should reflect that.
+        source: notes/10-operations-and-supply-chain.md
+        notes: >-
+          The data is 12 products, three of them Christmas-only (sold in the eight weeks before Christmas), 20 supplier
+          orders per product, and a packing line observed over 13 weeks. Everything is synthetic and seeded.
+
+      - layout: cards
+        beat: fundamentals
+        section: The question and the data
+        title: Three stock decisions, three tools
+        recall: Which three stock decisions does the chapter separate, and what tool does each use?
+        answer: "One season's order (the newsvendor), how much to order at a time (EOQ) and how much to keep in reserve (safety stock)."
+        cards:
+          - {title: One season's order, accent: "1E3A5F", body: "The newsvendor: a single order for a season that cannot be repeated"}
+          - {title: How much at a time, accent: "0F7490", body: "EOQ: balance the cost of placing an order against the cost of holding stock"}
+          - {title: How much in reserve, accent: "D4621A", body: "Safety stock: a buffer for demand and lead time that vary"}
+        takeaway: Each decision has its own cost trade-off, so each gets its own formula.
+        source: notes/10-operations-and-supply-chain.md
+        notes: >-
+          The three are usually taught together because they use the same data. They answer different questions, and mixing
+          them up is the commonest way to size stock wrongly.
+
+      - layout: flow
+        beat: fundamentals
+        level: core
+        section: "One season's order: the newsvendor"
+        title: The newsvendor weighs two costs
+        recall: How is the newsvendor's target fractile worked out?
+        answer: "Underage is price minus cost, overage is cost minus salvage, and the fractile is underage divided by underage plus overage. Here that is about 0.73, near 0.727 for TEX-03."
+        steps:
+          - {label: Underage, sub: "price minus cost", accent: "D4621A"}
+          - {label: Overage, sub: "cost minus salvage", accent: "94A3B8"}
+          - {label: Fractile, sub: "underage over the sum", accent: "1E3A5F"}
+          - {label: Order that quantile, sub: "of the demand forecast", accent: "0F7490"}
+        caption: "Here the fractile is about 0.73: order above the forecast mean, not at it."
+        takeaway: When a missed sale costs more than a leftover, the right order sits above the mean.
+        source: notes/10-operations-and-supply-chain.md
+        notes: >-
+          The mean is the right order only when the two costs are equal. Salvage value is what an unsold unit fetches after
+          the season.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: "One season's order: the newsvendor"
+        title: The fractile and the profit in code
+        recall: How do you score an order quantity against demand?
+        answer: "Units sold are the smaller of the order and demand. Profit is sales at price plus leftovers at salvage minus the cost of everything ordered."
+        lang: python
+        code: |-
+          def profit(q, d, p):
+              sold = np.minimum(q, d)
+              return (p.unit_price * sold
+                      + p.salvage_value * (q - sold)
+                      - p.unit_cost * q).mean()
+        bullets:
+          - "**sold** is capped by both the order and the demand"
+          - "Leftovers earn **salvage**, not price"
+          - "Average over demand draws to compare orders"
+        takeaway: Score every ordering rule with the same profit function over the same demand draws.
+        source: notes/10-operations-and-supply-chain.md
+        notes: >-
+          The note also has season_forecast and critical_fractile. The profit function is what lets us compare the forecast
+          order, the ratio route and the fractile against the true demand.
+
+      - layout: image
+        beat: fundamentals
+        section: "One season's order: the newsvendor"
+        title: Profit by ordering rule, against the truth
+        kicker: Three Christmas lines
+        recall: Which ordering rule earned the most across the three Christmas lines?
+        answer: "The fractile rule earned £49,177 against £48,191 for ordering the forecast, with £49,827 as the best possible (truth)."
+        image: ../../assets/sources/images/applied-newsvendor-profit.png
+        caption: "Profit across the three Christmas-only lines under each ordering rule."
+        takeaway: Ordering the fractile closes most of the gap between the forecast and the best possible order.
+        source: notes/10-operations-and-supply-chain.md
+        notes: >-
+          The fractile is about 2% over the forecast order in total. Individual lines behave very differently, which the
+          next two slides show.
+
+      - layout: cards
+        beat: fundamentals
+        section: "One season's order: the newsvendor"
+        title: Total profit across the three lines
+        recall: How much profit does each ordering route earn across the three lines?
+        answer: "Forecast £48,191, ratio route £48,914, fractile £49,177 and truth £49,827."
+        cards:
+          - {title: Order the forecast, accent: "94A3B8", body: "£48,191, the furthest from the truth"}
+          - {title: Ratio route, accent: "0F7490", body: "£48,914, in between"}
+          - {title: Fractile of the forecast, accent: "D4621A", body: "£49,177, the closest"}
+          - {title: Truth, accent: "1E3A5F", body: "£49,827, the ceiling"}
+        takeaway: Each step towards the cost-based quantile earns more, and the fractile gets within about £650 of the truth.
+        source: notes/10-operations-and-supply-chain.md
+        notes: >-
+          The truth row uses the generator's own demand distribution, so it is not available in practice. It marks what a
+          perfect forecast of the distribution would earn.
+
+      - layout: compare
+        beat: pitfalls
+        section: "One season's order: the newsvendor"
+        title: Two lines, two different failures
+        recall: Why did TEX-03 lose money and LGT-03 fall short of the best?
+        answer: "TEX-03's forecast error spread was 218 against a true 144, so the order was too cautious. LGT-03's forecast mean of 854 sat well below the true 960, so it stocked out 59% of the time against a 26% target."
+        emphasis: right
+        left:
+          title: TEX-03
+          bullets: ["Forecast 1,164 against a true mean of 1,120", "Error sd **218** against a true 144", "Stockout 11% against a 27% target", "Loses **£139**"]
+        right:
+          title: LGT-03
+          bullets: ["Forecast 854 against a true 960", "Stockout **59%** against a 26% target", "Gain £860, but **£471** short of the best"]
+        takeaway: A quantile of a poor forecast is a precise-looking poor order, so the forecast error matters more than the rule.
+        source: notes/10-operations-and-supply-chain.md
+        notes: >-
+          The rule did what it should in both cases. The inputs were wrong, in different ways: one spread too wide, one mean
+          too low.
+
+      - layout: bullets
+        beat: fundamentals
+        level: core
+        section: "One season's order: the newsvendor"
+        title: One season is not a verdict on the rule
+        recall: Does the fractile rule beat ordering the forecast on average?
+        answer: "Over seeds 100 to 111 the average gain was 1.70% and positive on 11 of 12. The real 2025 season is £161 up across the three lines."
+        bullets:
+          - "Seeds 100 to 111: average gain **1.70%**"
+          - "Positive in **11 of 12** seeds"
+          - "The real 2025 season: **£161** up across the three lines"
+        takeaway: Judge an ordering rule over many seasons, because one draw can go either way.
+        source: notes/10-operations-and-supply-chain.md
+        notes: >-
+          Judge the rule over many seeds, not over the one real season.
+
+      - layout: flow
+        beat: fundamentals
+        level: core
+        section: "How much to order at a time: EOQ"
+        title: EOQ balances ordering cost against holding cost
+        recall: What is the EOQ formula?
+        answer: "The square root of two times annual units times the cost per order, divided by the holding cost per unit."
+        steps:
+          - {label: Annual units, sub: "yearly demand", accent: "1E3A5F"}
+          - {label: Order cost, sub: "per order placed", accent: "D4621A"}
+          - {label: Holding cost, sub: "per unit a year", accent: "94A3B8"}
+          - {label: EOQ, sub: "root of 2 × units × order ÷ holding", accent: "0F7490"}
+        caption: "Today's order is assumed to be eight weeks of 2025 demand."
+        takeaway: Order often enough that the extra order cost matches the saved holding cost, and no more often than that.
+        source: notes/10-operations-and-supply-chain.md
+        notes: >-
+          The eight-week rule is the baseline Fernhill uses today. EOQ is compared against it product by product.
+
+      - layout: table
+        beat: fundamentals
+        section: "How much to order at a time: EOQ"
+        title: Missing the EOQ costs less than you fear
+        recall: How much more does ordering off the EOQ cost?
+        answer: "Ordering 25% over costs 2.5% more, and ordering 50% over costs 8.3% more. Ordering half the EOQ costs 25% more."
+        header: [Multiple of EOQ, Cost against the best]
+        widths: [4.6, 5.0]
+        rows:
+          - ["0.5", "1.25"]
+          - ["0.75", "1.042"]
+          - ["1.25", "1.025"]
+          - ["1.5", "1.083"]
+          - ["2", "1.25"]
+        highlight: [2]
+        takeaway: The cost curve is flat near the best, so a roughly right order size is nearly as good as the exact one.
+        source: notes/10-operations-and-supply-chain.md
+        notes: >-
+          This is why EOQ only matters where today's order is far from it. A product whose order is within a quarter of the
+          EOQ gains almost nothing.
+
+      - layout: bullets
+        beat: fundamentals
+        section: "How much to order at a time: EOQ"
+        title: EOQ saves 8.4%, and nothing on furniture
+        recall: What does EOQ save over today's eight-week order, and where?
+        answer: "8.4%, or £907 a year, with the total cycle cost falling from £10,767 to £9,860. It saves nothing on furniture, where eight weeks is already near the EOQ."
+        bullets:
+          - "Total cycle cost: **£10,767** to **£9,860**"
+          - "A saving of **8.4%**, or £907 a year"
+          - "Gains come on kitchen and textiles"
+          - "**Nothing** on furniture"
+        takeaway: Move to EOQ only where today's order is far from it, which here is kitchen and textiles.
+        source: notes/10-operations-and-supply-chain.md
+        notes: >-
+          About £900 a year is small against the stock decisions that follow, which is a useful sense of scale before anyone
+          builds an inventory system around it.
+
+      - layout: flow
+        beat: fundamentals
+        level: core
+        section: "How much to keep in reserve: safety stock"
+        title: Safety stock covers demand noise and lead-time noise
+        recall: What goes into the safety stock formula?
+        answer: "A z-score for the service level times the square root of lead time times weekly demand variance plus weekly mean squared times lead-time variance."
+        steps:
+          - {label: Service level, sub: "gives z", accent: "94A3B8"}
+          - {label: Demand noise, sub: "lead time × weekly variance", accent: "1E3A5F"}
+          - {label: Lead-time noise, sub: "weekly mean² × lead variance", accent: "D4621A"}
+          - {label: Buffer, sub: "z × the root of the sum", accent: "0F7490"}
+        caption: "34.4% of the buffer here is lead-time noise, which a demand-only formula drops."
+        takeaway: A late delivery empties the shelf as surely as high demand, so the buffer has two sources of variance.
+        source: notes/10-operations-and-supply-chain.md
+        notes: >-
+          FUR-03's lead-time sd was 0.9 weeks from 20 orders against about 1.8 true, so a small count of orders can halve the
+          estimate of its noise.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: "How much to keep in reserve: safety stock"
+        title: Safety stock in one line
+        recall: How is the safety stock computed in code?
+        answer: "The normal quantile of the service level times the square root of lead weeks times weekly variance plus weekly mean squared times lead-time variance in weeks squared."
+        lang: python
+        code: |-
+          def safety_stock(level, weekly_mean, weekly_var,
+                           lead_weeks, lead_sd_weeks):
+              return norm.ppf(level) * (
+                  lead_weeks * weekly_var
+                  + weekly_mean**2 * lead_sd_weeks**2
+              ) ** .5
+        bullets:
+          - "**norm.ppf** turns a service level into z"
+          - "Set **lead_sd_weeks** to 0 and you get the demand-only version"
+        takeaway: Pass the lead-time standard deviation in, and the buffer stops ignoring late deliveries.
+        source: notes/10-operations-and-supply-chain.md
+        notes: >-
+          The note loops this over the staple products at each service level. Only FUR-03's row is printed in the note.
+
+      - layout: table
+        beat: fundamentals
+        section: "How much to keep in reserve: safety stock"
+        title: Each extra point of service costs more
+        recall: What does each service level cost a year in held stock?
+        answer: "80% costs £2,476, 90% £3,770, 95% £4,839, 98% £6,042 and 99% £6,844. Going from 95% to 99% adds £2,005 a year."
+        header: [Service level, Cost a year]
+        widths: [4.6, 5.0]
+        rows:
+          - ["80%", "£2,476"]
+          - ["90%", "£3,770"]
+          - ["95%", "£4,839"]
+          - ["98%", "£6,042"]
+          - ["99%", "£6,844"]
+        highlight: [2]
+        takeaway: The buffer's cost curve steepens, so the service level is a price to agree and not a number to maximise.
+        source: notes/10-operations-and-supply-chain.md
+        notes: >-
+          The step from 95% to 99% costs £2,005 a year for four points of service. Whether that is worth it is a business
+          decision.
+
+      - layout: image
+        beat: practice
+        section: "How much to keep in reserve: safety stock"
+        title: Does the buffer deliver what it promises?
+        kicker: Cycle service by period
+        recall: How does the buffer's delivered service compare with its 95% promise?
+        answer: "Off-season it delivers 94.8% against 95%. In season it falls to 79.4%, because demand runs about 60% higher."
+        image: ../../assets/sources/images/applied-safety-stock-service.png
+        caption: "Simulated service level against the target, off-season and in season."
+        bullets:
+          - "Off-season cycle service **94.8%** against 95%"
+          - "In season **79.4%** (81.4% in the ladder's draw)"
+          - "Demand runs **60% higher** in season"
+        takeaway: A reorder point built on a year-round mean keeps the promise off-season and breaks it in season.
+        source: notes/10-operations-and-supply-chain.md
+        notes: >-
+          The buffer is sized from a year-round demand mean. In season demand is far higher, so the same buffer covers less
+          of the lead time.
+
+      - layout: table
+        beat: pitfalls
+        section: "How much to keep in reserve: safety stock"
+        title: The same weeks, three service numbers
+        recall: How do the delivered service numbers differ by period and measure?
+        answer: "Cycle service is 94.8% off-season, 79.4% in season and 91.4% over the whole year. Fill rate is 94.7% in season. A 99% target lifts in-season service only to 89%."
+        header: [Measure, Value]
+        widths: [5.6, 4.0]
+        rows:
+          - ["Cycle service, off-season", "94.8%"]
+          - ["Cycle service, in season", "79.4%"]
+          - ["Cycle service, all year", "91.4%"]
+          - ["Fill rate, in season", "94.7%"]
+          - ["Cycle service in season at a 99% target", "89%"]
+        highlight: [1]
+        takeaway: Cycle service and fill rate describe the same weeks differently, so say which one a target means.
+        source: notes/10-operations-and-supply-chain.md
+        notes: >-
+          An all-year figure of 91.4% hides a season at 79%. Raising z to 99% only reaches 89% in season, so splitting the
+          reorder point by season is the cheaper fix.
+
+      - layout: compare
+        beat: practice
+        section: "How much to keep in reserve: safety stock"
+        title: Fix the season, not the service level
+        recall: What is the cheaper fix for in-season stockouts?
+        answer: "A seasonal reorder point lifts in-season service from 80.0% to 94.7% for about £374 a year, against over £2,000 a year by raising z."
+        emphasis: left
+        left:
+          title: Split by season
+          bullets: ["In-season service **80.0%** to **94.7%**", "About **£374** a year"]
+        right:
+          title: Raise z for the whole year
+          bullets: ["Costs over **£2,000** a year", "Holds the extra stock off-season too"]
+        takeaway: Match the buffer to the season that fails, and the cost is a fraction of a blanket increase.
+        source: notes/10-operations-and-supply-chain.md
+        notes: >-
+          This is the second try-it in the note. The seasonal reorder point uses in-season demand for the in-season months only.
+
+      - layout: bullets
+        beat: wrap
+        section: Recommendation
+        title: What to do with the stock
+        recall: What four stock recommendations does the note make?
+        answer: "Order Christmas lines at the fractile near 73%, move kitchen and textiles to EOQ for about £900 a year, set the reorder point by season, and treat 95% as a decision since 99% costs about £2,000 more."
+        bullets:
+          - "Christmas lines: order the **fractile**, near 73%"
+          - "Staples: **EOQ** on kitchen and textiles, about £900 a year"
+          - "Set the reorder point **by season**"
+          - "Treat **95%** as a decision: 99% costs about £2,000 more"
+        takeaway: Spend more effort on the forecast than on the rule, because on LGT-03 forecast error cost more than the rule earned.
+        source: notes/10-operations-and-supply-chain.md
+        notes: >-
+          These are simulated tables and real demand will not match. A better forecast error than these two seasons gave
+          would change the stock recommendations. The packer recommendations are in the next note.
+
+      - layout: table
+        beat: pitfalls
+        section: Pitfalls
+        title: Five stock pitfalls
+        recall: Name two ways a stock rule can quietly go wrong.
+        answer: "Ordering the point forecast (stockouts of 37% to 80% against about 27%), and a year-round mean in a seasonal reorder point (healthy annual service, December stockouts)."
+        header: [Pitfall, Do instead]
+        widths: [4, 5.6]
+        rows:
+          - ["Ordering the point forecast", "Order the cost-based fractile; stockouts ran 37% to 80% against about 27%"]
+          - ["Trusting the forecast's own error", "Check the spread and the mean; TEX-03 was 50% too wide, LGT-03 11% too low"]
+          - ["A year-round mean in a seasonal reorder point", "Split service by period"]
+          - ["Cycle service and fill rate as one thing", "Say which; here 79% and 95% describe the same weeks"]
+          - ["Dropping lead-time variance", "Keep it; it is a third of the buffer and 20 orders can halve it"]
+        takeaway: Most stock failures come from a precise rule fed a rough input.
+        source: notes/10-operations-and-supply-chain.md
+        notes: >-
+          Each row is a symptom the note observed in the simulation, so each can be checked on your own data.
+
+  - title: Queues - packers on a Monday
+    summary: Little's law · Erlang C · A day that starts empty · Price a packer · Shift plan
+    notes: We move from stock to people, measure the packing line, check it against queueing theory, and turn the answer into a shift plan.
+    slides:
+      - layout: statement
+        beat: problem
+        section: The packing line, and Little's law
+        title: Monday is busiest, but it is not the longest wait
+        recall: Which weekday has the longest packing wait at Fernhill?
+        answer: "Wednesday, at 4.35 minutes. Its four packers run as hot as Monday's six, and a smaller crew pools less."
+        kicker: The problem
+        statement: "A queue the textbook says waits 3.9 minutes does not wait 3.9 minutes when the shift starts with nobody in it."
+        takeaway: Look at the wait and the utilisation before proposing a fix for the busiest day.
+        source: notes/10b-packers-queues-and-a-shift-plan.md
+        notes: >-
+          The packing line has 22,566 parcels over 65 days. Each weekday has its own arrival rate and crew, and the question
+          is how many packers to roster.
+
+      - layout: table
+        beat: fundamentals
+        section: The packing line, and Little's law
+        title: The line by weekday
+        recall: What are the mean wait, utilisation and crew by weekday?
+        answer: "Monday 2.909 minutes (6 packers, ρ 0.849), Tuesday 1.171, Wednesday 4.348 (4 packers, ρ 0.838), Thursday 1.984 and Friday 1.957."
+        header: [Weekday, Packers, ρ, Mean wait, Erlang C]
+        widths: [2.4, 1.6, 1.6, 2.0, 2.0]
+        rows:
+          - [Monday, "6", "0.849", "2.909", "3.894"]
+          - [Tuesday, "5", "0.720", "1.171", "1.623"]
+          - [Wednesday, "4", "0.838", "4.348", "4.933"]
+          - [Thursday, "4", "0.784", "1.984", "3.489"]
+          - [Friday, "4", "0.725", "1.957", "1.893"]
+        highlight: [2]
+        takeaway: Wednesday's four packers run about as hot as Monday's six, so Wednesday waits longest.
+        source: notes/10b-packers-queues-and-a-shift-plan.md
+        notes: >-
+          Utilisation, ρ, is arrivals divided by what the crew can pack in an hour. The service rate is 12 parcels an hour per
+          packer. Waits are in minutes.
+
+      - layout: flow
+        beat: fundamentals
+        level: core
+        section: The packing line, and Little's law
+        title: Little's law is a check on the log
+        recall: What does Little's law say, and what does it check here?
+        answer: "L = λW: the average number in the system equals the arrival rate times the average time in it. It held to 8.88e-16 over 65 days, so the timestamps are sound."
+        steps:
+          - {label: L, sub: "average number waiting", accent: "1E3A5F"}
+          - {label: λ, sub: "arrivals per minute", accent: "94A3B8"}
+          - {label: W, sub: "average time in the system", accent: "D4621A"}
+          - {label: L = λW, sub: "gap 8.88e-16 over 65 days", accent: "0F7490"}
+        caption: "Walk the floor every 30 minutes and count: Monday's implied wait is 2.86 against 2.91 recorded."
+        takeaway: If a real log failed Little's law, the timestamps would be wrong, and you would know before modelling.
+        source: notes/10b-packers-queues-and-a-shift-plan.md
+        notes: >-
+          The law needs stationary arrivals and finite means and no particular distribution. Our days start empty and run
+          until the line clears, so nothing straddles the ends and it holds to rounding error.
+
+      - layout: image
+        beat: fundamentals
+        section: Erlang C, and a day that starts empty
+        title: A day that starts empty waits less at first
+        kicker: Mean wait by arrival hour
+        recall: Why does a shift sit below the Erlang C wait?
+        answer: "It starts empty. The first hour waits under half as long, and the line only reaches Erlang's level by mid-afternoon."
+        image: ../../assets/sources/images/applied-packing-wait-by-hour.png
+        caption: "Monday with six packers and Wednesday with four, from 3,000 simulated days each."
+        bullets:
+          - "Both start low at 08:00: about **1.7** and **2.3** minutes"
+          - "Climb steeply for two hours"
+          - "Level near the dashed Erlang lines of **3.9** and **4.9**"
+        takeaway: Erlang C describes the afternoon, not the day.
+        source: notes/10b-packers-queues-and-a-shift-plan.md
+        notes: >-
+          Erlang C is the steady-state wait of an M/M/c queue: c servers, Poisson arrivals and exponential service. A shift
+          starts empty, arrivals stop at 16:00 and packers work until the line clears.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: Erlang C, and a day that starts empty
+        title: Simulating the day the generator runs
+        recall: How does the simulation model a day?
+        answer: "A Poisson count of parcels, uniform arrival times, exponential service and first come first served on c packers, starting empty at 08:00, repeated 2,000 times."
+        lang: python
+        code: |-
+          free = [0.0] * packers
+          heapq.heapify(free)
+          w = np.zeros(n)
+          for i in range(n):
+              soonest = heapq.heappop(free)
+              begin = max(times[i], soonest)
+              w[i] = begin - times[i]
+              heapq.heappush(free, begin + minutes[i])
+        bullets:
+          - "A **heap** of times each packer becomes free"
+          - "A parcel starts when it arrives or when the **soonest** packer is free"
+        takeaway: A heap of free times is all a first-come-first-served multi-packer queue needs.
+        source: notes/10b-packers-queues-and-a-shift-plan.md
+        notes: >-
+          The full function also records the overrun past 16:00 and each day's mean wait. The loop is the core.
+
+      - layout: table
+        beat: fundamentals
+        level: core
+        section: Erlang C, and a day that starts empty
+        title: Erlang C, simulated and recorded side by side
+        recall: How far below Erlang C does a day that starts empty run?
+        answer: "By 5% to 14%: Monday 3.42 against 3.89, Wednesday 4.25 against 4.93."
+        header: [Day and packers, Erlang C, Simulated, Recorded]
+        widths: [3.6, 2.0, 2.0, 2.0]
+        rows:
+          - ["Monday, 6", "3.894", "3.423", "2.909"]
+          - ["Tuesday, 5", "1.623", "1.527", "1.171"]
+          - ["Wednesday, 4", "4.933", "4.254", "4.348"]
+          - ["Thursday, 4", "3.489", "3.150", "1.984"]
+          - ["Friday, 4", "1.893", "1.797", "1.957"]
+        highlight: [0, 2]
+        takeaway: The empty start explains a small gap, and the rest of the distance to the record is thirteen-day luck.
+        source: notes/10b-packers-queues-and-a-shift-plan.md
+        notes: >-
+          The recorded column is 13 days per weekday. Friday's recorded wait is slightly above Erlang C and Thursday's is far
+          below, and neither is a finding.
+
+      - layout: compare
+        beat: pitfalls
+        section: Erlang C, and a day that starts empty
+        title: "'Unstable' does not mean what Erlang says"
+        recall: What does Monday with five packers really look like, when Erlang C says infinite?
+        answer: "ρ of 1.03: a mean wait of 19 minutes, 61% of parcels waiting over ten minutes, and a line running 42 minutes past 16:00."
+        emphasis: right
+        left:
+          title: Erlang C says
+          bullets: ["ρ above 1 gives an **infinite** wait", "No finite answer to give a manager"]
+        right:
+          title: The real day
+          bullets: ["Mean wait **19 minutes** (18.919)", "**61%** wait over ten minutes", "Runs **42 minutes** past 16:00"]
+        takeaway: Infinite in a steady-state formula means a very bad day with a finite cost, and a simulation can price it.
+        source: notes/10b-packers-queues-and-a-shift-plan.md
+        notes: >-
+          A day ends, so the queue cannot grow without bound. The cost is a late finish and long waits, both of which can be
+          counted.
+
+      - layout: bullets
+        beat: pitfalls
+        level: core
+        section: Erlang C, and a day that starts empty
+        title: Thirteen days cannot overturn a theory
+        recall: How big is the luck in a recorded Monday mean?
+        answer: "A single Monday's mean wait has an sd of 2.6 minutes, so thirteen Mondays have a standard error of about 0.7. Wednesday ran longer than Monday in 10 of 12 seeds."
+        bullets:
+          - "The sd of one Monday's mean wait is **2.6** minutes"
+          - "Thirteen Mondays: standard error about **0.7**"
+          - "Seeds 100 to 111: each weekday within two standard errors"
+          - "Wednesday above Monday in **10 of 12** seeds: a real feature of the crews"
+        takeaway: Report a recorded mean with its standard error before saying the theory is wrong.
+        source: notes/10b-packers-queues-and-a-shift-plan.md
+        notes: >-
+          The empty start is a small effect and does not explain the full gap on this seed. Wednesday's lead, by contrast,
+          holds across seeds.
+
+      - layout: table
+        beat: fundamentals
+        section: So how many packers on a Monday?
+        title: What an extra packer pays for
+        recall: At what value of a parcel-hour does an extra packer break even, by day?
+        answer: "Monday £5.66, Tuesday £17.04, Wednesday £6.20, Thursday £8.95 and Friday £19.03. A packer-day costs £112."
+        header: [Day, Wait now, With one more, Break-even per parcel-hour]
+        widths: [2.4, 2.0, 2.2, 3.0]
+        rows:
+          - [Monday, "3.34", "0.95", "£5.66"]
+          - [Tuesday, "1.56", "0.44", "£17.04"]
+          - [Wednesday, "4.35", "0.96", "£6.20"]
+          - [Thursday, "3.21", "0.74", "£8.95"]
+          - [Friday, "1.73", "0.44", "£19.03"]
+        highlight: [0, 2]
+        takeaway: Monday and Wednesday are nearly a coin toss for the one extra packer a budget stretches to.
+        source: notes/10b-packers-queues-and-a-shift-plan.md
+        notes: >-
+          A packer-day is £14 an hour times eight, £112. The break-even is that cost divided by the parcel-hours of waiting
+          the extra packer removes.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: So how many packers on a Monday?
+        title: Pricing an extra packer
+        recall: How is the break-even value of a parcel-hour worked out?
+        answer: "Simulate the day with c and c plus one packers, take the parcel-minutes of waiting saved, and divide the packer-day wage by the parcel-hours saved."
+        lang: python
+        code: |-
+          wage_day = line_truth["wage_per_hour"] * 8
+          now, _, _ = simulate_days(rate, c, rng)
+          more, _, _ = simulate_days(rate, c + 1, rng)
+          saved = (now.mean() - more.mean()) * rate * 8
+          break_even = wage_day / (saved / 60)
+        bullets:
+          - "**saved** is parcel-minutes a day"
+          - "Divide by 60 for parcel-hours"
+        takeaway: Price the extra packer against the waiting it removes, and the data stops pretending to know what a minute is worth.
+        source: notes/10b-packers-queues-and-a-shift-plan.md
+        notes: >-
+          The note loops this over the five weekdays to build the table on the previous slide.
+
+      - layout: table
+        beat: fundamentals
+        section: So how many packers on a Monday?
+        title: A tighter wait target adds packer-days
+        recall: What crews do 5-minute and 3-minute wait targets require?
+        answer: "A 5-minute limit needs 6, 5, 4, 4, 4, which is 23 packer-days. A 3-minute limit needs 7, 5, 5, 5, 4, which is 26."
+        lead: "Packers needed each weekday to keep the mean wait under each limit:"
+        header: [Max mean wait, Mon, Tue, Wed, Thu, Fri, Packer-days]
+        widths: [2.4, 1.1, 1.1, 1.1, 1.1, 1.1, 1.7]
+        rows:
+          - ["1 minute", "7", "6", "5", "5", "5", "28"]
+          - ["2 minutes", "7", "5", "5", "5", "4", "26"]
+          - ["3 minutes", "7", "5", "5", "5", "4", "26"]
+          - ["5 minutes", "6", "5", "4", "4", "4", "23"]
+        highlight: [3]
+        takeaway: Thursday sits at 3.21, so a 3-minute round number buys a packer that 3.3 minutes would not.
+        source: notes/10b-packers-queues-and-a-shift-plan.md
+        notes: >-
+          A round-number target hides a decision, and a price for waiting makes it visible. The 5-minute row is today's crew.
+
+      - layout: steps
+        beat: fundamentals
+        level: core
+        section: A shift plan as a linear programme
+        title: The shift plan as a linear programme
+        recall: How is the cheapest cover posed as a linear programme?
+        answer: "Permanents work all five days, agency cover is bought by the day at a premium, and each day's permanents plus agency must meet that day's need. Minimise the wage bill."
+        steps:
+          - {title: One permanent variable, text: "Permanent packers work all five days at the flat wage"}
+          - {title: One agency variable per day, text: "Bought by the day at a premium of 1.2, 1.5 or 2.0"}
+          - {title: A need per day, text: "Permanent plus agency must be at least the day's need"}
+          - {title: Minimise the weekly cost, text: "Today's rota is 23 packer-days, £2,576 a week", n: "★", accent: "D4621A"}
+        takeaway: Five permanents plus a few agency days can cover a peaked week more cheaply than a crew sized to the peak.
+        source: notes/10b-packers-queues-and-a-shift-plan.md
+        notes: >-
+          The premium is the price of flexibility. The needs come from the wait target rows on the previous table.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: A shift plan as a linear programme
+        title: The LP in pulp
+        recall: What are the variables and constraints of the shift plan?
+        answer: "One permanent variable, one agency variable per day, a cost of five wage-days per permanent plus the premium per agency day, and a need constraint per day."
+        lang: python
+        code: |-
+          model = pulp.LpProblem("shifts", pulp.LpMinimize)
+          permanent = model.add_variable("permanent", lowBound=0)
+          agency = {}
+          for d in WEEKDAYS:
+              agency[d] = model.add_variable(f"agency_{d}", lowBound=0)
+          extra = [premium * wage_day * agency[d] for d in WEEKDAYS]
+          model += 5 * wage_day * permanent + pulp.lpSum(extra)
+          for d in WEEKDAYS:
+              model += permanent + agency[d] >= need[d], d
+        bullets:
+          - "Integer or continuous: **cat=kind** in the full function"
+          - "Shadow prices come from the constraints' **pi**"
+        takeaway: The whole model is one cost line and one constraint per day, which is why it solves instantly.
+        source: notes/10b-packers-queues-and-a-shift-plan.md
+        notes: >-
+          pulp 4.2.0 needs numpy installed, CBC comes with pulp[cbc] and COIN_CMD, and LpVariable with lowBound raises a
+          TypeError, so the note uses add_variable.
+
+      - layout: table
+        beat: fundamentals
+        section: A shift plan as a linear programme
+        title: The premium decides the shape of the crew
+        recall: How does the agency premium change the cheapest crew?
+        answer: "At 1.2, four permanents and lots of agency. At 1.5 or 2.0 with a 3-minute target, five permanents and two Monday agency, £3,136 and £3,248."
+        header: [Premium, Target, Cost, Permanent, Agency Mon to Fri]
+        widths: [1.6, 1.6, 1.8, 1.8, 2.8]
+        rows:
+          - ["1.2", "3 min", "£3,046", "4", "3, 1, 1, 1, 0"]
+          - ["1.2", "5 min", "£2,643", "4", "2, 1, 0, 0, 0"]
+          - ["1.5", "3 min", "£3,136", "5", "2, 0, 0, 0, 0"]
+          - ["1.5", "5 min", "£2,744", "4", "2, 1, 0, 0, 0"]
+          - ["2.0", "3 min", "£3,248", "5", "2, 0, 0, 0, 0"]
+        highlight: [2]
+        takeaway: Today's need stays at four permanents at every premium, while the 3-minute need flips to five above about 1.25.
+        source: notes/10b-packers-queues-and-a-shift-plan.md
+        notes: >-
+          The LP and the integer solution agree on every row. That follows from the structure here and stops being true once
+          contracts get more complicated, so check. Monday's shadow price is firm, at £168 at premium 1.5. The other days are
+          not unique when several constraints tie.
+
+      - layout: cards
+        beat: fundamentals
+        section: A shift plan as a linear programme
+        title: Replace the target with a price for waiting
+        recall: How does the cheapest crew change with the value of a parcel-hour?
+        answer: "At £5 today's rota (23 packer-days) is cheapest, at £7 add Monday and Wednesday (25), at £10 add Thursday (26), and at £20 it reaches 28."
+        cards:
+          - {title: "£5 an hour", accent: "94A3B8", body: "Crew 6, 5, 4, 4, 4: 23 packer-days"}
+          - {title: "£7 an hour", accent: "0F7490", body: "Crew 7, 5, 5, 4, 4: 25 packer-days"}
+          - {title: "£10 an hour", accent: "D4621A", body: "Crew 7, 5, 5, 5, 4: 26 packer-days"}
+          - {title: "£20 an hour", accent: "1E3A5F", body: "Crew 7, 6, 5, 5, 5: 28 packer-days"}
+        takeaway: Show the manager these four crews, because each shows what a value of waiting buys.
+        source: notes/10b-packers-queues-and-a-shift-plan.md
+        notes: >-
+          The manager does not need a target from us. She needs to see that at £5 the rota stays and at £7 two packers are
+          added.
+
+      - layout: bullets
+        beat: practice
+        level: core
+        section: A shift plan as a linear programme
+        title: Is the answer solid enough to roster?
+        recall: How firm is the shift plan's answer?
+        answer: "The LP and integer solutions agree, and Monday's shadow price is firm, at £168 at premium 1.5."
+        bullets:
+          - "The LP and the integer solution **agree**"
+          - "Monday's shadow price is firm: **£168** at premium 1.5"
+          - "The other days are not unique when several constraints tie"
+          - "Run the plan against the simulated day to check it"
+        takeaway: Read a shadow price only where it is unique, and check the plan in the simulation before rostering from it.
+        source: notes/10b-packers-queues-and-a-shift-plan.md
+        notes: >-
+          The agreement of the LP and the integer answer follows from the structure here and stops being true once contracts get more complicated.
+
+      - layout: cards
+        beat: practice
+        section: A shift plan as a linear programme
+        title: Checking the plan day by day
+        recall: What does the plan do to each day's wait?
+        answer: "Monday 6 to 7 packers takes the wait from 3.47 to 0.94, Wednesday 4 to 5 from 4.41 to 0.94, Thursday 4 to 5 from 3.31 to 0.75, Friday 4 to 5 from 1.79 to 0.44, and Tuesday stays at 5 with 1.52."
+        cards:
+          - {title: Monday and Wednesday, accent: "1E3A5F", body: "Monday 3.47 to 0.94 and Wednesday 4.41 to 0.94 minutes"}
+          - {title: Thursday and Friday, accent: "0F7490", body: "Thursday 3.31 to 0.75 and Friday 1.79 to 0.44 minutes"}
+          - {title: Tuesday, accent: "94A3B8", body: "Stays at five packers, with a wait of 1.52 minutes"}
+        takeaway: The plan helps every day except Tuesday, which was already fine.
+        source: notes/10b-packers-queues-and-a-shift-plan.md
+        notes: >-
+          Waits are the simulated mean for each day, in minutes.
+
+      - layout: compare
+        beat: practice
+        section: A shift plan as a linear programme
+        title: The plan against today's crew
+        recall: What does the plan cost and what does it buy?
+        answer: "£3,136 a week against £2,744 under the same contract assumption, so £392 more, bringing the parcel-weighted wait from 2.96 to 0.95 minutes with 27 packer-days instead of 23."
+        emphasis: right
+        left:
+          title: Today's crew
+          bullets: ["23 packer-days", "**£2,744** a week", "Parcel-weighted wait **2.96** min"]
+        right:
+          title: The plan
+          bullets: ["27 packer-days", "**£3,136** a week, +£392", "Parcel-weighted wait **0.95** min"]
+        takeaway: The plan buys a three-quarter cut in waiting for £392 a week, and Friday gets a spare packer as a side effect.
+        source: notes/10b-packers-queues-and-a-shift-plan.md
+        notes: >-
+          The check is to run the plan against the simulated day. Parcels up 10% keeps seven on Monday and five on Wednesday,
+          20% needs eight on Monday, and 30% needs eight and six.
+
+      - layout: cards
+        beat: pitfalls
+        section: The wider warehouse
+        title: The wider warehouse does not reconcile
+        recall: What in the fulfilment log does not match the packing line?
+        answer: "Peak lifts picking by about 31% and does nothing to packing, delivery within 3 days falls from 71% to 47.5%, and the log's mean pack time of 3.5 minutes does not match 4.97 on the line."
+        cards:
+          - {title: Peak season, accent: "1E3A5F", body: "Picking up about 31% in every category, packing unchanged. Delivery within 3 days falls from 71% to 47.5%"}
+          - {title: June 2023 outage, accent: "D4621A", body: "Lead time 6.78 days against 3.01 in the rest of non-peak"}
+          - {title: Pack time, accent: "0F7490", body: "3.5 minutes here against 4.97 on the packing line, which does not reconcile"}
+        takeaway: A different pack time moves the answer, so reconcile the two sources before presenting the crew.
+        source: notes/10b-packers-queues-and-a-shift-plan.md
+        notes: >-
+          The fulfilment log covers picks and deliveries over three years. Its rows are flat across weekdays while the line has a
+          Monday peak. Exercise 4 shows that a pack time of 3.5 minutes moves Monday to five packers.
+
+      - layout: bullets
+        beat: wrap
+        section: Recommendation
+        title: What to roster
+        recall: What does the note recommend for Monday and for the plan?
+        answer: "Monday never five. Six to seven if a parcel-hour is worth more than about £6, with Wednesday's fifth packer alongside. The plan is five permanents plus two Monday agency at a premium of 1.5 or more; below about 1.25 stay at four permanents."
+        bullets:
+          - "Monday: **never five**"
+          - "Six to seven if a parcel-hour is worth more than about **£6**"
+          - "Take Wednesday's fifth packer with it"
+          - "Plan: **five permanents** plus two Monday agency at a premium of 1.5 or more"
+          - "Below about 1.25, stay at **four permanents**"
+        takeaway: "Six is already fragile: 10% more parcels takes Monday's wait from 3.4 to 7.9 minutes."
+        source: notes/10b-packers-queues-and-a-shift-plan.md
+        notes: >-
+          These are simulated tables with assumed contracts, and no absence, breaks or peak uplift. A stated value for waiting or
+          a promise on dispatch times would settle Monday outright.
+
+      - layout: table
+        beat: pitfalls
+        section: Pitfalls
+        title: Five queueing pitfalls
+        recall: Why must a recorded 13-day mean not be used to reject Erlang C?
+        answer: "Recorded means have a standard error of about 0.7 minutes on Monday, so Friday sitting above Erlang and Thursday far below are not findings."
+        header: [Pitfall, Do instead]
+        widths: [4, 5.6]
+        rows:
+          - ["Erlang C as the wait for the day", "Treat it as the afternoon; infinite means a late finish"]
+          - ["A 13-day sample to reject the theory", "Compare within a standard error of about 0.7 minutes"]
+          - ["Staffing to the busiest day by reflex", "Look at the wait and ρ; Wednesday waits longest"]
+          - ["A round target making the decision", "Price waiting; 3 minutes buys a Thursday packer that 3.3 would not"]
+          - ["Older pulp code on pulp 4.2.0", "Use pulp[cbc], COIN_CMD and add_variable"]
+        takeaway: Check the sample size and the steady-state assumption before rostering from a formula.
+        source: notes/10b-packers-queues-and-a-shift-plan.md
+        notes: >-
+          The pulp pitfall is a version issue: import fails without numpy, CBC is not bundled, LpVariable with lowBound raises
+          a TypeError and model.constraints is now a method.
+
+  - title: Metrics - a tree to look through
+    summary: Revenue identity · Two kinds of edge · North star · Guardrails · Goodhart · Definitions · Diagnosis
+    notes: We move from operations to the scoreboard, and build a metric tree whose edges are labelled as identities or claims.
+    slides:
+      - layout: statement
+        beat: problem
+        section: The question and the data
+        title: Revenue is up 2.1%, and nobody is happy
+        recall: Why is a revenue line not enough for Fernhill's scoreboard?
+        answer: "Revenue rose 2.1% while marketing spend rose 66.4% and revenue less marketing fell 17.1%, so the headline hides a worse business."
+        kicker: The problem
+        statement: "Revenue grew. Marketing spend grew faster. The scoreboard has to say which of the two the business is doing."
+        takeaway: A single revenue line cannot say what to change, so build a tree that can.
+        source: notes/11-metric-trees.md
+        notes: >-
+          The data is 63,958 orders from 26,342 customers over 2023 to 2025. The question is what the top of the scoreboard
+          should be.
+
+      - layout: compare
+        beat: fundamentals
+        section: A tree has two kinds of edge
+        title: A tree has two kinds of edge
+        recall: What is the difference between a solid and a dashed edge?
+        answer: "A solid edge is an identity you can check with an assert and that attributes a change exactly. A dashed edge is a causal claim that needs an experiment before anyone acts on it."
+        emphasis: right
+        left:
+          title: Solid edge
+          bullets: ["An **identity**", "Check it with an assert", "Attributes a change exactly"]
+        right:
+          title: Dashed edge
+          bullets: ["A **causal claim**", "Needs an experiment first", "The tree only tells you where to look"]
+        takeaway: Draw the two differently, because identities are read as arithmetic and claims are read as hypotheses.
+        source: notes/11-metric-trees.md
+        notes: >-
+          Revenue is active customers times orders per customer times value per order whatever the business does. The belief
+          that a reminder email raises orders per customer is a hypothesis, and it can be false while the identity holds.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: A tree has two kinds of edge
+        title: The identity runs as an assert
+        recall: What does the assert on the revenue tree protect against?
+        answer: "If the leaves stop multiplying back to the ledger, someone has changed a definition."
+        lang: python
+        code: |-
+          def tree(frame):
+              active = frame.customer_id.nunique()
+              n_orders = len(frame)
+              revenue = frame.value.sum()
+              return pd.Series({
+                  "revenue": revenue, "active": active,
+                  "per_customer": n_orders / active,
+                  "per_order": revenue / n_orders})
+
+          years["rebuilt"] = (years.active * years.per_customer
+                              * years.per_order)
+          assert np.allclose(years.revenue, years.rebuilt)
+        bullets:
+          - "Three leaves multiply to the ledger"
+          - "A failed assert means a **definition** changed"
+        takeaway: An assert on the identity turns a silent definition change into a failing check.
+        source: notes/11-metric-trees.md
+        notes: >-
+          The two side boxes in the tree, the counter-metric and the guardrail, have no edges because they constrain the tree
+          without feeding it.
+
+      - layout: table
+        beat: fundamentals
+        section: A tree has two kinds of edge
+        title: 2025 revenue is three numbers multiplied
+        recall: What are the three factors of 2025 revenue?
+        answer: "£1,295,567 is 13,825 active customers times 1.79 orders per customer times £52.27 per order."
+        header: [Year, Revenue, Active, Orders per customer, Per order]
+        widths: [1.6, 2.4, 1.8, 2.2, 1.8]
+        rows:
+          - ["2023", "£800,797", "7,940", "1.91", "£52.83"]
+          - ["2024", "£1,268,304", "10,324", "2.33", "£52.82"]
+          - ["2025", "£1,295,567", "13,825", "1.79", "£52.27"]
+        highlight: [2]
+        takeaway: Active customers rose, orders per customer fell, and the value of an order barely moved.
+        source: notes/11-metric-trees.md
+        notes: >-
+          The 2023 and 2024 rows show that the identity holds every year. The change between years is what the next slide
+          attributes.
+
+      - layout: cards
+        beat: fundamentals
+        section: A tree has two kinds of edge
+        title: Where did 2025's £27,263 come from?
+        recall: How is the 2024 to 2025 change split across the three leaves?
+        answer: "Active customers added £374,320, orders per customer took away £333,706 and value per order took away £13,352, summing exactly to £27,263."
+        cards:
+          - {title: "Active customers", accent: "0F7490", body: "+£374,320 from 33.9% more customers"}
+          - {title: "Per customer", accent: "D4621A", body: "−£333,706 from fewer orders each"}
+          - {title: "Per order", accent: "94A3B8", body: "−£13,352 from a slightly lower basket"}
+        takeaway: The weights are log-mean, so the three parts add to the change with no residual.
+        source: notes/11-metric-trees.md
+        notes: >-
+          If the extra customers had kept 2024's frequency, revenue would have been £1,698,403, a gap of about £403k. The
+          growth came from customers who buy less often.
+
+      - layout: bullets
+        beat: fundamentals
+        section: The north star and its drivers
+        title: The north star is repeat customers
+        recall: What is the north star, and what did it hide?
+        answer: "Customers with two or more orders in the trailing 365 days. They rose 3.5%, from 4,430 to 4,587, while the share repeating fell from 43.0% to 33.2%."
+        bullets:
+          - "Repeat customers: **2+ orders** in the trailing 365 days"
+          - "Count rose **3.5%**, from 4,430 to 4,587"
+          - "The share repeating fell from **43.0%** to **33.2%**"
+          - "New customers spent **£75.38** in 2025 against £101.41 in 2024"
+          - "New customers rose **33%**"
+        takeaway: A count needs a normalised twin, or growth in the base hides a weaker customer.
+        source: notes/11-metric-trees.md
+        notes: >-
+          Rodden and colleagues, the HEART framework with Goals, Signals and Metrics, warn that counts need normalising.
+
+      - layout: compare
+        beat: fundamentals
+        section: Guardrails and counter-metrics
+        title: A guardrail is global, a counter-metric is paired
+        recall: What is the difference between a guardrail and a counter-metric?
+        answer: "A guardrail is a global must-not-break such as delivery speed and applies to every change. A counter-metric is paired with one target and names how that target could be hit badly."
+        emphasis: right
+        left:
+          title: Guardrail
+          bullets: ["A global **must-not-break**", "Delivery speed, refunds, page load", "A breach stops the work"]
+        right:
+          title: Counter-metric
+          bullets: ["Paired with **one target**", "Asks how a lazy team would hit it", "Cost per repeater against new customers"]
+        takeaway: There is no primary source for the distinction, so treat it as the working one this course uses.
+        source: notes/11-metric-trees.md
+        notes: >-
+          The test of a counter-metric is whether it would have moved. In an experiment, a guardrail needs a non-inferiority
+          test of its own.
+
+      - layout: table
+        beat: pitfalls
+        level: core
+        section: Guardrails and counter-metrics
+        title: Cost per new customer missed the damage
+        recall: Which number caught paid social's decline when cost per new customer did not?
+        answer: "Cost per repeater rose 36%, from £365.56 to £498.76, while cost per new customer moved only 4%, from £64.72 to £67.60."
+        header: [Paid social, 2024, 2025]
+        widths: [4.2, 2.4, 2.4]
+        rows:
+          - [Cost per new customer, "£64.72", "£67.60"]
+          - [90-day repeat rate, "17.7%", "13.6%"]
+          - [Cost per repeater, "£365.56", "£498.76"]
+          - ["All channels, cost per repeater", "£122.03", "£229.94"]
+        highlight: [2]
+        takeaway: A counter-metric must come from a different step than the target, or it stays calm while the business deteriorates.
+        source: notes/11-metric-trees.md
+        notes: >-
+          The marginal cost of an extra paid social customer was £69.39. Across all channels cost per new customer went from
+          £37.06 to £46.38.
+
+      - layout: bullets
+        beat: fundamentals
+        section: Guardrails and counter-metrics
+        title: The 2025 scoreboard against 2024
+        recall: How did the headline numbers move from 2024 to 2025?
+        answer: "Revenue +2.1%, marketing spend +66.4% (£292,745 to £487,125), revenue less marketing −17.1%, repeat customers +3.5%, marketing per repeat customer +60.7% (£66.08 to £106.20)."
+        bullets:
+          - "Revenue **+2.1%**"
+          - "Marketing spend **+66.4%**, £292,745 to £487,125"
+          - "Revenue less marketing **−17.1%**"
+          - "Repeat customers **+3.5%**"
+          - "Marketing per repeat customer **+60.7%**"
+          - "Active **+33.9%** and new **+33.0%**"
+        takeaway: Every top-line number is up and the business is worse, which is the case for repeat customers as the star.
+        source: notes/11-metric-trees.md
+        notes: >-
+          The lead time guardrail has a mean of about 3.2 days and a p95 of 7 days in both years, so it did not move.
+
+      - layout: flow
+        beat: pitfalls
+        section: How a proxy goes wrong
+        title: Goodhart's law has four variants
+        recall: What are the four variants of Goodhart's law?
+        answer: "Regressional, extremal, causal and adversarial (Manheim and Garrabrant, a preprint)."
+        steps:
+          - {label: Regressional, sub: "picking on the metric picks noise", accent: "94A3B8"}
+          - {label: Extremal, sub: "the link breaks at the extreme", accent: "1E3A5F"}
+          - {label: Causal, sub: "pushing the proxy does not move the goal", accent: "0F7490"}
+          - {label: Adversarial, sub: "people game it", accent: "D4621A"}
+        caption: "Any metric that becomes a target will meet at least one of these."
+        takeaway: Name which variant a proxy is exposed to, and pair it with a counter-metric that would catch it.
+        source: notes/11-metric-trees.md
+        notes: >-
+          Manheim and Garrabrant is a preprint, so treat the taxonomy as a useful framing, not settled science.
+
+      - layout: compare
+        beat: pitfalls
+        section: How a proxy goes wrong
+        title: A simulated cheat lifts the star by 40%
+        recall: How much does a simulated gaming of repeat customers move the numbers?
+        answer: "Splitting 1,848 single-order orders in two lifts repeat customers from 4,587 to 6,435 (+40%) with revenue unchanged and value per order down from £52.27 to £48.64. Counting distinct days gives 4,571 before and after."
+        emphasis: right
+        left:
+          title: Orders counted
+          bullets: ["Repeat customers **4,587** to **6,435**", "+40% with revenue unchanged", "Value per order £52.27 to £48.64"]
+        right:
+          title: Distinct days counted
+          bullets: ["**4,571** before and after", "Removes 16 real customers", "The cheat gains nothing"]
+        takeaway: Define the metric so the cheapest way to move it is the intended one.
+        source: notes/11-metric-trees.md
+        notes: >-
+          The cheat splits the orders of the largest fifth of single-order customers into two. The distinct-days definition
+          costs 16 real customers, a price worth paying.
+
+      - layout: cards
+        beat: fundamentals
+        section: Writing a definition two analysts agree on
+        title: Five choices hide inside every definition
+        recall: What five choices make two analysts disagree about one metric?
+        answer: "The population and when it is final, the window, the clock, the unit, and the owner and version."
+        cards:
+          - {title: Population, accent: "1E3A5F", body: "Who counts, and when are they final? Repeat rate ever is 46.5% against 24.4%"}
+          - {title: Window, accent: "0F7490", body: "Active customers are 1,881 (30 days), 4,820 (90) or 13,825 (365)"}
+          - {title: Clock, accent: "D4621A", body: "November revenue is £117,454 by order date and £113,299 by delivery"}
+          - {title: Unit, accent: "5B21B6", body: "Conversion is 7.52% per session and 14.20% per visitor"}
+          - {title: Owner and version, accent: "94A3B8", body: "REPEAT_90 v1.0 has an owner, a version and a rule for when it is final"}
+        takeaway: Write all five down, because any one can shift a number by more than the effect you are measuring.
+        source: notes/11-metric-trees.md
+        notes: >-
+          The 90-day repeat rate has 30.4% for everyone against 18.1%, and 30.4% for final customers against 20.2% (7,923 of
+          10,503). December joiners show 4.6% of 854, which is right-censoring.
+
+      - layout: compare
+        beat: pitfalls
+        section: Writing a definition two analysts agree on
+        title: Who is final changes the repeat rate
+        recall: How much does the 90-day repeat rate depend on who is counted?
+        answer: "For everyone it is 30.4% in 2024 and 18.1% in 2025. For final customers only (7,923 of 10,503) the 2025 figure is 20.2%. December joiners are 4.6% of 854."
+        emphasis: right
+        left:
+          title: Everyone counted
+          bullets: ["2024 **30.4%**, 2025 **18.1%**", "Recent joiners have had no time to repeat"]
+        right:
+          title: Final customers only
+          bullets: ["2025 **20.2%**", "**7,923** of 10,503 are final", "December joiners are 4.6% of 854"]
+        takeaway: Count only customers whose 90 days have finished, or the latest cohort looks like a fall.
+        source: notes/11-metric-trees.md
+        notes: >-
+          This is right-censoring. Repeat rate ever is 46.5% against 24.4%, a gap that comes from the window alone.
+
+      - layout: bullets
+        beat: pitfalls
+        section: Writing a definition two analysts agree on
+        title: Windows, clocks and units move the number
+        recall: How much can a window, clock or unit choice move a metric?
+        answer: "Trailing 365 days gives £1,264,983 against £1,268,304 for the calendar year. 12.0% of December orders (£14,197) are delivered after 31 December. Conversion is 7.52% per session and 14.20% per visitor."
+        bullets:
+          - "Trailing 365 days **£1,264,983** against calendar **£1,268,304**"
+          - "**12.0%** of December orders (£14,197) delivered after 31 December"
+          - "Conversion **7.52%** per session, **14.20%** per visitor"
+          - "The web log counts **37,329** purchases against **20,852** ledger orders"
+        takeaway: Name the window, the clock and the unit in the definition, or two correct numbers will disagree.
+        source: notes/11-metric-trees.md
+        notes: >-
+          Both revenue figures are correct for their own definition. They differ by £3,321.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: Writing a definition two analysts agree on
+        title: A metric as a frozen dataclass
+        recall: What does a MetricSpec record?
+        answer: "Name, version, question, population, numerator, denominator, clock, window, how many days before a customer is final, and an owner."
+        lang: python
+        code: |-
+          @dataclass(frozen=True)
+          class MetricSpec:
+              name: str
+              version: str
+              question: str
+              population: str
+              numerator: str
+              denominator: str
+              clock: str
+              window_days: int
+              final_after_days: int
+              owner: str
+        bullets:
+          - "**frozen** makes a changed definition a new version"
+          - "`repeat_90d` returns **None** if nobody is final"
+        takeaway: A definition written as code can be versioned, reviewed and refused when its inputs are not final.
+        source: notes/11-metric-trees.md
+        notes: >-
+          REPEAT_90 v1.0 gives 30.4% in 2024 and 20.2% in 2025. A semantic layer such as dbt can enforce the definition, but
+          deciding it is still a human job.
+
+      - layout: steps
+        beat: practice
+        level: core
+        section: Using the tree to diagnose
+        title: Walk down the tree to find where it moved
+        recall: How do you use the tree to diagnose a fall in revenue?
+        answer: "Attribute the change across the identity leaves, find the leaf that moved, and then read the dashed edges under it as hypotheses to test."
+        steps:
+          - {title: Attribute the change, text: "Split the move across active, per customer and per order"}
+          - {title: Find the leaf that moved, text: "Usually one leaf carries most of the change"}
+          - {title: Read the dashed edges below it, text: "They are hypotheses, not findings"}
+          - {title: Test the likeliest, text: "An experiment or another design before action", n: "★", accent: "D4621A"}
+        takeaway: The tree says where to look, and a test says what to do.
+        source: notes/11-metric-trees.md
+        notes: >-
+          Orders per customer fell from 1.22 to 1.12 in the month window. The January 2025 email budget cut is confirmed by
+          the retail.py generator, which is synthetic.
+
+      - layout: compare
+        beat: practice
+        section: Using the tree to diagnose
+        title: Two diagnoses, two different leaves
+        recall: Which leaf explains December to January, and which explains November to November?
+        answer: "Dec 2024 to Jan 2025 is −£9,894, driven by per customer (−9,138) and active (−3,462). Nov 2024 to Nov 2025 is +£1,736, where active +10,761 is cancelled by per customer −9,531."
+        emphasis: right
+        left:
+          title: Dec 2024 to Jan 2025
+          bullets: ["**−£9,894** in total", "Active −3,462", "Per customer **−9,138**", "Per order +2,705"]
+        right:
+          title: Nov 2024 to Nov 2025
+          bullets: ["**+£1,736** in total", "Active **+10,761**", "Per customer −9,531", "Per order +506"]
+        takeaway: The same leaf, orders per customer, drags both months, and the second month hides it behind new customers.
+        source: notes/11-metric-trees.md
+        notes: >-
+          Orders per customer fell from 1.22 to 1.12 over the January window, a change the January email budget cut can
+          explain.
+
+      - layout: statement
+        beat: wrap
+        section: Using the tree to diagnose
+        title: The tree says where to look
+        recall: What can a metric tree tell you, and what can it not?
+        answer: "It says which leaf moved. Only an experiment says whether a dashed edge is real."
+        kicker: The rule
+        statement: "The solid edges say where the number moved. Only a test says what to do about it."
+        takeaway: A tree orders the questions, and an experiment answers them.
+        source: notes/11-metric-trees.md
+        notes: >-
+          A metric tree is a way to order questions. It does not replace the experiment.
+
+      - layout: table
+        beat: wrap
+        section: The recommendation
+        title: The scoreboard Fernhill should run
+        recall: What belongs at the top of Fernhill's scoreboard, and in which role?
+        answer: "Repeat customers (distinct days, trailing 365) as the north star, new customers and repeat_90d as drivers, cost per repeater and marketing per repeat customer as counter-metrics, and p95 lead time as the guardrail."
+        header: [Role, Metric, 2024, 2025]
+        widths: [2.4, 4.4, 1.4, 1.4]
+        rows:
+          - [North star, "Repeat customers (distinct days)", "4,423", "4,571"]
+          - [Driver, "New customers per channel", "7,899", "10,503"]
+          - [Driver, "repeat_90d v1.0, final only", "30.4%", "20.2%"]
+          - [Counter-metric, "Cost per customer who repeats", "£122.03", "£229.94"]
+          - [Counter-metric, "Marketing per repeat customer", "£66.08", "£106.20"]
+          - [Guardrail, "Delivery lead time p95", "7 days", "7 days"]
+        highlight: [0]
+        takeaway: Move acquisition's target from new customers to customers who repeat within 90 days, and cost per new stops being defended.
+        source: notes/11-metric-trees.md
+        notes: >-
+          The owners are illustrative, because a synthetic shop has no organisation chart. The 90-day rate is a proxy for a
+          long-term value nobody has measured directly here.
+
+      - layout: table
+        beat: pitfalls
+        section: Pitfalls
+        title: Six metric-tree pitfalls
+        recall: Name two ways a metric tree can mislead.
+        answer: "A tree of only identities that nobody can act on, and reading a dashed edge as solid, such as getting email opens up to feed repeat purchase."
+        header: [Pitfall, Do instead]
+        widths: [4, 5.6]
+        rows:
+          - ["A tree of only identities", "Draw and test the dashed edges"]
+          - ["Reading a dashed edge as solid", "Say which edges have been tested"]
+          - ["A counter-metric from the same step", "Pair it with a later step: cost per repeater moved 36%, cost per new 4%"]
+          - ["Comparing across a definition change", "Version the definition and restate history"]
+          - ["A trailing window mixed with a calendar period", "State which: two 2024 revenues sit £3,321 apart"]
+          - ["Unreconciled tables in an identity", "Keep the web log beside the tree, not under the ledger"]
+        takeaway: Most scoreboard failures are a definition that quietly changed or an edge that was never tested.
+        source: notes/11-metric-trees.md
+        notes: >-
+          The note lists nine pitfalls. The remaining three are a north star that restates revenue, reporting an immature
+          cohort as a fall, and too many metrics with one owner.

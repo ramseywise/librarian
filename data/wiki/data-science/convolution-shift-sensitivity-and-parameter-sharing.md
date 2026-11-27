@@ -1,8 +1,8 @@
 ---
 title: "Convolution, Shift Sensitivity and Parameter Sharing"
-tags: [data-science, concept]
+tags: [data-science, deep-learning, concept]
 summary: "A convolution reuses one small filter at every position (sharing plus sparse connections), so it survives shifts that wreck an MLP, but pooling and the final linear layer keep it from true invariance; augmentation buys invariance only for the shifts shown."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--04-convolutional-networks.md
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--03-structuring-ml-projects.md

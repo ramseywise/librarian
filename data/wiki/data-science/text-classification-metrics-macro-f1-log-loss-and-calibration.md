@@ -1,8 +1,8 @@
 ---
 title: "Text Classification Metrics: Macro-F1, Log-Loss and Calibration"
-tags: [data-science, concept]
+tags: [data-science, nlp, concept]
 summary: "Which metric fits which text task: macro-F1 exposes ignored small classes, log-loss punishes overconfident Naive Bayes, and multi-label needs micro versus macro averages and per-label thresholds."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--03-nlp--notes--02-text-classification.md
   - data/raw/papers/2026-11-07-guo-2017-calibration-modern-neural-networks.md

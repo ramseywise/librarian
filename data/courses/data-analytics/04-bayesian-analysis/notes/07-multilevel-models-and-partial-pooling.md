@@ -1,10 +1,11 @@
 ---
-imported_hash: c9b721aa83415e8f
+imported_hash: 7bce6ee14ba0a3dd
 title: 7 — Multilevel Models and Partial Pooling
 summary: Suppose Larkspur runs its checkout test in 24 markets, and the dashboard shows one market with a lift three times the average.
-order: 10
+order: 11
 kind: reading
 section: Notes
+tier: practitioner
 source: learn-ai-engineering/data-analytics/04-bayesian-analysis/notes/07-multilevel-models-and-partial-pooling.md
 ---
 

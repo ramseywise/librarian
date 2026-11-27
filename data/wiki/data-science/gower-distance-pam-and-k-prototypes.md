@@ -1,8 +1,8 @@
 ---
 title: "Gower Distance, PAM and k-prototypes"
-tags: [data-science, comparison]
+tags: [data-science, classical-ml, comparison]
 summary: "Gower handles missing values but equal weights give categories about three times the say of numbers; PAM needs an n-by-n matrix, and k-prototypes' gamma has no value that suits every world."
-updated: 2026-11-10
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--05b-clustering-categorical-and-mixed-data.md
 ---

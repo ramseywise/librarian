@@ -1,8 +1,8 @@
 ---
 title: "Drift Types and What Monitors Can See"
-tags: [data-science, pattern]
+tags: [data-science, classical-ml, pattern]
 summary: "Covariate shift is loud and harmless, prior and concept shift are silent to input monitors, and feature skew can break a model while the score monitor barely moves; bin coded columns by level."
-updated: 2026-11-19
+updated: 2026-11-20
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--10-imbalance-errors-and-drift.md
 ---
