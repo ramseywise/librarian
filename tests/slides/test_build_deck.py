@@ -69,16 +69,16 @@ class TestLevels(Base):
             part(
                 "Mixed",
                 slide("no level"),
+                slide("is intro", level="intro"),
                 slide("is core", level="core"),
-                slide("is practice", level="practice"),
                 slide("is deep", level="deep"),
             ),
             part(
                 "Advanced only",
-                slide("advanced practice", level="practice"),
+                slide("advanced core", level="core"),
                 slide("advanced deep", level="deep"),
             ),
-            part("Third", slide("third core")),
+            part("Third", slide("third intro")),
             closing(slide("closing deep", level="deep")),
         )
 
@@ -88,21 +88,21 @@ class TestLevels(Base):
     def has(self, texts, needle):
         return any(needle in t for t in texts)
 
-    def test_core_keeps_core_and_absent_and_drops_the_rest(self):
-        texts = self.texts(bd.build(self.spec, "core"))
+    def test_intro_keeps_intro_and_absent_and_drops_the_rest(self):
+        texts = self.texts(bd.build(self.spec, "intro"))
         # Title; Mixed's divider and two slides; Third's divider and slide; the closing slide.
         self.assertEqual(len(texts), 7)
-        for kept in ("no level", "is core", "third core"):
+        for kept in ("no level", "is intro", "third intro"):
             self.assertTrue(self.has(texts, kept), kept)
-        for dropped in ("is practice", "is deep", "advanced practice", "advanced deep"):
+        for dropped in ("is core", "is deep", "advanced core", "advanced deep"):
             self.assertFalse(self.has(texts, dropped), dropped)
 
     def test_closing_part_stays_whole_at_any_level(self):
-        self.assertTrue(self.has(self.texts(bd.build(self.spec, "core")), "closing deep"))
+        self.assertTrue(self.has(self.texts(bd.build(self.spec, "intro")), "closing deep"))
 
-    def test_practice_keeps_core_and_practice_only(self):
-        texts = self.texts(bd.build(self.spec, "practice"))
-        for kept in ("no level", "is practice", "advanced practice"):
+    def test_core_keeps_intro_and_core_only(self):
+        texts = self.texts(bd.build(self.spec, "core"))
+        for kept in ("no level", "is intro", "is core", "advanced core"):
             self.assertTrue(self.has(texts, kept), kept)
         for dropped in ("is deep", "advanced deep"):
             self.assertFalse(self.has(texts, dropped), dropped)
@@ -113,14 +113,14 @@ class TestLevels(Base):
         )
 
     def test_emptied_part_is_gone_from_agenda_and_dividers_and_the_rest_renumber(self):
-        texts = self.texts(bd.build(self.spec, "core"))
+        texts = self.texts(bd.build(self.spec, "intro"))
         self.assertFalse(self.has(texts, "Advanced only"))
         self.assertIn("Part 2: Third", texts[0])
         self.assertTrue(self.has(texts, "PART 2 Third"))
         self.assertFalse(self.has(texts, "PART 3"))
 
     def test_divider_stays_and_lists_only_kept_slides(self):
-        divider = self.texts(bd.build(self.spec, "core"))[1]
+        divider = self.texts(bd.build(self.spec, "intro"))[1]
         self.assertIn("PART 1", divider)
         self.assertIn("no level", divider)
         self.assertNotIn("is deep", divider)
@@ -151,6 +151,12 @@ class TestLevels(Base):
         self.assertIn("Part 1: Empty", texts[0])
         self.assertIn("Part 2: P", texts[0])
 
+    def test_practice_is_an_alias_for_core(self):
+        self.write(part("P", slide("old middle", level="practice"), slide("d", level="deep")))
+        out = bd.build(self.spec, "practice")
+        self.assertEqual(out.name, "01-topic-core.pptx")
+        self.assertTrue(self.has(self.texts(out), "old middle"))
+
 
 class TestFilterParts(unittest.TestCase):
     def test_does_not_change_the_parts_it_is_given(self):
@@ -158,6 +164,11 @@ class TestFilterParts(unittest.TestCase):
         kept = bd.filter_parts(parts, "core")
         self.assertEqual([s["title"] for s in kept[0]["slides"]], ["a"])
         self.assertEqual(len(parts[0]["slides"]), 2)
+
+    def test_practice_slides_count_as_core(self):
+        parts = [part("P", slide("old middle", level="practice"), slide("d", level="deep"))]
+        kept = bd.filter_parts(parts, "core")
+        self.assertEqual([s["title"] for s in kept[0]["slides"]], ["old middle"])
 
 
 class TestStoryAgainstFullDeck(Base):
@@ -757,3 +768,19 @@ def test_a_written_answer_excuses_a_one_line_takeaway_under_a_list_question() ->
     slide = {"title": "Bias", "recall": "Name three sources of bias?", "takeaway": "Bias hides."}
     assert any("asks for a list" in p for p in bd.flashcard_problems(slide))
     assert bd.flashcard_problems({**slide, "answer": "Selection, measurement, confounding."}) == []
+
+
+class LiteralTextTest(unittest.TestCase):
+    def setUp(self):
+        prs = Presentation()
+        self.slide = prs.slides.add_slide(prs.slide_layouts[6])
+
+    def test_literal_text_keeps_exponents_and_backticks(self):
+        box = bd.text(
+            self.slide, 0, 0, 5, 1, ["y = x ** 2 + z ** 2", "f(`a`)"], 12, bd.TEXT, literal=True
+        )
+        self.assertEqual(box.text_frame.text, "y = x ** 2 + z ** 2\nf(`a`)")
+
+    def test_markup_text_still_reads_bold(self):
+        box = bd.text(self.slide, 0, 0, 5, 1, "a **b** c", 12, bd.TEXT)
+        self.assertEqual(box.text_frame.text, "a b c")

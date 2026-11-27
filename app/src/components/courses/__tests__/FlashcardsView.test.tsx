@@ -1,7 +1,8 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { FlashcardDeck } from "../types";
+import { resetLearningForTests, useLearning } from "../../../hooks/useLearning";
 import { FlashcardsDue } from "../FlashcardsDue";
 import { FlashcardsView, InlineMarkup } from "../FlashcardsView";
 
@@ -23,6 +24,7 @@ function stubDeck(status = 200) {
 }
 
 afterEach(() => {
+  resetLearningForTests();
   cleanup();
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
@@ -118,6 +120,19 @@ describe("FlashcardsView", () => {
     expect(posts()).toBe(1);
     await userEvent.click(screen.getByRole("button", { name: "Next" }));
     expect(posts()).toBe(1);
+  });
+
+  it("a saved grade refreshes mastery", async () => {
+    const fetchMock = stubDeck();
+    // A mounted learning consumer (as on the course overview) refetches /state when a grade lands.
+    const Probe = () => { useLearning(); return null; };
+    render(<><Probe /><FlashcardsView deckId="c1/m1" /></>);
+    await screen.findByText("First question");
+    const stateCalls = () => fetchMock.mock.calls.filter((c) => String((c as unknown as [string])[0]) === "/api/learning/state").length;
+    await waitFor(() => expect(stateCalls()).toBe(1));
+    await userEvent.click(screen.getByRole("button", { pressed: false }));
+    await userEvent.click(screen.getByRole("button", { name: "Knew it" }));
+    await waitFor(() => expect(stateCalls()).toBe(2));
   });
 
   it("keeps going when a grade fails to save", async () => {

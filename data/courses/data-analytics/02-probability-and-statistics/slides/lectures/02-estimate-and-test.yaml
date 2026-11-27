@@ -1,0 +1,1292 @@
+# imported_hash: 0779f18ec6e3b394
+# Lecture on step 2, estimate and test: estimators, likelihood, intervals, the bootstrap, hypothesis tests and multiple comparisons.
+# make slides PILLAR=data-analytics/02-probability-and-statistics LECTURE=02-estimate-and-test STRICT=1 PREVIEW=1
+# Levels: a slide with no level is the intro, `core` is the core lesson, `deep` is the optional extension (code and maths).
+deck:
+  title: Estimate and Test
+  subtitle: Estimators, intervals, the bootstrap, tests and multiplicity
+  tagline: "Estimate one number · Bootstrap and power · Test a claim · Many tests"
+  reference: "Notes: data-analytics/02-probability-and-statistics/notes/04-estimation.md, 05-hypothesis-testing.md"
+  output: 02-estimate-and-test.pptx
+  notes: >-
+    This lecture is step 2 of the module. It turns a sample into a reported number with an interval, then asks whether that
+    number rules out zero. The running example is Larkspur: 4,000 users, 180 buyers, and a finance lead who wants to know
+    whether 2.50 or 3.20 revenue per user is safe to plan on.
+
+lecture:
+  covers:
+    - data-analytics/02-probability-and-statistics/notes/04-estimation.md
+    - data-analytics/02-probability-and-statistics/notes/05-hypothesis-testing.md
+  requires:
+    - data-analytics/02-probability-and-statistics/notes/03-distributions-and-sampling.md
+  next:
+    - data-analytics/02-probability-and-statistics/notes/06-regression-and-glms.md
+  related:
+    - data-analytics/03-experimentation-and-causality/notes/01-ab-testing.md
+    - data-analytics/03-experimentation-and-causality/notes/03-experimentation-at-scale.md
+    - data-science/01-classical-ml/notes/04-model-evaluation.md
+    - data-analytics/04-bayesian-analysis/notes/01-bayesian-inference.md
+    - data-analytics/06-applied-analyses/notes/07-survival-and-event-history.md
+
+parts:
+  - title: Estimate one number
+    divider: false
+    summary: "Estimators · Maximum likelihood · Standard errors · Wald and Wilson · The delta method"
+    notes: >-
+      One sample of 4,000 users gives one number. This part builds it, then puts an honest interval around it.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Why this chapter
+        kicker: The finance lead's question
+        statement: "Revenue per user is 2.68. Is 2.50 safe, and is 3.20?"
+        recall: Is 2.50 or 3.20 safe as revenue per user?
+        answer: "A single number cannot say. Revenue per user is 2.68, and only an interval answers whether 2.50 or 3.20 is safe."
+        takeaway: A number without an interval cannot answer that question.
+        source: notes/04-estimation.md
+        notes: >-
+          The finance lead needs to know whether 2.50 or 3.20 is safe to plan on. The answer is an estimate with an interval, not a single figure.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: Why this chapter
+        title: This chapter's sample
+        recall: What is the Larkspur sample the chapter works on?
+        answer: "Four thousand users with 180 buyers, a conversion of 0.0450 and revenue per user of 2.681."
+        lead: Drawn the same way as the revenue in chapter 1
+        lang: python
+        code: |-
+          rng = np.random.default_rng(42)
+          n = 4_000
+          buy = rng.random(n) < 0.047
+          revenue = np.where(buy, rng.lognormal(3.6, 1.1, n), 0.0)
+          print(f"{n} users, {buy.sum()} buyers, "
+                f"conversion {buy.mean():.4f}, "
+                f"revenue/user {revenue.mean():.3f}")
+          # 4000 users, 180 buyers, conversion 0.0450, revenue/user 2.681
+        bullets:
+          - "Conversion **0.0450**"
+          - "Revenue per user **2.681**"
+        takeaway: Everything in the chapter hangs off these two numbers.
+        source: notes/04-estimation.md
+        notes: >-
+          The true conversion in the generator is 0.047. The sample shows 0.0450, so already the estimate is not the truth.
+
+      - layout: flow
+        beat: problem
+        section: Why this chapter
+        title: Two chapters, one idea
+        recall: How do chapters 3, 4 and 5 fit together?
+        answer: "Chapter 3 says what a sample mean does as N grows. Chapter 4 turns that into an estimate with an interval. Chapter 5 asks whether the interval rules out zero."
+        steps:
+          - {label: "Chapter 3", sub: "what a mean does as N grows", accent: fundamentals}
+          - {label: "Chapter 4", sub: "an estimate with an interval", accent: practice}
+          - {label: "Chapter 5", sub: "does it rule out zero?", accent: pitfalls}
+        caption: The interval is usually the more useful side
+        takeaway: Estimation and testing are one idea seen from two sides.
+        source: notes/04-estimation.md
+        notes: >-
+          On most real questions the interval tells you more than the test, because it shows the size as well as the sign.
+
+      - layout: compare
+        beat: fundamentals
+        section: Estimators, bias and variance
+        title: An estimator is a recipe, an estimate is its output
+        recall: What is the difference between an estimator and an estimate?
+        answer: "An estimator is a rule applied to a sample, so it has a sampling distribution. An estimate is the single number one sample produced."
+        emphasis: right
+        left:
+          title: Estimator
+          bullets:
+            - "A **rule** applied to any sample"
+            - "Has a **distribution** across samples"
+        right:
+          title: Estimate
+          bullets:
+            - "One **number** from one sample"
+            - "Here **2.681** per user"
+        takeaway: Judge the recipe by how it behaves over many samples, not by one result.
+        source: notes/04-estimation.md
+        notes: >-
+          Bias, variance and mean squared error are all properties of the recipe across repeated samples.
+
+      - layout: cards
+        beat: fundamentals
+        section: Estimators, bias and variance
+        title: Four ways to judge an estimator
+        recall: How do you judge an estimator?
+        answer: "Bias is the average miss, variance is the spread across samples, mean squared error combines them, and consistency means the error shrinks as N grows."
+        cards:
+          - {title: "Bias", accent: problem, body: "The **average miss** across samples"}
+          - {title: "Variance", accent: fundamentals, body: "The **spread** across samples"}
+          - {title: "MSE", accent: practice, body: "Bias squared plus variance"}
+          - {title: "Consistency", accent: pitfalls, body: "The error **shrinks** as N grows"}
+        takeaway: Low bias alone does not make an estimator good.
+        source: notes/04-estimation.md
+        notes: >-
+          Mean squared error is the usual single score because it charges for both kinds of miss.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: Estimators, bias and variance
+        title: Divide by n or by n minus 1?
+        recall: What does dividing by n or n minus 1 do to the sample variance?
+        answer: "With 200,000 samples of size 5 from a variance of 4, dividing by n averages 3.190 and is biased, while n minus 1 averages 3.988 and is nearly unbiased. Yet the biased one has the smaller MSE, 5.76 against 7.98."
+        header: [Divisor, Mean, Bias, Variance, MSE]
+        widths: [2.6, 1.8, 1.8, 1.8, 1.8]
+        rows:
+          - ["n", "3.190", "-0.810", "5.11", "5.76"]
+          - ["n - 1", "3.988", "-0.012", "7.98", "7.98"]
+        takeaway: The unbiased version has the larger MSE here.
+        source: notes/04-estimation.md
+        notes: >-
+          The simulation draws 200,000 samples of size 5 from a Normal with variance 4. Unbiased is a property worth having, but it is not the goal.
+
+      - layout: statement
+        beat: pitfalls
+        level: core
+        section: Estimators, bias and variance
+        kicker: One bad draw
+        statement: "A mean of 0.155 becomes -35.12 when one draw is replaced by -213.8"
+        recall: What can one wild value do to a mean?
+        answer: "It can wreck it. A mean of 0.155 becomes -35.12 when one draw is replaced by -213.8."
+        takeaway: A mean has no defence against a single wild value.
+        source: notes/04-estimation.md
+        notes: >-
+          Six N(0,1) draws give a mean of 0.155. Swap the last draw for -213.8 and the mean is -35.12. This is why the choice of estimator matters.
+
+      - layout: compare
+        beat: fundamentals
+        level: core
+        section: Estimators, bias and variance
+        title: "Three dice: the best guess is not the likeliest"
+        recall: Why can the minimum-MSE guess differ from the MLE?
+        answer: "For the sum of three dice, 10.5 minimises the mean squared error, but it can never be the answer. The maximum likelihood guess of 10 or 11 is right one time in 8."
+        emphasis: right
+        left:
+          title: Minimum MSE
+          bullets:
+            - "Guess **10.5**"
+            - "Smallest average squared miss"
+        right:
+          title: Maximum likelihood
+          bullets:
+            - "Guess **10 or 11**"
+            - "Right **1 time in 8**"
+        takeaway: Different goals pick different estimators from the same data.
+        source: notes/04-estimation.md
+        notes: >-
+          Choose the estimator for the loss you care about. Squared error and the most probable value are different questions.
+
+      - layout: cards
+        beat: fundamentals
+        level: deep
+        section: Estimators, bias and variance
+        title: The locomotive problem
+        recall: How do three estimators of the largest number compare?
+        answer: "With estimator a times the number seen i, maximum likelihood uses a of 1, minimum MSE uses 3N over 2N+1 (tending to 3/2), and the unbiased choice uses 2N over N+1 (tending to 2)."
+        cards:
+          - {title: "Maximum likelihood", accent: fundamentals, body: "Multiplier **a = 1**"}
+          - {title: "Minimum MSE", accent: practice, body: "**3N / (2N + 1)**, tending to 3/2"}
+          - {title: "Unbiased", accent: pitfalls, body: "**2N / (N + 1)**, tending to 2"}
+        takeaway: Three reasonable goals give three different answers.
+        source: notes/04-estimation.md
+        notes: >-
+          After seeing train 60 with a uniform prior on 1 to 200, the posterior gives a 90% credible interval of [63, 189]. The note uses N+1 where the Think Stats book prints N-1, and corrects the book itself.
+
+      - layout: statement
+        beat: wrap
+        level: deep
+        section: Estimators, bias and variance
+        kicker: After train number 60
+        statement: "A 90% credible interval of [63, 189] for the number of trains"
+        recall: What interval do a prior and the data give for the number of trains?
+        answer: "A 90% credible interval of [63, 189] after seeing train number 60."
+        takeaway: A prior plus data yields an interval you can read as a probability.
+        source: notes/04-estimation.md
+        notes: >-
+          This is the Bayesian answer to the locomotive problem, with a uniform prior on 1 to 200.
+
+      - layout: bullets
+        beat: fundamentals
+        section: Maximum likelihood
+        title: Maximum likelihood in one sentence
+        recall: What is maximum likelihood?
+        answer: "Pick the parameter value under which the observed data are most probable. For k buyers among N users the answer is p-hat equals k over N, and a numeric optimiser finds the same value."
+        bullets:
+          - "Pick the value that makes the data **most probable**"
+          - "Bernoulli log-likelihood: **k log p + (N - k) log(1 - p)**"
+          - "Derivative to zero gives **p-hat = k / N = 0.04500**"
+          - "A numeric optimiser agrees, and works when there is no closed form"
+        takeaway: Maximum likelihood is the default recipe for building an estimator.
+        source: notes/04-estimation.md
+        notes: >-
+          The numeric route matters later, because most models have no closed form. The optimiser printed 0.04500 for both the numeric MLE and k over N.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: Maximum likelihood
+        title: The likelihood reports its own uncertainty
+        recall: How does the likelihood give a standard error?
+        answer: "The curvature at the peak is the observed Fisher information, and one over its square root is the standard error. Here it is 0.00328, matching the formula sqrt(p(1-p)/N)."
+        lead: Curvature of the log-likelihood at the peak
+        lang: python
+        code: |-
+          p_hat = k / N
+          h = 1e-4
+          curv = (neg_log_lik(p_hat + h)
+                  - 2 * neg_log_lik(p_hat)
+                  + neg_log_lik(p_hat - h)) / h**2
+          print(f"SE from curvature {curv**-0.5:.5f}")
+          print(f"SE formula {(p_hat*(1-p_hat)/N)**0.5:.5f}")
+          # SE from curvature 0.00328
+          # SE formula 0.00328
+        bullets:
+          - "A **sharp** peak pins the parameter down"
+          - "The familiar formula **is** the curvature"
+        takeaway: The standard error is the curvature of the log-likelihood, worked out by hand.
+        source: notes/04-estimation.md
+        notes: >-
+          The same machinery gives standard errors in logistic regression, where no simple formula exists. Chapter 6 reads them off the Hessian.
+
+      - layout: image
+        beat: fundamentals
+        level: core
+        section: Maximum likelihood
+        kicker: Information at the observed sample
+        image: ../../assets/sources/images/computer-age-statistical-inference-fig4-2.png
+        caption: Variance of the MLE rises with 1/I(x); the dashed line is the single unconditional variance
+        bullets:
+          - "Variance runs **0.05 to 0.20**, not a flat **0.10**"
+        recall: Why read the curvature at the observed sample?
+        answer: "Grouped by observed information, the MLE variance runs from about 0.05 to 0.20, while the textbook unconditional value is 0.10 for every group. The sample's own curvature is the better guide."
+        takeaway: The sample in hand tells you how precise it is better than the average does.
+        source: notes/04-estimation.md
+        notes: >-
+          Efron and Hastie simulate Cauchy-location samples of size 20 and group them by the observed information. Figure 4.2 shows the result.
+
+      - layout: bullets
+        beat: pitfalls
+        level: core
+        section: Maximum likelihood
+        title: Where maximum likelihood needs care
+        recall: When can maximum likelihood mislead?
+        answer: "With many parameters the largest of 6,033 gene effects, 5.29, is inflated by selection. Nuisance parameters and small samples also bias the MLE."
+        bullets:
+          - "Among **6,033** gene effects, the largest was **5.29**"
+          - "Picking the biggest estimate **inflates** it"
+          - "Nuisance parameters and small samples **bias** the MLE"
+        takeaway: The MLE is a good default, not a guarantee.
+        source: notes/04-estimation.md
+        notes: >-
+          The gene example returns in chapter 5, where empirical Bayes shrinks the 5.29 towards 4.11.
+
+      - layout: bullets
+        beat: practice
+        level: core
+        section: Maximum likelihood
+        title: Fitting the order values by maximum likelihood
+        recall: How close does the MLE get on the lognormal order values?
+        answer: "It recovers mu of 3.519 against a true 3.6 and sigma of 1.140 against 1.1. The implied mean order is 64.59, while the sample mean is 59.59."
+        bullets:
+          - "mu **3.519** against a true **3.6**"
+          - "sigma **1.140** against a true **1.1**"
+          - "Implied mean order **64.59**"
+          - "Sample mean **59.59**"
+        takeaway: A fitted model gives a mean the raw average does not.
+        source: notes/04-estimation.md
+        notes: >-
+          The model-based mean of 64.59 and the sample mean of 59.59 differ, and the gap is itself an estimation question.
+
+      - layout: compare
+        beat: fundamentals
+        level: deep
+        section: Maximum likelihood
+        title: Method of moments against MLE
+        recall: How does the method of moments compare with MLE for sigma?
+        answer: "On the 180 orders the moments estimate is sigma 0.916 and mu 3.668. Over 2,000 samples of 180, MLE gives sigma 1.096 plus or minus 0.056 and moments gives 1.044 plus or minus 0.123, so MLE is steadier."
+        emphasis: left
+        left:
+          title: MLE
+          bullets:
+            - "Sigma **1.096**"
+            - "Spread **0.056**"
+        right:
+          title: Moments
+          bullets:
+            - "Sigma **1.044**"
+            - "Spread **0.123**"
+        takeaway: Moments is simple, but MLE has less than half the spread.
+        source: notes/04-estimation.md
+        notes: >-
+          On the observed 180 orders the moments fit gave mu 3.668 and sigma 0.916. The comparison over 2,000 samples shows the standard deviation of each sigma estimate.
+
+      - layout: code
+        beat: practice
+        section: Standard errors and confidence intervals
+        title: Revenue per user with an interval
+        recall: What interval does the finance lead get?
+        answer: "Revenue per user is 2.681 with a standard error of 0.301, so the 95% interval is 2.091 to 3.272. A plan of 2.50 is fine and 3.20 is optimistic but not ruled out."
+        lead: Estimate plus or minus 1.96 standard errors
+        lang: python
+        code: |-
+          se = revenue.std(ddof=1) / n**0.5
+          print(f"revenue/user {revenue.mean():.3f}, SE {se:.3f}, "
+                f"95% CI [{revenue.mean() - 1.96 * se:.3f}, "
+                f"{revenue.mean() + 1.96 * se:.3f}]")
+          # revenue/user 2.681, SE 0.301,
+          # 95% CI [2.091, 3.272]
+        bullets:
+          - "Plan at **2.50**: fine"
+          - "Plan at **3.20**: optimistic, not ruled out"
+        takeaway: The interval, not the point, is what answers the finance lead.
+        source: notes/04-estimation.md
+        notes: >-
+          The standard error of a mean is s over root n, and of a proportion root of p-hat times one minus p-hat over n.
+
+      - layout: statement
+        beat: fundamentals
+        section: Standard errors and confidence intervals
+        kicker: A good way to report
+        statement: "54.25 ± 0.95"
+        recall: Why report a plus-or-minus after the estimate?
+        answer: "It tells the reader not to trust the digits after it, as in 54.25 ± 0.95."
+        takeaway: The plus-or-minus tells the reader not to trust the digits after it.
+        source: notes/04-estimation.md
+        notes: >-
+          This is the mean of 211 kidney-filtration scores from Efron and Hastie. The standard error is the inference and the mean is the algorithm.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: Standard errors and confidence intervals
+        title: What does 95% mean? Check by simulation
+        recall: How can you check what a 95% interval means?
+        answer: "Draw 10,000 samples from a known rate and count how often the interval contains it. Here the share is 0.948, close to 95%."
+        lead: A simulation knows the truth
+        lang: python
+        code: |-
+          rng3 = np.random.default_rng(3)
+          true_p = 0.047
+          hits = 0
+          for _ in range(10_000):
+              x = rng3.binomial(4_000, true_p)
+              p = x / 4_000
+              half = 1.96 * (p * (1 - p) / 4_000)**0.5
+              hits += p - half < true_p < p + half
+          print(hits / 10_000)   # 0.948
+        bullets:
+          - "**0.948** of the intervals contain the truth"
+        takeaway: The 95% describes the procedure, not the one interval you hold.
+        source: notes/04-estimation.md
+        notes: >-
+          A realised interval either contains the true value or does not. The statement people want, a 95% probability for the parameter, needs a credible interval and a prior.
+
+      - layout: compare
+        beat: pitfalls
+        section: Standard errors and confidence intervals
+        title: What a confidence interval does not say
+        recall: What does a 95% interval mean and not mean?
+        answer: "It describes the procedure's long-run hit rate. It does not give a 95% probability that the parameter lies in this interval, which needs a credible interval and a prior."
+        emphasis: left
+        left:
+          title: What it says
+          bullets:
+            - "**95%** of such intervals would contain the truth"
+            - "A property of the **procedure**"
+        right:
+          title: What it does not say
+          bullets:
+            - "Not a **95% probability** for this interval"
+            - "That needs a credible interval and a **prior**"
+        takeaway: The parameter is fixed, so there is no 95% left to assign to it.
+        source: notes/04-estimation.md
+        notes: >-
+          This is the most common misreading in the pitfalls list at the end of the chapter.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: Standard errors and confidence intervals
+        title: Wald collapses near zero, Wilson does not
+        recall: Why use Wilson instead of Wald for small counts?
+        answer: "Wald gives [0, 0] for 0 of 50 and can go below zero, while Wilson stays sensible. At 188 of 4,000 the two nearly agree."
+        header: [Counts, Wald, Wilson]
+        widths: [2.2, 3.4, 3.4]
+        rows:
+          - ["0 of 50", "[0, 0]", "[0, 0.0714]"]
+          - ["1 of 50", "[-0.0188, 0.0588]", "[0.0035, 0.1050]"]
+          - ["2 of 40", "[-0.0175, 0.1175]", "[0.0138, 0.1650]"]
+          - ["188 of 4,000", "[0.0404, 0.0536]", "[0.0409, 0.0540]"]
+        takeaway: Use Wilson for rates in small segments.
+        source: notes/04-estimation.md
+        notes: >-
+          Wald plugs the estimate into the variance, so zero conversions gives a standard error of zero and a claim of certainty. Wilson inverts the score test instead.
+
+      - layout: table
+        beat: pitfalls
+        level: core
+        section: Standard errors and confidence intervals
+        title: Coverage, Wald against Wilson
+        recall: How often do Wald and Wilson intervals contain the truth?
+        answer: "At p of 0.02 with n of 50, Wald covers 0.633 and Wilson 0.920. At p of 0.05 and n of 4,000 both are near 0.95, at 0.951 and 0.955."
+        header: [Setting, Wald, Wilson]
+        widths: [4, 2.5, 2.5]
+        rows:
+          - ["p = 0.02, n = 50", "0.633", "0.920"]
+          - ["p = 0.05, n = 50", "0.921", "0.962"]
+          - ["p = 0.05, n = 400", "0.930", "0.951"]
+          - ["p = 0.05, n = 4,000", "0.951", "0.955"]
+        takeaway: Wald is fine at 4,000 users and poor at 50.
+        source: notes/04-estimation.md
+        notes: >-
+          A nominal 95% interval that covers only 63% of the time is not a 95% interval. The gap closes as n grows.
+
+      - layout: compare
+        beat: practice
+        level: core
+        section: Standard errors and confidence intervals
+        title: Revenue per session needs the delta method
+        recall: Why is the naive standard error of a ratio metric too small?
+        answer: "Revenue per session is 1.832. Treating session rows as independent gives a standard error of 0.116, while the delta method gives 0.193. The naive one is 40% too small."
+        emphasis: right
+        left:
+          title: Naive
+          bullets:
+            - "Treats session rows as independent"
+            - "SE **0.116**, **40%** too small"
+        right:
+          title: Delta method
+          bullets:
+            - "Keeps each user's numerator and denominator together"
+            - "SE **0.193**"
+        takeaway: A ratio of two noisy totals has more uncertainty than independent rows suggest.
+        source: notes/04-estimation.md
+        notes: >-
+          Revenue per session is 1.832. The delta method uses the user as the unit, and the bootstrap in the next part agrees.
+
+  - title: Bootstrap and power
+    divider: false
+    summary: "The bootstrap · BCa · When it fails · Selection · Power and sample size · Pitfalls"
+    notes: >-
+      The bootstrap replaces algebra with computation. This part shows how to use it, when it breaks and how many users a test needs.
+    slides:
+      - layout: flow
+        beat: fundamentals
+        section: The bootstrap
+        title: The bootstrap loop
+        recall: How does the bootstrap work?
+        answer: "Resample n rows with replacement, recompute the statistic, repeat enough times and read the spread of the results as the standard error and interval."
+        steps:
+          - {label: "Observed sample", sub: "n users", accent: fundamentals}
+          - {label: "Resample", sub: "n users with replacement", accent: problem}
+          - {label: "Recompute", sub: "the statistic", accent: practice}
+          - {label: "Repeat", sub: "enough times", accent: practice}
+          - {label: "Read the spread", sub: "SE and interval", accent: pitfalls}
+        caption: Computation stands in for mathematics
+        takeaway: Your sample is the best available stand-in for the population.
+        source: notes/04-estimation.md
+        notes: >-
+          Efron's bootstrap from 1979 replaces the sampling distribution you cannot get by drawing from the sample you have.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: The bootstrap
+        title: Bootstrap the ratio at the user level
+        recall: What does a user-level bootstrap give for revenue per session?
+        answer: "A standard error of 0.195, a percentile interval of [1.47, 2.239] and a delta interval of [1.453, 2.212]. The two methods agree."
+        header: [Method, "Interval or SE"]
+        widths: [4.5, 4.5]
+        rows:
+          - ["Bootstrap SE", "0.195"]
+          - ["Percentile 95% CI", "[1.47, 2.239]"]
+          - ["Delta 95% CI", "[1.453, 2.212]"]
+        takeaway: Resample users, keeping each user's numerator and denominator together.
+        source: notes/04-estimation.md
+        notes: >-
+          The code draws 5,000 resamples of users. The percentile interval and the delta interval nearly coincide.
+
+      - layout: image
+        beat: practice
+        level: core
+        section: The bootstrap
+        kicker: A bootstrap distribution
+        image: ../../assets/sources/images/computer-age-statistical-inference-fig10-2.png
+        caption: Bootstrap distribution of the eigenratio, 2,000 resamples
+        bullets:
+          - "Bootstrap SE **0.075**, jackknife **0.083**, parametric **0.070**"
+        recall: For the eigenratio statistic, how do bootstrap, jackknife and parametric standard errors compare?
+        answer: "For the eigenratio of 0.693 with n of 22, the bootstrap SE is 0.075, the jackknife 0.083 and the parametric 0.070."
+        takeaway: Three routes to a standard error land close together here.
+        source: notes/04-estimation.md
+        notes: >-
+          For the age-score correlation of -0.572 with n of 157, the jackknife and bootstrap both give 0.058. Use B of 200 for a standard error and 1,000 to 2,000 for intervals.
+
+      - layout: bullets
+        beat: fundamentals
+        level: core
+        section: The bootstrap
+        title: Bootstrap any statistic, even one without a formula
+        recall: What is the bootstrap's main advantage over a formula?
+        answer: "It gives a standard error for any statistic. On the same scores it gave 0.78 for a 25% Winsorized mean, 0.87 for the median and 0.95 for the mean, with B of 1,000."
+        bullets:
+          - "25% Winsorized mean: SE **0.78**"
+          - "Median: SE **0.87**"
+          - "Mean: SE **0.95**"
+        takeaway: The same recipe covers every statistic you can compute.
+        source: notes/04-estimation.md
+        notes: >-
+          For the Lending Club income median of $62,000 the bootstrap gave a standard error of about $209 and a bias of about $70 below. In a kidney regression with n of 157 the standard error at age 80 is 0.42 for the linear fit and 0.70 for the lowess bootstrap.
+
+      - layout: statement
+        beat: pitfalls
+        section: The bootstrap
+        kicker: Where it works well
+        statement: "AML against ALL: a median difference of 0.235, 3.2 standard errors"
+        recall: Can a bootstrap standard error test a difference in medians?
+        answer: "Yes. AML against ALL has a median difference of 0.235, which is 3.2 standard errors."
+        takeaway: A bootstrap standard error makes a difference in medians testable.
+        source: notes/04-estimation.md
+        notes: >-
+          The standard error is 0.074, with groups of 25 and 47.
+
+      - layout: table
+        beat: fundamentals
+        level: deep
+        section: The bootstrap
+        title: Percentile or BCa?
+        recall: When does BCa differ from the percentile interval?
+        answer: "For a mean of 2.661, the percentile interval is [1.872, 3.610] and BCa is [1.941, 3.802]. BCa adjusts for bias and skew, so it shifts towards the long tail."
+        header: [Method, "95% interval for the mean 2.661"]
+        widths: [3, 5]
+        rows:
+          - ["Percentile", "[1.872, 3.610]"]
+          - ["BCa", "[1.941, 3.802]"]
+        takeaway: BCa corrects an interval that skewed data pulls off centre.
+        source: notes/04-estimation.md
+        notes: >-
+          The sample mean here is 2.661. BCa stands for bias-corrected and accelerated.
+
+      - layout: table
+        beat: practice
+        level: deep
+        section: The bootstrap
+        title: Against the exact answer
+        recall: How do the intervals compare with the exact ones?
+        answer: "For a Poisson count of 10, exact is (5.08, 17.82), standard (3.80, 16.20), percentile (4.18, 16.73) and BCa (5.02, 17.96). BCa is closest."
+        header: [Method, "Poisson count of 10", "Correlation 0.498, n = 22"]
+        widths: [2.4, 3.3, 3.3]
+        rows:
+          - ["Exact", "(5.08, 17.82)", "(0.09, 0.75)"]
+          - ["Standard", "(3.80, 16.20)", "(0.17, 0.83)"]
+          - ["Percentile", "(4.18, 16.73)", ""]
+          - ["BCa", "(5.02, 17.96)", "(0.08, 0.75)"]
+        takeaway: BCa tracks the exact interval where the standard one does not.
+        source: notes/04-estimation.md
+        notes: >-
+          The standard interval error shrinks like one over root n and BCa's like one over n. BCa is dependable only while the absolute bias and acceleration constants are about 0.2 or less.
+
+      - layout: image
+        beat: practice
+        level: deep
+        section: The bootstrap
+        kicker: A skewed bootstrap distribution
+        image: ../../assets/sources/images/computer-age-statistical-inference-fig11-3.png
+        caption: Bootstrap correlation, 2,000 resamples, quantiles 0.118 and 0.758
+        bullets:
+          - "Observed correlation **0.498**"
+        recall: What does the bootstrap correlation look like?
+        answer: "The bootstrap distribution is skewed, with 0.025 and 0.975 quantiles of 0.118 and 0.758 around an observed 0.498."
+        takeaway: Look at the bootstrap histogram before you trust any interval from it.
+        source: notes/04-estimation.md
+        notes: >-
+          The standard error of the bias constant is about 1.25 over root B, or 0.028 at B of 2,000.
+
+      - layout: statement
+        beat: pitfalls
+        section: The bootstrap
+        kicker: When the bootstrap fails
+        statement: "64% of resamples tie with the sample maximum"
+        recall: When does the bootstrap fail on the sample maximum?
+        answer: "About 64% of resamples tie with the sample maximum, so it cannot find a tail the sample never saw."
+        takeaway: The bootstrap cannot find a tail your sample never saw.
+        source: notes/04-estimation.md
+        notes: >-
+          The chance a resample contains the maximum is 0.644. So the maximum is a statistic where the bootstrap is a poor guide.
+
+      - layout: compare
+        beat: pitfalls
+        level: core
+        section: The bootstrap
+        title: Resample the right unit
+        recall: What happens if you bootstrap rows that are not independent?
+        answer: "With dependent rows, the row bootstrap gave a standard error of 0.0272 and the cluster bootstrap 0.0474. The true value was 0.0490, so only the cluster version was close."
+        emphasis: right
+        left:
+          title: Resample rows
+          bullets:
+            - "SE **0.0272**"
+            - "Far too small"
+        right:
+          title: Resample clusters
+          bullets:
+            - "SE **0.0474**"
+            - "Close to the truth, **0.0490**"
+        takeaway: Resample whole users, or blocks over time, never dependent rows.
+        source: notes/04-estimation.md
+        notes: >-
+          The unit of resampling must be the unit that is independent.
+
+      - layout: image
+        beat: pitfalls
+        level: deep
+        section: The bootstrap
+        kicker: Estimating after you selected
+        image: ../../assets/sources/images/computer-age-statistical-inference-fig20-4.png
+        caption: Bootstrap estimates for the adaptive and fixed-degree fits
+        bullets:
+          - "Ratio **1.43**: the interval is about **43%** too short"
+        recall: What does model selection do to an interval?
+        answer: "At compliance -2 the standard error is 5.98 for the adaptive fit against 3.97 for a fixed cubic, so ignoring the selection makes the interval about 43% too short."
+        takeaway: An interval that ignores how the model was chosen is too narrow.
+        source: notes/04-estimation.md
+        notes: >-
+          Across 164 pairs, Cp picked the straight line in 19% of resamples. Bagging cuts the standard error by about 12%. On the diabetes data with n of 442 and 10 predictors, Scheffe gives 4.30 against 1.97, which is 2.19 times wider.
+
+      - layout: bullets
+        beat: fundamentals
+        section: Power and sample size, the estimation view
+        title: How many users per arm?
+        recall: What sample size does a test need per arm?
+        answer: "About 2 times (1.96 plus 0.84) squared times sigma squared over delta squared, which is roughly 16 sigma squared over delta squared. The exact multiplier is 15.7."
+        bullets:
+          - "n per arm is about **2(1.96 + 0.84)² σ² / δ²**"
+          - "That is roughly **16 σ² / δ²** (exact multiplier **15.7**)"
+          - "The interval's half-width at n = 4,000 for p = .047 is **0.0066**"
+        takeaway: Sample size is set by noise and by the smallest effect you care about.
+        source: notes/04-estimation.md
+        notes: >-
+          The same formula appears in the experimentation pillar. The paper's 16 gives about 409,000 and 122,000 where the exact multiplier gives the numbers on the next slide.
+
+      - layout: compare
+        beat: practice
+        level: core
+        section: Power and sample size, the estimation view
+        title: Revenue needs far more users than conversion
+        recall: How many users do revenue and conversion tests need?
+        answer: "Revenue with an sd of 30 and a 5% lift on 3.75 needs 401,863 per arm. Conversion at p of .05 with a 5% relative lift needs 119,303 per arm, so revenue needs more than 3 times as many users."
+        emphasis: left
+        left:
+          title: Revenue
+          bullets:
+            - "sd 30, lift of 5% of 3.75"
+            - "**401,863** per arm"
+        right:
+          title: Conversion
+          bullets:
+            - "p = .05, 5% relative lift"
+            - "**119,303** per arm"
+        takeaway: A noisy metric costs many times more users than a binary one.
+        source: notes/04-estimation.md
+        notes: >-
+          Revenue needs more than 3 times the users of conversion. The Try it exercise finds about 3 million per arm for a 1% relative lift on 5% conversion.
+
+      - layout: statement
+        beat: pitfalls
+        section: Power and sample size, the estimation view
+        kicker: The square-root rule
+        statement: "Halve the effect and you need 4 times the users"
+        recall: What does halving the effect cost in sample size?
+        answer: "Four times the users, because precision costs data quadratically."
+        takeaway: Precision costs data quadratically.
+        source: notes/04-estimation.md
+        notes: >-
+          Width scales with root n, so doubling precision costs four times the data. People routinely expect twice the data to be enough.
+
+      - layout: cards
+        beat: pitfalls
+        section: Pitfalls
+        title: Four ways an interval looks better than it is
+        recall: Which estimation mistakes make an interval look better than it is?
+        answer: "Reading a 95% interval as a probability, quoting Wald for small counts, computing a ratio standard error from independent rows, and bootstrapping the wrong unit."
+        cards:
+          - {title: "95% probability", accent: pitfalls, body: "An interval is a hit rate for the **procedure**"}
+          - {title: "Wald at small n", accent: problem, body: "It gives **[0, 0]** for 0 of 50"}
+          - {title: "Ratio SE", accent: fundamentals, body: "Naive was **40% too small**"}
+          - {title: "Wrong unit", accent: practice, body: "Resample **whole users** or blocks"}
+        takeaway: Each of these makes an interval look better than it is.
+        source: notes/04-estimation.md
+        notes: >-
+          These are the first four of eight pitfalls in the note.
+
+      - layout: table
+        beat: pitfalls
+        section: Pitfalls
+        title: Report the interval, and say how it was built
+        recall: Which other estimation mistakes should you avoid?
+        answer: "Using the bootstrap as a cure for too little data, reporting a point estimate as the answer, forgetting that width scales with root n, and trusting nominal coverage on skewed data."
+        header: [Mistake, "Why it fails"]
+        widths: [3.2, 5.8]
+        rows:
+          - ["Bootstrap as a cure", "It cannot conjure a tail your sample missed"]
+          - ["Point as the answer", "The interval is what a decision uses"]
+          - ["Width and root n", "Doubling precision costs 4 times the data"]
+          - ["Nominal coverage", "A 95% label is a claim, not a fact"]
+        takeaway: Report the interval and say how it was built.
+        source: notes/04-estimation.md
+        notes: >-
+          These are the last four of eight pitfalls. Chapter 3 showed nominal coverage can be off by a long way on skewed data.
+
+  - title: Test a claim
+    divider: false
+    summary: "The recipe · What a p-value is not · Permutation tests · Choosing a test · Parametric and rank tests"
+    notes: >-
+      A test asks whether the interval rules out zero. This part gives the recipe, the common misreadings and the choice of test.
+    slides:
+      - layout: statement
+        beat: problem
+        section: The recipe
+        kicker: Larkspur's twenty segments
+        statement: "One segment in twenty hits p = 0.04, and a false positive somewhere is likelier than not"
+        recall: Why is one significant segment out of twenty weak evidence?
+        answer: "At p = 0.04 in one of twenty segments, a false positive somewhere is likelier than not."
+        takeaway: A single significant result among many tries is weak evidence.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          The chance of at least one false positive among twenty independent tests is more likely than not. The multiple comparisons section returns to this.
+
+      - layout: flow
+        beat: fundamentals
+        section: The recipe
+        title: The six steps of a test
+        recall: What are the six steps of a hypothesis test?
+        answer: "State the null, state the alternative (one or two sided, decided before looking), set alpha at usually 0.05, pick a test statistic, compute the p-value, then decide. Failing to reject is not accepting."
+        steps:
+          - {label: "Null H0", sub: "no effect", accent: fundamentals}
+          - {label: "Alternative H1", sub: "sidedness first", accent: problem}
+          - {label: "Alpha", sub: "usually 0.05", accent: practice}
+          - {label: "Statistic", sub: "t, chi-square, F, z", accent: practice}
+          - {label: "p-value", sub: "assuming H0", accent: pitfalls}
+          - {label: "Decision", sub: "reject or fail to reject", accent: wrap}
+        caption: Failing to reject is not the same as accepting
+        takeaway: Decide the sidedness and alpha before you see the data.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          The p-value is the probability, assuming H0 is true, of a statistic at least as extreme as the one observed.
+
+      - layout: cards
+        beat: fundamentals
+        section: The recipe
+        title: The four terms
+        recall: What do Type I, Type II, power and effect size mean?
+        answer: "Type I is a false positive at rate alpha. Type II is a false negative at rate beta. Power is one minus beta, the chance of detecting an effect of a given size. Effect size is the difference itself, independent of N."
+        cards:
+          - {title: "Type I error (α)", accent: pitfalls, body: "A **false positive**"}
+          - {title: "Type II error (β)", accent: problem, body: "A **false negative**"}
+          - {title: "Power (1 − β)", accent: practice, body: "Chance of detecting an effect of a given size"}
+          - {title: "Effect size", accent: fundamentals, body: "The difference, independent of **N**"}
+        takeaway: A test has two ways to be wrong, and power measures the second.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          Type I and Type II errors are the off-diagonal cells of the confusion matrix in data science, with the decision rule in place of a model.
+
+      - layout: compare
+        beat: practice
+        section: The recipe
+        title: Two ways to test the new checkout
+        recall: How do the Welch test and a permutation test compare?
+        answer: "On 400 buyers per arm, the means are 54.19 and 69.50. Welch gives t of 2.63 and p of 0.009. Shuffling the labels gives an observed difference of 15.32 and a permutation p of 0.007."
+        emphasis: right
+        left:
+          title: Welch t-test
+          bullets:
+            - "Means **54.19** and **69.50**"
+            - "t **2.63**, p = **0.009**"
+        right:
+          title: Permutation test
+          bullets:
+            - "Observed difference **15.32**"
+            - "Permutation p = **0.007**"
+        takeaway: Two quite different routes give the same verdict.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          If checkout made no difference the labels old and new are arbitrary. Shuffle them thousands of times and see how often chance gives a difference as large.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: The recipe
+        title: A price test that did not move
+        recall: What does a permutation test say about a flat price test?
+        answer: "Arm A converted 200 of 23,739 (0.8425%) and arm B 182 of 22,588 (0.8057%). The one-sided permutation p is 0.308 against 0.3498 from prop.test."
+        header: [Arm, Conversions, Users, Rate]
+        widths: [2, 2.6, 2.6, 2.2]
+        rows:
+          - ["A", "200", "23,739", "0.8425%"]
+          - ["B", "182", "22,588", "0.8057%"]
+        takeaway: A small gap with a large p-value is what no effect looks like.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          The permutation p of 0.308 uses a pooled urn of 382 ones and 45,945 zeros and 1,000 permutations. In a separate 36 session-time test the difference was 21.4 seconds with permutation p of about 0.12 and Welch p of 0.14.
+
+      - layout: statement
+        beat: fundamentals
+        level: core
+        section: The recipe
+        kicker: Under the null
+        statement: "p-values are uniform: each of five bins holds about a quarter of them"
+        recall: How often is p below 0.05 when H0 is true?
+        answer: "About 5% of the time, by design, because p-values are uniform under the null."
+        takeaway: When H0 is true, p below 0.05 happens 5% of the time by design.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          The simulated bin shares under H0 were 0.05057, 0.19972, 0.24795, 0.25152 and 0.25024.
+
+      - layout: table
+        beat: pitfalls
+        section: The recipe
+        title: What a p-value is not
+        recall: Which readings of a p-value are wrong?
+        answer: "P of 0.03 is not a 3% chance that H0 is true, p of 0.2 does not mean no effect, p of 0.0001 does not mean a big effect, and significant in one study but not another does not mean they disagree."
+        header: [Wrong reading, "Why it is wrong"]
+        widths: [4.5, 5]
+        rows:
+          - ["p = 0.03 means a 3% chance H0 is true", "p assumes H0; the probability of H0 needs a prior"]
+          - ["p = 0.2 means no effect", "The test may be underpowered"]
+          - ["p = 0.0001 means a big effect", "With huge N, tiny effects are significant"]
+          - ["Significant here, not there, so they disagree", "The difference is not itself significant"]
+        takeaway: A p-value answers one narrow question, and none of these.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          The last row is from Reinhart, chapter 5.
+
+      - layout: statement
+        beat: pitfalls
+        level: core
+        section: The recipe
+        kicker: Five million per arm
+        statement: "Rates of 0.0470 and 0.0474: a lift of 0.0004 gives z = 2.98 and p = 0.003, a relative lift of 0.9%"
+        recall: Does a significant p-value mean a big effect?
+        answer: "No. With five million users per arm, a lift of 0.0004 (0.9% relative) gives z = 2.98 and p = 0.003."
+        takeaway: Report the effect size and interval, not just the p-value.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          The two rates are 0.0470 and 0.0474. With five million users per arm, a trivially small lift is statistically significant.
+
+      - layout: compare
+        beat: pitfalls
+        level: core
+        section: The recipe
+        title: Same data, different stopping rule
+        recall: Can the stopping rule change the p-value?
+        answer: "For 9 correct out of 12, the binomial test gives p of 0.073 while the negative binomial gives p of 0.033. The rule for when you stop changes the answer."
+        emphasis: right
+        left:
+          title: Fixed 12 trials
+          bullets:
+            - "Binomial test"
+            - "p = **0.073**"
+        right:
+          title: Stop at the 3rd miss
+          bullets:
+            - "Negative binomial"
+            - "p = **0.033**"
+        takeaway: The p-value depends on the plan, so fix the plan before you look.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          Reinhart reports that 97% and 10% of papers in two samples made the interval-overlap and related errors, and that 89% of Nature articles did.
+
+      - layout: statement
+        beat: pitfalls
+        level: core
+        section: The recipe
+        kicker: Overlapping intervals
+        statement: "A test rejects at 2.77 standard errors apart, but intervals stop overlapping at 3.92"
+        recall: Do overlapping intervals mean no difference?
+        answer: "No. A test rejects at 2.77 standard errors apart, but intervals stop overlapping at 3.92."
+        takeaway: Overlapping intervals do not mean no difference.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          The 2.77 is 1.96 times root 2. The same logic applies to the difference between significant and not significant: serum 43% versus 22%, and five statin meta-analyses (three yes, two inconclusive) with a relative risk near 0.9.
+
+      - layout: image
+        beat: fundamentals
+        level: deep
+        section: The recipe
+        kicker: Neyman and Pearson
+        image: ../../assets/sources/images/computer-age-statistical-inference-fig2-2.png
+        caption: Null N(0,1) against alternative N(0.5,1), n = 10
+        bullets:
+          - "Cutoff **0.4**: alpha **0.10**, beta **0.38**, power **0.62**"
+        recall: In a Neyman-Pearson test of N(0,1) against N(0.5,1), how are alpha, beta and power linked?
+        answer: "With N(0,1) against N(0.5,1) and n of 10, a cutoff of 0.4 gives alpha 0.10 and beta 0.38, so power is 0.62."
+        takeaway: Moving the cutoff trades one error for the other.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          Neyman and Pearson fix alpha first and then choose the test with the most power at that alpha.
+
+      - layout: table
+        beat: fundamentals
+        section: Choosing the test
+        title: Choosing the test
+        recall: How do you choose a test?
+        answer: "Match the question and the data: one-sample t for a mean against a value, Welch for two groups, paired t before and after, ANOVA for 3 or more groups, chi-square for two categorical variables."
+        header: [Question, "Parametric", "Fallback"]
+        widths: [3.6, 2.6, 3.2]
+        rows:
+          - ["Mean against a known value", "One-sample t", "Wilcoxon signed-rank"]
+          - ["Two independent groups", "Welch t", "Mann-Whitney U"]
+          - ["Before and after, same units", "Paired t", "Wilcoxon"]
+          - ["3 or more groups", "One-way ANOVA", "Kruskal-Wallis"]
+          - ["Two categorical variables", "Chi-square", "Fisher's exact"]
+          - ["Same distribution", "None", "Kolmogorov-Smirnov"]
+        takeaway: The question and the data type pick the test, never the result.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          The note's full table also lists the scipy call for each test and the two-proportion z test, with chi-square on the 2x2 or Fisher as its fallback. Use Fisher when any expected count is below 5.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: The parametric tests in code
+        title: The same tools, with p-values
+        recall: Why does pairing matter for the chapter's parametric test example?
+        answer: "The paired t gives p of 0.0004, against 0.3266 for the same data analysed unpaired."
+        header: [Test, "p-value"]
+        widths: [5, 3]
+        rows:
+          - ["One-sample t", "0.0046"]
+          - ["Welch two-sample", "0.1509"]
+          - ["Paired t", "0.0004"]
+          - ["Same data, unpaired", "0.3266"]
+          - ["Chi-square, 1 dof", "0.0049"]
+          - ["Fisher's exact", "0.0046"]
+          - ["One-way ANOVA", "0.00089"]
+        takeaway: Ignoring the pairing raises p from 0.0004 to 0.3266.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          The chi-square expected counts are [[22.5, 27.5], [22.5, 27.5]]. Pairing removes between-unit noise, which is why the paired test is far more sensitive.
+
+      - layout: bullets
+        beat: practice
+        level: core
+        section: The parametric tests in code
+        title: ANOVA tells you something differs, Tukey says which
+        recall: What does a post-hoc test add to ANOVA?
+        answer: "ANOVA gives F of 7.63 and p of 0.00089. Tukey then shows A against B is not significant (p 0.589) while A against C (0.0009) and B against C (0.018) are."
+        bullets:
+          - "A against B: difference 2.0622, p-adj **0.589**, not rejected"
+          - "A against C: difference 7.8918, p-adj **0.0009**, rejected"
+          - "B against C: difference 5.8296, p-adj **0.018**, rejected"
+        takeaway: The overall test finds a difference, and the post-hoc test locates it.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          Tukey's adjustment controls the family of pairwise comparisons.
+
+      - layout: table
+        beat: fundamentals
+        section: Non-parametric tests
+        title: The rank tests and what they cost
+        recall: What do the non-parametric tests test and cost?
+        answer: "Mann-Whitney tests whether one group tends to be larger, at about 95% efficiency on Normal data. Wilcoxon handles pairs, Kruskal-Wallis handles 3 or more groups and KS compares whole distributions."
+        header: [Test, "Tests", "Cost"]
+        widths: [2.4, 4.6, 3]
+        rows:
+          - ["Mann-Whitney U", "One group tends to be larger", "About 95% efficiency"]
+          - ["Wilcoxon signed-rank", "Paired differences centred on zero", "Same"]
+          - ["Kruskal-Wallis", "Mann-Whitney for 3 or more groups", "Follow with Dunn"]
+          - ["Kolmogorov-Smirnov", "Whole distributions differ", "Low power in the tails"]
+        takeaway: Rank tests give up little power and gain robustness.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          Mann-Whitney reads as a median test only when the shapes are similar.
+
+      - layout: table
+        beat: pitfalls
+        level: core
+        section: Non-parametric tests
+        title: One whale changes the answer
+        recall: How does one huge order change a mean-based test and a rank test?
+        answer: "One 60,000 whale moves Welch from p of 0.165 to 0.506, while Mann-Whitney only moves from 0.125 to 0.163."
+        header: [Test, "As drawn", "With a whale in A"]
+        widths: [3.4, 2.6, 3.2]
+        rows:
+          - ["Welch", "0.165", "0.506"]
+          - ["Mann-Whitney", "0.125", "0.163"]
+          - ["KS", "0.293", "0.342"]
+        takeaway: The rank tests move far less than the mean-based test.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          A rank test answers a question about tendency, not about the revenue total. For a revenue conclusion, bootstrap the mean. The bootstrap median difference had a 95% interval of [-7.6, 16.6].
+
+      - layout: image
+        beat: practice
+        level: deep
+        section: Non-parametric tests
+        kicker: Log-rank on survival curves
+        image: ../../assets/sources/images/computer-age-statistical-inference-fig9-1.png
+        caption: Kaplan-Meier curves for the two head-and-neck arms
+        bullets:
+          - "Z = **2.27**, p about **0.012**"
+        recall: How does the log-rank test compare two survival curves?
+        answer: "At each death time it compares observed with expected deaths. Here 42 were observed against 32.9 expected, a variance sum of 16.0, Z of 2.27 and p of about 0.012."
+        takeaway: The log-rank test compares whole survival curves, not one time point.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          51 patients had chemo (Arm A) and 45 had chemo plus radiation (Arm B), with 47 monthly death times. At month 6 there were 32 at risk in A and 33 in B, with 11 deaths and 5.42 expected in A against 7 observed.
+
+  - title: Many tests
+    agenda: false
+    divider: false
+    summary: "Multiple comparisons · Exaggerated results · Stopping early · The published record"
+    notes: >-
+      Run enough tests and something is significant. This part covers the corrections, and why significant results overstate the truth.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Multiple comparisons
+        kicker: Twenty true nulls
+        statement: "1 − 0.95²⁰ is about 64% for at least one false positive"
+        takeaway: The more you look, the more you find by chance.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          The value is 0.642. In simulation the uncorrected rate was 0.619 and Bonferroni gave 0.052.
+
+      - layout: bullets
+        beat: fundamentals
+        level: core
+        section: Multiple comparisons
+        title: Jelly beans and dead salmon
+        recall: How fast does the chance of a false positive grow with the number of tests?
+        answer: "With 20 true nulls it is 64%, with 45 it is 90% and with 100 it is 99%. A dead salmon showed a significant cluster at p of 0.001 in 81 cubic millimetres."
+        bullets:
+          - "**20** true nulls: **64%**"
+          - "**45** true nulls: **90%**"
+          - "**100** true nulls: **99%**"
+        takeaway: With enough tests, something always looks significant.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          The dead salmon scan found a significant cluster of 81 cubic millimetres at p of 0.001. Among 20,000 people with ten coin tosses each, more than 99% would see at least one run that looks unusual.
+
+      - layout: table
+        beat: fundamentals
+        section: Multiple comparisons
+        title: Three corrections
+        recall: What do Bonferroni, Holm and Benjamini-Hochberg control?
+        answer: "Bonferroni and Holm control the family-wise error rate, with Holm uniformly more powerful. Benjamini-Hochberg controls the false discovery rate and suits many tests."
+        header: [Correction, Controls, Rule]
+        widths: [2.8, 3.2, 3.2]
+        rows:
+          - ["Bonferroni", "Any false positive", "p below α/m"]
+          - ["Holm", "Any false positive", "Step-down Bonferroni"]
+          - ["Benjamini-Hochberg", "Share of rejections that are false", "Sort p, p(i) at most (i/m)α"]
+        takeaway: Prefer Holm to Bonferroni, and BH when you run many tests.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          Use Bonferroni or Holm when any false positive is costly. Use BH for metric dashboards, gene screens and feature screens.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: Multiple comparisons
+        title: One hundred tests, four methods
+        recall: How do the corrections compare on 100 simulated tests?
+        answer: "Raw 0.05 rejects 11, of which 3 are false. Bonferroni and Holm reject 5 with no false ones, and BH rejects 7 with none false."
+        header: [Method, Rejected, True, False]
+        widths: [3.4, 2, 2, 2]
+        rows:
+          - ["Raw 0.05", "11", "8", "3"]
+          - ["Bonferroni", "5", "5", "0"]
+          - ["Holm", "5", "5", "0"]
+          - ["BH", "7", "7", "0"]
+        takeaway: BH finds more true effects than Bonferroni while keeping false ones out.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          The simulation knows which effects are real, so it can count true and false rejections for each method.
+
+      - layout: image
+        beat: practice
+        level: core
+        section: Multiple comparisons
+        kicker: Prostate genes
+        image: ../../assets/sources/images/computer-age-statistical-inference-fig15-3.png
+        caption: Rejections as the threshold changes, Holm against false discovery rate
+        bullets:
+          - "On the 50 largest z: Holm rejects **7**, BH **28**"
+        recall: How many prostate genes survive each multiple-testing correction?
+        answer: "Bonferroni on all 6,033 genes leaves 4, while on the 50 largest z, BH at 0.1 rejects 28 against 7 for Holm."
+        takeaway: Controlling the false discovery rate keeps far more discoveries.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          The data is 52 patients and 50 controls. The 50th largest gene, z of 2.99, has a q-value of 0.168.
+
+      - layout: image
+        beat: practice
+        section: Multiple comparisons
+        kicker: Fund managers
+        image: ../../assets/sources/images/islp-ch13-multiple-testing-fig13-6.png
+        caption: Rejections against the control level for fund managers
+        bullets:
+          - "BH rejects **146** at q = 0.1, **279** at q = 0.3"
+        recall: What do the corrections do on 2,000 fund managers?
+        answer: "Benjamini-Hochberg at 10% rejects 146, about 15 of them false, while Bonferroni at a family-wise rate of 0.1 rejects none. At q of 0.3, BH rejects 279."
+        takeaway: The right correction depends on whether a false positive is costly.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          A five-manager example: p-values 0.006, 0.918, 0.012, 0.601, 0.756. The Bonferroni cutoff 0.01 gives one rejection, Holm's second cutoff 0.0125 gives two, and BH's second cutoff 0.02 gives two.
+
+      - layout: bullets
+        beat: pitfalls
+        level: core
+        section: Multiple comparisons
+        title: Where multiplicity hides
+        recall: Where does multiplicity hide in everyday analysis?
+        answer: "In many metrics, many segments, repeated looks, many genes, data dredging, forking paths and repeated measures. Five groups give 10 comparisons, with a threshold of 0.005."
+        bullets:
+          - "Many **metrics** and many **segments**"
+          - "Repeated **looks** at a running test"
+          - "Forking paths: choices made **after** seeing the data"
+          - "Repeated measures: 10 patients × 100 measurements"
+          - "Five groups mean **10** comparisons, threshold **0.005**"
+        takeaway: Count every comparison you could have made, not only the ones you reported.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          A pair with p of 0.0349 (t) or 0.038 (paired) fails Tukey at 0.186. A Beatles song making listeners 1.5 years younger is a data-dredging example.
+
+      - layout: image
+        beat: pitfalls
+        level: deep
+        section: Multiple comparisons
+        kicker: A famous gene, seen in context
+        image: ../../assets/sources/images/computer-age-statistical-inference-fig1-5.png
+        caption: Histogram of the t statistics for the leukemia genes
+        bullets:
+          - "**400** other genes above 3.01 out of **7,128**"
+        recall: How does one significant gene look among thousands?
+        answer: "Gene t of 3.01 has p of 0.0036, but 400 of 7,128 other genes also exceed 3.01 (about 5.6%). Only 47 genes pass an FDR threshold of t above 6.16."
+        takeaway: A small p-value means little when thousands of genes are tested.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          The note prints this statistic as 3.01 in one place and 3.13 in another, and flags the discrepancy itself. A permutation test gave p of 0.0026 against 0.0025 from the t on 70 degrees of freedom, with 47 ALL and 25 AML patients.
+
+      - layout: compare
+        beat: fundamentals
+        level: deep
+        section: Multiple comparisons
+        title: The same p-value on a Bayesian scale
+        recall: How does a fixed p-value look as a Bayes factor?
+        answer: "A z of 2.36 gives a Bayes factor of 5.49. At z of 3.29 (p of 0.001) the factor is 57.96 at n of 15 but only 2.24 at n of 10,000."
+        emphasis: right
+        left:
+          title: Small sample
+          bullets:
+            - "z = **3.29**, p = **0.001**"
+            - "Bayes factor **57.96** at n = 15"
+        right:
+          title: Huge sample
+          bullets:
+            - "Same z and p"
+            - "Bayes factor **2.24** at n = 10,000"
+        takeaway: The same p-value is weaker evidence as the sample grows.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          Fisher and Jeffreys each proposed a scale for reading such evidence.
+
+      - layout: bullets
+        beat: pitfalls
+        section: Significant results exaggerate
+        title: The winner's curse in a simulation
+        recall: Why do significant results overstate the effect?
+        answer: "With a true lift of 0.01 and se 0.01, power is 0.17. All estimates average 0.0100, but the significant ones average 0.0245, 2.5 times the truth, and 0.9% have the wrong sign."
+        bullets:
+          - "True lift **0.01**, power **0.17**"
+          - "Mean of all estimates **0.0100**"
+          - "Mean of significant estimates **0.0245**"
+          - "Wrong sign **0.009**"
+        takeaway: Only inflated estimates cross the threshold at low power.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          Reinhart reports a median neuroscience power of about 20%, and fewer than 3% of studies compute power. A true 0.3% sex-ratio shift is overstated at least twentyfold, with 40% wrong sign.
+
+      - layout: statement
+        beat: pitfalls
+        level: deep
+        section: Significant results exaggerate
+        kicker: Correcting the exaggeration
+        statement: "A gene at 5.29 shrinks to 4.11 by empirical Bayes and 4.03 by Tweedie"
+        recall: How far does empirical Bayes shrink the top gene?
+        answer: "From 5.29 to 4.11 by empirical Bayes and 4.03 by Tweedie."
+        takeaway: Shrink the winners before you quote them.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          At z of 3.5 the expected effect is 1.96 and the fdr is 0.15.
+
+      - layout: image
+        beat: pitfalls
+        section: Significant results exaggerate
+        kicker: Stopping early
+        image: ../../assets/sources/images/computer-age-statistical-inference-fig3-3.png
+        caption: Monthly z over 30 months against the 1.645 cutoff
+        bullets:
+          - "A month-20 look pushes type I error to **0.074**"
+        recall: What does peeking do to a test?
+        answer: "Looking at month 20 as well as the end raises the type I error to 0.074, and the final z of 1.66 only just beats 1.645. Trials stopped early exaggerate by 29%."
+        takeaway: Every extra look spends some of your alpha.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          More than half of psychologists admitted peeking. About one in four A/A tests is flagged at 20 looks. Neuroimaging circularity runs about 40%.
+
+      - layout: bullets
+        beat: pitfalls
+        level: deep
+        section: Significant results exaggerate
+        title: What the published record looks like
+        recall: What does the published record suggest about significant results?
+        answer: "Amgen reproduced 6 of 53 landmark studies, about 38% of Nature p-values were wrong, and more than 40% of trials were registered after recruitment began."
+        bullets:
+          - "Amgen replicated **6 of 53**"
+          - "Only **64 of 249** studies sent their data"
+          - "More than **40%** of trials registered after recruitment began"
+          - "Pfizer's reboxetine: **three times** the published volume"
+        takeaway: The published record is a filtered sample of what was tested.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          Other figures: p-value errors about 38%, TP53 across 18 studies, Francis against Bem (9 of 10 experiments significant at 20% power against 90% significant), NEJM 2001 to 2010 with 146 of 363 (about 40%), and Schoenfeld and Ioannidis on 216 studies.
+
+      - layout: cards
+        beat: pitfalls
+        section: Pitfalls
+        title: Four ways to read too much into a p-value
+        recall: Which testing mistakes read too much into a p-value?
+        answer: "Reading p as the probability of the null, treating non-significance as proof of no effect, confusing significance with importance, and comparing p-values across groups."
+        cards:
+          - {title: "p as P(H0)", accent: pitfalls, body: "It assumes H0, so it cannot be its **probability**"}
+          - {title: "Non-significant is not zero", accent: problem, body: "The test may be **underpowered**"}
+          - {title: "Significant is not important", accent: fundamentals, body: "Report the **effect size** and interval"}
+          - {title: "Comparing p-values", accent: practice, body: "The difference is not itself **significant**"}
+        takeaway: Each of these reads more into a p-value than it holds.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          These are four of ten pitfalls in the note.
+
+      - layout: table
+        beat: pitfalls
+        section: Pitfalls
+        title: Pick the test and the stopping rule first
+        recall: Which other testing mistakes should you avoid?
+        answer: "Choosing the test after seeing the result, using a rank test for a revenue conclusion, forecasting from a low-power result, and judging by interval overlap."
+        header: [Mistake, "Why it fails"]
+        widths: [3.2, 5.8]
+        rows:
+          - ["Test chosen late", "Choose the test before the data"]
+          - ["Rank test, revenue", "It answers about tendency"]
+          - ["Low-power forecast", "The winner's curse inflates it"]
+          - ["Interval overlap", "Rejects at 2.77 SE, not 3.92"]
+        takeaway: Pick the test and the stopping rule before you see the data.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          The remaining two pitfalls are a stopping rule chosen after the data and an unpaired analysis of paired data.

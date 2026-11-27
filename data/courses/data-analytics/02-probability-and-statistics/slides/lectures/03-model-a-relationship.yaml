@@ -1,0 +1,1150 @@
+# imported_hash: e1494e1f2472da8b
+# Lecture on step 3, Model a relationship: notes/06-regression-and-glms.md and 06b-logistic-regression-and-poisson-glms.md, in the notes' order.
+# make slides PILLAR=data-analytics/02-probability-and-statistics LECTURE=03-model-a-relationship STRICT=1 PREVIEW=1
+# Levels: a slide with no level is the intro, `core` is the core lesson, `deep` is the optional extension (code and maths).
+deck:
+  title: Model a Relationship
+  subtitle: A coefficient with a standard error
+  tagline: "Regression · Diagnostics · Logistic and Poisson GLMs"
+  reference: "Notes: data-analytics/02-probability-and-statistics, notes 6 and 6b"
+  output: 03-model-a-relationship.pptx
+  notes: >-
+    This is the fourth lecture of the probability and statistics series, after the estimate-and-test lecture. It covers
+    step 3. By the end you should be able to read a regression summary, add pre-period covariates to an experiment, check
+    residuals, leverage, collinearity and clustering, avoid the habits that manufacture false positives, and carry the
+    same machinery to yes/no outcomes, counts with exposure and ordered ratings.
+
+lecture:
+  covers:
+    - data-analytics/02-probability-and-statistics/notes/06-regression-and-glms.md
+    - data-analytics/02-probability-and-statistics/notes/06b-logistic-regression-and-poisson-glms.md
+  requires: [data-analytics/02-probability-and-statistics/notes/05-hypothesis-testing.md]
+  next: [data-analytics/02-probability-and-statistics/notes/07-data-generating-process.md]
+  related:
+    - data-analytics/03-experimentation-and-causality/notes/03-experimentation-at-scale.md
+    - data-analytics/03-experimentation-and-causality/notes/04-correlation-and-causation.md
+    - data-analytics/04-bayesian-analysis/notes/07-multilevel-models-and-partial-pooling.md
+    - data-science/01-classical-ml/README.md
+  omits:
+    - Logistic regression and Poisson models
+
+parts:
+  - title: Regression as the analyst uses it
+    divider: false
+    summary: The t-test as a regression · Reading the summary · Covariates · Interactions
+    notes: We start with the one-line change that turns a t-test into a regression, and what that buys an experiment.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Why this chapter
+        title: One extra line turns a t-test into a regression
+        recall: What does adding the prior month's spend do to Larkspur's A/B test?
+        answer: "It turns the t-test into a regression and cuts the standard error by about 16% with no extra traffic."
+        kicker: The problem
+        statement: "Larkspur's A/B test has 20,000 users and a t-test finds p = 0.0001. Add one line, the spend of the month before, and the standard error falls by about 16%."
+        attribution: Regression as an estimate with a standard error, not as a predictor
+        takeaway: Regression holds other things fixed and reports what a covariate is worth.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          Data science treats regression as a predictor, and the two uses need different checks. This lecture is the analyst's
+          use: a coefficient, its standard error and whether to believe them.
+
+      - layout: flow
+        beat: fundamentals
+        section: Why this chapter
+        title: Choose the model by the outcome, then check it
+        recall: How does the outcome decide which regression to fit?
+        answer: "Continuous gives OLS, yes or no gives logistic with a log-odds link, and a count with varying exposure gives Poisson with an offset. All then go through diagnostics, and rows from one user that repeat need clustered errors."
+        steps:
+          - {label: "Outcome?", sub: "continuous, yes/no, count", accent: "94A3B8"}
+          - {label: Fit, sub: "OLS, logistic, Poisson", accent: "1E3A5F"}
+          - {label: Diagnostics, sub: "residuals, leverage, collinearity", accent: "0F7490"}
+          - {label: "Rows repeat?", sub: "cluster the SEs"}
+        caption: "Counts with variance far above the mean take a negative binomial, or robust SEs."
+        takeaway: The first decision is the outcome, and every branch ends in the same diagnostics.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          A t-test is a regression with one binary regressor, so seeing it that way lets you add covariates. That is what
+          CUPED and every adjustment in causal inference do.
+
+      - layout: bullets
+        beat: fundamentals
+        section: OLS in `statsmodels`
+        title: OLS minimises the sum of squared residuals
+        recall: What does ordinary least squares choose?
+        answer: "The coefficients that minimise the sum of squared residuals."
+        bullets:
+          - "OLS picks the coefficients that minimise the **sum of squared residuals**"
+          - "Running example: spend in the month after a new checkout was randomised"
+          - "Regressors: new checkout, pre-period spend and device"
+          - "The true effect is **1.5**"
+          - "20,000 users, seeded, so the truth is known"
+        takeaway: With a simulated truth of 1.5 we can see what each model gets right.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          ISLP sections 3.1 and 3.2 and Bruce and Bruce chapter 4 cover the method. The simulated spend is noisier for heavy
+          spenders, which matters later for robust errors.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: OLS in `statsmodels`
+        title: The Larkspur experiment, simulated
+        recall: How is the Larkspur spend data generated?
+        answer: "20,000 users with gamma pre-period spend, a randomised 0/1 checkout, a device draw and noise that grows with pre-period spend. Spend is 6 plus 1.5 times the checkout plus 0.6 times pre plus 3 for desktop."
+        lang: python
+        code: |-
+          rng = np.random.default_rng(42)
+          n = 20_000
+          pre = rng.gamma(2.0, 15.0, n)
+          new_checkout = rng.integers(0, 2, n)
+          device = rng.choice(
+              ["mobile", "desktop", "tablet"], n,
+              p=[.62, .31, .07])
+          noise = rng.normal(0, 8 + 0.35 * pre)
+          spend = (6 + 1.5 * new_checkout + 0.6 * pre
+                   + 3.0 * (device == "desktop") + noise)
+        bullets:
+          - "True checkout effect **1.5**"
+          - "Noise grows with `pre`: **heavy spenders are louder**"
+          - "Desktop adds **3.0**"
+        takeaway: Every later number comes from this one generator, so the truth is always known.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          Device is drawn 62% mobile, 31% desktop and 7% tablet. The noise term is what makes the residuals funnel later.
+
+      - layout: compare
+        beat: fundamentals
+        section: "OLS in `statsmodels`"
+        title: The coefficient on a 0/1 variable is the difference in means
+        recall: Why is a t-test the same as a regression on a 0/1 variable?
+        answer: "The coefficient on a 0/1 variable is the difference in group means, 1.350, and its t-statistic, 3.942 with p = 0.0001, is the pooled t-test's."
+        emphasis: right
+        left:
+          title: t-test
+          bullets: ["Difference in means **1.350**", "t = **3.942**", "p = **0.0001**"]
+        right:
+          title: OLS on `new_checkout`
+          bullets: ["Coefficient **1.350**", "t = **3.942**", "p = **0.0001**"]
+        takeaway: Nothing here is a coincidence, since the t-test is a regression with one binary regressor.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          The one-way ANOVA in chapter 5 matched smf.ols exactly for the same reason.
+
+      - layout: table
+        beat: fundamentals
+        level: core
+        section: "OLS in `statsmodels`"
+        title: Reading the summary from the left
+        recall: What does the Larkspur regression summary report?
+        answer: "Intercept 8.5986, mobile -2.9948, tablet -3.1347, new_checkout 1.4392 (SE 0.287) and pre 0.6118, with R-squared 0.299."
+        header: [Term, coef, std err, Reads as]
+        widths: [2.6, 1.4, 1.4, 5]
+        rows:
+          - [Intercept, "8.5986", "0.357", "Desktop user, no prior spend, old checkout"]
+          - [mobile, "-2.9948", "0.315", "Mobile compared with desktop"]
+          - [tablet, "-3.1347", "0.602", "Tablet compared with desktop"]
+          - [new_checkout, "1.4392", "0.287", "Conditional difference at the same pre and device"]
+          - [pre, "0.6118", "0.007", "One more unit of spend before goes with 0.61 more after"]
+        highlight: [3]
+        takeaway: Each coefficient is a conditional difference, not a statement about the group in general.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          R-squared is 0.299 and the model has 20,000 observations. Device uses dummy coding with desktop as the baseline,
+          so mobile at -2.99 is mobile compared with desktop and not a statement about mobile in general.
+
+      - layout: cards
+        beat: fundamentals
+        level: core
+        section: "OLS in `statsmodels`"
+        title: What to report from a summary
+        recall: Which parts of a regression summary should you report?
+        answer: "The coefficient with its 95% confidence interval. The std err is the coefficient's sampling standard deviation and t is their ratio. R-squared at 0.30 is low and fine for inference, and it says nothing about bias."
+        cards:
+          - {title: std err and t, accent: "1E3A5F", body: "The coefficient's sampling standard deviation, and the ratio of the two"}
+          - {title: "[0.025, 0.975]", accent: "D4621A", body: "The 95% confidence interval, which is what you should report"}
+          - {title: R-squared 0.30, accent: "0F7490", body: "Share of variance explained. Low is fine for inference"}
+          - {title: Bias, accent: "5B21B6", body: "Whether the effect is unbiased depends on the randomisation, not on R-squared"}
+        takeaway: Report the interval, and judge bias by the design, not by R-squared.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          The new checkout interval is 0.877 to 2.002 around 1.4392.
+
+      - layout: compare
+        beat: fundamentals
+        level: core
+        section: "OLS in `statsmodels`"
+        title: A confidence interval and a prediction interval answer different questions
+        recall: When do you report a confidence interval and when a prediction interval?
+        answer: "Confidence for an effect or an average, prediction for one new person. ISLP's advertising fit gives 11,256 units of sales with a confidence interval of 10,985 to 11,528 and a prediction interval of 7,930 to 14,580."
+        emphasis: right
+        left:
+          title: Confidence interval
+          bullets: ["The average outcome for everyone with those inputs", "**10,985** to **11,528**", "Report it for an effect or an average"]
+        right:
+          title: Prediction interval
+          bullets: ["One new person, with irreducible error added", "**7,930** to **14,580**", "Report it for a single user's spend"]
+        takeaway: Same centre of 11,256, but one person is noisier than an average, so the prediction interval is far wider.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          The numbers are the book's advertising fit, from ISLP chapter 3.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: "OLS in `statsmodels`"
+        title: sm.OLS takes arrays and builds no intercept
+        recall: How does the array interface differ from the formula interface, and what does uncentred R-squared mean?
+        answer: "sm.OLS takes arrays and adds no intercept unless you call sm.add_constant. With no constant, the reported R-squared of 0.430 is the uncentred one, variation around zero, so do not compare it with a model that has an intercept."
+        lang: python
+        code: |-
+          np.random.seed(12345)
+          N = 100
+          X = np.c_[dnorm(0, 0.4, (N,)),
+                    dnorm(0, 0.6, (N,)),
+                    dnorm(0, 0.2, (N,))]
+          y = X @ [0.1, 0.3, 0.5] + dnorm(0, 0.1, (N,))
+          res = sm.OLS(y, X).fit()
+          # [0.1783 0.223  0.501 ]  R2 0.43
+          # AR(2): lags 1, 2 = 0.7845, -0.4085
+          # extra lags: -0.0136, 0.015, 0.0143
+        bullets:
+          - "R-squared **0.430** is uncentred, because the model has no constant"
+        takeaway: Check whether a constant is in the model before comparing R-squared across fits.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          McKinney's chapter 13, seed 12345, recomputed. Standard errors are 0.053, 0.046 and 0.080. The AR(2) series follows
+          coefficients 0.8 and -0.4. The book calls sm.tsa.AR, which has been removed from statsmodels, and AutoReg with
+          trend c gives the same numbers.
+
+      - layout: table
+        beat: fundamentals
+        section: "OLS in `statsmodels`"
+        title: The effect holds and the standard error falls
+        recall: What does adding pre-period spend change in the experiment's regression?
+        answer: "The effect moves from 1.350 to 1.439, the SE falls from 0.343 to 0.287, and R-squared rises from 0.001 to 0.299, which removes 30% of the variance."
+        header: [Model, Effect, SE, R-squared]
+        widths: [3.4, 2, 2, 2]
+        rows:
+          - [No covariate, "1.350", "0.343", "0.001"]
+          - [With pre-period, "1.439", "0.287", "0.299"]
+        highlight: [1]
+        takeaway: Randomisation makes the estimate unbiased either way, and the covariate buys precision.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          Variance removed is 1 minus the squared ratio of the two standard errors, which comes to 30%.
+
+      - layout: bullets
+        beat: fundamentals
+        level: core
+        section: "OLS in `statsmodels`"
+        title: Precision is worth about 30% fewer users
+        recall: What does a pre-period covariate buy, and which covariates are safe?
+        answer: "Precision: pre-period spend explains 30% of outcome variance, so the standard error drops from 0.343 to 0.287, like running with about 30% fewer users. Only adjust for variables measured before assignment."
+        bullets:
+          - "Pre-period spend explains **30%** of outcome variance"
+          - "Variance removed is about the **R-squared gained**"
+          - "Same precision with about **30% fewer users**"
+          - "This is what **CUPED** does"
+          - "Adjust only for variables measured **before assignment**"
+        takeaway: A post-treatment covariate can absorb the treatment effect or manufacture one.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          The covariate removes that share of the noise from the error term, so the standard error falls from 0.343 to 0.287.
+
+      - layout: compare
+        beat: pitfalls
+        section: "OLS in `statsmodels`"
+        title: Without loyalty the email looks like it works
+        recall: What happens when you regress on an email that has no effect but loyal users open it?
+        answer: "Without loyalty the email coefficient is 5.69. Add loyalty and it falls to 0.08, against a truth of 0."
+        emphasis: right
+        left:
+          title: "y ~ email"
+          bullets: ["Coefficient **5.69**", "Loyal users open the email", "The effect is zero"]
+        right:
+          title: "y ~ email + loyal"
+          bullets: ["Coefficient **0.08**", "Truth is **0**", "Needs the `loyal` column"]
+        takeaway: Outside randomised data a coefficient is causal only if you adjusted for what matters.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          In observational work you rarely have the loyal column. Correlation and causation, in the experimentation pillar,
+          picks up from here.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: "OLS in `statsmodels`"
+        title: Three device effects that the data cannot tell apart
+        recall: How do you test whether a checkout effect differs by device?
+        answer: "Fit new_checkout * C(device) and test the interactions jointly. Desktop is 0.87, mobile adds 0.79 and tablet adds 1.11, but the joint p is 0.396, so the data do not distinguish them."
+        header: [Term, Estimate, Reads as]
+        widths: [4, 1.6, 4]
+        rows:
+          - [new_checkout, "0.873", Effect on desktop (the baseline)]
+          - [new_checkout x mobile, "0.793", Added on mobile]
+          - [new_checkout x tablet, "1.108", Added on tablet]
+          - [Joint p for the interactions, "0.396", No evidence the effects differ]
+        highlight: [3]
+        takeaway: Test the interaction jointly, and do not conclude that one segment is significant and another is not.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          The effect on desktop is 0.87, on mobile 0.87 plus 0.79 and on tablet 0.87 plus 1.11.
+
+      - layout: bullets
+        beat: fundamentals
+        level: deep
+        section: "OLS in `statsmodels`"
+        title: Interactions can be large, and power is rarely there
+        recall: How large can an interaction be, and why is it hard to detect?
+        answer: "Price per square foot runs from $177 in the cheapest zip group to $447 in the dearest, about 2.7 times. Interaction estimates have larger SEs than main effects, so power is rarely there."
+        bullets:
+          - "Price per square foot: **$177** in the cheapest zip group, **$447** in the dearest, about **2.7** times"
+          - "Interaction estimates have **larger SEs** than main effects, so power is rarely there"
+        takeaway: Test an interaction you care about, and expect a wide interval on it.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          The housing numbers are from Practical Statistics, chapter 4.
+
+      - layout: bullets
+        beat: fundamentals
+        level: deep
+        section: "OLS in `statsmodels`"
+        title: R-squared is the share of squared error removed
+        recall: What does simple regression reduce to, and what does R-squared mean?
+        answer: "The slope is Cov(X, Y) over Var(X) and the intercept is the mean of y minus the slope times the mean of x. R-squared is the square of Pearson's correlation, the share of mean squared error removed against always guessing the mean."
+        bullets:
+          - "Slope = **Cov(X, Y) / Var(X)**, intercept = mean y minus slope times mean x"
+          - "R-squared = rho squared, **1 − Var(residual) / Var(Y)**"
+          - "R-squared of 0.64 cuts squared error by **64%**"
+        takeaway: R-squared is the share of squared prediction error removed.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          The housing numbers are from Practical Statistics, chapter 4, and the algebra from Think Stats, chapter 9. Least
+          squares is the maximum likelihood fit when residuals are independent of x, normal, mean zero and of constant
+          variance. The book argues that computational convenience is no longer a reason to prefer squared loss.
+
+  - title: Diagnostics
+    summary: Residuals · Robust errors · Leverage · Collinearity · Clustering
+    notes: A regression can report a precise answer and be wrong about its own precision. These are the checks that catch it.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Diagnostics
+        title: A precise answer can be wrong about its own precision
+        recall: Which regression problems does ISLP list as the practical ones?
+        answer: "Non-linearity, correlated errors, non-constant variance, outliers, high-leverage points and collinearity."
+        kicker: ISLP section 3.3.3
+        statement: "Non-linearity, correlated errors, non-constant variance, outliers, high-leverage points and collinearity."
+        attribution: The practical problems of a regression fit
+        takeaway: The next few checks work through the ones that bite.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          The assumptions in the order they usually matter for an analyst follow on the next slide.
+
+      - layout: steps
+        beat: fundamentals
+        section: Diagnostics
+        title: The assumptions, in the order they matter
+        recall: In what order do regression assumptions usually matter for an analyst?
+        answer: "The sample represents what you claim, errors are independent, the relationship is additive and linear, error variance is constant, and errors are Normal, which rarely matters with large n."
+        steps:
+          - {title: The sample, text: "It represents what you claim"}
+          - {title: Independent errors, text: "Rows from one user are not independent"}
+          - {title: Additive and linear, text: "In what you modelled"}
+          - {title: Constant variance, text: "One error variance for everyone"}
+          - {title: Normal errors, text: "Rarely important with large n", accent: "94A3B8"}
+        takeaway: Normality is the assumption analysts spend time on and the one that matters least.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          The first assumption is the most expensive to get wrong and the one no plot can check.
+
+      - layout: bullets
+        beat: fundamentals
+        level: core
+        section: Diagnostics
+        title: Money gets louder as it gets bigger
+        recall: What does a funnel in the residual plot mean, and what breaks?
+        answer: "Noise grows with the prediction, which is heteroskedasticity. The coefficients stay unbiased and the standard errors go wrong. Larkspur's residual sd rises from 11.0 to 31.8 across fitted-value quintiles."
+        bullets:
+          - "A residual plot should be a **shapeless band**"
+          - "A **funnel** means noise grows with the prediction"
+          - "Residual sd by fitted quintile: **11.0, 13.9, 16.8, 21.1, 31.8**"
+          - "Coefficients stay **unbiased**"
+          - "The textbook SE assumes one variance for everyone, so the **SEs** go wrong"
+        takeaway: Heteroskedasticity leaves the estimate alone and breaks the standard error.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          The Breusch-Pagan p-value underflows to zero because n is large and the funnel is plain. The sd by quintile is the
+          more useful reading.
+
+      - layout: compare
+        beat: practice
+        section: Diagnostics
+        title: Robust errors move the SE and leave the coefficient alone
+        recall: What do HC3 robust standard errors change?
+        answer: "Only the uncertainty. For pre, the classical SE of 0.0067 is 40% too small against HC3's 0.0112. For the randomised new_checkout the two agree, 0.2869 and 0.2871."
+        emphasis: left
+        left:
+          title: "`pre`, lined up with the noise"
+          bullets: ["Classical SE **0.0067**", "HC3 SE **0.0112**", "Classical is **40%** too small"]
+        right:
+          title: "`new_checkout`, randomised"
+          bullets: ["Classical SE **0.2869**", "HC3 SE **0.2871**", "Unrelated to who is noisy"]
+        takeaway: Robust SEs cost little, so report them by default with large samples and skewed outcomes.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          In statsmodels you ask for cov_type HC3. The coefficient is 0.612 for pre and 1.439 for new_checkout either way.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: Diagnostics
+        title: One argument asks for HC3
+        recall: How do you get robust standard errors in statsmodels?
+        answer: "Pass cov_type=\"HC3\" to fit. The coefficient is unchanged and only the standard error differs."
+        lang: python
+        code: |-
+          hc = smf.ols(
+              "spend ~ new_checkout + pre + C(device)",
+              df).fit(cov_type="HC3")
+          # pre: classical SE 0.0067, HC3 SE 0.0112
+          # new_checkout: 0.2869 vs 0.2871
+        bullets:
+          - "Same coefficient, **different SE**"
+          - "`pre` classical is **40%** too small"
+        takeaway: Asking for robust errors is one argument, so there is no reason to skip it.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          Huber-White errors, also called HC errors, estimate the variance without the constant-variance assumption.
+
+      - layout: cards
+        beat: fundamentals
+        section: Diagnostics
+        title: A point matters when it is far out and off the line
+        recall: What are leverage, residual and Cook's distance?
+        answer: "Leverage is how far out a point is in x, the residual is how far off the line it sits, and Cook's distance combines the two into how much the fit changes if the point is removed."
+        cards:
+          - {title: Leverage, accent: "1E3A5F", body: "Far out in x. The average is always (p + 1) / n"}
+          - {title: Residual, accent: "0F7490", body: "Off the line. Studentized beyond 3 in absolute value is an outlier"}
+          - {title: Cook's distance, accent: "D4621A", body: "How much the fit changes if the point is removed"}
+        takeaway: Influence needs both, and the worst case is high leverage with a large residual.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          ISLP chapter 3 gives the average leverage and the studentized residual rule.
+
+      - layout: compare
+        beat: practice
+        level: core
+        section: Diagnostics
+        title: One row of 201 flipped the slope
+        recall: How much can a single high-leverage point change a regression?
+        answer: "A slope of 2.02 becomes -0.18 with one point. Its leverage is 0.55 against an average of 0.010, 55 times, and its Cook's D is 107.0."
+        emphasis: right
+        left:
+          title: Without the point
+          bullets: ["Slope **2.02**", "Leverage average **0.010**"]
+        right:
+          title: With one high-leverage point
+          bullets: ["Slope **-0.18**", "Leverage **0.55**, 55 times the average", "Cook's D **107.0**"]
+        takeaway: Look at the top few rows by Cook's distance and ask what each row is before deciding.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          The book's house regression has a largest standardized residual of -4.33, and dropping influential rows moves the
+          Bathrooms coefficient from 2,282 to -16,132. The same fit prices a 5,000 sq ft empty lot at -$522,202, since every
+          training row has a building. From Practical Statistics, chapter 4.
+
+      - layout: bullets
+        beat: pitfalls
+        level: deep
+        section: Diagnostics
+        title: The house regression shows what influential rows do
+        recall: What did dropping influential rows do to the house-price regression?
+        answer: "The largest standardized residual was -4.33, a partial-interest sale priced $757,753 off. Dropping influential rows moved the Bathrooms coefficient from 2,282 to -16,132."
+        bullets:
+          - "Largest standardized residual **-4.33**, a partial-interest sale priced **$757,753** off"
+          - "Bathrooms coefficient **2,282** becomes **-16,132** without the influential rows"
+          - "A 5,000 sq ft empty lot is priced at **-$522,202**"
+          - "Every training row has a building, so the fit **extrapolates**"
+        takeaway: A coefficient can hinge on a handful of rows, and a fit says nothing outside its data.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          From Practical Statistics, chapter 4. Always look at the top few rows by Cook's distance, then go back to the
+          question from chapter 1: what is this row? Then decide.
+
+      - layout: compare
+        beat: fundamentals
+        section: Diagnostics
+        title: Collinear predictors predict well and explain badly
+        recall: What does multicollinearity do to coefficients and to predictions?
+        answer: "It inflates the SEs without biasing the estimates and mostly leaves prediction alone. With a VIF of 391, the two coefficients are 1.51 and 0.54 with SEs of 0.81 and 0.82, against 2.05 and SE 0.041 for x1 alone, and the RMSE is 0.920 either way."
+        emphasis: right
+        left:
+          title: Both predictors in
+          bullets: ["VIF **391**", "Coefficients **1.51** and **0.54**", "SEs **0.81** and **0.82**"]
+        right:
+          title: x1 alone
+          bullets: ["Coefficient **2.05**", "SE **0.041**", "RMSE **0.920**, same as both in"]
+        takeaway: Collinearity is a problem for explanation and mostly not for prediction.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          The VIF is 1 over 1 minus R-squared of predictor j on the others, so 391 means 0.997. The rule of thumb is that 5 or
+          10 is a problem. The split between the two coefficients is arbitrary, and their standard errors are 20 times the
+          solo fit's.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: Diagnostics
+        title: Two near-copies of one variable
+        recall: How do you demonstrate collinearity inflating standard errors?
+        answer: "Make x2 equal to x1 plus small noise, fit both, and compare with x1 alone: VIF 391, SEs of 0.81 and 0.82 against 0.041."
+        lang: python
+        code: |-
+          x1 = rng4.normal(0, 1, 500)
+          x2 = x1 + rng4.normal(0, 0.05, 500)
+          y4 = 1 + x1 + x2 + rng4.normal(0, 1, 500)
+          X = sm.add_constant(np.c_[x1, x2])
+          fit = sm.OLS(y4, X).fit()
+          solo = sm.OLS(y4, sm.add_constant(x1)).fit()
+          print(vif(X, 1))          # 391
+          # both in: coefs 1.51 0.54, SEs 0.81 0.82
+          # x1 alone: 2.05, SE 0.041
+        takeaway: Explanation is what collinearity damages, so combine or drop predictors when you need to interpret them.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          The coefficients sum to the right total, which is 2, but the split is arbitrary.
+
+      - layout: image
+        beat: practice
+        level: core
+        section: Diagnostics
+        title: Limit and rating lie along a thin valley of near-equal fits
+        kicker: Credit data, ISLP Fig. 3.15
+        recall: What do real collinear predictors do to a fit?
+        answer: "In the Credit data, limit and rating have VIFs of 160.67 and 160.59, the limit coefficient's SE grows 12-fold, and dropping rating takes R-squared from 0.754 to 0.75."
+        image: ../../assets/sources/images/islp-ch03-linear-regression-fig3-15.png
+        caption: "Contours of the residual sum of squares: a closed ellipse for limit and age, a long narrow valley for limit and rating."
+        bullets:
+          - "VIFs **160.67** and **160.59**"
+          - "Limit SE grows **12-fold**"
+          - "Dropping rating: R-squared **0.754** to **0.75**"
+          - "King County bedrooms: flips to **+$27,657** without size"
+        takeaway: A small change in the data slides the fit along the valley, so the pair of coefficients is not stable.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          For a randomised treatment, collinearity with covariates is not a concern, because assignment is independent of
+          them by construction. King County is the book's house-price model with R-squared 0.5407 in-sample.
+
+      - layout: compare
+        beat: practice
+        section: Diagnostics
+        title: Repeated sessions make the naive SE half the truth
+        recall: What does clustering change when rows repeat within a user?
+        answer: "The coefficient stays at 0.033 and only the SE changes, from a naive 0.0411 to a clustered 0.0781."
+        emphasis: right
+        left:
+          title: Naive
+          bullets: ["SE **0.0411**", "Treats 4,800 rows as independent", "False positives **0.278**"]
+        right:
+          title: Clustered on user
+          bullets: ["SE **0.0781**", "800 users, 6 sessions each", "False positives **0.035**"]
+        takeaway: The naive analysis calls a null experiment significant more than a quarter of the time at a nominal 5%.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          Treatment is assigned per user and the true effect is zero. ISLP gives the extreme case: duplicate every row and the
+          intervals narrow by root 2 with no new information. Reinhart's pseudoreplication chapter is the same problem.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: Diagnostics
+        title: One argument clusters the standard errors
+        recall: How do you cluster standard errors in statsmodels?
+        answer: "Fit with cov_type=\"cluster\" and cov_kwds={\"groups\": user id}. Over 400 null experiments the naive false-positive rate was 0.278 and the clustered one 0.035."
+        lang: python
+        code: |-
+          naive = smf.ols("y ~ treat", d5).fit()
+          clus = smf.ols("y ~ treat", d5).fit(
+              cov_type="cluster",
+              cov_kwds={"groups": d5.uid})
+          # coef 0.033, naive SE 0.0411, clustered 0.0781
+          # false positives at nominal .05:
+          #   naive 0.278, clustered 0.035
+        bullets:
+          - "Cluster at the **level of randomisation**"
+          - "User-randomised, session-analysed means cluster on **user**"
+        takeaway: Cluster at the level of randomisation, and with few clusters even that is not enough.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          Cameron and Miller, in the authors' draft: a nominal 5% test with clustered errors and the usual 1.96 rejected about
+          21% of the time with five clusters. They give no clear cut-off for few, which may range from under 20 to under 50 when
+          clusters are balanced.
+
+      - layout: cards
+        beat: fundamentals
+        level: core
+        section: Diagnostics
+        title: Clustering is for nuisance, not for confounding
+        recall: When is clustering not enough?
+        answer: "Clustered errors treat groups as a nuisance and change only the SE. If the group effect may correlate with the predictor you need fixed effects, and if the group estimates are the question you need a multilevel model."
+        cards:
+          - {title: Clustered errors, accent: "1E3A5F", body: "Groups are a nuisance. The coefficient stays, the SE changes"}
+          - {title: Fixed effects, accent: "0F7490", body: "The group effect may correlate with the predictor"}
+          - {title: Multilevel model, accent: "D4621A", body: "The group-level estimates are themselves the question"}
+        takeaway: Pick the tool by what the groups are, a nuisance, a confounder or the question.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          The decision table in the multilevel chapter sets the three side by side. Fixed effects are the topic of note 8.
+
+  - title: Choosing variables and the goal
+    summary: Dichotomising · Selection · Prediction against explanation
+    notes: Two habits turn regression into a false-positive machine, and a model can be right for one question and wrong for another.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Choosing variables without fooling yourself
+        title: Two habits turn regression into a false-positive machine
+        recall: Which two habits make regression produce false positives?
+        answer: "Splitting a continuous predictor into high and low, and automatic variable selection."
+        kicker: Reinhart, chapters 7 and 8
+        statement: "Splitting a continuous predictor into high and low, and letting software choose the variables."
+        attribution: Both look like careful analysis
+        takeaway: Neither habit looks wrong from the output, so you have to know the mechanism.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          Reinhart reports that picking the cutoff with the smallest p-value raises the false-positive rate by up to a factor
+          of 10, and that dichotomising costs about as much power as discarding a third of the data.
+
+      - layout: compare
+        beat: practice
+        section: Choosing variables without fooling yourself
+        title: A median split flags a variable with no effect 75% of the time
+        recall: Why does splitting at the median create false positives?
+        answer: "x2 has no effect of its own but tracks the true cause x1. With median splits it is flagged 75% of the time at p < .05, and 4% when both are continuous."
+        emphasis: left
+        left:
+          title: Median split
+          bullets: ["Flagged at p < .05: **0.75**", "High half of x1 is mixed into both halves of x2", "x2 soaks up the residual signal"]
+        right:
+          title: Continuous
+          bullets: ["Flagged at p < .05: **0.04**", "x1 is controlled properly", "Holds the nominal **5%**"]
+        takeaway: The bigger harm of dichotomising is confounding, and a median split cannot control it.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          1,000 simulations, 200 rows each. Early-1990s breast-cancer studies that used optimal cutoffs, none of which
+          survived multiplicity correction, are Reinhart's example.
+
+      - layout: compare
+        beat: practice
+        section: Choosing variables without fooling yourself
+        title: Pure noise gave an R-squared of 0.55
+        recall: What happens when you keep the best-correlated of 1,600 noise predictors in 43 rows?
+        answer: "In-sample R-squared of 0.55 and a fresh-data R-squared of -0.50, worse than predicting the mean."
+        emphasis: right
+        left:
+          title: In-sample
+          bullets: ["43 rows, 1,600 noise predictors", "Keep the best 5", "R-squared **0.55**"]
+        right:
+          title: Fresh data
+          bullets: ["Same five predictors", "R-squared **-0.50**", "Worse than predicting the mean"]
+        takeaway: Evaluate on separate data or by cross-validation, because selection builds the fit it then reports.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          Reinhart's watermelon example: a cited study with 43 melons and 1,600 acoustic predictors claimed 99.9% of ripeness
+          variance, and his own stepwise regression on pure noise reproduced 99.9%. His rules also say a non-significant
+          variable is not a zero effect and that a coefficient is not an intervention.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: Choosing variables without fooling yourself
+        title: The lasso beat stepwise on the spam data
+        recall: How did the lasso compare with stepwise selection on the spam data?
+        answer: "Test error 0.057 for the lasso with interactions, 0.064 for stepwise logistic and 0.071 for the lasso on main effects. Stepwise stalled at 134 variables where the lasso reached 682, and a single pruned tree gets 9.3%."
+        header: [Method, Test error]
+        widths: [5, 2]
+        rows:
+          - ["Lasso logistic, with 3061 candidate predictors", "0.057"]
+          - [Stepwise logistic, "0.064"]
+          - [Lasso on main effects only, "0.071"]
+          - [One pruned tree, "9.3%"]
+        highlight: [0]
+        takeaway: Prefer the lasso to stepwise, and benchmark against a tree ensemble and not a single tree.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          4,601 emails, 3,065 for training and 1,536 for test, from Efron and Hastie, chapter 16. Stepwise stalled at 134
+          variables on convergence problems, where the lasso's active set grew to 682. On main effects alone stepwise matches
+          the lasso with about half as many terms, so it is not hopeless as a screen. The tree's 9.3% is against the lasso's
+          7.1%.
+
+      - layout: bullets
+        beat: pitfalls
+        level: deep
+        section: Choosing variables without fooling yourself
+        title: Selection breaks the intervals as well
+        recall: What does the HIV example show about inference after selection?
+        answer: "The lasso picks 7 of 30 mutation sites. Naive intervals make three sites significant and selection-adjusted ones leave one."
+        bullets:
+          - "Lasso picks **7 of 30** mutation sites"
+          - "Naive intervals: **three** sites significant"
+          - "Selection-adjusted intervals: **one**"
+          - "A network without its hidden nonlinearity is a **GLM**"
+          - "A forest far ahead of your model says **add interactions**"
+        takeaway: Choosing variables from the data and then reporting naive intervals counts the search as free.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          From Efron and Hastie chapters 16 to 18. Stepwise charges more degrees of freedom than it appears to for searching,
+          and nothing makes the greedy path optimal. Dropout on a linear model is a generalised ridge.
+
+      - layout: compare
+        beat: fundamentals
+        section: Prediction vs explanation
+        title: The right model for the question predicts worse
+        recall: How can the model that answers the question be the worse predictor?
+        answer: "Held-out RMSE is 24.17 for spend ~ new_checkout, the right model for did the checkout work, and 20.16 for spend ~ pre + C(device), which has no checkout term."
+        emphasis: right
+        left:
+          title: "spend ~ new_checkout"
+          bullets: ["Held-out RMSE **24.17**", "Right for did it work?", "Predicts poorly"]
+        right:
+          title: "spend ~ pre + C(device)"
+          bullets: ["Held-out RMSE **20.16**", "No checkout term", "Predicts better"]
+        takeaway: Decide which question you are answering, and judge by the matching test.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          A model with low R-squared can estimate an effect precisely, and a model with excellent held-out error can have
+          uninterpretable coefficients, as in the collinearity example.
+
+      - layout: table
+        beat: pitfalls
+        section: Pitfalls
+        title: Regression pitfalls and what to do instead
+        recall: What are the main regression pitfalls?
+        answer: "Reading a coefficient as causal, adjusting for post-treatment variables, using the wrong unit (28% false positives), judging an explanatory model by R-squared, and dropping a collinear predictor without thinking."
+        header: [Pitfall, Do instead]
+        widths: [4, 5.6]
+        rows:
+          - [Reading a coefficient as causal, "It is a conditional association: the email example made 5.69 out of nothing"]
+          - [Adjusting for post-treatment variables, Use variables measured before assignment]
+          - [The wrong unit of analysis, "Cluster: sessions within users gave 28% false positives"]
+          - [Judging by R-squared, "A low R-squared does not bias a randomised effect"]
+          - [Dropping a collinear predictor, "The remaining coefficient now absorbs what you removed"]
+        takeaway: Most regression errors come from how the model was used, not from how it was fitted.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          A high R-squared does not make a coefficient causal either.
+
+  - title: Logistic regression and Poisson GLMs
+    summary: Log-odds · Odds ratios · Separation · Link functions · Offsets · Deviance · Overdispersion · Ordered outcomes
+    notes: Larkspur's outcomes are mostly not continuous, so the same linear predictor takes a different distribution and link.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Logistic regression
+        title: A straight line can predict a probability above 1
+        recall: Why not use a straight line for a yes/no outcome?
+        answer: "A straight line can predict probabilities outside 0 and 1. Logistic regression models the log-odds as linear and squashes the prediction with the logistic function."
+        kicker: ISLP section 4.3
+        statement: "A user buys or does not, and orders arrive as counts over windows of different length."
+        attribution: Same linear predictor, different outcome distribution and link
+        takeaway: Keep the linear predictor and change the distribution and the link.
+        source: notes/06b-logistic-regression-and-poisson-glms.md
+        notes: >-
+          This half covers logistic regression, the Poisson family with its offset, deviance, overdispersion and ordered
+          ratings. The log-odds is the logit machine-learning texts call the raw score before the sigmoid.
+
+      - layout: code
+        beat: fundamentals
+        section: Logistic regression
+        title: The log-odds is linear, the probability is squashed
+        recall: What is the logistic regression model?
+        answer: "The log-odds log(p / (1 - p)) equals b0 + b1 x1 + ..., so p equals 1 over 1 plus exp of minus that. It is fitted by maximum likelihood."
+        lang: text
+        code: |-
+          log( p / (1 - p) ) = b0 + b1 x1 + b2 x2 + ...
+
+          p = 1 / (1 + exp(-(b0 + b1 x1 + b2 x2 + ...)))
+        bullets:
+          - "Linear in the **log-odds**"
+          - "The logistic function squashes it into **0 to 1**"
+          - "Fitted by **maximum likelihood**"
+        takeaway: The model is linear in the log-odds, not in the probability.
+        source: notes/06b-logistic-regression-and-poisson-glms.md
+        notes: >-
+          Maximum likelihood is the method of chapter 4 on estimation.
+
+      - layout: table
+        beat: practice
+        section: Logistic regression
+        title: The same effect on three scales
+        recall: How do a logit coefficient, an odds ratio and a marginal effect differ?
+        answer: "new_checkout has a coefficient of 0.1244, an odds ratio of 1.132 and an average marginal effect of 0.0086 (SE 0.0037), about 0.86 percentage points on a baseline near 7.6%."
+        header: [Term, Coefficient, Odds ratio, Marginal effect]
+        widths: [3, 2, 2, 2.6]
+        rows:
+          - [new_checkout, "0.1244", "1.132", "0.0086"]
+          - [desktop, "0.6999", "2.013", "0.0483"]
+          - [sessions, "0.2327", "1.262", "0.0161"]
+        highlight: [0]
+        takeaway: Stakeholders want percentage points, so report the average marginal effect.
+        source: notes/06b-logistic-regression-and-poisson-glms.md
+        notes: >-
+          The coefficient is on the log-odds scale. The marginal effect is found by predicting everyone under both conditions
+          and averaging the difference. Conversion overall is 0.0759. The SE of the new_checkout coefficient is 0.054.
+
+      - layout: table
+        beat: fundamentals
+        level: core
+        section: Logistic regression
+        title: A coefficient of 0.4 moves probability by different amounts
+        recall: Why does one odds ratio not translate to one change in probability?
+        answer: "A coefficient of 0.4 multiplies the odds by 1.49 at every baseline, but adds 0.010 at 2%, 0.072 at 20%, 0.099 at 50% and 0.056 at 80%."
+        header: [Baseline, Moves to, Change]
+        widths: [3, 3, 3]
+        rows:
+          - ["0.02", "0.030", "+0.010"]
+          - ["0.20", "0.272", "+0.072"]
+          - ["0.50", "0.599", "+0.099"]
+          - ["0.80", "0.856", "+0.056"]
+        highlight: [2]
+        takeaway: Divide by 4 for the maximum effect, 0.4 over 4 is 0.10 at p = 0.5, and report marginal effects.
+        source: notes/06b-logistic-regression-and-poisson-glms.md
+        notes: >-
+          When p is small the odds ratio approximates the relative risk, and the two drift apart as p grows.
+
+      - layout: compare
+        beat: pitfalls
+        level: core
+        section: Logistic regression
+        title: A model fitted to 5% defaults rarely predicts one
+        recall: What goes wrong when you fit a logistic model to a rare outcome?
+        answer: "A model on the raw data predicts a default for only 0.39% of loans. Weighting defaults by 1/p, about 20, lifts the mean predicted default to 43%, but the weighted model is not better calibrated."
+        emphasis: right
+        left:
+          title: Raw data
+          bullets: ["Predicts **0.39%** defaults against 5% actual", "Rarely crossing 0.5 minimises error", "Always saying no is **99.9%** accurate at a 0.1% rate"]
+        right:
+          title: Weighted by 1/p
+          bullets: ["Mean prediction **43%**", "Not better calibrated", "Rescale before quoting risk"]
+        takeaway: Do not judge a rare-outcome model on accuracy, use ROC, AUC or lift.
+        source: notes/06b-logistic-regression-and-poisson-glms.md
+        notes: >-
+          Undersampling the non-defaults gives the same effect. The book's loan model has an AUC of about 0.59, a weak ranker.
+          From Practical Statistics, chapter 5.
+
+      - layout: compare
+        beat: pitfalls
+        section: Logistic regression
+        title: A giant coefficient with a giant SE is separation
+        recall: What does separation look like in a logistic fit?
+        answer: "A coefficient of 28.52 with an SE of 171,433. A ridge penalty gives 4.92."
+        emphasis: right
+        left:
+          title: Unpenalised
+          bullets: ["Coefficient **28.52**", "SE **171,433**", "Every user with x = 1 bought"]
+        right:
+          title: Ridge-penalised
+          bullets: ["Coefficient **4.92**", "Penalise extreme coefficients", "Or use a weakly informative prior"]
+        takeaway: The likelihood keeps improving as the coefficient grows, so it is not a strong effect you can report.
+        source: notes/06b-logistic-regression-and-poisson-glms.md
+        notes: >-
+          McElreath's near-separated case with 20 points: R's glm returns -9.13 and 11.43, each with an SD of 2,955 and no
+          warning. A Normal(0, 10) prior gives -1.73 and 4.02. Gelman and colleagues argue for a Cauchy prior with scale 2.5 on
+          standardised inputs, which shrinks a bioassay coefficient from 10.2 plus or minus 6.4 to 5.4 plus or minus 2.2. In
+          fivefold cross-validation on 45 datasets a scale of 0.75 scored best, and the authors still recommend 2.5 as the
+          conservative default.
+
+      - layout: table
+        beat: fundamentals
+        level: deep
+        section: Logistic regression
+        title: A flat prior returns an SD of 2,955 and no warning
+        recall: How do the fits to McElreath's near-separated case compare?
+        answer: "R's glm returns -9.13 and 11.43, each with an SD of 2,955. A Normal(0, 10) prior gives -1.73 and 4.02."
+        header: [Fit to 20 near-separated points, Coefficients, SD each]
+        widths: [5, 2.6, 1.8]
+        rows:
+          - ["R's glm, flat prior, no warning", "-9.13 and 11.43", "2,955"]
+          - ["Normal(0, 10) prior", "-1.73 and 4.02", "2.78"]
+        highlight: [1]
+        takeaway: The flat-prior fit hands you a huge SD in silence, and a prior is a stable fix.
+        source: notes/06b-logistic-regression-and-poisson-glms.md
+        notes: >-
+          From Statistical Rethinking, chapter 10. statsmodels at least emits a convergence warning, but some software
+          returns the fit without complaint.
+
+      - layout: bullets
+        beat: fundamentals
+        level: deep
+        section: Logistic regression
+        title: What the Cauchy prior bought in two tests
+        recall: What did the Cauchy(0, 2.5) prior do in the bioassay and the cross-validation?
+        answer: "It shrank the dose coefficient from 10.2 ± 6.4 to 5.4 ± 2.2. In cross-validation on 45 datasets a scale of 0.75 scored best, and 2.5 is the conservative default."
+        bullets:
+          - "20-animal bioassay: dose coefficient **10.2 ± 6.4** under `glm`, **5.4 ± 2.2** with the prior"
+          - "Fivefold cross-validation on **45** UCI datasets"
+          - "Scale **0.75** scored best, while plain ML and `brglm` did badly"
+          - "The authors still recommend **2.5** as the conservative default"
+        takeaway: The prior wins on held-out scores, and 2.5 is the safe default.
+        source: notes/06b-logistic-regression-and-poisson-glms.md
+        notes: >-
+          Gelman, Jakulin, Pittau and Su, Annals of Applied Statistics 2008. Standardised means binary inputs centred and
+          other inputs centred and scaled to standard deviation 0.5, with Cauchy(0, 10) on the intercept.
+
+      - layout: image
+        beat: fundamentals
+        level: deep
+        section: Logistic regression
+        title: A Cauchy prior with scale 2.5 is a weakly informative default
+        kicker: Gelman et al., 2008, Fig. 1
+        recall: What prior do Gelman and colleagues recommend for logistic regression?
+        answer: "An independent Cauchy prior with scale 2.5 on standardised inputs, with Cauchy(0, 10) on the intercept. A change of one typical input is unlikely to shift the logit by more than about 5."
+        image: ../../assets/sources/images/gelman-weakly-informative-prior-fig1.png
+        caption: "Solid: Cauchy, scale 2.5. Dashed: t7, scale 2.5. Dotted: likelihood from half a success and half a failure."
+        bullets:
+          - "Cauchy scale **2.5** on standardised inputs"
+          - "Intercept prior **Cauchy(0, 10)**"
+          - "Binary inputs centred, others scaled to sd **0.5**"
+          - "Stable even under **separation**"
+        takeaway: A weakly informative prior gives stable answers under separation.
+        source: notes/06b-logistic-regression-and-poisson-glms.md
+        notes: >-
+          The paper is A weakly informative default prior distribution for logistic and other regression models, in the Annals
+          of Applied Statistics, 2008. Priors and bandits, in the Bayesian pillar, picks it up.
+
+      - layout: table
+        beat: fundamentals
+        section: Poisson and other GLMs
+        title: One family, four rows
+        recall: What are the parts of a generalised linear model, and how do the common ones differ?
+        answer: "A linear predictor, an outcome distribution and a link. Linear is Normal with identity link, logistic is Binomial with logit, Poisson is Poisson with log, and negative binomial is for overdispersed counts with log."
+        header: [Model, Outcome, Link, Coefficient reads as]
+        widths: [2.6, 2.6, 1.8, 3]
+        rows:
+          - [Linear, continuous, identity, difference in mean]
+          - [Logistic, yes/no, logit, log odds ratio]
+          - [Poisson, count, log, log rate ratio]
+          - [Negative binomial, overdispersed count, log, log rate ratio]
+        takeaway: A GLM is a linear predictor, a distribution for the outcome and a link connecting them.
+        source: notes/06b-logistic-regression-and-poisson-glms.md
+        notes: >-
+          Each outcome distribution is an exponential family. The log-odds, log-mean and identity links are the natural
+          parameters of the binomial, Poisson and normal. The maximum-likelihood condition means a Poisson regression with an
+          intercept matches the observed total.
+
+      - layout: bullets
+        beat: fundamentals
+        level: core
+        section: Poisson and other GLMs
+        title: Pick the likelihood, then the link
+        recall: How does McElreath choose the likelihood and the link, and what are the two cautions?
+        answer: "Pick the likelihood from the constraints on the outcome, then the link that keeps each parameter in range. No coefficient is a constant change on the outcome scale, since 0.61 on the log-odds multiplies the odds by 1.84 but moves a probability from 0.982 to 0.990. AIC and WAIC compare only models with the same outcome distribution."
+        bullets:
+          - "Likelihood from the **constraints on the outcome**"
+          - "Link keeps each parameter in range: **logit** for a probability, **log** for a positive one"
+          - "A big beta need not be a big effect: **0.61** gives odds x**1.84**"
+          - "Yet the probability only moves from **0.982** to **0.990**"
+          - "AIC and WAIC compare **only** within one outcome distribution"
+        takeaway: A coefficient is not a size of effect until you put it back on the outcome scale.
+        source: notes/06b-logistic-regression-and-poisson-glms.md
+        notes: >-
+          The chimpanzee example is from Statistical Rethinking, chapters 9 and 10, from an intercept of 4. The deviance
+          contains a normalising constant that differs across families.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: Poisson and other GLMs
+        title: A log-exposure offset turns counts into a rate
+        recall: What is an offset and how do you use one?
+        answer: "A term with its coefficient fixed at 1. Giving a log-link model log(exposure) as an offset makes it about the rate per day. The rate ratio recovered is 1.092 against a truth of 1.105."
+        lang: python
+        code: |-
+          po = smf.glm(
+              "orders ~ new_app", d7,
+              family=sm.families.Poisson(),
+              offset=np.log(d7.days)).fit()
+          # rate ratio 1.092 (truth 1.105)
+          # SE 0.0155, dispersion 1.00
+        bullets:
+          - "Rate ratio **1.092**, truth **1.105**"
+          - "Dispersion **1.00**: the data really are Poisson"
+          - "Without the offset: about **1.82**"
+        takeaway: Without an offset you are measuring exposure as well as behaviour.
+        source: notes/06b-logistic-regression-and-poisson-glms.md
+        notes: >-
+          Orders per user depend on how long the user has been observed. In the Try it exercise, making the new-app arm
+          observed longer gives a rate ratio of about 1.82 without the offset, against about 1.12 with it.
+
+      - layout: bullets
+        beat: practice
+        level: core
+        section: Poisson and other GLMs
+        title: An offset lets one fit mix observation windows
+        recall: How does McElreath's monastery example use an offset?
+        answer: "One monastery gives 30 daily counts at 1.5 a day and another 4 weekly counts at 0.5 a day. Stacking them with log(days) as the offset recovers 1.61 (SD 0.23) and 0.59 (SD 0.14) a day."
+        bullets:
+          - "Monastery one: **30** daily counts at **1.5** a day"
+          - "Monastery two: **4** weekly counts at **0.5** a day"
+          - "Stack them with **log(days)** as the offset"
+          - "Recovered **1.61** (SD 0.23) and **0.59** (SD 0.14) a day"
+          - "Both on the **daily** scale, so predictions drop the offset"
+        takeaway: The offset puts every observation window on one scale.
+        source: notes/06b-logistic-regression-and-poisson-glms.md
+        notes: >-
+          One simulated draw, quadratic-approximation fit, from Statistical Rethinking chapter 10.
+
+      - layout: image
+        beat: practice
+        level: deep
+        section: Poisson and other GLMs
+        title: Pooling across doses cut the error by better than half
+        kicker: Efron and Hastie, Fig. 8.2
+        recall: What does the logistic structure buy in the mice dose-response data?
+        answer: "With 10 mice at each of 11 doses, LD50 is 5.69. At dose 6 the SD of the fitted mortality probability is 0.072 against 0.157 for the raw proportion, and at dose 1 it is 0.015 against 0.045."
+        image: ../../assets/sources/images/computer-age-statistical-inference-fig8-2.png
+        caption: "Observed proportions of 10 mice per dose and the fitted logistic curve, LD50 = 5.69."
+        bullets:
+          - "LD50 **5.69**"
+          - "Dose 6: SD **0.072** against **0.157**"
+          - "Dose 1: SD **0.015** against **0.045**"
+          - "Price: **bias** if straight-in-logit is wrong"
+        takeaway: Pooling across doses cuts the error by better than half, and the price is bias if the logit line is wrong.
+        source: notes/06b-logistic-regression-and-poisson-glms.md
+        notes: >-
+          Table 8.1 of Computer Age Statistical Inference, chapter 8.
+
+      - layout: flow
+        beat: fundamentals
+        level: core
+        section: Poisson and other GLMs
+        title: Deviance is the GLM's residual sum of squares
+        recall: What is deviance and how do null and residual deviance differ?
+        answer: "Twice the log-likelihood gap between the fitted model and a saturated model that fits every row exactly. Null is an intercept only, and the drop to residual is a likelihood-ratio statistic. Adding new_app drops 5482.5 to 5450.1, a drop of 32.4, p 1.2e-08."
+        steps:
+          - {label: Saturated, sub: "one parameter per row", accent: "94A3B8"}
+          - {label: Null, sub: "5482.5, intercept only", accent: "1E3A5F"}
+          - {label: Residual, sub: "5450.1, your model", accent: "0F7490"}
+          - {label: The drop, sub: "32.4, p = 1.2e-08"}
+        caption: "Only 0.6% of the null deviance goes, yet the effect is clear."
+        takeaway: The drop from null to residual deviance is the likelihood-ratio test, and it agrees with the z-test.
+        source: notes/06b-logistic-regression-and-poisson-glms.md
+        notes: >-
+          Residual deviance per degree of freedom is 1.09 where the Pearson dispersion is 1.00, on data that really are
+          Poisson, because deviance is an unreliable variance check for small counts. Efron and Hastie's galaxy fit has 270
+          cells and a sum of squared deviance residuals of 610 against about 270 if the model held. Their 57-predictor spam
+          logistic regression on 4,601 emails has unstable coefficients, the problem ridge and the lasso address.
+
+      - layout: compare
+        beat: pitfalls
+        section: Poisson and other GLMs
+        title: Poisson understates the uncertainty by a factor of three
+        recall: What happens when counts are overdispersed?
+        answer: "With dispersion 8.3, the Poisson SE of 0.0155 is far below the robust SE of 0.0509. The negative binomial gives a coefficient of 0.079 with SE 0.0444."
+        emphasis: right
+        left:
+          title: Poisson
+          bullets: ["Coefficient 0.067, SE **0.0155**", "Dispersion **8.3**", "Z-values too large"]
+        right:
+          title: Robust or negative binomial
+          bullets: ["Poisson robust SE **0.0509**", "Negative binomial SE **0.0444**", "Valid for the mean model"]
+        takeaway: Check dispersion each time you fit a Poisson.
+        source: notes/06b-logistic-regression-and-poisson-glms.md
+        notes: >-
+          Poisson forces variance to equal the mean, and real counts rarely comply since a few users order all the time. The
+          negative binomial coefficient is 0.079.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: Poisson and other GLMs
+        title: Three fits of the same overdispersed counts
+        recall: How do you compare Poisson, robust and negative binomial fits?
+        answer: "Fit Poisson, Poisson with cov_type HC1, and a negative binomial family. Dispersion is 8.3, and the SEs are 0.0155, 0.0509 and 0.0444."
+        lang: python
+        code: |-
+          po2 = smf.glm("orders_od ~ new_app", d7,
+                        family=sm.families.Poisson(),
+                        offset=np.log(d7.days)).fit()
+          rob = ... .fit(cov_type="HC1")
+          nb = ... family=sm.families.NegativeBinomial(
+              alpha=2.0) ...
+          # dispersion 8.3 = pearson_chi2 / df_resid
+          # SE: 0.0155 | robust 0.0509 | NB 0.0444
+        takeaway: Dispersion is Pearson chi-squared over residual degrees of freedom.
+        source: notes/06b-logistic-regression-and-poisson-glms.md
+        notes: >-
+          The data are generated with a mean-1 gamma frailty. Two fixes are close to each other: keep Poisson and use robust
+          SEs, valid for the mean model, or fit a negative binomial that models the extra variance directly.
+
+      - layout: flow
+        beat: fundamentals
+        level: core
+        section: Poisson and other GLMs
+        title: Each rating level gets its own cutpoint
+        recall: How does the cumulative-logit model handle ordered outcomes?
+        answer: "Each level k gets its own cutpoint and a shared linear predictor phi. Seven levels need only six cutpoints, since Pr(y <= 7) = 1 has an infinite logit, and a level's probability comes by subtraction."
+        steps:
+          - {label: Cutpoints, sub: "six for seven levels", accent: "94A3B8"}
+          - {label: Shared phi, sub: "one linear predictor", accent: "1E3A5F"}
+          - {label: Cumulative odds, sub: "Pr(y <= k)", accent: "0F7490"}
+          - {label: Subtract, sub: "Pr(y = k)"}
+        caption: "McElreath's trolley data: 9,930 ratings from 331 people give cutpoints -1.92, -1.27, -0.72, 0.25, 0.89 and 1.77."
+        takeaway: An ordered rating is not a count and its steps are not equal, so each step gets its own cutpoint.
+        source: notes/06b-logistic-regression-and-poisson-glms.md
+        notes: >-
+          phi is subtracted so that a positive coefficient raises the rating. The inverse logits of the cutpoints, 0.128,
+          0.220, 0.328, 0.562, 0.709 and 0.854, are the empirical cumulative proportions. statsmodels fits this with
+          OrderedModel, distr logit.
+
+      - layout: table
+        beat: practice
+        level: deep
+        section: Poisson and other GLMs
+        title: Shifting every cutpoint by 0.5 raises the mean rating
+        recall: What does a shift of 0.5 in every cutpoint of McElreath's trolley ratings model do to the rating distribution?
+        answer: "Mass leaves the low ratings and lands on the high ones, and the mean rises from 4.20 to 4.73."
+        header: [Shift, "Rating 1", "Rating 4", "Rating 7", Mean]
+        widths: [1.4, 2, 2, 2, 1.6]
+        rows:
+          - ["0", "0.128", "0.235", "0.146", "4.20"]
+          - ["0.5", "0.082", "0.210", "0.219", "4.73"]
+        highlight: [1]
+        takeaway: A positive shift moves probability mass toward the high ratings.
+        source: notes/06b-logistic-regression-and-poisson-glms.md
+        notes: >-
+          This matches the book's 4.199 and 4.730 from unrounded cutpoints.
+
+      - layout: cards
+        beat: wrap
+        title: Rules of thumb for regression
+        recall: What are the rules of thumb for regression in an analysis?
+        answer: "Add pre-period covariates to experiments, cluster at the level of randomisation, use robust SEs on money, report marginal effects rather than odds ratios, and check dispersion on every Poisson fit."
+        cards:
+          - {title: Experiments, accent: "1E3A5F", body: "Add pre-period covariates, which buy precision and no bias"}
+          - {title: Standard errors, accent: "0F7490", body: "Cluster at the level of randomisation, and use robust SEs on money"}
+          - {title: Binary outcomes, accent: "D4621A", body: "Report marginal effects rather than odds ratios"}
+          - {title: Counts, accent: "5B21B6", body: "Check dispersion on every Poisson fit"}
+        takeaway: The checks are about whether to believe the standard error.
+        source: notes/06b-logistic-regression-and-poisson-glms.md
+        notes: >-
+          These are the pillar README's rules of thumb for this step. The next lecture steps back from fitting to ask what a
+          model is a claim about.
+
+      - layout: table
+        beat: pitfalls
+        section: Pitfalls
+        title: GLM pitfalls and what to do instead
+        recall: What are the main logistic and Poisson pitfalls?
+        answer: "Quoting odds ratios as probabilities, ignoring a giant coefficient with a giant SE, and fitting Poisson without checking dispersion."
+        header: [Pitfall, Do instead]
+        widths: [4, 5.6]
+        rows:
+          - [Quoting odds ratios as probabilities, "An odds ratio of 1.49 is one point or ten: report marginal effects"]
+          - [Ignoring a giant coefficient with a giant SE, "That is separation, not a strong effect"]
+          - [Fitting Poisson without checking dispersion, "The SEs can be wrong by a factor of 3"]
+        takeaway: Each pitfall has a one-line check, so run it every time.
+        source: notes/06b-logistic-regression-and-poisson-glms.md
+        notes: >-
+          The overdispersion pitfall is the 8.3 dispersion case.

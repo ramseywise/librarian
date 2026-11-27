@@ -12,6 +12,7 @@ import {
   type RingGeometry,
   type Spike,
 } from "../../utils/atlas";
+import { fieldScale, FIELD_R, type AtlasField } from "../../utils/atlasField";
 
 /** UI colours as the theme has them right now. */
 export interface Palette {
@@ -86,6 +87,11 @@ export interface RingFrame {
   dimSectors: Set<number> | null;
   alpha: number;
   anyActive: boolean;
+  /** The inner field of page dots, or null while it is not laid out (or mid-morph). */
+  field: AtlasField | null;
+  /** The view's zoom: labels and strokes are divided by it, so they stay one size on screen. */
+  viewK: number;
+  titles: string[];
 }
 
 export function drawRing(ctx: CanvasRenderingContext2D, f: RingFrame): void {
@@ -147,6 +153,8 @@ export function drawRing(ctx: CanvasRenderingContext2D, f: RingFrame): void {
     }
   }
 
+  if (f.showStructure && f.field) drawField(ctx, f, f.field);
+
   if (f.showStructure) {
     ctx.lineWidth = 3;
     for (const arc of f.ring.arcs) {
@@ -161,6 +169,104 @@ export function drawRing(ctx: CanvasRenderingContext2D, f: RingFrame): void {
   ctx.globalAlpha = 1;
 }
 
+/** On-screen radius a dot needs before it gets a label; zooming in grows dots past it. */
+export const LABEL_MIN_PX = 9;
+const MAX_LABELS = 140;
+const LABEL_PX = 11;
+
+/**
+ * Labels for `order` (most important first), each beside its dot, skipping any that would overlap
+ * one already placed. Sizes are in ring units divided by the zoom, so text reads the same at any zoom.
+ */
+function drawLabels(
+  ctx: CanvasRenderingContext2D,
+  g: RingGeometry,
+  field: AtlasField,
+  order: number[],
+  titles: string[],
+  viewK: number,
+  palette: Palette,
+  color: string,
+  max: number,
+): void {
+  const k = fieldScale(g);
+  const px = LABEL_PX / viewK;
+  ctx.font = `500 ${px}px system-ui, sans-serif`;
+  ctx.textBaseline = "middle";
+  ctx.lineJoin = "round";
+  ctx.lineWidth = 3 / viewK;
+  ctx.strokeStyle = palette.bg;
+  ctx.fillStyle = color;
+  const placed: [number, number, number, number][] = [];
+  for (const i of order) {
+    if (placed.length >= max) break;
+    const text = titles[i];
+    if (!text) continue;
+    const label = text.length > 28 ? `${text.slice(0, 27)}…` : text;
+    const x = g.cx + field.x[i] * k + field.r[i] * k + 2 / viewK;
+    const y = g.cy + field.y[i] * k;
+    const w = ctx.measureText(label).width;
+    const box: [number, number, number, number] = [x, y - px / 2, x + w, y + px / 2];
+    if (placed.some((b) => box[0] < b[2] && box[2] > b[0] && box[1] < b[3] && box[3] > b[1])) continue;
+    placed.push(box);
+    ctx.strokeText(label, x, y);
+    ctx.fillText(label, x, y);
+  }
+}
+
+/** The page dots inside the ring, their links faint behind them, and labels on the dots big enough to carry one. */
+function drawField(ctx: CanvasRenderingContext2D, f: RingFrame, field: AtlasField): void {
+  const { g, spikes, palette } = f;
+  const k = fieldScale(g);
+  const { cx, cy } = g;
+
+  ctx.globalAlpha = f.alpha * 0.28;
+  ctx.strokeStyle = palette.guide;
+  ctx.lineWidth = 0.6 / f.viewK;
+  ctx.beginPath();
+  const links = field.links;
+  for (let e = 0; e < links.length; e += 2) {
+    const a = links[e];
+    const b = links[e + 1];
+    ctx.moveTo(cx + field.x[a] * k, cy + field.y[a] * k);
+    ctx.lineTo(cx + field.x[b] * k, cy + field.y[b] * k);
+  }
+  ctx.stroke();
+
+  const buckets = new Map<string, number[]>();
+  for (let i = 0; i < field.x.length; i++) {
+    const state = spikes.state[i];
+    const key = state === SPIKE_DIM ? "dim" : `${state}|${spikes.color[i]}`;
+    const list = buckets.get(key);
+    if (list) list.push(i);
+    else buckets.set(key, [i]);
+  }
+  for (const [key, list] of buckets) {
+    const dim = key === "dim";
+    const state = dim ? SPIKE_DIM : Number(key[0]);
+    ctx.fillStyle = dim ? palette.dim : key.slice(2);
+    ctx.globalAlpha = f.alpha * (dim ? 0.4 : state === SPIKE_FAINT ? 0.45 : state === SPIKE_LIT ? 1 : 0.88);
+    ctx.beginPath();
+    for (const i of list) {
+      const x = cx + field.x[i] * k;
+      const y = cy + field.y[i] * k;
+      const r = field.r[i] * k;
+      ctx.moveTo(x + r, y);
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+    }
+    ctx.fill();
+  }
+
+  // Labels: the biggest dots first, and only those large enough on screen at this zoom.
+  const minR = LABEL_MIN_PX / (k * f.viewK);
+  const order = [];
+  for (let i = 0; i < field.x.length; i++) if (field.r[i] >= minR && spikes.state[i] !== SPIKE_DIM) order.push(i);
+  order.sort((a, b) => field.r[b] - field.r[a]);
+  ctx.globalAlpha = f.alpha;
+  drawLabels(ctx, g, field, order, f.titles, f.viewK, palette, palette.hot, MAX_LABELS);
+  ctx.globalAlpha = 1;
+}
+
 export interface HotFrame {
   g: RingGeometry;
   ring: Ring;
@@ -171,6 +277,87 @@ export interface HotFrame {
   cursor: Spike | null;
   /** Sector whose arc to thicken. */
   sector: number | null;
+  field: AtlasField | null;
+  viewK: number;
+  titles: string[];
+  /** Draw the selected page's wikilinks; off, only its similar pages show. */
+  wikiLines?: boolean;
+  /** The selected page's most similar pages, drawn dashed. */
+  similar?: number[];
+}
+
+/**
+ * The selected page and its neighbours: everything else in the field is veiled, the links to the
+ * neighbours drawn in the page's colour, and each neighbour labelled.
+ */
+function drawFocus(ctx: CanvasRenderingContext2D, f: HotFrame, field: AtlasField, focus: number): void {
+  const { g, spikes, palette, viewK } = f;
+  const k = fieldScale(g);
+  const { cx, cy } = g;
+  const linked = f.wikiLines === false ? [] : (field.neighbours[focus] ?? []);
+  const similar = (f.similar ?? []).filter((j) => j !== focus);
+  const near = [...new Set([...linked, ...similar])];
+  const at = (i: number) => ({ x: cx + field.x[i] * k, y: cy + field.y[i] * k, r: field.r[i] * k });
+
+  ctx.globalAlpha = 0.78;
+  ctx.fillStyle = palette.bg;
+  ctx.beginPath();
+  ctx.arc(cx, cy, FIELD_R * k + 3, 0, Math.PI * 2);
+  ctx.fill();
+
+  const self = at(focus);
+  ctx.globalAlpha = 0.75;
+  ctx.strokeStyle = spikes.color[focus];
+  ctx.lineWidth = 1.2 / viewK;
+  ctx.beginPath();
+  for (const j of linked) {
+    const p = at(j);
+    ctx.moveTo(self.x, self.y);
+    ctx.lineTo(p.x, p.y);
+  }
+  ctx.stroke();
+  if (similar.length) {
+    ctx.setLineDash([4 / viewK, 4 / viewK]);
+    ctx.beginPath();
+    for (const j of similar) {
+      const p = at(j);
+      ctx.moveTo(self.x, self.y);
+      ctx.lineTo(p.x, p.y);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  ctx.globalAlpha = 1;
+  for (const j of [...near, focus]) {
+    const p = at(j);
+    ctx.fillStyle = spikes.color[j];
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.strokeStyle = palette.hot;
+  ctx.lineWidth = 2.5 / viewK;
+  ctx.beginPath();
+  ctx.arc(self.x, self.y, self.r + 1.5 / viewK, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // Their spikes on the rim too, so the ring shows where the neighbours sit.
+  ctx.lineWidth = 1.4;
+  for (const j of near) {
+    const s = f.ring.spikes[j];
+    if (!s) continue;
+    const sin = Math.sin(s.angle);
+    const cos = Math.cos(s.angle);
+    ctx.strokeStyle = spikes.color[j];
+    ctx.beginPath();
+    ctx.moveTo(cx + g.inner * sin, cy - g.inner * cos);
+    ctx.lineTo(cx + spikes.tip[j] * sin, cy - spikes.tip[j] * cos);
+    ctx.stroke();
+  }
+
+  const order = [focus, ...[...near].sort((a, b) => field.r[b] - field.r[a])];
+  drawLabels(ctx, g, field, order, f.titles, viewK, palette, palette.hot, 60);
 }
 
 /** Hovered and keyboard-selected spikes, drawn full length, and the current sector's arc. */
@@ -203,6 +390,20 @@ export function drawHot(ctx: CanvasRenderingContext2D, f: HotFrame): void {
     ctx.arc(cx, cy, g.outer + ARC_RADIUS_OFFSET, arc.start - Math.PI / 2, arc.end - Math.PI / 2);
     ctx.stroke();
   }
+  if (f.field && f.cursor) drawFocus(ctx, f, f.field, f.cursor.index);
   if (f.cursor) spike(f.cursor, 2);
-  if (f.hover && f.hover !== f.cursor) spike(f.hover, 1.6);
+  if (f.hover && f.hover !== f.cursor) {
+    spike(f.hover, 1.6);
+    if (f.field) {
+      const k = fieldScale(g);
+      const i = f.hover.index;
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = palette.hot;
+      ctx.lineWidth = 1.6 / f.viewK;
+      ctx.beginPath();
+      ctx.arc(cx + f.field.x[i] * k, cy + f.field.y[i] * k, f.field.r[i] * k + 1.5 / f.viewK, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+  }
+  ctx.globalAlpha = 1;
 }

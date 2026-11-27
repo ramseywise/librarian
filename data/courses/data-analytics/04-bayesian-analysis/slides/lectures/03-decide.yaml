@@ -1,0 +1,1245 @@
+# imported_hash: c1bb6757ce8218b6
+# Lecture on step 3, Decide: notes/03b-bandits-and-thompson-sampling.md, 04-bayesian-ab-testing.md and 05-loss-functions-and-decisions.md, in the notes' order.
+# make slides PILLAR=data-analytics/04-bayesian-analysis LECTURE=03-decide STRICT=1 PREVIEW=1
+# Levels: a slide with no level is the intro, `core` is the core lesson, `deep` is the optional extension (code and maths).
+deck:
+  title: Decide
+  subtitle: From a posterior to an action
+  tagline: "Bandits · Bayesian A/B tests · Loss functions"
+  reference: "Notes: data-analytics/04-bayesian-analysis, notes 3b, 4 and 5"
+  output: 03-decide.pptx
+  notes: >-
+    This is the fourth lecture of the Bayesian analysis series, after the overview, infer, and compute and check. It covers
+    step 3. By the end you should be able to run Thompson sampling, answer a checkout test with a probability and an expected
+    loss, say why a Bayesian test is not immune to peeking, rank items with few ratings, and turn a posterior into a decision by
+    writing down what a wrong call costs.
+
+lecture:
+  covers:
+    - data-analytics/04-bayesian-analysis/notes/03b-bandits-and-thompson-sampling.md
+    - data-analytics/04-bayesian-analysis/notes/04-bayesian-ab-testing.md
+    - data-analytics/04-bayesian-analysis/notes/05-loss-functions-and-decisions.md
+  requires: [data-analytics/04-bayesian-analysis/notes/03-priors-and-bandits.md]
+  next: [data-analytics/04-bayesian-analysis/notes/06-bayesian-machine-learning.md]
+  related:
+    - generative-ai/05-RL/notes/01c-bandit-algorithms.md
+    - data-analytics/03-experimentation-and-causality/notes/01-ab-testing.md
+    - data-analytics/03-experimentation-and-causality/notes/03-experimentation-at-scale.md
+    - data-science/05-time-series-and-recommenders/notes/03-two-tower-and-evaluation.md
+
+parts:
+  - title: Bandits and Thompson sampling
+    divider: false
+    summary: Explore or exploit · Beta updates · Regret · Extensions · Bandit or A/B test
+    notes: We start with the choice that makes a bandit hard, then let the Beta posterior decide which arm to pull next.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Bayesian bandits (Thompson sampling)
+        title: Which option do you try next?
+        recall: Why is a multi-armed bandit hard?
+        answer: "Each pull earns a reward and also teaches you about that arm. Pull the best-looking arm too early and you may never find the real best one."
+        kicker: The problem
+        statement: "Pull the best-looking arm too early and you may never discover the real best one."
+        attribution: N slot machines with unknown payout rates
+        takeaway: Every pull is both a payout and a lesson, so the choice is how much to learn and how much to earn.
+        source: notes/03b-bandits-and-thompson-sampling.md
+        notes: >-
+          The multi-armed bandit is N slot machines with unknown payout rates. The Bayesian answer needs nothing beyond the
+          Beta posterior from the earlier chapters.
+
+      - layout: bullets
+        beat: fundamentals
+        section: Bayesian bandits (Thompson sampling)
+        title: An A/B test explores uniformly, then exploits
+        recall: How does an A/B test relate to a bandit?
+        answer: "An A/B test is a bandit that explores uniformly until a fixed N and then exploits. A bandit shifts traffic as it learns."
+        bullets:
+          - "**Explore too little:** pull the best-looking arm early and you may never find the real best"
+          - "**Explore too much:** pull every arm equally and you waste pulls on the losers"
+          - "**An A/B test** explores uniformly until a fixed N, then exploits"
+          - "**A bandit** shifts traffic toward the winner as evidence arrives"
+        takeaway: A bandit sits between the two failures and moves its pulls toward the winner as evidence arrives.
+        source: notes/03b-bandits-and-thompson-sampling.md
+        notes: >-
+          The A/B test is the special case with a fixed exploration phase. Thompson sampling, below, makes the shift
+          gradual and automatic.
+
+      - layout: cards
+        beat: fundamentals
+        section: Bayesian bandits (Thompson sampling)
+        title: The posterior update is arithmetic
+        recall: What are the two conjugate cases that cover most arms?
+        answer: "Bernoulli reward with a Beta prior, and Gaussian reward with a Gaussian prior. From Beta(1, 1), 3 successes in 10 pulls gives Beta(4, 8); a N(0, 1) prior with S_4 = 2 gives mean 0.4 and variance 0.2."
+        cards:
+          - {title: Bernoulli and Beta, accent: "1E3A5F", body: "Beta(a, b) becomes Beta(a + S, b + t - S). From Beta(1, 1), **3 of 10** gives **Beta(4, 8)**"}
+          - {title: Gaussian and Gaussian, accent: "0F7490", body: "A precision-weighted average of prior and data. N(0, 1) with S_4 = 2 gives mean **0.4**, variance **0.2**"}
+          - {title: A pseudo-count, accent: "D4621A", body: "A conjugate prior acts like n0 earlier observations. Pick one you can update or sample cheaply"}
+        takeaway: Thompson sampling is cheap because each update is arithmetic, and a non-conjugate arm needs MCMC every round.
+        source: notes/03b-bandits-and-thompson-sampling.md
+        level: core
+        notes: >-
+          After t pulls with S_t successes the Beta posterior has predictive success probability equal to its mean. The Gaussian
+          case assumes unit-variance noise, and its variance does not depend on what was observed.
+
+      - layout: flow
+        beat: fundamentals
+        section: Bayesian bandits (Thompson sampling)
+        title: Thompson sampling in one loop
+        recall: What are the steps of one round of Thompson sampling?
+        answer: "Draw one sample from each arm's posterior, pull the arm with the largest draw, observe the reward and update that arm's Beta."
+        steps:
+          - {label: Posterior per arm, sub: "Beta(1 + wins, 1 + losses)", accent: "1E3A5F"}
+          - {label: Draw one sample each, sub: "one per arm", accent: "0F7490"}
+          - {label: Pull the largest, sub: "the arm with the top draw"}
+          - {label: Observe the reward, sub: "win or loss", accent: "94A3B8"}
+          - {label: Update that Beta, sub: "back to the start", accent: "D4621A"}
+        caption: "Uncertain arms give widely spread samples, so they still win the draw sometimes."
+        takeaway: Exploration happens automatically and fades as evidence accumulates, and losers are never discarded.
+        source: notes/03b-bandits-and-thompson-sampling.md
+        notes: >-
+          The rule is due to Thompson in 1933 and spent decades in the shade. Empirical work by Chapelle and Li in 2011 found
+          it highly competitive and argued it should be a standard baseline.
+
+      - layout: code
+        beat: practice
+        section: Bayesian bandits (Thompson sampling)
+        title: A 12-line strategy learns which arm to stop paying for
+        recall: What does Thompson sampling do over 1,000 pulls on rates 0.85, 0.60 and 0.75?
+        answer: "It pulls the arms [926, 26, 48] times. The 0.85 arm gets 926 pulls and a tight posterior, and the others stay wide."
+        lead: "Three arms with true rates 0.85, 0.60 and 0.75."
+        lang: python
+        code: |-
+          class BayesianStrategy:
+              def __init__(self, bandits):
+                  self.bandits = bandits
+                  k = len(bandits)
+                  self.wins = np.zeros(k)
+                  self.trials = np.zeros(k)
+              def sample_bandits(self, n=1):
+                  for _ in range(n):
+                      draw = rng.beta(1 + self.wins,
+                          1 + self.trials - self.wins)
+                      i = np.argmax(draw)
+                      self.wins[i] += self.bandits.pull(i)
+                      self.trials[i] += 1
+          # pulls    [926  26  48]
+          # post sd  [0.011 0.091 0.061]
+        bullets:
+          - "**926** of 1,000 pulls go to the 0.85 arm"
+          - "Its posterior sd is **0.011**, the others **0.091** and **0.061**"
+          - "Wide posteriors are correct: enough was learned to stop paying"
+        takeaway: The strategy learns just enough about the losers to stop paying for more.
+        source: notes/03b-bandits-and-thompson-sampling.md
+        notes: >-
+          The draw line is the whole algorithm. Everything else is bookkeeping. The Bandits class only returns a reward with the
+          arm's true probability.
+
+      - layout: bullets
+        beat: fundamentals
+        section: Bayesian bandits (Thompson sampling)
+        level: core
+        title: "Regret counts what you gave up by not pulling the best arm"
+        recall: What is regret, and how must it grow for a good strategy?
+        answer: "R_T sums, over rounds, the best arm's true rate minus the chosen arm's rate. Lai and Robbins proved a good strategy's regret must grow at least logarithmically in T."
+        bullets:
+          - "**R_T** is the sum of (best true rate - chosen arm's rate) over T rounds"
+          - "Zero regret means you always picked the best arm"
+          - "Any good strategy's regret grows at least **logarithmically** in T (Lai and Robbins, 1985)"
+          - "Thompson sampling is logarithmic (Agrawal and Goyal, 2012)"
+          - "Bayes-UCB is asymptotically optimal for binary rewards (Kaufmann et al., 2012)"
+        takeaway: A strategy that matches the logarithmic rate has solved the problem, in the book's phrase.
+        source: notes/03b-bandits-and-thompson-sampling.md
+        notes: >-
+          Regret is the yardstick for comparing strategies. The strategies on the next slides differ in how they trade
+          exploring against earning.
+
+      - layout: table
+        beat: fundamentals
+        section: Bayesian bandits (Thompson sampling)
+        level: core
+        title: Five rules, and what each one guarantees
+        recall: Which strategies have a logarithmic regret guarantee?
+        answer: "Bayes-UCB and Thompson sampling. Random is linear in T, max mean can lock onto a wrong arm, and the fixed 95% bound is measured, with no guarantee claimed."
+        header: [Strategy, Rule, Expected regret]
+        widths: [2.0, 4.0, 3.4]
+        rows:
+          - [Random, pick uniformly, linear in T]
+          - [Max mean, pick the highest posterior mean, can lock onto a wrong arm]
+          - [Upper credible bound, pick the highest 95th percentile, "no guarantee claimed, measured"]
+          - [Bayes-UCB, pick a posterior quantile that rises over time, "logarithmic, optimal for binary"]
+          - [Thompson, sample and take the max, logarithmic]
+        highlight: [4]
+        takeaway: Only Bayes-UCB and Thompson sampling carry a logarithmic guarantee, and Thompson has no quantile to choose.
+        source: notes/03b-bandits-and-thompson-sampling.md
+        notes: >-
+          The upper credible bound uses a fixed quantile, so the note measures it in a simulation instead of quoting a bound.
+
+      - layout: table
+        beat: practice
+        section: Bayesian bandits (Thompson sampling)
+        title: On low checkout-style rates the plain bound beat Thompson
+        recall: At 2,000 pulls, what regret did each rule reach on rates 0.15, 0.20 and 0.10?
+        answer: "Random 100.0, max mean 28.3, the 95% upper bound 14.6 and Thompson 22.8. The ordering depends on the gaps and the horizon, so it is not a ranking."
+        header: [Rule, Regret at 100, At 500, At 2000]
+        widths: [3.0, 2.2, 2.2, 2.2]
+        rows:
+          - [Random, "5.0", "24.9", "100.0"]
+          - [Max mean, "2.9", "8.8", "28.3"]
+          - [95% upper bound, "3.3", "8.6", "14.6"]
+          - [Thompson, "3.8", "12.4", "22.8"]
+        highlight: [3]
+        takeaway: Do not read this as a ranking, and run your own simulation with your rates and horizon before you commit.
+        source: notes/03b-bandits-and-thompson-sampling.md
+        notes: >-
+          These are means over 300 runs, so they still carry noise. Random pays at a constant rate, while Thompson climbs from 12
+          to 23 as pulls quadruple. At 500 pulls max mean is level with the bound.
+
+      - layout: code
+        beat: practice
+        section: Bayesian bandits (Thompson sampling)
+        level: deep
+        title: Each rule is one lambda over wins and trials
+        recall: How is the regret comparison set up?
+        answer: "Each rule maps wins, trials and the round to an arm. The run repeats 300 times and averages the cumulative regret at pulls 100, 500 and 2000."
+        lang: python
+        code: |-
+          rules = {
+            "random": lambda w, n, t, r:
+                r.integers(len(w)),
+            "max mean": lambda w, n, t, r:
+                np.argmax((1 + w) / (2 + n)),
+            "95% upper bound": lambda w, n, t, r:
+                np.argmax(stats.beta.ppf(
+                    0.95, 1 + w, 1 + n - w)),
+            "Thompson": lambda w, n, t, r:
+                np.argmax(r.beta(1 + w, 1 + n - w)),
+          }
+          p = np.array([0.15, 0.20, 0.10])
+        bullets:
+          - "**300** runs of **2000** pulls per rule"
+          - "Rates like a checkout, not a slot machine"
+          - "Regret is read at pulls **100, 500, 2000**"
+        takeaway: A new rule is one more lambda, so you can test any rule on your own rates in minutes.
+        source: notes/03b-bandits-and-thompson-sampling.md
+        notes: >-
+          The run function cumulates p.max() minus the chosen arm's rate each round. It is the Law of Large Numbers again, as in the
+          book's 500-run estimate.
+
+      - layout: cards
+        beat: fundamentals
+        section: Bayesian bandits (Thompson sampling)
+        level: core
+        title: What the guarantees say, and what they do not
+        recall: What three results sharpen the regret table?
+        answer: "Bayesian regret averages over the prior and does not bound any single instance. Thompson's bounds are Thm 36.1 and 36.3. In Experiment 36.1 Thompson scored 29.9 against 23.8 for AdaUCB."
+        cards:
+          - {title: Bayesian regret, accent: "1E3A5F", body: "An average over your prior, so it does not bound any one instance. Analyse the frequentist regret instead"}
+          - {title: Thompson's bounds, accent: "0F7490", body: "Thm 36.1 bounds Bayesian regret. Thm 36.3 gives asymptotic optimality for unit-variance Gaussian arms"}
+          - {title: Experiment 36.1, accent: "D4621A", body: "Means (1/5, 0), n = 2,000: Thompson **29.9** against AdaUCB **23.8**, with a much larger variance"}
+        takeaway: Thompson is a good default, and a tuned bound can beat it at a given horizon.
+        source: notes/03b-bandits-and-thompson-sampling.md
+        notes: >-
+          Thm 36.1 gives a Bayesian regret of at most C times the square root of k n log n. Even the Bayes-optimal policy can have
+          positive Bayesian regret, because it cannot know the best arm in round one. Thompson still beat the plain UCB of the
+          book's chapter 7.
+
+      - layout: compare
+        beat: pitfalls
+        section: Bayesian bandits (Thompson sampling)
+        level: core
+        title: A bad prior does not wash out in a bandit
+        recall: Why can a misspecified prior fail to wash out in a bandit?
+        answer: "If the prior underestimates an arm, Thompson sampling may rarely or never play it, so no data arrives to correct the belief. Check the arm counts, not only the posterior means."
+        emphasis: right
+        left:
+          title: Ordinary Bayes
+          bullets: ["Data overrules a bad prior", "The prior washes out"]
+        right:
+          title: A bandit
+          bullets: ["The prior underrates an arm", "It is rarely or never played", "No data arrives to fix it"]
+        takeaway: When the prior is shaky, check the arm counts, because the data you needed may never have been collected.
+        source: notes/03b-bandits-and-thompson-sampling.md
+        notes: >-
+          This is Note 5 of chapter 36 in the bandit book, which leaves an exercise with means (0, 1/10) and n = 1,000.
+
+      - layout: cards
+        beat: fundamentals
+        section: Bayesian bandits (Thompson sampling)
+        title: Four extensions change one line each
+        recall: What are the BMH extensions of Thompson sampling?
+        answer: "Minimise instead (take argmin), non-stationary arms (a learning rate below 1 forgets old evidence), non-binary rewards (sample the posterior of the expected reward) and comment ranking (sample a score per comment and sort)."
+        cards:
+          - {title: Minimise, accent: "1E3A5F", body: "Prizes are bad: take the **argmin** of the samples"}
+          - {title: Forget, accent: "0F7490", body: "Non-stationary arms: wins = rate * wins + result, with rate below 1"}
+          - {title: Other rewards, accent: "94A3B8", body: "Sample each arm's expected reward. Needs MCMC if not conjugate"}
+          - {title: Rank comments, accent: "D4621A", body: "Beta(1 + U, 1 + D) per comment, sampled and sorted at each page load"}
+        takeaway: Sampling a score per item, and not ranking by a lower bound, still gives new items a chance to be seen.
+        source: notes/03b-bandits-and-thompson-sampling.md
+        notes: >-
+          The comment-ranking row is the contrast with the lower-bound ranking in the Bayesian A/B chapter, covered later in this
+          lecture.
+
+      - layout: code
+        beat: practice
+        section: Bayesian bandits (Thompson sampling)
+        level: core
+        title: Forgetting pays when the world moves
+        recall: What does forgetting buy when two arms swap their rates halfway through?
+        answer: "Mean reward per pull rises from 0.162 to 0.179, about 10% more. On a stationary problem it costs a little, because forgetting throws away evidence."
+        lead: "Two arms swap rates 0.20 and 0.10 halfway through 4,000 pulls."
+        lang: python
+        code: |-
+          for t in range(T):
+              p = (np.array([0.20, 0.10]) if t < T // 2
+                   else np.array([0.10, 0.20]))
+              i = np.argmax(rng.beta(1 + w, 1 + n - w))
+              r = rng.random() < p[i]
+              w, n = rate * w, rate * n
+              w[i] += r
+              n[i] += 1
+          # rate 1.0:  0.162
+          # rate 0.99: 0.179
+        bullets:
+          - "No forgetting earns **0.162** a pull"
+          - "A rate of **0.99** earns **0.179**, about **10%** more"
+          - "On a stationary problem it would cost a little"
+        takeaway: The non-stationary fix is one line, and it pays whenever the arms drift.
+        source: notes/03b-bandits-and-thompson-sampling.md
+        notes: >-
+          Each rate is averaged over 100 runs. The two multiplications by rate are the only change from plain Thompson sampling.
+
+      - layout: bullets
+        beat: fundamentals
+        section: Bayesian bandits (Thompson sampling)
+        level: deep
+        title: Sutton and Barto's testbed, and why exact is out of reach
+        recall: What did a purely greedy learner score on the 10-armed testbed, and why is the exact Bayesian answer not used?
+        answer: "Greedy levelled off near 1 per step against about 1.54 for the best arm, and found the best arm in only about a third of runs. The exact answer has 2^2000 leaves in a 1,000-step tree."
+        bullets:
+          - "10 arms, 2,000 bandits, 1,000 steps, values from Normal(0, 1)"
+          - "Greedy levels off near **1** against about **1.54** for the best arm"
+          - "Epsilon-greedy at 0.1 never chose the best arm more than **91%** of the time"
+          - "Exact Bayes-optimal exploration needs **2^2000** leaves for two actions and two rewards"
+          - "Thompson sampling and UCB are the feasible stand-ins"
+        takeaway: The Bayesian bandit of the chapter is an approximation to an answer too large to compute.
+        source: notes/03b-bandits-and-thompson-sampling.md
+        notes: >-
+          Greedy found the best arm in only about a third of the runs, because disappointing early draws sent it elsewhere for good.
+          Epsilon 0.01 improves more slowly but is expected to end higher, which the authors state and the 1,000 plotted steps do
+          not show. The authors also note that effectively non-stationary problems are the most common in reinforcement learning.
+
+      - layout: cards
+        beat: fundamentals
+        section: Bayesian bandits (Thompson sampling)
+        level: deep
+        title: The Gittins index is exact, under strict assumptions
+        recall: When is the Bayes-optimal bandit policy an index policy?
+        answer: "For discounted infinite-horizon reward with geometric discounting and independent arms. It breaks with other discounting, multiple plays per round or a finite undiscounted horizon, and carries no regret guarantee."
+        cards:
+          - {title: One arm, accent: "1E3A5F", body: "Against a known payoff the optimal policy is a retirement rule by backwards induction. **O(n^2)** against **O(n)**"}
+          - {title: Many arms, accent: "0F7490", body: "Geometric discounting and independent arms: play the arm with the highest index"}
+          - {title: Outside the assumptions, accent: "D4621A", body: "The index is only a heuristic. Optimality is for the discounted objective, with no regret guarantee"}
+        takeaway: Use the index only for the problem it was proved for, and Thompson sampling everywhere else.
+        source: notes/03b-bandits-and-thompson-sampling.md
+        notes: >-
+          The index is the smallest per-round charge that makes you indifferent between retiring and playing the arm. In Experiment
+          35.1 (n = 500) the regrets appear only in a figure, so the note gives no numbers.
+
+      - layout: bullets
+        beat: practice
+        section: Bayesian bandits (Thompson sampling)
+        title: Bandit or A/B test
+        recall: When do you use a bandit, and when a fixed-horizon A/B test?
+        answer: "A bandit when showing a loser is costly, arms change or there are many arms. An A/B test when you need an unbiased effect to report, a one-off ship decision or guardrail and long-term metrics."
+        bullets:
+          - "**Use a bandit when** showing a loser costs a lot, arms change over time, or there are many arms"
+          - "**Use an A/B test when** you must report an unbiased effect, the decision is one ship or no-ship, or you need guardrail metrics"
+        takeaway: Use a bandit when showing a loser is costly, and an A/B test when you must report an unbiased effect and read guardrails.
+        source: notes/03b-bandits-and-thompson-sampling.md
+        notes: >-
+          Adaptive allocation is why the bandit column cannot report a clean effect. The arm that looked bad early stops getting
+          traffic, so its estimate stays noisy and tends to stay low.
+
+      - layout: table
+        beat: pitfalls
+        section: Pitfalls
+        title: Three ways a bandit misleads
+        recall: Which bandit pitfalls does the note list?
+        answer: "Reporting a bandit's arm means as an effect, trusting a published regret ranking, and a prior that underrates an arm. The fixes are a fixed split or holdout, your own simulation, and checking arm counts."
+        header: [Pitfall, What goes wrong, Fix]
+        widths: [3.0, 3.4, 3.0]
+        rows:
+          - [Reporting arm means as an effect, Adaptive allocation biases them, Run a fixed split or a holdout]
+          - [Trusting a regret ranking, The order depends on gaps and horizon, Simulate with your own rates]
+          - [A prior that underrates an arm, The arm may never be played, "Check arm counts, not only means"]
+        takeaway: A bandit decides what to show, and a fixed split should measure the effect you report.
+        source: notes/03b-bandits-and-thompson-sampling.md
+        notes: >-
+          The first two rows are the note's Pitfalls table. The third restates the misspecified-prior point from the guarantees
+          section.
+
+  - title: Bayesian A/B testing
+    divider: false
+    summary: The question changes · Beta closed form · Larkspur · Expected loss · Peeking · Ranking
+    notes: We now answer the checkout question with a probability and an expected loss, test the claim that Bayesian tests are immune to peeking, and rank items with few ratings.
+    slides:
+      - layout: statement
+        beat: problem
+        section: The question changes
+        title: Two questions the p-value cannot answer
+        recall: What two things did Larkspur's head of product want from the checkout test?
+        answer: "How likely is it that the new checkout is better, and what do we lose if we ship it and we are wrong? A lift, an interval and a p-value answer neither."
+        kicker: Larkspur's checkout test
+        statement: "How likely is the new checkout to be better, and what do we lose if we ship it and we are wrong?"
+        attribution: Neither is a p-value
+        takeaway: A Bayesian test computes both answers, in a few lines, from the same counts.
+        source: notes/04-bayesian-ab-testing.md
+        notes: >-
+          The chapter also tests the claim that Bayesian tests are immune to peeking, and uses the same lower-bound idea to rank
+          items with few ratings, including prompts by eval pass rate.
+
+      - layout: bullets
+        beat: fundamentals
+        section: The question changes
+        title: The question changes from surprise to probability
+        recall: How does the question differ between frequentist and Bayesian A/B tests?
+        answer: "Frequentist: if A and B were equal, how surprising is this data? Bayesian: given the data, what is P(B > A)? Bayesian gives a probability and an expected loss, and any N is fine."
+        bullets:
+          - "**Frequentist:** how surprising is this data if A = B? Fixed N set in advance, then reject or fail to reject"
+          - "**Bayesian:** given the data, what is P(B > A)? Any N, unequal arms are fine, and you get a probability and an expected loss"
+        takeaway: A p-value asks how surprising the data are under no effect, and a posterior asks how probable the effect is.
+        source: notes/04-bayesian-ab-testing.md
+        notes: >-
+          The AB notebook in the experimentation pillar is entirely frequentist despite its folder name, and a comment in it points
+          to this chapter.
+
+      - layout: code
+        beat: practice
+        section: The PyMC model
+        title: Two sites, 5% against 4%, B with half the traffic
+        recall: What does the PyMC model for two sites estimate, and how does it compare with the closed form?
+        answer: "It samples p_A, p_B and delta = p_A - p_B. It gave P(A better than B) = 0.169, against 0.157 from the closed form."
+        lead: "Observed A 0.0380 and B 0.0467."
+        lang: python
+        code: |-
+          with pm.Model():
+              p_A = pm.Uniform("p_A", 0, 1)
+              p_B = pm.Uniform("p_B", 0, 1)
+              pm.Deterministic("delta", p_A - p_B)
+              pm.Bernoulli("obs_A", p_A, observed=obs_A)
+              pm.Bernoulli("obs_B", p_B, observed=obs_B)
+              trace = pm.sample(1000, tune=1000)
+          # P(A better than B) = 0.169
+          # closed form        = 0.157
+        bullets:
+          - "Posterior sd **0.0078** for B against **0.0049** for A"
+          - "The two answers agree to within a point"
+        takeaway: Name the quantity you care about, here delta, and the sampler gives its whole posterior.
+        source: notes/04-bayesian-ab-testing.md
+        notes: >-
+          The simulation is BMH chapter 2, with true rates 5% and 4% and sample sizes 1,500 and 750.
+
+      - layout: bullets
+        beat: pitfalls
+        section: The PyMC model
+        title: "The draw reversed the truth, and the report held"
+        recall: What are the three things worth reading off the PyMC result?
+        answer: "B's posterior is wider because it had half the traffic. The draw reversed the truth, so P(A better) is only about 0.17 though A really is better. More data firms the probability up with no change in method."
+        bullets:
+          - "B's posterior is wider (**0.0078** against **0.0049**): half the traffic"
+          - "The model needs **no correction** for unequal N"
+          - "A really is better, yet B's observed rate is higher: P(A better) is about **0.17**"
+          - "A correct report of the data, and a wrong guess about the world"
+          - "More N narrows the posterior and firms up the probability"
+        takeaway: Small samples at low rates reverse the truth, so the sample-size calculation still matters.
+        source: notes/04-bayesian-ab-testing.md
+        notes: >-
+          This is why the sample-size calculation from the experimentation pillar still matters under a Bayesian analysis.
+
+      - layout: code
+        beat: practice
+        section: "Skip the sampler: Beta closed form"
+        title: "Skip the sampler: two Beta draws and a comparison"
+        recall: How do you get P(B > A) and the expected loss with no sampler?
+        answer: "Draw from each arm's Beta posterior and compare. With 120/1000 against 140/1000, P(B > A) is 0.908 and the loss if you choose B is 0.00064 against 0.02058 for A."
+        lead: "A converts 120 of 1,000, B converts 140 of 1,000."
+        lang: python
+        code: |-
+          post_A = rng.beta(a0 + conv_A, b0 + n_A - conv_A,
+                            200_000)
+          post_B = rng.beta(a0 + conv_B, b0 + n_B - conv_B,
+                            200_000)
+          lift = (post_B - post_A) / post_A
+          print((post_B > post_A).mean())
+          print(np.maximum(post_A - post_B, 0).mean())
+          print(np.maximum(post_B - post_A, 0).mean())
+          # 0.908   lift 95% [-0.07, 0.462]
+          # loss if choose B 0.00064, if A 0.02058
+        bullets:
+          - "Conjugate, so fast enough for every dashboard refresh"
+          - "The exact finite sum gives **0.9079**"
+        takeaway: Monte Carlo generalises to any function of the rates, such as relative lift or revenue, and that is the habit to keep.
+        source: notes/04-bayesian-ab-testing.md
+        notes: >-
+          The exact sum is Evan Miller's. The relative lift interval of -0.07 to 0.462 includes zero, even though P(B > A) is 0.91.
+
+      - layout: image
+        beat: practice
+        section: Larkspur, answered
+        title: Larkspur's two posteriors barely overlap
+        recall: What were the Larkspur counts and what did the posteriors show?
+        answer: "2,079 of 42,141 on A (0.0493) and 2,335 of 41,859 on B (0.0558). The posteriors are two narrow peaks that barely overlap."
+        kicker: The checkout test
+        image: ../../assets/sources/images/bayes-larkspur-posteriors.png
+        caption: "Posterior densities of the conversion rate for checkout A and B."
+        bullets:
+          - "A: **2,079** of **42,141**, rate 0.0493"
+          - "B: **2,335** of **41,859**, rate 0.0558"
+          - "P(B > A) is **0.99999**, exact and simulated"
+          - "Lift interval **+0.34** to **+0.95** pp"
+        takeaway: Two narrow peaks that barely overlap mean B is better with probability 0.99999.
+        source: notes/04-bayesian-ab-testing.md
+        notes: >-
+          The credible interval matches the confidence interval from the frequentist analysis. With a flat prior the two
+          calculations agree numerically.
+
+      - layout: bullets
+        beat: fundamentals
+        section: Larkspur, answered
+        title: The answer the head of product asked for
+        recall: What does the head of product get from the Larkspur posterior?
+        answer: "The new checkout is better with probability above 0.9999, shipping a worse one costs 0.000001 pp in expectation, keeping A gives up 0.645 pp, and the lift clears half a point with probability 0.827 but a full point only 0.011."
+        bullets:
+          - "**Is B better:** P(B > A) is **0.99999**"
+          - "**What if we are wrong:** ship B and be wrong **0.000001** pp, or keep A and give up **0.645** pp"
+          - "**How big is the win:** P(lift > 0.5 pp) is **0.827**, P(lift > 1.0 pp) is **0.011**"
+        takeaway: The head of product gets P(B > A) of 0.99999 and P(lift > 0.5 pp) of 0.827, which a p-value cannot state.
+        source: notes/04-bayesian-ab-testing.md
+        notes: >-
+          The half point is the minimum the team set as worth shipping.
+
+      - layout: statement
+        beat: fundamentals
+        section: "Expected loss: the decision rule"
+        title: P(B > A) does not say how bad the other 9% is
+        recall: What does expected loss measure that P(B > A) does not?
+        answer: "The average conversion rate you give up by shipping B, counting only the worlds where A was actually better."
+        kicker: Stucchio's decision rule
+        statement: "E[loss | choose B] = E[ max(p_A - p_B, 0) ]"
+        attribution: The conversion rate you give up, in the worlds where A was better
+        takeaway: Expected loss turns the posterior into a number that has the cost of being wrong built in.
+        source: notes/04-bayesian-ab-testing.md
+        notes: >-
+          It is a loss function in the sense of the chapter on loss functions, later in this lecture.
+
+      - layout: bullets
+        beat: fundamentals
+        section: "Expected loss: the decision rule"
+        title: Three ways to decide to ship B
+        recall: What three decision rules does the chapter compare?
+        answer: "A probability threshold (P(B > A) above 0.95), an expected-loss threshold (below epsilon, the smallest difference you care about) and a credible interval that excludes 0."
+        bullets:
+          - "**Probability threshold:** ship B when P(B > A) > 0.95"
+          - "**Expected-loss threshold:** ship B when E[loss given B] < epsilon, for example 0.1 points"
+          - "**Credible interval:** ship B when the 95% interval of the lift excludes 0"
+        takeaway: The expected-loss rule stops early when B is clearly better, and also when the arms are so close that being wrong costs almost nothing.
+        source: notes/04-bayesian-ab-testing.md
+        notes: >-
+          The rule keeps running only when the choice still matters. That second behaviour is the source of the surprise in the
+          peeking simulation below.
+
+      - layout: table
+        beat: practice
+        section: "Expected loss: the decision rule"
+        level: core
+        title: A flat prior says a 1.77-point lift on day one
+        recall: What does the choice of prior do on day one and on the whole test?
+        answer: "On day one a flat prior reports +1.77 pp and P(B > A) 0.950, a Beta(500, 9500) prior reports +0.15 pp and 0.689. On the full test all three agree on the decision."
+        header: [Prior, Day-one P(B>A), Day-one lift, Full-test lift]
+        widths: [3.0, 2.4, 2.2, 2.2]
+        rows:
+          - ["Beta(1, 1), uniform", "0.950", "+1.77 pp", "+0.64 pp"]
+          - ["Beta(5, 95), weak", "0.943", "+1.60 pp", "+0.64 pp"]
+          - ["Beta(500, 9500), strong", "0.689", "+0.15 pp", "+0.52 pp"]
+        highlight: [2]
+        takeaway: Use the same prior for both arms, and a historical prior if you will read the first day.
+        source: notes/04-bayesian-ab-testing.md
+        notes: >-
+          Day one is hypothetical, with 42 against 58 conversions per 900 visitors. The strong prior still pulls the full-test lift
+          to +0.52, because both arms carry the same 10,000 pseudo-visitors at 5%. The prior encodes what you knew before the test,
+          not which arm you hope wins.
+
+      - layout: statement
+        beat: problem
+        section: Is peeking safe?
+        title: Bayesian tests are not free to peek
+        recall: Is a Bayesian test immune to peeking?
+        answer: "No. Checked daily, P(B > A) > 0.95 ships 23.8% of no-effect changes in the simulation, against 4.7% checked once."
+        kicker: Simulation, 4,000 tests per row
+        statement: "The posterior is a valid summary at any N. That does not make stopping on a good look free."
+        attribution: 30 days, 500 visitors per arm per day, 5% base rate
+        takeaway: Run the experiment before you tell a planning meeting a test is immune to peeking.
+        source: notes/04-bayesian-ab-testing.md
+        notes: >-
+          The simulation uses a Normal approximation to both Beta posteriors so that thousands of runs are cheap.
+
+      - layout: code
+        beat: practice
+        section: Is peeking safe?
+        level: deep
+        title: Two stopping rules, each a few lines
+        recall: How are the two stopping rules written in the simulation?
+        answer: "The probability rule ships when the Normal cdf of d over sd is above 0.95. The loss rule ships when the Normal-approximate expected loss is below epsilon, 0.0005."
+        lang: python
+        code: |-
+          def prob_rule(d, sd):
+              return stats.norm.cdf(d / sd) > 0.95
+
+          def loss_rule(d, sd, eps=0.0005):
+              u = d / sd
+              loss = sd * (stats.norm.pdf(u)
+                           - u * stats.norm.cdf(-u))
+              return loss < eps
+
+          # run on days 1..30, or on the last day only,
+          # or only from day 14 on
+        bullets:
+          - "The probability rule is close to a one-sided p < 0.05"
+          - "The loss rule is epsilon = **0.05 pp**"
+        takeaway: A rule is only a function of the daily difference and its standard error, so you can rerun it on your setup.
+        source: notes/04-bayesian-ab-testing.md
+        notes: >-
+          The expected loss of a Normal difference has the closed form shown, which is why the simulation needs no sampler.
+
+      - layout: table
+        beat: practice
+        section: Is peeking safe?
+        title: How often each rule ships B
+        recall: How often does each stopping rule ship when B has no effect, costs half a point, or adds a point?
+        answer: "Last day only: 0.047 / 0.000 / 0.987. Daily probability: 0.238 / 0.046 / 0.995. Daily expected loss: 0.589 / 0.143 / 1.000. Expected loss from day 14: 0.482 / 0.038 / 1.000."
+        header: [Rule, No effect, -0.5 pp, +1 pp]
+        widths: [4.8, 1.8, 1.6, 1.6]
+        rows:
+          - ["P(B>A) > 0.95, last day only", "0.047", "0.000", "0.987"]
+          - ["P(B>A) > 0.95, checked daily", "0.238", "0.046", "0.995"]
+          - ["Expected loss, daily", "0.589", "0.143", "1.000"]
+          - ["Expected loss, from day 14", "0.482", "0.038", "1.000"]
+        highlight: [1, 2]
+        takeaway: The columns that matter are the harmful one and the no-effect one, so read both before choosing a rule.
+        source: notes/04-bayesian-ab-testing.md
+        notes: >-
+          These figures depend on this setup (effect sizes, traffic, epsilon), so rerun simulate with yours.
+
+      - layout: cards
+        beat: pitfalls
+        section: Is peeking safe?
+        level: core
+        title: What each row shows
+        recall: What does each row of the peeking table show?
+        answer: "Checked once, the probability rule ships a no-effect change 4.7% of the time, checked daily 23.8%. The daily loss rule ships a harmful change 14.3% of the time. Waiting until day 14 cuts that to 3.8%."
+        cards:
+          - {title: Rows 1 and 2, accent: "1E3A5F", body: "One look: **4.7%** of no-effect changes shipped. Daily looks: **23.8%**. Taking the first favourable look selects on noise"}
+          - {title: Row 3, accent: "D4621A", body: "Daily expected loss ships **59%** of no-effect changes, which is harmless. It ships a harmful change **14.3%** of the time"}
+          - {title: Row 4, accent: "0F7490", body: "A minimum sample of 14 days cuts harmful shipping to **3.8%** and still ships real wins"}
+        takeaway: A minimum sample size is what protects you from an early lucky start.
+        source: notes/04-bayesian-ab-testing.md
+        notes: >-
+          Row 1 is close to a one-sided p-value of 0.05. Row 2 is in line with the inflation of about 25% over twenty looks in the
+          experimentation-at-scale chapter. The posterior is calibrated averaged over the prior, and a simulation fixing the effect
+          at exactly zero is not that average. Running full weeks also handles day-of-week effects.
+
+      - layout: steps
+        beat: practice
+        section: Is peeking safe?
+        title: The stopping rule to use
+        recall: What is the stopping rule the chapter recommends?
+        answer: "An expected-loss threshold, a minimum sample size set in advance, and full weeks. Do not call the test immune to peeking."
+        steps:
+          - {title: Expected-loss threshold, text: "Ship when the loss is below epsilon, the smallest difference you care about"}
+          - {title: Minimum sample set in advance, text: "For example wait until day 14 before the rule can fire"}
+          - {title: Full weeks, text: "Handles day-of-week effects"}
+          - {title: Never say immune to peeking, text: "The second row of the table says it is not", n: "★", accent: "D4621A"}
+        takeaway: Pre-register the threshold and the minimum sample, then let the rule run.
+        source: notes/04-bayesian-ab-testing.md
+        notes: >-
+          McElreath makes the same argument from the other side: an analysis plan fixed before the data arrives is the part of the
+          pipeline a researcher controls. It is an essay with no numbers to test.
+
+      - layout: bullets
+        beat: fundamentals
+        section: Is peeking safe?
+        level: deep
+        title: Efron and Hastie on stopping rules
+        recall: Why does a frequentist stopping rule cost more than 5%, and what does it say about the Bayesian?
+        answer: "A trial scheduled for 30 looks, with a peek at month 20, rejects a true null with probability 0.074, not 0.05. The posterior is untouched by the stopping rule, but that leniency holds only for a prior that reflects real experience."
+        bullets:
+          - "30 monthly looks, ended at Z = **1.66**, just over the **1.645** cutoff"
+          - "A peek at month 20 (Z = 0.79) makes the real rejection rate **0.074**, not 0.05"
+          - "The likelihood is the same, so the posterior is untouched: the likelihood principle"
+          - "That holds only for a prior that reflects real experience"
+          - "The prior is the price Bayes pays, and the stopping rule is the price the p-value pays"
+        takeaway: Bayesians may peek, with a prior built from real experience, and a flat default does not qualify.
+        source: notes/04-bayesian-ab-testing.md
+        notes: >-
+          From Computer Age Statistical Inference, chapter 3. The 0.074 is recomputed as one minus the joint normal cdf at 1.645
+          with correlation the square root of 20 over 30. Their meter-reader fable makes the same point.
+
+      - layout: statement
+        beat: problem
+        section: Ranking with few observations
+        title: Raw ratio puts 1 and 0 above 999 and 1
+        recall: What goes wrong when you sort comments by raw upvote ratio?
+        answer: "A comment with 1 upvote and 0 downvotes (100%) ranks above one with 999 and 1 (99.9%). The fix is to rank by the 5th percentile of the posterior."
+        kicker: Small-N trap, BMH chapter 4
+        statement: "A comment ranks high only if we are confident its ratio is high."
+        attribution: Rank by the 95% least plausible value
+        takeaway: Sort by a lower bound on the posterior and the small samples stop winning.
+        source: notes/04-bayesian-ab-testing.md
+        notes: >-
+          The same machinery fixes ratings, seller on-time rates, click-through and prompt eval pass rates.
+
+      - layout: table
+        beat: fundamentals
+        section: Ranking with few observations
+        title: The lower bound pulls small samples down
+        recall: What are the raw ratio and the 5th percentile for 999/1, 60/40, 6/4 and 1/0?
+        answer: "Raw 0.999, 0.600, 0.600, 1.000. The exact 5th percentile is 0.995, 0.517, 0.350 and 0.224. The Normal approximation is close except at the smallest count."
+        header: [Up, Down, Raw, Normal bound, Exact 5th pct]
+        widths: [1.6, 1.6, 2.0, 2.4, 2.4]
+        rows:
+          - ["999", "1", "0.999", "0.996", "0.995"]
+          - ["60", "40", "0.600", "0.518", "0.517"]
+          - ["6", "4", "0.600", "0.358", "0.350"]
+          - ["1", "0", "1.000", "0.278", "0.224"]
+        highlight: [3]
+        takeaway: Prefer the exact percentile when you can call it, because 1/0 has a very skewed posterior.
+        source: notes/04-bayesian-ab-testing.md
+        notes: >-
+          NUTS gives 0.357 for 6 up and 4 down. PyMC is only needed when the model is not conjugate. Star ratings work the same
+          way, mapping n stars out of N to n over N.
+
+      - layout: code
+        beat: practice
+        section: Ranking with few observations
+        title: Star ratings use the same lower bound
+        recall: How do seven star ratings become a lower bound?
+        answer: "Map n stars out of 5 to n/5 and sum to S = 6.20 over seven ratings. The mean is 4.43 stars and the lower bound on the 0-1 scale is 0.591."
+        lead: "Seven ratings out of 5 stars."
+        lang: python
+        code: |-
+          ratings = np.array([5, 5, 4, 3, 5, 4, 5])
+          S = (ratings / 5).sum()
+          # a = 1 + S, b = 1 + (count - S)
+          print(S, ratings.mean(),
+                lower_bound(S, len(ratings) - S))
+          # S 6.20  mean 4.43  lower bound 0.591
+        bullets:
+          - "Sum of normalised stars: **S = 6.20**"
+          - "Mean **4.43** stars, lower bound **0.591**"
+        takeaway: Anything with successes and trials ranks the same way, from products to sellers to ads.
+        source: notes/04-bayesian-ab-testing.md
+        notes: >-
+          The same table works for sellers by on-time delivery, ads by click-through and prompts by eval pass rate.
+
+      - layout: compare
+        beat: practice
+        section: Ranking with few observations
+        title: A 95% pass rate on 20 cases does not beat 85% on 200
+        recall: How do two prompts with 19 of 20 and 170 of 200 passes compare on the lower bound?
+        answer: "Prompt A has a raw rate 0.950 and a lower bound 0.810. Prompt B has 0.850 and 0.805. With 20 cases, 95% is about the same as 85% on 200."
+        emphasis: left
+        left:
+          title: "Prompt A, 19 of 20"
+          bullets: ["Raw pass rate **0.950**", "Lower bound **0.810**"]
+        right:
+          title: "Prompt B, 170 of 200"
+          bullets: ["Raw pass rate **0.850**", "Lower bound **0.805**"]
+        takeaway: A 95% on a small suite doesn't yet beat 85% on a large one.
+        source: notes/04-bayesian-ab-testing.md
+        notes: >-
+          The same table works for products by rating, sellers by on-time delivery, and ads by click-through. The limit from BMH
+          chapter 6 is that the lower bound favours old items with many votes, and sampling from each posterior, as in the bandit,
+          gives new items a chance.
+
+      - layout: table
+        beat: pitfalls
+        section: Pitfalls
+        title: Six ways a Bayesian test misleads
+        recall: Which pitfalls of Bayesian A/B tests does the note list?
+        answer: "Believing the test is immune to peeking, reading P(B > A) as the size of the win, using different priors per arm, a flat prior on day one, using P(B > A) when the change costs money, and ignoring novelty and guardrails."
+        header: [Pitfall, What goes wrong, Fix]
+        widths: [3.0, 3.6, 3.0]
+        rows:
+          - ["Immune to peeking", "Daily rule ships **23.8%** of no-effect changes", "Set a minimum sample, then use expected loss"]
+          - [P(B > A) as the win size, "0.99999 says nothing about size", Report the lift interval and P(lift > threshold)]
+          - [Different priors per arm, Builds your hope into the answer, Use the same prior]
+          - [A flat prior on day one, "A lift of 1.77 points on 900 visitors", "Use a historical prior, or wait"]
+          - [P(B > A) when change costs money, It ignores the cost and size, Compute expected value]
+          - [Ignoring novelty and guardrails, It only answers what you measured, The experimentation pillar still applies]
+        takeaway: The posterior answers what you measured, so report the lift and the cost and not only a probability.
+        source: notes/04-bayesian-ab-testing.md
+        notes: >-
+          Chapter 5, next in this lecture, computes the expected value that the fifth row asks for.
+
+  - title: Loss functions and decisions
+    divider: false
+    summary: Accuracy is not enough · Bayes actions · Showcase · Stocking and fraud · Should it ship
+    notes: A posterior is not a decision. We write down what each wrong answer costs, average it over the posterior and pick the action with the smallest expected loss.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Why accuracy is not enough
+        title: A 1% hurricane is not a rounding error
+        recall: What does a loss function measure that accuracy does not?
+        answer: "Accuracy measures how close the estimate is. A loss function measures how bad acting on it would be."
+        kicker: Bayesian Methods for Hackers, chapter 5
+        statement: "Accuracy measures how close the estimate is. A loss function measures how bad acting on it would be."
+        attribution: A meteorologist 95% sure there will be no hurricane advises no evacuation
+        takeaway: Write down what each wrong answer costs before you pick the number to report.
+        source: notes/05-loss-functions-and-decisions.md
+        notes: >-
+          Larkspur has a posterior for the checkout lift, and a posterior is not a decision. The finance lead wants to know if the
+          redesign pays, and that depends on what a wrong call costs in each direction.
+
+      - layout: table
+        beat: fundamentals
+        section: A catalogue of loss functions
+        level: core
+        title: Eight losses, and the job each fits
+        recall: Which losses are in the catalogue, and what does each punish?
+        answer: "Squared (large errors, outlier-sensitive), asymmetric squared (underestimating), absolute (robust), zero-one (right or wrong), log loss (confident wrong probabilities), bounded, pundit and sign-sensitive."
+        header: [Loss, Behaviour, Typical use]
+        widths: [2.6, 3.8, 3.2]
+        rows:
+          - [Squared error, "punishes large errors, outlier-sensitive", regression and most of ML]
+          - [Asymmetric squared, underestimating costs more, capacity planning]
+          - [Absolute error, linear and robust, forecasting with heavy tails]
+          - [Zero-one, right or wrong, classification accuracy]
+          - [Log loss, punishes confident wrong probabilities, probabilistic classifiers]
+          - [Bounded, indifferent once far enough off, '"wrong is wrong" past a point']
+          - [Pundit, huge near 0 and 1, confident yes/no calls]
+          - [Sign-sensitive, wrong direction costs far more, trading and bets on a direction]
+        takeaway: The loss you choose is a modelling decision, and it changes which answer is best.
+        source: notes/05-loss-functions-and-decisions.md
+        notes: >-
+          The Weather Channel reports 20% rain when it believes 5 or 10%, since people notice a missed rain forecast more than a
+          false alarm, per Silver. The loss being minimised is the forecaster's, not yours, so ask whose loss it is.
+
+      - layout: bullets
+        beat: pitfalls
+        section: A catalogue of loss functions
+        title: Whose loss is the forecast minimising
+        recall: Why might a forecast be biased on purpose?
+        answer: "The forecaster minimises its own loss. The Weather Channel reports a 20% chance of rain when it believes 5 or 10%, since people notice a missed rain forecast more than a false alarm."
+        bullets:
+          - "The Weather Channel reports **20%** rain when it believes **5 or 10%**"
+          - "People notice a missed rain forecast more than a false alarm (Silver)"
+          - "The loss being minimised is the forecaster's, not yours"
+          - "Whenever you are handed a forecast, ask whose loss it is"
+        takeaway: A number handed to you already has a loss function baked in, and it may not be yours.
+        source: notes/05-loss-functions-and-decisions.md
+        notes: >-
+          The same question applies to any model score you inherit, such as a fraud probability tuned for someone else's costs.
+
+      - layout: code
+        beat: practice
+        section: Expected loss and the Bayes action
+        title: Minimise the average loss over posterior draws
+        recall: What does minimising squared and absolute loss over a skewed posterior give?
+        answer: "On a Gamma(2, 10) posterior, squared loss gives 20.03, the posterior mean, and absolute loss gives 16.85, the median. The mode is 10.00."
+        lead: "A right-skewed posterior, Gamma(2, 10)."
+        lang: python
+        code: |-
+          samples = rng.gamma(2.0, 10.0, 100_000)
+          losses = {"squared": lambda t, g: (t - g) ** 2,
+                    "absolute": lambda t, g: np.abs(t - g)}
+          for name, loss in losses.items():
+              best = sop.minimize_scalar(
+                  lambda g: loss(samples, g).mean(),
+                  bounds=(0, 100), method="bounded").x
+              print(name, best)
+          # squared  20.03   absolute 16.85
+          # mean 20.03, median 16.85, mode 10.00
+        bullets:
+          - "Expected loss is the **average of L** over draws"
+          - "The Bayes action minimises it"
+          - "No formula was given to the optimiser"
+        takeaway: With samples, a Bayes action is a vectorised loss and an optimiser.
+        source: notes/05-loss-functions-and-decisions.md
+        notes: >-
+          The expected loss, or Bayesian risk, is l of theta-hat equal to the average of the loss over theta drawn from the
+          posterior.
+
+      - layout: image
+        beat: fundamentals
+        section: Expected loss and the Bayes action
+        title: Mean, median and mode each answer a different loss
+        recall: Which loss gives the mean, the median and the mode?
+        answer: "Squared error gives the posterior mean, absolute error the median, and zero-one in the limit the mode, also called MAP."
+        kicker: Gamma(2, scale 10)
+        image: ../../assets/sources/images/bayes-actions-skewed-posterior.png
+        caption: "Mode 10, median 16.8 and mean 20, each labelled with the loss that picks it."
+        bullets:
+          - "Squared error: posterior **mean**"
+          - "Absolute error: posterior **median**"
+          - "Zero-one, in the limit: posterior **mode** (MAP)"
+          - "When your loss is none of these, none of them is your answer"
+        takeaway: The mean, median and MAP are the usual summaries because each is optimal for one particular loss.
+        source: notes/05-loss-functions-and-decisions.md
+        notes: >-
+          Zero-one needs a limit because every exact guess misses on a continuous posterior. As the miss width falls from 5.0 to
+          1.0 to 0.2, the best guess moves from 10.95 to 9.60 to 9.30 toward the mode, and gets noisy when few samples fall in the
+          window.
+
+      - layout: bullets
+        beat: fundamentals
+        section: Expected loss and the Bayes action
+        level: core
+        title: Zero-one loss needs a window, and the window sets the answer
+        recall: How does the zero-one best guess move as the miss width shrinks?
+        answer: "Miss widths 5.0, 1.0 and 0.2 give best guesses 10.95, 9.60 and 9.30, moving toward the mode at 10.00 and getting noisier."
+        bullets:
+          - "**Miss width 5.0:** best guess **10.95**"
+          - "**Miss width 1.0:** best guess **9.60**"
+          - "**Miss width 0.2:** best guess **9.30**, and the guess gets noisier"
+          - "The guess moves toward the mode at **10.00** as the window shrinks"
+        takeaway: The mode is the limit of the zero-one loss, and the estimate gets noisy when few samples fall in the window.
+        source: notes/05-loss-functions-and-decisions.md
+        notes: >-
+          Every exact guess misses on a continuous posterior, so zero-one loss only makes sense as a limit. The mode of the Gamma
+          is 10.00.
+
+      - layout: statement
+        beat: problem
+        section: "Example: The Price is Right showcase"
+        title: One dollar over and you get nothing
+        recall: What makes the showcase bid a good test of a loss function?
+        answer: "The payoff has a cliff: bid over the true total and you get nothing, bid within $250 under and you win both showcases."
+        kicker: Bayesian Methods for Hackers
+        statement: "Bid over the true total and you get nothing. Bid within $250 under and you win both showcases."
+        attribution: A snowblower and a trip to Toronto
+        takeaway: A payoff with a cliff makes the posterior mean the wrong bid.
+        source: notes/05-loss-functions-and-decisions.md
+        notes: >-
+          Someone adding point guesses would bid $15,000 regardless of uncertainty, and a naive Bayesian would bid the posterior
+          mean. Neither accounts for the payoff.
+
+      - layout: bullets
+        beat: fundamentals
+        section: "Example: The Price is Right showcase"
+        level: core
+        title: The posterior mean drops to $20,000
+        recall: What posterior mean does the showcase model give, and how does it compare with the closed form?
+        answer: "Sampling gives a posterior mean of 20,000 (sd 3,677). The closed form gives 19,899 (sd 3,712). That is about $15,000 below the prior mean of 35,000."
+        bullets:
+          - "Prior: true price ~ Normal(**35,000**, 7,500)"
+          - "Guesses: snowblower Normal(3,000, 500), trip Normal(12,000, 3,000)"
+          - "Fit of guesses to price: Normal(prize 1 + prize 2, 3,000)"
+          - "Posterior mean **20,000**, sd 3,677. Closed form **19,899**, sd 3,712"
+          - "`pm.Potential` adds any extra log-probability term"
+        takeaway: The two prizes look cheap, so the posterior sits well below the prior, and it still is not the bid.
+        source: notes/05-loss-functions-and-decisions.md
+        notes: >-
+          Normal priors and Normal evidence combine by precision, so the model has a closed form, and the sampled answer sits within
+          Monte Carlo noise of it.
+
+      - layout: code
+        beat: practice
+        section: "Example: The Price is Right showcase"
+        level: deep
+        title: The showdown loss has a cliff and a window
+        recall: How is the showdown loss written?
+        answer: "Underbid: lose the gap. Overbid: a fixed risk. Within 250 under: win both, a loss of minus twice the price."
+        lang: python
+        code: |-
+          def showdown_loss(guess, true_price, risk=80000):
+              loss = np.abs(guess - true_price)
+              loss[true_price < guess] = risk
+              close = ((true_price >= guess)
+                       & (true_price - guess <= 250))
+              loss[close] = -2 * true_price[close]
+              return loss
+
+          grid = np.arange(5000, 40000, 50)
+          # expected loss per bid, over the draws,
+          # then take the grid minimum
+        bullets:
+          - "`risk` is what the contestant says an overbid costs"
+          - "The window pays out only for **rare draws**"
+        takeaway: Search a grid, because a spiky expected loss defeats a smooth optimiser.
+        source: notes/05-loss-functions-and-decisions.md
+        notes: >-
+          The book uses scipy fmin from a start of 15,000 and gets minima between 14,189 and 11,266 as risk rises, which sits a few
+          hundred dollars from the grid. fmin only finds a local minimum. The book's prose says a frequentist bids 35,000, but
+          3,000 plus 12,000 is 15,000 and the 35,000 is the prior's mean.
+
+      - layout: table
+        beat: practice
+        section: "Example: The Price is Right showcase"
+        title: The best bid falls well below the mean as the risk rises
+        recall: How does the best bid change as the cost of an overbid rises?
+        answer: "From 14,700 at a risk of 30,000 down to 11,800 at 150,000, all well below the posterior mean of 20,000. The chance of overbidding falls from 0.070 to 0.013."
+        header: [Overbid risk, Best bid, P(overbid)]
+        widths: [3.2, 3.0, 3.0]
+        rows:
+          - ["30,000", "14,700", "0.070"]
+          - ["54,000", "13,200", "0.029"]
+          - ["78,000", "13,200", "0.029"]
+          - ["102,000", "12,200", "0.016"]
+          - ["126,000", "12,200", "0.016"]
+          - ["150,000", "11,800", "0.013"]
+        highlight: [0, 5]
+        takeaway: The bid sits far below the mean because of the shape of the loss, and it moves in steps because we search a grid.
+        source: notes/05-loss-functions-and-decisions.md
+        notes: >-
+          The book's own run lands in the same place, 14,189.08 at risk 30,000 down to 11,265.78 at 150,000.
+
+      - layout: bullets
+        beat: fundamentals
+        section: "Example: The Price is Right showcase"
+        level: deep
+        title: Downey's version uses an empirical prior and a rival
+        recall: What does Think Bayes add to the showcase problem?
+        answer: "An empirical prior (a kernel density over 313 past prices) and a rival's record. A best guess of 20,000 moves the posterior mean to 25,096, and the optimal bids are 21,000 and 31,500."
+        bullets:
+          - "Prior: a density over **313** past prices, modes near 28,000 and 50,000"
+          - "Likelihood: price minus guess is Gaussian, as seen in past episodes"
+          - "A guess of 20,000 gives a posterior mean of **25,096**, pulled up by history"
+          - "Opponent overbid rate: **25%** first contestant, **29%** second"
+          - "Optimal bids **21,000** (gain about 16,700) and **31,500** (about 19,400)"
+        takeaway: The payoff is asymmetric and discontinuous, so a decision needs the whole distribution and not its mean.
+        source: notes/05-loss-functions-and-decisions.md
+        notes: >-
+          These are the book's numbers. The showcase CSVs are not in the repo, so they could not be re-run. Downey admits that
+          substituting bids for guesses is imperfect because bids are partly strategic.
+
+      - layout: code
+        beat: practice
+        section: "Example: predicting stock returns with a sign-sensitive loss"
+        title: A wrong-way call costs more than an overshoot
+        recall: What does the sign-sensitive loss give for true +0.01 and predictions of -0.01, +0.03 and 0.00?
+        answer: "0.03, 0.02 and 0.01. The wrong-sign prediction costs most and making no call costs least. Squared error rates the first two equally."
+        lead: "True return +0.01, three predictions."
+        lang: python
+        code: |-
+          def stock_loss(true_return, yhat, alpha=100.0):
+              wrong_way = true_return * yhat < 0
+              return np.where(
+                  wrong_way,
+                  alpha * yhat**2
+                  - np.sign(true_return) * yhat
+                  + np.abs(true_return),
+                  np.abs(true_return - yhat))
+          # predict -0.01: 0.03
+          # predict +0.03: 0.02
+          # predict  0.00: 0.01
+        bullets:
+          - "Squared error rates -0.01 and +0.03 **equally**"
+          - "Here they cost **0.03** and **0.02**"
+          - "No call costs least: **0.01**"
+        takeaway: When the direction matters more than the size, the loss has to say so.
+        source: notes/05-loss-functions-and-decisions.md
+        notes: >-
+          The book prints the two squared losses as 0.004 each. The correct values are 0.0004 and 0.0004, and the point stands
+          because both are equal.
+
+      - layout: table
+        beat: practice
+        section: "Example: predicting stock returns with a sign-sensitive loss"
+        level: core
+        title: The Bayes action takes almost no position near a zero signal
+        recall: How does the Bayes action compare with least squares across signal values?
+        answer: "Near a zero signal it is close to zero, and at the extremes it converges to the line. At +0.005 it is 0.0007 against 0.0017, at +0.050 it is 0.0228 against 0.0236. The slope is the same 0.487."
+        header: [Signal, Bayes action, Least squares]
+        widths: [3.0, 3.2, 3.2]
+        rows:
+          - ["-0.050", "-0.0245", "-0.0251"]
+          - ["-0.020", "-0.0076", "-0.0105"]
+          - ["0.000", "-0.0004", "-0.0008"]
+          - ["+0.005", "+0.0007", "+0.0017"]
+          - ["+0.020", "+0.0060", "+0.0090"]
+          - ["+0.050", "+0.0228", "+0.0236"]
+        highlight: [2, 3]
+        takeaway: The model does not fit better than least squares, and it makes better decisions under this loss.
+        source: notes/05-loss-functions-and-decisions.md
+        notes: >-
+          Both fits have slope 0.487. Where the return could go either way, take almost no position, and as the signal grows the
+          sign is no longer in doubt.
+
+      - layout: steps
+        beat: fundamentals
+        section: "Example: Observing Dark Worlds"
+        level: core
+        title: The winning Kaggle entry followed the full workflow
+        recall: What four steps did the winning Dark Worlds entry follow?
+        answer: "A prior over halo positions, a likelihood from a physical model of galaxy ellipticities, a posterior by MCMC, and a Bayes action minimising the contest's own metric."
+        steps:
+          - {title: Prior, text: "Over the unknown halo positions"}
+          - {title: Likelihood, text: "A physical model of how halos distort galaxy ellipticities"}
+          - {title: Posterior, text: "By MCMC"}
+          - {title: Bayes action, text: "Minimise the expected value of the contest's own metric", n: "★", accent: "D4621A"}
+        takeaway: Optimise for the metric you are scored on, under uncertainty, and not for parameter accuracy.
+        source: notes/05-loss-functions-and-decisions.md
+        notes: >-
+          This is Tim Salimans' winning entry to Kaggle's dark-matter contest, about 160 lines of code for step 4. It serves as a
+          template for any messy prediction problem.
+
+      - layout: bullets
+        beat: practice
+        section: "Example: Observing Dark Worlds"
+        level: deep
+        title: The posterior mean against one random guess
+        recall: How far was the posterior mean from the true halo on training sky 3?
+        answer: "31.15 pixels against 1,773.43 for a random guess, scores of 1.031 against 2.773. It is one guess on two skies, so an illustration and not a benchmark."
+        bullets:
+          - "**Posterior mean, sky 3:** **31.15** pixels from the halo, score **1.031**"
+          - "**One random guess:** **1,773.43** pixels, score **2.773**"
+          - "One guess on two skies, so an illustration and not a benchmark"
+        takeaway: Read two skies as an illustration, since each comparison is a single random guess.
+        source: notes/05-loss-functions-and-decisions.md
+        notes: >-
+          Lower scores are better. Sky 215, with three halos, gave 37.40 pixels off against 3,756.54, but the scoring call is given
+          one halo, so it covers only the first of three, and the sampler took a long time to converge.
+
+      - layout: table
+        beat: fundamentals
+        section: In analytics practice
+        title: Five decisions, five losses
+        recall: What loss and Bayes action go with each analytics decision?
+        answer: "Ship B or keep A: max(p_A - p_B, 0), ship if below epsilon. Inventory: an upper quantile. Fraud: the cost-balancing threshold. Price or bid: shade toward the safe side. Model selection: the business metric."
+        header: [Decision, Loss to write down, Bayes action]
+        widths: [2.4, 3.6, 3.4]
+        rows:
+          - [Ship B or keep A, "conversion lost if wrong", ship if expected loss < epsilon]
+          - [Inventory or capacity, stock-outs cost more than surplus, an upper quantile and not the mean]
+          - [Fraud threshold, missed fraud against blocked customer, threshold where expected costs balance]
+          - [Price or bid, asymmetric payoff around a cutoff, shade toward the safe side]
+          - [Model selection, the business metric, "the model with least expected business loss"]
+        takeaway: Name the decision, write its loss, and the action follows from the posterior.
+        source: notes/05-loss-functions-and-decisions.md
+        notes: >-
+          The first row is the expected-loss rule from the A/B chapter.
+
+      - layout: code
+        beat: practice
+        section: In analytics practice
+        level: core
+        title: Stock the quantile, not the mean
+        recall: What stock level minimises cost when running out costs five times a surplus unit?
+        answer: "46, the quantile 5/6 (0.833) of predictive demand. The cost is 15.26 at the mean and 9.92 at the Bayes action."
+        lead: "1,200 units over 30 days, Gamma posterior on the daily rate."
+        lang: python
+        code: |-
+          rate = rng.gamma(1 + 1200, 1 / (0.03 + 30), 8000)
+          demand = rng.poisson(rate)
+          def stock_cost(q, short=5.0, over=1.0):
+              return (short * np.maximum(demand - q, 0)
+                      + over * np.maximum(q - demand, 0)).mean()
+          # predictive mean 40.0, sd 6.5
+          # best stock 46 = quantile 5/6
+          # cost at the mean 15.26, at 46: 9.92
+        bullets:
+          - "Critical quantile **short / (short + over)** = 0.833"
+          - "Best stock **46**, against a mean of 40"
+          - "The mean costs about **54% more**"
+        takeaway: The newsvendor answer is a quantile of the predictive distribution, and predictive noise belongs in it.
+        source: notes/05-loss-functions-and-decisions.md
+        notes: >-
+          The demand draw adds Poisson noise on top of the posterior of the rate. A posterior on the mean alone would understate
+          the risk.
+
+      - layout: bullets
+        beat: practice
+        section: In analytics practice
+        level: core
+        title: A fraud threshold of 2.4% is what the costs imply
+        recall: At what fraud probability should you block, if a blocked good customer costs 2 and a missed fraud costs 80?
+        answer: "When P(fraud) is above 2 / (2 + 80) = 0.024. At P = 0.03, blocking costs 1.94 and allowing costs 2.40. It relies on calibrated probabilities."
+        bullets:
+          - "**Default of 0.5:** ignores what errors cost, and looks sensible on a classifier report"
+          - "**Cost-based threshold:** block when P(fraud) > **0.024**"
+          - "**At P = 0.03:** blocking costs **1.94**, allowing costs **2.40**"
+        takeaway: The threshold is the cost ratio, so calibrated probabilities are needed to apply it.
+        source: notes/05-loss-functions-and-decisions.md
+        notes: >-
+          Both costs are hypothetical. At P = 0.2, blocking costs 1.60 and allowing costs 16.00.
+
+      - layout: code
+        beat: practice
+        section: "Larkspur: should it ship?"
+        title: Multiply the posterior by the business numbers
+        recall: What yearly gain does the Larkspur posterior imply for the redesign?
+        answer: "A mean of $92,906 with a 95% interval of $49,559 to $136,395. Net of a $25,000 run cost, $67,906, and P(gain < run cost) is 0.001."
+        lead: "480,000 visitors a year, $30 an order, $25,000 a year to run."
+        lang: python
+        code: |-
+          visitors, value = 40_000 * 12, 30.0
+          run_cost = 25_000
+          gain = (b - a) * visitors * value
+          # yearly gain: mean 92,906
+          #   95% [49,559, 136,395]
+          # P(gain < run cost)   0.001
+          # expected net of shipping 67,906
+        bullets:
+          - "Mean gain **$92,906** a year"
+          - "Net of cost **$67,906**, keeping A is 0"
+          - "P(regret shipping) is **0.001**"
+        takeaway: Everything comes from the posterior draws multiplied by the business numbers.
+        source: notes/05-loss-functions-and-decisions.md
+        notes: >-
+          The business figures are hypothetical. The draws a and b are the Larkspur posteriors from the A/B chapter.
+
+      - layout: cards
+        beat: practice
+        section: "Larkspur: should it ship?"
+        title: Shipping holds until the cost nears $93,000
+        recall: How does the net of shipping change as the yearly cost rises?
+        answer: "Net 67,906 at 25,000 (regret 0.001), 47,906 at 45,000 (0.015), 32,906 at 60,000 (0.069) and 2,906 at 90,000 (0.448, near a coin flip). The break-even is about $93,000."
+        cards:
+          - {title: "$25,000", accent: "1E3A5F", body: "Net **67,906**. P(regret) **0.001**"}
+          - {title: "$45,000", accent: "0F7490", body: "Net **47,906**. P(regret) **0.015**"}
+          - {title: "$60,000", accent: "94A3B8", body: "Net **32,906**. P(regret) **0.069**"}
+          - {title: "$90,000", accent: "D4621A", body: "Net **2,906**. P(regret) **0.448**, close to a coin flip"}
+        takeaway: At a yearly cost below about $93,000, shipping has positive expected value, and anyone at the table can check it.
+        source: notes/05-loss-functions-and-decisions.md
+        notes: >-
+          An engineer can check the run cost and finance can check the order value, and neither needs to understand a p-value.
+
+      - layout: flow
+        beat: wrap
+        section: "Larkspur: should it ship?"
+        title: From posterior to decision
+        recall: How does a posterior become a decision?
+        answer: "Multiply the posterior of the lift by the business numbers, set that against the cost of each action to get the expected net per action, pick the largest and report the regret risk."
+        steps:
+          - {label: Posterior of the lift, sub: "draws", accent: "1E3A5F"}
+          - {label: Times business numbers, sub: "visitors and order value", accent: "0F7490"}
+          - {label: Cost of each action, sub: "run cost"}
+          - {label: Expected net, sub: "per action", accent: "94A3B8"}
+          - {label: Pick the largest, sub: "report the regret risk", accent: "D4621A"}
+        caption: "The decision is a statement anyone can argue with."
+        takeaway: Report the action with the best expected net, and the chance that you will regret it.
+        source: notes/05-loss-functions-and-decisions.md
+        notes: >-
+          This closes the arc of the series so far: infer, compute and check, then decide.
+
+      - layout: table
+        beat: pitfalls
+        section: Pitfalls
+        title: Six ways a decision analysis goes wrong
+        recall: Which pitfalls of Bayesian decisions does the note list?
+        answer: "Reporting the posterior mean by habit, using accuracy on asymmetric costs, treating the loss as objective, a smooth optimiser on a spiky loss, averaging outcomes before applying the loss, and forgetting predictive noise."
+        header: [Pitfall, What goes wrong, Fix]
+        widths: [3.0, 3.4, 3.0]
+        rows:
+          - [Posterior mean by habit, It answers squared loss, Write the loss down first]
+          - [Accuracy on asymmetric costs, A 0.5 threshold ignores costs, Set the threshold from the costs]
+          - [Treating the loss as objective, Costs are estimates with owners, Show results across a range of costs]
+          - [Smooth optimiser on a spiky loss, fmin stops at a local bump, Use a grid or restarts]
+          - [Averaging before the loss, "L(E[theta]) is not E[L(theta)]", "Apply the loss per draw, then average"]
+          - [Forgetting predictive noise, A posterior on the mean understates risk, Draw outcomes]
+        takeaway: Apply the loss per draw, then average, and show the answer across a range of costs.
+        source: notes/05-loss-functions-and-decisions.md
+        notes: >-
+          The note refers to the stock_fit and newsvendor code, where noise and a Poisson draw are added.

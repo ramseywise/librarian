@@ -1,0 +1,1216 @@
+# imported_hash: 14797b781f6c4c20
+# Lecture on step 1, Design and read one test: notes/01-ab-testing.md and 02-metrics-and-kpi-design.md, in the notes' order.
+# make slides PILLAR=data-analytics/03-experimentation-and-causality LECTURE=01-design-and-read-one-test STRICT=1 PREVIEW=1
+# Levels: a slide with no level is the intro, `core` is the core lesson, `deep` is the optional extension (code and maths).
+deck:
+  title: Design and Read One Test
+  subtitle: A sample size, a split, an interval and a metric
+  tagline: "A/B testing · Metrics and KPI design"
+  reference: "Notes: data-analytics/03-experimentation-and-causality, notes 1 and 2"
+  output: 01-design-and-read-one-test.pptx
+  notes: >-
+    This is the second lecture of the experimentation and causality series, after the overview. It covers step 1. By the end
+    you should be able to size a test and turn the size into days, assign users by hash, check the split before reading
+    anything, decide from an interval and not from a p-value, choose a metric whose parts you can show, and test a guardrail
+    with a margin set in advance.
+
+lecture:
+  covers:
+    - data-analytics/03-experimentation-and-causality/notes/01-ab-testing.md
+    - data-analytics/03-experimentation-and-causality/notes/02-metrics-and-kpi-design.md
+  requires: [data-analytics/03-experimentation-and-causality/README.md]
+  next: [data-analytics/03-experimentation-and-causality/notes/03-experimentation-at-scale.md]
+  related:
+    - data-analytics/02-probability-and-statistics/notes/05-hypothesis-testing.md
+    - data-analytics/02-probability-and-statistics/notes/04-estimation.md
+    - data-analytics/04-bayesian-analysis/notes/04-bayesian-ab-testing.md
+    - data-analytics/06-applied-analyses/notes/11-metric-trees.md
+    - data-science/01-classical-ml/notes/11-choosing-a-metric.md
+
+parts:
+  - title: Design one test
+    divider: false
+    summary: Randomise · Size · Assign · Check
+    notes: We start with a checkout that lost 90% of its revenue, then plan the test before a single user is assigned.
+    slides:
+      - layout: statement
+        beat: problem
+        section: The pipeline
+        title: An upgraded checkout lost 90% of its revenue
+        recall: Why test a redesign everyone thinks is better?
+        answer: "Because opinion is not evidence. A shop's upgraded checkout lost 90% of its revenue, as a coupon-code box made shoppers wonder whether they were overpaying, and removing the box put conversion 6.5% above the old design."
+        kicker: Kohavi et al., DMKD 2009
+        statement: "A coupon-code box made shoppers wonder whether they were overpaying. The new checkout lost 90% of its revenue."
+        attribution: Larkspur's designers have just rebuilt theirs
+        takeaway: Everyone thought the new checkout was better, which is why it needs a test and not a vote.
+        source: notes/01-ab-testing.md
+        notes: >-
+          The story is from Kohavi and colleagues. Removing the box from the new design put conversion 6.5% above the old one,
+          so the redesign was not bad everywhere, only in one detail nobody had predicted. Larkspur's designers have rebuilt
+          the checkout and the team is sure it is better.
+
+      - layout: compare
+        beat: fundamentals
+        section: The pipeline
+        title: A coin removes every other explanation
+        recall: What does randomisation buy that no observational analysis can?
+        answer: "A coin decides who gets the treatment, so nothing about a user can cause both the arm and the outcome. The difference between arms is then the effect, and the two-sample test is enough."
+        emphasis: left
+        left:
+          title: Randomised
+          bullets: ["A coin decides the arm", "Nothing about a user can cause **both** arm and outcome", "A two-sample test is enough"]
+        right:
+          title: The hard part
+          bullets: ["The test is the easy part", "The design is where it goes wrong", "Metric, size, unit, split"]
+        takeaway: Randomisation does the causal work, so the effort goes into the design around it.
+        source: notes/01-ab-testing.md
+        notes: >-
+          In the statistics pillar we could only say what was true of the data. Here a coin decides, and that is the whole
+          difference. Everything else in this lecture is about not breaking it.
+
+      - layout: flow
+        beat: fundamentals
+        section: The pipeline
+        title: Five steps, in order, before anyone reads a number
+        recall: What are the steps of an A/B test pipeline?
+        answer: "Choose the metric, set the MDE, compute N and duration, randomise by user, check the sample ratio, test once at N, and decide from the interval."
+        steps:
+          - {label: Metric and MDE, sub: "one primary, smallest lift worth shipping", accent: "1E3A5F"}
+          - {label: N and duration, sub: "from baseline, MDE, alpha, power", accent: "1E3A5F"}
+          - {label: Randomise by user, sub: "hash with a salt", accent: "0EA5C9"}
+          - {label: Check the ratio, sub: "sample ratio test first", accent: "0EA5C9"}
+          - {label: Test once at N, sub: "decide from the interval"}
+        bullets:
+          - "Every step has a failure if you skip it"
+        takeaway: Fix the metric, the size and the unit before launch, so nothing is decided after seeing results.
+        source: notes/01-ab-testing.md
+        notes: >-
+          The note draws seven boxes: choose the metric, set the MDE, compute N and duration, randomise by user, check the
+          sample ratio, test once at N, decide from the interval. The slide merges the first two and the last two so it fits.
+
+      - layout: table
+        beat: fundamentals
+        level: core
+        section: The pipeline
+        title: Each step names the failure of skipping it
+        recall: What goes wrong if you skip the metric, the sample size or the unit?
+        answer: "Skip the metric choice and one of twenty metrics wins by chance. Skip the sample size and you peek or stop early. Skip the unit and the same user sees both arms."
+        header: [Step, Decision, Failure if skipped]
+        widths: [2.2, 4.0, 3.4]
+        rows:
+          - [Metric, "one primary, plus guardrails", "twenty metrics, one wins by chance"]
+          - [MDE, the smallest lift worth shipping, "runs forever or underpowered"]
+          - [Sample size, "power analysis from baseline, MDE, alpha, power", "peeking or stopping early"]
+          - [Randomisation unit, "user, not session or pageview", the same user sees both arms]
+          - [Run to N, no decisions before N, inflated false positives]
+          - [Test, "two-proportion z, or Welch t for means", "the wrong test at small N: Fisher is for expected counts under 5"]
+          - [Report, "lift, 95% CI, p-value, sample ratio check", "significant with no effect size"]
+        highlight: [3]
+        takeaway: A significant result with no effect size and no ratio check is not a result.
+        source: notes/01-ab-testing.md
+        notes: >-
+          Kohavi and colleagues insist that the evaluation criterion is agreed before the test. The reason is practical:
+          anything chosen afterwards can be chosen to win.
+
+      - layout: statement
+        beat: problem
+        section: How many users
+        title: Can we detect 5.0% against 5.5%?
+        recall: How does a business number become a sample size?
+        answer: "Anything under half a point is not worth the engineering cost and risk, so the question becomes whether we can detect 5.0% against 5.5%. Power of 80% means a real effect of exactly that size is missed one time in five."
+        kicker: Baseline conversion 5%
+        statement: "Anything under half a point is not worth shipping. Can we detect 5.0% against 5.5%?"
+        attribution: The MDE is a business number, power is 80%, alpha is 0.05
+        takeaway: The minimum detectable effect comes from the business, and the sample size follows from it.
+        source: notes/01-ab-testing.md
+        notes: >-
+          The redesign has an engineering cost and ongoing risk, and the team agrees that anything under half a point is
+          not worth shipping. Power is the chance of detecting that effect if it exists. At 80%, a real effect of exactly
+          the MDE is missed one time in five.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: How many users
+        title: The formula for two arms has noise from both
+        recall: What is the per-arm sample size for 5.0% against 5.5% at 80% power?
+        answer: "31,231 per arm. The bracket sums the two variances because the difference between two means carries noise from both."
+        lead: "n = (z for alpha/2 + z for power)^2 x [p1(1-p1) + p2(1-p2)] / (p2 - p1)^2"
+        lang: python
+        code: |-
+          def n_per_arm(p1, p2, alpha=0.05, power=0.80):
+              z = (stats.norm.ppf(1 - alpha / 2)
+                   + stats.norm.ppf(power))
+              return (z ** 2
+                      * (p1 * (1 - p1) + p2 * (1 - p2))
+                      / (p2 - p1) ** 2)
+
+          print(f"{n_per_arm(0.05, 0.055):,.0f}")
+          # per arm, 5.0% to 5.5%: 31,231
+        bullets:
+          - "**31,231** users per arm"
+          - "Two-sided, two-proportion z-test, equal arms"
+        takeaway: Power analysis gives users per arm, and it is a two-sample calculation.
+        source: notes/01-ab-testing.md
+        notes: >-
+          The note's function is slightly longer, with the imports. The slide shows only the calculation and its result.
+
+      - layout: cards
+        beat: fundamentals
+        level: core
+        section: How many users
+        title: Three routes give the same number within a few percent
+        recall: Which cross-checks agree with the 31,231 per arm?
+        answer: "Cohen's h in statsmodels gives 31,217 and Kohavi's 16 sigma^2 over delta^2 gives 30,400. They agree within a few percent, and your baseline estimate is rarely better than that."
+        cards:
+          - {title: Both variances, accent: "1E3A5F", body: "The formula: **31,231** per arm"}
+          - {title: "Cohen's h", accent: "0EA5C9", body: "statsmodels, an arcsine transform: **31,217**"}
+          - {title: "16 sigma^2 / delta^2", accent: "D4621A", body: "Kohavi's rule of thumb: **30,400**"}
+        takeaway: Use any of the three, and use the 16 sigma squared rule as a seconds-long sanity check.
+        source: notes/01-ab-testing.md
+        notes: >-
+          Kohavi's rule assumes equal-sized variants and the large-sample normal approximation, at 5% significance and 80%
+          power. The factor 16 becomes 21 for 90% power.
+
+      - layout: bullets
+        beat: pitfalls
+        level: deep
+        section: How many users
+        title: One practice notebook halves the sample size
+        recall: What is wrong with a (z/d)^2 sample-size formula?
+        answer: "It is the one-sample formula and leaves out the factor 2 from noise in both arms. It gives 4,080 for 5% to 6% against the correct 8,155, which gives far less than the promised 80% power."
+        bullets:
+          - "The notebook computes **(z/d)^2**: the one-sample formula"
+          - "5% to 6%: it gives **4,080**, the two-arm formula gives **8,155**"
+          - "The AB notebook's 13% to 15% gives 4,719, which is right"
+          - "The 16 sigma^2 / delta^2 check gives about **8,300** in seconds"
+        takeaway: Check any sample-size formula against the 16 sigma squared rule, because it catches the missing factor 2.
+        source: notes/01-ab-testing.md
+        notes: >-
+          The bug is in the statistics pillar's practice notebook, in a form you will see elsewhere. The notebook is not
+          part of the notes, so treat this as a warning about the pattern.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: How many users
+        title: What moves N, and by how much?
+        recall: Which changes make a test cost more users, and which cost less?
+        answer: "Halving the MDE costs about 4 times the users (122,121), doubling it a quarter (8,155). Power 0.90 costs 1.34 times, alpha 0.01 costs 1.49 times, and the same absolute lift at a 20% baseline costs 3.25 times."
+        lang: python
+        code: |-
+          base = n_per_arm(0.05, 0.055)
+          n_per_arm(0.05, 0.0525)   # halve the MDE
+          n_per_arm(0.05, 0.06)     # double the MDE
+          n_per_arm(0.05, 0.055, power=0.9)
+          n_per_arm(0.05, 0.055, alpha=0.01)
+          n_per_arm(0.20, 0.205)    # 20% baseline
+          # baseline plan   31,231  x1.00
+          # halve the MDE  122,121  x3.91
+          # double the MDE   8,155  x0.26
+          # power 0.90      41,809  x1.34
+          # alpha 0.01      46,471  x1.49
+          # 20% baseline   101,400  x3.25
+        bullets:
+          - "Halve the MDE: **x3.91**"
+          - "Double it: **x0.26**"
+        takeaway: The effect size dominates sample size because of the inverse square.
+        source: notes/01-ab-testing.md
+        notes: >-
+          The slide drops the dictionary and print loop from the note to fit. The numbers are the note's own output.
+
+      - layout: cards
+        beat: fundamentals
+        level: core
+        section: How many users
+        title: Four things move the sample size
+        recall: Why does halving the MDE cost four times the users?
+        answer: "N grows with the inverse square of the effect, so halving the MDE is about x4. Power 0.9 costs x1.34 and alpha 0.01 x1.49. A higher baseline with the same absolute lift needs more, because p(1-p) peaks at 0.5, and an unequal split needs a larger total."
+        cards:
+          - {title: The effect, accent: "D4621A", body: "Halve the MDE: about **x4**, the inverse square"}
+          - {title: Power and alpha, accent: "1E3A5F", body: "Power 0.9: **x1.34**. Alpha 0.01: **x1.49**"}
+          - {title: The baseline, accent: "0EA5C9", body: "Variance p(1-p) **peaks at 0.5**, so a higher baseline needs more"}
+          - {title: The split, accent: "0F7490", body: "An unequal split needs a **larger total**"}
+        takeaway: The effect dominates, because precision costs data quadratically.
+        source: notes/01-ab-testing.md
+        notes: >-
+          The inverse square is the law from the estimation note. The same absolute lift at a 20% baseline, 20% to 20.5%, costs
+          101,400 per arm, which is 3.25 times the plan.
+
+      - layout: compare
+        beat: practice
+        level: core
+        section: How many users
+        title: 122,000 needed and 40,000 available
+        recall: What do you do when the plan needs 122,000 per arm and you can get 40,000?
+        answer: "Accept that you can only detect bigger effects, find a less noisy metric or a variance-reduction method, or do not run the test. An underpowered test that does reach significance also inflates the estimate."
+        emphasis: left
+        left:
+          title: Your options
+          bullets: ["Accept a **bigger MDE**", "Find a **less noisy metric**, or variance reduction", "Or **do not run** the test"]
+        right:
+          title: Why not run anyway
+          bullets: ["Misses the effect", "If it reaches significance, the estimate is **inflated**", "The winner's curse"]
+        takeaway: An underpowered test is worse than no test, because the one it wins is exaggerated.
+        source: notes/01-ab-testing.md
+        notes: >-
+          The inverse square comes from the estimation note: precision costs data quadratically. Most sizing arguments end here.
+          For rare events, the book sizes by the count of events and not visitors: at a 1.1% click rate, 300 visitors per arm
+          and a 10% lift is hopeless, and a 50% lift at 2,000 per arm gave 19 against 34 clicks, which a permutation test
+          still did not call significant.
+
+      - layout: bullets
+        beat: fundamentals
+        level: core
+        section: How many users
+        title: Revenue needs three times the users that conversion does
+        recall: Why does the choice of metric change the sample size by a factor of 3.3?
+        answer: "Spend is far noisier than a yes or no. With 5% of users buying about $75 (average spend $3.75, SD $30), a 5% change at 80% power needs over 409,000 users per variant on revenue against under 122,000 on conversion."
+        bullets:
+          - "5% of users buy about **$75**: average spend **$3.75**, SD **$30**"
+          - "Detect a 5% change at 80% power"
+          - "Revenue: over **409,000** users per variant"
+          - "Conversion: under **122,000**, a factor of **3.3**"
+        takeaway: A noisier metric needs more users, so the metric choice is a sizing decision.
+        source: notes/01-ab-testing.md
+        notes: >-
+          This is from Kohavi and colleagues, at 95% confidence. It is the same point that the exercises and the next
+          chapter make about metric choice.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: How many users
+        title: From users to days, in whole weeks
+        recall: How many days does Larkspur run, and why does a 99/1 split cost so much?
+        answer: "62,461 users at 4,000 a day is 15.6 days, so they run 21 days for about 84,000 users. A 1% share has a variance multiplier of 25.3, so a 99/1 split needs about 25 times the running time of 50/50."
+        lang: python
+        code: |-
+          daily_users = 4_000
+          needed = 2 * n_per_arm(0.05, 0.055)
+          days = needed / daily_users
+          for share in (0.5, 0.1, 0.01):
+              mult = 1 / (4 * share * (1 - share))
+          # users needed 62,461
+          # at 4,000/day = 15.6 days, run 21 days
+          # share  50%: multiplier  1.0
+          # share  10%: multiplier  2.8
+          # share   1%: multiplier 25.3
+        bullets:
+          - "Run **whole weeks**, at least one to two"
+          - "Split **50/50** once damage is ruled out"
+        takeaway: Round up to whole weeks, and keep the split near 50/50.
+        source: notes/01-ab-testing.md
+        notes: >-
+          Weekend shoppers differ from weekday ones, and some users only arrive at certain points in the cycle, which is
+          why Kohavi and colleagues recommend at least one to two weeks. Booking 21 days gives about 84,000 users, more than
+          the 62,461 needed. Stopping at day 16 because the number was reached is also fine, if that was the rule beforehand.
+          Deciding after seeing results is not.
+
+      - layout: cards
+        beat: fundamentals
+        level: core
+        section: How many users
+        title: Rarer events need more users per arm
+        recall: What does the variance multiplier 1/(4p(1-p)) say?
+        answer: "It is 1.0 at a 50% share, 2.8 at 10% and 25.3 at 1%, so a rare event costs far more users."
+        cards:
+          - {title: A 50% share, accent: fundamentals, body: "Multiplier **1.0**"}
+          - {title: A 10% share, accent: practice, body: "Multiplier **2.8**"}
+          - {title: A 1% share, accent: pitfalls, body: "Multiplier **25.3**"}
+        takeaway: Size the test on the rarest event you need to read.
+        source: notes/01-ab-testing.md
+        notes: >-
+          Rare events, such as a 1.1% click rate, can look large without being detectable. A 50 percent lift at 2,000 per arm
+          gave 19 against 34 clicks and was still not significant.
+
+      - layout: bullets
+        beat: pitfalls
+        level: core
+        section: How many users
+        title: A rare event with 300 visitors per arm shows little
+        recall: Why is a big relative lift on a rare event unreliable?
+        answer: "At a 1.1% click rate with 300 visitors per arm the counts are tiny, and a 50% lift at 2,000 per arm gave 19 against 34 clicks, still not significant by a permutation test."
+        bullets:
+          - "A **1.1%** click rate, 300 visitors per arm"
+          - "A 50% lift at 2,000 per arm: **19 vs 34** clicks"
+          - "A permutation test still says **not significant**"
+          - "Counts this small swing widely by chance"
+        takeaway: A large relative lift on a few clicks is noise until the sample says otherwise.
+        source: notes/01-ab-testing.md
+        notes: >-
+          The permutation test shuffles the arm labels and counts how often a gap that large appears.
+
+      - layout: flow
+        beat: practice
+        level: core
+        section: How many users
+        title: From 62,461 users to 21 days
+        card: false
+        recall: How does Larkspur turn a sample size into a calendar?
+        answer: "62,461 users at 4,000 a day is 15.6 days, rounded up to whole weeks is 21 days, which yields about 84,000 users, more than needed."
+        steps:
+          - {label: Users needed, sub: "2 x 31,231 = 62,461", accent: "1E3A5F"}
+          - {label: Per day, sub: "4,000 users a day", accent: "1E3A5F"}
+          - {label: Days, sub: "15.6 days", accent: "0EA5C9"}
+          - {label: Whole weeks, sub: "21 days, about 84,000 users"}
+        bullets:
+          - "Selling the spare weeks as more power is honest"
+        takeaway: Round up to whole weeks, then decide the stopping rule before launch.
+        source: notes/01-ab-testing.md
+        notes: >-
+          Stopping at day 16 because the number was reached is also fine, if that was the rule beforehand. Deciding after
+          seeing results is not.
+
+      - layout: statement
+        beat: problem
+        section: Assigning users
+        title: Random, stable and independent of every other test
+        recall: What three properties must assignment have?
+        answer: "It must be random, stable for a user, and independent of every other test running. Hashing the user ID with an experiment salt provides all three."
+        kicker: Assignment
+        statement: "Random. Stable for a user. Independent of every other test running."
+        takeaway: A salted hash of the user ID is the standard way to get all three properties.
+        source: notes/01-ab-testing.md
+        notes: >-
+          A returning user must always land in the same arm, and a new test must get a fresh split that does not correlate
+          with any other.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: Assigning users
+        title: A salted hash needs no assignment table
+        recall: Why hash the user ID with a salt per experiment?
+        answer: "There is no table to keep, a returning user always lands in the same arm, and a new salt gives a fresh independent split, which lets many tests overlap. Only a cryptographic hash passed Kohavi's tests."
+        lang: python
+        code: |-
+          def bucket(user_id, salt="checkout-redesign-v1",
+                     arms=("A", "B")):
+              h = hashlib.sha256(
+                  f"{salt}:{user_id}".encode()).hexdigest()
+              return arms[int(h, 16) % len(arms)]
+
+          # u17 twice: A A
+          # {'A': 42141, 'B': 41859}
+          # chi-square p: 0.331
+        bullets:
+          - "A new salt gives an **independent** split"
+          - "Weak hashes correlated the arms of different tests"
+        takeaway: Hash user ID plus salt, and never skimp on the hash.
+        source: notes/01-ab-testing.md
+        notes: >-
+          Kohavi and colleagues tested several hashes and found that only a cryptographic one passed, with poor ones causing
+          correlations between experiments. The counts come from 84,000 simulated users.
+
+      - layout: compare
+        beat: pitfalls
+        level: core
+        section: Assigning users
+        title: Randomise by user, analyse by user
+        recall: What happens if you randomise by user and analyse by pageview?
+        answer: "Pageviews from the same person are not independent, so the test is overconfident. In an A/A simulation of 2,000 repetitions, the false-positive rate was 0.108 by pageview against 0.046 by user."
+        emphasis: right
+        left:
+          title: Analysed by pageview
+          bullets: ["Views from one person are not independent", "False positives **0.108**"]
+        right:
+          title: Analysed by user
+          bullets: ["The user is the unit that was randomised", "False positives **0.046**"]
+        takeaway: The unit of randomisation is the unit of analysis, or false positives double.
+        source: notes/01-ab-testing.md
+        notes: >-
+          The A/A simulation has 2,000 repetitions of 800 users with 1 to 10 pageviews each, and no treatment at all. The
+          pageview analysis produces twice the false positives with at most ten views per user. Heavier users make it worse.
+          This is the same mistake as in regression.
+
+  - title: Read one test
+    divider: false
+    summary: Check the split · The interval · Calibration · Pitfalls
+    notes: With the design fixed, we run the test and read it in the right order. The assignment is checked first, the outcome second.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Checking the assignment
+        title: Check the split before you read the outcome
+        recall: What do you check before reading a test's outcome?
+        answer: "The sample ratio. A chi-square on the arm counts tells you whether assignment worked, and a failure disqualifies the result."
+        kicker: Larkspur's simulated test
+        statement: "A true lift of 0.6 points that we know only because we simulated it. The first question is still whether the split is what we planned."
+        takeaway: The sample ratio check is a gate, and it comes before the effect.
+        source: notes/01-ab-testing.md
+        notes: >-
+          Larkspur's experiment uses seed 301 and 84,000 users. The true lift is 0.6 points, which a real team would never know.
+
+      - layout: table
+        beat: fundamentals
+        level: core
+        section: Checking the assignment
+        title: A small split gap is huge at scale
+        recall: How can a 50.4/49.6 split be a failure?
+        answer: "On 2 million users, a 50.4/49.6 split has p = 1.1e-29. Even 42,400 against 41,600 gives p = 0.0058. Teams use p below 0.001 and treat a failure as disqualifying."
+        header: [Split, Users, "p-value"]
+        widths: [3.6, 2.6, 2.6]
+        rows:
+          - [Larkspur A 42141 and B 41859, "84,000", "0.331"]
+          - [50.4 / 49.6, "2 million", "1.1e-29"]
+          - [42400 / 41600, "84,000", "0.0058"]
+        highlight: [1]
+        takeaway: Check the ratio with a chi-square, and treat p below 0.001 as a broken test.
+        source: notes/01-ab-testing.md
+        notes: >-
+          Larkspur's counts pass, with A at 2079 conversions from 42,141 users (0.0493) and B at 2335 from 41,859 (0.0558).
+          The other two rows are what a failure looks like.
+
+      - layout: cards
+        beat: practice
+        level: core
+        section: Checking the assignment
+        title: Three splits, three verdicts
+        recall: Which of the three splits fails, and why?
+        answer: "Larkspur's 42,141 to 41,859 gives p 0.331 and passes. 50.4 to 49.6 on 2M gives p 1.1e-29 and fails. 42,400 to 41,600 gives p 0.0058, which is not below the strict 0.001 threshold."
+        cards:
+          - {title: "Larkspur's split", accent: fundamentals, body: "42,141 vs 41,859: p **0.331**, passes"}
+          - {title: "A tiny gap at scale", accent: pitfalls, body: "50.4 vs 49.6 on 2M: p **1.1e-29**, fails"}
+          - {title: "A 1% gap on 84,000", accent: practice, body: "42,400 vs 41,600: p **0.0058**, above the strict **0.001**"}
+        takeaway: A split that looks even can still fail at scale, so test it.
+        source: notes/01-ab-testing.md
+        notes: >-
+          The strict threshold of p below 0.001 keeps the alarm rare, and a failure means stop and find the cause.
+
+      - layout: bullets
+        beat: pitfalls
+        level: core
+        section: Checking the assignment
+        title: A failed ratio check means fix and rerun
+        recall: What should you do when the sample ratio check fails?
+        answer: "Do not reweight. Find the cause (a redirect that loses mobile traffic, a bot filter or a logging bug), fix it and rerun."
+        bullets:
+          - "Likely causes: a redirect that **loses mobile traffic**, a bot filter, a logging bug"
+          - "Do **not** reweight the data"
+          - "Find the cause, **fix it, rerun**"
+        takeaway: A sample ratio failure is a stopped test, not a statistic to adjust.
+        source: notes/01-ab-testing.md
+        notes: >-
+          The users who are lost are rarely a random sample, so reweighting adds a second assumption on top of a broken one.
+
+      - layout: table
+        beat: pitfalls
+        level: deep
+        section: Checking the assignment
+        title: A real-looking dataset can hide three defects
+        recall: What defects does the crosstab of a messy test dataset show, and what do you do first?
+        answer: "Off-diagonal rows (1,907 and 1,937), 3,900 users seen twice, and 293,900 rows reducing to 286,100. Dropping duplicates is the fix, but ask why they exist first, because lopsided duplicates can bias."
+        header: [Check, What it finds]
+        widths: [3.0, 6.2]
+        rows:
+          - [Group by landing page, "off-diagonal counts 1,907 and 1,937: users in the wrong page"]
+          - [Users seen twice, "3,900 users"]
+          - [After deduplication, "293,900 rows reduced to 286,100"]
+        takeaway: Drop duplicates only after asking why they exist, because lopsided ones bias the result.
+        source: notes/01-ab-testing.md
+        notes: >-
+          This is a synthetic stand-in with the same defects as a public click dataset, whose file is not included. The
+          lesson is to look at the crosstab and the duplicate count before any test.
+
+      - layout: statement
+        beat: problem
+        section: Running the test
+        title: The test is the easy part
+        recall: Which test reads a conversion experiment?
+        answer: "A two-proportion z-test for large N, which gives the same p-value as a chi-square on the table, and Welch or Fisher give nearly the same."
+        kicker: Larkspur's result
+        statement: "Treatment converts at 5.58% against 4.93%. A lift of 0.64 points, with 95% CI [+0.34, +0.95]."
+        takeaway: The answer is an interval around a lift, and the test only says it is unlikely to be zero.
+        source: notes/01-ab-testing.md
+        notes: >-
+          z = 4.188 and p = 0.00003. Squaring z gives the chi-square of 17.538, with the same p, and Welch and Fisher agree.
+
+      - layout: table
+        beat: fundamentals
+        level: core
+        section: Running the test
+        title: Four tests, one answer at this size
+        recall: When do you use each of the two-proportion z, chi-square, Fisher and Welch tests?
+        answer: "Two-proportion z is the default for large N. Chi-square is the same and generalises to more arms. Fisher is for small N (an expected count under 5). Welch t on 0/1 outcomes is fine at large N."
+        header: [Test, Use when]
+        widths: [3.4, 6.0]
+        rows:
+          - [Two-proportion z, the default for large N]
+          - [Chi-square, "same as z, and generalises to more arms"]
+          - [Fisher, "small N, an expected count under 5"]
+          - [Welch t on 0/1 outcomes, fine at large N]
+        takeaway: At large N every test agrees, so the choice matters only for small samples and more arms.
+        source: notes/01-ab-testing.md
+        notes: >-
+          z squared equals the chi-square statistic, which is why they give the same p.
+
+      - layout: compare
+        beat: fundamentals
+        level: core
+        section: Running the test
+        title: Report the lift in both units
+        recall: What are Larkspur's absolute and relative lift?
+        answer: "Absolute +0.64 points, 95% CI [+0.34, +0.95]. Relative +13.1%, 95% CI [+6.7%, +19.8%] from a log-ratio interval, and Kohavi recommends Fieller's method."
+        emphasis: left
+        left:
+          title: Absolute
+          bullets: ["**+0.64** points", "95% CI [+0.34, +0.95]", "z = 4.188, p = 0.00003"]
+        right:
+          title: Relative
+          bullets: ["**+13.1%**", "95% CI [+6.7%, +19.8%]", "Log-ratio interval"]
+        takeaway: Give the lift, its interval and the p-value, in the unit the decision-maker uses.
+        source: notes/01-ab-testing.md
+        notes: >-
+          The relative interval comes from a log-ratio. Kohavi recommends Fieller's method for the ratio of two means.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: Running the test
+        title: Decide from the interval, not the p-value
+        recall: How do you decide when the MDE is 0.5 points?
+        answer: "Ship if the whole interval clears the bar. If it is real but may be below the bar, weigh the cost, as Larkspur's does. A wide interval spanning zero and the MDE is inconclusive, not no effect. A wholly negative interval means stop."
+        header: [95% CI in points, Verdict]
+        widths: [3.2, 6.2]
+        rows:
+          - ["[+0.6, +1.4]", ship]
+          - ["[+0.2, +1.0]", "real, maybe below the bar: weigh the cost (Larkspur's [+0.34, +0.95] sits here)"]
+          - ["[-0.1, +0.3]", flat]
+          - ["[-0.4, +1.0]", "inconclusive: cannot rule out a worthwhile effect"]
+          - ["[-0.9, -0.2]", "harmful: stop"]
+        highlight: [3]
+        takeaway: Inconclusive is not the same as no effect, though teams often report it that way.
+        source: notes/01-ab-testing.md
+        notes: >-
+          Kohavi warns that launches justified as "does not hurt" can be negative and underpowered. The model report reads:
+          treatment converts at 5.58% against 4.93%, a lift of +0.64 points, 95% CI [+0.34, +0.95], p below 0.001, and the
+          sample ratio check passes (p = 0.33).
+
+      - layout: steps
+        beat: practice
+        level: core
+        section: Running the test
+        title: Plan the analysis in the ticket before launch
+        recall: What goes in the ticket before the test launches?
+        answer: "The primary metric, the unit, the sample size, the stopping rule, the guardrails and the segments, so the analysis is run as planned."
+        steps:
+          - {title: Primary metric, text: "One, chosen before the data"}
+          - {title: Unit, text: "User, for both assignment and analysis"}
+          - {title: Sample size and stopping rule, text: "N from the power analysis, no looks before it"}
+          - {title: Guardrails and segments, text: "Named in advance", n: "★", accent: "D4621A"}
+        takeaway: Write the plan down before launch, then run the analysis as planned.
+        source: notes/01-ab-testing.md
+        notes: >-
+          McElreath, ch. 15, argues for pre-planning the research with a mock analysis, registering it, then analysing as
+          planned. For a test, the ticket is the registration.
+
+      - layout: flow
+        beat: practice
+        level: core
+        section: Running the test
+        title: One z of 4.188 gives the same p four ways
+        card: false
+        recall: Why do the z-test, chi-square, Welch and Fisher agree here?
+        answer: "z squared is the chi-square, 4.188 squared is 17.538, and at this sample size the four tests give the same p of 0.00003."
+        steps:
+          - {label: z-test, sub: "z = 4.188", accent: fundamentals}
+          - {label: Squared, sub: "z^2 = 17.538", accent: fundamentals}
+          - {label: Chi-square, sub: "same p, 0.00003", accent: practice}
+          - {label: Welch and Fisher, sub: "same p again"}
+        takeaway: Pick the test for its assumptions, since at this size they cannot disagree.
+        source: notes/01-ab-testing.md
+        notes: >-
+          The z-test on two proportions is the chi-square test on the 2 by 2 table, and z squared equals chi-square. The
+          result is +0.64 pp with a CI of +0.34 to +0.95.
+
+      - layout: bullets
+        beat: practice
+        level: core
+        section: Running the test
+        title: What does the 0.64 point lift mean in relative terms?
+        card: false
+        recall: How is the lift reported in both units?
+        answer: "The lift is +0.64 pp with a CI of +0.34 to +0.95, and +13.1% relative with a CI of +6.7% to +19.8%."
+        bullets:
+          - "Absolute: **+0.64 pp**, CI [+0.34, +0.95]"
+          - "Relative: **+13.1%**, CI [+6.7%, +19.8%]"
+          - "z **4.188**, p **0.00003**"
+          - "Both ends of the interval sit above zero"
+        takeaway: Report the interval in both units, because the relative one reads better and the absolute one is what you sized for.
+        source: notes/01-ab-testing.md
+        notes: >-
+          The absolute interval is compared with the MDE of 0.5 pp, which is why the decision cases follow.
+
+      - layout: cards
+        beat: practice
+        level: core
+        section: Running the test
+        title: Three exercise answers worth remembering
+        card: false
+        recall: What do the three try-it answers show?
+        answer: "A 51,000 to 49,000 split gives chi-square 40 and p about 2.5e-10. Analysing by one pageview each brings the false-positive rate back to about 5%. An interval of -0.2 to +0.7 against an MDE of +0.5 is inconclusive."
+        cards:
+          - {title: A 51 to 49 split, accent: fundamentals, body: "Chi-square **40**, p about **2.5e-10**: a failed ratio check"}
+          - {title: One pageview each, accent: practice, body: "The false-positive rate falls to about **5%**"}
+          - {title: "CI [-0.2, +0.7]", accent: pitfalls, body: "Against an MDE of +0.5: **inconclusive**"}
+        takeaway: Run the ratio check first, analyse by user, and call a wide interval inconclusive.
+        source: notes/01-ab-testing.md
+        notes: >-
+          These are the note's try-it answers. The wide interval neither proves the effect nor rules it out.
+
+      - layout: statement
+        beat: problem
+        section: What calibration looks like
+        title: Does a test with no effect say so 95% of the time?
+        recall: How do you check that a test procedure is calibrated?
+        answer: "Run an A/A test with no treatment: about 5% should be significant at p below 0.05, and the p-values should be uniform, about a tenth per decile."
+        kicker: Calibration
+        statement: "Run it with no treatment at all. About one in twenty should come out significant."
+        takeaway: A procedure that is wrong with no effect cannot be trusted with one.
+        source: notes/01-ab-testing.md
+        notes: >-
+          The simulated A/A had a false-positive rate of 0.046 at p below 0.05, and the p-values spread evenly, about a tenth
+          per decile.
+
+      - layout: flow
+        beat: practice
+        level: core
+        section: What calibration looks like
+        title: How to run an A/A calibration
+        recall: What does a calibrated test look like on an A/A run?
+        answer: "About 4.6% of A/A runs are significant (0.046), and the p-values spread evenly across deciles, with shares near 0.1 each."
+        steps:
+          - {label: Split with no change, sub: "both arms identical", accent: fundamentals}
+          - {label: Test many times, sub: "same method as the real test", accent: practice}
+          - {label: Count significant, sub: "about 0.046", accent: practice}
+          - {label: Check deciles, sub: "each near 0.1"}
+        takeaway: A calibrated test is wrong about 5% of the time and its p-values are uniform.
+        source: notes/01-ab-testing.md
+        notes: >-
+          The decile shares in the note run from 0.093 to 0.108. A skewed shape would mean the test or the assignment is
+          broken.
+
+      - layout: compare
+        beat: pitfalls
+        level: core
+        section: What calibration looks like
+        title: Looking 20 times turns 5% into 25%
+        recall: How much does peeking inflate the false-positive rate?
+        answer: "Tested once at the end gave 0.055. Stopping at the first significant result among 20 looks gave 0.250."
+        emphasis: right
+        left:
+          title: Tested once at the end
+          bullets:
+            - "False-positive rate **0.055**"
+            - "Close to the 5% you chose"
+        right:
+          title: Stopped at the first of 20 looks
+          bullets:
+            - "False-positive rate **0.250**"
+            - "One A/A test in four wins"
+        takeaway: One look at the planned N keeps the error rate honest, and every extra look spends it.
+        source: notes/01-ab-testing.md
+        notes: >-
+          Peeking is how a team gets one A/A test in four to win. Both rates come from simulation with no real effect.
+
+      - layout: cards
+        beat: practice
+        level: core
+        section: What calibration looks like
+        title: If you must look early, pick a method for it
+        recall: Which method fits which reason for looking early?
+        answer: "A few planned looks fit group-sequential (O'Brien-Fleming or Pocock). Continuous monitoring fits always-valid p-values or mSPRT. Wanting a probability fits Bayesian A/B, where peeking is not free either. Stopping traffic to losers fits a bandit."
+        cards:
+          - {title: A few planned looks, accent: practice, body: "Group-sequential: **O'Brien-Fleming** or **Pocock**"}
+          - {title: Continuous monitoring, accent: fundamentals, body: "**Always-valid** p-values or mSPRT"}
+          - {title: A probability of winning, accent: pitfalls, body: "Bayesian A/B, where peeking is **not free** either"}
+          - {title: Stop traffic to losers, accent: fundamentals, body: "A **bandit**"}
+        takeaway: Looking early is allowed when the method accounts for it.
+        source: notes/01-ab-testing.md
+        notes: >-
+          The next lecture builds each of these. Here the point is that the fixed-horizon test is not a law, but its
+          correction has to be chosen before the data.
+
+      - layout: bullets
+        beat: pitfalls
+        level: core
+        section: What calibration looks like
+        title: The pageview bug in numbers
+        card: false
+        recall: How much does analysing by pageview inflate false positives?
+        answer: "With 2,000 repetitions and 800 users with 1 to 10 pageviews each, analysing by pageview gave a false-positive rate of 0.108 and analysing by user gave 0.046."
+        bullets:
+          - "2,000 simulated A/A tests, 800 users each"
+          - "Each user has **1 to 10** pageviews"
+          - "Analysed by pageview: false positives **0.108**"
+          - "Analysed by user: false positives **0.046**"
+        takeaway: The unit of analysis must match the unit of randomisation.
+        source: notes/01-ab-testing.md
+        notes: >-
+          Pageviews of one user are correlated, so treating them as independent shrinks the standard error.
+
+      - layout: statement
+        beat: pitfalls
+        section: What a test cannot tell you
+        title: It does not say why
+        recall: What are three limits of an A/B test?
+        answer: "It does not say why the change worked, it measures only the test window, and it tests only what you can build."
+        kicker: The limits of a test
+        statement: "It does not say why. It measures only the test window. It tests only what you can build."
+        attribution: MSN ads, 5% of users for 12 days, click-through down 0.38% relative (p = 0.02)
+        takeaway: A test measures an effect inside a window, and the reason for it is a separate question.
+        source: notes/01-ab-testing.md
+        notes: >-
+          The MSN ads experiment showed a click-through decline of 0.38% relative at p = 0.02 over 12 days with 5% of users.
+          That measured the decline, but not what the users were doing or what happened afterwards.
+
+      - layout: table
+        beat: pitfalls
+        level: core
+        section: Pitfalls
+        title: Eight pitfalls and the fix for each
+        recall: What is the fix for novelty effects, network effects, Simpson's paradox and high variance?
+        answer: "Run a full business cycle and look at lift by days since exposure, use cluster randomisation, stratify, and use CUPED."
+        header: [Pitfall, Fix]
+        widths: [4.6, 4.6]
+        rows:
+          - [Novelty or primacy, "a full business cycle, lift by days since exposure"]
+          - [Network effects, cluster randomisation]
+          - [Multiple metrics, one primary]
+          - [Segment fishing, pre-register segments]
+          - [Simpson's paradox, stratify]
+          - [Variance too high, CUPED]
+          - [Analysing by pageview, "analyse by user"]
+          - [Ignoring SRM, check it first]
+        takeaway: Each pitfall has a design-time fix, which is cheaper than a post-hoc one.
+        source: notes/01-ab-testing.md
+        notes: >-
+          The note's table has ten rows. Two more are reading errors. Treating "not significant" as "no effect" ignores that
+          median neuroscience power is about 20% (Reinhart). Stopping at first significance has one in four A/A tests winning at
+          20 looks, and stopped trials overstate effects by 29% (Statistics Done Wrong, ch. 6, as reported).
+
+  - title: Choose and read the metric
+    divider: false
+    summary: Four kinds · Parts · Ratios · Sensitivity · Guardrails · The dozen
+    notes: A test is only as good as the number it reads. We choose the metric, break it into parts and test the guardrails.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Four kinds of metric
+        title: Click-through fell 40%, and the change worked
+        recall: Why can a falling click-through rate mean a change worked?
+        answer: "Clicks rose 74%, impressions rose 200%, page-level CTR was flat and revenue went up. The per-user rate fell because the denominator grew faster than the numerator."
+        kicker: Dmitriev et al., KDD 2017
+        statement: "Click-through per user fell 40%. Clicks rose 74%, impressions rose 200%, and revenue went up."
+        attribution: A Microsoft page module moved higher
+        takeaway: A ratio can fall while everything that matters rises, so look at the parts.
+        source: notes/02-metrics-and-kpi-design.md
+        notes: >-
+          The obvious reading is that the change failed. The metric fell because the denominator grew faster than the
+          numerator. The gap behind this is that what you want is slow and noisy, and what you can measure is quick and a proxy.
+
+      - layout: table
+        beat: fundamentals
+        section: Four kinds of metric
+        title: Four kinds of metric answer four questions
+        recall: What are the four kinds of metric and what question does each answer?
+        answer: "Data quality asks whether you can trust the experiment, the OEC whether the change succeeded, a guardrail whether it broke a promise, and a diagnostic why."
+        header: [Kind, Question, Larkspur example]
+        widths: [2.2, 3.2, 4.2]
+        rows:
+          - [Data quality, can I trust this experiment, "sample ratio, event loss, bot share"]
+          - [OEC, did the change succeed, revenue per user with repeat purchase]
+          - [Guardrail, did it break a promise, "page load time, refunds, support contacts"]
+          - [Diagnostic, why, "coupon-box clicks, the funnel"]
+        takeaway: Only the OEC decides, a data-quality failure invalidates the rest, and diagnostics explain.
+        source: notes/02-metrics-and-kpi-design.md
+        notes: >-
+          A data quality failure invalidates everything else. The OEC is one number decided in advance. A guardrail must not
+          get worse beyond a margin. A diagnostic explains and does not decide. The north star is the company number, such as
+          revenue from repeat customers. Kohavi's OEC is one metric or a weighted combination, not short-term, and predictive
+          of long-term value. Dmitriev adds leading.
+
+      - layout: flow
+        beat: fundamentals
+        level: core
+        section: Four kinds of metric
+        title: The metric tree runs from north star to funnel
+        recall: How do the metric kinds connect for Larkspur?
+        answer: "Revenue from repeat customers is the north star. It feeds revenue per user (the OEC) and repeat purchase rate, and revenue per user splits into conversion, orders per buyer and value per order. Guardrails attach alongside."
+        steps:
+          - {label: North star, sub: "revenue from repeat customers", accent: "1E3A5F"}
+          - {label: OEC, sub: "revenue per user", accent: "0EA5C9"}
+          - {label: Conversion, sub: "cart, address, payment", accent: "0EA5C9"}
+          - {label: Orders and value, sub: "orders per buyer, value per order"}
+        bullets:
+          - "Repeat purchase rate feeds the north star slowly"
+          - "Guardrails (load time, refunds, support contacts) attach alongside"
+        takeaway: The OEC is a fast branch of a tree whose root is slow, so choose the branch you can measure.
+        source: notes/02-metrics-and-kpi-design.md
+        notes: >-
+          The note draws this as a metric tree. See the metric trees note in the applied analyses pillar for the longer
+          treatment.
+
+      - layout: cards
+        beat: fundamentals
+        level: core
+        section: Four kinds of metric
+        title: A good metric has five properties
+        recall: What are the five properties of a good metric?
+        answer: "Sensitive, directional, attributable, hard to game and predictive of the long-term goal."
+        cards:
+          - {title: Sensitive, accent: "1E3A5F", body: "Moves when the thing changes"}
+          - {title: Directional, accent: "1E3A5F", body: "Up is clearly good. Time on site fails"}
+          - {title: Attributable, accent: "0EA5C9", body: "Traceable to the change"}
+          - {title: Hard to game, accent: "0EA5C9", body: "Goodhart's law"}
+          - {title: Predictive, accent: "D4621A", body: "An empirical claim about long-term value"}
+        takeaway: Predictive is a claim to test, not a label to assign.
+        source: notes/02-metrics-and-kpi-design.md
+        notes: >-
+          Time on site is not directional, since more time can mean confusion. Google's long-term ad-load experiments are an
+          example of testing predictiveness, and the note quotes no numbers.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: Break the metric apart
+        title: Revenue up 10% and sessions up 20%
+        recall: What do the parts of revenue per user say about a reminder email?
+        answer: "Conversion rose 13.9% and revenue per user 10.3%, but orders per buyer fell 1.0% and value per order 2.2%. Sessions rose 20.2% while conversion per session fell 5.2% and revenue per session 8.2%: the email brought people back for low-intent visits."
+        header: [Metric, A, B, Change]
+        widths: [3.6, 1.8, 1.8, 2.0]
+        rows:
+          - [Conversion, "0.045", "0.052", "+13.9%"]
+          - [Orders per buyer, "1.026", "1.016", "-1.0%"]
+          - [Value per order, "55.997", "54.763", "-2.2%"]
+          - [Revenue per user, "2.612", "2.882", "+10.3%"]
+          - [Sessions per user, "2.590", "3.113", "+20.2%"]
+          - [Conversion per session, "0.018", "0.017", "-5.2%"]
+          - [Revenue per session, "1.008", "0.926", "-8.2%"]
+        highlight: [3]
+        takeaway: Session metrics read as failure and user metrics as a win, so name the unit before the verdict.
+        source: notes/02-metrics-and-kpi-design.md
+        notes: >-
+          This simulates a reminder email in arm B with 40,000 users (seed 302). The identity check is 0.0454 x 1.026 x 56.00
+          = 2.612, and if the parts do not multiply back, the definitions disagree.
+
+      - layout: bullets
+        beat: practice
+        level: core
+        section: Ratio metrics
+        title: Never report a ratio without its parts
+        recall: Why must a ratio always be shown with its numerator and denominator?
+        answer: "A ratio can move because either part moved. The MSN new-tab feature seemed to slow the homepage by 8.32%, but it had cut loads by 7.8%, because fast back-button reloads vanished."
+        bullets:
+          - "Show the **numerator and denominator** with every ratio"
+          - "MSN new-tab: homepage seemed **8.32%** slower"
+          - "But loads were down **7.8%**: the fast reloads had vanished"
+          - "Compare the denominators between arms, like a metric-level SRM"
+        takeaway: A ratio hides which part moved, so always show both.
+        source: notes/02-metrics-and-kpi-design.md
+        notes: >-
+          This is a metric-level sample ratio mismatch in the sense that the denominator itself changed with the treatment.
+
+      - layout: compare
+        beat: fundamentals
+        level: core
+        section: Ratio metrics
+        title: Ratio of averages or average of ratios?
+        recall: What is the difference between a ratio of averages and an average of ratios?
+        answer: "A ratio of averages weights heavy users and matches the dashboard. An average of ratios counts each user once, and Dmitriev prefers it because it is more sensitive, resists outliers, has less metric SRM and a simple variance."
+        emphasis: right
+        left:
+          title: Ratio of averages
+          bullets: ["Weights **heavy users**", "Matches the dashboard"]
+        right:
+          title: Average of ratios
+          bullets: ["Counts **each user once**", "More sensitive, outlier-resistant", "Less metric SRM, simple variance"]
+        takeaway: Pick the definition that matches the question, and state it in the metric spec.
+        source: notes/02-metrics-and-kpi-design.md
+        notes: >-
+          Dmitriev prefers the average of ratios for those four reasons. Whichever you use, the user is the independent unit.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: Ratio metrics
+        title: A per-session standard error is 40% too small
+        recall: Why does the naive standard error of a ratio fail, and what fixes it?
+        answer: "Sessions from the same user are not independent, so the user is the unit. The delta method (0.0490) or a user bootstrap (0.0491) give the honest standard error, and the naive per-session one (0.0282) is about 40% too small."
+        lang: python
+        code: |-
+          # revenue per session in A = 1.008
+          # standard error of the ratio:
+          #   delta method          0.0490
+          #   user bootstrap        0.0491
+          #   naive per-session     0.0282
+          #
+          # Comparing A and B on four definitions:
+          #   ratio of averages   z -1.28   p 0.2010
+          #   average of ratios   t -1.09   p 0.2743
+          #   revenue per user    t  1.46   p 0.1450
+          #   conversion          t  2.94   p 0.0033
+          #   sessions per user   t 21.12
+        bullets:
+          - "Delta method: Deng, Knoblich and Lu, 2018"
+          - "The verdict depends on the **definition**"
+        takeaway: The user is the independent unit, so use the delta method or a user bootstrap.
+        source: notes/02-metrics-and-kpi-design.md
+        notes: >-
+          The decision rests on the metric definitions, not on a p-value. The same experiment is flat on revenue per user and
+          significant on conversion. Which is right depends on which one you named as the OEC beforehand.
+
+      - layout: cards
+        beat: practice
+        level: core
+        section: "Sensitivity: revenue and its alternatives"
+        title: A capped metric needs a smaller sample
+        recall: Which of revenue per user, capped revenue and conversion is cheapest to detect a 5% change on?
+        answer: "Conversion needs 125,290 per arm, capped revenue 247,386 and uncapped revenue per user 290,154. Capping at P99.9 cuts the sample about 15%."
+        cards:
+          - {title: Revenue per user, accent: pitfalls, body: "Mean 2.746, SD 18.493: **290,154** per arm"}
+          - {title: Capped at 252, accent: practice, body: "Mean 2.645, SD 16.444: **247,386** per arm"}
+          - {title: Conversion, accent: fundamentals, body: "The cheapest: **125,290** per arm"}
+        takeaway: Sensitivity is the sample size to see a 5% change, and conversion is usually the cheapest.
+        source: notes/02-metrics-and-kpi-design.md
+        notes: >-
+          The sizes are for a 5% change, using 16 times the variance over the square of 0.05 times the mean. Forty users
+          above the cap hold 12.9% of revenue. Uncapped p is 0.1450 and capped is 0.1141.
+
+      - layout: bullets
+        beat: pitfalls
+        level: deep
+        section: "Sensitivity: revenue and its alternatives"
+        title: A cap or a filter can hide the effect
+        recall: When can capping or filtering a metric mislead?
+        answer: "A cap can hide an effect that only helps big spenders. A bot filter tuned on page counts removed engaged real users from treatment and caused an SRM. Filtering to affected users helps, but report it next to the unconditional metric."
+        bullets:
+          - "A cap can hide an effect that **only helps big spenders**"
+          - "Infopane: a bot filter tuned on page counts removed engaged users, causing an **SRM**"
+          - "Count affected values as a data-quality metric"
+          - "10% start checkout and half finish: **6,400** users, not 64,000"
+          - "Report the filtered metric **alongside** the unconditional one"
+        takeaway: Every sensitivity trick is a modelling choice, so report what it removed.
+        source: notes/02-metrics-and-kpi-design.md
+        notes: >-
+          The infopane case is slides 12 to 16 of the Dmitriev paper's discussion as the note cites it. Filtering to the
+          users who could have been affected shrinks the denominator and raises sensitivity.
+
+      - layout: statement
+        beat: problem
+        section: Guardrails need a test of their own
+        title: Not significant does not mean no harm
+        recall: Why is a non-significant guardrail not a pass?
+        answer: "A non-significant result with a wide interval cannot rule out harm. A guardrail needs a non-inferiority test with a margin and a one-sided upper bound, both fixed in advance."
+        kicker: Guardrails
+        statement: "A guardrail that is not significant is not a guardrail that passed."
+        attribution: "Larkspur's margin: +50 ms on page load"
+        takeaway: To pass a guardrail, show the upper bound is below the margin.
+        source: notes/02-metrics-and-kpi-design.md
+        notes: >-
+          The margin is a business judgement set in advance. For page load, the SD is 900 ms and the baseline mean is 1800 ms.
+
+      - layout: compare
+        beat: practice
+        level: core
+        section: Guardrails need a test of their own
+        title: Only one of four cases passes the margin
+        recall: Which page-load results pass a +50 ms non-inferiority margin?
+        answer: "Only n = 20,000 with +8 ms, which has an upper bound of 22.8. The same effect at n = 400 has an upper bound of 112.7, and +45 ms and +70 ms at n = 20,000 have bounds of 59.8 and 84.8."
+        emphasis: left
+        left:
+          title: Passes the +50 ms margin
+          bullets:
+            - "**20,000** per arm, +8 ms"
+            - "Upper bound **22.8**"
+        right:
+          title: Cannot pass
+          bullets:
+            - "**400** per arm, +8 ms: bound 112.7"
+            - "**20,000**, +45 ms: bound 59.8"
+            - "**20,000**, +70 ms: bound 84.8"
+        takeaway: A small test cannot pass a guardrail even when nothing is wrong, so size it for the margin.
+        source: notes/02-metrics-and-kpi-design.md
+        notes: >-
+          The p-values for non-inferiority are 0.255, 0.289 and 0.987 in the three failing rows. The test is one-sided
+          against the margin.
+
+      - layout: cards
+        beat: pitfalls
+        level: deep
+        section: Guardrails need a test of their own
+        title: Small delays and small effects both matter
+        recall: What do the Live Search and MSN guardrail examples show?
+        answer: "Live Search: a 1 s slowdown cut queries per user 1% and ad clicks 1.5%, and 2 s cut them 2.5% and 4.4%. MSN page views rose 0.5% with a CI of about plus or minus 5%, so only changes of at least 7.8% were detectable at 80% power."
+        cards:
+          - {title: "Live Search +1 s", accent: "1E3A5F", body: "Queries per user down **1%**, ad clicks down **1.5%**"}
+          - {title: "Live Search +2 s", accent: "1E3A5F", body: "Queries down **2.5%**, ad clicks down **4.4%**"}
+          - {title: "MSN page views", accent: "D4621A", body: "+0.5%, CI about **plus or minus 5%**: only 7.8% or more detectable at 80% power"}
+        takeaway: A flat guardrail is only reassuring if the test could have seen a harm.
+        source: notes/02-metrics-and-kpi-design.md
+        notes: >-
+          Report the minimum detectable effect next to every metric called unchanged.
+
+      - layout: statement
+        beat: problem
+        section: Many metrics, one decision
+        title: Sixty metrics will flag a few by chance
+        recall: What happens when you read many metrics at the normal threshold?
+        answer: "In a simulation with 60 metrics and 4 real movers, raw p-values flagged 7 with 3 false. Benjamini-Hochberg flagged 3 with none false."
+        kicker: Multiplicity
+        statement: "Sixty metrics, four real movers. Raw p-values flagged seven, and three were false."
+        takeaway: Give each metric a role, and only the OEC gets the normal threshold.
+        source: notes/02-metrics-and-kpi-design.md
+        notes: >-
+          Benjamini-Hochberg flagged 3 with none false in the same simulation.
+
+      - layout: steps
+        beat: practice
+        level: core
+        section: Many metrics, one decision
+        title: Arrange the metrics so one decides
+        recall: How should many metrics be arranged around one decision?
+        answer: "One OEC at the normal threshold, guardrails with margins, and diagnostics under false-discovery control. Dmitriev also uses Bonferroni when scanning segments."
+        steps:
+          - {title: One OEC, text: "At the normal threshold, decided in advance"}
+          - {title: Guardrails with margins, text: "A non-inferiority test each"}
+          - {title: Diagnostics under FDR, text: "Benjamini-Hochberg across the many"}
+          - {title: Segment scans, text: "Bonferroni, as Dmitriev does", n: "★", accent: "D4621A"}
+        takeaway: One decision metric plus controlled secondaries is how sixty metrics become one call.
+        source: notes/02-metrics-and-kpi-design.md
+        notes: >-
+          Promoting every diagnostic to a decision metric is a pitfall at the end of this note.
+
+      - layout: table
+        beat: practice
+        level: deep
+        section: Many metrics, one decision
+        title: A weighted OEC makes the trade-off explicit
+        recall: Which layout wins a weighted OEC, and what must someone say out loud?
+        answer: "Layout Y wins with an OEC of 0.024. Someone should say out loud that a point of repeat rate is worth two points of revenue, and weights should come from data where possible."
+        header: [Layout, Revenue 0.5, Repeat 1.0, Support -0.3, OEC]
+        widths: [1.8, 2.2, 2.0, 2.2, 1.4]
+        rows:
+          - [X, "0.030", "-0.020", "0.000", "-0.005"]
+          - [Y, "0.012", "0.015", "-0.010", "0.024"]
+          - [Z, "0.040", "0.000", "0.060", "0.002"]
+        highlight: [1]
+        takeaway: The weights are the decision, so write them down and defend them.
+        source: notes/02-metrics-and-kpi-design.md
+        notes: >-
+          The weights are revenue per user 0.5, repeat purchase rate 1.0 and support contacts -0.3. Layout Z has the biggest
+          revenue gain and still loses because support contacts rise.
+
+      - layout: table
+        beat: pitfalls
+        level: core
+        section: The dozen, mapped to checks
+        title: Six of the dozen pitfalls, with their checks
+        recall: Which check catches a metric SRM, a misread ratio, telemetry loss and a borderline p-value?
+        answer: "Compare denominators for a metric SRM, show numerator and denominator for a ratio, measure loss with server events or sequence numbers for telemetry, and use a certification rerun with Fisher's method for a borderline p-value."
+        header: [Pitfall, Their example, Check]
+        widths: [2.6, 3.8, 3.4]
+        rows:
+          - [Metric SRM, "MSN +8.32%, loads -7.8%", compare denominators]
+          - [Misread ratio, "CTR per user -40%, clicks +74%", show both parts]
+          - [Telemetry loss, Skype push notifications, "server events or sequence numbers"]
+          - [Underpowered, "MSN page views +0.5%, CI plus or minus 5%", report the MDE]
+          - [Borderline p, "Bing OEC p = 0.029, rerun not significant", "certification rerun, Fisher's method"]
+          - [Outliers, infopane, "cap or winsorise, count affected values"]
+        takeaway: Every one of the dozen has a check that is cheap compared with a wrong launch.
+        source: notes/02-metrics-and-kpi-design.md
+        notes: >-
+          The note has all twelve. The other six are continuous monitoring (predefine the end or use sequential methods),
+          uniform movement assumed (Bing ads duplicate pages -2.3%, others +0.3%), misread segments (deeplink), novelty and
+          primacy (Edge coach mark +2.07% clicks, gone after the first visit), incomplete funnel metrics (Xbox promos) and
+          Twyman's law.
+
+      - layout: image
+        beat: pitfalls
+        level: core
+        section: The dozen, mapped to checks
+        title: A 28% lift that decays every day is confusion, not a win
+        kicker: Twyman's law, MSN mail button
+        recall: What does Twyman's law warn about, and what did the MSN mail button show?
+        answer: "Distrust results that look too good. The mail button had +28% clicks and the neighbouring button +27%, with no retention change, and clicks fell every day, which suggests confusion. A Windows Store page-view lift of 10% turned out to be empty pages."
+        image: ../../assets/sources/images/dmitriev-metric-interpretation-pitfalls-fig2.png
+        caption: "Daily percent difference in clicks on the MSN mail button, treatment against control. From about 65% on day 1 to about 10% on day 5."
+        bullets:
+          - "+28% clicks on the button, **+27%** on its neighbour"
+          - "No change in retention"
+          - "Windows Store: +10% page views were **empty pages**"
+        takeaway: A result that looks too good deserves more suspicion than one that looks ordinary.
+        source: notes/02-metrics-and-kpi-design.md
+        notes: >-
+          This is Twyman's law. The daily fall points to confusion and not a lasting gain.
+
+      - layout: table
+        beat: pitfalls
+        level: deep
+        section: The dozen, mapped to checks
+        title: Both segments rose and the total did not
+        recall: What goes wrong when you segment by something affected by the treatment?
+        answer: "Deep-page visitors rose from 0.20 to 0.24 and shallow ones from 0.02 to 0.0274, yet the total is 0.0380 in both arms, and the segment sizes differ (4,000 against 2,000). Segments must be fixed before treatment, such as device or country."
+        header: [Segment, Users A, Conversion A, Users B, Conversion B]
+        widths: [2.4, 1.8, 1.9, 1.8, 1.9]
+        rows:
+          - [Reached deep page, "4,000", "0.20", "2,000", "0.2400"]
+          - [Stayed shallow, "36,000", "0.02", "38,000", "0.0274"]
+          - [Total, "", "0.0380", "", "0.0380"]
+        highlight: [2]
+        takeaway: Segment on what was true before the treatment, or the segment itself is an outcome.
+        source: notes/02-metrics-and-kpi-design.md
+        notes: >-
+          This is Simpson's paradox in experimental form. The sample ratio test per segment fails at 4,000 against 2,000, which
+          is the tell.
+
+      - layout: code
+        beat: practice
+        level: core
+        section: Writing a metric down
+        title: Write the metric as a spec before the test
+        recall: What belongs in a metric's written definition?
+        answer: "A name, owner, kind, unit, numerator, denominator, direction, filters, variance method, window and guardrails with margins."
+        lang: yaml
+        code: |-
+          name: revenue_per_user_28d
+          owner: checkout-analytics
+          kind: OEC
+          unit: user
+          numerator: net order value in the 28 days after first
+            exposure, capped at P99.9
+          denominator: users exposed, including those with no order
+          direction: up is good
+          filters: staff and known bots excluded
+          variance: Welch
+          window: 14 to 28 days, whole weeks
+          guardrails: p95 page load +50 ms, refund rate +0.2 pp,
+            support contacts +1%
+        bullets:
+          - "Unit and denominator **decided in advance**"
+          - "Guardrail margins written down"
+        takeaway: A metric with a written spec cannot be redefined after the result.
+        source: notes/02-metrics-and-kpi-design.md
+        notes: >-
+          The note shows this as a block. The share of users removed by the filters is tracked as well.
+
+      - layout: bullets
+        beat: pitfalls
+        section: Pitfalls
+        title: Eight ways a metric misleads
+        recall: What are common ways a metric misleads?
+        answer: "A ratio without its parts, a post-treatment segment, not significant read as a guardrail pass, a metric chosen after the result, a short-term click OEC, every diagnostic promoted to a decision metric, a cap that hides the effect, and believing a surprising result."
+        bullets:
+          - "A ratio **without its parts**"
+          - "A **post-treatment** segment"
+          - "\"Not significant\" read as a guardrail pass"
+          - "A metric chosen **after** the result"
+          - "A short-term click as the OEC"
+          - "Every diagnostic promoted to a decision metric"
+          - "A cap that hides the effect"
+          - "Believing a surprising result"
+        takeaway: Choose the metric first, show its parts and be suspicious of surprise.
+        source: notes/02-metrics-and-kpi-design.md
+        notes: >-
+          On an average day, sixty metrics yield three false movers, which is why diagnostics do not decide.

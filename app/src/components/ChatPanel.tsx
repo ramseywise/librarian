@@ -1,6 +1,9 @@
 import { useRef, useEffect, useMemo, useState, type KeyboardEvent } from "react";
 import "./chat/chat.css";
 import type { ChatMessage } from "../hooks/useChatStream";
+import { useDictation, type DictationEnd } from "../hooks/useSpeech";
+import { DICTATION_BLOCKED_NOTICE } from "../voice/policy";
+import { MicButton } from "./voice/MicButton";
 import { staleFor, useCitationStatus, type StaleMap } from "../hooks/useCitationStatus";
 import { ChatMarkdown } from "./chat/ChatMarkdown";
 import { AnswerRating } from "./feedback/AnswerRating";
@@ -17,7 +20,11 @@ interface Props {
   onStop?: () => void;
   /** Empty the conversation. The clear button is hidden without it. */
   onClear?: () => void;
+  /** Whether the mic may be offered on the page beside this panel (see voice/policy.ts). */
+  dictationAllowed?: boolean;
 }
+
+const joinText = (a: string, b: string) => (a.trim() ? `${a.trimEnd()} ${b}` : b);
 
 export function ChatPanel({
   messages,
@@ -27,6 +34,7 @@ export function ChatPanel({
   onOpenPage,
   onStop,
   onClear,
+  dictationAllowed = true,
 }: Props) {
   const [input, setInput] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -49,13 +57,28 @@ export function ChatPanel({
     bottomRef.current?.scrollIntoView({ behavior: streaming ? "auto" : "smooth", block: "end" });
   }, [messages, streaming]);
 
-  function handleSend() {
-    const q = input.trim();
-    if (!q || streaming) return;
+  function send(q: string) {
     setInput("");
     onClearHighlights();
     onSend(q);
   }
+
+  function handleSend() {
+    const q = input.trim();
+    if (!q || streaming) return;
+    send(q);
+  }
+
+  // Releasing the mic sends. Anything else that ended it leaves the words in the box to review.
+  const dictation = useDictation((heard: string, how: DictationEnd) => {
+    const said = joinText(input, heard);
+    if (how === "released" && !streaming) send(said);
+    else setInput(said);
+  });
+  const { cancel: cancelDictation } = dictation;
+  useEffect(() => {
+    if (!dictationAllowed) cancelDictation();
+  }, [dictationAllowed, cancelDictation]);
 
   function handleKey(e: KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -69,16 +92,26 @@ export function ChatPanel({
     onClear?.();
   }
 
+  // Minimized, the chat is a header bar and Reading takes the column.
+  const [minimized, setMinimized] = useState(false);
   const showStop = streaming && !!onStop;
   const sendDisabled = streaming || !input.trim();
 
   return (
-    <div className="chat-panel">
+    <div className={`chat-panel${minimized ? " chat-panel--min" : ""}`}>
       <div className="chat-header">
-        <span>Ask the Librarian</span>
+        <button
+          type="button"
+          className="chat-min-btn"
+          onClick={() => setMinimized((m) => !m)}
+          aria-expanded={!minimized}
+          title={minimized ? "Show the chat" : "Minimize the chat to read more"}
+        >
+          <span aria-hidden="true">{minimized ? "▸" : "▾"}</span> Ask the Librarian
+        </button>
         <span className="chat-header-meta">
-          <span className="chat-hint">ask about the KB</span>
-          {onClear && (
+          {!minimized && <span className="chat-hint">ask about the KB</span>}
+          {onClear && !minimized && (
             <button
               type="button"
               onClick={handleClear}
@@ -93,6 +126,8 @@ export function ChatPanel({
         </span>
       </div>
 
+      {!minimized && (
+      <>
       <div className="chat-log" role="log" aria-live="polite" aria-label="Conversation">
         {messages.length === 0 && (
           <div className="chat-empty">
@@ -144,7 +179,8 @@ export function ChatPanel({
 
       <div className="chat-input-area">
         <textarea
-          value={input}
+          value={dictation.listening && dictation.transcript ? joinText(input, dictation.transcript) : input}
+          readOnly={dictation.listening}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKey}
           placeholder="Ask about the wiki…  (Enter to send)"
@@ -175,7 +211,19 @@ export function ChatPanel({
             {streaming ? "…" : "→"}
           </button>
         )}
+        {dictation.supported && (
+          <div className="chat-mic-row">
+            {dictationAllowed ? (
+              <MicButton dictation={dictation} disabled={streaming} label="Hold to talk, release to send" />
+            ) : (
+              <span className="voice-notice">{DICTATION_BLOCKED_NOTICE}</span>
+            )}
+            {dictation.error && <span role="alert" className="voice-error">{dictation.error}</span>}
+          </div>
+        )}
       </div>
+      </>
+      )}
     </div>
   );
 }

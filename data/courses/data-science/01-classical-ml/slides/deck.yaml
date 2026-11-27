@@ -1,6 +1,6 @@
-# imported_hash: 5f70fb813d6c27a6
+# imported_hash: 8e7829d893aaee55
 # Classical ML lecture deck. Covers notes 01 to 15 including 04b and 05b, in the README's reading order (01, 02, 03, 04, 04b, 06, 07, 09, 08, 05, 05b, 10 to 15), opened by an overview part.
-# Levels: LEVEL=core is the talk for any audience, practice adds how it is done, and the full deck adds code and maths.
+# Levels: LEVEL=intro is the talk for any audience, core adds how it is done, and the full deck adds code and maths.
 # Build: make slides PILLAR=data-science/01-classical-ml STRICT=1 PREVIEW=1
 # Spec:  .claude/skills/slides/references/deck-spec.md
 # Running example: predict who earns over $50k on the adult census, from a dummy at 0.759 accuracy
@@ -150,7 +150,7 @@ parts:
 
       - layout: code
         beat: practice
-        level: practice
+        level: core
         title: Every scikit-learn model is the same four lines
         recall: "Why do scikit-learn estimators chain in pipelines and plug into search?"
         lang: python
@@ -247,7 +247,7 @@ parts:
 
       - layout: cards
         beat: practice
-        level: practice
+        level: core
         title: With 285 features and 331 rows, OLS memorises
         recall: What do ridge and lasso do when features nearly outnumber rows?
         lead: Diabetes data expanded to cubic terms, 285 features. R² on train and test.
@@ -324,7 +324,7 @@ parts:
 
       - layout: code
         beat: practice
-        level: practice
+        level: core
         title: On adult census the dummy is already 0.759
         recall: How do you evaluate a classifier when a dummy already scores 0.759 accuracy?
         lead: A dummy always answers under $50k. AUC and AP (average precision) score how well the model ranks people, higher is better.
@@ -491,7 +491,7 @@ parts:
 
       - layout: image
         beat: practice
-        level: practice
+        level: core
         title: Learning curves name the problem before you touch a knob
         recall: Does a small train-validation gap mean a good model?
         lead: Train and validation AUC as rows grow. Low and together is underfitting, far apart is overfitting, high with a small gap is healthy.
@@ -536,7 +536,7 @@ parts:
 
       - layout: table
         beat: pitfalls
-        level: practice
+        level: core
         title: Folds must mimic how new data will arrive
         recall: When does a shuffled split flatter a model?
         lead: Match the splitter to how the data was collected, or the score flatters the model.
@@ -726,7 +726,7 @@ parts:
 
       - layout: compare
         beat: pitfalls
-        level: practice
+        level: core
         title: One-hot lets the numbers shout, and FAMD rebalances
         recall: Why does k-means on one-hot columns ignore the categories?
         lead: 1,200 generated customers, 5 numeric and 6 categorical columns. In k-means a column's say is roughly its variance.
@@ -752,7 +752,7 @@ parts:
 
       - layout: image
         beat: practice
-        level: practice
+        level: core
         title: Each clustering recipe hears different columns
         recall: What can validate a customer segmentation?
         image: ../assets/sources/images/classical-mixed-benchmark.png
@@ -775,7 +775,7 @@ parts:
 
       - layout: code
         beat: pitfalls
-        level: practice
+        level: core
         title: No internal index picks four groups, but each beats its control
         recall: How do you use silhouette, CH and DB on mixed-data clusters?
         lead: "FAMD coordinates with k-means, true k is 4. Each cell reads data with groups / shuffled-column control."
@@ -892,7 +892,7 @@ parts:
 
       - layout: table
         beat: pitfalls
-        level: practice
+        level: core
         title: Different monitors see different kinds of drift
         recall: Which kind of drift stays invisible to PSI?
         lead: PSI measures how far a distribution has moved from its reference window, and needs no labels. These windows are simulated on real rows.
@@ -1042,7 +1042,7 @@ parts:
 
       - layout: table
         beat: practice
-        level: practice
+        level: core
         title: Better policy saved 2.49 euros, a perfect model at most 0.07
         recall: On generated invoices, how did the gain from changing policy compare with the most a better model could add?
         lead: Seven policies on the same 50,000 test invoices, mean of 20 seeds. The model's AUC is 0.858, and the true probabilities reach only 0.861.
@@ -1160,7 +1160,7 @@ parts:
 
       - layout: image
         beat: practice
-        level: practice
+        level: core
         title: Uncertainty sampling won on invoices and lost on real credit
         recall: How do you know whether uncertainty sampling beats random labelling on your data?
         image: ../assets/sources/images/corrections-active-learning.png

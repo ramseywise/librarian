@@ -5,7 +5,8 @@ import { AppNav } from "./components/AppNav";
 import { ChatPanel } from "./components/ChatPanel";
 import { pageTitle, useDocumentTitle } from "./components/courses/useDocumentTitle";
 import { useChatStream, type ChatContext, type LabChatContext, type StudyChatContext } from "./hooks/useChatStream";
-import { parseRoute } from "./routes";
+import { parseRoute, type CoursePage } from "./routes";
+import { dictationAllowed } from "./voice/policy";
 import { useHashRoute } from "./hooks/useHashRoute";
 import { useSlashSearch } from "./hooks/useSlashSearch";
 import { ThemeToggle } from "./components/ThemeToggle";
@@ -46,6 +47,13 @@ function writeFlag(key: string, on: boolean) {
   } catch {
     // Not remembered.
   }
+}
+
+/** The chat sits beside whatever is open, so the page decides whether it may offer a mic. */
+function pageAllowsDictation(page: CoursePage | null): boolean {
+  if (page?.page === "courses") return dictationAllowed(page.path);
+  if (page?.page === "flashcards" || page?.page === "slides") return dictationAllowed(page.deckId);
+  return true;
 }
 
 export default function App() {
@@ -245,9 +253,16 @@ export default function App() {
             className="pill-btn app-menu-btn"
             aria-expanded={isNarrow() ? navOpen : !navHidden}
             aria-controls="app-sidenav"
+            aria-label={(isNarrow() ? navOpen : !navHidden) ? "Hide navigation" : "Show navigation"}
+            title={(isNarrow() ? navOpen : !navHidden) ? "Hide navigation" : "Show navigation"}
             onClick={toggleNav}
           >
-            Menu
+            {/* A sidebar: a panel down the left of a window. */}
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
+              strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="16" rx="2" />
+              <line x1="9" y1="4" x2="9" y2="20" />
+            </svg>
           </button>
         )}
         <span className="app-brand">Librarian</span>
@@ -364,6 +379,7 @@ export default function App() {
                 onOpenPage={openConcept}
                 onStop={stop}
                 onClear={clear}
+                dictationAllowed={pageAllowsDictation(page)}
               />
             )}
           </aside>

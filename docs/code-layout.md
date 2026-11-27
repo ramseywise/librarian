@@ -36,9 +36,17 @@ commits). See `.claude/skills/README.md`.
   (scrapers, ingest gate, manifest, raw lint).
 - Also inside the `librarian` package, in three layers (enforced by import-linter, `make lint-imports`):
   entry points `api/` (FastAPI, `librarian api`; routers in `api/routers/`, logic in the core) and `mcp/`
-  (FastMCP, `librarian mcp`), independent of each other and using only the public names of
+  (FastMCP, `librarian mcp`), plus `voice/` (below), independent of each other and using only the public names of
   `librarian.retrieval`; `agent/` (the tool registry and chat loop they share); `tools/` (`slides`, `presenter`, `codemap`, `cartographer`: what builds the media and content; they must not import api/mcp; `mcp`
   imports codemap's tools); and the core below (`courses`, `retrieval`, `wiki`, `ingest`, `accounts`, `db`), which imports none of them.
+- `voice/` — conversational voice (flashcard, explain-your-approach, interview practice), an optional
+  third entry point that runs in its **own process** on `127.0.0.1:8200` (`make voice`, or `librarian voice`) with
+  its own env (`.venv-voice`, the `voice` extra: pipecat, Whisper, Kokoro). `api/routers/voice.py` is only a thin
+  broker: it forwards over httpx with the signed-in user in `x-librarian-user` and answers 503 when the voice
+  server is down; it imports neither `librarian.voice` nor pipecat. Pure-logic modules (`policy`, `conversation`,
+  `drill_prompt`, `tools`, `grades`) import without pipecat; only `pipeline.py` needs it. Grades are written per
+  user through `librarian.courses.learning.record_event` (kind `voice_grade`); drill prompts come from public
+  `data/courses/` only, and interviewing is always local speech. The core must not import `librarian.voice`.
 - `app/` — the React/Vite frontend only (`app/src/`, built to `app/dist/`, served by the API). The single
   `Dockerfile` at the repo root builds it and the API into one image.
 - Cartographer (`src/librarian/tools/cartographer/`: session facts, dashboard, weekly sweep) runs as `uv run cartographer`.

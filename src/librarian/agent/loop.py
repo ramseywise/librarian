@@ -7,7 +7,7 @@ import re
 import time
 import uuid
 from collections.abc import AsyncGenerator, Callable, Sequence
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from datetime import UTC, datetime
 from typing import Any, cast
 
@@ -347,7 +347,11 @@ async def run_agent_stream(
     if study:
         study = _cap(study, settings.agent_study_max_chars)
         system.append({"type": "text", "text": _STUDY_FRAME.format(brief=study)})
-    ctx = context or ToolContext(surface=CHAT)
+    ctx = (
+        replace(context, user_id=context.user_id or user_id)
+        if context
+        else ToolContext(surface=CHAT, user_id=user_id)
+    )
     started = time.monotonic()
     prior = _trim_history(history or [])
     messages: list[dict[str, Any]] = [*prior, {"role": "user", "content": query}]

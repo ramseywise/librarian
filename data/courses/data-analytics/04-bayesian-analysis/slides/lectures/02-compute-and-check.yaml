@@ -1,0 +1,1210 @@
+# imported_hash: 0e02088295a66e77
+# Lecture on step 2, Compute and check: notes/02-mcmc-and-pymc.md and 03-priors-and-bandits.md, in the notes' order.
+# make slides PILLAR=data-analytics/04-bayesian-analysis LECTURE=02-compute-and-check STRICT=1 PREVIEW=1
+# Levels: a slide with no level is the intro, `core` is the core lesson, `deep` is the optional extension (code and maths).
+deck:
+  title: Compute and check
+  subtitle: Sample the posterior, test the sampler, and choose the prior you give it
+  tagline: "Metropolis · NUTS · R-hat and ESS · Divergences · Prior predictive checks · Shrinkage"
+  reference: "Notes: data-analytics/04-bayesian-analysis, notes 2 and 3"
+  output: 02-compute-and-check.pptx
+  notes: >-
+    This is the third lecture of the Bayesian analysis series. It covers step 2. By the end you should be able to say
+    why we sample, read ESS, R-hat and divergences before any result, fix a struggling sampler by changing the model,
+    simulate from a prior before fitting, and explain why ridge, lasso and shrinkage are priors in disguise.
+
+lecture:
+  covers:
+    - data-analytics/04-bayesian-analysis/notes/02-mcmc-and-pymc.md
+    - data-analytics/04-bayesian-analysis/notes/03-priors-and-bandits.md
+  requires: [data-analytics/04-bayesian-analysis/notes/01b-grids-hypotheses-and-simulation.md]
+  next: [data-analytics/04-bayesian-analysis/notes/03b-bandits-and-thompson-sampling.md]
+  related:
+    - data-analytics/02-probability-and-statistics/notes/06b-logistic-regression-and-poisson-glms.md
+    - data-analytics/03-experimentation-and-causality/notes/03-experimentation-at-scale.md
+
+parts:
+  - title: Why we sample, and how a step works
+    divider: false
+    summary: Why sample · One Metropolis step · Step size and ESS · NUTS · Scaling
+    notes: We open with a sampler that returns clean numbers and can still be wrong, then build one in twenty lines.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Why sample at all
+        title: A sampler always returns numbers
+        recall: Why can a sampler's output be wrong without any error showing?
+        answer: "A sampler always returns numbers, including when they describe where it happened to start rather than the posterior, and nothing on the screen looks like an error."
+        kicker: The problem
+        statement: "A sampler returns numbers even when they describe where it started, not the posterior. Nothing on the screen looks like an error."
+        takeaway: The Challenger model sampled in a second and hid what can go wrong. This lecture opens the box and gives you the checks.
+        source: notes/02-mcmc-and-pymc.md
+        notes: Chapter 1's model had two parameters and the sampler answered at once. The point of the lecture is to know when to distrust that answer.
+
+      - layout: cards
+        beat: fundamentals
+        section: Why sample at all
+        title: A grid does not survive more parameters
+        recall: How many evaluations does a grid of 100 points per parameter need at 10 and 20 parameters?
+        answer: "At 100 points each, 10 parameters need 1e+20 evaluations and 20 parameters need 1e+40."
+        cards:
+          - title: 1 parameter
+            body: "**1e+02** evaluations"
+          - title: 2 parameters
+            body: "**1e+04** evaluations"
+            accent: "0F7490"
+          - title: 5 parameters
+            body: "**1e+10** evaluations"
+          - title: 10 parameters
+            body: "**1e+20** evaluations"
+            accent: "D4621A"
+          - title: 20 parameters
+            body: "**1e+40** evaluations"
+            accent: "D4621A"
+        takeaway: With many parameters the posterior is a surface to explore, not a table to fill, and normalising it means integrating over every dimension.
+        source: notes/02-mcmc-and-pymc.md
+        notes: Each row uses 100 grid points per parameter. Past two parameters the arithmetic fails, which is the reason to sample.
+
+      - layout: bullets
+        beat: fundamentals
+        level: core
+        section: Why sample at all
+        title: MCMC returns samples, not the posterior
+        recall: What are the two consequences of getting samples instead of the posterior?
+        answer: "A prior of zero stays zero, and you need thousands of samples because summaries are Monte Carlo estimates whose error shrinks like 1 over the root of the effective samples."
+        bullets:
+          - "**Every summary is an average over samples,** by the Law of Large Numbers"
+          - "**A prior of zero stays zero,** so choose supports generously"
+          - "**Thousands of samples, not tens,** because the draws are not independent"
+        aside:
+          title: Bishop on independent draws
+          body: "Ten or twenty independent samples may suffice for an expectation. MCMC needs thousands."
+        takeaway: The mean, the interval, P(B > A) and the expected loss are all sample averages, so they are only as good as the chain.
+        source: notes/02-mcmc-and-pymc.md
+        notes: The error shrinks like one over the root of the effective sample size, which is why correlated draws cost so much. Bishop's remark is about independent draws.
+
+      - layout: cards
+        beat: practice
+        level: deep
+        section: Why sample at all
+        title: Summaries stand in for costly data
+        kicker: Think Bayes, ch. 10
+        recall: How did the height example avoid a slow likelihood, and what went wrong with the summaries?
+        answer: "Working in log-likelihood with one sum of squares made the exact grid about 100 times faster. Approximate Bayesian computation took about a second and matched to five digits, but the answer depended on the summary chosen."
+        cards:
+          - title: Exact grid
+            body: "Log-likelihood and one sum of squares, **about 100 times faster**"
+          - title: ABC on summaries
+            body: "The whole dataset in **about a second**, matching to about five digits"
+            accent: "0F7490"
+          - title: The catch
+            body: "One summary said women were more variable, another said men, **with equal confidence**"
+            accent: "D4621A"
+        takeaway: Use summaries when the exact likelihood is costly, check that two reasonable summaries agree, and treat disagreement as the result.
+        source: notes/02-mcmc-and-pymc.md
+        notes: The data are BRFSS heights for 154,407 men and 254,722 women. With num_sigmas 1 the coefficient of variation was 0.0410 for men and 0.0429 for women. With num_sigmas 2 the same code concluded the reverse. The chapter gives no rule for choosing the summary.
+
+      - layout: flow
+        beat: fundamentals
+        section: What one MCMC step does
+        title: One step is propose, accept, record
+        recall: What are the steps of one MCMC step?
+        answer: "Start at the current position, propose a nearby position, accept it with a probability set by the density ratio (always uphill, sometimes downhill), record the position whether it moved or not, and repeat."
+        steps:
+          - label: Propose
+            sub: A nearby position
+          - label: Accept
+            sub: Always uphill, sometimes downhill
+            accent: "D4621A"
+          - label: Record
+            sub: The new position, or the old one if rejected
+          - label: Repeat
+            sub: From the position just recorded
+        caption: The chain is memoryless, so the next step depends only on the current position.
+        takeaway: Four moves repeated thousands of times turn a density you can only evaluate into samples you can average.
+        source: notes/02-mcmc-and-pymc.md
+        notes: After a warm-up, the positions are distributed like the posterior. The acceptance probability depends on how much higher or lower the density is at the proposal.
+
+      - layout: bullets
+        beat: fundamentals
+        level: core
+        section: What one MCMC step does
+        title: Why the chain works at all
+        recall: Why does the acceptance step not need the normalising constant?
+        answer: "It uses only a ratio of densities, so the constant we could not compute cancels. Rejected proposals are not wasted, because staying put is how the chain spends more time in high-density regions."
+        bullets:
+          - "**The acceptance step uses a ratio of densities,** so the normalising constant cancels"
+          - "**Rejected proposals are not wasted:** staying put weights high-density regions"
+          - "**After warm-up,** positions are distributed like the posterior"
+        aside:
+          title: The key point
+          body: "That cancellation is why any of this is possible."
+        takeaway: The constant that made a grid impossible never appears in the sampler, so a density known up to a constant is enough.
+        source: notes/02-mcmc-and-pymc.md
+        notes: This is the payoff of lecture 1's remark that the normalising constant only rescales. Here it drops out of the ratio.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: What one MCMC step does
+        title: A Metropolis sampler in twenty lines
+        recall: What does the coin sampler recover, and what is its one knob?
+        answer: "It reproduces the closed form Beta(36, 22), with mean 0.6201 against 0.6207, and the proposal width is the one knob that decides everything."
+        lang: python
+        code: |-
+          def metropolis(n, step, start=0.5, seed=1):
+              rng = np.random.default_rng(seed)
+              chain, p, lp = np.empty(n), start, log_post(start)
+              for i in range(n):
+                  proposal = p + rng.normal(0, step)   # propose nearby
+                  lp_new = log_post(proposal)
+                  if np.log(rng.random()) < lp_new - lp:
+                      p, lp = proposal, lp_new         # accept
+                  chain[i] = p                         # record
+              return chain
+        lead: "On the coin, 20,000 steps of width 0.1 give mean 0.6201 and sd 0.0628, against 0.6207 and 0.0632 in closed form."
+        takeaway: The sampler matches the closed form to two decimals. The proposal width is the one setting, and the next slides show how much it matters.
+        source: notes/02-mcmc-and-pymc.md
+        notes: log_post is the log of the Beta(36, 22) kernel, with minus infinity outside the support. The comparison against a known answer is the habit to keep.
+
+      - layout: table
+        beat: practice
+        section: What one MCMC step does
+        title: Three step sizes, one good chain
+        recall: Which of the three step sizes gave a working chain, and what did the others show?
+        answer: "Step 0.1 accepted 57.6% and had 3,594 effective samples. Step 0.002 accepted 98.7% with 11 effective samples and a wrong mean of 0.565. Step 3.0 accepted 2.8% with 278."
+        header: [Step, Accepted, Mean, "Effective samples of 19,000"]
+        widths: [1, 1, 1, 2]
+        rows:
+          - ["0.002", "98.7%", "0.565", "11"]
+          - ["**0.1**", "**57.6%**", "**0.620**", "**3,594**"]
+          - ["3.0", "2.8%", "0.625", "278"]
+        highlight: [1]
+        lead: The true mean is 0.6207.
+        takeaway: The small step accepts nearly everything and is the worst of the three. Only the middle one looks like a working chain.
+        source: notes/02-mcmc-and-pymc.md
+        notes: The large step rejects 97% of proposals and sits still between rare jumps. Use ESS, not the acceptance rate, to judge it.
+
+      - layout: image
+        beat: practice
+        section: What one MCMC step does
+        title: The same three chains as trace plots
+        kicker: Generated from the code above
+        recall: What does each of the three trace plots look like?
+        answer: "Step 0.002 drifts slowly and misses the mean, step 0.1 mixes as a dense band around it, and step 3.0 shows long flat stretches between rare jumps."
+        image: ../../assets/sources/images/bayes-metropolis-step-size.png
+        caption: "Metropolis on the coin posterior at three step sizes."
+        bullets:
+          - "**0.002:** slow drift"
+          - "**0.1:** a dense band"
+          - "**3.0:** flat stretches"
+        takeaway: A healthy trace is a dense band around one level. Drift and long flat stretches both mean few effective samples.
+        source: notes/02-mcmc-and-pymc.md
+        notes: Ask the room which trace they would trust, then point at the acceptance rates in the previous table.
+
+      - layout: statement
+        beat: fundamentals
+        level: core
+        section: What one MCMC step does
+        title: ESS counts independent draws
+        recall: What is effective sample size?
+        answer: "Correlated draws carry less information than independent ones, and ESS is how many independent draws yours are worth."
+        kicker: The core diagnostic idea
+        statement: "Correlated draws carry less information than independent ones. ESS is how many independent draws yours are worth."
+        takeaway: Count effective samples, not iterations. The coin chain had 19,000 draws and, at the smallest step, an ESS of 11.
+        source: notes/02-mcmc-and-pymc.md
+        notes: This is the gap between iterations and information. Every later diagnostic is a way of asking how much this gap costs.
+
+      - layout: table
+        beat: fundamentals
+        section: What one MCMC step does
+        title: Which sampler for which variable
+        recall: Which PyMC sampler handles continuous variables, and which handles categorical ones?
+        answer: "NUTS is the default for continuous variables, Metropolis suits discrete variables and quick experiments, CategoricalGibbsMetropolis handles Categorical assignments, and a compound step mixes them."
+        header: [Sampler, PyMC, Good for]
+        widths: [2, 2, 4]
+        rows:
+          - ["**NUTS** (Hamiltonian Monte Carlo)", "default for continuous", "almost everything continuous, with gradient-guided long moves"]
+          - ["Metropolis", "pm.Metropolis()", "discrete variables, quick experiments"]
+          - ["CategoricalGibbsMetropolis", "pm.CategoricalGibbsMetropolis()", "Categorical assignments"]
+          - ["Compound", "step=[step1, step2]", "continuous plus discrete in one model"]
+        highlight: [0]
+        takeaway: Leave continuous models to NUTS. Reach for a discrete sampler only for variables NUTS cannot move.
+        source: notes/02-mcmc-and-pymc.md
+        notes: CategoricalGibbsMetropolis replaced ElemwiseCategorical. Random-walk Metropolis proposes blindly, and in high dimensions almost every direction leads downhill.
+
+      - layout: flow
+        beat: fundamentals
+        level: core
+        section: What one MCMC step does
+        title: NUTS tunes itself
+        kicker: Hoffman and Gelman, JMLR, 2014
+        recall: How does the No-U-Turn Sampler avoid hand tuning?
+        answer: "It keeps doubling the trajectory until it starts to turn back on itself, which removes the number of leapfrog steps, and it tunes the step size during warm-up by dual averaging."
+        steps:
+          - label: Glide
+            sub: Use the gradient to simulate a particle across the surface
+          - label: Double
+            sub: Extend the trajectory again and again
+          - label: Stop at the U-turn
+            sub: When the path starts to turn back
+            accent: "D4621A"
+          - label: Tune
+            sub: Step size by dual averaging in warm-up
+        caption: HMC is sensitive to the step size and the number of leapfrog steps. NUTS removes both settings.
+        takeaway: pm.sample() works unattended on continuous models because NUTS needs no hand tuning.
+        source: notes/02-mcmc-and-pymc.md
+        notes: The paper's aim was a sampler that runs without user tuning. Its evidence is modest. It compared NUTS only with basic HMC and counted gradient evaluations, not wall-clock time.
+
+      - layout: image
+        beat: fundamentals
+        level: deep
+        section: What one MCMC step does
+        title: The doubling stops at a U-turn
+        kicker: Hoffman and Gelman, 2014, Fig. 2
+        recall: When does NUTS stop doubling the trajectory?
+        answer: "When the angle between the leftmost-to-rightmost vector and the momentum passes 90 degrees."
+        image: ../../assets/sources/images/hoffman-no-u-turn-sampler-fig2.png
+        caption: "Blue arrow: leftmost-to-rightmost vector. Magenta arrow: momentum."
+        bullets:
+          - "**Angle past 90 degrees:** doubling stops"
+          - "**Red marks:** excluded nodes"
+        takeaway: The U-turn rule is a geometric stopping test, so the trajectory length adapts to each region of the surface.
+        source: notes/02-mcmc-and-pymc.md
+        notes: On four targets NUTS beat the best HMC setting by about a factor of three in effective samples per gradient on the normal and stochastic volatility models, and matched it on the logistic regressions. The best HMC length varied about 100-fold, from 0.17 to 17.62.
+
+      - layout: table
+        beat: practice
+        section: What one MCMC step does
+        title: Scaling inputs beat 120,000 draws
+        recall: What did standardising the temperature change in the Challenger fits?
+        answer: "Metropolis on raw Fahrenheit had an ESS of 5 and R-hat 2.16. NUTS on raw data had 304 and 18.8 leapfrog steps per draw. Standardised, NUTS had 2,591 and 3.1 steps."
+        header: [Fit, ESS of beta, R-hat, Steps per draw]
+        widths: [3, 1, 1, 2]
+        rows:
+          - ["Metropolis, raw F", "5", "2.16", "n/a"]
+          - ["NUTS, raw F", "304", "1.01", "18.8"]
+          - ["**NUTS, standardised**", "**2,591**", "**1.00**", "**3.1**"]
+        highlight: [2]
+        lead: The same Challenger data after 4,000 draws.
+        takeaway: Standardising removes a long narrow ridge between intercept and slope. Scale your inputs before reaching for more draws.
+        source: notes/02-mcmc-and-pymc.md
+        notes: The intercept and slope are almost perfectly correlated when temperature is far from zero, which is the ridge. BMH runs Metropolis for 120,000 draws to cope.
+
+      - layout: compare
+        beat: pitfalls
+        level: deep
+        section: What one MCMC step does
+        title: MCMC or a cheaper approximation
+        kicker: Blei, Kucukelbir and McAuliffe, 2017
+        recall: When do the authors prefer MCMC and when variational inference?
+        answer: "MCMC for a small, expensive dataset where you trust the model and need precise inferences, and variational inference for a text model on a billion documents. For mixture models where Gibbs is not an option, VI may beat Hamiltonian Monte Carlo even on small data."
+        left:
+          title: MCMC
+          tag: Precise, slower
+          bullets:
+            - "A small, expensive dataset"
+            - "You trust the model"
+            - "You need precise inferences"
+        right:
+          title: Variational inference
+          tag: Faster, less exact
+          bullets:
+            - "A text model on a billion documents"
+            - "Fits a simple distribution by optimisation"
+            - "Chapter 6b measures how much less exact"
+        emphasis: left
+        takeaway: The Laplace approximation and variational inference are faster and less exact. The authors give two scenarios, not experiments.
+        source: notes/02-mcmc-and-pymc.md
+        notes: The Laplace approximation fits a Normal at the MAP, and pm.fit with method advi does the variational fit. Size is not the only factor.
+
+  - title: Mixtures and diagnostics
+    divider: false
+    summary: Two clusters · Marginalising labels · Using the posterior · Label switching · Diagnostics · Divergences
+    notes: A mixture with discrete labels shows both a slow sampler and a silent failure, then we list the checks.
+    slides:
+      - layout: statement
+        beat: problem
+        section: "Worked example: a two-cluster mixture"
+        title: 300 values that look bimodal
+        recall: What is the known answer in the simulated mixture?
+        answer: "40% of points are around 120 with sd 12, and the rest around 200 with sd 22, with 300 values in all."
+        kicker: The problem
+        statement: "300 values that look bimodal. The truth: 40% near 120 with sd 12, the rest near 200 with sd 22."
+        takeaway: Simulating data with a known answer lets us check whether the model and the sampler recover it.
+        source: notes/02-mcmc-and-pymc.md
+        notes: BMH's CSV is not vendored, so the note simulates a similar set. The sample has mean 170.6 and sd 42.3, and 0.38 of values fall below 160.
+
+      - layout: table
+        beat: fundamentals
+        section: "Worked example: a two-cluster mixture"
+        title: The mixture as a generative story
+        recall: What is the generative story of the mixture?
+        answer: "Each point belongs to cluster 0 with probability p, gets a label from a Categorical, each cluster has a centre and a spread, and the value is Normal around its cluster's centre."
+        header: [Story, Distribution]
+        widths: [3, 4]
+        rows:
+          - ["Each point is in cluster 0 with probability p", "p ~ Uniform(0, 1)"]
+          - ["Its cluster label", "assignment ~ Categorical([p, 1 - p])"]
+          - ["Each cluster has a centre and a spread", "centers ~ Normal([120, 190], 10)"]
+          - ["The observed value", "x ~ Normal(centers[label], sds[label])"]
+        highlight: [1]
+        takeaway: Labels are discrete, so NUTS cannot move them, and the first version mixes two samplers.
+        source: notes/02-mcmc-and-pymc.md
+        notes: The spreads get a Uniform(0, 100) prior. The model uses pm.Metropolis for the continuous parameters and CategoricalGibbsMetropolis for the labels.
+
+      - layout: compare
+        beat: practice
+        level: core
+        section: "Worked example: a two-cluster mixture"
+        title: Sum the labels out and NUTS takes over
+        recall: What happens when the 300 discrete labels are summed out of the likelihood?
+        answer: "The estimates agree, the ESS rises from hundreds to thousands, and the run takes a sixth of the time."
+        left:
+          title: With 300 labels
+          tag: Metropolis and Gibbs
+          bullets:
+            - "About half a minute for 1,000 draws"
+            - "ESS 429 to 808"
+            - "Centres 120.59 and 198.92"
+        right:
+          title: Labels summed out
+          tag: pm.NormalMixture and NUTS
+          bullets:
+            - "A sixth of the time"
+            - "ESS 4,095 to 5,136"
+            - "Centres 120.58 and 199.02"
+        emphasis: right
+        takeaway: Marginalise discrete variables whenever you can. The estimates agree and the sampler does far better.
+        source: notes/02-mcmc-and-pymc.md
+        notes: The labels cost a lot. The marginalised model has no discrete variables, so NUTS can sample it.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: "Worked example: a two-cluster mixture"
+        title: The marginalised mixture in PyMC
+        recall: Which PyMC distribution sums the labels out?
+        answer: "pm.NormalMixture, given the weights, the centres and the spreads."
+        lang: python
+        code: |-
+          with pm.Model():
+              w = pm.Dirichlet("w", a=np.ones(2))
+              sds = pm.HalfNormal("sds", 50, shape=2)
+              centers = pm.Normal("centers", mu=[120, 190],
+                                  sigma=10, shape=2)
+              pm.NormalMixture("obs", w=w, mu=centers,
+                               sigma=sds, observed=data)
+              mix = pm.sample(1000, tune=1000, chains=4, random_seed=7)
+        lead: No discrete variables remain, so the default NUTS sampler is used.
+        takeaway: The same model with the sum done analytically gives the sampler a smooth surface.
+        source: notes/02-mcmc-and-pymc.md
+        notes: The weights get a Dirichlet prior and the spreads a HalfNormal. Posterior means are w 0.37 and 0.63, spreads 11.49 and 22.33.
+
+      - layout: cards
+        beat: practice
+        section: "Worked example: a two-cluster mixture"
+        title: Even odds sit near 147, not 160
+        lead: "Even odds fall near 147; the midpoint of the centres is 159.8."
+        recall: Where does the posterior put even odds between the two clusters, and why not at the midpoint?
+        answer: "Near 147, because cluster 1 has about twice the spread and nearly twice the weight, so it reaches well into the gap. The midpoint of the centres is 159.8."
+        cards:
+          - title: x = 140
+            body: "P(cluster 0) = **0.888**"
+          - title: x = 150
+            body: "P(cluster 0) = **0.327**"
+            accent: "0F7490"
+          - title: x = 160
+            body: "P(cluster 0) = **0.019**"
+            accent: "D4621A"
+        takeaway: Compare each cluster's weighted likelihood sample by sample, then average. Centres alone ignore both spread and weight.
+        source: notes/02-mcmc-and-pymc.md
+        notes: At x = 175 the probability is 0.000. Nearest centre would split at 159.8.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: "Worked example: a two-cluster mixture"
+        title: Classify a new point sample by sample
+        recall: How do you get the cluster probability for a new point?
+        answer: "Compare each cluster's weighted likelihood within each joint draw, then average the ratio over draws."
+        lang: python
+        code: |-
+          w0 = mix.posterior["w"].values.reshape(-1, 2)[:, 0]
+          cent = mix.posterior["centers"].values.reshape(-1, 2)
+          sd = mix.posterior["sds"].values.reshape(-1, 2)
+          def p_cluster0(x):
+              a = w0 * stats.norm.pdf(x, cent[:, 0], sd[:, 0])
+              b = (1 - w0) * stats.norm.pdf(x, cent[:, 1], sd[:, 1])
+              return (a / (a + b)).mean()   # within each joint draw
+        lead: "At x = 150 this returns 0.327. Every line works within a draw."
+        takeaway: The average is taken last, after the ratio is formed inside each draw.
+        source: notes/02-mcmc-and-pymc.md
+        notes: The midpoint of the centres is 159.8, but the even odds sit near 147.
+
+      - layout: statement
+        beat: pitfalls
+        level: core
+        section: "Worked example: a two-cluster mixture"
+        title: Do not mix posterior samples across indices
+        recall: Why must derived quantities be computed within a sample?
+        answer: "Each sample is a joint draw. With x + y = 10, pairing x from one sample with y from another breaks the constraint, and the standard deviation of x + y goes from 0.0 to 1.4."
+        kicker: A joint draw is one unit
+        statement: "Each sample is a joint draw. Shuffle one variable against another and the constraint breaks: sd of x + y is 0.0 within a draw and 1.4 shuffled."
+        takeaway: Compute derived quantities within each sample, then summarise.
+        source: notes/02-mcmc-and-pymc.md
+        notes: The demo uses x + y = 10 in every draw. The same mistake appears whenever someone flattens parameters and recombines them.
+
+      - layout: compare
+        beat: pitfalls
+        level: core
+        section: "Worked example: a two-cluster mixture"
+        title: Label switching makes chain means nonsense
+        recall: What is label switching and how do you stop it?
+        answer: "Mixture components have no meaning the model can see, so chains can land on either labelling and R-hat is large. An ordering constraint on the centres stops it without assuming where the clusters are."
+        left:
+          title: Same prior on both centres
+          tag: R-hat 1.53
+          bullets:
+            - "Each chain is fine"
+            - "One chain lands on the swapped labelling"
+            - "The mean across chains is nonsense"
+        right:
+          title: Ordered centres
+          tag: R-hat 1.00
+          bullets:
+            - "All four chains agree"
+            - "Centres near 120.5 and 199.3"
+            - "No assumption about where clusters sit"
+        emphasis: right
+        takeaway: Order the parameters, then check R-hat. BMH's informative priors at 120 and 190 stopped it too.
+        source: notes/02-mcmc-and-pymc.md
+        notes: With chains=1 the problem hides, because one chain stays in one labelling. The prose of the note says R-hat is 1.73 while its printed output is 1.53, so quote the output.
+
+      - layout: table
+        beat: fundamentals
+        level: core
+        section: "Is the sampler working? Diagnostics"
+        title: Six checks before you read any result
+        recall: Which diagnostics should you look at, and what is healthy for each?
+        answer: "A fuzzy-caterpillar trace, R-hat at most 1.01, ESS in the hundreds or more, autocorrelation near zero within a few lags, zero divergences, and a posterior plot with an interval."
+        header: [Check, Tool, Healthy]
+        widths: [2, 3, 4]
+        rows:
+          - ["Trace plot", "az.plot_trace", "a fuzzy caterpillar, chains overlap"]
+          - ["**R-hat**", "az.summary", "**1.01 or below**"]
+          - ["**Effective sample size**", "ess_bulk, ess_tail", "**hundreds or more**"]
+          - ["Autocorrelation", "az.plot_autocorr", "near zero within a few lags"]
+          - ["**Divergences**", "sample_stats diverging", "**zero**, otherwise reparameterise"]
+        highlight: [1, 2, 4]
+        takeaway: Look at R-hat, ESS and divergences before you look at any result.
+        source: notes/02-mcmc-and-pymc.md
+        notes: The note also lists az.plot_dist for the posterior shape and interval. R-hat is a warning, never a certificate, since 1.00 can come from an invalid chain.
+
+      - layout: cards
+        beat: fundamentals
+        section: "Is the sampler working? Diagnostics"
+        title: Burn-in, thinning and which interval
+        recall: What do burn-in, thinning and the HDI versus the equal-tailed interval mean?
+        answer: "Burn-in drops early draws that reflect the start. Thinning keeps every k-th draw but adds no information. The HDI is the narrowest interval holding a share of the mass, the equal-tailed one cuts equal tails, and az.summary reports an 89% equal-tailed interval."
+        cards:
+          - title: Burn-in
+            body: "PyMC discards the `tune=` draws, where PyMC3 code sliced `trace[1000:]`"
+          - title: Thinning
+            body: "Reduces storage and correlation, but **adds no information**"
+            accent: "0F7490"
+          - title: HDI or equal-tailed
+            body: "They match for symmetric posteriors. `az.summary` gives an **89%** equal-tailed interval"
+            accent: "D4621A"
+        takeaway: ESS is what matters, and you should state which interval you quote.
+        source: notes/02-mcmc-and-pymc.md
+        notes: The default interval columns are eti89_lb and eti89_ub. Quoting that as 95% is one of the listed pitfalls.
+
+      - layout: statement
+        beat: problem
+        level: core
+        section: "Is the sampler working? Diagnostics"
+        title: The eight schools funnel
+        recall: What went wrong with the obvious eight schools model?
+        answer: "It gave 88 divergences and an ESS of 64 for tau, because when tau is small the thetas must crowd together and no single step size suits both the wide top and the narrow neck."
+        kicker: Rubin's eight schools
+        statement: "Written the obvious way, the eight schools model gives 88 divergences and an ESS of 64 for tau."
+        takeaway: When tau falls the valid region narrows into a funnel, and the chain stops visiting the neck.
+        source: notes/02-mcmc-and-pymc.md
+        notes: A divergence is a trajectory where the numerical simulation blew up, so the sampler could not follow the surface. Because it skips the neck, tau's estimate comes out too high.
+
+      - layout: compare
+        beat: practice
+        level: core
+        section: "Is the sampler working? Diagnostics"
+        title: Change the coordinates, not the model
+        recall: What is the non-centred fix and what did it change?
+        answer: "Sample raw from Normal(0, 1) and set theta = mu + tau times raw. Divergences fell from 88 to 2 and tau's ESS rose from 64 to over 2,000."
+        left:
+          title: Centred
+          tag: theta ~ Normal(mu, tau)
+          bullets:
+            - "88 divergences"
+            - "tau ESS 64"
+            - "tau mean 4.28"
+        right:
+          title: Non-centred
+          tag: theta = mu + tau * raw
+          bullets:
+            - "2 divergences"
+            - "tau ESS 2,143"
+            - "tau mean 3.63"
+        emphasis: right
+        takeaway: The non-centred trick is the first thing to try in any hierarchical model, and the model itself is unchanged.
+        source: notes/02-mcmc-and-pymc.md
+        notes: The two remaining divergences would be worth clearing with a higher target_accept. Chapter 7 teaches the model itself using this non-centred form.
+
+  - title: Converging, and migrating from PyMC3
+    divider: false
+    summary: Making chains converge · Flat priors · The PyMC3 map · Pitfalls
+    notes: We turn the diagnostics into a checklist of fixes, then the practical map from older code.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Making MCMC converge
+        title: Probably your model is wrong
+        recall: What is the Folk Theorem of Statistical Computing?
+        answer: "If you are having computational problems, probably your model is wrong."
+        kicker: BMH, ch. 3
+        statement: "If you are having computational problems, probably your model is wrong."
+        takeaway: When a sampler will not converge, reconsider the model before adding draws.
+        source: notes/02-mcmc-and-pymc.md
+        notes: This is the Folk Theorem of Statistical Computing as BMH ch. 3 states it. The fixes in the next table all work by changing the model or its starting point.
+
+      - layout: table
+        beat: practice
+        section: Making MCMC converge
+        title: Six fixes for a chain that will not settle
+        recall: What are the six tips for making MCMC converge?
+        answer: "Start in a sensible place, use priors that rule out nonsense, run several chains, prefer NUTS, rescale inputs, and when it will not converge reconsider the model."
+        header: [Tip, How]
+        widths: [3, 5]
+        rows:
+          - ["Start in a sensible place", "initvals=pm.find_MAP(), or the data's sample statistics"]
+          - ["Rule out nonsense", "bounded supports, weakly informative scales"]
+          - ["**Run several chains**", "**chains=4**, disagreement reveals multimodality"]
+          - ["Prefer NUTS", "unless you have discrete variables"]
+          - ["**Rescale inputs**", "**mean 0, sd 1**, as Challenger shows"]
+        highlight: [2, 4]
+        takeaway: Run several chains and rescale first. Both are cheap and catch most failures.
+        source: notes/02-mcmc-and-pymc.md
+        notes: The sixth tip is the folk theorem. A start= argument in PyMC3 is now initvals.
+
+      - layout: compare
+        beat: pitfalls
+        level: core
+        section: Making MCMC converge
+        title: A flat prior with two data points
+        kicker: McElreath, Statistical Rethinking, ch. 8
+        recall: What happened to the chain with flat priors and two observations, and how was it fixed?
+        answer: "With flat priors alpha's mean was 1.8e8 with ESS 8, R-hat 1.29 and 678 divergences. Normal(1, 10) and HalfCauchy(0, 1) priors gave ESS 861, R-hat 1.00 and 1 divergence."
+        left:
+          title: Flat priors
+          tag: The sick chain
+          bullets:
+            - "alpha mean 1.8e8"
+            - "ESS 8, R-hat 1.29"
+            - "678 divergences"
+        right:
+          title: Weak priors
+          tag: One line fixes it
+          bullets:
+            - "alpha mean 0, sd 1.8"
+            - "ESS 861, R-hat 1.00"
+            - "1 divergence"
+        emphasis: right
+        takeaway: The fix costs one line, and the prior is washed out where there is data.
+        source: notes/02-mcmc-and-pymc.md
+        notes: The data are y = -1 and 1. McElreath's own run gave a mean of 21,583,691, 7 effective samples and R-hat 1.36. The re-run here uses two chains of 2,000 draws.
+
+      - layout: image
+        beat: pitfalls
+        section: Making MCMC converge
+        title: Sick chains drift, healthy chains overlap
+        kicker: McElreath, Fig. 8.5
+        recall: What do sick and healthy chains look like in trace plots?
+        answer: "Healthy chains overlap into a caterpillar and sick ones drift and spike. R-hat is a warning, never a certificate, since 1.00 can come from an invalid chain."
+        image: ../../assets/sources/images/statistical-rethinking-fig8-5.png
+        caption: "Flat priors on top, weak priors in the bottom row."
+        bullets:
+          - "**Healthy:** an overlapping caterpillar"
+          - "**Sick:** drift and spikes"
+          - "**R-hat:** a warning, not a certificate"
+        takeaway: Look at the trace as well as the number, because R-hat of 1.00 can come from an invalid chain.
+        source: notes/02-mcmc-and-pymc.md
+        notes: A non-identifiable model, mu = a1 + a2 with flat priors, behaves the same way. There a1 wanders to about -1,195 with R-hat 2.83 and Normal(0, 10) priors repair it.
+
+      - layout: cards
+        beat: practice
+        level: deep
+        section: Making MCMC converge
+        title: Non-identifiable models and how many samples
+        kicker: McElreath, Statistical Rethinking, ch. 8
+        recall: What happens when only a sum of two parameters is constrained, and how many effective samples is enough?
+        answer: "With mu = a1 + a2 and flat priors, a1 wanders to about -1,195 with R-hat 2.83 and 1 effective sample, and Normal(0, 10) priors give 1,223. About 200 effective samples is enough for a posterior mean."
+        cards:
+          - title: Flat priors
+            body: "a1 wanders to about **-1,195**, R-hat **2.83**, ESS 1"
+            accent: "D4621A"
+          - title: Normal(0, 10)
+            body: "**1,223** effective samples"
+            accent: "0F7490"
+          - title: How many is enough
+            body: "About **200** for a mean, roughly **ten times** that for a variance"
+        takeaway: When only a sum is constrained, weak priors are what make the chain identifiable.
+        source: notes/02-mcmc-and-pymc.md
+        notes: The chapter predates divergences and bulk and tail ESS, so use the diagnostics table, not its R-hat alone. Four parallel chains raised the ESS about fourfold over one.
+
+      - layout: table
+        beat: fundamentals
+        section: PyMC3 to current PyMC
+        title: The PyMC3 to PyMC map
+        recall: What are the main renames from PyMC3 to current PyMC?
+        answer: "import pymc as pm, pytensor.tensor as pt, sigma instead of sd, initval instead of testval, az.plot_trace and az.summary, idata.posterior for the trace, and tune instead of slicing the burn-in."
+        header: [PyMC3, Current PyMC]
+        widths: [3, 4]
+        rows:
+          - ["import pymc3 as pm", "import pymc as pm"]
+          - ["sd=, testval=", "sigma=, initval="]
+          - ["pm.traceplot, pm.summary", "az.plot_trace, az.summary"]
+          - ["trace[\"x\"]", "idata.posterior[\"x\"]"]
+          - ["trace[1000:] for burn-in", "tune=1000"]
+          - ["pm.ElemwiseCategorical", "pm.CategoricalGibbsMetropolis"]
+        highlight: [4]
+        lead: Code in this pillar runs on PyMC 6.4 and ArviZ 1.3.
+        takeaway: Most code on the web before 2022 is PyMC3, so translate it before you run it.
+        source: notes/02-mcmc-and-pymc.md
+        notes: The note lists more rows, including testval, pm.glm.GLM.from_formula (use bambi) and pm.iter_sample (removed). The return value is an xarray DataTree. Samples have dimensions chain, draw, then the parameter's own, so use reshape of minus one by k for a vector.
+
+      - layout: cards
+        beat: pitfalls
+        level: core
+        section: Pitfalls
+        title: Six sampling pitfalls
+        recall: Which sampling pitfalls does the note list?
+        answer: "One chain, reading a high acceptance rate as good, more draws instead of a better model, ignoring a few divergences, shuffling draws between variables, and averaging across chains in a mixture."
+        cards:
+          - title: One chain
+            body: "It cannot disagree with anything. Run **four** from dispersed starts"
+          - title: High acceptance
+            body: "The 0.002 step accepted 98.7% with 11 effective samples"
+            accent: "0F7490"
+          - title: More draws
+            body: "Metropolis needed 120,000. Rescale, reparameterise or marginalise"
+            accent: "D4621A"
+          - title: A few divergences
+            body: "They mark regions the sampler cannot enter, so results are biased"
+          - title: Shuffled draws
+            body: "Derive quantities **within** each sample"
+            accent: "0F7490"
+          - title: Mixture means
+            body: "Label switching makes them meaningless. Order the parameters"
+            accent: "D4621A"
+        takeaway: Most of these fail silently, so run the checks every time.
+        source: notes/02-mcmc-and-pymc.md
+        notes: The note's table has a seventh row, quoting a default interval as 95% when az.summary reports 89%.
+
+  - title: Choosing a prior
+    divider: false
+    summary: Kinds of prior · Flat is a choice · Jeffreys · Prior predictive checks · A default
+    notes: The sampler is only as good as what it is given, so we turn to the prior and how to test one.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Kinds of prior
+        title: The objective default is often worse
+        recall: Why can a wide prior on a logistic slope be a poor default?
+        answer: "A Normal(0, 100) on a logistic slope looks like modest ignorance and actually says the failure rate is almost certainly 0% or 100%."
+        kicker: The problem
+        statement: "A Normal(0, 100) on a logistic slope looks like modest ignorance. It actually says the failure rate is almost certainly 0% or 100%."
+        takeaway: The useful complaint about priors is not that they are subjective but that the objective default is often worse.
+        source: notes/03-priors-and-bandits.md
+        notes: The chapter is about choosing a prior deliberately, checking one by simulation, and seeing when the data overrules it.
+
+      - layout: table
+        beat: fundamentals
+        section: Kinds of prior
+        title: Six kinds of prior and their catches
+        recall: What kinds of prior are on offer and what is the caveat of each?
+        answer: "Flat is not uninformative after a transform. Weakly informative is the modern default. Informative must be defensible. Empirical Bayes risks double-counting. Conjugate is convenience. Jeffreys is invariant but can be improper."
+        header: [Kind, Example, Caveat]
+        widths: [2, 3, 4]
+        rows:
+          - ["Flat", "Uniform(0, 1) for a rate", "not uninformative after a transform"]
+          - ["**Weakly informative**", "Cauchy(0, 2.5) on a scaled log-odds slope", "**the modern default**, check on the outcome scale"]
+          - ["Informative", "Beta(30, 970) for a 3% rate", "must be defensible to a sceptic"]
+          - ["Empirical Bayes", "centre on the sample mean", "double-counts the data"]
+          - ["Conjugate", "Beta for Binomial", "convenience, not insight"]
+          - ["Jeffreys", "Beta(1/2, 1/2) for a rate", "invariant, can be improper"]
+        highlight: [1]
+        takeaway: Prefer a weakly informative prior and check it on the scale of the outcome.
+        source: notes/03-priors-and-bandits.md
+        notes: BMH adds three rules. Revise a prior that gives nonsense, never put zero prior mass where the truth could be, and watch for priors that become informative after a transform.
+
+      - layout: cards
+        beat: practice
+        level: core
+        section: Kinds of prior
+        title: A wide prior on the logit is not wide on the rate
+        recall: What share of mass does Normal(0, 10) on the logit put on rates below 1% or above 99%?
+        answer: "65%. Normal(0, 1.5) puts almost none there and Cauchy(0, 2.5) puts 32%."
+        cards:
+          - title: Flat on p
+            body: "On the logit its sd is 1.81, with **46%** within plus or minus 1"
+          - title: Normal(0, 10)
+            body: "**65%** of mass on p below 1% or above 99%"
+            accent: "D4621A"
+          - title: Normal(0, 1.5)
+            body: "**0.00** there"
+            accent: "0F7490"
+          - title: Cauchy(0, 2.5)
+            body: "**0.32** there, heavy tails on purpose"
+            accent: "0F7490"
+        takeaway: Normal(0, 10) on the logit is a strong prior that the outcome is nearly deterministic.
+        source: notes/03-priors-and-bandits.md
+        notes: "A uniform p is a bell shape on the logit. Picking a Beta is the same exercise on an easier scale: Beta(3, 97) says around 3% give or take, and Beta(30, 970) has the same mean and claims ten times the evidence."
+
+      - layout: bullets
+        beat: fundamentals
+        level: deep
+        section: Kinds of prior
+        title: Jeffreys is flat in a way that survives a transform
+        recall: What does Jeffreys' rule say and what does it give for a Poisson rate?
+        answer: "The prior is proportional to the square root of the Fisher information. For a Poisson rate it gives theta to the minus one half, so x = 10 gives a Gamma(10.5) posterior with mean 10.5, against 11.0 under a flat prior."
+        bullets:
+          - "**The rule:** prior proportional to the square root of the Fisher information"
+          - "**It transforms correctly:** reparametrise and the rule gives the same posterior"
+          - "**Poisson, x = 10:** Gamma(10.5), mean 10.5, against 11.0 flat"
+        aside:
+          title: Two limits
+          body: "With ten normal means the joint Jeffreys prior is flat and can give disastrous results."
+        takeaway: Jeffreys answers the objection to flat priors in one parameter, but no single prior is uninformative for every target.
+        source: notes/03-priors-and-bandits.md
+        notes: The flat default is also where the winner's curse begins. For the top gene of 6,033 in a prostate study, with x = 5.29, a flat prior returns 5.29 and the empirical Bayes prior returns 4.11.
+
+      - layout: image
+        beat: fundamentals
+        level: deep
+        section: Kinds of prior
+        title: Jeffreys sits on the confidence density
+        kicker: Efron and Hastie, Fig. 13.1
+        recall: How do the flat and Jeffreys posteriors compare with the confidence density for the Poisson rate?
+        answer: "The flat-prior posterior sits about 0.5 to the right of the confidence density, and the Jeffreys posterior is nearly on top of it."
+        image: ../../assets/sources/images/computer-age-statistical-inference-fig13-1.png
+        caption: "Posterior of the Poisson rate after observing x = 10 under two priors."
+        bullets:
+          - "**Flat:** about 0.5 to the right"
+          - "**Jeffreys:** nearly on top"
+        takeaway: In one parameter Jeffreys tends to match frequentist coverage, which a flat prior does not.
+        source: notes/03-priors-and-bandits.md
+        notes: The book's second case is a sample correlation of 0.498 from 22 students, where the Jeffreys 95% credible interval is 0.093 to 0.750, nearly the Neyman confidence interval.
+
+      - layout: table
+        beat: fundamentals
+        section: Kinds of prior
+        title: Useful distributions for priors
+        recall: Which distribution suits which kind of parameter?
+        answer: "Beta for rates, Gamma for positive rates, Half-Normal or similar for standard deviations, Normal(0, s) for coefficients, and LKJ for covariance matrices."
+        header: [Distribution, Support, Prior for]
+        widths: [3, 2, 5]
+        rows:
+          - ["Beta(a, b)", "[0, 1]", "rates and probabilities"]
+          - ["Gamma(a, b)", "(0, inf)", "positive rates and scales"]
+          - ["**Half-Normal, Half-Cauchy, Exponential**", "(0, inf)", "**standard deviations**, over Uniform(0, big)"]
+          - ["Normal(0, s)", "all reals", "regression coefficients"]
+          - ["Wishart or LKJ", "positive-definite matrices", "covariance matrices, prefer LKJ in PyMC"]
+        highlight: [2]
+        lead: "A Beta(1, 1) prior with X successes in N trials gives Beta(1 + X, 1 + N - X)."
+        takeaway: That one conjugate line powers the bandit and the Bayesian A/B test in the next chapters.
+        source: notes/03-priors-and-bandits.md
+        notes: In Beta(a, b), a - 1 counts prior successes and b - 1 prior failures. Exp(b) equals Gamma(1, b).
+
+      - layout: cards
+        beat: practice
+        level: core
+        section: Prior predictive checks
+        title: Simulate from the prior before you see outcomes
+        recall: What does the prior predictive check show for Normal(0, 100) on the Challenger model?
+        answer: "It expects all 23 launches to fail, or none, about 29% of the time. Normal(0, 5) gives 18% and Normal(0, 1.5) gives 2%."
+        cards:
+          - title: Normal(0, 100)
+            body: "P(0 or 23 failures of 23) = **0.29**"
+            accent: "D4621A"
+          - title: Normal(0, 5)
+            body: "P(0 or 23 failures of 23) = **0.18**"
+          - title: Normal(0, 1.5)
+            body: "P(0 or 23 failures of 23) = **0.02**"
+            accent: "0F7490"
+        takeaway: The check costs one line, pm.sample_prior_predictive, and you run it before fitting.
+        source: notes/03-priors-and-bandits.md
+        notes: A team that knew nothing about O-rings would still doubt a 29% chance of all or none failing. It pairs with the posterior predictive check from chapter 1, which asks the same question after fitting.
+
+      - layout: flow
+        beat: fundamentals
+        section: A default for logistic regression
+        title: Gelman's default prior for logistic regression
+        kicker: Gelman, Jakulin, Pittau and Su, 2008
+        recall: What are the steps of Gelman's default prior?
+        answer: "Scale non-binary inputs to mean 0 and sd 0.5, put independent Cauchy(0, 2.5) priors on the coefficients, and a Cauchy(0, 10) on the intercept."
+        steps:
+          - label: Scale
+            sub: Non-binary inputs to mean 0 and sd 0.5
+          - label: Coefficients
+            sub: Independent Cauchy(0, 2.5)
+            accent: "D4621A"
+          - label: Intercept
+            sub: Cauchy(0, 10)
+        caption: In their cross-validation across a corpus of datasets, the Cauchy beat Gaussian and Laplace alternatives.
+        takeaway: The prior only means something once the inputs are scaled, so scale first.
+        source: notes/03-priors-and-bandits.md
+        notes: Their case for the scale is that on this input scale a move from low to high by more than 5 log-odds is rare, and the prior keeps a small amount of information everywhere.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: A default for logistic regression
+        title: Complete separation needs a prior
+        recall: How do the priors differ under complete separation?
+        answer: "Maximum likelihood has no finite answer. The flat fit stops at slope 100.3, Normal(0, 100) gives 39.1, Normal(0, 10) gives 9.6 with 99% and Gelman's Cauchy gives 3.6 and 86%."
+        header: [Prior, Slope, P(y = 1) at largest x]
+        widths: [3, 1, 2]
+        rows:
+          - ["Flat (maximum likelihood)", "100.3", "1.000"]
+          - ["Normal(0, 100)", "39.1", "1.000"]
+          - ["Normal(0, 10)", "9.6", "0.992"]
+          - ["**Cauchy(0, 2.5)**", "**3.6**", "**0.859**"]
+        highlight: [3]
+        lead: Six observations, with all the 1s on one side.
+        takeaway: Gelman's default gives 86% from six observations, which is about what six observations are worth.
+        source: notes/03-priors-and-bandits.md
+        notes: The flat fit stops at 100 only because the optimiser gives up. Chapter 6 of the statistics pillar showed the same failure as an enormous coefficient with an absurd standard error.
+
+  - title: The prior washes out
+    divider: false
+    summary: Washout · Small data · Ridge and lasso · Imagined data · Out-of-sample
+    notes: How much the prior matters depends on N, and ridge and lasso turn out to be priors under another name.
+    slides:
+      - layout: statement
+        beat: problem
+        level: core
+        section: The prior washes out
+        title: Only the likelihood grows with N
+        recall: Why does the prior wash out as data grows?
+        answer: "The log posterior is the log-likelihood plus the log-prior. The log-likelihood is a sum over data points so it grows with N, and the log-prior does not."
+        kicker: Why priors wash out
+        statement: "The log-likelihood is a sum over data points and grows with N. The log-prior does not."
+        takeaway: As N grows, any two priors with the same support give the same posterior.
+        source: notes/03-priors-and-bandits.md
+        notes: BMH's example pits a flat Beta(1, 1) against a biased Beta(2, 10), with a true rate of 0.6.
+
+      - layout: table
+        beat: practice
+        section: The prior washes out
+        title: The gap between two priors shrinks with N
+        recall: How big is the gap between the flat and the biased prior at N = 0, 32 and 500?
+        answer: "It is 0.333 at N = 0, 0.131 at N = 32 and 0.010 at N = 500."
+        header: [N, "Flat Beta(1, 1)", "Biased Beta(2, 10)", Gap]
+        widths: [1, 2, 2, 1]
+        rows:
+          - ["0", "0.500", "0.167", "0.333"]
+          - ["8", "0.600", "0.350", "0.250"]
+          - ["32", "0.676", "0.545", "0.131"]
+          - ["128", "0.585", "0.550", "0.035"]
+          - ["**500**", "**0.610**", "**0.600**", "**0.010**"]
+        highlight: [4]
+        lead: The true rate is 0.6.
+        takeaway: The prior matters most at small N, exactly where Bayesian methods matter most.
+        source: notes/03-priors-and-bandits.md
+        notes: The gap does not fall smoothly, because each N is one stretch of one data stream. The 32-observation row overshoots 0.6 under the flat prior. Priors wash out toward what the data says, not toward the truth.
+
+      - layout: image
+        beat: practice
+        section: The prior washes out
+        title: Four panels of the same washout
+        kicker: Generated from the same setup
+        recall: What do the washout panels show?
+        answer: "The two posteriors start far apart and are nearly identical by 500 observations. A prior with zero mass at the truth never washes out."
+        image: ../../assets/sources/images/bayes-prior-washout.png
+        caption: "Flat and Beta(2, 10) priors after 0, 8, 64 and 500 observations."
+        bullets:
+          - "**N = 0:** far apart"
+          - "**N = 500:** nearly identical"
+          - "**Zero mass at the truth:** never washes out"
+        takeaway: Priors wash out toward what the data says, and a prior with zero mass at the truth never does.
+        source: notes/03-priors-and-bandits.md
+        notes: The vertical line in each panel marks the true rate 0.6.
+
+      - layout: cards
+        beat: practice
+        level: core
+        section: The prior washes out
+        title: The locomotive problem across priors
+        kicker: Think Bayes, ch. 3
+        recall: How do posterior means for the fleet size change with the prior and the data?
+        answer: "Flat with train 60 only gives 207, 333 and 552 for bounds of 500, 1,000 and 2,000. Flat with trains 30, 60, 90 gives 152, 164 and 171. A power-law prior gives 131, 133 and 134."
+        cards:
+          - title: Flat, train 60 only
+            body: "**207, 333, 552** for bounds 500, 1,000, 2,000"
+            accent: "D4621A"
+          - title: Flat, three trains
+            body: "**152, 164, 171** for the same bounds"
+          - title: Power law N^-1
+            body: "**131, 133, 134**, nearly insensitive to the bound"
+            accent: "0F7490"
+        takeaway: More data pulls priors together but not all the way, and better background information does the rest.
+        source: notes/03-priors-and-bandits.md
+        notes: Firm sizes follow roughly a power law, so a prior proportional to N^-1 is more realistic. With a bound of 1,000 its 90% credible interval is 91 to 243. Downey's rule is to use the background information you have rather than pretend to know less.
+
+      - layout: compare
+        beat: pitfalls
+        level: core
+        section: The prior washes out
+        title: Plenty of data agrees, thin data does not
+        recall: How do the Euro coin and the Bruins series differ in how much the prior matters?
+        answer: "After 250 spins two priors give the same median of 56 and the same 90% interval of 51 to 61. With four games of hockey data a prior sd of 0.3 gives the Bruins 57% of the series and an sd of 0.85 gives 80%."
+        left:
+          title: Euro coin, 250 spins
+          tag: The prior washes out
+          bullets:
+            - "Medians both 56"
+            - "90% intervals both 51 to 61"
+            - "Means 55.95 and 55.74"
+        right:
+          title: Bruins, four games
+          tag: The prior decides
+          bullets:
+            - "Prior sd 0.3 gives 57%"
+            - "Prior sd 0.85 gives 80%"
+            - "Same data in both"
+        emphasis: right
+        takeaway: With little data the prior can decide the answer, so show how much it matters.
+        source: notes/03-priors-and-bandits.md
+        notes: "Downey adds two caveats. Convergence needs both people to agree on the model as well as the data. And a hypothesis with prior probability 0 keeps posterior probability 0, which is Cromwell's rule: never assign 0 to anything remotely possible."
+
+      - layout: table
+        beat: fundamentals
+        section: Regularisation is a prior
+        title: Ridge and lasso are priors in disguise
+        recall: Which prior does each frequentist method correspond to?
+        answer: "Ordinary least squares is maximum likelihood with a flat prior, ridge is the MAP with a Normal(0, tau) prior, lasso is the MAP with a Laplace prior, and the penalty strength is the prior precision."
+        header: [Frequentist, Bayesian equivalent]
+        widths: [3, 5]
+        rows:
+          - ["Ordinary least squares", "maximum likelihood, flat prior on beta"]
+          - ["**Ridge** (L2 penalty)", "**MAP with a Normal(0, tau) prior** on each beta"]
+          - ["**Lasso** (L1 penalty)", "**MAP with a Laplace prior** on each beta"]
+          - ["Penalty strength lambda", "prior precision, tighter prior means larger lambda"]
+        highlight: [1, 2]
+        takeaway: With unit noise, a Normal(0, tau) prior is a ridge penalty of 1 over tau squared.
+        source: notes/03-priors-and-bandits.md
+        notes: James et al. state the same pairing. Ridge is both mode and mean under Gaussian priors, and lasso is the posterior mode under a Laplace prior. In the orthonormal case ridge divides each coefficient by 1 + lambda and lasso subtracts lambda over 2 and clips at zero.
+
+      - layout: statement
+        beat: pitfalls
+        level: core
+        section: Regularisation is a prior
+        title: Lasso zeros are not a belief in sparsity
+        recall: Does a Laplace prior give a sparse posterior?
+        answer: "No. Lasso's zeros come from the geometry of the L1 penalty at the MAP. The posterior mean under the same prior is not sparse, and none of the 24,000 draws is exactly zero."
+        kicker: Reading lasso wrongly
+        statement: "Not one of 24,000 draws under the Laplace prior is exactly zero. Lasso's sparsity comes from the MAP, not from a belief in sparsity."
+        takeaway: If you want a Bayesian to say a coefficient is zero, the Laplace prior is not doing it.
+        source: notes/03-priors-and-bandits.md
+        notes: The ridge check is exact. On 60 rows and six inputs, the MAP and scikit-learn's ridge agree to within a unit in the third decimal. Lasso and the MAP agree on which coefficients vanish.
+
+      - layout: bullets
+        beat: fundamentals
+        level: deep
+        section: Regularisation is a prior
+        title: A prior is worth imagined data
+        kicker: McElreath, Statistical Rethinking, ch. 4
+        recall: How many observations is a Normal prior on a mean worth?
+        answer: "About n = 1 over sd squared. On the heights data Normal(178, 0.1) equals 100 heights and Normal(178, 20) equals 0.0025 of one. The narrow prior kept mu at 177.86 against 154.61, and sigma jumped from 7.73 to 24.52."
+        bullets:
+          - "**Strength:** Normal(mu, sd) is worth about 1/sd^2 observations"
+          - "**Normal(178, 0.1):** worth 100 heights"
+          - "**Normal(178, 20):** worth 0.0025 of one"
+          - "**Spillover:** a prior on one parameter moves the others"
+        aside:
+          title: Sigma absorbs the misfit
+          body: "Mu stays at 177.86 against 154.61, and sigma jumps from 7.73 to 24.52."
+        takeaway: Sensitivity checks must refit the whole model, because one prior moves every parameter.
+        source: notes/03-priors-and-bandits.md
+        notes: The data are the !Kung census, n = 352. With a sensible prior the posterior over a regression line tightens as data arrive, and the slope at N = 352 is 0.90 cm per kg with sd 0.04.
+
+      - layout: image
+        beat: practice
+        level: deep
+        section: Regularisation is a prior
+        title: Tight priors win out of sample
+        kicker: McElreath, Fig. 6.9
+        recall: What does the simulation show about regularising priors out of sample?
+        answer: "Training deviance falls with every added parameter, but test deviance is lowest at three, the true model. Tighter priors make training deviance worse and test deviance better for over-parameterised models, and at N = 100 the data overwhelm even Normal(0, 0.2)."
+        image: ../../assets/sources/images/statistical-rethinking-fig6-9.png
+        caption: "Training and test deviance by number of parameters under three priors."
+        bullets:
+          - "**Training deviance:** falls with each parameter"
+          - "**Test deviance:** lowest at the true three"
+          - "**Tighter priors:** help over-fitted models"
+        takeaway: Regularisation is the prior, measured on held-out data, and its value depends on N.
+        source: notes/03-priors-and-bandits.md
+        notes: Models with one to five parameters were fitted to 10,000 simulated training sets. At N = 20 with Normal(0, 0.2) the four- and five-parameter models are barely worse than the true one. McElreath calls multilevel models adaptive regularisation.
+
+  - title: Empirical Bayes and priors in practice
+    divider: false
+    summary: Winner's curse · Robbins · Missing species · Elicitation · Pitfalls
+    notes: A prior fitted across many experiments takes back the winner's curse.
+    slides:
+      - layout: statement
+        beat: problem
+        section: "The winner's curse: shrinkage as a prior on experiments"
+        title: Winners report three times their true lift
+        recall: How much do significant winners overstate their lift in the simulation?
+        answer: "Winners report a mean observed lift of 0.759 against a true 0.246, about three times, because conditioning on significance selects the experiments whose noise pointed up."
+        kicker: The problem
+        statement: "A team that ships every significant win overstates its gains: winners report 0.759 points against a true 0.246."
+        takeaway: Selecting on significance inflates reported effects, and a prior is how to remove the inflation.
+        source: notes/03-priors-and-bandits.md
+        notes: The simulation runs 2,000 experiments with true lifts Normal(0, 0.2) points and a standard error of 0.3. Of them 91 are significant wins.
+
+      - layout: cards
+        beat: practice
+        level: core
+        section: "The winner's curse: shrinkage as a prior on experiments"
+        title: Shrinking removes most of the inflation
+        recall: What does shrinking by a prior estimated across all experiments do to the winners?
+        answer: "The prior sd is estimated at 0.192 and the shrink factor is 0.290. The mean among winners falls from 0.759 to 0.220, against a truth of 0.246."
+        cards:
+          - title: Observed
+            body: "Winners average **0.759**"
+            accent: "D4621A"
+          - title: Shrunk
+            body: "Factor **0.290** gives **0.220**"
+            accent: "0F7490"
+          - title: Truth
+            body: "Winners truly average **0.246**"
+        takeaway: The prior comes from the whole population, where one experiment's own result is a tiny share, so its data is not counted twice.
+        source: notes/03-priors-and-bandits.md
+        notes: The prior is the variance of the observed lifts less the known noise. This is empirical Bayes in the form that avoids BMH's objection. The simulation has known noise and a truly Normal population, and real programmes need the second checked.
+
+      - layout: bullets
+        beat: fundamentals
+        level: deep
+        section: "The winner's curse: shrinkage as a prior on experiments"
+        title: Robbins' formula needs no prior family
+        kicker: Efron and Hastie, ch. 6
+        recall: What is Robbins' formula and what does it give for a customer with no claims?
+        answer: "E of theta given x equals (x + 1) y(x+1) over y(x), where y(x) is the number of cases with count x. With 7,840 policies at no claims and 1,317 at one, it gives 0.168 expected claims."
+        bullets:
+          - "**Formula:** E(theta given x) = (x + 1) y(x+1) / y(x)"
+          - "**Auto policies:** 7,840 had no claims, 1,317 one, 239 two"
+          - "**No claims:** 1 x 1,317 / 7,840 = 0.168"
+        aside:
+          title: Erratic where counts are thin
+          body: "At x = 5 it returns 6.00, against about 1.34 from a fitted gamma prior."
+        takeaway: The observed counts already carry the prior's information, so the prior can be read off them.
+        source: notes/03-priors-and-bandits.md
+        notes: The table is one year of claims on 9,461 policies. The book later calls this f-modelling, with the alternative g-modelling fitting the prior itself. In a 1,000-case simulation the g-model's estimate was far less variable at similar bias.
+
+      - layout: image
+        beat: practice
+        level: deep
+        section: "The winner's curse: shrinkage as a prior on experiments"
+        title: Predicting species not yet seen
+        kicker: Efron and Hastie, Fig. 6.2
+        recall: How many new butterfly species does Fisher's estimate predict for half a further trapping period?
+        answer: "Corbet's data had 118 species caught once, 74 twice and 44 three times, and Fisher's estimate gives 45.2 plus or minus 11.2 new species for half the original trapping time."
+        image: ../../assets/sources/images/computer-age-statistical-inference-fig6-2.png
+        caption: "Expected new species against extra trapping time, nonparametric and gamma model."
+        bullets:
+          - "**Caught once, twice, three times:** 118, 74, 44"
+          - "**Half more time:** 45.2 plus or minus 11.2 new species"
+          - "**The series fails** for more than one unit"
+        takeaway: The same idea predicts what has not been seen, with a stated band on the answer.
+        source: notes/03-priors-and-bandits.md
+        notes: The gamma-prior version gives 123 for double the time, as educated guessing. On Shakespeare's 884,647 words a new canon of equal size would bring 11,430 plus or minus 178 unseen words.
+
+      - layout: bullets
+        beat: practice
+        section: Eliciting priors from experts
+        title: Get a prior out of an expert's head
+        recall: What is trial roulette?
+        answer: "Give the expert a grid of bins and twenty chips, have them place chips where they think the value lies, then fit a distribution to the chip histogram."
+        bullets:
+          - "**Trial roulette:** twenty chips on a grid of bins, then fit a distribution"
+          - "**It works** with people who would never write down a Beta"
+          - "**Stock returns:** beliefs become Normal priors on four means and a Wishart on the covariance"
+        aside:
+          title: The warning
+          body: "Finance has a low signal-to-noise ratio, and N assets have N(N-1)/2 correlations to estimate."
+        takeaway: Start from the sample covariance, or drop correlations you do not need.
+        source: notes/03-priors-and-bandits.md
+        notes: Posterior means and correlations from the stock example feed a mean-variance portfolio optimiser.
+
+      - layout: table
+        beat: pitfalls
+        level: core
+        section: Pitfalls
+        title: Five prior pitfalls and their fixes
+        recall: What prior pitfalls does the note list?
+        answer: "Calling a wide prior uninformative, fitting the prior on the same data, zero mass at the truth, unscaled inputs with a default prior, and reading lasso as a sparsity belief."
+        header: [Pitfall, Fix]
+        widths: [4, 4]
+        rows:
+          - ["Calling a wide prior uninformative", "Simulate outcomes from the prior"]
+          - ["Fitting the prior on the same data", "Use earlier data or a population of other units"]
+          - ["Zero mass at the truth", "Use generous supports"]
+          - ["Unscaled inputs with a default prior", "Scale first, as Gelman et al. specify"]
+          - ["Reading lasso as a sparsity belief", "Use MAP if you want zeros, and say so"]
+        highlight: [0]
+        takeaway: Simulate from the prior, scale the inputs and keep the support generous.
+        source: notes/03-priors-and-bandits.md
+        notes: Normal(0, 10) on the logit puts 65% on p below 1% or above 99%. Cauchy(0, 2.5) means little if the input is in pounds or milliseconds.
+
+  - title: Rules of thumb
+    agenda: false
+    divider: false
+    slides:
+      - layout: cards
+        beat: wrap
+        title: Rules of thumb for sampling and priors
+        recall: What are the rules of thumb for sampling and priors?
+        answer: "A high acceptance rate is not health. Look at r_hat, ESS and divergences before any result. Change the model when a sampler struggles. Simulate from the prior before you fit. Priors matter most when data is thin. Shrink lifts picked as winners."
+        cards:
+          - title: Acceptance is not health
+            body: "At step 0.002 Metropolis accepted **98.7%** with an ESS of **11**"
+          - title: Check before you read
+            body: "**r_hat, ESS and divergences** come before any result"
+            accent: "0F7490"
+          - title: Change the model
+            body: "Standardise, marginalise or go **non-centred**"
+            accent: "D4621A"
+          - title: Simulate the prior
+            body: "A wide prior on the logit is **not uninformative**"
+          - title: Thin data
+            body: "Priors matter most when data is thin, and **wash out** as it grows"
+            accent: "0F7490"
+          - title: Shrink winners
+            body: "Selection alone **inflates** lifts"
+            accent: "D4621A"
+        takeaway: Trust a sampler only after its diagnostics, and trust a prior only after it has been simulated.
+        source: README.md
+        notes: These are the sampling and priors rules from the README. They carry into the next lecture, where the posterior is used to decide.
+
+      - layout: bullets
+        beat: wrap
+        title: Where to go next
+        recall: What comes after compute and check?
+        answer: "Bandits and Thompson sampling, which turn a posterior into an allocation rule, then the Bayesian A/B test."
+        bullets:
+          - "**Next:** bandits and Thompson sampling (note 03b)"
+          - "**Then:** the Bayesian A/B test (note 04)"
+          - "**Practice:** rerun the coin sampler at three step sizes"
+        takeaway: With a checked posterior in hand, the next question is what to do with it.
+        source: README.md
+        notes: Thompson sampling follows the same Beta posterior into a different job, choosing the next arm to pull.

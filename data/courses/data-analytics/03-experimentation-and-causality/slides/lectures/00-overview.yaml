@@ -1,0 +1,284 @@
+# imported_hash: 2ca020663d3fe315
+# Opening lecture of the experimentation and causality series: did a change cause a result, the three steps and where each is taught.
+# make slides PILLAR=data-analytics/03-experimentation-and-causality LECTURE=00-overview STRICT=1 PREVIEW=1
+# Levels: a slide with no level is the intro, `core` is the core lesson, `deep` is the optional extension (code and maths).
+deck:
+  title: Experiments and Causality
+  subtitle: Did the change cause the result?
+  tagline: "One test · Many tests · No randomisation"
+  reference: "Notes: data-analytics/03-experimentation-and-causality/README.md"
+  output: 00-overview.pptx
+  notes: >-
+    This opening lecture runs no code. It gives you the map: the one question the module answers, the three steps that
+    group its notes, and which lecture teaches each. Everything named here is taught properly later.
+
+lecture:
+  overview: true
+  covers: [data-analytics/03-experimentation-and-causality/README.md]
+  next: [data-analytics/03-experimentation-and-causality/notes/01-ab-testing.md]
+  related:
+    - data-analytics/04-bayesian-analysis/README.md
+    - data-analytics/06-applied-analyses/README.md
+
+parts:
+  - title: The shape of the module
+    summary: One question · Randomise or defend · Larkspur and Fernhill
+    notes: First, the single question the module answers, and the two ways to answer it.
+    slides:
+      - layout: statement
+        beat: problem
+        section: The core
+        title: Did the change cause the result?
+        recall: What question does this module answer?
+        answer: "Whether a change caused a result, with an experiment when you can run one and with a design you can defend when you cannot."
+        kicker: The problem
+        statement: "Answer whether a change caused a result, with an experiment when you can run one and with a design you can defend when you cannot."
+        attribution: Larkspur, a fictional plant shop, and its checkout page
+        takeaway: Randomise when you can, and when you cannot, defend the design and name its assumption.
+        source: README.md
+        notes: >-
+          Larkspur is a fictional plant shop that wants to know whether a new checkout page raises conversion. The same
+          question comes back with no experiment available, and the module covers both cases.
+
+      - layout: flow
+        beat: fundamentals
+        section: The core
+        title: Three steps from one test to no randomisation
+        recall: What are the three steps of the module?
+        answer: "Design and read one test; run many tests safely; and what to do when you cannot randomise."
+        steps:
+          - {label: One test, sub: "split, unit, metric", accent: "1E3A5F"}
+          - {label: Many tests, sub: "variance, peeking, trust", accent: "0F7490"}
+          - {label: No randomisation, sub: "confounding, matching", accent: "D4621A"}
+        caption: "Each step assumes the one before it. Every step ends in what you can and cannot claim."
+        takeaway: Three steps take you from a single test, to a programme of tests, to causal claims without randomisation.
+        source: README.md
+        notes: >-
+          The first two steps are about experiments you control. The third is about the case where you cannot control
+          assignment and must argue the comparison is fair.
+
+      - layout: cards
+        beat: fundamentals
+        section: The core
+        title: Larkspur and Fernhill supply the examples
+        recall: Which fictional businesses run through the module?
+        answer: "Larkspur, a plant shop whose checkout test runs through steps 1 and 2, and Fernhill Home, the retailer from Applied Analyses, whose loyalty club drives step 3."
+        cards:
+          - {title: Larkspur checkout, accent: "1E3A5F", body: "A new checkout page: size it, split it, read it"}
+          - {title: Loyalty email, accent: "0F7490", body: "Subscribers ordered 1.21 more times a year, against a true effect of 0.30"}
+          - {title: Fernhill loyalty club, accent: "D4621A", body: "Members spent £95.54 more, against a true effect of £23.38"}
+        takeaway: The truth is known in each simulated case, so you can see how far a method lands from it.
+        source: README.md
+        notes: >-
+          Because the data is simulated, the true effect is known. That is what lets the module score six matching and
+          weighting methods against the answer.
+
+  - title: The three steps
+    summary: Design and read · Run many safely · When you cannot randomise
+    notes: The notes are grouped into three steps. Each step gets its own lecture.
+    slides:
+      - layout: table
+        beat: problem
+        section: Syllabus
+        title: Six notes in three steps
+        recall: What are the three steps of the experimentation and causality module?
+        answer: "Design and read one test; run many tests safely; when you cannot randomise."
+        header: [Step, Question it answers, Notes]
+        widths: [3.2, 4.8, 1.6]
+        rows:
+          - ["1. Design and read one test", "How big, split how, judged on what?", "1, 2"]
+          - ["2. Run many tests safely", "Can we trust a result, or a stack of them?", "3"]
+          - ["3. When you cannot randomise", "What is a fair comparison without a coin?", "4, 4b, 5"]
+        highlight: [0]
+        takeaway: Three steps cover six notes, and this series has one lecture per step.
+        source: README.md
+        notes: >-
+          Note 4b, on potential outcomes and quasi-experiments, sits between correlation and causation (4) and matching
+          and weighting (5), as the README's syllabus places it.
+
+      - layout: steps
+        beat: fundamentals
+        section: Syllabus
+        title: Step 1 sizes the test and checks the split
+        recall: What does step 1 teach you to do before looking at the outcome?
+        answer: "Size the test, check the sample ratio, analyse at the randomised unit, report ratios with numerator and denominator, and agree one OEC with guardrails."
+        steps:
+          - {title: Size it, text: "Halving the minimum detectable effect costs about 4 times the users"}
+          - {title: Check the split, text: "Sample ratio before the outcome"}
+          - {title: Analyse the unit, text: "Pageview-level analysis took 5% false positives to about 11%"}
+          - {title: One OEC, text: "Each guardrail gets a margin and a one-sided test", n: "★", accent: "D4621A"}
+        takeaway: Size the test, check the split, analyse at the randomised unit and agree one OEC in advance.
+        source: README.md
+        notes: >-
+          The Larkspur checkout test runs through step 1. Twyman's law closes it: a result that looks too good is usually a bug.
+
+      - layout: compare
+        beat: fundamentals
+        section: Syllabus
+        title: Step 2 trusts a test only after the checks
+        recall: What does step 2 add to a single test?
+        answer: "Variance reduction with CUPED, sequential boundaries for people who peek, trust checks such as SRM, and care when tests overlap or users affect each other."
+        emphasis: right
+        left:
+          title: One test, read once
+          bullets: ["Fixed sample size", "One look at the end", "Users independent"]
+        right:
+          title: Fifty tests, read all week
+          bullets: ["CUPED cuts the variance", "Sequential boundaries for peekers", "SRM treated as a stopped test"]
+        takeaway: Use sequential boundaries if people will look, and treat an SRM as a stopped test.
+        source: README.md
+        notes: >-
+          Daily peeking turned a 5% false positive rate into 25%. A 50.4/49.6 split on two million users is a broken pipeline,
+          not noise.
+
+      - layout: steps
+        beat: practice
+        section: Syllabus
+        title: Step 3 draws the graph before it picks controls
+        recall: What does step 3 say about choosing controls?
+        answer: "Draw the graph first and control for confounders, not for mediators or colliders. Every method without randomisation carries an assumption the data cannot prove."
+        steps:
+          - {title: Draw the graph, text: "Control for confounders, not mediators or colliders"}
+          - {title: Plot pre-trends, text: "Before trusting a difference in differences"}
+          - {title: Check balance, text: "Balance and overlap, before the outcome"}
+          - {title: Stress the result, text: "What would an unmeasured confounder have to do?", n: "★", accent: "D4621A"}
+        takeaway: Name the unprovable assumption of every non-randomised method, and say what it would take to undo the result.
+        source: README.md
+        notes: >-
+          Fernhill's loyalty club members spent £95.54 more. Six methods land about £3 to £4 above the true £23.38 because
+          of a trait the data never logged.
+
+      - layout: statement
+        beat: pitfalls
+        section: Syllabus
+        title: A result that looks too good is a bug until shown otherwise
+        recall: What is Twyman's law?
+        answer: "A result that looks too good is usually a bug. Check the split, the unit and the logging before celebrating."
+        statement: "A result that looks too good is usually a bug."
+        attribution: Twyman's law, as the module uses it
+        takeaway: Treat a surprising win as a bug first and a finding second.
+        source: README.md
+        notes: >-
+          The same attitude carries across the module, from SRM checks in step 1 to the sensitivity analysis that ends step 3.
+
+  - title: Using the series
+    summary: Prerequisites · Levels · Order of study
+    notes: Last, what to bring and how to read a lecture in the series.
+    slides:
+      - layout: table
+        beat: practice
+        section: Builds on and feeds into
+        title: What you should already know
+        card: false
+        recall: Which earlier modules does this module build on?
+        answer: "Estimation, hypothesis testing, regression and GLMs and panel data from module 02, plus groupby, aggregation, reshaping and joins from module 01."
+        header: [From, You can already]
+        widths: [3.2, 6.4]
+        rows:
+          - ["Module 02", "Estimate with an interval, run a hypothesis test, read regression and fixed effects"]
+          - ["Module 01", "Group and aggregate, reshape and join tables"]
+        takeaway: Nothing in the prerequisites is taught again here, so go back to the linked chapter for any line you cannot tick.
+        source: README.md
+        notes: >-
+          The README lists the exact notes: estimation, hypothesis testing, regression and GLMs, panel data and fixed effects,
+          groupby and aggregation, reshaping and joins.
+
+      - layout: cards
+        beat: practice
+        section: Builds on and feeds into
+        title: Each note runs intro, core, then deep
+        card: false
+        recall: How is each lecture in this series layered?
+        answer: "Intro slides tell the idea to anyone, core slides teach how it is done, and deep slides add the code and the maths. The deep slides are optional."
+        cards:
+          - {title: Intro, accent: "0EA5C9", body: "The concept for any audience. Slides with no level."}
+          - {title: Core lesson, accent: "1E3A5F", body: "How the analysis is done. Slides marked core."}
+          - {title: Deep, accent: "5B21B6", body: "The code and the maths. Optional, and marked deep."}
+        takeaway: Take the intro and core slides for the lesson and the deep slides only when you need the mechanism.
+        source: README.md
+        notes: >-
+          A build at core level draws the short talk. The full lecture is the whole note, so deep slides count towards its length.
+
+      - layout: flow
+        beat: wrap
+        section: Builds on and feeds into
+        title: How the series is laid out
+        card: false
+        recall: How is the experimentation and causality series organised?
+        answer: "An overview lecture, then one lecture per step, each covering every note of its step in the README's reading order."
+        steps:
+          - {label: Overview, sub: "this lecture", accent: "94A3B8"}
+          - {label: Step 1, sub: "design and read"}
+          - {label: Step 2, sub: "many tests"}
+          - {label: Step 3, sub: "no randomisation"}
+        caption: One lecture per step, notes in the README's order.
+        takeaway: One lecture covers one step, and each lecture covers all the notes of its step.
+        source: README.md
+        notes: >-
+          Step 3 is the longest, since it covers three notes: correlation and causation, potential outcomes and
+          quasi-experiments, and matching and weighting.
+
+  - title: Rules of thumb
+    agenda: false
+    divider: false
+    slides:
+      - layout: bullets
+        beat: wrap
+        section: Rules of thumb
+        title: Rules for one test and its metrics
+        recall: Which rules of thumb come from steps 1 and 2?
+        answer: "Size the test first, run the SRM check before the outcome, analyse at the randomised unit, never report a ratio without its parts, agree one OEC, and apply Twyman's law."
+        bullets:
+          - "**Size first.** Halving the MDE costs about four times the users"
+          - "**SRM before outcome.** Check the split first"
+          - "**Randomised unit.** Pageview-level analysis took 5% to about 11%"
+          - "**Ratios.** Report the numerator and the denominator"
+          - "**One OEC,** a margin and a one-sided test for each guardrail"
+        takeaway: Size the test, check the split, analyse the unit you randomised and agree the metric before you look.
+        source: README.md
+        notes: "Twyman's law is the last rule here. A result that looks too good is usually a bug."
+
+      - layout: bullets
+        beat: wrap
+        section: Rules of thumb
+        title: Rules for tests at scale
+        recall: Which rules of thumb apply when you run many tests?
+        answer: "CUPED removes rho squared of the variance if the covariate predates exposure, use sequential boundaries or always-valid p-values if people will look, and treat an SRM as a stopped test."
+        bullets:
+          - "**CUPED** removes ρ² of the variance, if the covariate predates exposure"
+          - "**If people will look,** use sequential boundaries or always-valid p-values"
+          - "**An SRM is a stopped test.** Adding up reported lifts overstates what shipped"
+        takeaway: Plan for variance, for peeking and for a broken split before the tests start.
+        source: README.md
+        notes: Adding up the lifts that teams reported overstates what shipped.
+
+      - layout: cards
+        beat: wrap
+        section: Rules of thumb
+        title: Rules for causality without randomisation
+        recall: Which rules of thumb apply when you cannot randomise?
+        answer: "Draw the graph first, plot pre-trends, say the unprovable assumption, match on pre-treatment covariates with a balance table, report who was kept and the effective sample."
+        cards:
+          - {title: "Graph first", accent: "1E3A5F", body: "Control for confounders, not for mediators or colliders"}
+          - {title: "Pre-trends", accent: "0F7490", body: "Plot them before you trust a DiD"}
+          - {title: "Who was kept", accent: "0EA5C9", body: "An estimate on 53% of the treated answers a different question"}
+          - {title: "Effective sample", accent: "D4621A", body: "5,710 weighted controls were worth 107"}
+        takeaway: Say what the data cannot prove, and what an unmeasured confounder would have to do.
+        source: README.md
+        notes: >-
+          Match or weight on covariates measured before treatment, and show the balance table first.
+
+      - layout: bullets
+        beat: wrap
+        section: Next
+        title: Where to go next
+        card: false
+        recall: Where does the series go from here?
+        bullets:
+          - "Step 1 lecture: design and read one test"
+          - "Then steps 2 and 3, in the README's order"
+          - "After step 3, applied analyses and Bayesian analysis"
+        takeaway: Start with step 1, design and read one test.
+        source: README.md
+        notes: >-
+          After step 3 the README points to the applied analyses module, then Bayesian analysis, which re-answers the checkout question.

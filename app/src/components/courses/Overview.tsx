@@ -2,7 +2,8 @@ import type { Course } from "./types";
 import { useLabs } from "../../hooks/useCourses";
 import { Markdown } from "./Markdown";
 import { lessonsOf, moduleGroups, splitCourseReadme } from "./courseLogic";
-import { SourceList, ProgressBar } from "./courseBits";
+import { useLearning } from "../../hooks/useLearning";
+import { SourceList, ProgressBar, MasteryBar } from "./courseBits";
 import { useOverview } from "./useOverview";
 
 /** One course, opening on its readme: what the course is, what you will be able to do, then a card per module
@@ -12,6 +13,7 @@ export function Overview({ course, done, last, onOpen, onOpenConcept }: {
   course: Course; done: Set<string>; last?: string; onOpen: (p: string) => void; onOpenConcept: (id: string) => void;
 }) {
   const { data: labsData } = useLabs();
+  const { data: learning } = useLearning();
   const first = lessonsOf(course)[0];
   const resume = last ?? first?.id;
   const readme = (course.guide ?? []).find((l) => /\/readme$/.test(l.id));
@@ -66,6 +68,7 @@ export function Overview({ course, done, last, onOpen, onOpenConcept }: {
                     </div>
                     {tests.length > 0 && <div className="course-card-meta course-card-tests">Test yourself: {tests.join(" · ")}</div>}
                     <ProgressBar value={m.lessons.length ? n / m.lessons.length : 0} />
+                    <MasteryBar mastery={learning?.modules[`${course.id}/${m.id}`]} />
                   </button>
                 );
               })}

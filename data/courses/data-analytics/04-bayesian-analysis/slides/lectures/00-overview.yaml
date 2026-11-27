@@ -1,0 +1,293 @@
+# imported_hash: a02184f2888571c6
+# Opening lecture of the Bayesian analysis series: the generative story, the five steps and where each is taught.
+# make slides PILLAR=data-analytics/04-bayesian-analysis LECTURE=00-overview STRICT=1 PREVIEW=1
+# Levels: a slide with no level is the intro, `core` is the core lesson, `deep` is the optional extension.
+deck:
+  title: Bayesian Analysis
+  subtitle: From an unknown to a decision
+  tagline: "Posterior · Five steps · The series"
+  reference: "Notes: data-analytics/04-bayesian-analysis/README.md"
+  output: 00-overview.pptx
+  notes: >-
+    This opening lecture runs no code. It gives you the map: the one idea under the whole module, the five steps that group
+    its notes, and which lecture teaches each. Everything named here is taught properly later.
+
+lecture:
+  overview: true
+  covers: [data-analytics/04-bayesian-analysis/README.md]
+  next: [data-analytics/04-bayesian-analysis/notes/01-bayesian-inference.md]
+  related:
+    - data-analytics/02-probability-and-statistics/README.md
+    - data-analytics/03-experimentation-and-causality/README.md
+
+parts:
+  - title: The shape of Bayesian analysis
+    summary: Unknowns as distributions · Prior to posterior · Larkspur · Failure modes
+    notes: First, what a posterior gives you that a p-value does not, and where it can go wrong.
+    slides:
+      - layout: statement
+        beat: problem
+        section: The core
+        title: What do stakeholders actually ask?
+        recall: Which two questions does a p-value fail to answer?
+        answer: "How likely B is to be better, and how much it could cost to be wrong. A posterior answers both."
+        kicker: The problem
+        statement: "Stakeholders ask how likely B is to be better and how much it could cost to be wrong. A p-value answers neither."
+        attribution: Larkspur's checkout test, from module 03
+        takeaway: A posterior answers both questions, and makes the cost of a mistake part of the calculation.
+        source: README.md
+        notes: >-
+          Module 03 ran the Larkspur checkout test with a p-value. This module asks the question the stakeholders asked in the
+          first place, and answers it with a distribution.
+
+      - layout: flow
+        beat: fundamentals
+        section: The core
+        title: Write the story, add a prior, compute the posterior
+        recall: What are the steps of a Bayesian analysis?
+        answer: "Write down how the data could have been generated, put a prior on the unknowns, and compute the posterior, which is what is plausible once the data is in."
+        steps:
+          - {label: Generative story, sub: "how the data arises", accent: "1E3A5F"}
+          - {label: Prior, sub: "on the unknowns", accent: "0F7490"}
+          - {label: Posterior, sub: "plausible given the data", accent: "0EA5C9"}
+          - {label: Decision, sub: "lowest expected cost", accent: "D4621A"}
+        caption: "When the posterior has no closed form, MCMC or variational inference approximates it."
+        takeaway: The result is a distribution you can ask direct questions of and feed into a decision.
+        source: README.md
+        notes: >-
+          The model is the generative story written as code. Every later chapter is a variation on these four boxes: how to
+          get the posterior, how to trust it, and what to do with it.
+
+      - layout: compare
+        beat: fundamentals
+        section: The core
+        title: A p-value against a posterior
+        recall: What does a posterior give you that a p-value does not?
+        answer: "Direct answers to how likely and how costly, prior knowledge carried into small samples, and the cost of a mistake inside the calculation."
+        emphasis: right
+        left:
+          title: A p-value
+          bullets: ["Does not say how likely B is to be better", "Does not price a mistake"]
+        right:
+          title: A posterior
+          bullets: ["Answers how likely B is to be better", "Carries prior knowledge into small samples", "Prices the cost of being wrong"]
+        takeaway: Use the posterior when the question is how likely and how costly.
+        source: README.md
+        notes: >-
+          The same machinery sits under bandits, Bayesian optimisation and VAEs, which is why the module ends in machine
+          learning.
+
+      - layout: cards
+        beat: practice
+        section: The core
+        title: The Larkspur answer, step by step
+        recall: What does the module finally tell Larkspur?
+        answer: "P(B > A) of 0.99999, a lift between +0.34 and +0.95 points, and a measured answer to whether peeking is safe, which becomes a ship decision in dollars."
+        cards:
+          - {title: Build the update, accent: "1E3A5F", body: "Coins, Challenger and German tanks teach the habit of a generative story"}
+          - {title: Trust the sampler, accent: "0F7490", body: "A posterior you cannot trust is worse than none"}
+          - {title: Test the priors, accent: "0EA5C9", body: "Before fitting, then Thompson sampling for traffic"}
+          - {title: Answer Larkspur, accent: "D4621A", body: "P(B > A) of 0.99999, lift +0.34 to +0.95 points"}
+        takeaway: Each step earns the right to read the next one, and the last turns a posterior into a ship decision in dollars.
+        source: README.md
+        notes: >-
+          The numbers are the chapter 4 result. They are quoted here only to show where the series is heading.
+
+      - layout: steps
+        beat: pitfalls
+        section: The core
+        title: Three ways a Bayesian label does not make you safe
+        recall: Which three failure modes does the module name?
+        answer: "A sampler that has not converged, a prior nobody checked, and peeking, which a Bayesian label does not make safe."
+        steps:
+          - {title: Unconverged sampler, text: "The posterior it returns cannot be trusted"}
+          - {title: Unchecked prior, text: "A wide prior is not automatically uninformative"}
+          - {title: Peeking, text: "A Bayesian label does not make it safe", n: "!", accent: "D4621A"}
+        takeaway: Check the sampler, simulate the prior and fix the stopping rule before the test starts.
+        source: README.md
+        notes: >-
+          Each failure has its own chapter: sampling in step 2, priors in step 2, peeking in step 3.
+
+  - title: The five steps
+    summary: Infer · Compute and check · Decide · Bayesian ML · Many groups
+    notes: The notes are grouped into five steps. Each step gets its own lecture.
+    slides:
+      - layout: table
+        beat: problem
+        section: Syllabus
+        title: Five steps, one question each
+        recall: What are the five steps of the Bayesian analysis module?
+        answer: "Infer a posterior; compute it and check the computation; turn it into a decision; carry the ideas into machine learning; read the same test across many groups."
+        header: [Step, Question it answers, Notes]
+        widths: [3.0, 5.2, 1.4]
+        rows:
+          - ["1. Infer", "What does the data say about the unknown?", "1, 1b"]
+          - ["2. Compute and check", "Can I trust the posterior I computed?", "2, 3"]
+          - ["3. Decide", "What do I do with it?", "3b, 4, 5"]
+          - ["4. Bayesian machine learning", "Where do the ideas carry on?", "6, 6b"]
+          - ["5. Many groups", "What about the same test in many places?", "7, 7b"]
+        highlight: [0]
+        takeaway: Five steps cover the module's notes, and this series has one lecture per step.
+        source: README.md
+        notes: >-
+          Read the notes in the order shown. Note 1b can wait until after 2, and 3b follows 3. Note 6 needs 1 and 2, and 6b is
+          a specialist extension. Note 7 needs 2 and 4.
+
+      - layout: steps
+        beat: fundamentals
+        section: Syllabus
+        title: Step 1 starts from the generative story
+        recall: What habits does step 1 build?
+        answer: "Write the generative story first, use a closed form when one exists, read two-parameter posteriors through marginals and conditionals, and report an interval and a probability about the question asked."
+        steps:
+          - {title: Story first, text: "The model is that story in code"}
+          - {title: Closed form, text: "Use one when it exists, and use it to check the sampler"}
+          - {title: Bayes factor, text: "Compute it, and know what it hinges on"}
+          - {title: Report, text: "An interval and a probability, never a posterior mean alone", n: "★", accent: "D4621A"}
+        takeaway: Write the generative story first, and never report a posterior mean alone.
+        source: README.md
+        notes: >-
+          This is the step on coins, Challenger and German tanks. Note 1b adds grids, hypotheses and simulation.
+
+      - layout: statement
+        beat: pitfalls
+        section: Syllabus
+        title: Step 2 says a high acceptance rate is not health
+        recall: What did a step size of 0.002 show?
+        answer: "Metropolis accepted 98.7% of proposals and kept an ESS of 11 from 19,000 draws."
+        kicker: Compute and check
+        statement: "At a step size of 0.002, Metropolis accepted 98.7% and kept an ESS of 11 from 19,000 draws."
+        attribution: Step 2, MCMC and priors
+        takeaway: Look at r_hat, ESS and divergences before any result, and when a sampler struggles change the model.
+        source: README.md
+        notes: >-
+          The same step simulates from the prior before fitting, because a wide prior on the logit scale is not uninformative,
+          and shrinks lifts picked as winners, since selection alone inflates them.
+
+      - layout: bullets
+        beat: fundamentals
+        section: Syllabus
+        title: Step 3 turns a posterior into an action
+        recall: What are the main lessons of step 3?
+        answer: "Thompson sampling draws once per arm posterior and plays the highest. A bandit saves traffic but biases arm means. P(B > A) says nothing about size. Peeking is not free. Pick the point estimate from the loss."
+        bullets:
+          - "**Thompson sampling** draws once per arm posterior and plays the highest"
+          - "**A bandit** saves traffic but biases arm means, so use a fixed split for the effect you report"
+          - "**P(B > A)** says nothing about size, so report the lift interval beside it"
+          - "**Peeking** shipped 24% of no-effect tests against 5% at the last look alone"
+        takeaway: Turn a posterior into an action with a sampling rule, a lift interval beside P(B > A), and a stopping rule you do not peek past.
+        source: README.md
+        notes: >-
+          The 24% against 5% is the chapter 4 simulation. Note 5 prices the decision in dollars.
+
+      - layout: flow
+        beat: fundamentals
+        section: Syllabus
+        title: Step 4 carries the ideas into machine learning
+        recall: What does step 4 warn about EM and variational inference?
+        answer: "EM finds local optima, so restart it. Mean-field ADVI is fast and understates correlated uncertainty, so check it against NUTS on a small version."
+        steps:
+          - {label: EM, sub: "restart it", accent: "1E3A5F"}
+          - {label: Variational inference, sub: "mean-field ADVI", accent: "0F7490"}
+          - {label: Check, sub: "against NUTS, small version", accent: "0EA5C9"}
+          - {label: Gaussian processes, sub: "and Bayesian optimisation", accent: "D4621A"}
+        caption: "One run of EM cannot tell you which local optimum you got."
+        takeaway: Restart EM, and check ADVI against NUTS on a small version.
+        source: README.md
+        notes: >-
+          The labs for this step are the coursework in practice/BayesianML: EM for a Gaussian mixture, a VAE on MNIST, and
+          Gaussian processes with Bayesian optimisation. Note 6b is a specialist extension.
+
+      - layout: cards
+        beat: practice
+        section: Syllabus
+        title: Step 5 reads the test across many groups
+        recall: Which numbers show what partial pooling does to the winner?
+        answer: "The raw winner overstated its true lift by 2.93 in the chapter's simulation, and the pooled winner by 0.09."
+        cards:
+          - {title: Nuisance or question, accent: "1E3A5F", body: "Cluster when groups are a nuisance, model them when they are the question"}
+          - {title: Pool first, accent: "D4621A", body: "Raw winner overstated by 2.93, pooled winner by 0.09"}
+          - {title: Few groups, accent: "0F7490", body: "Run several priors and report the range"}
+        takeaway: Partially pool many segment effects first, and with a handful of groups report the range over several priors.
+        source: README.md
+        notes: >-
+          With a handful of groups the between-group spread is barely known. Note 7b adds varying slopes, measurement error and
+          missing data.
+
+  - title: Using the series
+    summary: Order of study · Practice
+    notes: Last, how to read a lecture in the series.
+    slides:
+      - layout: flow
+        beat: wrap
+        section: Syllabus
+        title: How the series is laid out
+        recall: How is the Bayesian analysis series organised?
+        answer: "An overview lecture, then one lecture per step, each covering the notes of its step in the README's reading order."
+        steps:
+          - {label: Overview, sub: "this lecture", accent: "94A3B8"}
+          - {label: Step 1, sub: "infer"}
+          - {label: Step 2, sub: "compute and check"}
+          - {label: Step 3, sub: "decide"}
+          - {label: Steps 4 and 5, sub: "machine learning, many groups"}
+        caption: One lecture per step, with notes in the README's order.
+        takeaway: One lecture covers one step, and the chapter code runs top to bottom as a notebook.
+        source: README.md
+        notes: >-
+          The chapter code runs on PyMC 6.4 and ArviZ 1.3 with fixed seeds. The coursework in practice/BayesianML is kept as
+          written and needs its pinned environment.
+
+  - title: Rules of thumb
+    agenda: false
+    divider: false
+    slides:
+      - layout: cards
+        beat: wrap
+        section: Rules of thumb
+        title: Rules for inference, sampling and priors
+        recall: Which rules of thumb come from steps 1 and 2?
+        answer: "Write the generative story first, report an interval and a probability, a high acceptance rate is not health, check r_hat, ESS and divergences first, simulate from the prior, and shrink lifts picked as winners."
+        cards:
+          - {title: "Story first", body: "The model is that story in code"}
+          - {title: "Acceptance is not health", body: "98.7% accepted, ESS of 11"}
+          - {title: "Change the model", body: "Standardise, marginalise or go non-centred"}
+          - {title: "Simulate the prior", body: "A wide prior on the logit is not uninformative"}
+          - {title: "Thin data", body: "Priors matter most there, and wash out as it grows"}
+          - {title: "Shrink winners", body: "Selection alone inflates lifts"}
+        takeaway: Trust a sampler only after its diagnostics, and a prior only after it has been simulated.
+        source: README.md
+        notes: >-
+          These are the first three groups of the README's rules of thumb.
+
+      - layout: bullets
+        beat: wrap
+        section: Rules of thumb
+        title: Rules for deciding and for groups
+        recall: Which rules of thumb come from steps 3 to 5?
+        answer: "Report the lift interval beside P(B > A), set the stopping rule before the test, pick the estimate from the loss, restart EM, check ADVI against NUTS, partially pool segment effects and run several priors with few groups."
+        bullets:
+          - "**P(B > A) says nothing about size.** Report the lift interval beside it"
+          - "**Set the stopping rule** and its threshold before the test starts"
+          - "**Pick the point estimate from the loss,** in the business's own units"
+          - "**Restart EM,** and check mean-field ADVI against NUTS"
+          - "**Partially pool** many segment effects first"
+        takeaway: Fix the stopping rule first, price the decision, and pool before you read the winner.
+        source: README.md
+        notes: >-
+          These are the remaining groups of the README's rules of thumb.
+
+      - layout: bullets
+        beat: wrap
+        section: Next
+        title: Where to go next
+        card: false
+        recall: Where does the series go from here?
+        bullets:
+          - "Step 1 lecture: the generative story and the posterior"
+          - "Then the other steps, in the README's order"
+          - "After step 5 you can write a generative model, fit it, check the sampler and price a decision"
+        takeaway: Start with step 1, infer.
+        source: README.md
+        notes: >-
+          Start with submodule 1, read note 1 Bayesian inference, then the other notes in the syllabus order. This is the last
+          module of data analytics.

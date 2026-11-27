@@ -1,7 +1,7 @@
-# imported_hash: d8477f700b287eb4
+# imported_hash: 28963b1b23311326
 # Lecture on step 1, Forecast and score: notes/01-forecasting.md and 02-credit-scoring.md, in the notes' order.
 # make slides PILLAR=data-analytics/06-applied-analyses LECTURE=01-forecast-and-score STRICT=1 PREVIEW=1
-# Levels: a slide with no level is the intro (core), `practice` is the core lesson, `deep` is the optional extension (code and maths).
+# Levels: a slide with no level is the intro, `core` is the core lesson, `deep` is the optional extension (code and maths).
 deck:
   title: Forecast and Score
   subtitle: A plan and a cutoff
@@ -86,7 +86,7 @@ parts:
 
       - layout: bullets
         beat: fundamentals
-        level: practice
+        level: core
         section: The question and the data
         title: A 52.18-week year rules out the classic seasonal methods
         recall: Why is weekly seasonality awkward to model?
@@ -105,7 +105,7 @@ parts:
 
       - layout: steps
         beat: fundamentals
-        level: practice
+        level: core
         section: The question and the data
         title: Two checks before modelling
         recall: What two checks come before fitting a model?
@@ -191,7 +191,7 @@ parts:
 
       - layout: code
         beat: practice
-        level: practice
+        level: core
         section: Baselines come first
         title: Two of the benchmarks in code
         recall: How do you compute the seasonal naive and drift forecasts?
@@ -235,7 +235,7 @@ parts:
 
       - layout: flow
         beat: fundamentals
-        level: practice
+        level: core
         section: Three models that can handle a 52.18-week year
         title: STL plus ETS removes the season, then forecasts the rest
         recall: How does STL plus ETS forecast?
@@ -254,7 +254,7 @@ parts:
 
       - layout: bullets
         beat: fundamentals
-        level: practice
+        level: core
         section: Three models that can handle a 52.18-week year
         title: Harmonic regression writes the season as sines and cosines
         recall: How does dynamic harmonic regression model a season, and how is K chosen?
@@ -338,7 +338,7 @@ parts:
 
       - layout: code
         beat: fundamentals
-        level: practice
+        level: core
         section: Backtest, because one split is one anecdote
         title: Twelve origins, and the last one stays locked
         recall: How are the twelve rolling origins used?
@@ -359,7 +359,7 @@ parts:
 
       - layout: table
         beat: fundamentals
-        level: practice
+        level: core
         section: Backtest, because one split is one anecdote
         title: Each error measure answers a different question
         recall: What does each error measure reward, and what should you watch for?
@@ -381,7 +381,7 @@ parts:
 
       - layout: bullets
         beat: pitfalls
-        level: practice
+        level: core
         section: Backtest, because one split is one anecdote
         title: Read MASE with care, and report bias on its own
         recall: Why does the seasonal naive not score exactly 1 on MASE, and why report bias?
@@ -456,10 +456,10 @@ parts:
         image: ../../assets/sources/images/applied-forecast-backtest-mase.png
         caption: "Three models fall below the seasonal naive, and the three other baselines sit above it."
         bullets:
-          - "Mean, naive, drift: **1.84, 1.61, 1.66**"
-          - "Seasonal naive **1.21**, with bias of about +185 units a week"
-          - "STL + ETS **1.02**: it smears Black Friday"
-          - "Harmonic **0.70** and Prophet **0.63**, both told the moving event"
+          - "Mean, naive and drift **know nothing** about the season"
+          - "The seasonal naive **copies last year**, and so runs biased"
+          - "STL + ETS **smears** Black Friday across neighbouring weeks"
+          - "Harmonic and Prophet were **told** the moving event"
         takeaway: The seasonal naive copies last year into a business that has grown, which is why it runs about 185 units a week low.
         source: notes/01-forecasting.md
         notes: >-
@@ -509,7 +509,7 @@ parts:
 
       - layout: code
         beat: practice
-        level: practice
+        level: core
         section: From forecast to decision
         title: The buffer is a quantile of past errors
         recall: How is the staffing buffer read off the backtest?
@@ -571,7 +571,7 @@ parts:
 
       - layout: compare
         beat: pitfalls
-        level: practice
+        level: core
         section: From forecast to decision
         title: The exam reverses the order of two models
         recall: Why can one quarter not pick a model?
@@ -692,7 +692,7 @@ parts:
 
       - layout: code
         beat: practice
-        level: practice
+        level: core
         section: The question and the data
         title: Check the target against a published table
         recall: How do we confirm the target is read the right way round?
@@ -1160,7 +1160,7 @@ parts:
 
       - layout: flow
         beat: fundamentals
-        level: practice
+        level: core
         section: The Basel vocabulary
         title: IRB capital covers a one-in-a-thousand-year loss
         recall: What does the IRB capital formula compute?
@@ -1179,7 +1179,7 @@ parts:
 
       - layout: table
         beat: practice
-        level: practice
+        level: core
         section: The Basel vocabulary
         title: Twenty times the expected loss, 2.3 times the capital
         recall: Why does capital grow so much more slowly than expected loss as PD rises?

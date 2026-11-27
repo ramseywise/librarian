@@ -1,0 +1,300 @@
+# imported_hash: 07a4a1ab8e45735b
+# Opening lecture of the probability and statistics series: the one question, the four steps and where each is taught.
+# make slides PILLAR=data-analytics/02-probability-and-statistics LECTURE=00-overview STRICT=1 PREVIEW=1
+# Levels: a slide with no level is the intro, `core` is the core lesson, `deep` is the optional extension (code and maths).
+deck:
+  title: Probability and Statistics
+  subtitle: What are we entitled to claim?
+  tagline: "Look · Estimate and test · Model · Ask how the rows got there"
+  reference: "Notes: data-analytics/02-probability-and-statistics/README.md"
+  output: 00-overview.pptx
+  notes: >-
+    This opening lecture runs no code. It gives you the map: the one question the module asks, the four steps that group its
+    notes, and which lecture teaches each. Everything named here is taught properly later.
+
+lecture:
+  overview: true
+  covers: [data-analytics/02-probability-and-statistics/README.md]
+  next: [data-analytics/02-probability-and-statistics/notes/01-descriptive-statistics-and-eda.md]
+  related:
+    - data-analytics/05-visualisation-and-storytelling/README.md
+    - data-analytics/03-experimentation-and-causality/README.md
+
+parts:
+  - title: The one question
+    divider: false
+    summary: How far to trust a claim · Errors that reach decisions · Larkspur · Four steps
+    notes: First, why a statistics module is about trust in a claim and not about formulas.
+    slides:
+      - layout: statement
+        beat: problem
+        section: The core
+        title: How far can a claim about unseen data be trusted?
+        recall: What single question does the module ask?
+        answer: "What are we entitled to claim? Each step comes with the check that catches its usual mistake."
+        kicker: The problem
+        statement: "Say how far a claim about data you have not seen can be trusted."
+        attribution: The module's one question is what we are entitled to claim
+        takeaway: Statistics here means knowing how far a claim can be trusted, and each step has the check that catches its usual mistake.
+        source: README.md
+        notes: >-
+          The earlier module taught you to load, clean and reshape a table. This one asks what you may say about the
+          customers you did not measure, from the rows you did.
+
+      - layout: cards
+        beat: fundamentals
+        section: The core
+        title: Four errors that reach decisions
+        recall: Name the errors this module is built to prevent.
+        answer: "A mean over a column that is 95% zero, a 99%-accurate filter whose flags are 9 in 10 false, a winning segment that is one of twenty tests, and a session-level analysis of a user-level experiment that calls noise significant more than a quarter of the time."
+        cards:
+          - {title: The mean of zeros, accent: "1E3A5F", body: "A mean over a column that is 95% zero"}
+          - {title: The base rate, accent: "0F7490", body: "A 99%-accurate filter whose flags are 9 in 10 false"}
+          - {title: One of twenty, accent: "0EA5C9", body: "A winning segment that is one of twenty tests"}
+          - {title: The wrong unit, accent: "D4621A", body: "Session-level analysis of a user-level experiment calls noise significant over a quarter of the time"}
+        takeaway: Each error is a correct calculation applied to the wrong question, so the checks matter more than the formulas.
+        source: README.md
+        notes: >-
+          These four reappear as hooks in the notes. The README lists them as the errors the four steps exist to catch.
+
+      - layout: cards
+        beat: fundamentals
+        section: The core
+        title: Larkspur is the running example
+        recall: What is Larkspur and why is it used?
+        answer: "A fictional online plant shop with 20,000 users and a checkout it wants to redesign. The data is synthetic with a fixed seed, so every number reproduces."
+        cards:
+          - title: The shop
+            accent: 1E3A5F
+            body: "A fictional online plant shop with **20,000 users**"
+          - title: The question
+            accent: D4621A
+            body: "It wants to redesign its checkout"
+          - title: The data
+            accent: 0EA5C9
+            body: "Synthetic with a **fixed seed**, so numbers reproduce"
+          - title: The test
+            accent: 5B21B6
+            body: "The new checkout goes to a proper experiment in module 03"
+        takeaway: One shop and one checkout question carry every note, so each chapter builds on the same table.
+        source: README.md
+        notes: >-
+          Where a note quotes a real dataset or a book example, it says so. Larkspur numbers come from the seeded generator.
+
+      - layout: flow
+        beat: fundamentals
+        section: The core
+        title: Four steps, from the table to the process behind it
+        recall: What are the four steps of the module?
+        answer: "Look and reason, estimate and test, model a relationship, and ask how the rows got there."
+        steps:
+          - {label: Look and reason, sub: "notes 1 to 3", accent: "1E3A5F"}
+          - {label: Estimate and test, sub: "notes 4, 5", accent: "0F7490"}
+          - {label: Model, sub: "notes 6, 6b", accent: "0EA5C9"}
+          - {label: How the rows got there, sub: "notes 7, 8", accent: "D4621A"}
+        caption: Each step answers what we are entitled to claim, one level further from the raw table.
+        takeaway: The four steps move from describing the rows to asking where they came from.
+        source: README.md
+        notes: >-
+          The syllabus groups the notes into four steps, and the series has one lecture per step after this overview.
+
+  - title: The four steps
+    summary: Look and reason · Estimate and test · Model a relationship · How the rows got there
+    notes: Each step gets its own lecture. Here is what each one hands you.
+    slides:
+      - layout: table
+        beat: problem
+        section: Syllabus
+        title: Four steps over eight notes
+        recall: Which notes sit in each step?
+        answer: "Look and reason holds notes 1 to 3, estimate and test 4 and 5, model a relationship 6 and 6b, and how the rows got there 7 and 8."
+        header: [Step, What it hands you, Notes]
+        widths: [2.8, 5.2, 1.6]
+        rows:
+          - ["1. Look and reason", "What the data is, and the rules for what it is not", "1 to 3"]
+          - ["2. Estimate and test", "A number with its interval, and a decision", "4, 5"]
+          - ["3. Model a relationship", "Regression with its standard error", "6, 6b"]
+          - ["4. Ask how the rows got there", "The process behind the table", "7, 8"]
+        highlight: [0]
+        takeaway: Four steps cover the notes, and the series has one lecture per step.
+        source: README.md
+        notes: >-
+          The model step has no lab yet. Lecture 01 is the first you can run end to end.
+
+      - layout: steps
+        beat: fundamentals
+        section: Syllabus
+        title: Step 1 looks before it reasons
+        recall: What does step 1 teach you to check first?
+        answer: "What one row is, whether mean and median agree, that P(A|B) is not P(B|A), that expectations add while variances add only for uncorrelated variables, that N of 30 is not enough on zero-inflated revenue, and that small groups crowd both ends of a league table."
+        steps:
+          - {title: Establish the row, text: "What one row is, before any summary"}
+          - {title: Compare mean and median, text: "When they disagree the tail runs the summary"}
+          - {title: Respect the base rate, text: "P(A|B) is not P(B|A)"}
+          - {title: Watch small groups, text: "They crowd both ends of a league table", n: "★", accent: "D4621A"}
+        takeaway: Establish what one row is, let the tail show in the summary and expect small groups at both ends of a ranking.
+        source: README.md
+        notes: >-
+          Notes 1 to 3: descriptive statistics and EDA, probability foundations, distributions and sampling.
+
+      - layout: compare
+        beat: fundamentals
+        section: Syllabus
+        title: Step 2 turns a number into an interval and a decision
+        recall: What does step 2 add to a point estimate?
+        answer: "An interval, and a test that says whether the pattern could be noise. Half the error costs four times the data, and twenty tests of nothing have a 64% chance of a false positive."
+        emphasis: right
+        left:
+          title: A point estimate
+          bullets: ["One number", "No sense of how far to trust it", "A slice that wins looks real"]
+        right:
+          title: With step 2
+          bullets: ["An interval, Wilson for small counts", "Bootstrap the user", "One primary question in advance"]
+        takeaway: Report the interval and not the point, and name one primary question before you look.
+        source: README.md
+        notes: >-
+          Notes 4 and 5: estimation, then hypothesis testing. At low power the significant estimates are inflated.
+
+      - layout: bullets
+        beat: fundamentals
+        section: Syllabus
+        title: Step 3 treats a test as a regression
+        recall: What links a t-test to regression in step 3?
+        answer: "A t-test is a regression with one binary regressor. Pre-period covariates shrink the SE and bias nothing, and the right model depends on the outcome: logistic for yes/no, Poisson with an offset for counts."
+        bullets:
+          - "A t-test is a regression with **one binary regressor**"
+          - "Pre-period covariates **shrink the SE** and bias nothing"
+          - "**Cluster** at the level of randomisation, robust SEs on money"
+          - "Logistic for yes/no, Poisson with an offset for counts"
+          - "Marginal effects rather than odds ratios, and check **dispersion**"
+        takeaway: A regression reads off an effect with its standard error, and the standard error is only as good as the clustering.
+        source: README.md
+        notes: >-
+          Notes 6 and 6b cover regression and GLMs, then logistic and Poisson. There is no lab for this step yet.
+
+      - layout: statement
+        beat: pitfalls
+        section: Syllabus
+        title: A better fit is not a better answer
+        recall: What does step 4 warn about a better in-sample fit?
+        answer: "A better fit in sample is not a better answer for the population. Write the data generating process, simulate from it, and decide first whether to explain or to predict."
+        statement: "A big sample is not a representative one, and a better fit in sample is not a better answer."
+        attribution: Step 4, the process behind the table
+        takeaway: Write the data generating process before you fit, and ask how the rows got into the table.
+        source: README.md
+        notes: >-
+          Notes 7 and 8: the data generating process, then panel data and fixed effects. Fixed effects remove only what is constant within a unit.
+
+  - title: Using the series
+    summary: Prerequisites · Feeds into · How the series runs
+    notes: Last, what to bring and where the module leads.
+    slides:
+      - layout: table
+        beat: practice
+        section: Builds on and feeds into
+        title: What you should already know
+        card: false
+        recall: What does the module assume from module 01 and the Python track?
+        answer: "Load a file and check shape and types, filter with a mask and loc, know that a missing value is not zero, groupby with counts, and write functions and loops."
+        header: [From, You can already]
+        widths: [3.2, 6.4]
+        rows:
+          - ["Module 01", "Load a file and check shape and types"]
+          - ["Module 01", "Filter with a mask and `loc`"]
+          - ["Module 01", "Know a missing value is not zero, and groupby with counts"]
+          - ["Python track", "Write functions and loops"]
+        takeaway: Nothing in the prerequisites is taught again here, so go back to module 01 for any line you cannot tick.
+        source: README.md
+        notes: >-
+          The README has a tick list for these.
+
+      - layout: table
+        beat: practice
+        section: Builds on and feeds into
+        title: The module feeds six later chapters
+        card: false
+        recall: Where does the module feed in?
+        answer: "Statistical foundations and model evaluation in data science, reading results and calibrating a judge in generative AI, guardrail models in AI engineering, and quality dimensions and tests in data engineering."
+        header: [Course, Where it is used]
+        rows:
+          - [Data science, "Statistical foundations, then model evaluation"]
+          - [Generative AI, "Reading eval results, and calibrating a judge against human labels"]
+          - [AI engineering, "Guardrail models, where the base rate bites"]
+          - [Data engineering, Quality dimensions and tests]
+        takeaway: The same checks reappear wherever a number has to be trusted, from an eval score to a data test.
+        source: README.md
+        notes: >-
+          The README lists the later chapters that lean on this module. Interval, base rate and multiplicity come up in each.
+
+      - layout: flow
+        beat: wrap
+        section: Syllabus
+        title: How the series is laid out
+        card: false
+        recall: How is the series organised?
+        answer: "An overview lecture, then one lecture per step, each covering the notes of its step in the README's reading order."
+        steps:
+          - {label: Overview, sub: "this lecture", accent: "94A3B8"}
+          - {label: Look and reason, sub: "lecture 1"}
+          - {label: Estimate and test, sub: "lecture 2"}
+          - {label: Model a relationship, sub: "lecture 3"}
+          - {label: How the rows got there, sub: "lecture 4"}
+        caption: One lecture per step, notes in the README's order.
+        takeaway: One lecture covers one step, and the steps run from description to process.
+        source: README.md
+        notes: >-
+          Intro slides tell the idea to anyone, core slides teach how it is done, and deep slides add the code and the maths.
+
+  - title: Rules of thumb
+    agenda: false
+    divider: false
+    slides:
+      - layout: bullets
+        beat: wrap
+        section: Rules of thumb
+        title: Rules for looking, probability and sampling
+        recall: Which rules of thumb come from step 1?
+        answer: "Establish what one row is; if mean and median disagree the tail runs it; show N next to every rate; P(A|B) is not P(B|A); expectations add and variances add only for uncorrelated variables; N of 30 is not a law; more rows do not fix selection bias."
+        bullets:
+          - "**What one row is,** before any summary"
+          - "**Mean and median disagree:** the tail runs the summary"
+          - "**Show N** next to every rate, and count every removed row"
+          - "**P(A|B) is not P(B|A).** Variances add only if uncorrelated"
+          - "**N of 30 is not a law,** and more rows do not fix selection bias"
+        takeaway: Establish the row, show N and remember that a large sample can still be the wrong one.
+        source: README.md
+        notes: >-
+          Standard errors assume independent rows. League-table extremes are small groups.
+
+      - layout: cards
+        beat: wrap
+        section: Rules of thumb
+        title: Rules for estimating, testing and modelling
+        recall: Which rules of thumb come from steps 2 and 3?
+        answer: "Report the interval, half the error needs four times the data, Wilson for small counts, bootstrap the independent unit; default to Welch, twenty tests of nothing give a 64% chance of a false positive, significant results at low power are inflated; cluster at the level of randomisation and prefer marginal effects."
+        cards:
+          - {title: The interval, body: "Report it. Half the error needs four times the data"}
+          - {title: The unit, body: "Bootstrap the independent unit, the user"}
+          - {title: Twenty tests, body: "A 64% chance of a false positive from nothing"}
+          - {title: Low power, body: "Significant estimates are inflated"}
+        takeaway: Give the interval, resample the user and expect a winning slice to shrink on a rerun.
+        source: README.md
+        notes: >-
+          Default to Welch and shuffle the labels if unsure. For regression, cluster at the level of randomisation and check dispersion on every Poisson fit.
+
+      - layout: bullets
+        beat: wrap
+        section: Rules of thumb
+        title: Rules for the process behind the table
+        recall: Which rules of thumb come from step 4?
+        answer: "Write the data generating process before you fit, a better fit is not a better answer, decide explaining versus predicting, clustered errors fix the SE and not the estimate, fixed effects remove what is constant within a unit, and a flat pre-period is not proof of parallel trends."
+        bullets:
+          - "**Write the process** before you fit, then simulate from it"
+          - "**A better fit** is not a better answer"
+          - "**Clustered errors** fix the SE and not the estimate"
+          - "**Fixed effects** remove only what is constant within a unit"
+          - "A flat pre-period is **not proof** of parallel trends"
+        takeaway: Say how the rows got there, because that decides which claim the numbers can carry.
+        source: README.md
+        notes: >-
+          These close the module. They connect to module 03, where Larkspur's new checkout goes to a proper experiment.

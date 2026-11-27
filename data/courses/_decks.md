@@ -185,11 +185,11 @@ flowchart LR
 | [generative-ai/08-eval](generative-ai/08-eval/readme.md) | 0 of 20 | 19 | yes |
 | [generative-ai/09-llms-from-scratch](generative-ai/09-llms-from-scratch/readme.md) | 0 of 4 | 3 | yes |
 | [data-analytics/01-python-for-data-analysis](data-analytics/01-python-for-data-analysis/readme.md) | 4 of 9 | 8 | yes |
-| [data-analytics/02-probability-and-statistics](data-analytics/02-probability-and-statistics/readme.md) | 0 of 10 | 9 | yes |
-| [data-analytics/03-experimentation-and-causality](data-analytics/03-experimentation-and-causality/readme.md) | 0 of 7 | 6 | yes |
-| [data-analytics/04-bayesian-analysis](data-analytics/04-bayesian-analysis/readme.md) | 0 of 12 | 11 | yes |
-| [data-analytics/05-visualisation-and-storytelling](data-analytics/05-visualisation-and-storytelling/readme.md) | 0 of 9 | 8 | yes |
-| [data-analytics/06-applied-analyses](data-analytics/06-applied-analyses/readme.md) | 2 of 16 | 15 | yes |
+| [data-analytics/02-probability-and-statistics](data-analytics/02-probability-and-statistics/readme.md) | 5 of 10 | 9 | yes |
+| [data-analytics/03-experimentation-and-causality](data-analytics/03-experimentation-and-causality/readme.md) | 4 of 7 | 6 | yes |
+| [data-analytics/04-bayesian-analysis](data-analytics/04-bayesian-analysis/readme.md) | 6 of 12 | 11 | yes |
+| [data-analytics/05-visualisation-and-storytelling](data-analytics/05-visualisation-and-storytelling/readme.md) | 5 of 9 | 8 | yes |
+| [data-analytics/06-applied-analyses](data-analytics/06-applied-analyses/readme.md) | 6 of 16 | 15 | yes |
 | [data-science/01-classical-ml](data-science/01-classical-ml/readme.md) | 2 of 19 | 18 | yes |
 | [data-science/02-deep-learning](data-science/02-deep-learning/readme.md) | 0 of 11 | 10 | yes |
 | [data-science/03-nlp](data-science/03-nlp/readme.md) | 0 of 9 | 8 | yes |
@@ -215,18 +215,62 @@ flowchart LR
 | 1 | [Processing Data](data-analytics/01-python-for-data-analysis/slides/lectures/00-overview.yaml) | nothing | Extract |
 | 2 | [Extract](data-analytics/01-python-for-data-analysis/slides/lectures/01-extract.yaml) | Processing Data | Clean |
 | 3 | [Clean](data-analytics/01-python-for-data-analysis/slides/lectures/02-clean.yaml) | Extract, Extract | Summarise |
-| 4 | [Summarise](data-analytics/01-python-for-data-analysis/slides/lectures/03-summarise.yaml) | Clean, Clean | Probability and statistics (data-analytics/02-probability-and-statistics), notes only |
+| 4 | [Summarise](data-analytics/01-python-for-data-analysis/slides/lectures/03-summarise.yaml) | Clean, Clean | Probability and Statistics (data-analytics/02-probability-and-statistics) |
+
+## data-analytics/02-probability-and-statistics
+
+| # | Lecture | Before it | After it |
+|---|---|---|---|
+| 1 | [Probability and Statistics](data-analytics/02-probability-and-statistics/slides/lectures/00-overview.yaml) | nothing | Look and Reason |
+| 2 | [Look and Reason](data-analytics/02-probability-and-statistics/slides/lectures/01-look-and-reason.yaml) | Probability and Statistics | Estimate and Test |
+| 3 | [Estimate and Test](data-analytics/02-probability-and-statistics/slides/lectures/02-estimate-and-test.yaml) | Look and Reason | Model a Relationship |
+| 4 | [Model a Relationship](data-analytics/02-probability-and-statistics/slides/lectures/03-model-a-relationship.yaml) | Estimate and Test | How the Rows Got There |
+| 5 | [How the Rows Got There](data-analytics/02-probability-and-statistics/slides/lectures/04-how-the-rows-got-there.yaml) | Model a Relationship | Experiments and Causality (data-analytics/03-experimentation-and-causality) |
+
+## data-analytics/03-experimentation-and-causality
+
+| # | Lecture | Before it | After it |
+|---|---|---|---|
+| 1 | [Experiments and Causality](data-analytics/03-experimentation-and-causality/slides/lectures/00-overview.yaml) | nothing | Design and Read One Test |
+| 2 | [Design and Read One Test](data-analytics/03-experimentation-and-causality/slides/lectures/01-design-and-read-one-test.yaml) | Experiments and Causality | Run Many Tests Safely |
+| 3 | [Run Many Tests Safely](data-analytics/03-experimentation-and-causality/slides/lectures/02-run-many-tests-safely.yaml) | Design and Read One Test | Without Randomising |
+| 4 | [Without Randomising](data-analytics/03-experimentation-and-causality/slides/lectures/03-when-you-cannot-randomise.yaml) | Run Many Tests Safely | Applied Analyses (data-analytics/06-applied-analyses) |
+
+## data-analytics/04-bayesian-analysis
+
+| # | Lecture | Before it | After it |
+|---|---|---|---|
+| 1 | [Bayesian Analysis](data-analytics/04-bayesian-analysis/slides/lectures/00-overview.yaml) | nothing | Infer |
+| 2 | [Infer](data-analytics/04-bayesian-analysis/slides/lectures/01-infer.yaml) | Bayesian Analysis | Compute and check |
+| 3 | [Compute and check](data-analytics/04-bayesian-analysis/slides/lectures/02-compute-and-check.yaml) | Infer | Decide |
+| 4 | [Decide](data-analytics/04-bayesian-analysis/slides/lectures/03-decide.yaml) | Compute and check | Bayesian machine learning |
+| 5 | [Bayesian machine learning](data-analytics/04-bayesian-analysis/slides/lectures/04-bayesian-machine-learning.yaml) | Decide | Many groups |
+| 6 | [Many groups](data-analytics/04-bayesian-analysis/slides/lectures/05-many-groups.yaml) | Bayesian machine learning | Visualisation and Storytelling (data-analytics/05-visualisation-and-storytelling) |
+
+## data-analytics/05-visualisation-and-storytelling
+
+| # | Lecture | Before it | After it |
+|---|---|---|---|
+| 1 | [Visualisation and Storytelling](data-analytics/05-visualisation-and-storytelling/slides/lectures/00-overview.yaml) | nothing | Choose and Plot |
+| 2 | [Choose and Plot](data-analytics/05-visualisation-and-storytelling/slides/lectures/01-choose-and-plot.yaml) | Visualisation and Storytelling | Static and Interactive Charts |
+| 3 | [Static and Interactive Charts](data-analytics/05-visualisation-and-storytelling/slides/lectures/02-static-and-interactive-charts.yaml) | Choose and Plot | Dashboards and Story |
+| 4 | [Dashboards and Story](data-analytics/05-visualisation-and-storytelling/slides/lectures/03-dashboards-and-story.yaml) | Static and Interactive Charts | Dashboard Stacks |
+| 5 | [Dashboard Stacks](data-analytics/05-visualisation-and-storytelling/slides/lectures/04-dashboard-stacks.yaml) | Dashboards and Story | Experiments and Causality (data-analytics/03-experimentation-and-causality) |
 
 ## data-analytics/06-applied-analyses
 
 | # | Lecture | Before it | After it |
 |---|---|---|---|
 | 1 | [Applied Analyses](data-analytics/06-applied-analyses/slides/lectures/00-overview.yaml) | nothing | Forecast and Score |
-| 2 | [Forecast and Score](data-analytics/06-applied-analyses/slides/lectures/01-forecast-and-score.yaml) | Applied Analyses | Cohort and retention: did we lose customers, or buy worse ones?, notes only |
+| 2 | [Forecast and Score](data-analytics/06-applied-analyses/slides/lectures/01-forecast-and-score.yaml) | Applied Analyses | Read the Customers |
+| 3 | [Read the Customers](data-analytics/06-applied-analyses/slides/lectures/02-read-the-customers.yaml) | Forecast and Score | Lifetime and Spend |
+| 4 | [Lifetime and Spend](data-analytics/06-applied-analyses/slides/lectures/03-lifetime-and-spend.yaml) | Read the Customers | Operations and Metrics |
+| 5 | [Operations and Metrics](data-analytics/06-applied-analyses/slides/lectures/04-operations-and-metrics.yaml) | Lifetime and Spend | Surveys |
+| 6 | [Surveys](data-analytics/06-applied-analyses/slides/lectures/05-surveys.yaml) | Operations and Metrics | Classical Machine Learning (data-science/01-classical-ml) |
 
 ## data-science/01-classical-ml
 
 | # | Lecture | Before it | After it |
 |---|---|---|---|
 | 1 | [Classical Machine Learning](data-science/01-classical-ml/slides/lectures/00-overview.yaml) | nothing | Statistical Foundations |
-| 2 | [Statistical Foundations](data-science/01-classical-ml/slides/lectures/01-statistical-foundations.yaml) | Classical Machine Learning, Probability Foundations (data-analytics/02-probability-and-statistics), notes only | Supervised Learning, notes only |
+| 2 | [Statistical Foundations](data-science/01-classical-ml/slides/lectures/01-statistical-foundations.yaml) | Classical Machine Learning, Look and Reason (data-analytics/02-probability-and-statistics) | Supervised Learning, notes only |

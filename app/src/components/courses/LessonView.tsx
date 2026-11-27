@@ -8,6 +8,11 @@ import { Markdown } from "./Markdown";
 import { openingRepeatsSummary, splitLesson, stripDuplicateH1 } from "./lessonParts";
 import { CLOBBER_PREFIX, splitSolution } from "./markdownUtils";
 import { StudyLevels } from "./StudyLevels";
+import { useSpeech } from "../../hooks/useSpeech";
+import { dictationAllowed } from "../../voice/policy";
+import { drillPromptSpeech, lessonSections } from "../../voice/speechText";
+import { ReadAloud } from "../voice/ReadAloud";
+import { VoiceDrawer } from "../voice/VoiceDrawer";
 
 interface Props {
   lesson: Lesson;
@@ -45,6 +50,22 @@ export function DrillBadges({ drill }: { drill: NonNullable<Lesson["drill"]> }) 
       ))}
     </span>
   );
+}
+
+/** A drill reads its Prompt section or nothing, and says which. See drillPromptSpeech. */
+function DrillReadAloud({ body }: { body: string }) {
+  const speech = useSpeech();
+  if (!speech.supported) return null;
+  const prompt = drillPromptSpeech(body);
+  if (!prompt.ok) return <p className="voice-notice">Read-aloud is off for this drill: {prompt.reason}.</p>;
+  return <ReadAloud speech={speech} label="Read prompt" segments={() => [{ text: prompt.text }]} />;
+}
+
+/** A lesson, one heading at a time. */
+function LessonReadAloud({ body, title }: { body: string; title: string }) {
+  const speech = useSpeech();
+  const segments = () => lessonSections(body, title).map((s, group) => ({ text: s.text, group, groupLabel: s.heading }));
+  return <ReadAloud speech={speech} label="Read aloud" segments={segments} skipLabel="Next section" />;
 }
 
 export function LessonView({ lesson, courseTitle, decks = [], done, onMarkDone, onOpen, onOpenConcept, onAsk, onToc, onActiveHeading }: Props) {
@@ -135,6 +156,16 @@ export function LessonView({ lesson, courseTitle, decks = [], done, onMarkDone, 
             </div>
           )}
           {lesson.summary && !openingRepeatsSummary(body, lesson.summary) && <p className="lesson-summary">{lesson.summary}</p>}
+          {lesson.kind === "drill" || lesson.drill ? (
+            <DrillReadAloud key={`read-${lesson.id}`} body={body} />
+          ) : (
+            <LessonReadAloud key={`read-${lesson.id}`} body={body} title={lesson.title} />
+          )}
+          {lesson.kind === "drill" || lesson.drill ? (
+            <VoiceDrawer key={`voice-${lesson.id}`} subject={lesson.id} target={{ mode: "approach", lesson: lesson.id }} />
+          ) : !dictationAllowed(lesson.id) ? (
+            <VoiceDrawer key={`voice-${lesson.id}`} subject={lesson.id} target={{ mode: "interview", lesson: lesson.id }} />
+          ) : null}
           {tabbed ? (
             <div className="lab-tabs lesson-tabs" role="tablist" aria-label="Parts of this lesson">
               {TABS.map((t) => (

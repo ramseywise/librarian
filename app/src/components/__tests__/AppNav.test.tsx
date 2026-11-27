@@ -1,4 +1,4 @@
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { resetProgressStoreForTests } from "../../hooks/useCourseProgress";
 import { resetCourseCachesForTests } from "../../hooks/useCourses";
@@ -32,34 +32,85 @@ const renderNav = (route: string) => render(<AppNav id="nav" route={route} open=
 const current = () => screen.getAllByRole("link").filter((a) => a.getAttribute("aria-current") === "page").map((a) => a.querySelector(".grow")?.textContent ?? a.textContent);
 
 describe("AppNav", () => {
-  it("lists the four sections, and under Courses every course as a group label over its modules", async () => {
+  it("lists the four sections, and under Courses every pillar collapsed, its chevron opening its modules in place", async () => {
     renderNav("/");
     expect(await screen.findByRole("link", { name: "Data Engineering" })).toHaveAttribute("href", "#/courses/de");
     for (const [name, href] of [["Graph", "#/"], ["Courses", "#/courses"], ["Study", "#/study"], ["Labs", "#/labs"]]) {
       expect(screen.getByRole("link", { name })).toHaveAttribute("href", href);
     }
     const group = within(screen.getByRole("group", { name: "Data Science" }));
+    expect(group.queryByRole("link", { name: "Classical ML" })).toBeNull();
+    const toggle = group.getByRole("button", { name: "Expand Data Science" });
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    fireEvent.click(toggle);
     expect(group.getByRole("link", { name: "Classical ML" })).toHaveAttribute("href", "#/courses/ds/01-ml");
     expect(group.getByRole("link", { name: "Deep Learning" })).toHaveAttribute("href", "#/courses/ds/02-dl");
+    fireEvent.click(group.getByRole("button", { name: "Collapse Data Science" }));
+    expect(group.queryByRole("link", { name: "Classical ML" })).toBeNull();
     expect(current()).toEqual(["Graph"]);
-    expect(screen.queryByRole("button")).toBeNull();
+  });
+
+  it("orders Graph, Courses and its pillars, Study, Labs, then Practice with the interview course at the bottom", async () => {
+    const withIv = [...courses, { id: "interviewing", title: "Interviewing", summary: "", order: 8, lessonCount: 0, modules: [] }];
+    vi.stubGlobal("fetch", vi.fn(async (url: string) =>
+      new Response(JSON.stringify(url === "/api/courses" ? withIv : {}), { status: 200 })));
+    const { container } = renderNav("/courses/interviewing");
+    await screen.findByRole("link", { name: "Interviewing" });
+    expect(container.textContent).toMatch(/^Graph.*Courses.*Data Science.*Data Engineering.*Study.*Labs.*Practice.*Interviewing$/);
+    expect(screen.getByRole("link", { name: "Courses" })).not.toHaveClass("is-within");
+    expect(screen.getByText("Practice")).toHaveClass("is-within");
+  });
+
+  it("opens the pillar being read, and a pillar's label opens it too", async () => {
+    renderNav("/courses/ds");
+    const group = within(await screen.findByRole("group", { name: "Data Science" }));
+    expect(group.getByRole("link", { name: "Classical ML" })).toBeInTheDocument();
+    expect(group.getByRole("button", { name: "Collapse Data Science" })).toHaveAttribute("aria-expanded", "true");
+    const de = within(screen.getByRole("group", { name: "Data Engineering" }));
+    fireEvent.click(de.getByRole("link", { name: "Data Engineering" }));
+    expect(de.getByRole("button", { name: "Collapse Data Engineering" })).toBeInTheDocument();
   });
 
   it("heads a course's modules with Core and Advanced when the course sorts them", async () => {
     const grouped = [{ ...courses[0], modules: [{ ...courses[0].modules[0], group: "core" }, { ...courses[0].modules[1], group: "advanced" }] }];
     vi.stubGlobal("fetch", vi.fn(async (url: string) =>
       new Response(JSON.stringify(url === "/api/courses" ? grouped : {}), { status: 200 })));
-    renderNav("/courses");
+    renderNav("/courses/ds");
     const group = await screen.findByRole("group", { name: "Data Science" });
     expect(group.textContent).toMatch(/Core.*Classical ML.*Advanced.*Deep Learning/);
   });
 
-  it("shows each module's lesson count and no lessons, even for the module being read", async () => {
+  it("shows no counts and no lessons, even for the module being read", async () => {
     const { container } = renderNav("/courses/ds/01-ml/notes/trees");
     await screen.findByRole("link", { name: "Classical ML" });
     expect(screen.queryByRole("link", { name: "Trees" })).toBeNull();
-    expect([...container.querySelectorAll(".sidenav-count")].map((n) => n.textContent)).toEqual(["1", "1"]);
+    expect(container.querySelector(".sidenav-count")).toBeNull();
     expect(container.querySelector(".check")).toBeNull();
+  });
+
+  it("lists the deck's parts under each module of an open pillar, each opening its first note", async () => {
+    const decked = [{ ...courses[0], modules: [
+      { ...courses[0].modules[0], lessons: [lesson("ds/01-ml/notes/trees", "Trees"), lesson("ds/01-ml/notes/forests", "Forests")],
+        decks: [{ id: "ds/01-ml", title: "Classical ML", parts: [
+          { n: 2, title: "Single trees", notes: ["trees"] },
+          { n: 3, title: "Ensembles", notes: ["forests"] },
+          { n: 4, title: "Elsewhere", notes: [] },
+        ] }] },
+      courses[0].modules[1],
+    ] }, courses[1]];
+    vi.stubGlobal("fetch", vi.fn(async (url: string) =>
+      new Response(JSON.stringify(url === "/api/courses" ? decked : {}), { status: 200 })));
+    const { container, unmount } = renderNav("/courses/ds/01-ml/notes/forests");
+    const group = within(await screen.findByRole("group", { name: "Data Science" }));
+    expect(group.getByRole("link", { name: "Single trees" })).toHaveAttribute("href", "#/courses/ds/01-ml/notes/trees");
+    expect(group.getByRole("link", { name: "Ensembles" })).toHaveClass("is-current", "sidenav-item--part");
+    expect(group.getByRole("link", { name: "Elsewhere" })).toHaveAttribute("href", "#/slides/ds/01-ml?part=4");
+    expect(container.textContent).toMatch(/Classical ML.*Single trees.*Ensembles.*Elsewhere.*Deep Learning/);
+    unmount();
+    // Outside the course the pillar is closed; opened by hand it shows the parts too.
+    renderNav("/");
+    fireEvent.click(await screen.findByRole("button", { name: "Expand Data Science" }));
+    expect(screen.getByRole("link", { name: "Single trees" })).toHaveClass("sidenav-item--part");
   });
 
   it("lists the folders of a course's only module under it, each opening on its readme", async () => {

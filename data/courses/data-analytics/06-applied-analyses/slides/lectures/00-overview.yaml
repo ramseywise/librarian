@@ -1,4 +1,4 @@
-# imported_hash: 7d6a7f0a52d12dd1
+# imported_hash: 4b14a4e984c589c9
 # Opening lecture of the applied analyses series: the vague question, the shape every analysis shares, the five steps and where each is taught.
 # make slides PILLAR=data-analytics/06-applied-analyses LECTURE=00-overview STRICT=1 PREVIEW=1
 # Levels: a slide with no level is the intro (core), `practice` is the core lesson, `deep` is the optional extension.
@@ -156,7 +156,7 @@ parts:
       - layout: bullets
         beat: fundamentals
         section: Syllabus
-        title: Step 3 treats a customer who has not left as censored
+        title: Step 3 is four ideas about time and credit
         recall: What does a customer who has not churned yet count as?
         answer: "Censored, not retained. Averaging lifetimes over the churned only is biased."
         bullets:
@@ -208,6 +208,7 @@ parts:
         section: Builds on and feeds into
         title: What you should already know
         card: false
+        lead: "Earlier modules feed this one. Tick each line before you start:"
         recall: Which earlier modules does the applied analyses module build on?
         answer: "SQL, groupby and joins from module 01, regression and the data generating process from module 02, and A/B test sizing and weighting from module 03."
         header: [From, You can already]
@@ -303,7 +304,7 @@ parts:
           - "Step 1 lecture: forecasting and credit scoring"
           - "Then the other steps, in the README's order"
           - "After step 5, go on to data science"
-        takeaway: Start with step 1, forecast and score.
+        takeaway: Start with step 1, which asks for a staffing number and a loan cutoff.
         source: README.md
         notes: >-
           After step 5 you can take a vague business question to a recommendation with its limits stated, and say what would change it.

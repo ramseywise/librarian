@@ -179,6 +179,7 @@ describe("CoursesView course page", () => {
       modules: [
         {
           ...studied.modules[0], objectives: ["Read a p-value"],
+          decks: [{ id: "c1/c1/m1", title: "Frames lecture", parts: [{ n: 2, title: "Loading a table", summary: "Read it in", notes: ["01-frames"] }] }],
           lessons: [part("readme", "Module"), part("notes/01-frames", "Frames"), part("practice/puzzles/one", "Puzzle one", "notebook"),
             part("practice/extra", "Extra notebook", "notebook"), part("references", "References")],
         },
@@ -205,7 +206,12 @@ describe("CoursesView course page", () => {
     expect(screen.getAllByRole("link", { name: "Frames" })).toHaveLength(2);
     expect(screen.queryByRole("link", { name: "Module" })).toBeNull();
     expect(screen.getByRole("link", { name: "Start: Frames" })).toHaveAttribute("href", "#/courses/c1/c1/m1/notes/01-frames");
-    expect(screen.getByText("Submodule 1. Load")).toBeInTheDocument();
+    // The notes are grouped by submodule (the deck's parts), and what's next names the one it is in.
+    const sub = within(screen.getByRole("region", { name: "Loading a table" }));
+    expect(sub.getByRole("link", { name: "Slides" })).toHaveAttribute("href", "#/slides/c1/c1/m1?part=2");
+    expect(sub.getByText("Read it in")).toBeInTheDocument();
+    expect(sub.getByRole("link", { name: "Frames" })).toBeInTheDocument();
+    expect(screen.getByText("In Loading a table")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "What follows" })).toHaveAttribute("href", "#/courses/c1/c1/m2");
   });
 

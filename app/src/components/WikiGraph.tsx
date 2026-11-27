@@ -241,7 +241,13 @@ function WikiGraphInner({
     [atlasPages, degree, grouping, areas, theme],
   );
   const pageInfo = useMemo(
-    () => new Map<string, AtlasPageInfo>(baseNodes.map((n) => [n.id, { title: n.data.title, summary: n.data.summary }])),
+    () =>
+      new Map<string, AtlasPageInfo>(
+        baseNodes.map((n) => [
+          n.id,
+          { title: n.data.title, summary: n.data.summary, tags: n.data.tags, path: n.data.path, origins: n.data.origins, sourceCount: n.data.sourceCount },
+        ]),
+      ),
     [baseNodes],
   );
   const primaryIds = useMemo(() => filterPrimaryIds(baseNodes, activeTags, facets), [baseNodes, activeTags, facets]);
@@ -655,10 +661,11 @@ function WikiGraphInner({
   // The first paint doesn't wait for these. Retries on reconnect while none have landed.
   const hasSemanticEdges = semanticEdges.length > 0;
   useEffect(() => {
-    if (!hasRenderedNodes || !connected || !edgeVis.semantic || hasSemanticEdges) return;
+    // The atlas draws no React Flow nodes but its cards list similar pages, so it loads them too.
+    if (!(hasRenderedNodes || (onAtlas && hasNodes)) || !connected || !edgeVis.semantic || hasSemanticEdges) return;
     const timer = setTimeout(() => void handleLoadSemantic(), SEMANTIC_DELAY_MS);
     return () => clearTimeout(timer);
-  }, [hasRenderedNodes, connected, edgeVis.semantic, hasSemanticEdges, handleLoadSemantic]);
+  }, [hasRenderedNodes, onAtlas, hasNodes, connected, edgeVis.semantic, hasSemanticEdges, handleLoadSemantic]);
 
   // Clicking a node focuses it and keeps its neighbours on the canvas, so the graph can be
   // walked outward click by click. Clicking it again unfocuses. In a clustered level the walk is
@@ -704,6 +711,22 @@ function WikiGraphInner({
   });
   const titleOf = useCallback((id: string) => pageInfo.get(id)?.title ?? id, [pageInfo]);
 
+  // A page's most similar pages by embedding, best first; empty until the edges load.
+  const similarOf = useMemo(() => {
+    const by = new Map<string, { id: string; title: string; score: number }[]>();
+    for (const e of semanticEdges) {
+      const score = e.data?.score;
+      if (score == null) continue;
+      for (const [a, b] of [[e.source, e.target], [e.target, e.source]]) {
+        const list = by.get(a) ?? [];
+        list.push({ id: b, title: pageInfo.get(b)?.title ?? b, score });
+        by.set(a, list);
+      }
+    }
+    for (const list of by.values()) list.sort((x, y) => y.score - x.score);
+    return (id: string) => by.get(id) ?? [];
+  }, [semanticEdges, pageInfo]);
+
   // What an open card shows and does. Its related pages are the page's wikilinks by kind of link.
   const closeCard = useCallback(() => onNodeSelect?.(null), [onNodeSelect]);
   const nodeCard = useMemo<NodeCard>(
@@ -742,10 +765,6 @@ function WikiGraphInner({
     [navigate, grouping],
   );
   const openAtlas = useCallback(() => navigate(mapPath({ level: "atlas", grouping })), [navigate, grouping]);
-  const openPageLevel = useCallback(
-    (id: string, page: string) => navigate(mapPath({ level: "page", grouping, sector: id, page, cap: PAGE_CAP })),
-    [navigate, grouping],
-  );
 
   const handlePaneClick = useCallback(() => {
     setFocusNodeId(null);
@@ -962,10 +981,13 @@ function WikiGraphInner({
               matches={atlasMatches}
               lit={atlasLit}
               taught={taught}
-              onOpenSector={openSectorLevel}
-              onOpenPage={openPageLevel}
+              related={nodeCard.related}
+              similar={similarOf}
+              activeTags={activePageTags}
+              onTagClick={onTagClick}
               enterFrom={enterFrom}
               reading={reading}
+              links={wikilinkEdges}
             />
           )
         ) : (

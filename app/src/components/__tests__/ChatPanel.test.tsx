@@ -27,6 +27,18 @@ describe("ChatPanel", () => {
     expect(screen.getByLabelText("Ask the librarian")).toBeInTheDocument();
   });
 
+  it("minimizes to its header and opens again", () => {
+    render(<ChatPanel {...base} messages={[reply({ content: "x" })]} streaming={false} />);
+    const toggle = screen.getByRole("button", { name: /Ask the Librarian/ });
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
+    fireEvent.click(toggle);
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByRole("log")).toBeNull();
+    expect(screen.queryByLabelText("Ask the librarian")).toBeNull();
+    fireEvent.click(toggle);
+    expect(screen.getByRole("log")).toBeInTheDocument();
+  });
+
   it("swaps send for stop while streaming and calls onStop", () => {
     const onStop = vi.fn();
     render(<ChatPanel {...base} messages={[reply({ streaming: true })]} streaming onStop={onStop} />);

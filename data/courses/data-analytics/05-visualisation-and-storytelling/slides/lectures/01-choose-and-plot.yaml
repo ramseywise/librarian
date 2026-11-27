@@ -1,0 +1,942 @@
+# imported_hash: c71c3bc28835dbce
+# Lecture on step 1, Choose and plot: notes/01-grammar-and-chart-choice.md and 01b-plotting-your-own-data.md, in the notes' order.
+# make slides PILLAR=data-analytics/05-visualisation-and-storytelling LECTURE=01-choose-and-plot STRICT=1 PREVIEW=1
+# Levels: a slide with no level is the intro, `core` is the core lesson, `deep` is the optional extension (code and detail).
+deck:
+  title: Choose and Plot
+  subtitle: What a chart must say, and how to draw it
+  tagline: "Grammar of graphics · Encodings · Honest axes · Plotting your own data"
+  reference: "Notes: data-analytics/05-visualisation-and-storytelling, notes 1 and 1b"
+  output: 01-choose-and-plot.pptx
+  notes: >-
+    This is the second lecture of the visualisation series, after the overview. It covers step 1. By the end you should
+    be able to describe a chart as a set of independent decisions, rank encodings by how accurately people read them,
+    choose a chart from the question, spot a dual axis and a truncated bar, and draw the common charts from your own
+    table with matplotlib, pandas and seaborn.
+
+lecture:
+  covers:
+    - data-analytics/05-visualisation-and-storytelling/notes/01-grammar-and-chart-choice.md
+    - data-analytics/05-visualisation-and-storytelling/notes/01b-plotting-your-own-data.md
+  requires: [data-analytics/05-visualisation-and-storytelling/README.md]
+  next: [data-analytics/05-visualisation-and-storytelling/notes/02-matplotlib-and-seaborn.md]
+  related:
+    - data-analytics/01-python-for-data-analysis/notes/08-time-series.md
+    - data-analytics/01-python-for-data-analysis/notes/04-reshaping-and-joins.md
+    - data-analytics/03-experimentation-and-causality/README.md
+
+parts:
+  - title: Why plot at all
+    summary: A chart is an argument · Fernhill Home · Anscombe · Two jobs
+    notes: First, why a bad chart is worse than no chart, and the company we follow through the whole module.
+    slides:
+      - layout: statement
+        beat: problem
+        title: A chart is an argument made with geometry
+        recall: Why is a bad chart worse than no chart?
+        answer: "A reader believes geometry faster than prose, so a bad chart misleads before anyone has read a label."
+        kicker: The problem
+        statement: "A chart is an argument made with geometry, and a reader believes geometry faster than they believe prose."
+        attribution: Why a bad chart is worse than no chart
+        takeaway: Two tools stop most bad charts before they are drawn, a grammar and a ranking of encodings.
+        source: notes/01-grammar-and-chart-choice.md
+        notes: >-
+          The chapter gives two tools. One describes any chart as a small set of independent decisions. The other is a
+          ranked list of how accurately people read each visual encoding.
+
+      - layout: cards
+        beat: problem
+        section: The company we will follow
+        title: Fernhill Home cuts its email budget
+        recall: What is the Fernhill story that the module follows?
+        answer: "Fernhill Home, a fictional online homewares shop, cut its email budget from £14k to £4k a month in January 2025 and spent more on paid social. Revenue kept rising, but a retention analyst suspects something underneath."
+        cards:
+          - {title: The shop, accent: "1E3A5F", body: "Fernhill Home sells homewares online"}
+          - {title: The cut, accent: "D4621A", body: "Email from £14k to £4k a month in January 2025, more on paid social"}
+          - {title: The mood, accent: "0F7490", body: "Finance is pleased, since revenue kept rising"}
+          - {title: The suspicion, accent: "0EA5C9", body: "A retention analyst thinks something else is happening underneath"}
+        takeaway: One shop answers one question through five charting tools, so the tools can be compared fairly.
+        source: notes/01-grammar-and-chart-choice.md
+        notes: >-
+          By lecture 4 we have to tell the leadership team whether to restore the budget. The data comes from a seeded
+          generator, so the story was planted and the numbers prove nothing about real email marketing. What it gives us is
+          a way to check what each chart reveals against what we know is true.
+
+      - layout: table
+        beat: problem
+        section: The company we will follow
+        title: Two tables, two different moods
+        recall: What did revenue and the 90-day repeat rate do from 2023 to 2025?
+        answer: "Revenue rose from £5.60m to £5.96m, while the share of new customers who bought again within 90 days fell from about 38% to 26%."
+        header: [Year, Revenue, Spend, Repeat rate]
+        widths: [1.6, 2.6, 2.4, 2.6]
+        rows:
+          - ["2023", "£5,197,998", "£480,000", "0.377"]
+          - ["2024", "£5,596,149", "£480,000", "0.376"]
+          - ["2025", "£5,960,289", "£624,000", "0.262"]
+        highlight: [2]
+        takeaway: Revenue rose while the repeat rate fell, and most of this lecture is about drawing both honestly.
+        source: notes/01-grammar-and-chart-choice.md
+        notes: >-
+          Hold on to those two lines. Revenue went from £5.60m to £5.96m. The share of new customers who bought again
+          within 90 days fell from about 38% to 26%.
+
+      - layout: table
+        beat: problem
+        section: Why plot at all
+        title: Four datasets, one set of summary numbers
+        card: false
+        recall: What do Anscombe's four datasets share?
+        answer: "Mean of x 9.0, mean of y 7.5, variance of y about 4.12, correlation 0.82, slope 0.5 and intercept 3.0. To two decimals they are the same dataset."
+        header: [Set, Mean y, Var y, Corr, Slope, Intercept]
+        widths: [1.4, 1.6, 1.6, 1.6, 1.6, 1.8]
+        rows:
+          - ["I", "7.5", "4.13", "0.82", "0.5", "3.0"]
+          - ["II", "7.5", "4.13", "0.82", "0.5", "3.0"]
+          - ["III", "7.5", "4.12", "0.82", "0.5", "3.0"]
+          - ["IV", "7.5", "4.12", "0.82", "0.5", "3.0"]
+        takeaway: To two decimal places the four sets are the same dataset, and the table cannot tell you otherwise.
+        source: notes/01-grammar-and-chart-choice.md
+        notes: >-
+          Frank Anscombe built four small datasets in 1973 to argue with the belief that calculations are exact and graphs
+          are rough. Here are the summary statistics an analyst would normally report. Now draw them.
+
+      - layout: image
+        beat: problem
+        section: Why plot at all
+        title: Same fitted line, four different stories
+        kicker: Anscombe's quartet
+        recall: What does Anscombe's quartet show?
+        answer: "Four datasets share means, variance, correlation and fitted line and look nothing alike. Summaries alone can hide curvature, outliers and leverage."
+        image: ../../assets/sources/images/viz-anscombe-quartet.png
+        caption: "Four scatter plots with an identical fitted line, from the values in Anscombe (1973)."
+        bullets:
+          - "**Sets II and III** are a clean curve and a tight line with one outlier"
+          - "**Set IV** has one point that makes the slope"
+        takeaway: Each set calls for a different next step, and the table could not have told you which.
+        source: notes/01-grammar-and-chart-choice.md
+        notes: >-
+          Set II is a clean curve that a line should never have been fitted to. Set III is a tight line with one outlier
+          dragging it. Set IV has no relationship at all except a single point that manufactures the whole slope.
+
+      - layout: compare
+        beat: fundamentals
+        section: Why plot at all
+        title: Exploratory charts and explanatory charts
+        recall: What is the difference between exploratory and explanatory charts?
+        answer: "Exploratory charts are the many you make to find out what is true. Explanatory charts are the few you make to tell someone else."
+        emphasis: right
+        left:
+          title: Exploratory
+          tag: Many
+          bullets: ["Made to find out what is true", "Drawn quickly, for your own eyes", "This lecture and the next"]
+        right:
+          title: Explanatory
+          tag: Few
+          bullets: ["Made to tell someone else", "One message, the rest removed", "Lecture 4"]
+        takeaway: There are two separate jobs for charts, and the distinction is worth learning early.
+        source: notes/01-grammar-and-chart-choice.md
+        notes: >-
+          The opening distinction comes from Knaflic. Most of the first three lectures is about the first job.
+          Lecture 4 is about the second.
+
+  - title: The grammar and the ranking
+    summary: Seven decisions · One spec, three marks · Encodings ranked · Choose by the question
+    notes: Now the two tools. The grammar lets you vary one decision at a time, and the ranking tells you which encoding to spend on what.
+    slides:
+      - layout: table
+        beat: fundamentals
+        section: A chart is a set of independent decisions
+        title: A chart is seven independent decisions
+        recall: Which parts does the grammar of graphics split a chart into?
+        answer: "Data, mark, encoding, statistic, scale, coordinates and facet."
+        header: [Part, The question it answers]
+        widths: [2.6, 6.8]
+        rows:
+          - ["Data", "Which rows, at what grain?"]
+          - ["Mark (geom)", "What shape stands for a row?"]
+          - ["Encoding (aesthetic)", "Which column drives which visual channel?"]
+          - ["Statistic", "Is anything computed first?"]
+          - ["Scale", "How do values map to pixels and colours?"]
+          - ["Coordinates", "Which space are we in? Polar would give a pie"]
+          - ["Facet", "Do we repeat the chart per group?"]
+        takeaway: Each decision can change while the others stay still, which is what chart types as a menu cannot offer.
+        source: notes/01-grammar-and-chart-choice.md
+        notes: >-
+          Leland Wilkinson replaced the menu of chart types with a grammar in 1999, the way a sentence is a composition of
+          parts of speech. Wickham made it practical in ggplot2 with layers, Vega-Lite brought it to JSON, and Altair is
+          that grammar with a Python API.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: A chart is a set of independent decisions
+        title: One word changed, a different chart
+        recall: How do you turn Altair lines into areas or small multiples?
+        answer: "Keep the data and the encoding, change the mark with mark_area, or add a facet."
+        lang: python
+        code: |-
+          base = alt.Chart(data).properties(width=250, height=190)
+          lines = base.mark_line(strokeWidth=2).encode(
+              x=x, y=y, color=colour)
+          areas = base.mark_area().encode(
+              x=x, y=y, color=colour)   # change only the mark
+          small = (base.properties(width=112, height=78)
+                   .mark_line(strokeWidth=2)
+                   .encode(x=x, color=colour,
+                           y=alt.Y("sum(revenue):Q", title=None))
+                   .facet(facet=alt.Facet("channel:N"),
+                          columns=2))      # add a facet
+        takeaway: Data and encoding stay put while the mark changes and a facet is added.
+        source: notes/01-grammar-and-chart-choice.md
+        notes: >-
+          The excerpt is trimmed from the note's block. The printed encoding of the lines chart is color, x and y, with a
+          line mark.
+
+      - layout: image
+        beat: fundamentals
+        section: A chart is a set of independent decisions
+        title: Lines, stacked areas and small multiples
+        kicker: The same Fernhill data three ways
+        recall: What does each of the three Fernhill charts show best?
+        answer: "Lines compare channels month by month and show paid social crossing email in January 2025. The stack shows the total. Small multiples show each channel's own shape."
+        image: ../../assets/sources/images/viz-grammar-one-spec-three-marks.png
+        caption: "Three charts from one specification with a word changed."
+        bullets:
+          - "**Lines:** paid social crosses email in January 2025"
+          - "**Stack** shows the total, **small multiples** each channel's own shape"
+        takeaway: The three charts answer three different questions from the same data.
+        source: notes/01-grammar-and-chart-choice.md
+        notes: >-
+          The stack makes the middle channels hard to read because each one sits on a moving baseline. The small multiples
+          give up cross-channel comparison for each channel's own shape.
+
+      - layout: statement
+        beat: fundamentals
+        section: A chart is a set of independent decisions
+        title: Ask which encoding makes the comparison easiest
+        recall: What question replaces 'what chart should this be?'
+        answer: "Which encoding will make the comparison I care about easiest to read? That question has an answer based on evidence."
+        statement: "Which encoding will make the comparison I care about easiest to read?"
+        attribution: The grammar's version of 'what chart should this be?'
+        takeaway: Chart choice stops being taste once the question is about encodings and the comparison.
+        source: notes/01-grammar-and-chart-choice.md
+        notes: >-
+          When someone asks what chart it should be, translate it into this question. Evidence from perception experiments
+          answers it, which is the next slide.
+
+      - layout: steps
+        beat: fundamentals
+        section: Encodings have a ranking
+        title: Six encodings, from most to least accurate
+        recall: In what order do people read encodings most accurately?
+        answer: "Position on a common scale, position on non-aligned scales, length, direction and angle, area, volume and curvature, then shading and colour saturation (Cleveland and McGill, 1984)."
+        steps:
+          - {title: Common-scale position, text: "Dot plot, line, bar tip", n: "1", accent: "1E3A5F"}
+          - {title: Non-aligned position, text: "The same value across small multiples", n: "2"}
+          - {title: Length, direction, angle, text: "Stacked segments, slopes, pie slices", n: "3"}
+          - {title: Area, text: "Bubbles, treemaps", n: "4"}
+          - {title: Volume, curvature, text: "3D shapes", n: "5"}
+          - {title: Shading, saturation, text: "Heatmaps, choropleths", n: "6", accent: "D4621A"}
+        takeaway: Put the most important attribute on position, and spend shading only on pattern.
+        source: notes/01-grammar-and-chart-choice.md
+        notes: >-
+          William Cleveland and Robert McGill ran experiments in which people judged the relative size of two values shown by
+          different elementary encodings, and ordered the encodings by accuracy.
+
+      - layout: bullets
+        beat: fundamentals
+        level: core
+        section: Encodings have a ranking
+        title: The ranking is not one laboratory's artefact
+        recall: Why can the Cleveland and McGill ordering be trusted?
+        answer: "Heer and Bostock (2010) replicated spatial encoding and luminance contrast studies with Mechanical Turk workers, showing crowdsourced perception experiments are viable. Munzner turns it into a rule: put the most important attribute on the most accurately perceived channel."
+        bullets:
+          - "**Replicated.** Crowdsourced workers (Heer and Bostock, 2010) support the ordering"
+          - "**A design rule.** Munzner: most important attribute, most accurate channel"
+          - "**The pie advice.** A pie compares angles and areas, which sit below position"
+        takeaway: The ordering is evidence, and the pie advice follows from it.
+        source: notes/01-grammar-and-chart-choice.md
+        notes: >-
+          This is the real reason for the common advice about pie charts. A pie asks the reader to compare angles and areas,
+          which sit below position on the list.
+
+      - layout: image
+        beat: practice
+        section: Encodings have a ranking
+        title: Which slice is second? Sorted bars say at once
+        kicker: Fernhill 2025 revenue by channel
+        recall: What do sorted bars show that the pie hides?
+        answer: "Organic 44%, paid social 35%, email 12% and referral 9% read at once as sorted bars, because bars use position on a common scale."
+        image: ../../assets/sources/images/viz-pie-vs-sorted-bars.png
+        caption: "A pie beside sorted horizontal bars of the same four shares. The pie is a labelled counter-example."
+        bullets:
+          - "**Organic** 0.441"
+          - "**Paid social** 0.350"
+          - "**Email** 0.120"
+          - "**Referral** 0.089"
+        takeaway: Sorted bars win when the question is comparison.
+        source: notes/01-grammar-and-chart-choice.md
+        notes: >-
+          The shares are 2025 revenue by channel. The counter-example asks which slice is second, and the bars answer it
+          without effort.
+
+      - layout: compare
+        beat: pitfalls
+        section: Encodings have a ranking
+        title: "\"Never use a pie\" is a slogan, not a finding"
+        recall: When is a pie chart a defensible choice?
+        answer: "When the message is that parts make a whole or a simple fraction such as a half or a quarter. For comparing the parts, and for many pieces, side-by-side bars are better (Wilke)."
+        emphasis: left
+        left:
+          title: Pie is good at
+          bullets: ["Parts make a whole", "Simple fractions, a half or a quarter"]
+        right:
+          title: Bars are better at
+          bullets: ["Comparing the parts", "Many pieces"]
+        takeaway: The comparison the reader must make decides the form, and a two-slice pie can be defensible.
+        source: notes/01-grammar-and-chart-choice.md
+        notes: >-
+          If your point is that organic is nearly half of revenue, a two-slice pie is defensible. Knaflic takes the harder
+          line and advises avoiding pies altogether. Both agree that the comparison decides the form.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: Choose by the question
+        title: Start from the sentence the reader should say
+        recall: Which chart goes with change, comparison, distribution and relationship?
+        answer: "Change over time is a line, a comparison across categories is sorted bars or dots, a distribution is a histogram or box plot, a relationship is a scatter, many groups at once are small multiples."
+        header: [The reader needs to see, Use, Avoid]
+        widths: [3.4, 3.0, 3.4]
+        rows:
+          - ["Change over time", "Line", "Stacked area for each series"]
+          - ["A comparison across categories", "Sorted bars or dots", "Pie with many slices"]
+          - ["Parts of a whole, simple fractions", "One stacked bar, small pie", "Many-slice pie, 3D pie"]
+          - ["A distribution", "Histogram, box plot, density", "Mean-only bar"]
+          - ["A relationship", "Scatter", "Two lines on two axes"]
+          - ["Many groups at once", "Small multiples", "Spaghetti lines, over eight hues"]
+          - ["Two values in a grid", "Heatmap, one-hue scale", "Rainbow scale"]
+          - ["One number that matters", "The number, in large type", "A chart of one point"]
+        takeaway: Write the sentence first, and sometimes the answer is not a chart at all.
+        source: notes/01-grammar-and-chart-choice.md
+        notes: >-
+          Knaflic's own short list of visuals covers simple text, tables, heatmaps, lines, slopegraphs and bars. A small
+          vocabulary used precisely beats a large one used loosely. Wilke's directory of visualizations helps when you
+          have forgotten the name of a form.
+
+  - title: Honest axes and colour
+    summary: Dual axes · Two panels · Truncated bars · Colour jobs · Pitfalls
+    notes: Two ways an honest dataset gets misrepresented, the fixes, and the jobs colour can do.
+    slides:
+      - layout: image
+        beat: problem
+        section: Two ways an honest dataset gets misrepresented
+        title: One dataset, two dual-axis stories
+        kicker: Both panels plot the same data
+        recall: Why can a dual-axis chart tell opposite stories from the same data?
+        answer: "Nothing in the data decides where the two scales sit relative to each other, so the crossing points and the apparent gap are whatever the author set the limits to."
+        image: ../../assets/sources/images/viz-dual-axis-two-stories.png
+        caption: "Left: nothing much happens. Right: a collapse crossing a surge. Both are labelled counter-examples."
+        bullets:
+          - "Revenue limits **0 to 1600** against **300 to 800**"
+          - "Repeat rate limits **0 to 100** against **24 to 40**"
+        takeaway: Any crossing or gap on a dual-axis chart is invented by whoever set the limits.
+        source: notes/01-grammar-and-chart-choice.md
+        notes: >-
+          On the left the repeat rate drifts across the bottom and appears to matter little. On the right it plunges
+          through revenue like a crash. Knaflic lists secondary y axes among the things to avoid for this reason.
+
+      - layout: image
+        beat: practice
+        section: Two ways an honest dataset gets misrepresented
+        title: Give each measure its own panel
+        kicker: Fernhill's problem, honestly
+        recall: How do you replace a dual-axis chart?
+        answer: "Give each measure its own panel on a shared time axis, mark the event, or index both series to 100 at a chosen date if they genuinely share a base."
+        image: ../../assets/sources/images/viz-two-panels-instead-of-dual-axis.png
+        caption: "Revenue and repeat rate in two aligned panels, with the email budget cut marked."
+        bullets:
+          - "**Shared x axis** keeps the relationship in time"
+          - "**A marker** for the budget cut"
+          - "**No argument** about where the scales sit"
+        takeaway: Two aligned panels keep the timing and remove the authored scales.
+        source: notes/01-grammar-and-chart-choice.md
+        notes: >-
+          If the two measures genuinely share a base, a third option is to index both to 100 at a chosen date.
+
+      - layout: compare
+        beat: fundamentals
+        section: Two ways an honest dataset gets misrepresented
+        title: Dual axis against two panels
+        recall: Why are two panels better than a dual-axis chart?
+        answer: "A dual axis lets whoever sets the limits author the crossing. Two panels on a shared time axis keep the timing and leave no scale to argue about."
+        emphasis: right
+        left:
+          title: Dual axis
+          tag: Authored
+          bullets: ["Limits decide where the lines cross", "Same data tells two stories", "Knaflic lists it to avoid"]
+        right:
+          title: Two panels
+          tag: Honest
+          bullets: ["One panel per measure", "Shared time axis, event marked", "Or index both to 100"]
+        takeaway: Choose the form where nobody has to trust the scale limits.
+        source: notes/01-grammar-and-chart-choice.md
+        notes: >-
+          This is the fix for the problem on the two slides before.
+
+      - layout: image
+        beat: problem
+        section: Two ways an honest dataset gets misrepresented
+        title: The same bars with and without a zero
+        kicker: Fernhill 2025 quarterly revenue
+        recall: How much does a truncated bar axis exaggerate Fernhill's quarters?
+        answer: "Q3 revenue is 11% above Q1, but on the truncated axis it is drawn 86% taller."
+        image: ../../assets/sources/images/viz-bar-baseline-truncated-vs-zero.png
+        caption: "Left: the y axis starts at £1.1m, a counter-example. Right: the bars start at zero."
+        bullets:
+          - "Real Q3 against Q1: **+11%**"
+          - "Bar heights on the left: **+86%**"
+        takeaway: A truncated axis turns an 11% gap into an 86% one.
+        source: notes/01-grammar-and-chart-choice.md
+        notes: >-
+          The comparison uses the three ordinary quarters, since Q4 is the Christmas peak.
+
+      - layout: bullets
+        beat: fundamentals
+        section: Two ways an honest dataset gets misrepresented
+        title: Bars start at zero, lines may not
+        recall: Why must bars start at zero when a line can zoom in?
+        answer: "A bar's length is its message, and the size of a shaded area must be proportional to its value (Wilke's proportional ink). A line or dot encodes by position alone, so it can zoom if the axis says so plainly."
+        bullets:
+          - "**Proportional ink.** A shaded area must be proportional to its value (Wilke)"
+          - "**Bars:** zero baseline on a linear scale"
+          - "**Lines and dots:** position only, so a zoom is allowed if the axis says so"
+          - "A tax-rate bar chart with a cut axis made about **13%** look like about **460%**"
+        takeaway: Bars start at zero, and a line may zoom only when the axis says so plainly.
+        source: notes/01-grammar-and-chart-choice.md
+        notes: >-
+          The tax-rate example is Knaflic's. We drew the repeat rate from zero anyway, because the honest size of the fall
+          matters more here than the month-to-month wiggle.
+
+      - layout: cards
+        beat: fundamentals
+        section: Colour has a job too
+        title: Colour has three jobs, each with one rule
+        recall: What are the three jobs of colour and the rule for each?
+        answer: "Categorical says which thing: a fixed order of distinct hues, one colour per entity, no ninth hue. Sequential says how much: one hue from light to dark. Diverging says above or below a midpoint: two hues with a neutral grey in the middle."
+        cards:
+          - {title: Categorical, accent: "1E3A5F", body: "Which thing. A fixed order of distinct hues, one colour per entity, stop before a ninth"}
+          - {title: Sequential, accent: "0EA5C9", body: "How much. One hue from light to dark"}
+          - {title: Diverging, accent: "D4621A", body: "Above or below a midpoint. Two hues, a neutral grey in the middle"}
+        takeaway: Spend colour on identity, not quantity, unless a grid leaves you nothing else.
+        source: notes/01-grammar-and-chart-choice.md
+        notes: >-
+          Colour is near the bottom of the accuracy list, so it carries identity better than quantity.
+
+      - layout: bullets
+        beat: practice
+        level: deep
+        section: Colour has a job too
+        title: Run a contrast check, do not judge by eye
+        recall: What did the Fernhill palette check find?
+        answer: "Two of its four hues have less than 3:1 contrast against the background, so charts using them must also carry direct labels or a table."
+        bullets:
+          - "The palette was checked with a **colour-vision-deficiency validator**"
+          - "Two of the four hues have **under 3:1** contrast"
+          - "Those charts also carry **direct labels or a table**"
+        takeaway: A contrast check is a calculation, so run one.
+        source: notes/01-grammar-and-chart-choice.md
+        notes: >-
+          The palette lives in practice/chartstyle.py.
+
+      - layout: cards
+        beat: pitfalls
+        section: Pitfalls
+        title: Four ways to pick the wrong chart
+        recall: Name four ways a chart choice goes wrong before it is drawn
+        answer: "Picking the chart before the question, two y axes, bars or areas from a non-zero baseline, and stacking to compare."
+        cards:
+          - {title: Chart first, accent: "1E3A5F", body: "Write the sentence the reader should say first"}
+          - {title: Two y axes, accent: "D4621A", body: "The scales are arbitrary. Use aligned panels or an index"}
+          - {title: Non-zero baseline, accent: "0F7490", body: "Length and area are the message. Plot differences or use dots"}
+          - {title: Stacking to compare, accent: "5B21B6", body: "Only the bottom segment shares a baseline. Stack for totals"}
+        takeaway: Order the decisions question first, then form, then axes.
+        source: notes/01-grammar-and-chart-choice.md
+        notes: >-
+          A dashboard with a pie is a decision made in the wrong order.
+
+      - layout: bullets
+        beat: pitfalls
+        section: Pitfalls
+        title: Three more pitfalls from the same lecture
+        card: false
+        recall: Which three further pitfalls does the chapter name?
+        answer: "Summaries without a plot, colour for its own sake, and rotated tick labels on vertical bars."
+        bullets:
+          - "**Summaries without a plot.** Plot before you report"
+          - "**Colour for its own sake.** One colour per bar in a single series invents a category"
+          - "**Rotated labels.** 45-degree text was read about **52%** slower, 90-degree about **205%** slower"
+        takeaway: Plot before you report, and swap to horizontal bars before you rotate a label.
+        source: notes/01-grammar-and-chart-choice.md
+        notes: >-
+          The rotated-text figures are from Wigdor and Balakrishnan (2005), as cited by Knaflic.
+
+  - title: Plotting your own data
+    summary: Figure and Axes · Lines and bars · Histograms · Seaborn · Which chart
+    notes: Now the mechanics, in the order you meet them. Here the reader is you.
+    slides:
+      - layout: statement
+        beat: problem
+        title: A plot is the fastest way to find out what is wrong
+        recall: Why do analysts plot early and often?
+        answer: "A plot is the fastest way to find out what is wrong with your data and what is interesting about it, well before anyone asks for a chart."
+        statement: "A table of a year's daily revenues tells you almost nothing. One line chart shows the trend, the weekly ripple, the outage and the December jump in a second."
+        attribution: Plotting your own data
+        takeaway: Plot early and often, because the reader of these charts is you.
+        source: notes/01b-plotting-your-own-data.md
+        notes: >-
+          The chapter teaches matplotlib's model of a figure, then pandas shortcuts, then seaborn for statistical plots that
+          start from a whole table, and answers which chart answers which question.
+
+      - layout: compare
+        beat: fundamentals
+        section: Figures and axes
+        title: A Figure is the canvas, an Axes is one plot
+        recall: What is the difference between a Figure and an Axes?
+        answer: "The Figure is the canvas you save to a file, and an Axes is one plot on it with its own coordinate system. A Figure holds one or more Axes."
+        emphasis: right
+        left:
+          title: Figure
+          tag: The canvas
+          bullets: ["What you save to a file", "Holds one or more Axes", "Can carry a suptitle"]
+        right:
+          title: Axes
+          tag: One plot
+          bullets: ["Own coordinate system", "Title, lines, bars, points, legend", "Has two axes, x and y"]
+        takeaway: Every confusing plotting moment is a confusion about these two objects.
+        source: notes/01b-plotting-your-own-data.md
+        notes: >-
+          John Hunter started matplotlib in 2002 to bring MATLAB-style plotting to Python, and pandas and seaborn both draw
+          through it. The name is confusing since one Axes has two axes.
+
+      - layout: code
+        beat: practice
+        section: Figures and axes
+        title: Ask for the Axes by name
+        recall: Why prefer fig, ax = plt.subplots() to plt.plot?
+        answer: "The explicit interface says which Axes you mean. plt.plot draws on an implicit current Axes, which gets confusing as soon as there are two plots."
+        lang: python
+        code: |-
+          fig, ax = plt.subplots()
+          print(type(fig).__name__, type(ax).__name__)
+          fig, axes = plt.subplots(2, 3, sharey=True)
+          print(axes.shape)
+          plt.close("all")
+        bullets:
+          - "Prints **Figure Axes**, then **(2, 3)**"
+          - "A grid gives a NumPy array: **axes[0, 1]**"
+          - "**sharey=True** puts every plot on one scale"
+        takeaway: Use the explicit interface, since current stops being obvious with two plots.
+        source: notes/01b-plotting-your-own-data.md
+        notes: >-
+          Without sharey, each plot scales itself, and plots that look the same may differ tenfold. The implicit plt.plot
+          is what old tutorials use.
+
+      - layout: image
+        beat: practice
+        section: "Line charts: change over time"
+        title: A line shows what describe never would
+        kicker: Daily revenue, 2024, with a seven-day mean
+        recall: What does the daily revenue line chart show that describe() hides?
+        answer: "The weekly ripple, the trend removed by the 7-day mean, and a break in mid-March where NaN leaves a gap. The one-day August gap is too small to spot."
+        image: ../../assets/sources/images/da01-plotting-line.png
+        caption: "Upward trend, gaps in March and August, and a jump in December."
+        bullets:
+          - "**Grey ripple:** the weekly pattern"
+          - "**Teal line:** the 7-day mean"
+          - "**Mid-March break:** NaN leaves a gap"
+        takeaway: The line breaks at a missing value, so plot the regular series, and still count missing values.
+        source: notes/01b-plotting-your-own-data.md
+        notes: >-
+          A line says these points are connected and the order means something. Plotting the regular series shows the
+          outage that plotting the raw one would have drawn straight over. The August gap is a limit of the eye.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: "Line charts: change over time"
+        title: Draw, label, annotate, save on one Axes
+        recall: What is the whole line chart workflow on one Axes?
+        answer: "Draw with ax.plot, label and annotate with methods on ax, then save and close the figure."
+        lang: python
+        code: |-
+          fig, ax = plt.subplots(figsize=(8, 3.4))
+          ax.plot(regular.index, regular, color=GREY,
+                  linewidth=0.8, label="daily")
+          ax.plot(regular.index, regular.rolling(7).mean(),
+                  color=TEAL, linewidth=2, label="7-day mean")
+          ax.set(title="Daily revenue rises through the year"
+                       " and jumps in December",
+                 ylabel="revenue", ylim=(0, None))
+          ax.legend(frameon=False, loc="upper left")
+          fig.tight_layout()
+          fig.savefig("da01-plotting-line.png")
+          plt.close(fig)
+        takeaway: Every labelling call is a method on ax, and the title says what you found.
+        source: notes/01b-plotting-your-own-data.md
+        notes: >-
+          The note also adds an annotate call for the December bump, left out here for space.
+
+      - layout: bullets
+        beat: fundamentals
+        section: "Pandas shortcuts: plot straight from your data"
+        title: Series and DataFrames have a plot accessor
+        recall: What does the pandas .plot accessor choose for you?
+        answer: "The index becomes the x axis, each column becomes a series and column names become the legend. Pass ax= to place it on your own Axes."
+        bullets:
+          - "**Index** becomes the x axis"
+          - "**Each column** becomes a series, names become the legend"
+          - "**ax=** places it on an Axes of yours and hands the Axes back"
+          - "For a quick look, **df.plot()** alone is often the entire job"
+        takeaway: Pandas calls matplotlib with sensible choices, so start there for a quick look.
+        source: notes/01b-plotting-your-own-data.md
+        notes: >-
+          Because it hands the Axes back, you can keep labelling after the quick plot.
+
+      - layout: image
+        beat: practice
+        section: "Pandas shortcuts: plot straight from your data"
+        title: Bars compare, sorted and from zero
+        kicker: Revenue by month and by product
+        recall: Which habits make a bar chart readable?
+        answer: "Start at zero, sort by value unless the categories have a natural order such as months, and use horizontal bars when labels are long."
+        image: ../../assets/sources/images/da01-plotting-bars.png
+        caption: "Months keep calendar order, products are sorted, and the left panel uses the mean per day."
+        bullets:
+          - "**Zero baseline,** which pandas does for you"
+          - "**Sort,** unless the order is natural"
+          - "**Horizontal** when labels are long"
+        takeaway: Sort the bars, start them at zero, and turn them sideways when labels are long.
+        source: notes/01b-plotting-your-own-data.md
+        notes: >-
+          The left panel uses the mean per day so that February's shortness does not count against it, which is the time
+          series chapter's point in picture form.
+
+      - layout: image
+        beat: practice
+        section: "Histograms: the shape of one column"
+        title: A histogram shows the shape mean and std hide
+        kicker: Daily revenue with 5, 25 and 150 bins
+        recall: How do you choose the number of histogram bins?
+        answer: "Try several. Five bins give a plain staircase, 150 look like static and 25 show a main body with a long right tail."
+        image: ../../assets/sources/images/da01-plotting-hist.png
+        caption: "Three histograms of the same daily revenue. The middle panel shows the right-skewed shape."
+        bullets:
+          - "**5 bins:** a plain staircase"
+          - "**150 bins:** static"
+          - "**25 bins:** body with a long right tail"
+        takeaway: The bin count is a real choice, so try several.
+        source: notes/01b-plotting-your-own-data.md
+        notes: >-
+          The tail is made by the December days and the weekends.
+
+      - layout: statement
+        beat: fundamentals
+        section: "Histograms: the shape of one column"
+        title: The mean sits above the median on a skewed column
+        recall: What do the mean and median say about daily revenue's shape?
+        answer: "The mean is 507 and the median 477, so the mean sits above the median, as on any right-skewed column."
+        statement: "Mean 507, median 477. The mean sits above the median, as it does on any right-skewed column."
+        attribution: Daily revenue, 363 observed days
+        takeaway: The skew shows in the numbers as well as the picture.
+        source: notes/01b-plotting-your-own-data.md
+        notes: >-
+          The describe output gave a count of 363, a minimum of 311 and a maximum of 1082.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: "Histograms: the shape of one column"
+        title: What describe says about daily revenue
+        recall: What does the describe output show for daily revenue?
+        answer: "Count 363, mean 507, std 132, min 311, quartiles 421, 477 and 566, max 1082. The numbers summarise the column and hide its shape."
+        header: [Statistic, Value]
+        widths: [4.0, 4.0]
+        rows:
+          - ["count", "363"]
+          - ["mean", "507"]
+          - ["std", "132"]
+          - ["min", "311"]
+          - ["25%", "421"]
+          - ["50%", "477"]
+          - ["75%", "566"]
+          - ["max", "1082"]
+        highlight: [1, 5]
+        takeaway: Summary numbers describe the column, and the histogram shows its shape.
+        source: notes/01b-plotting-your-own-data.md
+        notes: >-
+          The long upper tail shows in the maximum of 1082 against a median of 477.
+
+      - layout: flow
+        beat: fundamentals
+        section: "Seaborn: start from the table"
+        title: Seaborn starts from the whole table
+        recall: What does seaborn need to do the grouping and statistics for you?
+        answer: "A tidy table with one row per observation and one column per variable, so you can name the column for each role: x, y, colour, facet."
+        steps:
+          - {label: Tidy frame, sub: "one row per observation", accent: "1E3A5F"}
+          - {label: Name the roles, sub: "x, y, hue, col", accent: "0F7490"}
+          - {label: Seaborn groups, sub: "and computes the statistics", accent: "0EA5C9"}
+        caption: "Matplotlib thinks in arrays, pandas in columns of one frame, and seaborn in a whole table."
+        takeaway: Seaborn works only on tidy data, which is why reshaping spent a section on melt.
+        source: notes/01b-plotting-your-own-data.md
+        notes: >-
+          Waskom, JOSS 2021. The note builds the tidy frame with a weekday, a quarter, a weekday or weekend part and a visitors column.
+
+      - layout: image
+        beat: practice
+        section: "Seaborn: start from the table"
+        title: A box plot compares spread across groups
+        kicker: Daily revenue by weekday
+        recall: What does a box plot show that a bar of means hides?
+        answer: "The median, the middle half of the values, whiskers and outliers for each group at once."
+        image: ../../assets/sources/images/da01-plotting-box.png
+        caption: "Saturday highest, Tuesday lowest, and high outliers on each day."
+        bullets:
+          - "**Saturday** median **600**"
+          - "**Tuesday** median **420**"
+          - "Outliers from **December** on every day"
+        takeaway: A box shows the median, spread and outliers, where a bar of means hides them.
+        source: notes/01b-plotting-your-own-data.md
+        notes: >-
+          One line of seaborn replaces a groupby plus a loop of drawing calls. The deprecation warning printed in the note
+          comes from inside seaborn 0.13.2 on matplotlib 3.11 and is harmless.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: "Seaborn: start from the table"
+        title: Weekday medians behind the box plot
+        recall: Which weekday has the highest median daily revenue and which the lowest?
+        answer: "Saturday highest at 600 and Tuesday lowest at 420."
+        header: [Weekday, Median revenue]
+        widths: [4.0, 4.0]
+        rows:
+          - ["Mon", "444"]
+          - ["Tue", "420"]
+          - ["Wed", "429"]
+          - ["Thu", "462"]
+          - ["Fri", "491"]
+          - ["Sat", "600"]
+          - ["Sun", "551"]
+        highlight: [5]
+        takeaway: The box plot gives these medians plus the spread around them.
+        source: notes/01b-plotting-your-own-data.md
+        notes: >-
+          The chart title says Saturday leads and each day has outliers from December.
+
+      - layout: bullets
+        beat: practice
+        section: "Seaborn: start from the table"
+        title: A scatter shows two numbers, a fit adds the trend
+        recall: What does the fitted line on the scatter tell you and not tell you?
+        answer: "That the two move together. It does not say one causes the other. The correlation is 0.933 here only because visitors was built from revenue."
+        bullets:
+          - "**Correlation 0.933,** by design, since visitors was built from revenue plus noise"
+          - "**Lower the opacity** when dots pile up"
+          - "**regplot** adds a fitted line with a confidence band"
+          - "**Causation** is pillar 03, and the fit cannot show it"
+        takeaway: A fit shows that two numbers move together, and not why.
+        source: notes/01b-plotting-your-own-data.md
+        notes: >-
+          Colour can carry a third variable. The tight fit is by design, so do not expect real data to look like this.
+
+      - layout: compare
+        beat: fundamentals
+        section: "Seaborn: start from the table"
+        title: Axes-level or figure-level seaborn
+        recall: What is the difference between axes-level and figure-level seaborn functions?
+        answer: "Axes-level functions such as boxplot and scatterplot draw on an Axes you give them. Figure-level functions such as catplot, relplot and displot make their own Figure, take col= and row=, and return a FacetGrid."
+        emphasis: right
+        left:
+          title: Axes-level
+          tag: boxplot, scatterplot
+          bullets: ["Draw on an Axes you pass in", "Sized by figsize", "Return an Axes"]
+        right:
+          title: Figure-level
+          tag: catplot, relplot, displot
+          bullets: ["Build their own Figure", "Take col= and row=", "Return a FacetGrid, sized by height= and aspect="]
+        takeaway: Facets need figure-level functions, because they lay out the whole Figure.
+        source: notes/01b-plotting-your-own-data.md
+        notes: >-
+          Rather than draw four lines on one plot, draw one plot four times on the same scale, one per group.
+
+      - layout: image
+        beat: practice
+        section: "Seaborn: start from the table"
+        title: Small multiples cure a spaghetti plot
+        kicker: Weekday revenue, one panel a quarter
+        recall: What do the four quarter panels show at a glance?
+        answer: "The weekly shape is the same in each quarter, and the whole shape rises through the year, because the panels share a y axis."
+        image: ../../assets/sources/images/da01-plotting-facets.png
+        caption: "The same weekend peak in each panel, at a rising level."
+        takeaway: Shared axes let one glance show the shape repeats and the level rises.
+        source: notes/01b-plotting-your-own-data.md
+        notes: >-
+          That is the chart to reach for when a single plot has turned into spaghetti.
+
+      - layout: table
+        beat: practice
+        level: core
+        section: Which chart answers which question
+        title: Which chart answers which question
+        recall: Which call draws a line, a bar, a histogram, a box and a scatter?
+        answer: "ax.plot or series.plot() for a line, series.plot.barh() or sns.barplot for bars, ax.hist or sns.histplot, sns.boxplot, and sns.scatterplot or sns.regplot."
+        header: [Question, Chart, Call]
+        widths: [3.6, 2.6, 3.6]
+        rows:
+          - ["How does it change over time?", "Line", "ax.plot, series.plot()"]
+          - ["How do categories compare?", "Sorted bars from zero", "series.plot.barh()"]
+          - ["What shape does one column have?", "Histogram", "ax.hist, sns.histplot"]
+          - ["How do distributions differ?", "Box or violin", "sns.boxplot"]
+          - ["How do two numbers relate?", "Scatter", "sns.scatterplot"]
+          - ["Do all numeric columns relate?", "Pair plot, heatmap", "sns.pairplot"]
+          - ["Is the pattern the same across groups?", "Small multiples", "sns.catplot(col=...)"]
+          - ["A value over two categories?", "Heatmap of a pivot table", "sns.heatmap"]
+        takeaway: Choose from the question, and do not start from the chart you made last time.
+        source: notes/01b-plotting-your-own-data.md
+        notes: >-
+          McKinney uses pairplot for this exploratory pass, and notes that barplot draws each bar as a mean with a 95%
+          confidence interval by default. A pie compares angles, which people judge worse than position and length, and a
+          chart with two y axes implies a relationship set by whichever scales you picked. Pillar 05 returns to both.
+
+      - layout: bullets
+        beat: practice
+        level: deep
+        section: Which chart answers which question
+        title: Check colormap, outliers and counts before reading a shape
+        recall: Why is jet a poor default colormap compared with viridis?
+        answer: "A default colormap should have steadily rising luminance. Viridis rises monotonically from 0.18 to 0.88, while jet is not monotonic and its two ends measure 0.17 and 0.27, so in grayscale the high end looks like the low end."
+        bullets:
+          - "**Rising luminance.** Viridis 0.18 to 0.88, while jet's ends are **0.17** and **0.27**"
+          - "**Outliers swamp a scale.** Clip with plt.clim and extend the colourbar"
+          - "**Many points.** plt.plot with markers is faster than scatter past a few thousand"
+          - "**Group sizes.** The marathon violin hid **7** runners over 80"
+        takeaway: Check the colormap's luminance, clip outliers visibly and count each group before reading a shape.
+        source: notes/01b-plotting-your-own-data.md
+        notes: >-
+          The luminance numbers come from the note's own run of the book's formula on current matplotlib. The speed claim is
+          qualitative, with no timing given.
+
+      - layout: code
+        beat: pitfalls
+        level: deep
+        section: Old notebooks and current seaborn
+        title: Old plotting code breaks on current seaborn
+        recall: Why does sns.regplot with positional columns fail on current seaborn?
+        answer: "Since seaborn 0.12 data columns are passed by keyword, as x= and y=. factorplot became catplot, which draws a strip plot by default, so state kind=."
+        lang: python
+        code: |-
+          try:
+              sns.regplot("total_bill", "tip", data=tips)
+          except TypeError as e:
+              print("TypeError:", str(e)[:70])
+          print(hasattr(sns, "factorplot"),
+                hasattr(sns, "catplot"))
+          sns.regplot(x="total_bill", y="tip", data=tips)
+        bullets:
+          - "Error: **multiple values for data**"
+          - "Prints **False True**"
+          - "State **kind=** for catplot"
+        takeaway: Pass columns by keyword, and rename factorplot to catplot.
+        source: notes/01b-plotting-your-own-data.md
+        notes: >-
+          These changes account for most of the errors you will meet in old plotting code, such as 5_Plotting.ipynb and the
+          McKinney notebooks.
+
+      - layout: bullets
+        beat: practice
+        section: Saving and showing
+        title: Save by extension, and close what you open
+        recall: Which file format and which habits suit saving a figure?
+        answer: "PNG for screens and notebooks, SVG or PDF for anything scaled or printed. Call tight_layout before saving, and plt.close(fig) when making figures in a loop."
+        bullets:
+          - "**PNG** for screens and notebooks; **SVG or PDF** for scaled or printed"
+          - "**fig.tight_layout()** stops labels overlapping"
+          - "**plt.close(fig)** in a loop, since each figure holds memory"
+          - "In Jupyter, every drawing call for a figure goes in **one cell**"
+        takeaway: The extension picks the format, and tight_layout comes before the save.
+        source: notes/01b-plotting-your-own-data.md
+        notes: >-
+          The book's example uses dpi=400, and bbox_inches="tight" trims surrounding whitespace.
+
+      - layout: cards
+        beat: pitfalls
+        section: Pitfalls
+        title: Four plotting pitfalls with a one-line fix
+        recall: Name four matplotlib habits that mislead, and the one-line fix for each
+        answer: "Using plt. with several plots, unsorted x on a line, connecting categories with a line, and bars not starting at zero."
+        cards:
+          - {title: "plt. with many plots", accent: "1E3A5F", body: "It lands on the current Axes. Use ax. methods"}
+          - {title: Unsorted x, accent: "0F7490", body: "A line connects in row order. sort_index() first"}
+          - {title: Lines for categories, accent: "0EA5C9", body: "A line implies order. Use bars for products or regions"}
+          - {title: Bars off zero, accent: "D4621A", body: "A shortened bar misstates the ratio. Show dots or differences"}
+        takeaway: Name the Axes, sort the index, match the mark to the data and start bars at zero.
+        source: notes/01b-plotting-your-own-data.md
+        notes: >-
+          Also on the list are different scales across panels, overplotting, one histogram bin count, confidence bands read
+          as data, and a title that names a column.
+
+      - layout: bullets
+        beat: pitfalls
+        section: Pitfalls
+        title: Five more ways a plot misleads
+        card: false
+        recall: Which five further pitfalls does the plotting chapter list?
+        answer: "Panels on different scales, overplotting, one histogram bin count, confidence bands read as data, and a title that names a column."
+        bullets:
+          - "**Different scales.** Use sharey=True across panels"
+          - "**Overplotting.** Lower alpha, or use histplot or hexbin"
+          - "**One bin count.** Try several"
+          - "**Bands read as data.** The regplot band is uncertainty about the line"
+          - "**Title as label.** Say what you found, not the column"
+        takeaway: Share the scales, thin the dots, and let the title say what to see.
+        source: notes/01b-plotting-your-own-data.md
+        notes: >-
+          Revenue names a column. Revenue rises and jumps in December tells the reader what to see.
+
+  - title: Rules of thumb
+    agenda: false
+    divider: false
+    slides:
+      - layout: cards
+        beat: wrap
+        title: Four answers to give in an interview
+        card: false
+        recall: How would you answer the grammar, encoding, dual-axis and zero-baseline questions?
+        answer: "The grammar composes a chart from data, marks, encodings, statistics, scales, coordinates and facets. Position on a common scale is read most accurately. Dual axes are arbitrary, so use panels or an index. Bars start at zero because length is the value, while lines may zoom."
+        cards:
+          - {title: Grammar, accent: "1E3A5F", body: "Compose data, marks, encodings, statistics, scales, coordinates and facets"}
+          - {title: Encodings, accent: "0F7490", body: "Position on a common scale first, shading last"}
+          - {title: Dual axes, accent: "D4621A", body: "The scales are arbitrary. Use panels or index to one base"}
+          - {title: Zero baseline, accent: "5B21B6", body: "Bars start at zero, lines may zoom if the axis is plain"}
+        takeaway: Decide what the chart must say, then pick position, zero and colour to say it honestly.
+        source: notes/01-grammar-and-chart-choice.md
+        notes: >-
+          The interview tables in both notes also cover pies, Anscombe, exploratory against explanatory, Figure against
+          Axes, axes-level against figure-level seaborn, tidy data, box plots and overplotting.
+
+      - layout: bullets
+        beat: wrap
+        title: Where to go next
+        card: false
+        recall: Where does the series go from here?
+        bullets:
+          - "Step 2 lecture: matplotlib and seaborn, plotly, and the JavaScript tools"
+          - "A chart for someone else has to say one thing"
+          - "Then dashboards and story in step 3"
+        takeaway: These charts are for you, and the next step makes them for someone else.
+        source: notes/01b-plotting-your-own-data.md
+        notes: >-
+          The charts so far are drawn with the defaults. Next is decluttering, small multiples, seaborn facets and heatmaps.

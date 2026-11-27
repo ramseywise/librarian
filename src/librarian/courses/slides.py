@@ -64,6 +64,8 @@ RETRY_FAILED_S = 600.0  # a failed build is retried after this, or at once when 
 _SEGMENT = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
 _PNG = re.compile(r"^slide-(\d+)\.png$")
 _MD_MARKS = re.compile(r"\*\*|__|`")
+# A note of this module named in a slide's `source:` (`notes/01-x.md`, not `../python/notes/01-x.md`).
+_NOTE_SOURCE = re.compile(r"(?<![\w./-])notes/([\w.-]+?)\.md")
 # Text-bearing keys of a yaml slide, in reading order.
 _TEXT_KEYS = ("kicker", "statement", "attribution", "recall", "subtitle", "summary", "takeaway")
 
@@ -124,7 +126,14 @@ def decks_in(slides_dir: Path, course: str, module: str) -> list[dict[str, Any]]
     """`module_decks` for a given `slides/` folder, so the catalog can list them for the tree it is building."""
     out: list[dict[str, Any]] = []
     if (slides_dir / "deck.yaml").is_file():
-        out.append({"id": f"{course}/{module}", **_deck_names(slides_dir / "deck.yaml")})
+        parts = deck_parts(slides_dir / "deck.yaml")
+        out.append(
+            {
+                "id": f"{course}/{module}",
+                **_deck_names(slides_dir / "deck.yaml"),
+                **({"parts": parts} if parts else {}),
+            }
+        )
     lectures = slides_dir / "lectures"
     for spec in sorted(lectures.glob("*.yaml")) if lectures.is_dir() else []:
         names = _deck_names(spec)
@@ -140,6 +149,39 @@ def decks_in(slides_dir: Path, course: str, module: str) -> list[dict[str, Any]]
             }
         )
     return out
+
+
+def deck_parts(spec: Path) -> list[dict[str, Any]]:
+    """The module's submodules: the deck's numbered parts, without the overview part (the module page
+    is the intro) and without a closing part (`agenda: false`).
+
+    `n` is the part's number as the deck shows it ("Part n"), so `#/slides/<deck>?part=n` opens on it.
+    `notes` are the stems of the notes the part's slides cite in `source:`. A note cited by several
+    parts belongs to the one citing it most often (the first of those on a tie), so each note is
+    listed once.
+    """
+    numbered = deck_frames.agenda_parts(
+        [p for p in _load_spec(spec).get("parts") or [] if isinstance(p, dict)]
+    )
+    cites: dict[str, list[int]] = {}  # note stem → how often each part cites it
+    for i, part in enumerate(numbered):
+        if part.get("overview"):  # the overview previews every part, so it is no note's home
+            continue
+        for sl in part.get("slides") or []:
+            source = sl.get("source") if isinstance(sl, dict) else None
+            for stem in _NOTE_SOURCE.findall(str(source or "")):
+                cites.setdefault(stem, [0] * len(numbered))[i] += 1
+    home = {stem: counts.index(max(counts)) for stem, counts in cites.items()}
+    return [
+        {
+            "n": i + 1,
+            "title": _plain(part.get("title")),
+            **({"summary": _plain(part.get("summary"))} if part.get("summary") else {}),
+            "notes": [stem for stem in cites if home[stem] == i],
+        }
+        for i, part in enumerate(numbered)
+        if not part.get("overview")
+    ]
 
 
 def _load_spec(spec: Path) -> dict[str, Any]:

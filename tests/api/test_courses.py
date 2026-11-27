@@ -759,3 +759,25 @@ def test_a_lecture_over_several_notes_lists_the_notes_it_covers(tmp_path: Path) 
         {"id": "da/01-py/01-extract", "title": "Extract", "covers": ["01-frames", "02-loading"]},
         {"id": "da/01-py/02-clean", "title": "Clean"},
     ]
+
+
+def test_a_module_deck_lists_its_parts_as_submodules_each_note_once(tmp_path: Path) -> None:
+    from librarian.courses.slides import decks_in
+
+    (tmp_path / "deck.yaml").write_text(
+        "deck: {title: SQL}\n"
+        "parts:\n"
+        "  - {title: Overview, overview: true, slides: [{source: notes/01-select.md}]}\n"
+        "  - title: Asking a table\n"
+        "    summary: '**SELECT** and WHERE'\n"
+        "    slides: [{source: notes/01-select.md}, {source: 'notes/01-select.md; notes/02-join.md'}]\n"
+        "  - title: Combining rows\n"
+        "    slides: [{source: notes/02-join.md}, {source: notes/02-join.md}, {source: ../python/notes/09-x.md}]\n"
+        "  - {title: Rules to keep, agenda: false, slides: [{source: notes/03-rules.md}]}\n"
+    )
+    [deck] = decks_in(tmp_path, "programming", "sql")
+    # Part 1 is the overview (the module page itself) and the closing part is not numbered.
+    assert deck["parts"] == [
+        {"n": 2, "title": "Asking a table", "summary": "SELECT and WHERE", "notes": ["01-select"]},
+        {"n": 3, "title": "Combining rows", "notes": ["02-join"]},
+    ]

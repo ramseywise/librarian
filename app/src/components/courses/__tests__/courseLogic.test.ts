@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { lessonsOf, moduleGroups, splitCourseReadme, splitOverview, submoduleOf } from "../courseLogic";
+import { lessonsOf, moduleGroups, splitCourseReadme, splitOverview } from "../courseLogic";
 import type { Course, CourseModule, Lesson } from "../types";
 
 const mod = (id: string, group?: string, lessons: string[] = []) =>
@@ -72,16 +72,5 @@ describe("splitOverview", () => {
     expect(r.lead).toBe("Lead.\n\n");
     expect(r.rest).toContain("## Syllabus");
     expect(r.rest).not.toMatch(/## (Lecture|Next)/);
-  });
-});
-
-describe("submoduleOf", () => {
-  const body = "| **1. Load**: x | [trees](notes/trees.md) |\n| **2. Fit** | [cnn](../notes/cnn#top) |\n| other |";
-  it("reads the syllabus row a note belongs to", () => {
-    expect(submoduleOf(body, "ds/01/notes/trees")).toBe("1. Load");
-    expect(submoduleOf(body, "ds/01/notes/cnn")).toBe("2. Fit");
-  });
-  it("is null when no row names the note", () => {
-    expect(submoduleOf(body, "ds/01/notes/missing")).toBeNull();
   });
 });

@@ -188,7 +188,8 @@ export function ringGeometry(width: number, height: number, insets: RingInsets):
   const availW = Math.max(0, width - insets.left);
   const availH = Math.max(0, height - insets.top - insets.bottom);
   const outer = Math.max(MIN_OUTER, Math.min(availW / 2 - insets.labelWidth - 22, availH / 2 - 14));
-  const inner = outer * 0.54;
+  // The page field fills the hole, so the hole takes most of the disc and the spikes a thin rim.
+  const inner = outer * 0.76;
   return {
     width,
     height,

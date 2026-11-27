@@ -28,6 +28,9 @@ const LabsView = lazy(() =>
 const LabWorkspace = lazy(() =>
   import("./components/courses/LabWorkspace").then((m) => ({ default: m.LabWorkspace }))
 );
+const ConceptView = lazy(() =>
+  import("./components/courses/ConceptView").then((m) => ({ default: m.ConceptView }))
+);
 const LoginView = lazy(() => import("./components/account/LoginView").then((m) => ({ default: m.LoginView })));
 const AdminView = lazy(() => import("./components/account/AdminView").then((m) => ({ default: m.AdminView })));
 const PrivacyView = lazy(() =>
@@ -52,6 +55,8 @@ interface Props {
 export function CourseLayer({
   page, route, navigate, openLesson, openLab, openConcept, askAbout, setLabContext, setStudyContext,
 }: Props) {
+  // A wiki page named in a lesson, drill or overview opens its hub; the hub's own button opens the graph.
+  const openHub = (pageId: string) => navigate(`/concept/${encodeURIComponent(pageId)}`);
   return (
     <div className="app-course-layer">
       <ErrorBoundary what="This page" resetKey={route}>
@@ -90,11 +95,13 @@ export function CourseLayer({
       case "labs":
         return <LabsView onOpenLab={openLab} onOpenLesson={openLesson} onOpenDrills={() => navigate("/practice")} />;
       case "practice":
-        return <PracticeView onOpenLesson={openLesson} onOpenConcept={openConcept} />;
+        return <PracticeView onOpenLesson={openLesson} onOpenConcept={openHub} />;
       case "flashcards":
         return <FlashcardsView deckId={page.deckId} onChatContext={setStudyContext} />;
       case "courses":
-        return <CoursesView route={page.path} navigate={navigate} onOpenConcept={openConcept} onAsk={askAbout} />;
+        return <CoursesView route={page.path} navigate={navigate} onOpenConcept={openHub} onAsk={askAbout} />;
+      case "concept":
+        return <ConceptView key={page.conceptId} id={page.conceptId} navigate={navigate} onShowInGraph={openConcept} />;
     }
   }
 }

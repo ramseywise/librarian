@@ -48,6 +48,11 @@ RESULTS: dict[str, tuple[str, ...]] = {
     "flashcard": ("knew", "missed"),
     "mcq": ("correct", "wrong"),
     "drill": ("pass", "fail", "revealed"),
+    # Mastery evidence (courses.learning): a graded voice session, and a concept-level grade for
+    # a card or drill answered without a catalog item. Not in KINDS, so the study views, the
+    # Leitner schedule and the drill list never see them; learning asks for them by name.
+    "voice_grade": ("pass", "fail"),
+    "concept_grade": ("pass", "fail"),
 }
 GOOD = {"knew", "correct", "pass"}
 

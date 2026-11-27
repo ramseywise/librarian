@@ -2,7 +2,7 @@
 # repo targets below must keep working on a machine without ~/.claude set up.
 -include ~/.claude/Makefile.common
 
-.PHONY: slides slides-all flashcards deck-graph deck-graph-check deck-check app app-build dev deploy-content obsidian api ui mcp index-rebuild install-ui install-api setup-ollama test test-watch test-e2e install-browsers ingest scrape scrape-sessions scrape-docs scrape-repos lint lint-raw help codemap-reindex codemap-api install-codemap install-presenter eval eval-live eval-nofts eval-gate eval-chat eval-chat-dry eval-grounding eval-grounding-dry e2e-container e2e-compose
+.PHONY: slides slides-all flashcards deck-graph deck-graph-check deck-check app app-build dev deploy-content obsidian api voice ui mcp index-rebuild install-ui install-api setup-ollama test test-watch test-e2e install-browsers ingest scrape scrape-sessions scrape-docs scrape-repos lint lint-raw help codemap-reindex codemap-api install-codemap install-presenter eval eval-live eval-nofts eval-gate eval-chat eval-chat-dry eval-grounding eval-grounding-dry e2e-container e2e-compose
 
 # The private tmpfs masks need their mountpoints on the host: the data mount is read-only.
 LOCAL_COMPOSE = docker compose -f docker-compose.yml -f docker-compose.local.yml
@@ -24,6 +24,12 @@ obsidian:
 
 api:
 	LIBRARIAN_DEV_BUILD_SLIDES=1 LIBRARIAN_DEV_WATCH=1 LIBRARIAN_DEV_RUN_LABS=1 uv run --extra api librarian api --reload --port 8000
+
+# Conversational voice (Pipecat + Claude), its own process on 127.0.0.1:8200. The rest of the app
+# works without it. It has its own venv so the voice extra never lands in the main one. First run
+# downloads the local models (about 200 MB) into ~/.cache/librarian-voice. Needs ANTHROPIC_API_KEY.
+voice:
+	UV_PROJECT_ENVIRONMENT=.venv-voice uv run --extra voice python -m librarian.voice
 
 mcp:
 	uv run librarian mcp
@@ -59,8 +65,8 @@ install-presenter:
 # Lecture decks for every course. Specs and images live in data/courses; built files are gitignored.
 SLIDES_DIR = data/courses/$(PILLAR)
 
-slides:  ## Build a deck: make slides PILLAR=<course>/<module> [LECTURE=<NN-slug>] [PREVIEW=1] [PDF=1] [STRICT=1] [LEVEL=core|practice|deep]
-	@test -n "$(PILLAR)" || { echo "usage: make slides PILLAR=<course>/<module> [LECTURE=<NN-slug>] [PREVIEW=1] [PDF=1] [STRICT=1] [LEVEL=core|practice|deep]"; exit 1; }
+slides:  ## Build a deck: make slides PILLAR=<course>/<module> [LECTURE=<NN-slug>] [PREVIEW=1] [PDF=1] [STRICT=1] [LEVEL=intro|core|deep]
+	@test -n "$(PILLAR)" || { echo "usage: make slides PILLAR=<course>/<module> [LECTURE=<NN-slug>] [PREVIEW=1] [PDF=1] [STRICT=1] [LEVEL=intro|core|deep]"; exit 1; }
 	@uv run -q --with python-pptx --with pillow --with resvg-py python -m librarian.tools.slides.build_deck \
 		$(SLIDES_DIR)/slides/$(if $(LECTURE),lectures/$(LECTURE).yaml,deck.yaml) \
 		$(if $(PREVIEW),--preview $(SLIDES_DIR)/slides/$(if $(LECTURE),lectures/.preview/$(LECTURE),.preview)) $(if $(PDF),--pdf) $(if $(STRICT),--strict) $(if $(LEVEL),--level $(LEVEL))
@@ -204,6 +210,7 @@ help:
 	@echo "mcp              — start MCP server (local, used by Claude Code)"
 	@echo "index-rebuild    — force full rebuild of the wiki search index"
 	@echo "api              — start FastAPI backend directly (port 8000)"
+	@echo "voice            — start the conversational voice server (own venv, port 8200)"
 	@echo "ui               — start Vite dev server directly (port 5173)"
 	@echo "flashcards       — build each module's _flashcards.md from its deck specs and interview checklists"
 	@echo "install-ui       — npm install for app/"

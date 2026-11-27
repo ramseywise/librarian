@@ -1,0 +1,1078 @@
+# imported_hash: 4a92c8023938872b
+# Lecture on step 5, Surveys: notes/12-surveys-and-sampling-design.md and 12b-weighting-the-margin-and-the-question.md, in the notes' order.
+# make slides PILLAR=data-analytics/06-applied-analyses LECTURE=05-surveys STRICT=1 PREVIEW=1
+# Levels: a slide with no level is the intro, `core` is the core lesson, `deep` is the optional extension (code and maths).
+deck:
+  title: Surveys
+  subtitle: Who you ask, and who answers
+  tagline: "Frames · Strata · Clusters · Nonresponse · Weighting · The margin · The question"
+  reference: "Notes: data-analytics/06-applied-analyses, notes 12 and 12b"
+  output: 05-surveys.pptx
+  notes: >-
+    This is the sixth and last lecture of the applied analyses series. It covers step 5. By the end you should be able to
+    say why a margin of error fails on an email blast, design a stratified or clustered sample, report what happened to every
+    case, weight respondents to known totals and say what weighting cannot fix, state a margin that reflects the design, and
+    test whether a question measures what you mean.
+
+lecture:
+  covers:
+    - data-analytics/06-applied-analyses/notes/12-surveys-and-sampling-design.md
+    - data-analytics/06-applied-analyses/notes/12b-weighting-the-margin-and-the-question.md
+  requires: [data-analytics/06-applied-analyses/notes/11-metric-trees.md]
+  next: [data-science/01-classical-ml/README.md]
+  omits:
+    - Weighting, the margin and the question
+  related:
+    - data-analytics/03-experimentation-and-causality/notes/05-matching-and-weighting.md
+    - data-analytics/02-probability-and-statistics/notes/04-estimation.md
+    - data-analytics/02-probability-and-statistics/notes/07-data-generating-process.md
+
+parts:
+  - title: A margin 13 times too small
+    divider: false
+    summary: The email blast · Frame and coverage · Why size does not help
+    notes: We start with a survey that printed a tight margin and was far from the truth, and name the errors that margin cannot see.
+    slides:
+      - layout: statement
+        beat: problem
+        section: The question and the data
+        title: 73% satisfied, plus or minus 1.7
+        recall: What did Fernhill's email blast say, and what was the truth?
+        answer: "2,573 people replied and 73.0% said they were satisfied, with a margin of plus or minus 1.7 points. The truth in the synthetic data is 49.6%, an error more than 13 times the margin."
+        kicker: The problem
+        statement: "Fernhill emailed everyone it could about their last delivery. The dashboard printed 73%, give or take 1.7 points. The truth was 49.6%, and more replies would not have shrunk the gap."
+        takeaway: A margin of error answers how far a random sample would wander, and this was not a random sample.
+        source: notes/12-surveys-and-sampling-design.md
+        notes: >-
+          Fernhill's customers are synthetic, so we can look up the truth, which a real survey never can. The error is 23.4
+          points against a printed margin of 1.7. The chapter is about building a sample that is random and repairing what
+          goes wrong in the field.
+
+      - layout: bullets
+        beat: fundamentals
+        section: The question and the data
+        title: One table stands in for the customer list
+        recall: What table does the chapter use, and what does a real survey not have?
+        answer: "load_survey_frame() gives one row per customer who has ordered, with CRM columns and true_ columns holding the answer they would give and their chance of giving it. A real survey has no true_ columns."
+        bullets:
+          - "One row per customer who has ordered: **26,342** of them"
+          - "CRM columns: channel, order count, spend, active in 2025, emailable, postcode area"
+          - "`true_` columns hold the answer and the chance of giving it"
+          - "A 4 or 5 on the 1-to-5 answer counts as satisfied, and the true share is **49.6%**"
+        takeaway: Here every method gets marked against a known truth, which no real survey allows.
+        source: notes/12-surveys-and-sampling-design.md
+        notes: >-
+          Whether someone answers leans on the CRM columns and also on satisfaction itself. That second part is what the
+          weighting section cannot repair. All of it is synthetic and seeded.
+
+      - layout: table
+        beat: fundamentals
+        section: The question and the data
+        title: Three order segments drive everything below
+        recall: What are the three order segments and how do they differ?
+        answer: "One order (16,025 customers, spend 51.97, 46% satisfied), two or three orders (6,274, spend 120.93, 49%) and four or more (4,043, spend 438.56, 65%). The heavy buyers are the smallest group, spend most and are happiest."
+        header: [Segment, Customers, Mean spend, Satisfied]
+        widths: [3, 2, 2, 2]
+        rows:
+          - ["one (1 order)", "16,025", "£51.97", "46%"]
+          - ["few (2 or 3)", "6,274", "£120.93", "49%"]
+          - ["many (4 or more)", "4,043", "£438.56", "65%"]
+        highlight: [2]
+        takeaway: The smallest group spends the most and is the happiest, so any sample that under-draws it will be biased.
+        source: notes/12-surveys-and-sampling-design.md
+        notes: >-
+          The spread of spend inside each segment is very different too, a standard deviation of 37.98, 70.64 and 383.69.
+          That spread matters when we allocate interviews.
+
+      - layout: flow
+        beat: fundamentals
+        section: "Frame, coverage and the errors a margin can't see"
+        title: Four groups, and an error at every gap between them
+        recall: What are the target, frame, sample and respondents, and which error sits between each pair?
+        answer: "The target is everyone you want to know about, the frame is the list you can draw from, the sample is who you select and the respondents are who answer. Coverage, sampling and nonresponse error sit between them, with measurement error on top."
+        steps:
+          - {label: Target, sub: "every customer", accent: "1E3A5F"}
+          - {label: Frame, sub: "coverage error", accent: "0F7490"}
+          - {label: Sample, sub: "sampling error", accent: "D4621A"}
+          - {label: Respondents, sub: "nonresponse error", accent: "94A3B8"}
+          - {label: Answers, sub: "measurement error", accent: "1E3A5F"}
+        caption: "A margin of error measures only the sampling step."
+        takeaway: Total survey error is every error from design to analysis, and the printed margin covers one of them.
+        source: notes/12-surveys-and-sampling-design.md
+        notes: >-
+          The definition is Biemer's, quoted in Maslovskaya's NCRM slides, which the note read in place of the original. The
+          AAPOR task force groups the first three gaps as errors of non-observation. AAPOR's fact sheet says there is no such
+          thing as a measurable overall margin of error for a poll.
+
+      - layout: table
+        beat: fundamentals
+        section: "Frame, coverage and the errors a margin can't see"
+        title: Coverage cost 2.5 points and nonresponse cost 20.9
+        recall: How does the blanket email's error split across the gaps, and what does the margin see?
+        answer: "Of 26,342 customers, 15,981 (61%) were emailable and 2,573 replied (16.1% of those sent). The true share is 49.6% for everyone, 52.1% for the emailable and 73.0% for the replies, so coverage error is +2.5 and nonresponse error +20.9 points. The margin sees only sampling error, plus or minus 1.7 points."
+        lead: "What the margin sees is sampling error only, plus or minus 1.7 points. It misses the two errors in the last column."
+        header: [Group, Size, Satisfied, Error added]
+        widths: [3.2, 2.2, 2, 2.2]
+        rows:
+          - ["Everyone (the target)", "26,342", "49.6%", "none"]
+          - ["Emailable (the frame)", "15,981 (61%)", "52.1%", "coverage +2.5"]
+          - ["Replies (respondents)", "2,573 (16.1%)", "73.0%", "nonresponse +20.9"]
+        highlight: [2]
+        takeaway: Neither error shrinks with more email, because bias is not a function of the sample size.
+        source: notes/12-surveys-and-sampling-design.md
+        notes: >-
+          The last phrase is the AAPOR report's. The 1.7-point margin is the textbook formula applied to 2,573 answers, which
+          is the right answer to a question nobody asked.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: "Frame, coverage and the errors a margin can't see"
+        title: The textbook margin, applied to the email
+        recall: What does the half-width function compute?
+        answer: "The simple-random-sample 95% half-width, 1.96 times the square root of p times 1 minus p over n. It is what a dashboard prints as a margin of error."
+        lang: python
+        code: |-
+          def half_width(p, n):
+              return 1.96 * np.sqrt(p * (1 - p) / n)
+
+          sent = frame[frame.emailable]
+          draw = RNG.random(len(sent))
+          replied = sent[draw < sent.true_p_email]
+          raw = replied.true_satisfied.mean()
+          # 0.730, plus or minus 0.017
+        bullets:
+          - "Each customer replies with their own chance `true_p_email`"
+          - "The formula sees only **2,573** answers, never who is missing"
+        takeaway: The formula is correct arithmetic for a random sample and says nothing about who chose to reply.
+        source: notes/12-surveys-and-sampling-design.md
+        notes: >-
+          The script draws the replies with a random number against each emailable customer's reply chance, then marks the
+          result against the truth, which is the step a real survey cannot take.
+
+      - layout: bullets
+        beat: fundamentals
+        section: "Frame, coverage and the errors a margin can't see"
+        title: A probability sample makes the sampling step measurable
+        recall: What makes a sample a probability sample?
+        answer: "Every unit in the population has a non-zero chance of selection and those chances can be calculated. The chances need not be equal. The email fails twice: nobody chose who replied, and 39% of customers had no chance at all."
+        bullets:
+          - "Every unit has a **non-zero** chance of selection"
+          - "The chances can be **calculated**, though they need not be equal"
+          - "The email fails twice: nobody chose who replied"
+          - "**39%** of customers had no chance at all"
+        takeaway: Only random selection with known chances lets a margin of sampling error mean anything.
+        source: notes/12-surveys-and-sampling-design.md
+        notes: >-
+          The requirement is Statistics Canada's in Survey Methods and Practices. AAPOR's fact sheet adds that a margin of
+          sampling error does not apply to opt-in online surveys and other non-probability polls.
+
+      - layout: compare
+        beat: pitfalls
+        section: "Frame, coverage and the errors a margin can't see"
+        title: A quarter of a million answers lost to a thousand
+        recall: What did Bradley and colleagues find about size and bias in COVID-19 vaccination polls?
+        answer: "Delphi-Facebook, with about 250,000 responses a week, overestimated first-dose uptake by 17 points in May 2021. Axios-Ipsos, with about 1,000 a week and careful panel recruitment, overestimated it by 4.2."
+        emphasis: right
+        left:
+          title: Delphi-Facebook
+          bullets: ["About **250,000** responses a week", "Overestimated uptake by **17** points", "Bias-adjusted effective sample under 10"]
+        right:
+          title: Axios-Ipsos
+          bullets: ["About **1,000** responses a week", "Careful panel recruitment", "Overestimated by **4.2** points"]
+        takeaway: A big sample with a biased way of choosing people is worse than a small careful one.
+        source: notes/12-surveys-and-sampling-design.md
+        notes: >-
+          Bradley and colleagues, Nature 2021, compared US first-dose estimates with the CDC benchmark. The effective-sample
+          figure counts bias as well as variance, and refers to April 2021.
+
+  - title: Designing the sample
+    summary: Strata · Allocation · The finite population correction · Clusters
+    notes: Fernhill can do better, because it has the whole customer list. The design choices are who to split into strata, how many from each, and whether to cluster.
+    slides:
+      - layout: statement
+        beat: problem
+        section: "Strata and allocation: where to spend a fixed sample"
+        title: Spend a fixed sample where it counts
+        recall: What does Fernhill's designed survey look like at the start?
+        answer: "It uses the whole customer list as the frame, samples 2,000 and expects about half to answer, which buys about 1,000 completed interviews."
+        kicker: The design
+        statement: "Fernhill has the whole customer list, and the budget buys about 1,000 completed interviews. It samples 2,000 and expects half to answer. The choice is how to split them."
+        takeaway: A designed sample starts from the whole list, so the choice becomes how to divide a fixed number of interviews.
+        source: notes/12-surveys-and-sampling-design.md
+        notes: >-
+          A simple random sample would work, but the segments are known and differ, so the sample is stratified: the frame is
+          split into groups and each is sampled separately, so no draw can come up short on heavy buyers.
+
+      - layout: compare
+        beat: fundamentals
+        level: core
+        section: "Strata and allocation: where to spend a fixed sample"
+        title: Proportional and Neyman allocation answer different questions
+        recall: What is the difference between proportional and Neyman allocation?
+        answer: "Proportional gives each stratum its population share, so every customer has the same chance, and Statistics Canada says it is never worse than simple random sampling. Neyman gives more to the strata that vary more, minimising the variance of one statistic."
+        emphasis: right
+        left:
+          title: Proportional
+          bullets: ["Each stratum gets its population share", "Every customer has the **same chance**", "Never worse than simple random sampling"]
+        right:
+          title: Neyman
+          bullets: ["More to the strata that **vary more**", "n_h = n × N_h × S_h over the sum of N_k × S_k", "Minimises variance for **one statistic**"]
+        takeaway: Proportional is the safe default, and Neyman is tuned to one number.
+        source: notes/12-surveys-and-sampling-design.md
+        notes: >-
+          Statistics Canada describes Neyman as the special case of optimum allocation for equal interview costs. Its catch is
+          that S_h belongs to one statistic.
+
+      - layout: table
+        beat: practice
+        section: "Strata and allocation: where to spend a fixed sample"
+        title: Neyman for spend piles 596 interviews on heavy buyers
+        recall: How are 1,000 completes allocated under the three plans?
+        answer: "Proportional gives 238, 153 and 608 to few, many and one. Neyman for spend gives 170, 596 and 234. Neyman for satisfied gives 240, 148 and 612."
+        header: [Segment, Proportional, Neyman spend, Neyman satisfied]
+        widths: [2.6, 2.4, 2.4, 2.6]
+        rows:
+          - [few, "238", "170", "240"]
+          - [many, "153", "**596**", "148"]
+          - [one, "608", "234", "612"]
+        highlight: [1]
+        takeaway: Spend varies hugely among heavy buyers, so Neyman sends most interviews there.
+        source: notes/12-surveys-and-sampling-design.md
+        notes: >-
+          For a share near one half, S_h barely varies between strata, so Neyman for satisfied lands on nearly proportional.
+
+      - layout: cards
+        beat: practice
+        section: "Strata and allocation: where to spend a fixed sample"
+        title: Four plans, two standard errors each
+        recall: What standard errors do the allocation plans give on spend and on satisfaction?
+        answer: "Simple random 6.43 and 0.0155. Proportional 4.88 and 0.0154. Neyman for spend 2.97 and 0.0218. Neyman for satisfied 4.95 and 0.0154."
+        cards:
+          - {title: Simple random, accent: "94A3B8", body: "Spend 6.43, satisfied 0.0155"}
+          - {title: Proportional, accent: "1E3A5F", body: "Spend 4.88, satisfied 0.0154"}
+          - {title: Neyman for spend, accent: "D4621A", body: "Spend 2.97, satisfied 0.0218"}
+          - {title: Neyman for satisfied, accent: "0F7490", body: "Spend 4.95, satisfied 0.0154"}
+        takeaway: Proportional cuts spend's error by a quarter for free, and the 2,000 repeated draws agree with the formula.
+        source: notes/12-surveys-and-sampling-design.md
+        notes: >-
+          Proportional barely moved satisfaction because a 19-point gap between segments is small beside the spread of a
+          yes-or-no answer within each. The repeated draws gave 3.0459 and 0.0213 for Neyman for spend.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: "Strata and allocation: where to spend a fixed sample"
+        title: Allocation and the stratified standard error
+        recall: How does the chapter compute allocations and the stratified standard error?
+        answer: "Neyman gives each stratum n times N_h times S_h over the sum of N times S. The stratified standard error is the root of the sum of W squared, times 1 minus allocation over N_h, times S squared over allocation."
+        lang: python
+        code: |-
+          neyman = n * strata.N_h * strata.S_spend / (
+              strata.N_h * strata.S_spend).sum()
+
+          def stratified_se(alloc, S):
+              W = strata.N_h / N
+              return np.sqrt((W**2 * (1 - alloc / strata.N_h)
+                              * S**2 / alloc).sum())
+        bullets:
+          - "`W` is each stratum's share of the population"
+          - "`1 - alloc / N_h` is the finite population correction per stratum"
+        takeaway: The same function scores any allocation, so a plan can be compared before a single interview.
+        source: notes/12-surveys-and-sampling-design.md
+        notes: >-
+          The script also simulates 2,000 draws of the Neyman design and takes their standard deviation, which matches the
+          formula.
+
+      - layout: compare
+        beat: pitfalls
+        section: "Strata and allocation: where to spend a fixed sample"
+        title: Optimising for one number costs another
+        recall: What did Neyman allocation for spend do to the satisfaction estimate?
+        answer: "It cut spend's standard error from 6.43 to 2.97 but raised satisfaction's from 0.0155 to 0.0218, about 42% wider."
+        emphasis: right
+        left:
+          title: Spend, the target
+          bullets: ["Standard error **6.43** to **2.97**", "596 of 1,000 interviews on heavy buyers"]
+        right:
+          title: Satisfaction, the cost
+          bullets: ["Standard error **0.0155** to **0.0218**", "About **42%** wider"]
+        takeaway: A survey asks many questions, so use proportional unless one statistic dominates.
+        source: notes/12-surveys-and-sampling-design.md
+        notes: >-
+          Kish reports the same from a real multistage sample, that an optimal allocation for mean incomes resulted in losses
+          for median incomes. Disproportionate allocation earns its keep when one number matters most or a small stratum needs
+          its own estimate.
+
+      - layout: flow
+        beat: fundamentals
+        level: core
+        section: "Strata and allocation: where to spend a fixed sample"
+        title: The finite population correction shrinks variance by 1 minus f
+        recall: What is the finite population correction and when does it matter?
+        answer: "It multiplies the variance by 1 minus f, where f is n over N, because a sample that uses up the population leaves less to be uncertain about. For 1,000 of 26,342 it is a 2% change, and for 150 of 400 B2B accounts a 21% cut."
+        steps:
+          - {label: Sampling fraction, sub: "f = n over N", accent: "1E3A5F"}
+          - {label: Variance, sub: "multiplied by 1 − f", accent: "D4621A"}
+          - {label: Standard error, sub: "multiplied by the root of 1 − f", accent: "0F7490"}
+        caption: "1,000 of 26,342 gives 0.981. 150 of 400 B2B accounts gives 0.791."
+        takeaway: Ignore it below a sampling fraction of about 5%, and use it when the sample is a big share of the population.
+        source: notes/12-surveys-and-sampling-design.md
+        notes: >-
+          The 5% rule, and 10% for many purposes, is Cochran's, relayed by Statistics Canada, and the note read it
+          second-hand. Leaving the correction out for a small population overstates the margin.
+
+      - layout: statement
+        beat: problem
+        section: "Clusters: paying precision to save money"
+        title: A sofa's delivery is hard to judge by email
+        recall: What are the costs in the home-visit cluster example?
+        answer: "Reaching a postcode area costs £60 in travel and each interview there costs £8, with £12,000 to spend. Both figures are invented for the example."
+        kicker: The trade
+        statement: "The research team wants home visits. Reaching a postcode area costs £60 and each interview there £8. Visit one customer per area and the money goes on travel."
+        takeaway: When travel dominates cost, you save by taking several people per area, and you pay for it in precision.
+        source: notes/12-surveys-and-sampling-design.md
+        notes: >-
+          The costs are invented for the example. The budget is £12,000.
+
+      - layout: compare
+        beat: fundamentals
+        section: "Clusters: paying precision to save money"
+        title: Stratify for precision, cluster to save money
+        recall: When do you stratify and when do you cluster?
+        answer: "Stratify for precision, because every group is sampled. Cluster to save money, because only some groups are sampled and neighbours resemble each other, so precision falls."
+        emphasis: right
+        left:
+          title: Stratify
+          bullets: ["**Every** group is sampled", "Precision goes up", "No draw can miss heavy buyers"]
+        right:
+          title: Cluster
+          bullets: ["**Some** groups are sampled", "Cheaper per interview", "Neighbours are alike, so precision falls"]
+        takeaway: Stratifying never costs precision, and clustering always does.
+        source: notes/12-surveys-and-sampling-design.md
+        notes: >-
+          Each extra interview in an area tells you less than the last, because people in one postcode area resemble each other.
+
+      - layout: flow
+        beat: fundamentals
+        level: core
+        section: "Clusters: paying precision to save money"
+        title: The design effect turns interviews into effective interviews
+        recall: How does the design effect relate interviews per area to the effective sample?
+        answer: "The design effect is 1 plus m minus 1 times rho, where m is interviews per area and rho the intra-cluster correlation. The effective sample size is interviews divided by the design effect."
+        steps:
+          - {label: Interviews per area, sub: "m", accent: "1E3A5F"}
+          - {label: Intra-cluster correlation, sub: "rho: how alike an area is", accent: "D4621A"}
+          - {label: Design effect, sub: "1 + (m − 1) × rho", accent: "94A3B8"}
+          - {label: Effective sample, sub: "interviews over deff", accent: "0F7490"}
+        caption: "Compare designs by effective sample size within the budget."
+        takeaway: Compare cluster designs by effective sample size, not by the number of interviews.
+        source: notes/12-surveys-and-sampling-design.md
+        notes: >-
+          The design effect comes from the experiments pillar, where users affect each other. Here rho measures how alike
+          people in one area are.
+
+      - layout: table
+        beat: practice
+        section: "Clusters: paying precision to save money"
+        title: Effective sample peaks at 15 to 20 per area
+        recall: What interviews per area give the best effective sample on a £12,000 budget?
+        answer: "Fifteen per area gives 724 effective interviews and 20 gives 721, while 40 per area gives the most interviews (1,240) but only 613 effective."
+        header: [Per area, Areas, Interviews, Deff, Effective n]
+        widths: [1.8, 1.8, 2, 1.8, 2.2]
+        rows:
+          - ["5", "120", "600", "1.11", "543"]
+          - ["10", "85", "850", "1.24", "688"]
+          - ["**15**", "66", "990", "1.37", "**724**"]
+          - ["20", "54", "1,080", "1.50", "721"]
+          - ["40", "31", "1,240", "2.02", "613"]
+        highlight: [2]
+        takeaway: Forty per area buys the most interviews and the least information.
+        source: notes/12-surveys-and-sampling-design.md
+        notes: >-
+          The intra-cluster correlation is only 0.026. The formula's standard errors run a little above the simulated ones,
+          because the formula treats the areas as drawn from an endless supply, and here 85 of the 120 are visited.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: "Clusters: paying precision to save money"
+        title: Pick the cluster size by effective sample
+        recall: How does the chapter estimate the intra-cluster correlation and compare cluster sizes?
+        answer: "A one-way ANOVA estimate of rho from between and within variance, then for each m the number of areas the budget buys, the design effect and the effective sample."
+        lang: python
+        code: |-
+          def icc(data, group, y):
+              by = data.groupby(group)[y]
+              k = by.ngroups
+              m = len(data) / k
+              gap = by.mean() - data[y].mean()
+              between = (by.size() * gap**2).sum() / (k - 1)
+              dev = data[y] - by.transform("mean")
+              within = (dev**2).sum() / (len(data) - k)
+              return (between - within) / (between + (m - 1) * within)
+
+          cost = per_area + per_interview * m
+          areas = budget // cost
+          deff = 1 + (m - 1) * rho
+        bullets:
+          - "Budget **£12,000**, **£60** per area and **£8** per interview"
+          - "Simulated standard errors confirm the formula"
+        takeaway: With rho measured, the best cluster size falls out of the budget arithmetic.
+        source: notes/12-surveys-and-sampling-design.md
+        notes: >-
+          The try-it exercise raises the cost of an area to £120 and £240. The best size rises to 25 and then 30 per area,
+          because dearer travel pushes you to fewer areas with more people in each.
+
+      - layout: bullets
+        beat: wrap
+        level: core
+        section: "Clusters: paying precision to save money"
+        title: You cannot control rho, but you can choose the cluster size
+        recall: What can a sampler control about clustering, and what not?
+        answer: "The sampler can exercise no control over the intra-class correlation but can adjust the cluster size. In the UN's example with a correlation of 0.03, 50 per cluster gives a design effect of 2.5 and 100 gives 4.0."
+        bullets:
+          - "The sampler \"can exercise no control over the intra-class correlation\""
+          - "But \"can still adjust the cluster size\""
+          - "UN example, rho **0.03**: 50 per cluster gives deff **2.5**, 100 gives **4.0**"
+          - "Effects \"much larger than 2.5-3.0\" are undesirable for key indicators"
+        takeaway: Cluster size is the one dial the design controls, so set it with the design effect in view.
+        source: notes/12-surveys-and-sampling-design.md
+        notes: >-
+          The line is from the UN's household survey handbook, 2008. Our own correlation of 0.026 is of the same order.
+
+  - title: Nonresponse and weighting
+    summary: Response rates · Bias · Raking · What weighting cannot fix
+    notes: The designed survey goes into the field. We report what happened to every case, ask whether a low rate means a high bias, and repair what is left with weights.
+    slides:
+      - layout: statement
+        beat: problem
+        section: "Nonresponse: a low rate is not the same as high bias"
+        title: Report what happened to every case
+        recall: What should a survey report about its fieldwork?
+        answer: "What happened to every case, not just a single response rate, and which of the six AAPOR rates is being quoted."
+        kicker: The field
+        statement: "Fernhill's designed survey goes into the field. Of 2,000 sampled, 853 completed, 55 gave a partial, 284 refused, 661 could not be reached and 147 were of unknown eligibility."
+        takeaway: Report every disposition, then say which response rate you quote.
+        source: notes/12-surveys-and-sampling-design.md
+        notes: >-
+          The dispositions are generated in the script. Each section of the chapter draws its own fieldwork, so this one has
+          908 answers and the weighting section below has 966.
+
+      - layout: table
+        beat: fundamentals
+        section: "Nonresponse: a low rate is not the same as high bias"
+        title: One fieldwork gives three response rates
+        recall: How do AAPOR's RR1, RR3 and RR6 differ?
+        answer: "RR1 counts completes over everyone who might be eligible (0.426). RR3 discounts unknown cases by the eligible share e, here 0.8 (0.433). RR6 counts partials and drops unknowns (0.490), and so is an upper bound here."
+        header: [Rate, Value, How it treats the unknowns]
+        widths: [1.6, 1.6, 6.4]
+        rows:
+          - ["RR1", "0.426", "All counted as possibly eligible"]
+          - ["RR3", "0.433", "Discounted by the estimated eligible share, e = 0.8"]
+          - ["RR6", "0.490", "Partials counted and unknowns dropped, so an upper bound"]
+        takeaway: Name the rate you quote, and RR3 is the most common.
+        source: notes/12-surveys-and-sampling-design.md
+        notes: >-
+          AAPOR says one must not select a proportion to boost the response rate. RR6 is allowed only if no unknown case is
+          assumed eligible, which conflicts with e = 0.8 here. AAPOR also says response rates make little sense for
+          non-probability samples.
+
+      - layout: compare
+        beat: fundamentals
+        level: core
+        section: "Nonresponse: a low rate is not the same as high bias"
+        title: A flat 8% has no bias, and a 42% mailing has 14.7 points
+        recall: Does a low response rate mean high bias?
+        answer: "Not by itself. Bias is roughly the covariance of the chance of answering and the answer, over the mean chance. A flat 8% has no bias, and a 42% mailing that invites people to say what they loved has 14.7 points."
+        emphasis: right
+        left:
+          title: Flat 8% reply
+          bullets: ["Everyone equally likely to answer", "Bias **0.000**"]
+        right:
+          title: Invited to say what they loved, 42%
+          bullets: ["Happy customers answer more", "Bias **+0.147**"]
+        takeaway: Bias comes from who answers, and the response rate only appears in the denominator.
+        source: notes/12-surveys-and-sampling-design.md
+        notes: >-
+          The formula is bias roughly equal to cov(p, y) over the mean of p, where p is a person's chance of answering and y
+          is their answer.
+
+      - layout: table
+        beat: practice
+        section: "Nonresponse: a low rate is not the same as high bias"
+        title: Four mailings, four biases
+        recall: What response rate and bias do the four mailings have?
+        answer: "A flat 8% has response 0.080 and bias 0.000. 'Tell us what you loved' has 0.424 and +0.147. The blanket email has 0.147 and +0.217. The designed survey with reminders has 0.460 and +0.047."
+        header: [Mailing, Response, Bias]
+        widths: [5.6, 2, 2]
+        rows:
+          - ["Flat 8%", "0.080", "0.000"]
+          - ["'Tell us what you loved'", "0.424", "+0.147"]
+          - ["Blanket email, all customers", "0.147", "+0.217"]
+          - ["Designed, with reminders", "0.460", "+0.047"]
+        highlight: [3]
+        takeaway: The designed survey answers at 46% with a quarter of the email's bias.
+        source: notes/12-surveys-and-sampling-design.md
+        notes: >-
+          Each row checks the formula against a direct weighted mean, and the two agree to three decimals.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: "Nonresponse: a low rate is not the same as high bias"
+        title: Nonresponse bias in three lines
+        recall: How does the chapter compute nonresponse bias?
+        answer: "The covariance of the chance of answering with the answer, divided by the mean chance of answering."
+        lang: python
+        code: |-
+          def nonresponse_bias(p):
+              return np.cov(p, y, bias=True)[0, 1] / p.mean()
+
+          check = np.average(y, weights=p) - y.mean()
+        bullets:
+          - "`p` is each customer's chance of answering"
+          - "The check is the respondents' mean minus the population mean"
+        takeaway: The formula and the direct check agree, so bias can be read off the covariance.
+        source: notes/12-surveys-and-sampling-design.md
+        notes: >-
+          This is the one section where the true reply chances are used directly, which only a simulation can do.
+
+      - layout: cards
+        beat: fundamentals
+        section: "Nonresponse: a low rate is not the same as high bias"
+        title: The response rate predicts bias poorly, but not never
+        recall: What does the evidence say about response rates and nonresponse bias?
+        answer: "Groves pooled about 959 estimates from 59 studies and concluded the rate alone is not a good predictor of bias. Brick and Tourangeau's reanalysis found correlations of about −0.36 to −0.50 with response rate and call it far from irrelevant."
+        cards:
+          - {title: Groves, accent: "1E3A5F", body: "About 959 estimates from 59 studies. The rate alone is not a good predictor of bias, and R squared is 0.04"}
+          - {title: Brick and Tourangeau, accent: "0F7490", body: "Correlation of bias with rate about −0.36 to −0.50, so rates are far from irrelevant"}
+          - {title: The reading, accent: "D4621A", body: "A low rate gives bias more room, and does not tell you how much of the room got used"}
+        takeaway: Treat a low rate as a reason to look, and compare respondents with the frame on known columns.
+        source: notes/12-surveys-and-sampling-design.md
+        notes: >-
+          The note read Groves's talk slides, not his 2006 article, and knows the R squared figure through Brick and
+          Tourangeau. Most of the variation lies among estimates within the same survey.
+
+      - layout: bullets
+        beat: fundamentals
+        section: "Nonresponse: a low rate is not the same as high bias"
+        title: Whether a variable can repair nonresponse depends on its cause
+        recall: What is the difference between missing at random and not missing at random in a survey?
+        answer: "If something else drives both answering and the answer, such as being a heavy buyer, that is consistent with missing at random and a variable holding that cause can repair it. If the answer itself drives answering, it is not missing at random."
+        bullets:
+          - "A heavy buyer answers more and is happier: **missing at random**, repairable"
+          - "The unhappy do not reply: **not missing at random**, not repairable from the frame"
+          - "You cannot tell them apart without data on the non-respondents"
+        takeaway: Weighting can only repair what the columns you hold explain.
+        source: notes/12-surveys-and-sampling-design.md
+        notes: >-
+          The mapping from Groves's causes, Common Cause and Survey Variable Cause, to the two missing-data names is the
+          note's own, not his. The last line is Brick's, 2013.
+
+      - layout: cards
+        beat: pitfalls
+        section: Pitfalls
+        title: Three survey-design pitfalls
+        recall: Name the three survey-design pitfalls and their fixes.
+        answer: "Printing a margin on a self-selected sample (report it as non-probability), treating the response rate as the quality measure (compare respondents with the frame first) and optimising allocation for one number (use proportional unless one statistic dominates)."
+        cards:
+          - {title: A margin on a self-selected sample, body: "Report it as non-probability, and describe the model if you give a precision measure"}
+          - {title: The response rate as the quality measure, body: "Compare respondents with the frame on known columns first"}
+          - {title: Allocating for one number, body: "Proportional unless one statistic dominates: satisfaction's margin was 42% wider"}
+        takeaway: Most design failures are a margin that claims more than the sample earned.
+        source: notes/12-surveys-and-sampling-design.md
+        notes: >-
+          These are the pitfalls of note 12. The weighting and reporting pitfalls close the lecture.
+
+      - layout: statement
+        beat: problem
+        section: "Weighting: post-stratification, raking and their limit"
+        title: The respondents still do not add up to the customer list
+        recall: What does weighting do, and what is an analyst's advantage over a pollster?
+        answer: "Weighting makes respondents add up to known population totals. An analyst's totals come from the CRM exactly, not from a census estimate."
+        kicker: The repair
+        statement: "Weighting makes respondents add up to known totals. An analyst has an edge over a pollster: the totals come from the CRM, exactly."
+        takeaway: Weights can match what you know about everyone, and nothing else.
+        source: notes/12b-weighting-the-margin-and-the-question.md
+        notes: >-
+          The auxiliary variables are the columns known for both the respondents and the whole population.
+
+      - layout: compare
+        beat: fundamentals
+        level: core
+        section: "Weighting: post-stratification, raking and their limit"
+        title: Cells when there are few, raking when there are many
+        recall: What is the difference between post-stratification and raking?
+        answer: "Post-stratification cross-classifies the auxiliary variables and weights each cell to its population count, clean until cells run out. Raking matches each variable's population shares in turn, needing only the margins, and assumes response probabilities multiply."
+        emphasis: right
+        left:
+          title: Post-stratification
+          bullets: ["Cross-classify the auxiliary variables", "Weight each **cell** to its population count", "Clean until cells run out"]
+        right:
+          title: Raking
+          bullets: ["Match each variable's **margin** in turn", "Needs only the margins", "Assumes response probabilities multiply"]
+        takeaway: Raking assumes no interaction in response, which is the price of using margins alone.
+        source: notes/12b-weighting-the-margin-and-the-question.md
+        notes: >-
+          Kalton and Flores-Cervantes suggest cells when there are few and well filled, and raking when there are many.
+          Raking leads to less variability in the weights. A margin here has nothing to do with a margin of error.
+
+      - layout: flow
+        beat: fundamentals
+        section: "Weighting: post-stratification, raking and their limit"
+        title: Raking fits one margin at a time until all of them hold
+        recall: How does raking, or iterative proportional fitting, work?
+        answer: "Scale the weights so one variable's levels match their population shares, move to the next variable, and repeat until all margins hold within the tolerance. Our designed survey took 29 steps."
+        steps:
+          - {label: Pick a variable, sub: "channel, segment, active or band", accent: "1E3A5F"}
+          - {label: Scale each level, sub: "to its population share", accent: "D4621A"}
+          - {label: Next variable, sub: "the last one is disturbed", accent: "94A3B8"}
+          - {label: Repeat, sub: "until every margin holds", accent: "0F7490"}
+        caption: "Our run took 29 steps. Raking usually converges in 3 to 10."
+        takeaway: Raking cycles through the margins and stops when none of the weights moves.
+        source: notes/12b-weighting-the-margin-and-the-question.md
+        notes: >-
+          Battaglia, Hoaglin and Frankel say raking generally converges in 3 to 10 iterations and give no numeric rule for
+          the bounds. Ours took 29 because segment and spend band overlap heavily and the tolerance is tight.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: "Weighting: post-stratification, raking and their limit"
+        title: Raking and Kish's 1 + L
+        recall: What do the rake and kish functions compute?
+        answer: "Rake scales weights to one margin at a time until the largest relative change is below the tolerance. Kish returns n times the sum of squared weights over the squared sum of weights, the variance inflation from unequal weights."
+        lang: python
+        code: |-
+          for column, target in margins.items():
+              codes = data[column].to_numpy()
+              for level, share in target.items():
+                  mask = codes == level
+                  w[mask] *= share * w.sum() / w[mask].sum()
+
+          def kish(w):
+              return len(w) * (w**2).sum() / w.sum()**2
+        bullets:
+          - "The loop repeats until the largest change is below `1e-6`"
+          - "`kish` is 1 + L, and effective sample is n over it"
+        takeaway: Two short functions give the weights and their price in precision.
+        source: notes/12b-weighting-the-margin-and-the-question.md
+        notes: >-
+          1 + L is n times the sum of squared weights over the square of the sum, where L is the relative variance of the
+          weights. Kish offers it for haphazard weights, so here it is a rough measure of cost.
+
+      - layout: table
+        beat: practice
+        section: "Weighting: post-stratification, raking and their limit"
+        title: Raking moves the email by 6 points and leaves it 17 out
+        recall: How do the weighting methods move the two surveys' estimates?
+        answer: "The email goes from 0.725 unweighted to 0.699 raked on channel, and 0.667 on channel, segment and active, a figure that cells match at 0.666. The designed survey goes from 0.514 to 0.499. The truth is 0.496."
+        header: [Method, Email, 1 + L, Designed, 1 + L]
+        widths: [4, 1.5, 1.5, 1.7, 1.5]
+        rows:
+          - ["Unweighted", "0.725", "1.000", "0.514", "1.000"]
+          - ["Rake: channel only", "0.699", "1.140", "0.511", "1.005"]
+          - ["Rake: channel, segment, active", "0.667", "1.755", "0.499", "1.033"]
+          - ["Rake: plus spend band", "0.666", "1.763", "0.499", "1.034"]
+          - ["Cells (5 and 11 empty)", "0.666", "1.907", "0.498", "1.095"]
+        highlight: [2]
+        takeaway: Which variables you weight on matters more than which method you use.
+        source: notes/12b-weighting-the-margin-and-the-question.md
+        notes: >-
+          The truth is 0.496. Kalton and Flores-Cervantes say the choice of auxiliaries may be of more significance than the
+          choice of a particular method.
+
+      - layout: bullets
+        beat: fundamentals
+        section: "Weighting: post-stratification, raking and their limit"
+        title: Weights cost precision, and cells lose people
+        recall: What does weighting cost?
+        answer: "The email's effective sample fell from 2,648 to about 1,500. Post-stratification cells lost 62 customers (email) and 325 (designed survey), who sat in cells where nobody answered."
+        bullets:
+          - "Effective sample is n over 1 + L: the email's fell from **2,648** to about **1,500**"
+          - "The designed survey's fell from 966 to about **934**"
+          - "Cells with nobody in them lose people: **62** and **325** customers"
+          - "Those estimates no longer cover the lost customers"
+        takeaway: Every weight adjustment buys bias reduction with variance, and an empty cell is a customer you stopped covering.
+        source: notes/12b-weighting-the-margin-and-the-question.md
+        notes: >-
+          This is the same effective-sample idea the matching chapter uses for propensity weights.
+
+      - layout: compare
+        beat: pitfalls
+        section: "Weighting: post-stratification, raking and their limit"
+        title: A weighted number is not a debiased number
+        recall: Why is the weighted estimate still wrong for the email?
+        answer: "Most of what is left is the part where satisfaction itself drives replying, and no CRM column holds it. The email's 66.6% is still 17 points out, and the designed survey's 49.9% looks nearly perfect but is a lucky draw."
+        emphasis: left
+        left:
+          title: Designed survey
+          bullets: ["Raked to **49.9%**, truth 49.6%", "Looks perfect, but a lucky draw"]
+        right:
+          title: Blanket email
+          bullets: ["Raked to **66.6%**, **17** points out", "Satisfaction itself drives replying"]
+        takeaway: Weighting on observed covariates cannot correct selection on the answer itself.
+        source: notes/12b-weighting-the-margin-and-the-question.md
+        notes: >-
+          Pew's study of opt-in panels, not peer-reviewed, found the best adjustment removed only about 30% of the original
+          bias across 24 benchmarks, and complex methods never beat simpler ones by more than 0.3 points on average.
+          Bradley and colleagues conclude that weighting on observed covariates alone cannot explain or correct the
+          discrepancies.
+
+      - layout: cards
+        beat: pitfalls
+        level: deep
+        section: "Weighting: post-stratification, raking and their limit"
+        title: The Xbox poll worked because the variables held the selection
+        recall: Why did the Xbox poll work despite a lopsided sample?
+        answer: "Men were 93% of 750,148 Xbox interviews against 47% of the electorate, yet the day-before estimate was 0.6 points from the result. It used partial pooling over 176,256 cells that included party identification and past vote, so the variables held the selection."
+        cards:
+          - {title: The sample, accent: "94A3B8", body: "750,148 interviews, 93% men against 47% of the electorate"}
+          - {title: The model, accent: "1E3A5F", body: "Partial pooling over 176,256 cells, including party identification and past vote"}
+          - {title: The result, accent: "0F7490", body: "The day-before estimate of voter intent was 0.6 points from the result"}
+        takeaway: Weighting can rescue a lopsided sample when the cells include the variables that drove selection.
+        source: notes/12b-weighting-the-margin-and-the-question.md
+        notes: >-
+          Wang, Rothschild, Goel and Gelman, author's preprint, published in the International Journal of Forecasting, 2015.
+          Raking's distance is also the one entropy balancing uses, as Hartman, Hazlett and Sterbenz show.
+
+      - layout: table
+        beat: practice
+        level: deep
+        section: "Weighting: post-stratification, raking and their limit"
+        title: Trimming trades bias for precision
+        recall: What does capping the weights do to the email's estimate?
+        answer: "A cap of 3 times the mean takes 1 + L from 1.763 to 1.564 and the estimate to 0.673. A cap of 2 takes effective sample from 1,502 to 1,890, about 26% up, and the estimate to 0.681."
+        header: [Cap, Largest weight, 1 + L, Effective n, Estimate]
+        widths: [2, 2.2, 1.6, 2.2, 1.8]
+        rows:
+          - ["None", "5.00", "1.763", "1,502", "0.666"]
+          - ["5 × mean", "5.00", "1.763", "1,502", "0.666"]
+          - ["3 × mean", "3.14", "1.564", "1,693", "0.673"]
+          - ["2 × mean", "2.25", "1.401", "1,890", "0.681"]
+        takeaway: Trimming raises the effective sample by 26% and moves the estimate 1.5 points further from the truth.
+        source: notes/12b-weighting-the-margin-and-the-question.md
+        notes: >-
+          Trimming caps extreme weights and spreads the excess over everyone else. Kalton and Flores-Cervantes describe the
+          bargain as accepting some possible loss in bias reduction.
+
+  - title: The margin and the question
+    summary: A margin the design earns · Measurement error · Reading a scale · The recommendation
+    notes: The sampling is done and the weights are in. We state the margin honestly, then ask whether the question measured what we meant.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Reporting a margin that reflects the design
+        title: A margin says how much it would wobble, not how far off it is
+        recall: What does a margin of error tell you and what does it not?
+        answer: "It answers how much the estimate would wobble. It says nothing about how far off it is, because the bias left after weighting is as large as the margin."
+        kicker: The limit
+        statement: "Run the whole survey 400 times and mark the intervals. The margin is right about the wobble. The truth is outside the interval half the time."
+        takeaway: A margin answers how much an estimate would wobble, and bias answers how far off it is.
+        source: notes/12b-weighting-the-margin-and-the-question.md
+        notes: >-
+          This frame can check itself because the truth is known. A real survey cannot, which is why the unmeasured risk is
+          reported next to the margin.
+
+      - layout: table
+        beat: practice
+        section: Reporting a margin that reflects the design
+        title: Intervals centred on the wrong number cover the truth half the time
+        recall: How often did the 95% intervals cover the truth across 400 repeated surveys?
+        answer: "For the designed survey about 52.5% of plain intervals and 54.8% of Kish-adjusted ones covered the truth. For the blanket email, none did."
+        header: [400 repeated surveys, Designed, Blanket email]
+        widths: [4.4, 2.2, 2.4]
+        rows:
+          - ["Mean respondents", "918", "2,602"]
+          - ["Mean raked estimate", "0.528", "0.678"]
+          - ["True standard deviation", "0.016", "0.012"]
+          - ["Plain margin", "0.032", "0.018"]
+          - ["Kish-adjusted margin", "0.033", "0.023"]
+          - ["Plain coverage of the truth", "0.525", "0.000"]
+          - ["Kish coverage of the truth", "0.548", "0.000"]
+        highlight: [5, 6]
+        takeaway: The designed survey's margin is right about 0.016 of wobble, but the 3-point bias left in the centre cancels it.
+        source: notes/12b-weighting-the-margin-and-the-question.md
+        notes: >-
+          The raked estimates have a standard deviation of 0.016, so 1.96 of those is 0.031, close to the 0.033 reported. The
+          intervals are centred on 52.8% rather than 49.6%. Raking took out about 30% of the designed survey's bias and 23% of
+          the email's, which is the note's own arithmetic.
+
+      - layout: flow
+        beat: fundamentals
+        level: core
+        section: Reporting a margin that reflects the design
+        title: Multiply the margin by deft
+        recall: What are deff and deft, and how do they change the margin?
+        answer: "Deff is the ratio of the actual variance to a simple random sample's, and deft is its square root. The margin is 1.96 times deft times the root of p times 1 minus p over n, or the plain formula with n replaced by the effective sample."
+        steps:
+          - {label: Weights, sub: "give 1 + L", accent: "1E3A5F"}
+          - {label: Deff, sub: "stands in as 1 + L", accent: "D4621A"}
+          - {label: Deft, sub: "the root of deff", accent: "94A3B8"}
+          - {label: Margin, sub: "1.96 × deft × SE", accent: "0F7490"}
+        caption: "An approximation: it ignores clustering."
+        takeaway: Deft is on the same scale as the standard error, so the margin scales by it directly.
+        source: notes/12b-weighting-the-margin-and-the-question.md
+        notes: >-
+          Kish prefers deft first and warns that a deft of 3 turns a claimed t of 2 at alpha .05 into 2 over 3 at alpha 0.50.
+          Using 1 + L for deff ignores clustering. Kish reserves it for haphazard weights and has no simple answer for
+          post-stratification.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: Reporting a margin that reflects the design
+        title: A design-adjusted margin and a sensitivity check
+        recall: How does the chapter compute the final margin and the sensitivity to non-respondents?
+        answer: "The plain half-width is multiplied by the square root of 1 + L. Sensitivity assumes non-respondents are a set number of points less satisfied and blends the two groups by the response rate."
+        lang: python
+        code: |-
+          w, _ = rake(data, use)
+          est, deff = np.average(data.y, weights=w), kish(w)
+          margin = half_width(est, len(data)) * np.sqrt(deff)
+          rate = len(data) / 2000
+          for gap in [0, .05, .10]:
+              print(rate * est + (1 - rate) * (est - gap))
+        bullets:
+          - "n **966**, weighted **0.499**, deft **1.02**, margin **0.032**"
+          - "The sensitivity gap is an assumption, not an estimate"
+        takeaway: The adjusted margin is one line, and the sensitivity check names the risk the margin cannot.
+        source: notes/12b-weighting-the-margin-and-the-question.md
+        notes: >-
+          For this design the adjustment is tiny, a deff of 1.03, so the plain formula gives 0.032 as well.
+
+      - layout: table
+        beat: practice
+        section: Reporting a margin that reflects the design
+        title: Subgroups get wide fast
+        recall: What are the weighted estimates and margins by channel?
+        answer: "Email 65.4% (n 144, margin 7.9), organic 53.5% (351, 5.3), paid social 40.1% (354, 5.2) and referral 52.6% (117, 9.2). Paid social against organic is 13.4 points with a margin of about 7.4."
+        header: [Channel, n, Satisfied, Margin]
+        widths: [3, 1.8, 2.2, 2.2]
+        rows:
+          - [email, "144", "65.4%", "7.9"]
+          - [organic, "351", "53.5%", "5.3"]
+          - [paid_social, "354", "40.1%", "5.2"]
+          - [referral, "117", "52.6%", "9.2"]
+        highlight: [2]
+        takeaway: A gap between two groups needs its own margin, and a subgroup of 117 people gives 9.2 points.
+        source: notes/12b-weighting-the-margin-and-the-question.md
+        notes: >-
+          The 7.4 is the note's arithmetic, the root of the two squared margins for independent groups. Between two
+          candidates' shares on the same question, Pew says the margin is about twice a single candidate's. AAPOR's code
+          requires disclosing the unweighted sample sizes behind subgroups.
+
+      - layout: cards
+        beat: fundamentals
+        section: Reporting a margin that reflects the design
+        title: If non-respondents are less satisfied, the figure drops
+        recall: How does the headline figure change if non-respondents are less satisfied?
+        answer: "At a gap of 0, 5 and 10 points the figure is 49.9%, 47.3% and 44.7%. The real gap in this frame is about 6 points, so the middle line is close."
+        cards:
+          - {title: No gap, accent: "94A3B8", body: "Non-respondents like the respondents: 49.9%"}
+          - {title: 5 points less, accent: "D4621A", body: "The figure becomes 47.3%, close to the real gap of about 6 points"}
+          - {title: 10 points less, accent: "1E3A5F", body: "The figure becomes 44.7%"}
+        takeaway: A sensitivity check turns an unmeasurable risk into a range the reader can judge.
+        source: notes/12b-weighting-the-margin-and-the-question.md
+        notes: >-
+          The real gap works out at about 6 points, which is the note's arithmetic from a mean raked estimate of 52.8%
+          against 49.6% at a 46% response rate. AAPOR's code requires saying whether sampling error was adjusted for the
+          design effect, and how weights were calculated.
+
+      - layout: statement
+        beat: problem
+        section: "The question itself: measurement error"
+        title: Wording alone moved a result by 25 points
+        recall: How much did question wording move the Pew Iraq result?
+        answer: "In January 2003, 68% favoured military action against Iraq when asked plainly and 43% when the question added 'even if it meant that U.S. forces might suffer thousands of casualties'."
+        kicker: The question
+        statement: "In January 2003, 68% favoured military action against Iraq. Add the words 'even if it meant thousands of casualties' and it was 43%."
+        takeaway: Everything above assumes the answer means what you think, and wording can break that by itself.
+        source: notes/12b-weighting-the-margin-and-the-question.md
+        notes: >-
+          The source is Pew's methods page on writing survey questions. Order moves answers too: dissatisfaction with the
+          country was 88% straight after a question on presidential approval and 78% without it.
+
+      - layout: table
+        beat: fundamentals
+        level: core
+        section: "The question itself: measurement error"
+        title: Four common faults in a question
+        recall: What are four common faults in survey questions and their fixes?
+        answer: "Double-barrelled (ask one thing), acquiescence (offer a choice between statements), social desirability (self-administer or use randomised response) and order (overall first, and rotate the items)."
+        header: [Fault, Example, Fix]
+        widths: [2.4, 4.2, 3.4]
+        rows:
+          - ["Double-barrelled", "How happy were you with the speed and care of delivery?", "Ask one thing per question"]
+          - ["Acquiescence", "Delivery was on time: agree or disagree?", "Offer a choice between statements"]
+          - ["Social desirability", "An interviewer asks whether the driver was rude", "Self-administer, or use randomised response"]
+          - ["Order", "Overall rating asked after a list of complaints", "Overall first, and rotate the items"]
+        takeaway: Fix a question with a design change, because no weight repairs a question that measured the wrong thing.
+        source: notes/12b-weighting-the-margin-and-the-question.md
+        notes: >-
+          Acquiescence is the tendency to agree with whatever is put to you.
+
+      - layout: compare
+        beat: practice
+        section: "The question itself: measurement error"
+        title: A split ballot turns the question into an experiment
+        recall: What did the split ballot show about the acquiescence-prone wording?
+        answer: "Form A, 'how satisfied, 1 to 5?', gave 51.7% and form B, 'I am satisfied: agree or disagree?', gave 56.3%. The difference is +4.6 points with a 95% interval of +1.5 to +7.7, and each form alone has a margin of 2.2."
+        emphasis: right
+        left:
+          title: Form A, a 1-to-5 question
+          bullets: ["**51.7%** satisfied", "Margin about 2.2 points"]
+        right:
+          title: Form B, agree or disagree
+          bullets: ["**56.3%** satisfied", "Margin about 2.2 points", "Difference **+4.6**, interval +1.5 to +7.7"]
+        takeaway: Both forms look tidy alone, and only the comparison shows the problem.
+        source: notes/12b-weighting-the-margin-and-the-question.md
+        notes: >-
+          The 12% acquiescence is planted in the script. The margin says nothing about which form is right.
+
+      - layout: code
+        beat: practice
+        level: deep
+        section: "The question itself: measurement error"
+        title: A split ballot in six lines
+        recall: How does the chapter simulate a split ballot?
+        answer: "Randomise which form each of 4,000 people gets, plant 12% who agree with whatever is put to them on form B, then compare the two shares and the standard error of their difference."
+        lang: python
+        code: |-
+          ballot = frame.sample(4000, random_state=12)
+          form_b = RNG.random(len(ballot)) < .5
+          acquiesce = RNG.random(len(ballot)) < .12
+          truth = ballot.true_satisfied
+          says_yes = np.where(form_b, truth | acquiesce, truth)
+          a, b = says_yes[~form_b].mean(), says_yes[form_b].mean()
+        bullets:
+          - "Randomising the form is what makes the gap causal"
+          - "The acquiescence rate is planted, so the answer is known"
+        takeaway: Randomise the wording and the difference between the shares is the effect of the question.
+        source: notes/12b-weighting-the-margin-and-the-question.md
+        notes: >-
+          This is the experiment from the experimentation pillar, run on a question instead of a treatment.
+
+      - layout: bullets
+        beat: fundamentals
+        section: "The question itself: measurement error"
+        title: Pretest with cognitive interviews, then split-ballot the fix
+        recall: How do you test a survey question?
+        answer: "Cognitive interviews to find problems, where a respondent talks through how they understand and answer each question, then a split ballot to measure the fix."
+        bullets:
+          - "Cognitive interviews: \"as few as fifteen\" can reveal major problems"
+          - "Expert review alone only as a last resort"
+          - "Lenzner and colleagues: ten interviews found a real ambiguity, but the rewrite helped only in part"
+          - "Agree/disagree items had \"much lower quality\" in Saris, .48 against .85 and .76 on one item"
+          - "Lelkes and Weiss found the formats equally valid on one US battery"
+        takeaway: Interviews find the problem and a split ballot checks that the fix worked.
+        source: notes/12b-weighting-the-margin-and-the-question.md
+        notes: >-
+          The standard is the US Census Bureau's. The Saris figures are 23-country means in the European Social Survey, where
+          quality is a model-based product of reliability and validity. Mode matters too: Pew found randomly assigned phone and
+          web groups differed by 5.5 points on average across 60 questions. DeCastellarnau concludes no single scale length
+          is best.
+
+      - layout: bullets
+        beat: fundamentals
+        section: Reading a five-point scale
+        title: The mean of a five-point scale assumes equal gaps
+        recall: What does averaging a Likert item assume?
+        answer: "That the gap from 4 to 5 equals the gap from 1 to 2. Liddell and Kruschke found every one of 68 psychology articles treated Likert outcomes as metric, and an ordered probit recovered effects that the metric model got wrong."
+        bullets:
+          - "A 1-to-5 answer is **ordinal**: the gaps are not known to be equal"
+          - "All **68** articles checked treated Likert outcomes as metric"
+          - "The metric model reported an effect of **0.49** where none existed, and **−0.01** where it was 0.66"
+          - "An ordered probit assumes a hidden score cut at thresholds"
+        takeaway: Look at the shares, and use an ordinal model or a rank test if you need a test.
+        source: notes/12b-weighting-the-margin-and-the-question.md
+        notes: >-
+          The worked examples used settings Liddell and Kruschke picked to show the problem. Norman argues parametric methods
+          are robust on such data, and the authors answer that such work did not test unequal variability or means near one
+          end of the scale.
+
+      - layout: table
+        beat: practice
+        section: Reading a five-point scale
+        title: Same mean of 4.3, different customers
+        recall: How do packaging and delivery differ despite the same mean?
+        answer: "Both average about 4.3 (p = 0.57). Delivery has more top scores (65% against 50%) and 10.6% in the bottom two against 1.4%. The probit sees delivery's mean at 5.48 and spread at 2.44, against 4.50 and 0.96."
+        header: [Measure, Packaging, Delivery]
+        widths: [4, 2.4, 2.4]
+        rows:
+          - ["Mean", "4.33", "4.29"]
+          - ["Top box (5)", "50%", "**65%**"]
+          - ["Bottom two", "1.4%", "**10.6%**"]
+          - ["Probit mean", "4.50", "5.48"]
+          - ["Probit spread", "0.96", "2.44"]
+        highlight: [2]
+        takeaway: An average of 4.3 on both would have hidden a delivery problem affecting one customer in nine.
+        source: notes/12b-weighting-the-margin-and-the-question.md
+        notes: >-
+          The true underlying means are 4.6 and 5.4, and the t test on the means gives p = 0.567. The probit has its
+          thresholds pinned so the mean and spread are on the 1-to-5 scale. Report the shares.
+
+      - layout: steps
+        beat: wrap
+        level: core
+        section: Recommendation
+        title: Stop publishing 73% and run the designed survey
+        recall: What should Fernhill do instead of the email blast?
+        answer: "Run a proportional stratified sample of the whole list by order segment, with a split-ballot tested questionnaire and reminders across email, post and phone, rake to channel, segment and activity from the CRM, and report the margin with the unmeasured risk."
+        steps:
+          - {title: Sample the whole list, text: "Proportional stratified by order segment, 2,000 sampled"}
+          - {title: Test the questionnaire, text: "Split ballot, with reminders across email, post and phone"}
+          - {title: Rake to the CRM, text: "Channel, segment and activity"}
+          - {title: Report the risk with the margin, text: "Plus or minus 3 points, and the 5-point sensitivity", n: "★", accent: "D4621A"}
+        takeaway: The design, the weights and the honest statement of what is left each repair a different gap.
+        source: notes/12b-weighting-the-margin-and-the-question.md
+        notes: >-
+          What would change this is a follow-up with a random subsample of non-respondents, the only way to measure the gap
+          directly, and a repeat of the survey to track it over time. A change of mode or wording breaks the series.
+
+      - layout: statement
+        beat: wrap
+        section: Recommendation
+        title: About 50%, plus or minus 3
+        recall: How should Fernhill report the satisfaction figure?
+        answer: "About 50% satisfied, plus or minus 3 points of sampling error, on 966 answers from 2,000 sampled (a 48% completed share), weighted to CRM totals, with an unmeasured risk: if non-respondents are 5 points less satisfied, the figure is 47%. Add shares by channel, flagging paid social at 40.1% with a margin of 5.2."
+        kicker: The report
+        statement: "About 50% satisfied, plus or minus 3 points, on 966 answers from 2,000 sampled, weighted to CRM totals. If non-respondents are 5 points less satisfied, it is 47%."
+        takeaway: Print the margin, the base and the unmeasured risk together, and flag paid social at 40.1%.
+        source: notes/12b-weighting-the-margin-and-the-question.md
+        notes: >-
+          The completed share of 48% is 966 of 2,000. Compare the 73% the email blast reported.
+
+      - layout: bullets
+        beat: wrap
+        section: Recommendation
+        title: What to take from the surveys
+        recall: What are the rules of thumb for a survey?
+        answer: "Choose who is asked at random with known chances, spend interviews by stratum, report every disposition, weight to known totals, state a margin that includes the design and the unmeasured risk, and test the question with a split ballot."
+        bullets:
+          - "A margin of error covers sampling error only, so design the sample first"
+          - "Stratify for precision, cluster to save money, and compare designs by effective sample"
+          - "Bias comes from who answers, not from how few"
+          - "Weights repair what the columns explain, and no more"
+          - "Report shares, margins with deft, and the risk that is left"
+        takeaway: A survey is only as good as its weakest gap, and the margin never measures that one.
+        source: notes/12b-weighting-the-margin-and-the-question.md
+        notes: >-
+          This is the last lecture of the applied analyses. Data science takes up the models behind these analyses in depth.
+
+      - layout: table
+        beat: pitfalls
+        section: Pitfalls
+        title: Two weighting and reporting pitfalls
+        recall: Name two pitfalls in weighting and reporting, and their fixes.
+        answer: "A plain margin after weighting or clustering (multiply by deft and say so) and taking a weighted number as debiased (state the unmeasured risk and follow up a sample of non-respondents)."
+        header: [Pitfall, Do instead]
+        widths: [4.2, 5.4]
+        rows:
+          - ["A plain margin after weighting or clustering", "Multiply by deft, and say that you did"]
+          - ["Taking a weighted number as debiased", "State the unmeasured risk, and follow up a sample of non-respondents"]
+        takeaway: A survey is only as good as its weakest gap, and the margin never measures that one.
+        source: notes/12b-weighting-the-margin-and-the-question.md
+        notes: >-
+          This is the last lecture of the applied analyses. Data science takes up the models behind these analyses in depth.

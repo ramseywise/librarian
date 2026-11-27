@@ -1,0 +1,1125 @@
+# imported_hash: d12ab2cba47ae404
+# Lecture on step 4, Bayesian machine learning: notes/06-bayesian-machine-learning.md and 06b-variational-inference-and-gaussian-processes.md, in the notes' order.
+# make slides PILLAR=data-analytics/04-bayesian-analysis LECTURE=04-bayesian-machine-learning STRICT=1 PREVIEW=1
+# Levels: a slide with no level is the intro, `core` is the core lesson, `deep` is the optional extension (code and maths).
+deck:
+  title: Bayesian machine learning
+  subtitle: When the posterior is too big to sample
+  tagline: "EM · Logistic regression · Likelihoods · Overfitting · VI · Gaussian processes"
+  reference: "Notes: data-analytics/04-bayesian-analysis, notes 6 and 6b"
+  output: 04-bayesian-machine-learning.pptx
+  notes: >-
+    This is the fifth lecture of the Bayesian analysis series, after the overview, infer, compute and check, and decide. It covers
+    step 4. By the end you should be able to fit a Gaussian mixture by EM and say what it gives up, read a Bayesian logistic
+    regression, choose a likelihood and link, explain why training fit is the wrong yardstick, and say what variational inference
+    and a Gaussian process each buy you.
+
+lecture:
+  covers:
+    - data-analytics/04-bayesian-analysis/notes/06-bayesian-machine-learning.md
+    - data-analytics/04-bayesian-analysis/notes/06b-variational-inference-and-gaussian-processes.md
+  requires: [data-analytics/04-bayesian-analysis/notes/05-loss-functions-and-decisions.md]
+  next: [data-analytics/04-bayesian-analysis/notes/07-multilevel-models-and-partial-pooling.md]
+  related:
+    - data-analytics/02-probability-and-statistics/notes/06b-logistic-regression-and-poisson-glms.md
+    - programming/computer-science/notes/04-numbers-and-memory.md
+    - data-analytics/04-bayesian-analysis/notes/03b-bandits-and-thompson-sampling.md
+
+parts:
+  - title: EM for Gaussian mixtures
+    divider: false
+    summary: Hidden labels · E-step and M-step · Restarts · EM against MCMC
+    notes: We start with the simplest model where a hidden variable stops you from writing the answer down, and fit it by optimisation instead of sampling.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Where this sits
+        title: What if every point has a label you never saw?
+        recall: Why is a mixture model hard to fit directly?
+        answer: "Each point has a hidden cluster label. With the labels the parameters are simple averages, and with the parameters the labels follow from Bayes' rule, but you have neither."
+        kicker: The problem
+        statement: "If you knew the labels, the parameters would be simple averages. If you knew the parameters, the labels would follow from Bayes' rule."
+        attribution: A Gaussian mixture with weights, means and covariances
+        takeaway: Each half of the problem is easy when the other half is known, and EM alternates between them.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          The model is chapter 2's mixture, fitted by optimisation instead of sampling. Expectation-maximisation is due to
+          Dempster, Laird and Rubin in 1977.
+
+      - layout: table
+        beat: fundamentals
+        section: Where this sits
+        title: The coursework behind this lecture
+        recall: Which inference method does each week of the coursework use?
+        answer: "Week 2 uses EM on a Gaussian mixture, week 4 MCMC on logistic regression, week 5 variational inference on a VAE, and week 6 an exact GP posterior for Bayesian optimisation."
+        header: [Coursework, Topic, Inference method]
+        widths: [1.8, 3.8, 3.8]
+        rows:
+          - [Week 2, Gaussian mixture model, Expectation-maximisation]
+          - [Week 4, "Markov chains, Bayesian logistic regression", "MCMC (Metropolis, NUTS)"]
+          - [Week 5, Variational autoencoder on MNIST, Variational inference (ELBO)]
+          - [Week 6, "Gaussian processes, Bayesian optimisation", Exact GP posterior]
+        takeaway: The coursework is legacy code, so read it for the method and run the NumPy, PyMC and scikit-learn versions here.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          The coursework is HSE's Bayesian Methods for Machine Learning on Coursera. Its environment pins Python 3.7, TensorFlow
+          1.15 and pymc3 3.11.4, and every notebook imports a grader module that is not included. Weeks 5 and 6 are covered from
+          the second half of this lecture.
+
+      - layout: flow
+        beat: fundamentals
+        section: EM for Gaussian mixtures (week 2)
+        title: EM alternates two steps until the bound plateaus
+        recall: What are the steps of expectation-maximisation?
+        answer: "Start from a guess, compute responsibilities in the E-step, re-fit the parameters from them in the M-step, and repeat until the lower bound on the log-likelihood plateaus."
+        steps:
+          - {label: Initial guess, sub: "weights, means, covariances", accent: "94A3B8"}
+          - {label: E-step, sub: "responsibilities per point", accent: "1E3A5F"}
+          - {label: M-step, sub: "parameters from responsibilities", accent: "0F7490"}
+          - {label: Check the bound, sub: "rises monotonically", accent: "D4621A"}
+        caption: "Stop when the lower bound on the log-likelihood plateaus."
+        takeaway: EM trades the full posterior for a loop of two easy steps, and each pass can only improve the bound.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          Each point x_i has a hidden label t_i among C clusters. The responsibility is the probability of a label given the
+          point, and the M-step turns those soft assignments into updated parameters.
+
+      - layout: table
+        beat: fundamentals
+        section: EM for Gaussian mixtures (week 2)
+        level: core
+        title: What the E-step and M-step compute
+        recall: What does each EM step compute?
+        answer: "The E-step gives responsibilities proportional to the weight times the Normal density, normalised over clusters. The M-step sets the weights, means and covariances from those responsibilities."
+        header: [Step, Computes, Formula]
+        widths: [1.6, 3.4, 4.4]
+        rows:
+          - [E-step, "responsibilities P(t_i = c given x_i)", "weight times Normal density, normalised over c"]
+          - [M-step, parameters given responsibilities, "mean of the responsibilities; weighted means and covariances"]
+          - [Loss, lower bound on the log-likelihood, "rises monotonically; stop when it plateaus"]
+        highlight: [0]
+        takeaway: If you can write the two conditional updates, the algorithm is just those two lines in a loop.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          The M-step weight is the mean of the responsibilities for that cluster. The mean is the responsibility-weighted average
+          of the points, and the covariance is the responsibility-weighted covariance.
+
+      - layout: code
+        beat: practice
+        section: EM for Gaussian mixtures (week 2)
+        level: core
+        title: The E-step in log space avoids underflow
+        recall: Why does the E-step work in log space?
+        answer: "Multiplying small densities underflows, so the code adds logs and normalises with logaddexp, the log-sum-exp trick."
+        lead: "The M-step then re-fits the parameters from r."
+        lang: python
+        code: |-
+          def e_step(X, pi, mu, cov):
+              cols = [np.log(pi[c]) + log_gauss(X, mu[c], cov[c])
+                      for c in range(len(pi))]
+              log_r = np.stack(cols, axis=1)
+              log_norm = np.logaddexp.reduce(
+                  log_r, axis=1, keepdims=True)
+              return np.exp(log_r - log_norm), log_norm.sum()
+
+          def m_step(X, r):
+              Nk = r.sum(axis=0)
+              pi = Nk / len(X)
+              mu = (r.T @ X) / Nk[:, None]
+              ...  # plus 1e-6 * I on each covariance
+        bullets:
+          - "Returns the responsibilities and the log-likelihood"
+          - "**1e-6 * I** stops a component collapsing onto one point"
+          - "Bishop calls the collapse a singularity of maximum likelihood that a prior removes"
+        takeaway: Do the arithmetic in log space, and guard the covariance against collapsing.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          A collapsing covariance is the failure where a component shrinks onto a single point and the likelihood rises without
+          limit. The reference is Bishop, PRML, chapter 9, pages 434 and 441. The log-sum-exp trick is explained in the numbers
+          and memory note of the programming course.
+
+      - layout: code
+        beat: practice
+        section: EM for Gaussian mixtures (week 2)
+        level: core
+        title: Ten restarts on three clusters of unequal size
+        recall: What happened across ten random restarts of EM?
+        answer: "Eight restarts reached a log-likelihood of -1107.8 and two ended lower, at -1186.9 and -1268.1. The best fit recovered the weights 0.33, 0.5 and 0.17."
+        lead: "Clusters of 150, 100 and 50 points."
+        lang: python
+        code: |-
+          fits = [train_em(X, C=3, seed=s) for s in range(10)]
+          final = [f[3][-1] for f in fits]
+          # final log-likelihood by restart:
+          #   -1107.8 x 8,  -1186.9,  -1268.1
+          pi, mu, cov, trace = fits[int(np.argmax(final))]
+          # always rising: True   iterations: 28
+          # weights [0.33 0.5 0.17]
+        bullets:
+          - "The bound rose at every step, as the theory promises"
+          - "Two starts got **stuck** in worse local optima"
+          - "The weights match the 0.5, 0.33 and 0.17 shares of the points"
+          - "The labels come out in a different order"
+        takeaway: EM only promises a local peak, so run several restarts and keep the best.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          The labels coming out in a different order is the label problem from chapter 2 again. The bound never falls, but a
+          monotone climb says nothing about whether it found the highest peak.
+
+      - layout: compare
+        beat: fundamentals
+        section: EM for Gaussian mixtures (week 2)
+        title: EM or MCMC for the same mixture
+        recall: How do EM and MCMC differ on the same model?
+        answer: "EM gives a fast point estimate with no parameter uncertainty and fails on local optima and collapsing covariances. MCMC gives the full posterior, more slowly, and fails on slow mixing and label switching."
+        emphasis: right
+        left:
+          title: EM
+          bullets: ["A point estimate, MAP or MLE", "Fast, deterministic per restart", "No uncertainty on parameters", "Fails: local optima, collapsing covariances"]
+        right:
+          title: MCMC
+          bullets: ["Samples from the full posterior", "Slower", "Full uncertainty", "Fails: slow mixing, label switching"]
+        takeaway: Take EM for a fast point estimate, and MCMC when you need to know how sure the parameters are.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          This is the same decision as the interview prompt in the note: EM for a fast point estimate, MCMC when you need
+          parameter uncertainty.
+
+  - title: MCMC and Bayesian logistic regression
+    divider: false
+    summary: Start-point independence · Odds ratio with an interval · Metropolis against NUTS
+    notes: Next we put the sampler of chapter 2 to work on a real regression, and check it in two ways.
+    slides:
+      - layout: statement
+        beat: problem
+        section: MCMC and Bayesian logistic regression (week 4)
+        title: Does it matter where the sampler starts?
+        recall: Why does MCMC give the same answer from different starting points?
+        answer: "A stationary distribution that does not depend on where you start is what makes MCMC valid. After burn-in, starts at 10 and at 1,000 agree."
+        kicker: Task 1, Alice and Bob
+        statement: "A stationary distribution that does not depend on where you start is exactly what makes MCMC valid."
+        attribution: Two sellers setting prices from each other's last price
+        takeaway: Discard a burn-in, and the start no longer matters, which is the property every sampler relies on.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          Each seller sets a price from the other's last price plus Gaussian noise. The simulation is a two-variable Markov chain
+          you can solve by algebra, so you can check the sampler against the answer.
+
+      - layout: code
+        beat: practice
+        section: MCMC and Bayesian logistic regression (week 4)
+        level: core
+        title: Three very different starts land on the algebra
+        recall: What did the three Alice and Bob starts give against the algebra?
+        answer: "Alice averaged about 278 to 279 and Bob about 314 to 315 from every start. The algebra gives 278.6 and 314.3."
+        lead: "Burn-in of 1,000 discarded, 10,000 hours kept."
+        lang: python
+        code: |-
+          alice = 0.6 * bob + 90 + rng.normal(0, 20)
+          bob = 1.2 * alice - 20 + rng.normal(0, 10)
+          # start  300  Alice 279.2  Bob 315.2  corr 0.96
+          # start 1000  Alice 277.9  Bob 313.5  corr 0.96
+          # start   10  Alice 279.0  Bob 314.8  corr 0.96
+          # long-run mean by algebra:
+          #   Alice 278.6   Bob 314.3
+        bullets:
+          - "Starts at **10** and **1,000** make no difference"
+          - "Long-run means match the algebra"
+          - "The two prices are correlated at **0.96**"
+        takeaway: Check a sampler against a case with a known answer before you trust it on one without.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          The standard deviations are about 30 for Alice and 37 for Bob in every run. The numbers in the code comments are from
+          the three seeded runs in the note.
+
+      - layout: code
+        beat: practice
+        section: MCMC and Bayesian logistic regression (week 4)
+        level: core
+        title: Does sex affect income, with the truth known?
+        recall: Why check a model on simulated data with known truth?
+        answer: "Simulation shows how far one dataset's estimate can sit from the truth. Here 2,000 simulated rows had a true odds ratio of 2.01, and NUTS gave 1.65 with a 95% interval of 1.27 to 2.12."
+        lead: "Controls: age, age squared, education and hours."
+        lang: python
+        code: |-
+          with pm.Model():
+              b0 = pm.Normal("b0", 0, 5)
+              b = pm.Normal("b", 0, 2.5, shape=5)
+              logit = b0 + design @ b
+              pm.Bernoulli("y", logit_p=logit, observed=y)
+              idata = pm.sample(1000, tune=1000)
+          # odds ratio for male: 1.65
+          # 95% interval [1.27, 2.12]
+        bullets:
+          - "The census file is not included, so the data are **simulated**"
+          - "True odds ratio **2.01**, from a log-odds of 0.7"
+          - "The odds ratio is exp of the coefficient"
+        takeaway: Simulation shows how far one dataset's estimate can sit from the truth, and a credible interval is not a guarantee.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          The coursework wrote the model through a PyMC3 formula interface that no longer exists. Current PyMC writes it out
+          directly, and bambi offers a formula interface again. A 95% interval from one simulated dataset leaves out the truth
+          some of the time.
+
+      - layout: bullets
+        beat: practice
+        section: MCMC and Bayesian logistic regression (week 4)
+        title: Metropolis against NUTS on the same model
+        recall: How did Metropolis and NUTS compare on the same regression?
+        answer: "From the same draws, Metropolis had a minimum ESS of 155 of 4,000 and a max r_hat of 1.041. NUTS had 3,306 and 1.001, about twenty times the effective samples."
+        bullets:
+          - "**Metropolis:** minimum ESS **155** of 4,000 draws, max r_hat **1.041**"
+          - "**NUTS:** minimum ESS **3,306** of 4,000 draws, max r_hat **1.001**"
+        takeaway: NUTS gives about twenty times the effective samples from the same draws, so Metropolis needs far more draws for the same precision.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          This is the Challenger comparison again with more dimensions. The coursework ends on the point chapter 1 makes, that a
+          credible interval can be read the way people wish they could read a confidence interval.
+
+  - title: Likelihoods and links
+    divider: false
+    summary: Maximum entropy · Binomial regression · Counts and mixtures · Ordered outcomes
+    notes: The models so far used a Gaussian or a Bernoulli likelihood without saying why, so we now ask where a likelihood should come from.
+    slides:
+      - layout: statement
+        beat: problem
+        section: "Likelihoods and links: maximum entropy, counts and mixtures"
+        title: Why a Gaussian, and why a Bernoulli?
+        recall: What is McElreath's maximum entropy answer to choosing a likelihood?
+        answer: "Given what you know about an outcome, such as its support, mean or variance, choose the distribution that can be realised in the most ways, so it assumes the least more."
+        kicker: The problem
+        statement: "Choose the distribution that can be realised in the most ways, and so assumes the least more."
+        attribution: McElreath, Statistical Rethinking, chapter 9
+        takeaway: Pick a likelihood from what you know about the outcome, not from habit.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          The constraints are things you know about an outcome, such as its support, its mean or its variance.
+
+      - layout: cards
+        beat: fundamentals
+        section: "Likelihoods and links: maximum entropy, counts and mixtures"
+        title: The common likelihoods are maximum entropy choices
+        recall: Which constraints make the Gaussian, binomial and Poisson the maximum entropy choice?
+        answer: "Ten pebbles in five buckets make the flat arrangement 113,400 ways, with entropy log 5 = 1.609. The Gaussian is highest for a given variance, the binomial for two unordered outcomes with a constant mean, and the Poisson is its limit."
+        cards:
+          - {title: Flat wins, accent: "1E3A5F", body: "Ten pebbles in five buckets: two per bucket is **113,400** ways, entropy log 5 = **1.609**"}
+          - {title: Gaussian, accent: "0F7490", body: "Highest entropy on the real line for a **given variance**"}
+          - {title: Binomial, accent: "D4621A", body: "Highest for **two unordered outcomes** with a constant expected value"}
+          - {title: Poisson, accent: "94A3B8", body: "The binomial's **large-n, small-p** limit, with the same constraints"}
+        takeaway: The familiar likelihoods are what you get when you assume the least beyond the constraints you actually know.
+        source: notes/06-bayesian-machine-learning.md
+        level: core
+        notes: >-
+          The flat arrangement is the one that can be produced in the most ways, more than any other, and its entropy is the
+          largest possible.
+
+      - layout: image
+        beat: fundamentals
+        section: "Likelihoods and links: maximum entropy, counts and mixtures"
+        level: core
+        title: A brute-force check of the binomial claim
+        recall: How did McElreath check that the binomial has maximum entropy?
+        answer: "Of 100,000 random distributions over two draws with expected value 1.4, the largest entropy found was 1.221728, against 1.221729 for the binomial with p = 0.7."
+        kicker: Statistical Rethinking, Fig. 9.4
+        image: ../../assets/sources/images/statistical-rethinking-fig9-4.png
+        caption: "Entropies of 100,000 random distributions with expected value 1.4: largest found 1.221728, binomial with p = 0.7 gives 1.221729."
+        takeaway: No random distribution beat the binomial, so the claim holds by brute force as well as by proof.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          Each of the random distributions had an expected value of 1.4 over two draws, which is the binomial's constraint.
+
+      - layout: bullets
+        beat: fundamentals
+        section: "Likelihoods and links: maximum entropy, counts and mixtures"
+        title: "A link bends the scale, and WAIC needs one likelihood"
+        recall: What are the two practical consequences of choosing a likelihood and link?
+        answer: "A link keeps predictions in range, but no coefficient gives a constant change on the outcome scale. WAIC cannot compare models with different outcome distributions."
+        bullets:
+          - "A **link** (logit for probabilities, log for rates) keeps predictions in range"
+          - "No coefficient then gives a constant change on the outcome scale"
+          - "A half-unit rise in log-odds from 0 moves probability by about **0.25**, and further up the curve far less"
+          - "**WAIC** cannot compare models with different outcome distributions"
+          - "Deviance includes the normalising constants"
+        takeaway: Read a coefficient on the link scale, and compare models only within one outcome distribution.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          Both points are from Statistical Rethinking, chapter 9. The link table and Poisson offset belong with the regression
+          and GLMs note in the probability and statistics pillar.
+
+      - layout: bullets
+        beat: practice
+        section: "Likelihoods and links: maximum entropy, counts and mixtures"
+        level: core
+        title: Add the department and the sign reverses
+        recall: What did the Berkeley admissions model show with and without department?
+        answer: "Pooled, men had an odds ratio of 1.84 (bm +0.61). With department intercepts the sign reversed to an odds ratio of 0.91 (bm -0.10), because women applied more to departments with low admission rates."
+        bullets:
+          - "**Pooled, no department:** bm **+0.61** (sd 0.07), odds ratio **1.84**"
+          - "**With department:** bm **-0.10** (sd 0.08), odds ratio **0.91**"
+          - "Women applied more to departments with low admission rates"
+        takeaway: A pooled comparison can reverse once you condition on where people applied, which is Simpson's paradox.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          The data have 12 rows, 6 departments by gender, standing for 4,526 applications of which 38.8% were admitted. The
+          department intercepts run from 0.68 down to -2.64, and the model is a Binomial with a logit link.
+
+      - layout: image
+        beat: practice
+        section: "Likelihoods and links: maximum entropy, counts and mixtures"
+        level: core
+        title: WAIC ties with and without gender once department is in
+        recall: What did WAIC say about gender once department was in the model?
+        answer: "The pooled model beat the intercept-only model by 91.5 WAIC points but fit each department badly. With department intercepts WAIC tied with and without gender, at 5200.9 and 5201.4."
+        kicker: Statistical Rethinking, Fig. 10.6
+        image: ../../assets/sources/images/statistical-rethinking-fig10-6.png
+        caption: "Observed admission proportions against predictions for the six departments."
+        bullets:
+          - "Pooled model beats intercept-only by **91.5** WAIC points"
+          - "With department, WAIC is **5200.9** against **5201.4** without gender"
+          - "The data cannot say whether gender matters within departments"
+        takeaway: A lower WAIC is not a good fit, and a tie means the data cannot separate the two models.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          The result is the book's, with bm of +0.61 and then -0.10 reproduced in a PyMC re-run.
+
+      - layout: cards
+        beat: pitfalls
+        section: "Likelihoods and links: maximum entropy, counts and mixtures"
+        level: core
+        title: "Coefficient size, separation and counts: three warnings"
+        recall: What are the warnings about coefficients, separation and counts?
+        answer: "A log-odds slope of 0.61 can move a probability only from 0.982 to 0.990. With near-perfect separation a flat-prior glm gave a slope of 11.43 with sd 2,955, against 4.02 under Normal(0, 10). Keep counts as counts."
+        cards:
+          - {title: Big coefficient, small effect, accent: "1E3A5F", body: "A slope of **0.61** multiplies the odds by 1.84, but from an intercept of 4 moves p only **0.982 to 0.990**"}
+          - {title: Separation, accent: "D4621A", body: "Flat-prior glm gave slope **11.43**, sd **2,955**, no warning. Normal(0, 10) gave **4.02**"}
+          - {title: Counts stay counts, accent: "0F7490", body: "Never convert to proportions, which discards the sample size. A Poisson over different exposures takes **log(exposure)** as an offset"}
+        takeaway: Judge an effect on the outcome scale, put a prior on a separated model, and keep the sample size in the data.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          His monastery simulation recovers 1.61 against a true 1.5 and 0.59 against 0.5. The Oceanic tools example warns about
+          correlated parameters: contact and its interaction with population both overlap zero, with a correlation of -0.99, yet
+          95.27% of the posterior mass says a high-contact island at log-population 8 has more tools.
+
+      - layout: cards
+        beat: fundamentals
+        section: "Likelihoods and links: maximum entropy, counts and mixtures"
+        level: deep
+        title: Ordered logit puts K categories on K minus 1 cutpoints
+        recall: How does an ordered logit work?
+        answer: "K categories get K-1 cutpoints on the log-cumulative-odds scale, and a linear predictor is subtracted from all of them at once. The book's interaction model had WAIC 36,929.4 against 37,090.3 for the additive one."
+        cards:
+          - {title: Cutpoints, accent: "1E3A5F", body: "**K - 1** cutpoints on the log-cumulative-odds scale"}
+          - {title: One predictor, accent: "0F7490", body: "The linear predictor is **subtracted from all** cutpoints at once"}
+          - {title: Interaction wins, accent: "D4621A", body: "WAIC **36,929.4** against **37,090.3** (difference 160.8, se 25.80). Contact by intention slope **-1.27** is the largest"}
+        takeaway: The cutpoints carry the shape of the response, and the predictor shifts all of them together.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          The comparison and the slope are from Statistical Rethinking, chapter 11, on the 9,930 trolley-problem responses.
+
+      - layout: image
+        beat: practice
+        section: "Likelihoods and links: maximum entropy, counts and mixtures"
+        level: deep
+        title: Cutpoints you can check by eye
+        recall: What are the intercept-only cutpoints on the trolley data, and are they recovered?
+        answer: "They are the logit of the cumulative proportions. The logits are -1.92, -1.27, -0.72, 0.25, 0.89 and 1.77, and OrderedLogistic recovers -1.91, -1.26, -0.73, 0.23, 0.87 and 1.74."
+        kicker: Statistical Rethinking, Fig. 11.1
+        image: ../../assets/sources/images/statistical-rethinking-fig11-1.png
+        caption: "9,930 responses on a 1 to 7 scale, re-described as cumulative proportions and then log-cumulative-odds. Cutpoints recovered within 0.03."
+        takeaway: With no predictors the fitted cutpoints should equal the logit of the cumulative proportions, so you can check them by eye.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          The data are not in the repo, so the re-run simulates 9,930 responses from the book's cumulative proportions and fits
+          an OrderedLogistic with an ordered transform.
+
+      - layout: cards
+        beat: practice
+        section: "Likelihoods and links: maximum entropy, counts and mixtures"
+        level: deep
+        title: Zero inflation is two sources of zeros
+        recall: What does a zero-inflated Poisson model, and how well did the re-run recover it?
+        answer: "A zero comes from not working with probability p or from working and producing none, with likelihood p + (1 - p) exp(-lambda). Our seed 11 estimated 0.13 against 0.20 and 0.85 against 1.00."
+        cards:
+          - {title: Two processes, accent: "1E3A5F", body: "A zero from not working (probability **p**) or from working and producing none: **p + (1 - p) exp(-lambda)**"}
+          - {title: The book's run, accent: "0F7490", body: "365 days, p = 0.2, rate 1.0, recovered as **0.1994** and **1.05**"}
+          - {title: Our run, accent: "D4621A", body: "Seed 11 gave 184 zero days and **0.13** (true 0.20) and **0.85** (true 1.00)"}
+        takeaway: The two sources of zeros are only weakly identified, so a single run can miss by this much.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          The estimates here are p and the rate. The point is that one run can miss, not that the model is wrong.
+
+      - layout: bullets
+        beat: practice
+        section: "Likelihoods and links: maximum entropy, counts and mixtures"
+        level: deep
+        title: Over-dispersed counts get a Beta mixture
+        recall: How does a beta-binomial handle over-dispersed counts?
+        answer: "Each row gets its own probability from a Beta with mean pbar and concentration theta. On the Berkeley data without department the book has theta 2.77 (sd 0.96) and our re-run gives pbar 0.41 and theta 2.77 (sd 0.95)."
+        bullets:
+          - "Each row draws its own probability from a Beta with mean **pbar** and concentration **theta**"
+          - "Berkeley without department: book theta **2.77** (sd 0.96)"
+          - "Our re-run: pbar **0.41**, theta **2.77** (sd 0.95)"
+          - "**WAIC** is unsafe here, so he falls back on DIC"
+          - "An **Exponential(1)** prior on theta samples better than a half-Cauchy"
+        takeaway: A beta-binomial absorbs extra variation, but compare these models with DIC and not WAIC.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          The Exponential(1) and half-Cauchy priors give the same inference, and the Exponential samples better. The multilevel
+          versions of these models are in chapters 7 and 7b.
+
+  - title: Overfitting and information criteria
+    divider: false
+    summary: Training fit · Deviance gap · AIC and WAIC · Reading a comparison
+    notes: Everything so far asks how well a model explains the data it saw, and this part shows why that question has the wrong answer built in.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Overfitting and information criteria
+        title: A perfect fit to seven points
+        recall: What does a polynomial of degree 6 do to seven hominin species?
+        answer: "R squared rises from 0.49 at degree 1 to 0.99 at degree 5 and 1.00 at degree 6, where seven parameters pass through seven points and the curve predicts a negative brain size near 58 kg."
+        kicker: Brain volume against body mass
+        statement: "Seven parameters pass through seven points, and the curve predicts a negative brain size."
+        attribution: Polynomials of degree 1 to 6, McElreath chapter 6
+        takeaway: Fit to the sample improves with every parameter, so it cannot be the yardstick.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          R squared is 0.49 at degree 1, 0.99 at degree 5 and 1.00 at degree 6. The negative brain size appears near 58 kg.
+
+      - layout: code
+        beat: fundamentals
+        section: Overfitting and information criteria
+        level: core
+        title: Train and test deviance for models of one to five parameters
+        recall: How was the deviance simulation built?
+        answer: "y is Normal with mean 0.15 x1 minus 0.4 x2, so the true model has three parameters. Models with one to five parameters are fitted by least squares and scored on a fresh sample of the same size."
+        lead: "Deviance is minus twice the log-likelihood."
+        lang: python
+        code: |-
+          def dev(y, mu):   # -2 * log-lik, sigma = 1
+              return (np.log(2 * np.pi) + (y - mu) ** 2).sum()
+
+          def one_run(n, k, rng):
+              X = rng.normal(size=(2 * n, 4))
+              noise = rng.normal(size=2 * n)
+              y = 0.15 * X[:, 0] - 0.4 * X[:, 1] + noise
+              A = np.c_[np.ones(2 * n), X[:, :k - 1]]
+              tr, te = slice(0, n), slice(n, None)
+              b = np.linalg.lstsq(A[tr], y[tr], rcond=None)[0]
+              return dev(y[tr], A[tr] @ b), dev(y[te], A[te] @ b)
+        bullets:
+          - "True model has **three** parameters"
+          - "Fit on one sample, score on a fresh one of the same size"
+          - "**5,000** runs per row"
+        takeaway: Score on data the model has not seen, because the training score only ever improves.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          The simulation is the chapter's, re-run. The book used 10,000 runs and prints slightly different gaps.
+
+      - layout: table
+        beat: fundamentals
+        section: Overfitting and information criteria
+        level: core
+        title: Test deviance bottoms out at the true three parameters
+        recall: At which number of parameters is test deviance lowest?
+        answer: "At three, the true model. At N = 20 the two-parameter model is worse out of sample than the one-parameter one, and the gap between test and train is close to twice the number of parameters."
+        header: [N, Parameters, Train, Test, Gap]
+        widths: [1.4, 2.2, 1.8, 1.8, 1.8]
+        rows:
+          - ["20", "1", "59.3", "61.5", "2.2"]
+          - ["20", "2", "57.5", "62.3", "4.8"]
+          - ["20", "3", "53.7", "60.3", "6.6"]
+          - ["20", "4", "52.8", "61.9", "9.1"]
+          - ["20", "5", "51.8", "63.9", "12.1"]
+          - ["100", "3", "280.9", "286.9", "6.0"]
+        highlight: [2]
+        takeaway: Training deviance falls with every parameter, while test deviance turns upward past the true model.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          The note also prints N = 100 for one parameter (train 300.3, test 303.0, gap 2.7) and five (279.1, 289.3, 10.2).
+          The book's gaps at N = 20 are 2, 4.1, 5.3, 7.6 and 9.7.
+
+      - layout: image
+        beat: fundamentals
+        section: Overfitting and information criteria
+        title: The gap is about twice the parameters, which is AIC
+        recall: What idea does the gap between test and train deviance give?
+        answer: "The gap is close to twice the number of parameters, which is AIC = D_train + 2p. AIC is reliable only with flat priors, a near-Gaussian posterior and N much larger than the parameter count."
+        kicker: Statistical Rethinking, Fig. 6.7
+        image: ../../assets/sources/images/statistical-rethinking-fig6-7.png
+        caption: "Training and test deviance against number of parameters at N = 20 and N = 100. The gap is close to 2p, so AIC = D_train + 2p."
+        takeaway: AIC is a corrected training score, and a regularising prior takes you outside its conditions.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          That is why chapter 3 pairs regularising priors with a different criterion.
+
+      - layout: flow
+        beat: fundamentals
+        section: Overfitting and information criteria
+        level: core
+        title: WAIC is computed pointwise from the posterior draws
+        recall: How is WAIC computed?
+        answer: "WAIC = -2(lppd - pWAIC). The lppd sums over observations the log of the average likelihood across draws, and pWAIC sums over observations the variance across draws of the log-likelihood."
+        steps:
+          - {label: Posterior draws, sub: "log-likelihood per point", accent: "94A3B8"}
+          - {label: lppd, sub: "log of the mean likelihood, summed", accent: "1E3A5F"}
+          - {label: pWAIC, sub: "variance of the log-likelihood, summed", accent: "0F7490"}
+          - {label: WAIC, sub: "-2 (lppd - pWAIC)", accent: "D4621A"}
+        caption: "It needs no Gaussian assumption."
+        takeaway: The penalty is measured from the posterior itself, so there is no parameter count to get wrong.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          In Python the route is az.compare on InferenceData objects that carry log_likelihood.
+
+      - layout: compare
+        beat: pitfalls
+        section: Overfitting and information criteria
+        level: core
+        title: What DIC and WAIC do well, and where they stop
+        recall: How accurate are DIC and WAIC, and what are their caveats?
+        answer: "In the book's simulation both land within about 1 deviance point of the true average test deviance in most settings, WAIC the closer. They assume test data come from the training process, are hard for time series, and none is consistent for picking the true model."
+        emphasis: right
+        left:
+          title: In the simulation
+          bullets: ["Within about 1 deviance point of the true test deviance", "In most settings", "WAIC is the closer"]
+        right:
+          title: The book's caveats
+          bullets: ["Test data must come from the training process", "WAIC is hard to define for time series", "None is consistent for the true model"]
+        takeaway: Treat an information criterion as an estimate of out-of-sample fit under assumptions, not as a verdict.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          The simulation used Normal(0, 100) and Normal(0, 0.5) priors on the slopes.
+
+      - layout: cards
+        beat: practice
+        section: Overfitting and information criteria
+        level: core
+        title: Read a comparison by its difference and its error
+        recall: What did the primate milk comparison show?
+        answer: "The neocortex and log body mass model had WAIC -15.0 and an Akaike weight of 0.93, against -8.3 for the intercept-only model. The difference is 6.7 with a standard error of 7.26, and the ranking reverses with chance 0.18."
+        cards:
+          - {title: Two models, accent: "1E3A5F", body: "WAIC **-15.0** with neocortex and log body mass, **-8.3** intercept-only, on 17 species"}
+          - {title: Weight 0.93, accent: "0F7490", body: "The probability the model predicts best, conditional on the set compared"}
+          - {title: Difference 6.7, accent: "D4621A", body: "Standard error **7.26**. The chance the ranking reverses is **0.18**"}
+        takeaway: A big weight can sit on a difference smaller than its own standard error, so read the difference, not the rank.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          Averaging predictions across models, not parameters, barely moves the mean but widens the interval enough to include a
+          zero slope for neocortex.
+
+      - layout: compare
+        beat: pitfalls
+        section: Overfitting and information criteria
+        level: core
+        title: The criteria answer a predictive question only
+        recall: Why can the better predictive model still be the wrong causal one?
+        answer: "In a simulated plant experiment the model with a post-treatment variable, fungus, fits better and still hides a treatment slope of 1.07 behind an estimate of -0.27."
+        emphasis: right
+        left:
+          title: Predictive question
+          bullets: ["The model with fungus fits better", "Lower WAIC, better out-of-sample prediction"]
+        right:
+          title: Causal question
+          bullets: ["True treatment slope is 1.07", "The fungus model estimates -0.27"]
+        takeaway: Use the criteria to compare predictions, and do not read a causal effect off the winning model.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          This is from Statistical Rethinking, chapter 5. The fungus is a post-treatment variable.
+
+      - layout: cards
+        beat: pitfalls
+        section: Pitfalls
+        title: "Pitfalls: single EM starts and legacy coursework"
+        recall: What are the two pitfalls of the first half?
+        answer: "Using one EM start, since two of ten restarts ended in worse optima, and running the coursework on current packages, which no longer provide PyMC3, Theano, TF 1 or grader."
+        cards:
+          - {title: One EM start, accent: "D4621A", body: "Two of ten restarts ended in worse optima. **Restart and keep the best bound**"}
+          - {title: Coursework on current packages, accent: "1E3A5F", body: "PyMC3, Theano, TF 1 and `grader` are not there. **Use the pinned environment, or port with chapter 2's map**"}
+        takeaway: Restart EM from several points, and read the legacy coursework for the method rather than running it.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          The pinned environment is in bayesian.yml. The port map is in chapter 2.
+
+  - title: Variational inference and the VAE
+    divider: false
+    summary: The ELBO · Reparameterisation · Where it goes wrong · The VAE
+    notes: The second half takes the same questions to posteriors too large to sample, starting with approximating the posterior by optimisation.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Where this sits
+        title: Too big to sample, so make it smaller
+        recall: What does variational inference do instead of sampling?
+        answer: "It approximates the posterior with a simpler distribution q and makes q as close as possible, turning inference into optimisation over a KL divergence."
+        kicker: The idea
+        statement: "When the posterior is too big to sample, approximate it with a simpler distribution q, and make q as close as possible."
+        attribution: Blei, Kucukelbir and McAuliffe, JASA, 2017
+        takeaway: Variational inference swaps integration for optimisation, and the price is that q is narrower than the truth.
+        source: notes/06b-variational-inference-and-gaussian-processes.md
+        notes: >-
+          The review frames the method and its trade-off: faster and better scaling than MCMC, and it generally underestimates
+          the variance of the posterior.
+
+      - layout: bullets
+        beat: fundamentals
+        section: Where this sits
+        title: The second half of the coursework
+        recall: What do weeks 5 and 6 and the final assignment cover?
+        answer: "Week 5 is a VAE on MNIST with the ELBO, week 6 is Gaussian processes and Bayesian optimisation, and the final assignment, Finding the suspect, combines a VAE with Bayesian optimisation."
+        bullets:
+          - "**Week 5:** VAE on MNIST, the ELBO and an amortised posterior"
+          - "**Week 6:** Gaussian processes and Bayesian optimisation"
+          - "**Final assignment:** Finding the suspect, a VAE plus Bayesian optimisation"
+        takeaway: The second half moves from approximating a posterior to using one to choose experiments.
+        source: notes/06b-variational-inference-and-gaussian-processes.md
+        notes: >-
+          The weeks 5 and 6 notebooks run only in the pinned legacy environment, so this lecture reads them for the method.
+
+      - layout: code
+        beat: fundamentals
+        section: Variational inference and the VAE (week 5)
+        title: The ELBO is reconstruction minus a regulariser
+        recall: What is the evidence lower bound?
+        answer: "log p(x) is at least the expected log p(x given z) under q minus the KL from q(z given x) to the prior p(z). The gap is exactly the KL from q to the true posterior."
+        lead: "KL to the true posterior needs the evidence we cannot compute, so we maximise this instead."
+        lang: text
+        code: |-
+          log p(x) >= E_q[ log p(x | z) ] - KL( q(z | x) || p(z) )
+                      reconstruction        regulariser
+
+          # gap = KL( q || true posterior )
+        bullets:
+          - "**Reconstruction** rewards q for explaining the data"
+          - "**Regulariser** keeps q close to the prior"
+          - "The gap is the KL to the true posterior"
+        takeaway: Maximising the ELBO closes the gap to the true posterior without ever computing the evidence.
+        source: notes/06b-variational-inference-and-gaussian-processes.md
+        notes: >-
+          The ELBO is an equivalent quantity to the KL, which needs the evidence we could not compute.
+
+      - layout: table
+        beat: fundamentals
+        section: Variational inference and the VAE (week 5)
+        level: core
+        title: On a toy model the gap goes to zero at the exact posterior
+        recall: What does the ELBO table show for x = 2 with x from N(z, 1) and z from N(0, 1)?
+        answer: "The log evidence is -2.2655. From the prior the ELBO is -3.4199 with a gap of 1.1544, and at the exact posterior N(1, 0.71 squared) it is -2.2660 with a gap of 0.0005."
+        header: [q, Reconstruction, KL, ELBO, Gap]
+        widths: [2.6, 1.9, 1.5, 1.7, 1.7]
+        rows:
+          - ["N(0, 1)", "-3.4199", "0.0000", "-3.4199", "1.1544"]
+          - ["N(0.5, 1)", "-2.5449", "0.1250", "-2.6699", "0.4044"]
+          - ["N(1, 1)", "-1.9200", "0.5000", "-2.4200", "0.1545"]
+          - ["N(1, 0.71 squared)", "-1.6694", "0.5966", "-2.2660", "0.0005"]
+        highlight: [3]
+        takeaway: Moving q toward the data costs some KL and gains more reconstruction, until the ELBO reaches the log evidence.
+        source: notes/06b-variational-inference-and-gaussian-processes.md
+        notes: >-
+          The log evidence is -2.2655. At the exact posterior the ELBO matches it up to Monte Carlo noise in the fourth
+          decimal, so the gap you cannot measure in a real model is visible here.
+
+      - layout: code
+        beat: practice
+        section: Variational inference and the VAE (week 5)
+        level: core
+        title: "The reparameterisation trick gives a gradient via sampling"
+        recall: What does the reparameterisation trick do?
+        answer: "It writes z = m + s times epsilon with epsilon from N(0, 1), so the randomness no longer depends on what we differentiate. Forty noisy gradient steps reached the exact mean of 1.000."
+        lead: "Forty noisy steps of gradient ascent on the ELBO."
+        lang: python
+        code: |-
+          def grad_m(m, s, seed=1, n=200_000):
+              eps = np.random.default_rng(seed).standard_normal(n)
+              z = m + s * eps
+              lik = ((x_obs - z) / sigma**2).mean()
+              return lik - m / s0**2
+
+          m, s = 0.0, post_sd
+          for step in range(40):
+              m += 0.2 * grad_m(m, s, seed=step)
+          # m 1.000   exact 1.000
+        bullets:
+          - "**z = m + s * eps**, with eps from N(0, 1)"
+          - "The randomness no longer depends on m"
+          - "Reaches the exact mean **1.000**"
+        takeaway: Move the randomness out of the parameters and you can differentiate straight through the sampling step.
+        source: notes/06b-variational-inference-and-gaussian-processes.md
+        notes: >-
+          This is the core of a VAE. It is not the core of Blei et al., whose review never uses the trick.
+
+      - layout: cards
+        beat: fundamentals
+        section: Variational inference and the VAE (week 5)
+        level: core
+        title: Three ways to optimise q
+        recall: Which algorithms do Blei et al. centre, and where does the trick belong?
+        answer: "Their main algorithm is coordinate ascent (CAVI), which updates one factor of q at a time, plus a stochastic version (SVI) for large data. The reparameterisation trick is the VAE's route."
+        cards:
+          - {title: CAVI, accent: "1E3A5F", body: "**Coordinate ascent**: updates one factor of q at a time from the same complete conditional a Gibbs sampler draws from"}
+          - {title: SVI, accent: "0F7490", body: "A stochastic version for **large data**, following noisy natural gradients on a sampled data point"}
+          - {title: Reparameterisation, accent: "D4621A", body: "The route of a **VAE**. Kingma and Welling appear in the review only as a black-box example"}
+        takeaway: The review's algorithms are CAVI and SVI, and the reparameterisation trick belongs to the VAE line.
+        source: notes/06b-variational-inference-and-gaussian-processes.md
+        notes: >-
+          PyMC's pm.fit with method advi is the same idea, with a Normal q per parameter.
+
+      - layout: code
+        beat: practice
+        section: Variational inference and the VAE (week 5)
+        level: core
+        title: ADVI against NUTS on two nearly collinear inputs
+        recall: What was the setup of the ADVI against NUTS comparison?
+        answer: "Two inputs with correlation 0.95 and true coefficients of 1 each, 80 points. The posterior over the two coefficients is a narrow diagonal ridge."
+        lead: "The posterior is a narrow diagonal ridge."
+        lang: python
+        code: |-
+          noise = rng.normal(size=80)
+          x2 = 0.95 * x + np.sqrt(1 - 0.95**2) * noise
+          y_vi = 1.0 * x + 1.0 * x2 + rng.normal(0, 1, 80)
+          with pm.Model():
+              a = pm.Normal("a", 0, 5)
+              b = pm.Normal("b", 0, 5)
+              mu = a * x + b * x2
+              pm.Normal("y", mu, 1, observed=y_vi)
+              mcmc = pm.sample(1000, tune=1000)
+              approx = pm.fit(20000, method="advi")
+              vi = approx.sample(4000)
+        bullets:
+          - "Two inputs correlated at **0.95**"
+          - "Same model, fitted by **NUTS** and by **ADVI**"
+          - "ADVI uses a Normal q per parameter"
+        takeaway: Fit the same model both ways on a correlated problem to see what mean-field misses.
+        source: notes/06b-variational-inference-and-gaussian-processes.md
+        notes: >-
+          The comparison is on the standard deviations and on the correlation, which is where a mean-field approximation shows
+          its limit.
+
+      - layout: table
+        beat: practice
+        section: Variational inference and the VAE (week 5)
+        level: core
+        title: ADVI gets the means and misses the spread
+        recall: How did ADVI's standard deviations compare with NUTS's?
+        answer: "Marginal sds were about 0.39 under NUTS and 0.13 under ADVI, threefold too narrow. The sd of a + b was 0.181 against 0.113, and the correlation -0.96 became -0.01."
+        header: [Method, Mean a, Mean b, Sd a, Sd b, Sd of a + b, Corr]
+        widths: [1.6, 1.3, 1.3, 1.2, 1.2, 1.7, 1.1]
+        rows:
+          - [NUTS, "1.218", "0.960", "0.390", "0.397", "0.113", "-0.96"]
+          - [ADVI, "1.153", "1.018", "0.127", "0.130", "0.181", "-0.01"]
+        highlight: [1]
+        takeaway: If you need intervals rather than a prediction, check VI against MCMC on a sample of the data first.
+        source: notes/06b-variational-inference-and-gaussian-processes.md
+        notes: >-
+          A mean-field q has no way to express the correlation of -0.96, and that also misstates the sum: the well-determined
+          a + b gets an sd of 0.181 against 0.113.
+
+      - layout: image
+        beat: pitfalls
+        section: Variational inference and the VAE (week 5)
+        level: core
+        title: "A factorised q is too narrow: it ignores the correlation"
+        recall: What does a mean-field approximation look like against a correlated posterior?
+        answer: "The exact posterior is a tilted ellipse, and the mean-field approximation is too narrow because it misses the correlation."
+        kicker: Blei et al., Fig. 1
+        image: ../../assets/sources/images/blei-variational-inference-fig1.png
+        caption: "Exact correlated posterior against its mean-field approximation, drawn as 2-sigma ellipses."
+        bullets:
+          - "The ellipses are **2-sigma** contours"
+          - "Mean-field misses the correlation and is too narrow"
+          - "Bishop: a factorised approximation tends to be **too compact**"
+        takeaway: Under a factorised q the narrowness is built in, and the correlation is the part it cannot represent.
+        source: notes/06b-variational-inference-and-gaussian-processes.md
+        notes: >-
+          Bishop's PRML shows where the narrowness comes from: minimising KL(q to p) with a factorised q matches the variance of
+          the narrowest direction and under-estimates the rest (chapter 10, page 467).
+
+      - layout: cards
+        beat: pitfalls
+        section: Variational inference and the VAE (week 5)
+        level: core
+        title: How accurate VI is against MCMC is still unknown
+        recall: What do Blei et al. say about VI against MCMC, and its limits?
+        answer: "The relative accuracy 'is still unknown'. CAVI fit a 30-cluster mixture to 10,000 images in under a minute but it was 'not a definitive comparison'. The ELBO is non-convex, and choosing a model by it is 'not justified in theory'."
+        cards:
+          - {title: Unknown, accent: "1E3A5F", body: "Relative accuracy of VI and MCMC **'is still unknown'**. VI underestimates variance but need not lose predictive accuracy"}
+          - {title: A speed result, accent: "0F7490", body: "CAVI fit a **30-cluster** mixture to **10,000** images in under a minute. A footnote: **'not a definitive comparison'**"}
+          - {title: Two limits, accent: "D4621A", body: "The ELBO is **non-convex**, so CAVI finds a local optimum. Model choice by ELBO is **'not justified in theory'**"}
+        takeaway: Do not generalise from one speed result, and do not rank models by their ELBO alone.
+        source: notes/06b-variational-inference-and-gaussian-processes.md
+        notes: >-
+          The images are 576-dimensional colour histograms, and the sampler was the HMC-based one in Stan, which the review
+          cites at version 2.8. No hardware is stated. The result says nothing about intervals.
+
+      - layout: table
+        beat: fundamentals
+        section: Variational inference and the VAE (week 5)
+        level: deep
+        title: A VAE learns both halves of the ELBO with networks
+        recall: What are the parts of a VAE?
+        answer: "An encoder gives the mean and log-variance of q, reparameterisation lets gradients flow through the sampling, a decoder gives p(x given z), and the prior is N(0, I). A conditional VAE adds the label."
+        header: [Part, Role]
+        widths: [2.6, 6.8]
+        rows:
+          - [Encoder, "outputs the mean and log-variance of q(z given x): an amortised posterior"]
+          - [Reparameterisation, "z = mu + sigma times eps, so gradients flow through the sampling"]
+          - [Decoder, "p(x given z); Bernoulli per pixel for binarised MNIST"]
+          - [Prior, "N(0, I); sampling from it and decoding hallucinates new digits"]
+          - [Conditional VAE, "condition encoder and decoder on the label to generate a chosen digit"]
+        takeaway: The ELBO's two halves become a decoder and an encoder, trained together by gradient ascent.
+        source: notes/06b-variational-inference-and-gaussian-processes.md
+        notes: >-
+          The VAE is from Kingma and Welling, 2013. Week 5 builds this for MNIST in Keras 2.3 on TensorFlow 1.15, with the pinned
+          environment.
+
+      - layout: bullets
+        beat: fundamentals
+        section: Variational inference and the VAE (week 5)
+        level: deep
+        title: ADVI fits one q per model, a VAE one encoder
+        recall: What makes a VAE amortised?
+        answer: "ADVI fits one q per model, while a VAE fits one encoder that outputs a q per data point. That is why a VAE can handle a new image without refitting."
+        bullets:
+          - "**ADVI:** one q per model, so a new data point means a refit"
+          - "**VAE:** one encoder outputs a q per data point, so a new image needs no refit"
+        takeaway: Amortising the posterior into a network is what lets a VAE handle new data without refitting.
+        source: notes/06b-variational-inference-and-gaussian-processes.md
+        notes: >-
+          The encoder outputs a posterior for any input, rather than fitting one per data point.
+
+  - title: Gaussian processes and Bayesian optimisation
+    divider: false
+    summary: A prior over functions · Posterior with error bars · Acquisition functions · Tuning a model
+    notes: The last idea keeps an exact posterior, over functions, and uses it to choose the next expensive experiment.
+    slides:
+      - layout: statement
+        beat: problem
+        section: Gaussian processes and Bayesian optimisation (week 6)
+        title: A prediction with an error bar at every x
+        recall: What does a Gaussian process give you?
+        answer: "A prior over functions: conditioning on observed points gives a posterior mean and a variance at every x, a prediction with an error bar."
+        kicker: The idea
+        statement: "Conditioning on observed points gives a posterior mean and a variance at every x: a prediction with an error bar."
+        attribution: A Gaussian process, Rasmussen and Williams
+        takeaway: A GP does not just predict, it says how sure it is at each input.
+        source: notes/06b-variational-inference-and-gaussian-processes.md
+        notes: >-
+          Rasmussen and Williams is the standard text. The algebra is a Normal conditional, which takes a few lines.
+
+      - layout: cards
+        beat: fundamentals
+        section: Gaussian processes and Bayesian optimisation (week 6)
+        title: A GP is a prior over functions with a kernel
+        recall: What defines a Gaussian process?
+        answer: "Any finite set of function values is jointly Normal, with covariance given by a kernel such as the RBF, k(x, x') = sigma squared times exp(-distance squared over 2 ell squared)."
+        cards:
+          - {title: Jointly Normal, accent: "1E3A5F", body: "Any finite set of function values is **jointly Normal**"}
+          - {title: A kernel, accent: "0F7490", body: "The covariance comes from a kernel such as the **RBF**, with variance and lengthscale ell"}
+          - {title: Condition on data, accent: "D4621A", body: "A posterior **mean and variance at every x**"}
+        takeaway: Choose a kernel, condition on the points, and you get an exact posterior over functions.
+        source: notes/06b-variational-inference-and-gaussian-processes.md
+        notes: >-
+          The RBF kernel is k(x, x') = sigma squared times exp of minus the squared distance over twice the lengthscale squared.
+
+      - layout: code
+        beat: practice
+        section: Gaussian processes and Bayesian optimisation (week 6)
+        level: core
+        title: A GP posterior in a few lines of NumPy
+        recall: How is the GP posterior computed by hand?
+        answer: "Build the kernel matrix K for the observed points, solve for alpha, and take the mean as Ks times alpha and the variance as the prior variance minus the explained part."
+        lead: "Three observed points of sin(x)."
+        lang: python
+        code: |-
+          def gp_posterior(X, y, Xn, noise=1e-6, **kw):
+              K = rbf(X, X, **kw) + noise * np.eye(len(X))
+              Ks = rbf(Xn, X, **kw)
+              alpha = np.linalg.solve(K, y)
+              mean = Ks @ alpha
+              v = np.linalg.solve(K, Ks.T)
+              explained = (Ks * v.T).sum(axis=1)
+              prior = np.diag(rbf(Xn, Xn, **kw))
+              var = prior - explained
+              return mean, np.sqrt(np.maximum(var, 0))
+        bullets:
+          - "Observed at **x = 1, 3 and 4**, where y = sin(x)"
+          - "Scikit-learn gives the same answer, with a largest difference of **0.0**"
+          - "The week 6 notebook fits the kernel hyperparameters with GPy"
+        takeaway: The algebra is one linear solve, and an established library confirms it exactly.
+        source: notes/06b-variational-inference-and-gaussian-processes.md
+        notes: >-
+          GPy fits the kernel's hyperparameters by marginal likelihood, and sparse GPs cut the O(n cubed) cost for large n.
+
+      - layout: table
+        beat: practice
+        section: Gaussian processes and Bayesian optimisation (week 6)
+        level: core
+        title: Certain at the data, honest far from it
+        recall: How does the GP's sd change across x?
+        answer: "At an observed point the sd is effectively zero. Between points it grows, and at x = 6 the mean drifts to the prior's 0 and the sd reaches 0.987, nearly the prior's own."
+        header: [x, Mean, Sd, Truth]
+        widths: [2.0, 2.4, 2.4, 2.6]
+        rows:
+          - ["1.0", "+0.841", "0.001", "+0.841"]
+          - ["2.0", "+0.768", "0.540", "+0.909"]
+          - ["3.5", "-0.365", "0.171", "-0.351"]
+          - ["6.0", "-0.160", "0.987", "-0.279"]
+        highlight: [3]
+        takeaway: An honest model says it does not know far from the data, and acquisition functions exploit that.
+        source: notes/06b-variational-inference-and-gaussian-processes.md
+        notes: >-
+          The model is sin(x) observed at three points. The sd grows between the observed points and reaches the prior's own far
+          from them.
+
+      - layout: flow
+        beat: fundamentals
+        section: Gaussian processes and Bayesian optimisation (week 6)
+        title: Bayesian optimisation picks the next expensive evaluation
+        recall: How does Bayesian optimisation use a GP?
+        answer: "The GP is a cheap surrogate for an expensive black-box function. An acquisition function turns its mean and uncertainty into the next point to evaluate, trading exploration against exploitation."
+        steps:
+          - {label: Surrogate, sub: "a GP fit to the points so far", accent: "1E3A5F"}
+          - {label: Acquisition function, sub: "mean and uncertainty to a score", accent: "0F7490"}
+          - {label: Evaluate there, sub: "the expensive function", accent: "D4621A"}
+          - {label: Add the point, sub: "and refit", accent: "94A3B8"}
+        caption: "It trades off exploration and exploitation, as the bandits of chapter 3b do."
+        takeaway: Spend a few expensive evaluations where the surrogate says they will teach or earn the most.
+        source: notes/06b-variational-inference-and-gaussian-processes.md
+        notes: >-
+          A typical expensive function is a model's validation score as a function of its hyperparameters. Snoek, Larochelle and
+          Adams made this a standard approach for tuning models in 2012.
+
+      - layout: table
+        beat: fundamentals
+        section: Gaussian processes and Bayesian optimisation (week 6)
+        title: Three acquisition functions
+        recall: What does each acquisition function pick?
+        answer: "Expected improvement picks the largest expected gain over the best so far, the upper confidence bound the highest mean plus kappa times the sd, and probability of improvement the highest chance of beating the best."
+        header: [Acquisition, Picks the point with]
+        widths: [3.0, 6.4]
+        rows:
+          - [Expected improvement, the largest expected gain over the best value so far]
+          - [Upper confidence bound, "the highest mean + kappa times standard deviation"]
+          - [Probability of improvement, the highest chance of beating the best so far]
+        highlight: [0]
+        takeaway: All three turn the surrogate's mean and uncertainty into one score, and differ in how they weigh the two.
+        source: notes/06b-variational-inference-and-gaussian-processes.md
+        notes: >-
+          GPyOpt's MPI, used in week 6, is probability of improvement.
+
+      - layout: image
+        beat: fundamentals
+        section: Gaussian processes and Bayesian optimisation (week 6)
+        title: Expected improvement peaks where to look next
+        recall: What does the expected-improvement curve show?
+        answer: "The top panel is a GP through four observations with its mean and uncertainty band. The bottom panel is the expected improvement over the same range, peaking near 7.7, the next point to evaluate."
+        kicker: Generated for this chapter
+        image: ../../assets/sources/images/bayes-gp-expected-improvement.png
+        caption: "A GP on four points with its expected-improvement curve."
+        bullets:
+          - "Top: a GP through **four** observations, with its band"
+          - "Bottom: expected improvement over the same x range"
+          - "It peaks near **7.7**, the next point to evaluate"
+        takeaway: The peak of the acquisition curve is the next experiment, and it sits where the band is wide or the mean is high.
+        source: notes/06b-variational-inference-and-gaussian-processes.md
+        notes: >-
+          This image is generated for the chapter, not taken from a book.
+
+      - layout: code
+        beat: practice
+        section: Gaussian processes and Bayesian optimisation (week 6)
+        level: core
+        title: Tuning a gradient-boosted model, 20 fits in total
+        recall: How was the Bayesian optimisation loop run on the gradient-boosted model?
+        answer: "It tuned the learning rate and leaf count on a small built-in dataset, four starting fits then expected improvement over 2,000 random candidates each round, 20 fits in all."
+        lead: "Log loss from 3-fold cross-validation."
+        lang: python
+        code: |-
+          def expected_improvement(mean, sd, best):
+              z = (mean - best) / sd
+              gain = (mean - best) * stats.norm.cdf(z)
+              return gain + sd * stats.norm.pdf(z)
+
+          # each round: fit a GP, score 2000 candidates,
+          #   evaluate the best one
+          candidates = rng.uniform(low, high, (2000, 2))
+          mean, sd = gp.predict(candidates, return_std=True)
+          ei = expected_improvement(mean, sd + 1e-9, y_u.max())
+          next_u = candidates[np.argmax(ei)]
+        bullets:
+          - "**4** starting fits, **20** in total"
+          - "Tunes learning rate and leaf count"
+          - "Expected improvement over **2,000** random candidates"
+        takeaway: The whole method is a GP fit, a score for candidates, and one expensive evaluation per round.
+        source: notes/06b-variational-inference-and-gaussian-processes.md
+        notes: >-
+          The week 6 coursework tunes XGBoost with GPyOpt and repeats it for an SVR. That code needs the pinned environment.
+
+      - layout: bullets
+        beat: practice
+        section: Gaussian processes and Bayesian optimisation (week 6)
+        level: core
+        title: Bayesian optimisation beat random search at every checkpoint
+        recall: How did Bayesian optimisation compare with random search on log loss?
+        answer: "Best log loss after 4, 8, 12 and 20 fits was 0.1148, 0.1065, 0.1065 and 0.1016, against a random-search average of 0.1233, 0.1193, 0.1164 and 0.1120."
+        bullets:
+          - "**Bayesian optimisation** after 4, 8, 12 and 20 fits: **0.1148, 0.1065, 0.1065, 0.1016**"
+          - "**Random search** (mean of 5) at the same checkpoints: **0.1233, 0.1193, 0.1164, 0.1120**"
+        takeaway: Bayesian optimisation led by about 0.01 at each checkpoint, which is a shape, not a measured advantage.
+        source: notes/06b-variational-inference-and-gaussian-processes.md
+        notes: >-
+          The best learning rate found was 0.447 with 3 leaves. The random search takes about two minutes to run.
+
+      - layout: compare
+        beat: pitfalls
+        section: Gaussian processes and Bayesian optimisation (week 6)
+        title: What the comparison shows, and what it cannot
+        recall: Why is the Bayesian optimisation result not a measured advantage?
+        answer: "It is one Bayesian optimisation run against five random runs, on a dataset where each evaluation takes about a second. It shows the shape of the method, and the case grows as each fit gets more expensive."
+        emphasis: right
+        left:
+          title: It shows
+          bullets: ["GP beats the random average at each checkpoint", "By 0.01 or so", "The shape of the method"]
+        right:
+          title: It cannot show
+          bullets: ["One run against five random runs", "Each evaluation takes about a second", "A random search with more fits is often simpler"]
+        takeaway: Reserve Bayesian optimisation for expensive functions, and measure it with more than one run.
+        source: notes/06b-variational-inference-and-gaussian-processes.md
+        notes: >-
+          The case for Bayesian optimisation grows as each fit gets more expensive. If a fit takes a second, random search with
+          more fits is often simpler.
+
+      - layout: flow
+        beat: wrap
+        section: Gaussian processes and Bayesian optimisation (week 6)
+        title: The final project combines both ideas
+        recall: What does the final project combine?
+        answer: "Train a VAE on faces, then run Bayesian optimisation over its latent space with a human rating each generated face, to converge on a target face in a few dozen evaluations."
+        steps:
+          - {label: Train a VAE, sub: "on faces", accent: "1E3A5F"}
+          - {label: Search the latent space, sub: "Bayesian optimisation", accent: "0F7490"}
+          - {label: A human rates each face, sub: "the expensive function", accent: "D4621A"}
+          - {label: Converge on the target, sub: "a few dozen evaluations", accent: "94A3B8"}
+        caption: "The target might be darkest hair, widest smile or a specific person."
+        takeaway: A VAE gives a small search space and Bayesian optimisation spends human ratings where they matter.
+        source: notes/06b-variational-inference-and-gaussian-processes.md
+        notes: >-
+          This is the final assignment, finding the suspect, which searches a VAE's latent space with human feedback.
+
+      - layout: table
+        beat: pitfalls
+        section: Pitfalls
+        title: Five ways variational inference and GPs mislead
+        recall: Which pitfalls does the note list for VI, GPs and the coursework?
+        answer: "Quoting mean-field intervals, ranking models by ELBO, a GP on large n, Bayesian optimisation on cheap fits, and running the coursework on current packages."
+        header: [Pitfall, What goes wrong, Fix]
+        widths: [3.0, 3.4, 3.0]
+        rows:
+          - [Quoting mean-field VI intervals, Threefold too narrow on the collinear example, Check against MCMC on a sample]
+          - [Ranking models by ELBO, "It is a bound, and the gap differs across models", Use held-out predictive scores]
+          - [A GP on large n, Cost grows as n cubed, Sparse GPs or a different surrogate]
+          - [Bayesian optimisation on cheap fits, "Random search with more trials can be simpler", Reserve it for expensive functions]
+          - [Coursework on current packages, "PyMC3, Theano, TF 1 and grader are not there", Use the pinned environment or port]
+        takeaway: Check variational intervals against MCMC, and use held-out scores rather than the ELBO to compare models.
+        source: notes/06b-variational-inference-and-gaussian-processes.md
+        notes: >-
+          The ELBO is a bound, and the gap differs across models, so it is an unsafe way to rank them.

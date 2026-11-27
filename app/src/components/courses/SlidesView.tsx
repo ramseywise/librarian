@@ -49,7 +49,7 @@ function outline(frames: SlideFrameData[]): { title: string; frames: SlideFrameD
   return groups;
 }
 
-/** One deck of slides: `#/slides/<module>[/<lecture>][?play=1]`. The slides are drawn in the page from the
+/** One deck of slides: `#/slides/<module>[/<lecture>][?play=1][&part=n]`. The slides are drawn in the page from the
  * deck's yaml (`frames`); a deck with no frames falls back to the built images and their text. You page
  * through them yourself: reading aloud (the browser's voice) and the read-along text are both off until
  * asked for. Arrow keys, Home and End move; `k` reads aloud and pauses (Space too, while it reads); `c`
@@ -94,6 +94,13 @@ export function SlidesView({ deckId, onAsk }: { deckId: string; onAsk?: (questio
 
   const frames = useMemo(() => deck?.frames ?? [], [deck]);
   const drawn = frames.length > 0;
+  // `?part=n` (a submodule's link) opens on that part's first slide.
+  const startPart = Number(new URLSearchParams(query).get("part")) || null;
+  useEffect(() => {
+    if (startPart === null) return;
+    const i = frames.findIndex((f) => f.kind !== "title" && f.part.n === startPart);
+    if (i >= 0) setPos(i);
+  }, [frames, startPart]);
   const building = deck?.status === "building" && !drawn;
   useEffect(() => {
     if (!building) return;

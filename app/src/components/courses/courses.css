@@ -102,6 +102,30 @@
 .progress-bar { height: 3px; background: var(--border); border-radius: 2px; margin-top: var(--space-3); overflow: hidden; }
 .progress-bar-fill { height: 100%; background: var(--success); }
 
+.mastery { margin-top: var(--space-3); }
+.mastery-track { display: flex; height: 5px; }
+.mastery-seg { flex: 1; background: var(--border); border-radius: 2px; overflow: hidden; }
+/* No data: an outline, so it can't be read as a bar at 0%. */
+.mastery-seg.is-empty { background: transparent; border: 1px dashed var(--text-faint); }
+.mastery-fill { height: 100%; min-width: 2px; background: var(--accent-text); }
+.mastery-label { margin-top: var(--space-1); font-size: 11px; color: var(--text-faint); }
+
+.practice-due { margin-bottom: var(--space-5); }
+.practice-due-title { font-size: 15px; margin: 0 0 var(--space-2); }
+.practice-due-row { padding: var(--space-2) 0; border-bottom: 1px solid var(--border); }
+.practice-due-reason { color: var(--text-faint); font-size: 12px; margin: 2px 0 var(--space-1); }
+.practice-due-links { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+
+/* Concept hub (#/concept/<id>) */
+.concept-domain { color: var(--text-faint); font-size: var(--fs-md); margin-bottom: var(--space-1); }
+.concept-actions { margin-bottom: var(--space-5); }
+.concept-mastery { color: var(--text-secondary); font-size: var(--fs-base); margin: 0 0 var(--space-7); }
+.concept-due { color: var(--danger); }
+.concept-spoke { margin-bottom: var(--space-7); }
+.concept-row { display: flex; gap: var(--space-3); align-items: baseline; flex-wrap: wrap; padding: 2px 0; }
+.concept-row .practice-link { text-align: left; }
+.concept-row-note { color: var(--text-faint); font-size: var(--fs-sm); }
+
 .kind-badge {
   font-size: var(--fs-xs); color: var(--warn); border: 1px solid color-mix(in srgb, var(--warn) 33%, transparent);
   border-radius: var(--radius-lg); padding: 1px var(--space-2);
@@ -141,7 +165,9 @@
 .course-section-title { display: flex; align-items: baseline; gap: var(--space-3); margin: var(--space-6) 0 var(--space-2); font-size: var(--fs-base); font-weight: 600; }
 .course-section-title a { color: var(--text); text-decoration: none; }
 .course-section-title a:hover { color: var(--link); text-decoration: underline; }
-.course-section-count { color: var(--text-faint); font-size: var(--fs-md); font-weight: 400; font-variant-numeric: tabular-nums; }
+/* A submodule (a part of the deck): its title, a link to its slides, and its one-line summary. */
+.course-section-title a.course-section-slides { margin-left: auto; color: var(--text-faint); font-size: var(--fs-md); font-weight: 400; }
+.course-submodule-summary { margin: 0 0 var(--space-2); color: var(--text-dim); font-size: var(--fs-md); }
 div.course-row { cursor: default; flex-wrap: wrap; }
 a.course-row-title { text-decoration: none; }
 div.course-row--stack { flex-direction: column; align-items: flex-start; gap: 2px; }
@@ -483,3 +509,10 @@ a.course-row-title:hover { color: var(--link); text-decoration: underline; }
 /* The syllabus table needs the page's width; running text keeps the reading measure. */
 .course-module-overview { max-width: none; }
 .course-module-overview :is(p, ul, ol):not(td *, th *) { max-width: var(--measure-reading); }
+
+.flashcard-answer { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin-top: var(--space-4); }
+.flashcard-spoken { flex-basis: 100%; margin: 0; color: var(--text-body); font-size: var(--fs-md); }
+.bank-list { margin-top: var(--space-5); }
+.bank-row { padding: var(--space-2) 0; border-bottom: 1px solid var(--border); }
+.bank-title { display: block; color: var(--text-body); font-size: var(--fs-md); margin-bottom: var(--space-2); }
+.bank-row .voice-controls { margin-bottom: var(--space-1); }

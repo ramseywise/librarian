@@ -31,6 +31,16 @@ presenter = "librarian.tools.presenter.__main__:main"
 cartographer = "librarian.tools.cartographer.__main__:main"
 
 [project.optional-dependencies]
+voice = [
+    # Conversational voice, run by `make voice` as its own process (`librarian.voice`). Nothing
+    # in the core app or the API imports these. Exact pins: Pipecat's service classes move
+    # between minors, and this is verified against 1.15.0 only.
+    # No `anthropic` extra here on purpose: pipecat-ai[anthropic] caps anthropic<2, which
+    # conflicts with this repo's anthropic>=2. librarian.voice calls Claude with the repo's SDK.
+    "pipecat-ai[webrtc,whisper,kokoro]==1.15.0",
+    "fastapi>=0.162.0",
+    "uvicorn>=0.54.0",
+]
 api = [
     "fastapi>=0.162.0",
     "uvicorn[standard]>=0.54.0",
@@ -149,6 +159,9 @@ ignore = ["E501", "RUF001", "RUF002", "RUF003", "N803", "N806"]
 # Ported whole from the course repo's deck builder; annotating it adds nothing yet.
 "src/librarian/tools/slides/*" = ["ANN"]
 "tests/slides/*" = ["ANN"]
+# Loguru records and Pipecat's untyped callbacks are Any at the boundary.
+"src/librarian/voice/log_policy.py" = ["ANN401"]
+"src/librarian/voice/pipeline.py" = ["ANN401"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
@@ -191,14 +204,20 @@ source_modules = [
 forbidden_modules = [
     "librarian.api",
     "librarian.mcp",
+    "librarian.voice",
     "librarian.tools",
     "librarian.release",
 ]
 
 [[tool.importlinter.contracts]]
-name = "librarian.api and librarian.mcp are independent"
+name = "librarian.api, librarian.mcp and librarian.voice are independent"
 type = "independence"
-modules = ["librarian.api", "librarian.mcp"]
+modules = ["librarian.api", "librarian.mcp", "librarian.voice"]
+
+# librarian.voice is an optional process on its own environment: it sits beside api and mcp, no
+# layer below imports it (layers, and the core contract above), and the API reaches it over HTTP.
+# Pipecat is an external package the linter does not graph; tests/voice checks that importing the
+# API loads neither librarian.voice nor pipecat.
 
 # Dependencies run downwards: entry points (api, mcp; independent of each other, see above) ->
 # agent (tool registry and chat loop, imported only by api and mcp) -> tools (librarian.tools: slides, presenter, codemap, cartographer) -> courses -> retrieval -> wiki -> ingest -> ops -> feedback (reader feedback rows) -> accounts (users and API keys) -> db (user-state tables; imports none of them). retrieval (the
@@ -212,7 +231,7 @@ modules = ["librarian.api", "librarian.mcp"]
 name = "librarian sub-packages are layered"
 type = "layers"
 layers = [
-    "librarian.api | librarian.mcp",
+    "librarian.api | librarian.mcp | librarian.voice",
     "librarian.agent",
     "librarian.tools",
     "librarian.release",

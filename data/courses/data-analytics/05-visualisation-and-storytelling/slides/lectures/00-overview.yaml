@@ -1,0 +1,294 @@
+# imported_hash: bb46c8f8f30d128c
+# Opening lecture of the visualisation and storytelling series: the last metre, the four steps and where each is taught.
+# make slides PILLAR=data-analytics/05-visualisation-and-storytelling LECTURE=00-overview STRICT=1 PREVIEW=1
+# Levels: a slide with no level is the intro, `core` is the core lesson, `deep` is the optional extension.
+deck:
+  title: Visualisation and Storytelling
+  subtitle: From a chart to a decision
+  tagline: "The last metre · Four steps · The series"
+  reference: "Notes: data-analytics/05-visualisation-and-storytelling/README.md"
+  output: 00-overview.pptx
+  notes: >-
+    This opening lecture runs no code. It gives you the map: why the last metre of an analysis matters, the four steps
+    that group the notes, and which lecture teaches each. Everything named here is taught properly later.
+
+lecture:
+  overview: true
+  covers: [data-analytics/05-visualisation-and-storytelling/README.md]
+  next: [data-analytics/05-visualisation-and-storytelling/notes/01-grammar-and-chart-choice.md]
+  related:
+    - data-analytics/01-python-for-data-analysis/README.md
+    - data-analytics/03-experimentation-and-causality/README.md
+    - data-analytics/06-applied-analyses/README.md
+
+parts:
+  - title: The last metre
+    summary: Where analyses fail · Anscombe · Fernhill Home
+    notes: First, why a module on charts is about decisions as much as drawing.
+    slides:
+      - layout: statement
+        beat: problem
+        section: The core
+        title: Analyses fail in the last metre
+        recall: Where do most analyses that fail actually fail?
+        answer: "Not at the statistics. They fail in the last metre, when the finding reaches someone who has ten minutes and a chart they cannot read."
+        kicker: The problem
+        statement: "Most analyses that fail do not fail at the statistics. They fail in the last metre, when the finding reaches someone who has ten minutes and a chart they cannot read."
+        attribution: Visualisation and storytelling
+        takeaway: The chart is where the analysis meets a decision, so it is part of the analysis.
+        source: README.md
+        notes: >-
+          The module is about that last metre: choosing a chart, drawing it well, and using it to get a decision made.
+
+      - layout: statement
+        beat: fundamentals
+        section: The core
+        title: A chart is also a thinking tool
+        card: false
+        recall: What did Anscombe show about summary statistics?
+        answer: "Four datasets can share every summary statistic and look nothing alike, so you must draw the data."
+        kicker: Anscombe, 1973
+        statement: "Four datasets can share every summary statistic and look nothing alike."
+        attribution: Anscombe (1973)
+        takeaway: Draw the data before you trust the summary.
+        source: README.md
+        notes: >-
+          A good chart is a way of finding things out as well as a way of telling them.
+
+      - layout: cards
+        beat: fundamentals
+        section: The core
+        title: Fernhill Home cut its email budget
+        card: false
+        recall: What happened at Fernhill Home in January 2025?
+        answer: "A fictional online homewares retailer cut its email budget in January 2025. Revenue kept growing and the dashboard stayed green, but something fell."
+        cards:
+          - {title: The cut, accent: "1E3A5F", body: "Email budget reduced in January 2025"}
+          - {title: The dashboard, accent: "0F7490", body: "Revenue kept growing and it stayed green"}
+          - {title: The question, accent: "D4621A", body: "Which chart makes the fall visible, and gets it acted on?"}
+        takeaway: One dataset runs through every lecture, so each new tool meets the same problem.
+        source: README.md
+        notes: >-
+          Fernhill is fictional. The data comes from a seeded generator in practice, so nothing needs downloading.
+
+      - layout: flow
+        beat: fundamentals
+        section: The core
+        title: The path through the module
+        recall: In what order does the module move from a chart to a decision?
+        answer: "Describe a chart as a mapping from data to marks, draw it in matplotlib and seaborn, make it explorable in plotly and Altair, rebuild it in JavaScript, build the dashboard and the story, then choose a dashboard stack."
+        steps:
+          - {label: Grammar, sub: "data to marks", accent: "1E3A5F"}
+          - {label: Draw, sub: "matplotlib, seaborn", accent: "0F7490"}
+          - {label: Explore, sub: "plotly, Altair, JavaScript", accent: "0EA5C9"}
+          - {label: Story, sub: "dashboard, chart, sentence", accent: "D4621A"}
+          - {label: Stack, sub: "what to build on", accent: "5B21B6"}
+        caption: "Each stage is taught in one step of the syllabus."
+        takeaway: Learn the grammar first, then draw, explore, tell the story and choose the stack.
+        source: README.md
+        notes: >-
+          The last chapter moves to Fernhill's customer segments and asks what a dashboard should be built on.
+
+  - title: The four steps
+    summary: Choose and plot · Static and interactive · Dashboards and story · Stacks
+    notes: The notes are grouped into four steps. Each step gets its own lecture.
+    slides:
+      - layout: table
+        beat: problem
+        section: Syllabus
+        title: Four steps, one lecture each
+        recall: What are the four steps of the visualisation module?
+        answer: "Choose and plot, draw static and interactive charts, dashboards and story, and dashboard stacks."
+        header: [Step, What it teaches]
+        widths: [3.6, 6]
+        rows:
+          - ["1. Choose and plot", "The grammar and your own data"]
+          - ["2. Static and interactive", "Matplotlib, plotly and JavaScript"]
+          - ["3. Dashboards and story", "Monitor a number, then get a decision made"]
+          - ["4. Dashboard stacks", "From Python results to a browser"]
+        highlight: [0]
+        takeaway: Four steps cover the notes, and this series has one lecture per step.
+        source: README.md
+        notes: >-
+          Each step has labs: scripts in practice that generate every chart in the notes.
+
+      - layout: steps
+        beat: fundamentals
+        section: Syllabus
+        title: Step 1 decides what the chart must say
+        recall: What are the core ideas of step 1?
+        answer: "Decide what the chart must say before choosing its type, and write the finding as the title. Position on a common scale is the most accurate encoding. Bars start at zero. Never use two y-axes."
+        steps:
+          - {title: Say it first, text: "Write the finding as the title", n: "1", accent: "1E3A5F"}
+          - {title: Position wins, text: "Common scale is the most accurate encoding", n: "2"}
+          - {title: Bars start at zero, text: "Lines may not, but the axis must say so", n: "3"}
+          - {title: No two y-axes, text: "Two panels, or index to a common base", n: "4", accent: "D4621A"}
+        takeaway: Decide the message, prefer position, start bars at zero and never use two y-axes.
+        source: README.md
+        notes: >-
+          The step covers the grammar of graphics and plotting your own data.
+
+      - layout: compare
+        beat: fundamentals
+        section: Syllabus
+        title: Step 2 assigns colour and interaction by job
+        recall: What colour scale does each job need?
+        answer: "Categorical for identity, one hue for magnitude, and two hues with a grey midpoint for polarity. Run the palette through a colour-vision check."
+        emphasis: right
+        left:
+          title: Colour
+          tag: By job
+          bullets: ["Categorical for identity", "One hue for magnitude", "Two hues and grey for polarity"]
+        right:
+          title: Interaction
+          tag: With care
+          bullets: ["Label lines directly", "Essentials visible without hover", "Altair, plotly or seaborn first"]
+        takeaway: Start with Altair, plotly or seaborn, and reach for D3 only when the chart is worth days of work.
+        source: README.md
+        notes: >-
+          The step covers matplotlib and seaborn, plotly and interactive charts, and JavaScript with D3, Vega-Lite and
+          Observable Plot.
+
+      - layout: bullets
+        beat: fundamentals
+        section: Syllabus
+        title: Step 3 separates a number from a finding
+        recall: What does a dashboard answer, and what does it not deliver?
+        answer: "A dashboard answers what my number is. It does not deliver a finding, so write the sentence and send it. Pair a metric you can push by spending with a metric that shows the side effect."
+        bullets:
+          - "**Pair metrics.** One you can push by spending, one that shows the side effect"
+          - "**A dashboard answers** what my number is"
+          - "**It does not deliver a finding.** Write the sentence and send it"
+        takeaway: The dashboard monitors, and the single chart and sentence get the decision made.
+        source: README.md
+        notes: >-
+          This is the step where the budget gets restored.
+
+      - layout: steps
+        beat: practice
+        section: Syllabus
+        title: Step 4 picks the lightest stack that fits
+        recall: What are the rules for choosing a dashboard stack?
+        answer: "Pick the stack by the situation, take the lightest route that fits, and move up only for a requirement you can name. Precompute the labels, since a filter selects rows and never refits. Colour categories by name, never by numeric id."
+        steps:
+          - {title: By the situation, text: "A BI tool, a Python app or a full stack", n: "1", accent: "1E3A5F"}
+          - {title: Lightest route, text: "Move up only for a requirement you can name", n: "2"}
+          - {title: Precompute labels, text: "A filter selects rows, it never refits", n: "3"}
+          - {title: Colour by name, text: "With a second encoding, never a numeric id", n: "4", accent: "D4621A"}
+        takeaway: Take the lightest route that fits, and precompute what a filter should only select.
+        source: README.md
+        notes: >-
+          The step runs on Fernhill's customer segments, with the cost of each stack measured.
+
+  - title: Using the series
+    summary: Prerequisites · Order of study
+    notes: Last, what to bring and how the series is laid out.
+    slides:
+      - layout: table
+        beat: practice
+        section: Builds on and feeds into
+        title: What you should already know
+        card: false
+        recall: Which earlier chapters does visualisation build on?
+        answer: "Processing data from module 01 for the DataFrame, and web data and JavaScript for how results reach a browser."
+        header: [From, You can already]
+        widths: [3.6, 6]
+        rows:
+          - ["DA 01 Processing data", "Build, select, join and reshape a DataFrame"]
+          - ["Python web data", "HTTP and JSON, for how results reach a browser"]
+          - ["TypeScript 01", "Optional, for reading the React front end"]
+        takeaway: Nothing in the prerequisites is taught again here, so go back to the linked module for any line you cannot tick.
+        source: README.md
+        notes: >-
+          The README has a tick list for the three data processing skills.
+
+      - layout: statement
+        beat: wrap
+        section: Syllabus
+        title: What you can do after step 4
+        card: false
+        recall: What can you do after the four steps?
+        kicker: After step 4
+        statement: "Choose a chart for a question, draw it in Python and JavaScript, build a dashboard that would have caught a fall, and write the chart and sentence that get a decision made."
+        attribution: Visualisation and storytelling
+        takeaway: The four steps end with a decision made, not a chart drawn.
+        source: README.md
+        notes: >-
+          This is the outcome the README promises after submodule 4.
+
+      - layout: flow
+        beat: wrap
+        section: Syllabus
+        title: How the series is laid out
+        card: false
+        recall: How is the visualisation series organised?
+        answer: "An overview lecture, then one lecture per step, each covering the notes of its step in the README's order."
+        steps:
+          - {label: Overview, sub: "this lecture", accent: "94A3B8"}
+          - {label: Step 1, sub: "choose and plot"}
+          - {label: Step 2, sub: "static, interactive"}
+          - {label: Step 3, sub: "dashboards, story"}
+          - {label: Step 4, sub: "stacks"}
+        caption: One lecture per step, notes in the README's order, a lab script per chapter.
+        takeaway: One lecture covers one step, and every chart in the notes is generated in practice/.
+        source: README.md
+        notes: >-
+          After step 4 you can choose a chart for a question, draw it in Python and JavaScript, build a dashboard that would
+          have caught a fall, and write the chart and sentence that get a decision made.
+
+  - title: Rules of thumb
+    agenda: false
+    divider: false
+    slides:
+      - layout: cards
+        beat: wrap
+        section: Rules of thumb
+        title: Rules for choosing and drawing
+        card: false
+        recall: Which rules of thumb come from steps 1 and 2?
+        answer: "Decide what the chart must say first and write the finding as the title. Position on a common scale is most accurate. Bars start at zero. Never use two y-axes. Assign colour by job. Label lines directly. Start with Altair, plotly or seaborn."
+        cards:
+          - {title: Finding as title, accent: "1E3A5F", body: "Decide what the chart must say before its type"}
+          - {title: Position, accent: "0F7490", body: "The most accurate encoding on a common scale"}
+          - {title: Bars from zero, accent: "D4621A", body: "And never two y-axes"}
+          - {title: Colour by job, accent: "0EA5C9", body: "Identity, magnitude or polarity, with a vision check"}
+          - {title: Label directly, accent: "5B21B6", body: "And give two or more series a legend or equivalent"}
+          - {title: Lightest tool, accent: "1E3A5F", body: "Altair, plotly or seaborn before D3"}
+        takeaway: State the finding, use position, start bars at zero and keep colour for a job.
+        source: README.md
+        notes: >-
+          Anything essential must also be visible without hover.
+
+      - layout: bullets
+        beat: wrap
+        section: Rules of thumb
+        title: Rules for dashboards and stacks
+        card: false
+        recall: Which rules of thumb come from steps 3 and 4?
+        answer: "Essentials visible without hover. Pair a spend-driven metric with a side-effect metric. A dashboard answers what my number is, not a finding. Pick the stack by the situation. Precompute labels. Colour categories by name."
+        bullets:
+          - "**Visible without hover.** Anything essential"
+          - "**Pair metrics.** A spend-driven one and a side-effect one"
+          - "**A dashboard** answers what my number is. Write the sentence and send it"
+          - "**Pick the stack by the situation,** and precompute the labels"
+          - "**Colour categories by name,** never by a numeric id"
+        takeaway: Monitor the number, send the finding and take the lightest stack that fits.
+        source: README.md
+        notes: >-
+          A filter selects rows and never refits.
+
+      - layout: bullets
+        beat: wrap
+        section: Next
+        title: Where to go next
+        card: false
+        recall: Where does the series go from here?
+        bullets:
+          - "Step 1 lecture: choose and plot"
+          - "Then the other steps, in the README's order"
+          - "After step 4, go on to experimentation and causality"
+        takeaway: Start with step 1, choose and plot.
+        source: README.md
+        notes: >-
+          After submodule 4 the README sends you to experimentation and causality, and after it to applied analyses, which
+          use these charts on worked business questions.

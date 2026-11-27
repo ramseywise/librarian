@@ -9,6 +9,10 @@ import { z } from "zod";
 export const edgeTypeSchema = z.enum(["wikilink", "semantic", "tag-shared", "module", "term", "course-order"]);
 
 /** A page as the map draws it. `highlighted` and the optional flags are set client-side. */
+export const originLinkSchema = z.object({ kind: z.enum(["arxiv", "pdf", "web"]), href: z.string() });
+export const pageOriginSchema = z.object({ title: z.string(), links: z.array(originLinkSchema) });
+export type PageOrigin = z.output<typeof pageOriginSchema>;
+
 export const wikiNodeDataSchema = z.looseObject({
   title: z.string(),
   tags: z.array(z.string()),
@@ -18,6 +22,10 @@ export const wikiNodeDataSchema = z.looseObject({
   updated: z.string(),
   path: z.string(),
   dimmed: z.boolean(),
+  /** Public links to where the page came from (arXiv, a course PDF, an article URL); raw paths never. */
+  origins: z.array(pageOriginSchema).optional(),
+  /** How many sources the page cites in all, linkable or not. */
+  sourceCount: z.number().optional(),
   highlighted: z.boolean().default(false),
   /** Drawn at 1.5x: chat-cited pages only, which are few. Not part of the layout box. */
   enlarged: z.boolean().optional(),

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import "../filter.css";
 import {
@@ -12,7 +12,10 @@ import {
   type AtlasSector,
   type Spike,
 } from "../../utils/atlas";
-import { DEFAULT_CAP, mapPath, type Grouping } from "../../utils/mapRoute";
+import { fieldHit, layoutField, type FieldLink } from "../../utils/atlasField";
+import type { Grouping } from "../../utils/mapRoute";
+import type { RelatedPages } from "../NodeDetailPanel";
+import { AtlasPageDetail } from "./AtlasPageDetail";
 import {
   clear,
   drawHot,
@@ -47,8 +50,6 @@ interface Props {
   lit: Set<string> | null;
   /** Pages some lesson links; the rest draw faint as course gaps. Null until the curriculum arrives. */
   taught: Set<string> | null;
-  onOpenSector: (sector: string) => void;
-  onOpenPage: (sector: string, page: string) => void;
   /** Where the map is coming back from: the camera eases out of it. */
   enterFrom: { sector: string; page?: string } | null;
   /**
@@ -56,7 +57,31 @@ interface Props {
    * keyboard cursor) is read there in full, and the hole keeps only a few large words.
    */
   reading?: HTMLElement | null;
+  /** Wikilinks between pages: they place the inner field's dots and are drawn on selecting one. */
+  links?: FieldLink[];
+  /** A page's links grouped by kind of link; without it the card lists them in one group. */
+  related?: (pageId: string) => RelatedPages[];
+  /** A tag on the card toggles its filter; `activeTags` are the ones on. */
+  onTagClick?: (tag: string) => void;
+  activeTags?: Set<string>;
+  /** A page's most similar pages by embedding, best first. Without it the card lists none. */
+  similar?: (pageId: string) => SimilarPage[];
 }
+
+export interface SimilarPage {
+  id: string;
+  title: string;
+  score: number;
+}
+
+const NO_LINKS: FieldLink[] = [];
+/** How many of a page's neighbours the card and column list by name. */
+const NEIGHBOUR_LIST = 12;
+/** The link groups the card shows, and how many pages each lists before "+n more". */
+const CARD_GROUPS = ["Builds on", "Leads to", "Examples", "Related", "Disagrees with", "Superseded by", "Replaces"];
+const CARD_GROUP_CAP = 3;
+/** How many similar pages the card lists and the map draws. */
+const SIMILAR_CAP = 3;
 
 const MORPH_MS = 720;
 const MORPH_STAGGER = 0.3;
@@ -92,10 +117,13 @@ export function Atlas({
   matches,
   lit,
   taught,
-  onOpenSector,
-  onOpenPage,
   enterFrom,
   reading = null,
+  links = NO_LINKS,
+  related,
+  onTagClick,
+  activeTags,
+  similar,
 }: Props) {
   const stageRef = useRef<HTMLDivElement>(null);
   const baseRef = useRef<HTMLCanvasElement>(null);
@@ -106,12 +134,16 @@ export function Atlas({
   const [zooming, setZooming] = useState(enterFrom != null && !reducedMotion());
   const [cursor, setCursor] = useState<Cursor | null>(null);
   const [hoverSector, setHoverSector] = useState<number | null>(null);
+  // Which lines the selected page shows, on the map and in its card.
+  const [lines, setLines] = useState({ wiki: true, similar: true });
   // The last thing pointed at. It stays when the pointer leaves, so it can still be read in the column.
   const [peek, setPeek] = useState<Cursor | null>(null);
   const peekRef = useRef<Cursor | null>(null);
   peekRef.current = peek;
 
   const ring = useMemo(() => layoutRing(sectors), [sectors]);
+  const field = useMemo(() => layoutField(ring, degree, links), [ring, degree, links]);
+  const titles = useMemo(() => ring.spikes.map((s) => info.get(s.id)?.title ?? s.id), [ring, info]);
   const insets = useMemo(() => insetsFor(size.wide, grouping), [size.wide, grouping]);
   const g = useMemo(() => ringGeometry(size.w, size.h, insets), [size, insets]);
   const labels = useMemo(() => layoutLabels(ring, g), [ring, g]);
@@ -120,6 +152,13 @@ export function Atlas({
     return on ? ring.spikes.filter((s) => on.has(s.id)).length : null;
   }, [lit, matches, ring]);
   const cursorSpike = cursor?.spike != null ? (ring.spikes[cursor.spike] ?? null) : null;
+  const spikeIndex = useMemo(() => new Map(ring.spikes.map((sp) => [sp.id, sp.index])), [ring]);
+  /** A page's similar pages that are on the ring, best first, or none with the switch off. */
+  const similarOf = useCallback(
+    (id: string): SimilarPage[] =>
+      lines.similar && similar ? similar(id).filter((p) => p.id !== id && spikeIndex.has(p.id)).slice(0, SIMILAR_CAP) : [],
+    [lines.similar, similar, spikeIndex],
+  );
   /** Per sector, how many of its pages no lesson links yet; null until the curriculum is in. */
   const gaps = useMemo(
     () => (taught ? new Map(ring.sectors.map((s) => [s.id, s.pageIds.filter((id) => !taught.has(id)).length])) : null),
@@ -147,6 +186,11 @@ export function Atlas({
     moveRaf: 0,
     rectLeft: 0,
     rectTop: 0,
+    field: null as ReturnType<typeof layoutField> | null,
+    titles: [] as string[],
+    viewK: 1,
+    wikiLines: true,
+    similar: [] as number[],
   });
 
   // Free zoom and pan: a CSS transform on the layer holding the canvases, labels and card. The
@@ -211,6 +255,9 @@ export function Atlas({
       dimSectors: d.dimSectors,
       alpha: d.alpha,
       anyActive: d.anyActive,
+      field: d.field,
+      viewK: d.viewK,
+      titles: d.titles,
     };
     drawRing(ctx, frame);
     (window as unknown as { __atlasDrawTimes?: number[] }).__atlasDrawTimes?.push(performance.now() - started);
@@ -234,23 +281,33 @@ export function Atlas({
       hover: d.hover,
       cursor: d.cursor,
       sector: d.hoverSector ?? d.cursorSector ?? d.hover?.sector ?? null,
+      field: d.field,
+      viewK: d.viewK,
+      titles: d.titles,
+      wikiLines: d.wikiLines,
+      similar: d.similar,
     };
     drawHot(ctx, frame);
   }, []);
 
-  // Once a zoom settles, redraw at the zoomed resolution so the scaled bitmap stays sharp.
+  // Once a zoom settles, redraw at the zoomed resolution so the scaled bitmap stays sharp, and
+  // with the labels the zoom has made room for.
   useEffect(() => {
     const timer = setTimeout(() => {
       const d = draw.current;
       const base = window.devicePixelRatio || 1;
       const { width, height } = d.g;
       const dpr = Math.max(base, Math.min(base * viewK, Math.sqrt(MAX_CANVAS_PX / Math.max(1, width * height))));
-      if (Math.abs(dpr - d.dpr) < 0.01) return;
-      d.dpr = dpr;
-      for (const canvas of [baseRef.current, hotRef.current]) {
-        if (!canvas) continue;
-        canvas.width = Math.round(width * dpr);
-        canvas.height = Math.round(height * dpr);
+      const sameDpr = Math.abs(dpr - d.dpr) < 0.01;
+      if (sameDpr && d.viewK === viewK) return;
+      d.viewK = viewK;
+      if (!sameDpr) {
+        d.dpr = dpr;
+        for (const canvas of [baseRef.current, hotRef.current]) {
+          if (!canvas) continue;
+          canvas.width = Math.round(width * dpr);
+          canvas.height = Math.round(height * dpr);
+        }
       }
       paintBase(false);
       paintHot();
@@ -315,6 +372,8 @@ export function Atlas({
     const d = draw.current;
     d.ring = ring;
     d.g = g;
+    d.field = field;
+    d.titles = titles;
     const target = spikeFrame(ring, g, degree);
     const before = lastRing.current;
     lastRing.current = { grouping, spikes: target, ids: ring.spikes.map((s) => s.id) };
@@ -405,7 +464,7 @@ export function Atlas({
     d.raf = requestAnimationFrame(tick);
     // `moving` only guards re-entry above; it must not restart this effect.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ring, g, degree, grouping, matches, lit, taught, paintBase, paintHot, stopAnim]);
+  }, [ring, g, degree, field, titles, grouping, matches, lit, taught, paintBase, paintHot, stopAnim]);
 
   // A theme switch: repaint with the new colours. Sector colours are resolved in spikeFrame, so a
   // sector on a CSS variable picks its colour up on the next ring; arcs resolve on every paint.
@@ -440,8 +499,10 @@ export function Atlas({
     d.cursor = cursorSpike;
     d.cursorSector = cursor?.sector ?? null;
     d.hoverSector = hoverSector;
+    d.wikiLines = lines.wiki;
+    d.similar = cursorSpike ? similarOf(cursorSpike.id).map((p) => spikeIndex.get(p.id)!) : [];
     paintHot();
-  }, [cursorSpike, cursor, hoverSector, paintHot]);
+  }, [cursorSpike, cursor, hoverSector, lines.wiki, similarOf, spikeIndex, paintHot]);
 
   // --- Camera: into a sector or spike, then the route changes; back out on return ---------
   const cameraTarget = useCallback((sector: number, spike: Spike | null): Camera => {
@@ -484,24 +545,6 @@ export function Atlas({
     [paintBase, stopAnim],
   );
 
-  const zoomInto = useCallback(
-    (sector: number, spike: Spike | null) => {
-      const s = ring.sectors[sector];
-      if (!s) return;
-      const open = () => (spike ? onOpenPage(s.id, spike.id) : onOpenSector(s.id));
-      if (reducedMotion() || !hotRef.current?.getContext("2d")) {
-        open();
-        return;
-      }
-      resetView();
-      setZooming(true);
-      setHoverSector(null);
-      hideTip(tipRef.current);
-      runCamera(homeCamera(draw.current.g), cameraTarget(sector, spike), 1, ZOOMED_ALPHA, open);
-    },
-    [ring, onOpenPage, onOpenSector, runCamera, cameraTarget, resetView],
-  );
-
   // On arrival from a focused view, once the ring has its real size.
   const entered = useRef(false);
   useEffect(() => {
@@ -529,13 +572,24 @@ export function Atlas({
   }, [size, enterFrom, ring, runCamera, cameraTarget, paintBase, paintHot]);
 
   // --- Pointer -------------------------------------------------------------------------
+  /** The rim first (spikes, arcs), then the field of dots inside it. */
+  const hitAt = (x: number, y: number) => {
+    const d = draw.current;
+    const hit = hitTest(d.ring, d.g, x, y);
+    if (hit || !d.field || !d.structure) return hit;
+    if (Math.hypot(x - d.g.cx, y - d.g.cy) >= d.g.inner - 8) return null;
+    const i = fieldHit(d.field, d.g, x, y, 4 / view.current.k);
+    const spike = i == null ? null : d.ring.spikes[i];
+    return spike ? { kind: "spike" as const, spike } : null;
+  };
+
   const applyHover = useCallback(() => {
     const d = draw.current;
     d.moveRaf = 0;
     const at = d.pendingMove;
     if (!at || d.raf || d.cam) return;
     const p = toRing(at.x, at.y);
-    const hit = hitTest(d.ring, d.g, p.x, p.y);
+    const hit = hitAt(p.x, p.y);
     const spike = hit?.kind === "spike" ? hit.spike : null;
     const sector = hit?.kind === "sector" ? hit.sector : null;
     const tip = tipRef.current;
@@ -596,9 +650,7 @@ export function Atlas({
     hideTip(tipRef.current);
   }, [paintHot]);
 
-  const pointerKind = useRef<string>("mouse");
   const onPointerDown = useCallback((e: React.PointerEvent) => {
-    pointerKind.current = e.pointerType;
     const stage = stageRef.current?.getBoundingClientRect();
     if (stage) {
       draw.current.rectLeft = stage.left;
@@ -625,21 +677,18 @@ export function Atlas({
       }
       if (d.raf || d.cam) return;
       const p = toRing(e.clientX - d.rectLeft, e.clientY - d.rectTop);
-      const hit = hitTest(d.ring, d.g, p.x, p.y);
+      const hit = hitAt(p.x, p.y);
       if (!hit) {
         setCursor(null);
         return;
       }
       const sector = hit.kind === "spike" ? hit.spike.sector : hit.sector;
       const spike = hit.kind === "spike" ? hit.spike : null;
-      // A fingertip covers dozens of spikes, so a tap selects and the card opens it.
-      if (pointerKind.current === "touch") {
-        setCursor({ sector, spike: spike?.index ?? null });
-        return;
-      }
-      zoomInto(sector, spike);
+      // A click selects a page (lighting its links) or a sector; the card reads it. Nothing
+      // here leaves the atlas: the card's links move the selection instead.
+      setCursor({ sector, spike: spike ? spike.index : null });
     },
-    [zoomInto],
+    [],
   );
 
   // --- Keyboard ------------------------------------------------------------------------
@@ -683,9 +732,6 @@ export function Atlas({
           const last = ring.spikes[ring.spikes.length - 1];
           if (last) setCursor({ sector: last.sector, spike: last.index });
         },
-        Enter: () => {
-          if (cursor) zoomInto(cursor.sector, cursorSpike);
-        },
       };
       if (e.key === "Escape" && cursor) {
         e.preventDefault();
@@ -697,7 +743,7 @@ export function Atlas({
       e.preventDefault();
       action();
     },
-    [stepSpike, stepSector, ring, cursor, cursorSpike, zoomInto],
+    [stepSpike, stepSector, ring, cursor],
   );
 
   // A ring from another grouping or wiki state: an index would point at another page.
@@ -717,23 +763,82 @@ export function Atlas({
   const pageTotal = ring.spikes.length;
   const titleOf = useCallback((id: string) => info.get(id)?.title ?? id, [info]);
 
-  // Always in the hole; a small ring drops the card's secondary lines instead of moving it out.
-  const cardSize = g.inner * 1.72;
-  const cardStyle = {
-    left: g.cx - cardSize / 2,
-    top: g.cy - cardSize / 2,
-    width: cardSize,
-    height: cardSize,
-    // The hole's few words scale with the ring, so a big screen gets big type.
-    "--hole": `${cardSize}px`,
-  } as CSSProperties;
-
   // With a Reading slot, the column shows the selection, or failing that the last thing pointed at.
   const readCursor = cursor ?? peek;
   const readSector = readCursor ? ring.sectors[readCursor.sector] : null;
   const readSpike = readCursor?.spike != null ? (ring.spikes[readCursor.spike] ?? null) : null;
   const readInfo = readSpike ? info.get(readSpike.id) : null;
-  const spikeOf = (id: string) => ring.spikes.find((s) => s.id === id) ?? null;
+  const spikeById = useMemo(() => new Map(ring.spikes.map((sp) => [sp.id, sp])), [ring]);
+  const selectPage = useCallback(
+    (id: string) => {
+      const sp = spikeById.get(id);
+      if (sp) setCursor({ sector: sp.sector, spike: sp.index });
+    },
+    [spikeById],
+  );
+  const colorOf = useCallback(
+    (id: string) => {
+      const sp = spikeById.get(id);
+      return sp ? ring.sectors[sp.sector].color : "var(--text-ghost)";
+    },
+    [spikeById, ring],
+  );
+
+  /** A page's links, grouped by kind when the caller knows the kinds, else one best-linked group. */
+  const groupsOf = (spike: Spike): RelatedPages[] => {
+    if (!lines.wiki) return [];
+    if (related) {
+      return related(spike.id)
+        .filter((g) => CARD_GROUPS.includes(g.label))
+        .map((g) => {
+          const pages = g.pages.filter((p) => spikeById.has(p.id));
+          return { ...g, pages: pages.slice(0, CARD_GROUP_CAP), more: g.more + Math.max(0, pages.length - CARD_GROUP_CAP) };
+        })
+        .filter((g) => g.pages.length > 0);
+    }
+    const near = [...(field.neighbours[spike.index] ?? [])].sort(
+      (a, b) => (degree.get(ring.spikes[b].id) ?? 0) - (degree.get(ring.spikes[a].id) ?? 0),
+    );
+    if (!near.length) return [];
+    return [
+      {
+        label: "Linked pages",
+        pages: near.slice(0, NEIGHBOUR_LIST).map((j) => ({ id: ring.spikes[j].id, title: titleOf(ring.spikes[j].id) })),
+        more: Math.max(0, near.length - NEIGHBOUR_LIST),
+      },
+    ];
+  };
+
+  const pageDetail = (spike: Spike) => (
+    <AtlasPageDetail
+      key={spike.id}
+      pageId={spike.id}
+      related={groupsOf(spike)}
+      similar={similarOf(spike.id)}
+      page={info.get(spike.id)}
+      tags={info.get(spike.id)?.tags ?? []}
+      activeTags={activeTags}
+      onSelect={selectPage}
+      onTagClick={onTagClick}
+      colorOf={colorOf}
+    />
+  );
+
+  /** A sector's best-linked pages, as buttons that select them. */
+  const bestLinked = (sector: AtlasSector, n: number) => (
+    <>
+      <div className="panel-label reading-sub">Best linked</div>
+      <ul className="reading-list">
+        {sector.pageIds.slice(0, n).map((id) => (
+          <li key={id}>
+            <button type="button" className="reading-link" onClick={() => selectPage(id)}>
+              {titleOf(id)}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </>
+  );
 
   const actions = (sel: Cursor, spike: Spike | null) => (
     <div className="atlas-card-actions">
@@ -743,16 +848,23 @@ export function Atlas({
       <button type="button" className="pill-btn" aria-label="Next" onClick={() => (spike ? stepSpike(1) : stepSector(1))}>
         ›
       </button>
-      <button type="button" className="pill-btn pill-btn--accent" onClick={() => zoomInto(sel.sector, spike)}>
-        Open
-      </button>
+      {spike && (
+        <button type="button" className="pill-btn" onClick={() => setCursor({ sector: sel.sector, spike: null })}>
+          {ring.sectors[sel.sector]?.label ?? "Sector"}
+        </button>
+      )}
+      {cursor && (
+        <button type="button" className="pill-btn" onClick={() => setCursor(null)}>
+          Clear
+        </button>
+      )}
     </div>
   );
 
   const legend = (
     <>
-      <div className="atlas-card-legend">Spike length: links to and from a page</div>
-      {taught && <div className="atlas-card-legend">Faint spike: no lesson links the page yet</div>}
+      <div className="atlas-card-legend">Dot size and spike length: links to and from a page</div>
+      {taught && <div className="atlas-card-legend">Faint: no lesson links the page yet</div>}
     </>
   );
 
@@ -764,20 +876,6 @@ export function Atlas({
       <div className="atlas-card-note">{matchedTotal != null ? "pages match" : "wiki pages"}</div>
       <div className="atlas-card-note">{totalLinks.toLocaleString("en-US")} links</div>
     </>
-  );
-
-  // The hole beside a Reading slot: only what reads at a glance, sized to the ring.
-  const holeBrief = readSector ? (
-    <>
-      <div className="atlas-card-sector">
-        <span className="cur-dot" style={{ background: readSector.color }} aria-hidden="true" />
-        {readSector.label}
-      </div>
-      <div className="atlas-card-title">{readSpike ? (readInfo?.title ?? readSpike.id) : `${readSector.pageIds.length} pages`}</div>
-      {readSpike && <div className="atlas-card-note">{degree.get(readSpike.id) ?? 0} links</div>}
-    </>
-  ) : (
-    totals
   );
 
   // The same selection in full, for the Reading slot.
@@ -797,28 +895,22 @@ export function Atlas({
                 {degree.get(readSpike.id) ?? 0} links
                 {taught && !taught.has(readSpike.id) && " · not yet in a lesson"}
               </div>
+              {pageDetail(readSpike)}
             </>
           ) : (
             <>
               <h2 className="reading-title">{readSector.pageIds.length} pages</h2>
               {gaps?.get(readSector.id) ? <div className="reading-meta">{gapText(gaps.get(readSector.id)!)}</div> : null}
-              <div className="panel-label reading-sub">Best linked</div>
-              <ul className="reading-list">
-                {readSector.pageIds.slice(0, 6).map((id) => (
-                  <li key={id}>
-                    <button type="button" className="reading-link" onClick={() => zoomInto(readCursor.sector, spikeOf(id))}>
-                      {titleOf(id)}
-                    </button>
-                  </li>
-                ))}
-              </ul>
+              {bestLinked(readSector, 8)}
             </>
           )}
           {actions(readCursor, readSpike)}
         </>
       ) : (
         <>
-          <p className="reading-empty">Point at a spike or a sector to read about it here. Click to open it.</p>
+          <p className="reading-empty">
+            Point at a page or a sector to read about it here. Click one to keep it here, then follow its links from page to page.
+          </p>
           {legend}
         </>
       )}
@@ -836,7 +928,7 @@ export function Atlas({
         // A canvas has no native semantics; "application" hands arrow keys to the page (labelled below).
         // eslint-disable-next-line jsx-a11y/no-interactive-element-to-noninteractive-role
         role="application"
-        aria-label={`Atlas of ${pageTotal} wiki pages in ${ring.sectors.length} sectors, one spike per page; a longer spike means more links. Left and right arrows step through pages, up and down through sectors, Enter opens. Everything here is also under "Browse as a list".`}
+        aria-label={`Atlas of ${pageTotal} wiki pages in ${ring.sectors.length} sectors, one dot and one spike per page; a bigger dot or longer spike means more links. Left and right arrows step through pages, up and down through sectors, Escape clears. Everything here is also under "Browse as a list".`}
         onPointerMove={onPointerMove}
         onPointerLeave={onPointerLeave}
         onPointerDown={onPointerDown}
@@ -869,12 +961,15 @@ export function Atlas({
                 d={`M${l.from.x},${l.from.y} L${l.x - dir * 4},${l.y - 4}`}
                 style={{ stroke: s.color }}
               />
-              <a
-                href={`#${mapPath({ level: "sector", grouping, sector: s.id, cap: DEFAULT_CAP })}`}
+              <g
+                role="button"
+                tabIndex={0}
                 className="atlas-label"
-                onClick={(e) => {
+                onClick={() => setCursor({ sector: l.sector, spike: null })}
+                onKeyDown={(e) => {
+                  if (e.key !== "Enter" && e.key !== " ") return;
                   e.preventDefault();
-                  zoomInto(l.sector, null);
+                  setCursor({ sector: l.sector, spike: null });
                 }}
                 onPointerEnter={() => setHoverSector(l.sector)}
                 onPointerLeave={() => setHoverSector(null)}
@@ -885,56 +980,70 @@ export function Atlas({
                 <text x={l.x} y={l.y} textAnchor={l.anchor}>
                   {l.text} <tspan className="atlas-label-count">{l.count}</tspan>
                 </text>
-              </a>
+              </g>
             </g>
           );
         })}
       </svg>
 
-      {reading ? (
-        <div className={`atlas-card atlas-card--brief${g.cardInside ? "" : " atlas-card--compact"}`} style={cardStyle}>
-          {holeBrief}
-        </div>
-      ) : (
-        <div className={`atlas-card${g.cardInside ? "" : " atlas-card--compact"}`} style={cardStyle}>
-          {selSector && cursor ? (
+      </div>
+      {reading && createPortal(readingBody, reading)}
+
+      {/* The corner beside the ring: the totals, and without a Reading slot the selection's card. */}
+      <div className="atlas-corner">
+      {!reading && selSector && cursor && (
+        <div className="atlas-card atlas-card--dock">
+          <div className="atlas-card-sector">
+            <span className="cur-dot" style={{ background: selSector.color }} aria-hidden="true" />
+            {selSector.label}
+          </div>
+          {cursorSpike ? (
             <>
-              <div className="atlas-card-sector">
-                <span className="cur-dot" style={{ background: selSector.color }} aria-hidden="true" />
-                {selSector.label}
+              <div className="atlas-card-title">{selInfo?.title ?? cursorSpike.id}</div>
+              {selInfo?.summary && <div className="atlas-card-summary">{selInfo.summary}</div>}
+              <div className="atlas-card-note">
+                {degree.get(cursorSpike.id) ?? 0} links
+                {taught && !taught.has(cursorSpike.id) && " · not yet in a lesson"}
               </div>
-              {cursorSpike ? (
-                <>
-                  <div className="atlas-card-title">{selInfo?.title ?? cursorSpike.id}</div>
-                  <div className="atlas-card-summary">{selInfo?.summary}</div>
-                  <div className="atlas-card-note">
-                    {degree.get(cursorSpike.id) ?? 0} links
-                    {taught && !taught.has(cursorSpike.id) && " · not yet in a lesson"}
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="atlas-card-title">{selSector.pageIds.length} pages</div>
-                  {gaps?.get(selSector.id) ? (
-                    <div className="atlas-card-note">{gapText(gaps.get(selSector.id)!)}</div>
-                  ) : null}
-                  <div className="atlas-card-summary">
-                    Best linked: {selSector.pageIds.slice(0, 3).map(titleOf).join(", ")}
-                  </div>
-                </>
-              )}
-              {actions(cursor, cursorSpike)}
+              <div className="atlas-card-links">{pageDetail(cursorSpike)}</div>
             </>
           ) : (
             <>
-              {totals}
-              {legend}
+              <div className="atlas-card-title">{selSector.pageIds.length} pages</div>
+              {gaps?.get(selSector.id) ? <div className="atlas-card-note">{gapText(gaps.get(selSector.id)!)}</div> : null}
+              <div className="atlas-card-links">{bestLinked(selSector, 6)}</div>
             </>
           )}
+          {actions(cursor, cursorSpike)}
         </div>
       )}
-      {reading && createPortal(readingBody, reading)}
+      <div className="atlas-totals">
+        {totals}
+        {!reading && !cursor && legend}
+      </div>
+      </div>
 
+      <div className="atlas-lines" role="group" aria-label="Lines to show from the selected page">
+        <button
+          type="button"
+          className="pill-btn"
+          aria-pressed={lines.wiki}
+          title="Wikilinks: pages this one links or is linked from"
+          onClick={() => setLines((l) => ({ ...l, wiki: !l.wiki }))}
+        >
+          — wiki links
+        </button>
+        {similar && (
+          <button
+            type="button"
+            className="pill-btn"
+            aria-pressed={lines.similar}
+            title="Pages whose text is closest to this one's, linked or not"
+            onClick={() => setLines((l) => ({ ...l, similar: !l.similar }))}
+          >
+            ┄ similar
+          </button>
+        )}
       </div>
 
       <div className="atlas-zoom" role="group" aria-label="Zoom the atlas">
